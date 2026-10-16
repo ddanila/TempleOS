@@ -13001,6 +13001,18 @@
           "result": "pass",
           "evidence": "build/i386-c4-derived-contention-final/result.json",
           "scope": "16 commands: native cooperative contended lock, canceled waiter preserves holder lock, successful waiter resumes, exact parent heap and presentation reuse; original default spin policy and public layout unchanged; not whole-file parity"
+        },
+        {
+          "command": "python3 tools/test-i386-spawn-home-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-spawn-home-shared-current/result.json",
+          "scope": "Seven original public Spawn home cases: explicit/default/selected parent, dormant creation, mapped home, invalid parent drive and NULL parent directory; all masks 63, unchanged inputs. Native correction and whole-file compatibility remain pending."
+        },
+        {
+          "command": "python3 tools/test-i386-spawn-home.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-spawn-home-native-private-abi/result.json",
+          "scope": "Seven public Spawn configured-home cases, all masks 63 and unchanged inputs; selected/default parents, dormant birth, external mapped home, invalid parent drive and NULL parent directory. Not full TaskInit parity."
         }
       ]
     },

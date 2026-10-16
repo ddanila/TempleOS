@@ -23,6 +23,7 @@ class CI386TaskFiles {
 //not Cd: callers supply an already established rooted directory and drive letter.
 public extern Bool I386TaskFilesInit(CI386Task *task,CI386Heap *heap,CFilePathContext *environment,CI386FileVolumes *volumes);
 public extern Bool I386TaskFilesClone(CI386Task *source,CI386Task *target,CI386Heap *heap);
+public extern Bool I386TaskFilesPublicClone(CI386Task *source,CI386Task *target,CI386Heap *heap);
 public extern Bool I386TaskFilesSet(CI386Task *task,U8 *directory,U8 drive);
 public extern Bool I386TaskFilesDestroy(CI386Task *task);
 //Current/root/finished-task inspection. Balance each successful borrow; a borrow

@@ -8,7 +8,7 @@ Bool I386TaskFilesAccess(CI386Task *task)
   if(!task->owner) return TRUE;
   return task->finished || task->owner->current==task || task->owner->current==task->owner->root;
 }
-CI386TaskFiles *I386TaskFilesValid(CI386Task *task)
+CI386TaskFiles *I386TaskFilesState(CI386Task *task,Bool require_directory)
 {
   CI386TaskFiles *state;
   CI386TaskHeaps *owner;
@@ -18,19 +18,24 @@ CI386TaskFiles *I386TaskFilesValid(CI386Task *task)
       state->task!=task || !state->environment || !state->volumes ||
       task->file_clone!=&I386TaskFilesClone || task->file_destroy!=&I386TaskFilesDestroy) return 0;
   bytes=I386HeapSize(state->heap,state);directory=task->cur_dir;
-  if(!directory || *directory!='/')return 0;
+  if(require_directory && (!directory || *directory!='/'))return 0;
   if(owner=state->directory_owner) {
     if(bytes!=sizeof(CI386TaskFiles) || owner!=task->heap_state || owner->task!=task ||
         owner->signature!=I386_TASK_HEAPS_MAGIC || !owner->code_allocate ||
         !owner->code_release || !owner->code_capacity)return 0;
+    if(!require_directory)return state;
     capacity=(*owner->code_capacity)(owner,directory);
     for(i=1;i<capacity;i++)if(!directory[i])return state;
     return 0;
   }
-  if(bytes<sizeof(CI386TaskFiles)+2 || directory!=(state+1)(U8 *) ||
+  if(bytes<sizeof(CI386TaskFiles)+2)return 0;
+  if(!require_directory)return state;
+  if(directory!=(state+1)(U8 *) ||
       directory[bytes-sizeof(CI386TaskFiles)-1])return 0;
   return state;
 }
+CI386TaskFiles *I386TaskFilesValid(CI386Task *task)
+{ return I386TaskFilesState(task,TRUE); }
 U8 I386TaskFilesLetter(CI386TaskFiles *state)
 {//Public field assignment is part of original directory-context restoration.
   CDrv *drive=state->task->cur_dv;
@@ -90,22 +95,39 @@ Bool I386TaskFilesInit(CI386Task *task,CI386Heap *heap,CFilePathContext *environ
 files_init_done:
   I386IrqRestore(flags); return result;
 }
-Bool I386TaskFilesClone(CI386Task *source,CI386Task *target,CI386Heap *heap)
+Bool I386TaskFilesCloneMode(CI386Task *source,CI386Task *target,CI386Heap *heap,Bool home)
 {
   U32 flags=I386IrqSave;
   CI386TaskFiles *state,*copy;
-  U8 *new_directory;
+  U8 *new_directory,*directory,drive;
+  CDrv *identity;
   Bool result=FALSE;
-  state=I386TaskFilesValid(source);
+  state=I386TaskFilesState(source,!home);
   if(!state || !target || target->owner || target->file_state || target->file_clone || target->file_destroy) goto files_clone_done;
-  copy=I386TaskFilesNew(target,heap,state->environment,state->volumes,source->cur_dir,I386TaskFilesLetter(state),&new_directory);
+  if(home) {
+    directory=state->environment->home_dir;
+    if(!directory || directory[0]<'A' || directory[0]>'Z' ||
+        directory[1]!=':' || directory[2]!='/')goto files_clone_done;
+    drive=directory[0];directory+=2;
+    identity=I386TaskFilesDrive(state->volumes,drive);
+  } else {
+    directory=source->cur_dir;drive=I386TaskFilesLetter(state);identity=source->cur_dv;
+  }
+  copy=I386TaskFilesNew(target,heap,state->environment,state->volumes,directory,drive,&new_directory);
   if(!copy) goto files_clone_done;
   target->file_state=copy; target->file_clone=&I386TaskFilesClone; target->file_destroy=&I386TaskFilesDestroy;
-  target->cur_dir=new_directory;
-  target->cur_dv=source->cur_dv;
+  target->cur_dir=new_directory;target->cur_dv=identity;
   result=TRUE;
 files_clone_done:
   I386IrqRestore(flags); return result;
+}
+Bool I386TaskFilesClone(CI386Task *source,CI386Task *target,CI386Heap *heap)
+{//Private foundation workers retain explicit parent-context inheritance.
+  return I386TaskFilesCloneMode(source,target,heap,FALSE);
+}
+Bool I386TaskFilesPublicClone(CI386Task *source,CI386Task *target,CI386Heap *heap)
+{//Original TaskInit selects the configured home independently from its parent.
+  return I386TaskFilesCloneMode(source,target,heap,TRUE);
 }
 Bool I386TaskFilesSet(CI386Task *task,U8 *directory,U8 drive)
 {

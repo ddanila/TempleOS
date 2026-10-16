@@ -254,7 +254,7 @@ def memory_runtime_layout(module):
     #bindings, not additional external kernel services.
     external_imports = set(imports) - set(exports)
     if external_imports != {'I386HeapAlloc', 'I386HeapFree', 'I386HeapShrink', 'I386HeapSize', 'I386HeapValid',
-                       'I386IrqSave', 'I386IrqRestore', 'KernelLog', 'KernelHex', 'KernelStop', 'HashAdd', 'throw', 'SysTry', 'SysUntry', 'HashFind', 'I386SchedYield', 'cnts', 'I386TaskCreateFrom', 'I386TaskDestroy', 'I386SchedActivate', 'I386SchedFinish'}:
+                       'I386IrqSave', 'I386IrqRestore', 'KernelLog', 'KernelHex', 'KernelStop', 'HashAdd', 'throw', 'SysTry', 'SysUntry', 'HashFind', 'I386SchedYield', 'cnts', 'I386TaskCreateWithFiles', 'I386TaskDestroy', 'I386SchedActivate', 'I386SchedFinish'}:
         raise ValueError('Unexpected memory-runtime import contract')
     for name in ('Main', 'MemoryBind', 'MemoryProbe', 'MemoryCAllocExact', 'Yield', 'Sleep', 'SleepUntil', 'Spawn', 'Exit', 'TaskQueIns', 'MemoryManagedYield', 'MemoryTaskMsg', 'MemoryPostMsg', 'MemoryMsg', 'MemorySuspend', 'MemoryIsSuspended', 'MemoryJobsHndlr', 'MemoryScanMsg', 'MemoryGetMsg', 'MemoryFlushMsgs', 'MemoryKill'):
         if exports.get(name, (0, 0))[0] != 1:
@@ -280,8 +280,10 @@ def memory_runtime_layout(module):
         raise ValueError('Missing memory-runtime version')
     if exports.get('memory_owner_retire', (0, 0))[0] != 3:
         raise ValueError('Missing owner-retirement callback slot')
+    if exports.get('memory_file_birth', (0, 0))[0] != 3:
+        raise ValueError('Missing public task file-birth hook')
     version_offset = 32+exports['memory_runtime_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 28:
+    if struct.unpack_from('<I', module, version_offset)[0] != 29:
         raise ValueError('Unexpected memory-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=imports['I386HeapAlloc'],
@@ -356,15 +358,15 @@ def file_runtime_layout(module):
             symbol = module[name:name+length].decode('ascii')
             if kind in (1, 3): exports[symbol] = (kind, offset)
             else: imports[symbol] = name
-    if set(imports) != {'I386BuildRuntimeAcquire', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
+    if set(imports) != {'I386TaskFileBirthHook', 'I386BuildRuntimeAcquire', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
             'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield', 'I386RedSeaSectorRead', 'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc', 'I386RedSeaFree', 'I386RedSeaWrite', 'I386RedSeaDirectory', 'I386RedSeaPutWord', 'I386RedSeaMoveIntentSet', 'I386RedSeaMoveIntentClear', 'KernelLog', 'SysTry', 'SysUntry', 'throw'}:
         raise ValueError('Unexpected file-runtime import contract')
-    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386InstallBootArea', 'I386InstallBootImageArea', 'I386TaskInstallBoot', 'I386TaskInstallBootImage', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet', 'I386TaskFileWritePublic', 'I386TaskFileReadStored', 'I386ExpandBuf', 'I386TaskFilePublicReader', 'I386TaskCd', 'I386TaskFileFind', 'I386FileRuntimeTmpFilename', 'I386FileRuntimeDriveAlias', 'I386TaskModuleStageNew', 'I386TaskModuleStageCleanup', 'I386TaskModulePublish', 'I386TaskFilesValid', 'I386TaskFilesAccess', 'I386TaskBuildModule'):
+    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386InstallBootArea', 'I386InstallBootImageArea', 'I386TaskInstallBoot', 'I386TaskInstallBootImage', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeInit', 'I386TaskFilesPublicClone', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet', 'I386TaskFileWritePublic', 'I386TaskFileReadStored', 'I386ExpandBuf', 'I386TaskFilePublicReader', 'I386TaskCd', 'I386TaskFileFind', 'I386FileRuntimeTmpFilename', 'I386FileRuntimeDriveAlias', 'I386TaskModuleStageNew', 'I386TaskModuleStageCleanup', 'I386TaskModulePublish', 'I386TaskFilesValid', 'I386TaskFilesAccess', 'I386TaskBuildModule'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing file service {name}')
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 60:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 61:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         cancel_wait_offset=8+exports['I386FileRuntimeCancelWait'][1],
@@ -389,7 +391,7 @@ def file_runtime_layout(module):
         export_at_offset=8+exports['I386FileRuntimeExportAt'][1],
         arc_entry_offset=8+exports['I386ArcEntryGet'][1],
         bind_offset=8+exports['I386FileRuntimeBind'][1],
-        init_offset=8+exports['I386TaskFilesInit'][1], compiler_init_offset=8+exports['I386FileRuntimeCompiler'][1],
+        init_offset=8+exports['I386FileRuntimeInit'][1], compiler_init_offset=8+exports['I386FileRuntimeCompiler'][1],
         control_new_offset=8+exports['I386FileRuntimeControl'][1], name_abs_offset=8+exports['I386TaskFileNameAbs'][1],
         import_offset=imports['I386RedSeaReadAll'])
 
@@ -2586,7 +2588,7 @@ def main():
                 log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=60, image_address=file_address, image_bytes=file_size,
+        result['file_runtime'] = dict(version=61, image_address=file_address, image_bytes=file_size,
             retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, read_raw_address=file_read_raw, install_boot_address=file_install_boot, arc_entry_address=file_address+files_layout['arc_entry_offset'],
             write_public_address=file_write_public,
             read_stored_address=file_read_stored,
@@ -3149,7 +3151,7 @@ def main():
             raise ValueError('Public define list ownership failed')
         result['public_define_lists']={'phases':[0,1],'cases_per_phase':6,'original_x64':'pass'}
         result['public_hash_tables']={'phases':[0,1],'cases_per_phase':10,'allocation_failure_cleanup':'pass'}
-        result['memory_runtime']=dict(version=28,image_address=mbase,image_bytes=msize,
+        result['memory_runtime']=dict(version=29,image_address=mbase,image_bytes=msize,
             retained_heap_bytes=mspan,validated_phases=phases,public_api_cases=public_memory,
             rejected=verify_memory_rejection(normal_disk,volume,out,memory_layout))
         result['file_runtime']['rejected']=verify_file_rejection(normal_disk,volume,out,files_layout)

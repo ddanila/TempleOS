@@ -191,8 +191,8 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
   if(!stack_size) stack_size=MEM_DFT_STK;
   record=I386HeapAlloc(memory_pool.heap,sizeof(CMemoryTaskRecord),TRUE);
   if(!record) { I386IrqRestore(irq); throw('OutMem',TRUE); return 0; }
-  owned=I386TaskCreateFrom(memory_root->owner,memory_pool.heap,parent,
-      stack_size,&MemoryTaskEntry,(data+0)(U64),0x18,0x20);
+  owned=I386TaskCreateWithFiles(memory_root->owner,memory_pool.heap,parent,
+      stack_size,&MemoryTaskEntry,(data+0)(U64),0x18,0x20,0,FALSE,memory_file_birth);
   if(!owned) {
     I386HeapFree(memory_pool.heap,record);
     I386IrqRestore(irq); throw('OutMem',TRUE); return 0;

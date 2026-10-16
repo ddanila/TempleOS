@@ -18,9 +18,10 @@ public U0 I386TaskReturn()
   I386SchedFinish(I386TaskSelf->owner);
   while (1) {}
 }
-public CI386OwnedTask *I386TaskCreateFrom(CI386Scheduler *s,CI386Heap *heap,
+public CI386OwnedTask *I386TaskCreateWithFiles(CI386Scheduler *s,CI386Heap *heap,
   CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
-  U16 fs=0x18,U16 gs=0x20,I64 private_size=0,Bool queued=FALSE)
+  U16 fs,U16 gs,I64 private_size,Bool queued,
+  Bool (*file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap))
 {//NULL-returning bootstrap API, not the full public Spawn/OutMem contract.
   CI386OwnedTask *owned;
   CI386Task *creator[1];
@@ -195,8 +196,10 @@ public CI386OwnedTask *I386TaskCreateFrom(CI386Scheduler *s,CI386Heap *heap,
         !(*parent->heap_clone)(parent,&owned->task,file_heap)) goto spawn_fail;
   }
   if(parent->file_state || parent->file_clone || parent->file_destroy) {
-    if(!parent->file_state || !parent->file_clone || !parent->file_destroy ||
-        !(*parent->file_clone)(parent,&owned->task,file_heap)) goto spawn_fail;
+    if(!parent->file_state || !parent->file_clone || !parent->file_destroy)goto spawn_fail;
+    if(file_birth) {
+      if(!(*file_birth)(parent,&owned->task,file_heap))goto spawn_fail;
+    } else if(!(*parent->file_clone)(parent,&owned->task,file_heap))goto spawn_fail;
   }
   if(parent->hash_table || parent->symbol_state || parent->symbol_clone || parent->symbol_destroy) {
     if(!parent->hash_table || !parent->symbol_state || !parent->symbol_clone || !parent->symbol_destroy ||
@@ -227,6 +230,13 @@ spawn_fail:
   I386IrqRestore(flags);
   return 0;
 }
+public CI386OwnedTask *I386TaskCreateFrom(CI386Scheduler *s,CI386Heap *heap,
+  CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
+  U16 fs=0x18,U16 gs=0x20,I64 private_size=0,Bool queued=FALSE)
+{//Keep the private constructor's existing call contract.
+  return I386TaskCreateWithFiles(s,heap,parent,stack_size,entry,arg,fs,gs,private_size,queued,0);
+}
+
 public CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *heap,
   CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
   U16 fs=0x18,U16 gs=0x20,I64 private_size=0)

@@ -5,6 +5,7 @@
 #include "/Kernel/I386/Context.HH"
 #include "/Kernel/I386/Heap.HH"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/Bits.HH"
 #include "/Kernel/I386/Scheduler.HH"
 #include "/Kernel/I386/Task.HH"
 #include "/Kernel/I386/Frame.HH"

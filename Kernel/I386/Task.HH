@@ -23,6 +23,10 @@ public extern CI386OwnedTask *I386TaskSpawnFrom(CI386Scheduler *s,CI386Heap *hea
 public extern CI386OwnedTask *I386TaskCreateFrom(CI386Scheduler *s,CI386Heap *heap,
   CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
   U16 fs=0x18,U16 gs=0x20,I64 private_size=0,Bool queued=FALSE);
+public extern CI386OwnedTask *I386TaskCreateWithFiles(CI386Scheduler *s,CI386Heap *heap,
+  CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
+  U16 fs,U16 gs,I64 private_size,Bool queued,
+  Bool (*file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap));
 public extern Bool I386TaskDestroy(CI386OwnedTask *owned);
 public extern U8 *I386TaskAlloc(I64 size,Bool zero=FALSE);
 public extern Bool I386TaskFree(U8 *ptr);

@@ -25,6 +25,7 @@
 #define I386SchedSetCleanup TaskRuntimeSchedSetCleanup
 #define I386TaskReturn TaskRuntimeTaskReturn
 #define I386TaskCreateFrom TaskRuntimeTaskCreateFrom
+#define I386TaskCreateWithFiles TaskRuntimeTaskCreateWithFiles
 #define I386TaskSpawnFrom TaskRuntimeTaskSpawnFrom
 #define I386TaskSpawn TaskRuntimeTaskSpawn
 #define I386TaskDestroy TaskRuntimeTaskDestroy

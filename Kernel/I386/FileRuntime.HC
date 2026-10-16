@@ -10,6 +10,7 @@
 #include "/Kernel/I386/TaskModuleStage.HH"
 #include "/Kernel/I386/BuildRuntime.HH"
 import CI386BuildServices *I386BuildRuntimeAcquire();
+import Bool (*I386TaskFileBirthHook)(CI386Task *source,CI386Task *target,CI386Heap *heap);
 extern CI386TaskFiles *I386TaskFilesValid(CI386Task *task);
 extern Bool I386TaskFilesAccess(CI386Task *task);
 extern CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive);
@@ -104,6 +105,12 @@ U8 *I386FileRuntimeTmpFilename()
 {
   return file_compiler.tmp_filename;
 }
+Bool I386FileRuntimeInit(CI386Task *task,CI386Heap *heap,CFilePathContext *paths,CI386FileVolumes *volumes)
+{//Install retained public birth policy only after the provider is bound.
+  if(!I386TaskFilesInit(task,heap,paths,volumes))return FALSE;
+  I386TaskFileBirthHook=&I386TaskFilesPublicClone;
+  return TRUE;
+}
 U8 I386FileRuntimeDriveAlias(U8 alias)
 {//Boot/home aliases are valid even after the current drive record is cleared.
   U32 flags=I386IrqSave;
@@ -156,7 +163,7 @@ I64 Main(CI386FileServices *services,I64 bytes)
   services->install_boot=&I386TaskInstallBoot;
   services->install_image=&I386TaskInstallBootImage;
   services->name_abs=&I386TaskFileNameAbs;
-  services->bind=&I386FileRuntimeBind; services->init=&I386TaskFilesInit;
+  services->bind=&I386FileRuntimeBind; services->init=&I386FileRuntimeInit;
   services->compiler_init=&I386FileRuntimeCompiler; services->control_new=&I386FileRuntimeControl;
   services->tmp_filename=&I386FileRuntimeTmpFilename;
   services->drive_alias=&I386FileRuntimeDriveAlias;

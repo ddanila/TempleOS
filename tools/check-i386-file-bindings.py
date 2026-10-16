@@ -18,20 +18,33 @@ def check(kernel, runtime):
     providers = names[1].split(r'\0')[:-1]
     if len(indices) != count or len(set(indices)) != count:
         raise ValueError('File binding array has wrong or duplicate initializer count')
-    patterns = [r'CI386ModuleBinding bindings\[(\d+)\]',
-                r'KernelBindings\(bindings,kernel_files_bindings,(\d+),',
-                r'KernelServiceLoad\([^;]*?bindings,(\d+),']
-    for pattern in patterns:
+    named = [(int(index), name) for index, name in re.findall(
+        r'KernelBinding\(&bindings\[(\d+)\],"([^" ]+)"\);', body[1])]
+    total = count + len(named)
+    if [index for index, _ in named] != list(range(count, total)):
+        raise ValueError('Named File bindings must fill consecutive trailing slots')
+    patterns = [(r'CI386ModuleBinding bindings\[(\d+)\]', total),
+                (r'KernelBindings\(bindings,kernel_files_bindings,(\d+),', count),
+                (r'KernelServiceLoad\([^;]*?bindings,(\d+),', total)]
+    for pattern, expected in patterns:
         match = re.search(pattern, body[1], re.S)
-        if not match or int(match[1]) != count:
+        if not match or int(match[1]) != expected:
             raise ValueError('File loader stack/call counts disagree with provider array')
+    capacity = re.search(r'KernelBindings\(bindings,kernel_files_bindings,\d+,([^;]+)\);', body[1])
+    if not capacity or capacity[1] not in (str(count),
+            'sizeof(bindings)/sizeof(CI386ModuleBinding)' if total == count else ''):
+        raise ValueError('Indexed File binding capacity must match indexed count')
     if any(index >= len(providers) for index in indices):
         raise ValueError('File binding index is outside published providers')
-    imports = set(re.findall(r'^import\s+[^;]*?\b(\w+)\s*\(', runtime, re.M))
-    missing = imports - {providers[index] for index in indices}
+    imports = set(re.findall(r'^import\s+[^;]*?\b(\w+)\s*\((?!\*)', runtime, re.M))
+    imports.update(re.findall(r'^import\s+[^;]*?\(\*(\w+)\)\s*\(', runtime, re.M))
+    supplied = [providers[index] for index in indices] + [name for _, name in named]
+    if len(set(supplied)) != total:
+        raise ValueError('Duplicate File binding names')
+    missing = imports - set(supplied)
     if missing:
         raise ValueError('File imports missing from kernel bindings: '+', '.join(sorted(missing)))
-    return count
+    return total
 
 
 def main():

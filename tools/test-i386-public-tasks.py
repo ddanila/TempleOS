@@ -31,7 +31,7 @@ def behavior_commands():
         ('I64 LifeParentVisible=39;', []),
         ('Bool LifeEmpty(CTask *t){return t->next_child_task==(&t->next_child_task)(U8 *)-offset(CTask.next_sibling_task)&&t->last_child_task==t->next_child_task;}', []),
         ('Bool LifeHeaps(CTask *t,CTask *p){return t->code_heap&&t->data_heap&&t->data_heap!=p->data_heap&&t->data_heap->mem_task==t&&t->code_heap->mem_task==t&&t->data_heap->bp==p->data_heap->bp;}', []),
-        ('Bool LifeCwd(CTask *t,CTask *p){return t->cur_dv==p->cur_dv&&t->cur_dir&&t->cur_dir!=p->cur_dir&&!StrCmp(t->cur_dir,p->cur_dir);}', []),
+        ('Bool LifeCwd(CTask *t,CTask *p){U8 *h=FileNameAbs("~/");Bool ok=h&&t->cur_dv==Let2Drv(\'~\')&&t->cur_dir&&t->cur_dir!=p->cur_dir&&!StrCmp(t->cur_dir,h+2);Free(h);return ok;}', []),
         ('Bool LifeSymbols(CTask *t,CTask *p){return t->hash_table!=p->hash_table&&t->hash_table->next==p->hash_table&&HashFind("LifeParentVisible",t->hash_table,HTT_GLBL_VAR)!=0;}', []),
         ('U0 LifeWork(U8 *data){CTaskLifeProbe *p=data;p->stage=1;if(Fs!=p->child||Fs->parent_task!=p->parent||!LifeHeaps(Fs,p->parent)||!LifeCwd(Fs,p->parent)||!LifeSymbols(Fs,p->parent))p->errors|=1;MAlloc(2048);Sleep(10);p->stage=2;}', []),
         ('U0 LifeExit(U8 *data){CTaskLifeProbe *p=data;LifeWork(data);Exit;p->stage=3;}', []),
