@@ -302,3 +302,50 @@ fails with 9184 largest free payload, 6611464 raw bytes used out of 6634496 and
 9514 allocations. This is not an 8 MiB interaction pass; the minimal profile
 cannot be promoted. The independent older Console rebuild continues compiling
 its embedded source epoch and provides no qualification for this new image.
+
+## Shared original drive and device lookup (2026-10-16)
+
+`DriveLookupCore.HC`, `BlockDevLookupCore.HC` and `DriveWritableCore.HC` share the
+complete original Let2Drv, BlkDevChk, Let2BlkDev and DrvIsWritable routines.
+Reinserting them and expanding the drive-table expression reproduces both
+original DskDrv.HC and DskBlkDev.HC byte-for-byte; see
+`build/i386-drive-lookup-extraction.json`. Native table access borrows current
+file state and returns the mounted volume's persistent drive identity. A mounted
+identity is initialized lazily if unused; an existing identity is not repaired by
+lookup, so invalid signatures still reach original DrvChk. File service version
+55 and Console version 115 include the new callback and four public exports.
+The original Drv/media-initialization branches have not been replaced or removed.
+
+The twelve shared cases in `i386-drive-lookup-reference/Contract.HC` cover
+current/explicit/lowercase lookup, boot/home aliases, invalid-letter NULL and
+exception results, NULL/bad-signature/out-of-range device validation, writable
+and read-only states, the read-only exception, and invalid current drive
+signatures through both implicit and explicit lookup. They check exception
+identifiers, stable directory pointer/device identity, caller document roles and
+exact caller heap usage. Device flags/signatures are restored after observing
+results in the disposable guest. No writes are issued while testing flags.
+All original masks are 31 in `build/i386-c4-drive-lookup-reference`; native
+preflight fails on missing Let2Drv in `build/i386-c4-drive-lookup-red`.
+
+The first extraction used function-style macro syntax unsupported by HolyC and
+failed the original kernel build; its artifact is retained in
+`build/i386-c4-drive-lookup-bootstrap-macro-red`. The corrected extraction uses
+the same expression-macro convention as the existing boot/home drive aliases.
+These cases do not qualify drive remapping, hot mounting, media initialization,
+full Drv or directory-context integration.
+
+The corrected original bootstrap passes both generations, and the shared
+lookup fixture again returns twelve masks of 31 on that rebuilt system in
+`build/i386-c4-drive-lookup-current-reference`. Both reference runs preserve
+all inputs. `build/i386-c4-drive-lookup-cross` completes with 574056 kernel bytes,
+1484 source and 24 build-input hashes matching, normal disk hash verified and
+the limited 96-BIOS/255-protected-instruction boot audit passing.
+
+All fifteen native commands pass at 64 MiB on TCG `486,-fpu` in
+`build/i386-c4-drive-lookup-native`, including all twelve mask-31 cases. The
+same image also passes all eight directory-ownership commands in
+`build/i386-c4-drive-lookup-directory-owner`. Both runners verify unchanged
+inputs and byte-identical delivered fixtures. Normal 8 MiB startup still fails
+before the first command in `build/i386-c4-drive-lookup-startup-8m`: 9480 bytes
+requested, 9184 largest free payload, 6611296 bytes used out of 6634496 and 9545
+allocations. This does not promote the minimal profile or complete C1–C5.

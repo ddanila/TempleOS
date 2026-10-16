@@ -11,6 +11,29 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Shared original drive/device lookup (2026-10-16)
+
+Native Let2Drv, BlkDevChk, Let2BlkDev and DrvIsWritable now execute shared complete
+original routines against actual mounted drive/device identities. The table
+adapter preserves existing signatures for original validation. File service 55
+and Console service 115 carry the new callback and four public bindings.
+Reinserting the extracted bodies reconstructs the original files byte-for-byte.
+
+Twelve original lookup/alias/validation/read-only/exception cases pass both on
+the pinned original and current original rebuild, with caller roles, identities
+and exact heap usage checked. All fifteen native commands pass at 64 MiB without
+an FPU in `build/i386-c4-drive-lookup-native`; the preceding image rejects the
+missing Let2Drv preflight. The eight-command directory ownership regression also
+passes on this image. All inputs remain unchanged. Bootstrap and the cross-build
+pass, with 1484 source plus 24 build pins verified.
+
+Normal 8 MiB startup remains red in `build/i386-c4-drive-lookup-startup-8m`:
+9480 bytes requested versus a largest free block of 9184. Full Drv/media
+initialization, remapping and directory-context integration remain open. The
+independent older native Console rebuild is still live and compiling; it does
+not qualify this source epoch. C1–C5 remain incomplete. See
+[lookup evidence and boundaries](docs/i386-directory-context.md).
+
 ### Public task directory ownership (2026-10-16)
 
 Public task directory strings now belong to each task's public heap. File

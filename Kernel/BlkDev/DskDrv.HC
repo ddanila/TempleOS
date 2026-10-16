@@ -143,35 +143,9 @@ U0 DrvFATBlkSet(CDrv *dv,I64 c,I64 fat_sel=3)
 
 #include "/Kernel/BlkDev/DriveClassCore.HC"
 
-CDrv *Let2Drv(U8 drv_let=0,Bool except=TRUE)
-{//Drv letter to Drv ptr.
-  CDrv *dv;
-  if (!drv_let)
-    dv=Fs->cur_dv;
-  else {
-    drv_let=Let2Let(drv_let);
-    if (!('A'<=drv_let<='Z')) {
-      if (except)
-	throw('Drv');
-      else
-	return NULL;
-    }
-    dv=blkdev.let_to_drv[drv_let-'A'];
-  }
-  return DrvChk(dv,except);
-}
+#include "/Kernel/BlkDev/DriveLookupCore.HC"
 
-CBlkDev *DrvIsWritable(U8 drv_let=0,Bool except=FALSE)
-{//Is drive writable?
-  CBlkDev *bd;
-  if (!(bd=Let2BlkDev(drv_let,except)) || bd->flags & BDF_READ_ONLY) {
-    if (except)
-      throw('Drv');
-    else
-      return NULL;
-  } else
-    return bd;
-}
+#include "/Kernel/BlkDev/DriveWritableCore.HC"
 
 U0 DskCacheInvalidate(CDrv *dv)
 {//Needed for removable media. Called by $LK,"DskChg",A="MN:DskChg"$().

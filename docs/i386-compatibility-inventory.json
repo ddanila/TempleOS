@@ -11770,7 +11770,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-drive-device-lookup",
+          "command": "python3 tools/test-i386-drive-lookup-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-lookup-reference/result.json",
+          "scope": "Twelve bounded lookup, validation, read-only and exception cases with unchanged caller state/heap; not full drive/media APIs"
+        },
+        {
+          "target": "current-original-drive-device-lookup",
+          "command": "python3 tools/test-i386-drive-lookup-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-lookup-current-reference/result.json",
+          "scope": "Same twelve cases on current original rebuild after sharing complete routine bodies"
+        },
+        {
+          "target": "native-drive-device-lookup",
+          "command": "python3 tools/test-i386-drive-lookup.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-lookup-native/result.json",
+          "scope": "Fifteen commands, twelve original mask-31 cases at 64 MiB on 486,-fpu; not full Drv/media initialization, remapping or minimal profile qualification"
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskCDDVD.HC",
@@ -11997,6 +12019,27 @@
           "result": "pass",
           "evidence": "build/i386-c4-device-identity-api-native/result.json",
           "scope": "15 public metadata/stability commands at 64 MiB; not Drv/Let2Drv behavior, device locking or complete drive compatibility"
+        },
+        {
+          "target": "original-drive-device-lookup",
+          "command": "python3 tools/test-i386-drive-lookup-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-lookup-reference/result.json",
+          "scope": "Twelve bounded lookup, validation, read-only and exception cases with unchanged caller state/heap; not full drive/media APIs"
+        },
+        {
+          "target": "current-original-drive-device-lookup",
+          "command": "python3 tools/test-i386-drive-lookup-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-lookup-current-reference/result.json",
+          "scope": "Same twelve cases on current original rebuild after sharing complete routine bodies"
+        },
+        {
+          "target": "native-drive-device-lookup",
+          "command": "python3 tools/test-i386-drive-lookup.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-lookup-native/result.json",
+          "scope": "Fifteen commands, twelve original mask-31 cases at 64 MiB on 486,-fpu; not full Drv/media initialization, remapping or minimal profile qualification"
         }
       ]
     },

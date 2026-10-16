@@ -12,6 +12,7 @@
 import CI386BuildServices *I386BuildRuntimeAcquire();
 extern CI386TaskFiles *I386TaskFilesValid(CI386Task *task);
 extern Bool I386TaskFilesAccess(CI386Task *task);
+extern CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive);
 extern Bool I386TaskModulePublish(CI386ModuleStage *unit,U8 *target);
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
@@ -117,6 +118,21 @@ U8 I386FileRuntimeDriveAlias(U8 alias)
   if(!I386TaskFilesRelease(state)) throw('Drv');
   return result;
 }
+CDrv *I386FileRuntimeDriveLookup(U8 letter)
+{
+  CFilePathContext paths;
+  CI386FileVolumes *volumes;
+  CI386TaskFiles *state=I386TaskFilesBorrow(I386TaskSelf,&paths,&volumes);
+  CDrv *result=0;
+  if(!state)return 0;
+  if('A'<=letter<='Z' && volumes->letter[letter-'A']) {
+    result=&volumes->drives[letter-'A'];
+    //Publish an as-yet unused mounted identity; validation belongs to DrvChk.
+    if(!result->drv_let)result=I386TaskFilesDrive(volumes,letter);
+  }
+  if(!I386TaskFilesRelease(state))throw('Drv');
+  return result;
+}
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
 Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
 {
@@ -145,6 +161,7 @@ I64 Main(CI386FileServices *services,I64 bytes)
   services->compiler_init=&I386FileRuntimeCompiler; services->control_new=&I386FileRuntimeControl;
   services->tmp_filename=&I386FileRuntimeTmpFilename;
   services->drive_alias=&I386FileRuntimeDriveAlias;
+  services->drive_lookup=&I386FileRuntimeDriveLookup;
   services->cancel_wait=&I386FileRuntimeCancelWait;
   services->write=&I386TaskFileWrite; services->write_public=&I386TaskFileWritePublic;
   services->dir_mk=&I386TaskDirMk;

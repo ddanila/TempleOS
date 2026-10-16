@@ -3,6 +3,10 @@
 #include "/Kernel/DateTypes.HH"
 #include "/Kernel/BlkDev/DriveTypes.HH"
 #include "/Kernel/BlkDev/BlockDevTypes.HH"
+public _extern _LET_TO_DRV CDrv *Let2Drv(U8 drv_let=0,Bool except=TRUE);
+public _extern _BLOCK_DEV_CHECK CBlkDev *BlkDevChk(CBlkDev *bd,Bool except=TRUE);
+public _extern _LET_TO_BLOCK_DEV CBlkDev *Let2BlkDev(U8 drv_let=0,Bool except=TRUE);
+public _extern _DRV_IS_WRITABLE CBlkDev *DrvIsWritable(U8 drv_let=0,Bool except=FALSE);
 public _extern _DRV_CHECK CDrv *DrvChk(CDrv *dv,Bool except=TRUE);
 public _extern _DRV_TO_LET U8 Drv2Let(CDrv *dv=NULL);
 public _extern _LET_TO_LET U8 Let2Let(U8 drv_let=0);
