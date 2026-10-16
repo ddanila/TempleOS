@@ -51,8 +51,13 @@ inputs unchanged in `build/i386-c2-dc-load-alias-cross/input-audit.json`.
 The native four-command suite passes all eleven checks with unchanged inputs
 in `build/i386-c2-dc-load-native`. The existing six-check bitmap insertion suite
 also passes on the final image with all four exact sprite buffers and unchanged
-inputs in `build/i386-c2-dc-load-bitmap-regression`. Resource qualification is
-pending. GRRead, DocGR, complete
+inputs in `build/i386-c2-dc-load-bitmap-regression`. The isolated 8 MiB gate fails its 60-second startup limit on committed
+8b4e4efc: 61.118576 seconds, with all nine behavior/VGA checks passing, zero
+build-provider loads and all four execution pins unchanged. Evidence is in
+`build/i386-c2-dc-load-startup/result.json`. The gate coordinator resumed C5
+and did not run the dependent 16 MiB diagnostics. A controlled startup comparison
+against Console-129 is investigating the added cost; resource qualification
+remains open. GRRead, DocGR, complete
 Type, original terminal startup and C1–C5 acceptance remain open. This suite does
 not qualify malformed compressed dictionary streams or complete source files.
 

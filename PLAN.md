@@ -19,7 +19,10 @@ controls pass eleven load/expansion checks and produce identical raw and 7/8-bit
 compressed GR buffers with both palette modes. Final bootstrap/cross-build pass
 with all 1520 source and 24 build inputs unchanged. The native four-command suite
 passes all eleven checks, and bitmap insertion passes its six-check/four-buffer
-regression with unchanged inputs. Resource gates are pending; GRRead, DocGR, full Type and original terminal startup remain open.
+regression with unchanged inputs. The isolated 8 MiB gate fails the 60-second
+startup limit at 61.118576 seconds, despite nine passing behavior checks and
+unchanged pins; the dependent diagnostic gate has not run. Startup-cost
+investigation is active; GRRead, DocGR, full Type and original terminal startup remain open.
 See docs/i386-dc-load.md. All 686 inventory entries and C1–C5 remain unqualified.
 
 ### Original bitmap document integration candidate (2026-10-16)
