@@ -551,8 +551,8 @@ Validation now passes:
 - Inventory coverage and five guard tests; all 686 entries remain unqualified.
 
 ConsoleRuntime is version 117 and FileRuntime version 56. The broader public
-kill regression is running in `build/i386-c4-drive-lock-kill`; it is not yet
-claimed as a pass. This checkpoint still does not qualify every lock-state
+kill regression passes all nine cases at 64 MiB in
+`build/i386-c4-drive-lock-kill`, with its source disk unchanged. This checkpoint still does not qualify every lock-state
 combination, drive remapping, unmounted devices, Break end-to-end behavior,
 interrupted media initialization, full Drv/DirContext or C1-C5 completion.
 

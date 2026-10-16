@@ -33,8 +33,8 @@ source and 24 build-input pins matching. Normal 8 MiB startup passes in
 55.797052 seconds, with nine commands and exact VGA restoration. Test-only ATA
 transport grew 4 KiB while preserving its 32 KiB root stack; production limits
 are unchanged. Full artifact history and remaining scope are documented in
-`docs/i386-directory-context.md`. The broader public kill regression remains
-live; no result is inferred from that pending run.
+`docs/i386-directory-context.md`. The broader public kill regression also passes all nine cases at 64 MiB in
+`build/i386-c4-drive-lock-kill`, with its source disk unchanged.
 
 The older independent C5 retained build stopped at GrPlot3 after 449 function
 starts without a terminal report. Its process/handle disappearance and preserved
