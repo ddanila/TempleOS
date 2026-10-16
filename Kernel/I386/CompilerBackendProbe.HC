@@ -93,6 +93,7 @@ U0 ProbeBackend(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       KernelLog(" "); KernelHex(out->count); KernelLog(" "); KernelHex(out->capacity);
       KernelLog("\n"); KernelStop;
     }
+    if(out->measuring || out->planned || out->capacity!=out->count) KernelStop;
     KernelLog("BACKEND BYTES "); KernelHex(out->count); KernelLog("\n");
     generated=out->data;
     if(kind==15) {

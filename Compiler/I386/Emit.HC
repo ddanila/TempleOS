@@ -14,6 +14,6 @@ U0 I386HostOutReserve(CI386Out *out,I64 minimum)
 }
 U0 I386OutInit(CI386Out *out)
 {
-  out->data=0; out->count=out->capacity=0; out->reserve=&I386HostOutReserve;
+  out->data=0; out->count=out->capacity=out->planned=0; out->measuring=FALSE; out->reserve=&I386HostOutReserve;
 }
 #endif

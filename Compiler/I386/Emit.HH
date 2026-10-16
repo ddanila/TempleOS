@@ -3,7 +3,8 @@
 class CI386Out
 {
   U8 *data;
-  I64 count,capacity;
+  I64 count,capacity,planned;
+  Bool measuring;
   U0 (*reserve)(CI386Out *out,I64 minimum);
 };
 //The reserve callback must satisfy minimum or throw without returning.

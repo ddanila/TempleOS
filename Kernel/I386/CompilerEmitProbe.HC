@@ -4,9 +4,9 @@ U0 ProbeEmit(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
   CCmpCtrl *cc;
-  CI386Out *out;
+  CI386Out *out,*measured;
   CCodeCtrl *saved;
-  U8 *before,*fill,*block,*next;
+  U8 *before,*fill,*block,*next,*hole;
   I64 (*generated)();
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   I64 base_used,base_allocations,round,i,count,capacity,size,accepted,value;
@@ -40,6 +40,9 @@ U0 ProbeEmit(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   out=probe->compiler->out_new(heap,cc);
   for(i=0;i<64;i++) I386Byte(out,i);
   before=out->data; count=out->count; capacity=out->capacity;
+  measured=probe->compiler->out_new(heap,cc);
+  hole=I386HeapAlloc(heap,117144,FALSE);
+  if(!measured || !hole) KernelStop;
   fill=0; accepted=0;
   try {
     for(size=8192;size>=8;size>>=1)
@@ -58,6 +61,27 @@ U0 ProbeEmit(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     task->catch_except=TRUE; accepted=1;
   }
   for(i=0;i<64;i++) if(out->data[i]!=i) KernelStop;
+  //Reproduce the C5 gap: exact output fits, but a doubled 128 KiB buffer does not.
+  if(!I386HeapFree(heap,hole)) KernelStop;
+  base_used=heap->used; base_allocations=heap->allocations;
+  measured->measuring=TRUE;
+  for(i=0;i<102136;i++) I386Byte(measured,i);
+  if(measured->count!=102136 || measured->data || measured->capacity ||
+      heap->used!=base_used || heap->allocations!=base_allocations) KernelStop;
+  measured->planned=measured->count; measured->count=0; measured->measuring=FALSE;
+  for(i=0;i<102136;i++) I386Byte(measured,i);
+  if(measured->count!=102136 || measured->capacity!=102136 ||
+      I386HeapSize(heap,measured->data)!=102136) KernelStop;
+  for(i=0;i<102136;i++) if(measured->data[i]!=i.u8[0]) KernelStop;
+  accepted=0;
+  try { I386Byte(measured,0); KernelStop; }
+  catch {
+    if(task->except_ch!='Compiler' || measured->count!=102136 ||
+        measured->capacity!=102136) KernelStop;
+    task->catch_except=TRUE; accepted=1;
+  }
+  if(!accepted || !probe->compiler->out_del(heap,cc,measured)) KernelStop;
+  KernelLog("EMITTER EXACT CAPACITY "); KernelHex(probe->phase); KernelLog("\n");
   while(fill) { next=fill(U8 **)[0]; if(!I386HeapFree(heap,fill)) KernelStop; fill=next; }
   if(!accepted) KernelStop;
   //A failed reserve preserves the builder, allowing a real retry after reclamation.

@@ -11,6 +11,22 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Measure backend output before buffer allocation (2026-10-16)
+
+CompilerRuntime 72 counts bytes during the complete label-sizing pass, then
+allocates exactly the measured output size for emission. The second pass must
+reproduce that size; ordinary unplanned emitters retain geometric growth and
+all ownership/unwind behavior. Bootstrap and cross-build pass. Ten cross-built
+modules remain byte-identical; Console/File/Kernel change only their compiler
+version bytes. Normal 8 MiB startup passes in 55.579832 seconds with all nine
+commands and unchanged inputs. The full 16 MiB gate passes both native pressure phases reproducing the C5
+117144-byte hole/102136-byte output, all 32 backend cases, 22 publication/28
+program cases, preserved live memory and nine interactive checks. All 32
+free-list cases also pass through the new compiler, with unchanged inputs. A source-pinned Console/Editor native rebuild is
+live in `build/i386-c5-emitter-measure-native-build`. Neither it nor two native
+release generations are yet qualified. See docs/i386-emitter-sizing.md.
+All 686 inventory entries and C1-C5 remain unqualified.
+
 ### Complete original RedSea free-list teardown (2026-10-16)
 
 Console 120 shares the complete original RedSeaFreeFreeLst body and CFreeLst

@@ -349,8 +349,11 @@ U0 I386BackendCore(CI386Backend *backend)
     for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
       if (ic->ic_code==IC_BR_ZERO || ic->ic_code==IC_BR_NOT_ZERO)
         I386BranchLogic(backend,ic->t.arg1_tree);
-    // First pass determines label offsets; second resolves near branches.
+    //First pass measures label offsets without an output allocation. The second
+    //pass reserves exactly that size and must reproduce the measured layout.
     for (pass=0;pass<2;pass++) {
+      if(pass) out->planned=out->count;
+      out->measuring=!pass;
       out->count=0;
       depth=0;
       for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next) {
@@ -1198,6 +1201,7 @@ U0 I386BackendCore(CI386Backend *backend)
             I386Dword(out,label->addr-switch_table->addr);
           }
         }
+      if(pass && out->count!=out->planned) throw('Compiler');
       if (pass && out->count>pool_start) {
         import_rec=(*backend->allocate)(backend->context,sizeof(CAOTImportExport));
         import_rec->type=IET_I386_DATA;
@@ -1207,5 +1211,6 @@ U0 I386BackendCore(CI386Backend *backend)
         import_rec->last->next=import_rec; cc->aot->last_ie=import_rec;
       }
     }
+    out->planned=0;
   }
 }

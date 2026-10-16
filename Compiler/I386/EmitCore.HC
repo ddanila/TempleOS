@@ -6,6 +6,10 @@ I64 I386OutCapacity(CI386Out *out,I64 minimum)
   I64 capacity=out->capacity;
   if(minimum<1 || minimum>0x7FFFFFFF || out->count<0 || out->count>capacity ||
       capacity<0 || capacity>0x7FFFFFFF || (capacity && !out->data)) return 0;
+  if(out->planned) {
+    if(out->planned<minimum || out->planned>0x7FFFFFFF || capacity>out->planned) return 0;
+    return out->planned;
+  }
   if(capacity<64) capacity=64;
   while(capacity<minimum) {
     if(capacity>0x3FFFFFFF) capacity=0x7FFFFFFF;
@@ -15,6 +19,10 @@ I64 I386OutCapacity(CI386Out *out,I64 minimum)
 }
 U0 I386Byte(CI386Out *out,U8 val)
 {
+  if(out->measuring) {
+    if(out->count<0 || out->count>=0x7FFFFFFF) throw('Compiler');
+    out->count++; return;
+  }
   if(out->count>=out->capacity) (*out->reserve)(out,out->count+1);
   out->data[out->count++]=val;
 }
