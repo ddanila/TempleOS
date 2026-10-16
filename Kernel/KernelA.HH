@@ -816,11 +816,7 @@ class CISOPriDesc
 #define MBR_PT_NTFS	0x07
 #define MBR_PT_REDSEA	0x88
 
-class CFreeLst
-{
-  CFreeLst *next,*last;
-  I64	start,size;
-};
+#include "/Kernel/BlkDev/FreeListTypes.HH"
 
 #include "/Kernel/BlkDev/DriveTypes.HH"
 

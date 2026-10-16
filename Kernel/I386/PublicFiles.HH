@@ -1,6 +1,7 @@
 #ifndef I386_PUBLIC_FILES_INCLUDED
 #define I386_PUBLIC_FILES_INCLUDED
 #include "/Kernel/DateTypes.HH"
+#include "/Kernel/BlkDev/FreeListTypes.HH"
 #include "/Kernel/BlkDev/DriveTypes.HH"
 #include "/Kernel/BlkDev/BlockDevTypes.HH"
 public _extern _LET_TO_DRV CDrv *Let2Drv(U8 drv_let=0,Bool except=TRUE);

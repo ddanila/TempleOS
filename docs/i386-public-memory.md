@@ -374,3 +374,11 @@ A fresh whole-gate rerun with the corrected checker is active in
 build/i386-c4-live-memory-probe-exact-diagnostics. It must finish before the
 updated command is reported as passing. The normal 8 MiB gate remains passing;
 this correction does not qualify complete desktop/application parity or C1-C5.
+
+The fresh corrected gate passes in
+build/i386-c4-live-memory-probe-exact-diagnostics: 240.331457-second diagnostic
+startup, both preserved memory phases, all 22 publication and 28 program cases,
+and all nine interactive/presentation commands at 16 MiB. The committed-input
+audit pins this run to d1dd500b and confirms all 1501 source hashes and recorded
+execution inputs were unchanged. This closes the diagnostic failure described
+above; it does not qualify complete C1-C5 compatibility.

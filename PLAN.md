@@ -11,6 +11,24 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Complete original RedSea free-list teardown (2026-10-16)
+
+Console 120 shares the complete original RedSeaFreeFreeLst body and CFreeLst
+record. All 32 original/rebuilt-original/native cases pass, covering direct and
+forwarded nested locks, null/empty/populated lists, caller/root ownership,
+metadata preservation, exact heap recovery and repeated teardown. Native checks
+run at 64 MiB with unchanged inputs and a byte-identical guest fixture. Bootstrap
+and cross-build pass with 1503 source/24 build-input hashes unchanged.
+A repeated private extern proved unresolved on the original system, so the
+fixture uses one declaration and no compiler collision relaxation was retained.
+A native root-heap measurement failure is preserved; allowing command input to
+settle before measurement restores the unchanged exact heap assertions.
+The isolated 8 MiB regression passes in 55.149927 seconds with all nine
+commands; the full 16 MiB diagnostic regression passes both memory phases,
+22 publication/28 program cases and nine commands, with unchanged inputs.
+See docs/i386-redsea-free-list.md. Full drive/media initialization and C1-C5
+remain open; all 686 inventory entries remain unqualified.
+
 ### Preserve live task heaps during diagnostics (2026-10-16)
 
 MemoryRuntime 28 corrects the isolated probe's outdated empty-heap assumption.
@@ -22,8 +40,9 @@ The worker's legitimate 16-byte current-directory allocation survives; both
 memory phases and all 22 publication/28 program-publication cases complete.
 All nine 16 MiB interactive checks also complete. The initial host verdict is
 a false failure from matching PARSER MEMORY PROBE as MEMORY PROBE; exact-line
-matching fixes the checker, and a fresh full rerun is active. Its passing
-verdict remains pending. Normal 8 MiB startup
+matching fixes the checker. The fresh full rerun passes at 16 MiB with both
+memory phases, 22 publication and 28 program cases, and all nine commands.
+The input audit pins it to d1dd500b. Normal 8 MiB startup
 passes at 56.135985 seconds with all nine checks. Bootstrap/cross-build and all
 1501 source/24 build-input hashes pass. See docs/i386-public-memory.md.
 C1-C5 and all 686 inventory entries remain unqualified.
@@ -145,11 +164,16 @@ are unchanged. Full artifact history and remaining scope are documented in
 The older independent C5 retained build stopped at GrPlot3 after 449 function
 starts without a terminal report. Its process/handle disappearance and preserved
 artifacts are recorded in `process-exit-observation.json`; it is not a pass.
-A replacement selected-module native build is now live in
-`build/i386-c5-drive-lock-native-build`, using the current verified image and
-its exact reference exports at 16 MiB on 486,-fpu. It runs in a detached session;
-its PID is recorded in `build/i386-c5-drive-lock-native-build.pid`. This is
-pending evidence, not a completed native generation.
+The replacement selected-module native build in
+`build/i386-c5-drive-lock-native-build` fails at 16 MiB on TCG 486,-fpu.
+The emitter rejects a 131,072-byte allocation after the last function-start
+record, DocRecalc, followed by OutMem/BUILD MODULE REJECT. The reported source
+is `C:/Kernel/StrIMatchCore.HC`; that diagnostic alone does not identify the
+active emitted function.
+The terminal report preserves the unchanged source-disk hash. This run used
+an older pinned image and does not establish a native generation or current
+source qualification. Investigate emitter allocation/lifetime pressure before
+rerunning this expensive gate.
 All 686 inventory entries remain unqualified and C1-C5 remain open.
 
 ### Original drive-lock integration contracts (2026-10-16)

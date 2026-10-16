@@ -12175,9 +12175,38 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Tear down null, empty and populated RedSea free lists under direct/forwarded and nested drive/device locks, with caller-owned and root-owned nodes; repeat teardown and inspect metadata and heap recovery.",
+      "oracle": "docs/i386-redsea-free-list.md: 32 cases require mask 63 with exact caller/owner heap recovery. A single private extern and input settling precede measurement. This covers the complete teardown routine, not list construction, filesystem allocation, disk I/O or full media/drive initialization.",
+      "tests": [
+        {
+          "target": "original-redsea-free-list",
+          "command": "python3 tools/test-i386-redsea-free-list-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-redsea-free-list-settled-reference/result.json",
+          "scope": "Pinned original, all 32 masks 63; unchanged inputs."
+        },
+        {
+          "target": "rebuilt-original-redsea-free-list",
+          "command": "python3 tools/test-i386-redsea-free-list-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-redsea-free-list-settled-current/result.json",
+          "scope": "Extracted complete original routine and record, all 32 masks 63; unchanged inputs."
+        },
+        {
+          "target": "native-redsea-free-list-before-input-settling",
+          "command": "python3 tools/test-i386-redsea-free-list.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-redsea-free-list-single-native/result.json",
+          "scope": "Cases 0-23 pass; first root-owner case fails exact heap recovery. Preserved earlier fixture, unchanged execution inputs; not the final fixture."
+        },
+        {
+          "target": "native-redsea-free-list",
+          "command": "python3 tools/test-i386-redsea-free-list.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-redsea-free-list-settled-native/result.json",
+          "scope": "All 32 cases/35 commands at 64 MiB on 486,-fpu, unchanged inputs and byte-identical guest fixture; not full filesystem or minimal-memory qualification."
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/MakeBlkDev.HC",

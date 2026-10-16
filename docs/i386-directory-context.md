@@ -556,11 +556,19 @@ kill regression passes all nine cases at 64 MiB in
 combination, drive remapping, unmounted devices, Break end-to-end behavior,
 interrupted media initialization, full Drv/DirContext or C1-C5 completion.
 
-A replacement C5 selected-module build is live in
-`build/i386-c5-drive-lock-native-build`, on the verified current image at
-16 MiB, TCG 486,-fpu. Its detached launcher PID is recorded beside the output
-folder. This remains pending evidence; the selected-module run does not by
-itself satisfy two complete native release generations.
+The replacement C5 selected-module build in
+`build/i386-c5-drive-lock-native-build` has a terminal failure at 16 MiB,
+TCG 486,-fpu. Its log records `HEAP EXHAUSTED` for 0x20000 bytes and
+`EMITTER BUFFER ALLOCATION REJECT C:/Kernel/StrIMatchCore.HC`, followed by
+OutMem/BUILD MODULE REJECT. The last function-start record is DocRecalc;
+the source diagnostic does not itself identify the active emitted function.
+`allocation-failure-audit.json` pins these observations: 13,911,464 bytes used
+of 14,101,504, largest free payload 117,144 bytes, and 76,702 allocations.
+The report preserves source-disk SHA-256
+`4abcb393888ee4da902d5ee19906e9dd8a93f8803a0c2cfd26a00e4c66480ff7`.
+This older pinned image does not qualify current sources. No selected-module
+native generation completed, and two complete native release generations
+remain open. Preserve these artifacts when investigating emitter pressure.
 
 ## Operation-specific outer-lock release (2026-10-16)
 
