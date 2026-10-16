@@ -37,7 +37,10 @@ build inputs unchanged. The isolated 8 MiB gate fails the 60-second startup limi
 62.374019 seconds in `build/i386-c2-doc-type-startup`, despite all nine behavior/
 VGA checks passing, no build-provider load and unchanged execution pins. The
 coordinator resumed the older C5 build and skipped dependent diagnostics.
-Candidate-specific 16 MiB diagnostics remain pending.
+Independent 16 MiB diagnostics pass in `build/i386-c2-doc-type-diagnostics`: all
+128 push-word, 22 publication and 28 program cases, both memory phases and nine
+interactive/VGA checks. Startup is 235.255434 seconds and all four execution pins
+remain unchanged. This does not erase the 8 MiB timing failure.
 
 ```sh
 python3 tools/test-i386-doc-type.py --out ORIGINAL

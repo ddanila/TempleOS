@@ -33,10 +33,10 @@ It is an original reference contract, not native startup qualification.
 Native integration still needs the complete `DocTermNew` path, including its
 right-click callback, border, menu and scroll initialization, followed by the
 original welcome insertion. `NativeTerminalTranscriptStart` currently writes a
-minimal heading. The full original `DocType`/`Type` path also depends on `DocDump`
-for raw output and `DocGR` for graphics files. The graphics branch calls `GRRead`,
-`DCLoad`, `DC2Sprite` and `DocSprite`; importing only the text branch would leave
-the public function incomplete. Desktop task orchestration in `HomeSys.HC`
+minimal heading. The complete original `DocType`/`Type`, `DocDump` and graphics dependencies
+are now integrated and pass their scoped original/native comparisons; see
+[document output evidence](i386-doc-type.md). This supplies the welcome insertion
+service but does not run the original terminal startup sequence. Desktop task orchestration in `HomeSys.HC`
 remains separate outstanding work. Preserve the minimal 8 MiB boot contract
 while implementing the full desktop profile. No inventory entry or milestone
 is qualified by this reference test.

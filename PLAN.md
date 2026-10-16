@@ -33,7 +33,9 @@ VGA captures. Real hardware delay and timer-state restoration pass; the precedin
 native image rejects the first Busy call. Bootstrap/cross-build pass with all
 1528 source and 24 build inputs unchanged. The isolated 8 MiB startup gate
 fails at 62.374019 seconds with all nine behavior/VGA checks passing and
-unchanged execution pins. Candidate-specific 16 MiB diagnostics remain pending. Original terminal startup and the strict TimeClock
+unchanged execution pins. Independent 16 MiB diagnostics pass all 128/22/28
+cases, both memory phases and nine interactive/VGA checks, with unchanged pins
+and 235.255434-second startup. Original terminal startup and the strict TimeClock
 report mismatch remain open. See docs/i386-doc-type.md. All 686 inventory entries
 and C1–C5 remain unqualified.
 
