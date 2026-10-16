@@ -11,6 +11,19 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Literal array-bound startup optimization candidate (2026-10-16)
+
+CompilerRuntime 74 avoids compiling/executing a literal array bound only when
+its closing bracket is already buffered. Ownership checks and delimiter lexing
+remain in place; all expression fallbacks and the full public header surface
+remain unchanged. Corrected original and preceding native controls pass eight
+array-bound masks and the independent compile-time call count. Both bootstrap
+generations and cross-build pass with all 1528 source and 24 build inputs
+unchanged. The candidate passes the four-command array-bound suite and nine-command
+document/VGA regression with unchanged inputs. Isolated startup/memory qualification
+is pending; no timing improvement is claimed. See docs/i386-array-literal-bounds.md.
+C1–C5 and all inventory entries remain unqualified.
+
 ### Original document output integration candidate (2026-10-16)
 
 ConsoleRuntime 132 integrates complete original Type, DocType, DocDump, Busy and

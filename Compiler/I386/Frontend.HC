@@ -811,8 +811,17 @@ I64 I386FrontendExecute(U8 *context,U8 *code)
 }
 I64 I386FrontendInteger(U8 *context,CCmpCtrl *cc)
 {
+  CI386Frontend *state=context;
   U8 *code;
   I64 raw_type,result;
+  //A buffered closing bracket proves this array bound is one integer token.
+  //Do not lex speculatively: macros, comments and expressions use the full path.
+  if(cc!=state->cc || !I386CmpCodeOwner(state->heap,cc)) I386FrontendUnavailable(state);
+  if(cc->token==TK_I64 && cc->flags&CCF_USE_LAST_U16 && cc->last_U16==']') {
+    result=cc->cur_i64;
+    I386FrontendLex(context,cc);
+    return result;
+  }
   code=I386FrontendCompile(context,cc,&raw_type);
   if(!code) I386FrontendUnavailable(context);
   result=I386FrontendExecute(context,code);

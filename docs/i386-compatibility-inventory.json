@@ -6131,7 +6131,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-array-literal.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-array-literal-reference-fixed/result.json",
+          "scope": "Literal and expression array bounds, macros, conversion, multidimensional/local arrays and compile-time call count; whole-file/compiler qualification remains open"
+        },
+        {
+          "command": "python3 tools/test-i386-array-literal.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-array-literal-baseline-fixed/result.json",
+          "scope": "Literal and expression array bounds, macros, conversion, multidimensional/local arrays and compile-time call count; whole-file/compiler qualification remains open"
+        },
+        {
+          "command": "python3 tools/test-i386-array-literal.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-array-literal-native/result.json",
+          "scope": "Literal and expression array bounds, macros, conversion, multidimensional/local arrays and compile-time call count; whole-file/compiler qualification remains open"
+        }
+      ]
     },
     {
       "path": "Compiler/Templates.HC",
