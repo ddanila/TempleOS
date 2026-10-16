@@ -22,7 +22,9 @@ and 24 build inputs unchanged. DocClear's existing original body is now publicly
 bound, allowing unchanged TimeClock Load/Install to pass its four-command gate.
 The 8 MiB gate passes all nine checks in 58.910551 seconds with no build
 provider and unchanged pins on committed f0639b4a; 16 MiB diagnostics are running.
-Native punch/persistence/reboot and exact report tests are running;
+Native punch/persistence/cold-reboot checks pass in 14 commands with unchanged
+inputs. The strict report test matches records/content/dates/total but fails on
+the missing original welcome-document held word-wrap entry;
 physical-keyboard/filter/replay/task-exit qualification remains open. See
 docs/i386-getstr-compatibility.md. No inventory item or C1–C5 milestone closes.
 

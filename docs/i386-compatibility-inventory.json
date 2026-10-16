@@ -1094,7 +1094,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Thirteen scripted GetStr cases, including backspace/default erasure, tabs/spaces, dollar command echo/escaping and extended bytes; canonical DocScanLine structure/cursor checks. Other APIs, physical input/navigation, prompt formatting and task exit remain unqualified."
+        "description": "Thirteen scripted GetStr cases, typed dollar and DocScanLine checks, public hook replacement with exact flags, formatted prompt and default handling. Native 26-command integration passes; other APIs, physical input, filter/replay and task exit remain unqualified."
       },
       "oracle": {
         "tool": "tools/test-i386-getstr-reference.py",
@@ -1177,6 +1177,18 @@
           "result": "pass",
           "evidence": "build/i386-c4-doc-getkey-native/result.json",
           "scope": "12 native commands match original 14-field oracle through public DocGetKey; default document echo, physical input, unwind and GetStr unqualified; whole-file unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-getstr-reference.py --shared-getstr --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-getstr-hook-declared-shared/result.json",
+          "scope": "21 original/shared byte buffers: 13 scripted GetStr cases, typed-dollar/DocScanLine buffers, overridable hook, forwarded flags, formatted prompt and empty-hook default. Not complete input APIs."
+        },
+        {
+          "command": "python3 tools/test-i386-getstr.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-getstr-docclear-native/result.json",
+          "scope": "26 native commands including original GetStr/DocGetStr2 and public fp_getstr2 hook, flags, formatted prompt, defaults and 13 scripted-input cases; unchanged inputs. Physical keyboard, filter/replay and task exit remain open."
         }
       ]
     },
@@ -4744,6 +4756,24 @@
           "result": "fail",
           "evidence": "build/i386-c3-timeclock-console113-load/result.json",
           "scope": "Additive unchanged three-file application package; source availability passes, Load rejects missing GetStr at line 127; punch workflow not reached"
+        },
+        {
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c3-timeclock-docclear-load-result/result.json",
+          "scope": "Unchanged original source availability, fresh installation, Load/Install and continuation in four native commands; unchanged inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-timeclock-punch-native.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c3-timeclock-punch-reopen-result/result.json",
+          "scope": "Ten native command checks plus four after cold reboot: real In/GetStr, multiline/empty/cancel input, duplicate calls, independent typed-record/prefix/date-bound checks and exact reopened file identity; unchanged inputs. Not physical keyboard, exact report or full application qualification."
+        },
+        {
+          "command": "python3 tools/test-i386-timeclock-report-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c3-timeclock-report-native/comparison.json",
+          "scope": "Controlled logical records, report content, dates and 5400-second total match original; exact DolDoc report lacks original welcome-document held $WW+H,1$ entry. C2 full startup remains missing; no normalization of the golden."
         }
       ]
     },
@@ -4818,6 +4848,24 @@
           "result": "fail",
           "evidence": "build/i386-c3-timeclock-console113-load/result.json",
           "scope": "Additive unchanged three-file application package; source availability passes, Load rejects missing GetStr at line 127; punch workflow not reached"
+        },
+        {
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c3-timeclock-docclear-load-result/result.json",
+          "scope": "Unchanged original source availability, fresh installation, Load/Install and continuation in four native commands; unchanged inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-timeclock-punch-native.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c3-timeclock-punch-reopen-result/result.json",
+          "scope": "Ten native command checks plus four after cold reboot: real In/GetStr, multiline/empty/cancel input, duplicate calls, independent typed-record/prefix/date-bound checks and exact reopened file identity; unchanged inputs. Not physical keyboard, exact report or full application qualification."
+        },
+        {
+          "command": "python3 tools/test-i386-timeclock-report-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c3-timeclock-report-native/comparison.json",
+          "scope": "Controlled logical records, report content, dates and 5400-second total match original; exact DolDoc report lacks original welcome-document held $WW+H,1$ entry. C2 full startup remains missing; no normalization of the golden."
         }
       ]
     },
@@ -4893,6 +4941,24 @@
           "result": "fail",
           "evidence": "build/i386-c3-timeclock-console113-load/result.json",
           "scope": "Additive unchanged three-file application package; source availability passes, Load rejects missing GetStr at line 127; punch workflow not reached"
+        },
+        {
+          "command": "python3 tools/test-i386-timeclock-native.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c3-timeclock-docclear-load-result/result.json",
+          "scope": "Unchanged original source availability, fresh installation, Load/Install and continuation in four native commands; unchanged inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-timeclock-punch-native.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c3-timeclock-punch-reopen-result/result.json",
+          "scope": "Ten native command checks plus four after cold reboot: real In/GetStr, multiline/empty/cancel input, duplicate calls, independent typed-record/prefix/date-bound checks and exact reopened file identity; unchanged inputs. Not physical keyboard, exact report or full application qualification."
+        },
+        {
+          "command": "python3 tools/test-i386-timeclock-report-native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c3-timeclock-report-native/comparison.json",
+          "scope": "Controlled logical records, report content, dates and 5400-second total match original; exact DolDoc report lacks original welcome-document held $WW+H,1$ entry. C2 full startup remains missing; no normalization of the golden."
         }
       ]
     },
@@ -14056,6 +14122,18 @@
           "result": "fail",
           "evidence": "build/i386-c2-getstr-console89-red/result.json",
           "scope": "Current-interface GetStr helper rejects before thirteen scripted cases; missing API and full input/replay dependency path remain open; unchanged inputs, not thirteen observed failures"
+        },
+        {
+          "command": "python3 tools/test-i386-getstr-reference.py --shared-getstr --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-getstr-hook-declared-shared/result.json",
+          "scope": "21 original/shared byte buffers: 13 scripted GetStr cases, typed-dollar/DocScanLine buffers, overridable hook, forwarded flags, formatted prompt and empty-hook default. Not complete input APIs."
+        },
+        {
+          "command": "python3 tools/test-i386-getstr.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-getstr-docclear-native/result.json",
+          "scope": "26 native commands including original GetStr/DocGetStr2 and public fp_getstr2 hook, flags, formatted prompt, defaults and 13 scripted-input cases; unchanged inputs. Physical keyboard, filter/replay and task exit remain open."
         }
       ]
     },

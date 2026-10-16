@@ -44,3 +44,12 @@ reboot persistence, report formatting for these new records, time progression,
 resource cleanup or complete TimeClock compatibility. Native Load and the same
 punch workflows still require qualification; the native GetStr dependency
 remains under development.
+
+
+The native equivalent now passes ten first-boot commands and four cold-reboot
+checks in build/i386-c3-timeclock-punch-reopen-result with unchanged inputs.
+All four records, descriptions, timestamp bounds, intermediate prefixes and
+duplicate-file identities match the original oracle, and the reopened logical
+file is byte-identical. The application source remains unchanged. See
+[i386-timeclock-native.md](i386-timeclock-native.md), including the separate
+strict report failure caused by missing original welcome-document state.

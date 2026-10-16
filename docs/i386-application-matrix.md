@@ -113,3 +113,11 @@ build/i386-c3-timeclock-docclear-load-result, with unchanged inputs. The native
 punch/storage/reboot oracle is now running. This is a loading milestone, not
 whole-application qualification; elapsed-time report formatting and physical
 keyboard workflows remain open.
+
+The native punch/storage/cold-reboot run now passes ten first-boot and four
+reopen checks with unchanged inputs (build/i386-c3-timeclock-punch-reopen-result).
+A strict deterministic report comparison finds exact record/content/date/total
+agreement but a missing held word-wrap entry from the original welcome document.
+This C2 startup gap remains a failing report gate; see
+[i386-timeclock-native.md](i386-timeclock-native.md). Full application qualification
+remains open.

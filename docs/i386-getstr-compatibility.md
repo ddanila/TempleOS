@@ -242,7 +242,7 @@ inputs (build/i386-c2-getstr-docclear-native). Its cross-build matches all 1514
 source and 24 build-input hashes. Unchanged TimeClock now passes source
 availability, a fresh-install precondition, Load/Install and continuation
 arithmetic in four commands (build/i386-c3-timeclock-docclear-load-result).
-The harness accounts for the first installation's top-level DirMk result;
+The harness accounts for the Load script's top-level Cd result;
 the earlier empty-answer expectation is retained as a fixture failure, not an
 application rejection. Native punch/storage/reboot checks are running. The
 minimal-profile memory gates and full C1–C5 qualification remain open.
@@ -256,3 +256,10 @@ location. The corrected fixture retains independent exact persisted-byte checks;
 all seven command stages and host record checks pass, with cold reboot reopen
 still running. A separate deterministic report/reboot run compares the entire
 saved DolDoc document against the original 5,400-second report golden.
+
+The complete native punch run now passes ten first-boot and four cold-reboot
+commands, with unchanged inputs and exact reopened data
+(build/i386-c3-timeclock-punch-reopen-result). The strict report comparison stays
+failed: native default terminal startup omits the original welcome document's
+held word-wrap entry. All later report bytes and controlled records match.
+See docs/i386-timeclock-native.md for that C2 gap and the retained evidence.
