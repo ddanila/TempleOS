@@ -9,6 +9,7 @@ public _extern _SYS_MACRO_HEAD CJob sys_macro_head;
 public _extern _SYS_MACRO_TASK CTask *sys_macro_task;
 public _extern _TASK_MSG CJob *TaskMsg(CTask *task,CTask *master,I64 msg_code,I64 arg1,I64 arg2,I64 flags);
 public _extern _POST_MSG U0 PostMsg(CTask *task,I64 msg_code,I64 arg1,I64 arg2,I64 flags=0);
+public _extern _POST_MSG_WAIT U0 PostMsgWait(CTask *task,I64 msg_code,I64 arg1,I64 arg2,I64 flags=0);
 public _extern _MSG U0 Msg(I64 msg_code,I64 arg1,I64 arg2,I64 flags=0);
 public _extern _JOBS_HNDLR I64 JobsHndlr(I64 run_flags,CTask *task=0);
 public _extern _SCAN_MSG I64 ScanMsg(I64 *arg1=0,I64 *arg2=0,I64 mask=~1,CTask *task=0);

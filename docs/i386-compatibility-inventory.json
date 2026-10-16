@@ -12928,6 +12928,18 @@
           "result": "pass",
           "evidence": "build/i386-c2-popup-print-lifetime/result.json",
           "scope": "Twenty-four commands: formatted-source reclamation and empty request rings before recovered caller exits, committed kill, previous ownership, heap/presentation reuse; unchanged pins; foreign owner/fault/UI and whole-file remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-post-msg-wait.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-post-msg-wait-reference-pair/result.json",
+          "scope": "Original PostMsgWait mask255: self/default/explicit flags, yielding recipient, queued order, negative key down/up pair, disabled IF, invalid/null tasks and idle return during Sleep; not full job or DocPutKey qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-post-msg-wait.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-post-msg-wait-native/result.json",
+          "scope": "Console135 complete shared PostMsgWait: mask255 matches original self/worker queue and idle semantics, negative key pair, flags/IF and invalid/null tasks; three commands with unchanged inputs; 64 MiB functional run, not resource or whole-file qualification"
         }
       ]
     },

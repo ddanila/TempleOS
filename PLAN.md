@@ -11,6 +11,20 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original PostMsgWait dependency candidate (2026-10-16)
+
+ConsoleRuntime 135 shares the original PostMsgWait body, backed by the existing
+MemoryRuntime message provider and NativeTaskWait. The pinned-original contract
+passes eight cases, including the negative key down/up pair used by DocPutKey.
+The first fixture incorrectly expected Sleep to delay idle return; that original
+failure is preserved, and the final contract explicitly checks the actual idle
+semantics. The preceding native image rejects the missing service as expected.
+Both bootstrap generations, cross-build and the 386 audit pass with 1532 source
+and 24 build-input hashes unchanged. Native validation passes mask 255 and all
+three commands with unchanged execution inputs. Resource gates are queued after
+the preceding WinBorder gates. Full DocPutKey
+and C1–C5 qualification remain open. See docs/i386-post-msg-wait.md.
+
 ### Original WinBorder dependency candidate (2026-10-16)
 
 ConsoleRuntime 134 shares the byte-identical original WinBorder body and appends

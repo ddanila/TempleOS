@@ -38,12 +38,12 @@ python3 tools/test-i386-win-border.py --out ORIGINAL
 python3 tools/test-i386-win-border.py IMAGE --out NATIVE
 ```
 
-The remaining DocPutKey integration graph includes PostMsgWait, AutoComplete/
+The remaining DocPutKey integration graph includes AutoComplete/
 ACFillIn/ACDFillin/ACDDef/ACMan, directory contexts and file selection, editor
 code/widget/macro/sprite tools, FindWiz, and God application services. EdFindReplace
 and EdGoToLine already exist in EditorRuntime but still need provider dispatch
 from ConsoleRuntime. This callable-name audit is not a complete dependency proof:
 shared globals, types and constants must also be checked when compiling the full
-original body. PostMsgWait can use the existing MemoryRuntime PostMsg provider
-and NativeTaskWait; its real message delivery and completion semantics need a
-reference contract before integration.
+original body. PostMsgWait now shares its complete original body using the existing
+MemoryRuntime PostMsg provider and NativeTaskWait; see
+`docs/i386-post-msg-wait.md` for the reference and native validation.
