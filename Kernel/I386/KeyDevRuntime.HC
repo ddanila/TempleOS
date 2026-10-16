@@ -98,6 +98,7 @@ U0 NativeKeyDevStart()
   MemSet(&keydev,0,sizeof(CKeyDevGlbls));
   QueInit(&keydev.put_key_head);
   KeyDevAdd(&NativeKeyDevFilterKey,&NativeKeyDevFilterString,0x40000000,FALSE);
+  KeyDevAdd(&KDRawPutKey,&KDRawPutS,0x60000000,FALSE);
   KeyDevAdd(&NativeKeyDevConsoleKey,&NativeKeyDevConsoleString,0x80000000,TRUE);
   native_keydev_ready=TRUE;
 }

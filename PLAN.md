@@ -11,6 +11,21 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Complete original raw renderer integration (2026-10-16)
+
+Console 119 shares the complete original RawPutChar and both raw key-device
+handlers. The native adapter supplies interrupt operations, a kernel-owned
+lazy cache and the actual VGA boot-mode value. All 13 original/native captures
+match byte for byte, including the raw cache and four hardware planes, controls,
+dollar state, wrapping and scrolling. The previously failing raw diagnostic
+case now passes; all eight diagnostic cases pass. The two-generation bootstrap
+and native cross-build pass. Minimal-profile timing remains failing: the concurrent and subsequent
+separate runs took 62.474 and 61.302 seconds against the unchanged 60-second
+target, despite passing all nine behavior checks. A source-pinned prior-image
+control passes in 57.138 seconds. The nine-case public task-kill regression
+also passes on the new image. See docs/i386-raw-output.md for artifacts and scope. All 686 inventory
+entries remain unqualified; this is a prerequisite, not C1-C5 completion.
+
 ### Original diagnostic output and minimal-profile memory (2026-10-16)
 
 The complete original GetOutOfDollar, PrintErr and PrintWarn routines are now

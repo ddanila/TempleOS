@@ -1,0 +1,176 @@
+{
+  "baseline_reference_revision": "c26482bb6ad3f80106d28504ec5db3c6a360732c",
+  "baseline_repair_revision": "ce055f205fc38536443289fb1cfc73632f6624f4",
+  "captures": [
+    {
+      "mode": 0,
+      "meta": [
+        1,
+        0,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "668e2aa5be61ced817f5b66e3e9ea5cbb07cfb2d52ec5defb270165b4a72fce6",
+      "cache_sha256": "0ada82589083f9234c6a9ae9819a6754e73bb51eea4c7bf2aa652d55f353f22f"
+    },
+    {
+      "mode": 1,
+      "meta": [
+        9,
+        0,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "83478db892cf6abe697467e7378b906662e84d52968a6c7d5d991b59f9ebc6a3",
+      "cache_sha256": "7945153f9d1e7508f8af3b38b5c72a9f1991000acc6643b09208489537c95cde"
+    },
+    {
+      "mode": 2,
+      "meta": [
+        2,
+        0,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "cbfb639410838cbdcdf1577127882082ef376a35550b995ab14f6a075dfd70c3",
+      "cache_sha256": "f577da9dc952ef7ae9bb401172c7d17e32d5a169e20e639020bb869d8dec8114"
+    },
+    {
+      "mode": 3,
+      "meta": [
+        81,
+        0,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "da835a7d65c2079912f450cf778eb4e02835c9343725be8ffc3c590449e3eda9",
+      "cache_sha256": "e7285caa62dc67a7cde84b28d2b86cba8469a8d4255454bc8ae40d59f17ccc05"
+    },
+    {
+      "mode": 4,
+      "meta": [
+        1,
+        0,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "668e2aa5be61ced817f5b66e3e9ea5cbb07cfb2d52ec5defb270165b4a72fce6",
+      "cache_sha256": "0ada82589083f9234c6a9ae9819a6754e73bb51eea4c7bf2aa652d55f353f22f"
+    },
+    {
+      "mode": 5,
+      "meta": [
+        1,
+        0,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "60fdd12233db78bbe4e1d27088f2dec79f5ef62d01d0b7b4107ab148e088cf40",
+      "cache_sha256": "491613a8d257badd9c15b976390e0de84db63a877736e60eafc9f24a86b26014"
+    },
+    {
+      "mode": 6,
+      "meta": [
+        6,
+        4,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "3585697b62424fc1c61ad390c3618901921a9306b7fa04c8dc8c7b893481402f",
+      "cache_sha256": "7d27dd96c5a4971fbb6b543bed148a56b969b0a18c4dbe8dc67b0cb62aa5bdc0"
+    },
+    {
+      "mode": 7,
+      "meta": [
+        4801,
+        0,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "60c73cdc943074a59fe447dcb0ac4c13c7c1946ee9968c446904c91172b37c73",
+      "cache_sha256": "67009f3f41893be7d2a67b7894fb9d558413d961d507da135a3c8b2b94850380"
+    },
+    {
+      "mode": 8,
+      "meta": [
+        4721,
+        8,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "b3f860ecaee9ded452d8880f65e1da67b3d5474fcf5746c4bb33aa245538fd31",
+      "cache_sha256": "b793791d965627c0343ca27a934813a4c1ade4bbc88116d94ed6ab0516321943"
+    },
+    {
+      "mode": 9,
+      "meta": [
+        81,
+        0,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "201e813f5a31eb0b71c89d104be7dbd8a0c57ce19720d4473179e271f152a013",
+      "cache_sha256": "6d8f62d373913a113c9c7f574423eac28b1f0a3bbe8006f740d539d132eefd23"
+    },
+    {
+      "mode": 10,
+      "meta": [
+        2,
+        0,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "1209665a56a164e0e4073be4bd791c8a994219d4700ce275119aa26ede6d1c3b",
+      "cache_sha256": "003cb5b5056efe8bdc927fd724d2b3d942f586b61e1c3cf1c2a5aa3e1e331f12"
+    },
+    {
+      "mode": 11,
+      "meta": [
+        1,
+        0,
+        80,
+        60,
+        1,
+        31
+      ],
+      "sha256": "9c89770fed257f2526e89d81dd80b0414934f010146d5246e8e6a1781ba19d50",
+      "cache_sha256": "d1220ac7864b5f626b8c53dd1f9d5a0492c5080442b1e98cab73b3e620715b55"
+    },
+    {
+      "mode": 12,
+      "meta": [
+        1,
+        0,
+        80,
+        60,
+        0,
+        31
+      ],
+      "sha256": "dfa91fc8d104be8b7863cddc72e96b30595ef726fdf85bac205233692486b422",
+      "cache_sha256": "0ada82589083f9234c6a9ae9819a6754e73bb51eea4c7bf2aa652d55f353f22f"
+    }
+  ],
+  "fixture_sha256": "04eb68e29e963408034dc8ca05c4da1f9847a9fefe2d90efb40ba12aa572fb46"
+}

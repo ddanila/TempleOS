@@ -4,6 +4,7 @@
 #include "/Kernel/TextGlobalsTypes.HH"
 #include "/Kernel/GeometryTypes.HH"
 public extern CTextGlbls text;
+public _extern _RAW_PUT_CHAR U0 RawPutChar(I64 ch);
 public _extern _TEXT_BORDER U0 TextBorder(CTask *task=NULL,I64 l,I64 r,I64 t,I64 b,I64 attr,Bool solid);
 public _extern _TEXT_RECT U0 TextRect(I64 l,I64 r,I64 t,I64 b,I64 d);
 public _extern _WIN_SCROLL_NULL U0 WinScrollNull(CTask *task,CD3I64 *s);

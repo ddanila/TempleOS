@@ -162,3 +162,9 @@ cases/69 commands at 64 MiB, with an unchanged source disk, in
 build/i386-c4-diagnostic-print-validator-kill. The detached selected-module C5
 build remains live on its older 9d64ad4b snapshot; it does not qualify this
 latest source or two full native generations.
+
+The subsequent Console 119 raw renderer integration closes the pending case:
+all eight diagnostic cases pass in build/i386-c4-raw-output-diagnostic with
+unchanged inputs. Independent original/native cache and hardware-plane
+comparisons are documented in i386-raw-output.md. Earlier failing artifacts
+above remain evidence of the missing route before that integration.

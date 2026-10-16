@@ -1,0 +1,48 @@
+#ifndef RUNLEVELTYPES_INCLUDED
+#define RUNLEVELTYPES_INCLUDED
+//Run-Levels
+#define RLf_16BIT		0
+#define RLf_VGA			1
+#define RLf_32BIT		2
+#define RLf_PATCHED		3
+#define RLf_16MEG_SYS_CODE_BP	4
+#define RLf_64BIT		5
+#define RLf_16MEG_ADAM_HEAP_CTRL 6
+#define RLf_FULL_HEAPS		7
+#define RLf_RAW			8
+#define RLf_INTERRUPTS		9
+#define RLf_BLKDEV		10
+#define RLf_MP			11
+#define RLf_COMPILER		12
+#define RLf_DOC			13
+#define RLf_WINMGR		14
+#define RLf_REGISTRY		15
+#define RLf_HOME		16
+#define RLf_AUTO_COMPLETE	17
+#define RLf_ADAM_SERVER		18
+#define RLf_ONCE_ADAM		19
+#define RLf_ONCE_USER		20
+
+#define RLF_16BIT		0x000001
+#define RLF_VGA			0x000002
+#define RLF_32BIT		0x000004
+#define RLF_PATCHED		0x000008
+#define RLF_16MEG_SYS_CODE_BP	0x000010
+#define RLF_64BIT		0x000020
+#define RLF_16MEG_ADAM_HEAP_CTRL 0x000040
+#define RLF_FULL_HEAPS		0x000050
+#define RLF_RAW			0x000100
+#define RLF_INTERRUPTS		0x000200
+#define RLF_BLKDEV		0x000400
+#define RLF_MP			0x000800
+#define RLF_COMPILER		0x001000
+#define RLF_DOC			0x002000
+#define RLF_WINMGR		0x004000
+#define RLF_REGISTRY		0x008000
+#define RLF_HOME		0x010000
+#define RLF_AUTO_COMPLETE	0x020000
+#define RLF_ADAM_SERVER		0x040000
+#define RLF_ONCE_ADAM		0x080000
+#define RLF_ONCE_USER		0x100000
+
+#endif
