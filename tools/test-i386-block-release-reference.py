@@ -10,7 +10,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))
-EXPECTED = [31]*8
+EXPECTED = [31]*16
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
     fixture = ROOT/'tests/guest/i386-block-release-reference'
     sha = REFERENCE['sha']
     inputs = [Path(__file__).resolve(), ROOT/'tools/test-i386-timeclock-reference.py',
-              fixture/'Once.HC', fixture/'Contract.HC', ROOT/'Kernel/FontStd.HC', ROOT/'tools/build-iso.py', ROOT/'tools/guest-run.py']
+              fixture/'Once.HC', fixture/'Contract.HC', fixture/'Table.HC', ROOT/'Kernel/FontStd.HC', ROOT/'tools/build-iso.py', ROOT/'tools/guest-run.py']
     source_hashes = {}
     extra = [overlay]
     if args.current_system:
@@ -66,7 +66,7 @@ def main():
         subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),
                         '--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
         data = (out/'guest/block-release.bin').read_bytes()
-        report['observed']=list(struct.unpack('<8q',data))
+        report['observed']=list(struct.unpack('<16q',data))
         report['expected']=EXPECTED
         if report['observed']!=EXPECTED:
             raise ValueError('Original block-device release differs from explicit oracle')

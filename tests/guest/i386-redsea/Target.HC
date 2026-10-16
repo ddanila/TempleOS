@@ -6,7 +6,8 @@ public extern I64 TestFiles(CI386RedSea *v);
 public extern I64 TestNames();
 I64 Main(I64 a,I64 b)
 {
-  CI386Ata disk;
+  CI386Ata disk;CBlkDev public_record;
+  disk.signature=0;disk.public_device=&public_record;
   CI386RedSea v,bad;
   CI386RedSeaEntry entry,dir;
   U8 buffer[1502],*p,*source="I64 Twice(I64 x) { return x*2; }\n";

@@ -398,16 +398,16 @@ I64 TaskFilesTest()
   same=I386TaskFilesDrive(&task_volumes,'E');
   second=I386TaskFilesDrive(&task_volumes,'D');
   if(!first || !same || !second || first==same || first->bd!=same->bd ||
-      first->bd==second->bd || first->bd!=&disks[0].public_device ||
-      second->bd!=&disks[1].public_device || first->bd->first_drv_let!='C' ||
+      first->bd==second->bd || first->bd!=disks[0].public_device ||
+      second->bd!=disks[1].public_device || first->bd->first_drv_let!='C' ||
       second->bd->first_drv_let!='D')return 100;
   device_flags=first->bd->flags;first->bd->flags|=BDF_INIT_IN_PROGRESS;
   if(I386TaskFilesDrive(&task_volumes,'C')!=first ||
       !(same->bd->flags&BDF_INIT_IN_PROGRESS))return 101;
   first->bd->flags=device_flags;
-  disks[0].public_device.bd_signature=0;
+  disks[0].public_device->bd_signature=0;
   if(I386TaskFilesDriveInit(&task_volumes,'C') || first->dv_signature)return 102;
-  disks[0].public_device.bd_signature=BD_SIGNATURE_VAL;
+  disks[0].public_device->bd_signature=BD_SIGNATURE_VAL;
   if(I386TaskFilesDriveInit(&task_volumes,'C')!=first ||
       first->bd!=same->bd || first->bd->flags!=device_flags)return 103;
   //Clearing a published record is deletion, not a request for lazy remount.
@@ -472,7 +472,7 @@ U0 DirectoryReader(I64 id)
   for(i=0;i<599;i++) huge[i]='a'; huge[0]='/'; huge[599]=0;
   if(I386TaskFilesSet(task,huge,'D')) { errors++; return; }
   if(id && !I386TaskFilesSet(task,"/Two",'D')) { errors++; return; }
-  if(!task->cur_dv || task->cur_dv->bd!=&disks[id].public_device) { errors++; return; }
+  if(!task->cur_dv || task->cur_dv->bd!=disks[id].public_device) { errors++; return; }
   state=I386TaskFilesBorrow(task,&paths,&selected);
   if(!state || paths.cur_drv!='C'+id || paths.cur_dir[1]!="OT"(U8 *)[id]) { errors++; return; }
   name=I386FileNameAbs(&heap,&paths,"Local.BIN");

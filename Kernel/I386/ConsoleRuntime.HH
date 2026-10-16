@@ -7,13 +7,14 @@
 //Native task extensions include public heap ownership callbacks.
 #include "/Kernel/I386/DocDiagnostic.HH"
 #include "/Kernel/I386/EditorRuntime.HH"
-#define I386_CONSOLE_VERSION 122
+#define I386_CONSOLE_VERSION 123
 class CI386ConsoleConfig {
   CI386Heap *heap;
   CI386CompilerServices *compiler;
   CI386FileServices *files;
   //Borrowed kernel-lifetime canonical drive table, including unused slots.
   CDrv *drive_records;
+  CBlkDev *block_records;
   CI386LexIncludeService *includes;
   CHashClass **types;
   CI386KeyboardReader *reader;

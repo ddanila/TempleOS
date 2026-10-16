@@ -4,7 +4,8 @@
 #include "/Kernel/I386/RedSea.HH"
 I64 Main(I64 a,I64 b)
 {
-  CI386Ata disk;
+  CI386Ata disk;CBlkDev public_record;
+  disk.signature=0;disk.public_device=&public_record;
   CI386RedSea v,again;
   CI386RedSeaEntry entry;
   U8 buffer[700],output[700],*code="I64 Answer() { return 42; }\n";

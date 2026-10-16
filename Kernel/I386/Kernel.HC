@@ -49,6 +49,7 @@ CI386Scheduler kernel_scheduler;
 CI386Task kernel_root;
 CI386Cpu kernel_cpu;
 CI386Heap kernel_heap;
+CBlkDev kernel_block_devices[BLKDEVS_NUM];
 CI386Ata kernel_disk;
 CI386RedSea kernel_volume;
 CI386Ata kernel_target_disk;
@@ -233,13 +234,13 @@ I64 Main(CI386BootInfo *info,I64 unused)
     I386IrqRestore(target_flags);
   }
   if(kernel_install_copy_probe) {
-    CI386Ata target;
+    CI386Ata *target=&kernel_target_disk;
     I64 copied;
     U32 flags=I386IrqSave;
-    if(I386AtaIdentifyPolled(&target,1,0,100000,0)) {
+    if(I386AtaIdentifyPolled(target,1,0,100000,0)) {
       copied=kernel_install_copy_probe;
       if(copied==1) copied=0;
-      copied=I386InstallCopy(&kernel_disk,&target,copied);
+      copied=I386InstallCopy(&kernel_disk,target,copied);
       if(copied<0) KernelStop;
       if(copied) KernelLog("INSTALL COPY READY\n");
       else KernelLog("INSTALL COPY INTERRUPTED\n");
@@ -403,6 +404,8 @@ U0 KernelStorage(CI386BootInfo *info)
   CI386BootDiskInfo *boot=I386_BOOT_DISK_INFO_ADDRESS;
   U8 *bitmap,move_header[512];
   I64 bitmap_bytes;
+  kernel_disk.public_device=&kernel_block_devices[0];
+  kernel_target_disk.public_device=&kernel_block_devices[1];
   if(boot->magic!=I386_BOOT_DISK_INFO_MAGIC || boot->version!=1 ||
       boot->bios_drive!=0x80 || boot->volume_start<=(info->stage_end-info->stage_begin)/512 ||
       !I386AtaIdentify(&kernel_disk,0,0) ||
@@ -646,6 +649,7 @@ U0 KernelCompilerProbe(I64 phase)
   probe.cancel_wait=kernel_console.cancel_wait;
   probe.persist_modules=phase && kernel_file_mutation_probe;
   probe.format_target=phase && kernel_target_format_probe;
+  probe.target_disk=&kernel_target_disk;
   if(!I386BackingCheckSave(&backing_check,&kernel_heap,I386TaskSelf->code_heap)) KernelStop;
   entry=kernel_probe_image;
   if((*entry)(&probe,sizeof(CI386CompilerProbe))!=1) {
@@ -908,6 +912,7 @@ U0 KernelConsoleLoad()
   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
   kernel_console_config.drive_records=kernel_volumes.drives;
+  kernel_console_config.block_records=kernel_block_devices;
   kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;
   kernel_console_config.input=&kernel_input; kernel_console_config.jiffies=&cnts.jiffies;
   kernel_console_config.mouse=&kernel_mouse;

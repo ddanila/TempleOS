@@ -1867,7 +1867,7 @@ I64 ProbeProgramNativeCreateRun(CI386CompilerProbe *probe,CI386Heap *heap,
   CHashTable *table;
   CI386RedSeaEntry directory,target_entry;
   CI386RedSea target_volume;
-  CI386Ata target;
+  CI386Ata *target=probe->target_disk;
   U8 *image,*read,*source=0,*copied=0,*payload="Created by guest",target_data[16];
   U8 dir_sector[512],*dir_name;
   I64 image_bytes,read_bytes,source_bytes,i,j,k,parent,status,offset=-1;
@@ -1949,8 +1949,8 @@ I64 ProbeProgramNativeCreateRun(CI386CompilerProbe *probe,CI386Heap *heap,
     sector_write=imports[4].address;
     flush=imports[5].address;
     irq=I386IrqSave;
-    if(!(*identify)(&target,1,0,100000,0) || target.sectors!=32768 ||
-        !(*mount)(&target_volume,&target,2048)) KernelStop;
+    if(!(*identify)(target,1,0,100000,0) || target->sectors!=32768 ||
+        !(*mount)(&target_volume,target,2048)) KernelStop;
     status=(*guest_create)(&target_volume,target_volume.root,"InstallSeed.HC",
       payload,16,0,0x800);
     if(status==1) KernelLog("NATIVE TARGET CREATE FRESH\n");
@@ -2057,7 +2057,7 @@ I64 ProbeProgramNativeFormatRun(CI386CompilerProbe *probe,CI386Heap *heap,
   CI386ModuleBinding imports[2];
   CHashExport *resident;
   CHashTable *table;
-  CI386Ata target;
+  CI386Ata *target=probe->target_disk;
   U8 *image,sector[512];
   I64 image_bytes,i,offset=-1,used=heap->used,allocations=heap->allocations;
   U32 irq;
@@ -2100,18 +2100,18 @@ I64 ProbeProgramNativeFormatRun(CI386CompilerProbe *probe,CI386Heap *heap,
   KernelLog("NATIVE FORMAT NEGATIVE DONE ");KernelHex(probe->format_target);KernelLog("\n");
   if(probe->format_target) {
     irq=I386IrqSave;
-    if(!(*identify)(&target,1,0,100000,0) || target.sectors!=32768 ||
-        !(*transfer)(&target,2048,sector,100000,FALSE,0)) KernelStop;
+    if(!(*identify)(target,1,0,100000,0) || target->sectors!=32768 ||
+        !(*transfer)(target,2048,sector,100000,FALSE,0)) KernelStop;
     blank=TRUE;
     for(i=0;i<512;i++) if(sector[i]) blank=FALSE;
     if(blank) {
-      if(!(*guest_format)(&target,2048,target.sectors-2048)) KernelStop;
+      if(!(*guest_format)(target,2048,target->sectors-2048)) KernelStop;
       KernelLog("NATIVE FORMAT FRESH\n");
     } else {
-      if((*guest_format)(&target,2048,target.sectors-2048)) KernelStop;
+      if((*guest_format)(target,2048,target->sectors-2048)) KernelStop;
       KernelLog("NATIVE FORMAT EXISTING\n");
     }
-    if(!(*transfer)(&target,2048,sector,100000,FALSE,0) ||
+    if(!(*transfer)(target,2048,sector,100000,FALSE,0) ||
         sector[3]!=0x88 || sector[510]!=0x55 || sector[511]!=0xAA) KernelStop;
     I386IrqRestore(irq);
   }

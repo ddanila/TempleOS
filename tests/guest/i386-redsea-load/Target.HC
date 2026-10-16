@@ -6,7 +6,8 @@
 extern Bool I386BuffersOverlap(U8 *a,I64 an,U8 *b,I64 bn);
 I64 Main(I64 a,I64 b)
 {
-  CI386Ata disk;
+  CI386Ata disk;CBlkDev public_record;
+  disk.signature=0;disk.public_device=&public_record;
   CI386RedSea v;
   CI386RedSeaEntry entry,bad;
   CI386Heap heap;

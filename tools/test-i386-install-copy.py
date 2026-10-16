@@ -47,6 +47,7 @@ def main():
         raise ValueError('Invalid source image or installer flags')
     for offset in offsets:
         struct.pack_into('<I', source, offset, 1)
+    build.refresh_extended_checksum(source)
     candidate = out / 'source.img'
     target = out / 'target.img'
     candidate.write_bytes(source)
@@ -71,6 +72,7 @@ def main():
         case.mkdir(exist_ok=True)
         interrupted_source = bytearray(source)
         struct.pack_into('<I', interrupted_source, offsets[0], stop_after)
+        build.refresh_extended_checksum(interrupted_source)
         candidate = case / 'source.img'
         target = case / 'target.img'
         candidate.write_bytes(interrupted_source)
@@ -86,6 +88,7 @@ def main():
         if partial != expected or candidate.read_bytes() != interrupted_source:
             raise ValueError(f'Interrupted copy changed unexpected sectors at {stop_after}')
         struct.pack_into('<I', interrupted_source, offsets[0], 1)
+        build.refresh_extended_checksum(interrupted_source)
         candidate.write_bytes(interrupted_source)
         retry = boot(candidate, case / 'retry-boot', target)
         if retry.count('INSTALL COPY READY\n') != 1 or \

@@ -4,7 +4,8 @@
 #include "/Kernel/I386/RedSea.HH"
 I64 Main(I64 a,I64 b)
 {
-  CI386Ata disk;
+  CI386Ata disk;CBlkDev public_record;
+  disk.signature=0;disk.public_device=&public_record;
   CI386RedSea v,again;
   CI386RedSeaEntry entry;
   U8 buffer[702],output[702],*code="I64 Answer() { return 42; }\n";
@@ -12,15 +13,15 @@ I64 Main(I64 a,I64 b)
   if (!I386AtaIdentify(&disk,0,0) || !I386RedSeaMount(&v,&disk,2048)) return 1;
   for (i=0;i<702;i++) { buffer[i]=0xA5; output[i]=0x5A; }
   for (i=0;i<700;i++) buffer[i+1]=((i*17)^(i>>2)^0x95)&255;
-  if (I386RedSeaCreate(&v,v.root,"",0,0)!=-1 ||
-      I386RedSeaCreate(&v,v.root,".",0,0)!=-1 ||
-      I386RedSeaCreate(&v,v.root,"..",0,0)!=-1 ||
-      I386RedSeaCreate(&v,v.root,"bad/name",0,0)!=-1 ||
-      I386RedSeaCreate(&v,v.root,"Bad",0,1)!=-1 ||
-      I386RedSeaCreate(&v,v.root,"Bad",buffer,-1)!=-1 ||
-      I386RedSeaCreate(&v,v.root,"Bad",(0xFFFFFFF0)(U8 *),32)!=-1 ||
-      I386RedSeaCreate(&v,2053,"FullDirectory",0,0)!=0 ||
-      I386RedSeaCreate(&v,2057,"ReadOnly",0,0)!=-1) return 2;
+  if (I386RedSeaCreate(&v,v.root,"",0,0)!=-1) return 21;
+  if (I386RedSeaCreate(&v,v.root,".",0,0)!=-1) return 22;
+  if (I386RedSeaCreate(&v,v.root,"..",0,0)!=-1) return 23;
+  if (I386RedSeaCreate(&v,v.root,"bad/name",0,0)!=-1) return 24;
+  if (I386RedSeaCreate(&v,v.root,"Bad",0,1)!=-1) return 25;
+  if (I386RedSeaCreate(&v,v.root,"Bad",buffer,-1)!=-1) return 26;
+  if (I386RedSeaCreate(&v,v.root,"Bad",(0xFFFFFFF0)(U8 *),32)!=-1) return 27;
+  if (I386RedSeaCreate(&v,2053,"FullDirectory",0,0)!=0) return 28;
+  if (I386RedSeaCreate(&v,2057,"ReadOnly",0,0)!=-1) return 29;
   disk.flush=FALSE;
   if (I386RedSeaCreate(&v,v.root,"NoFlush",0,0)!=-1) return 3;
   disk.flush=TRUE;

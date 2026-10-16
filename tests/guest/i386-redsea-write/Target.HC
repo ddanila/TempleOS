@@ -9,7 +9,8 @@ U0 Pattern(U8 *p,I64 count,I64 seed)
 }
 I64 Main(I64 a,I64 b)
 {
-  CI386Ata disk;
+  CI386Ata disk;CBlkDev public_record;
+  disk.signature=0;disk.public_device=&public_record;
   CI386RedSea v;
   CI386RedSeaEntry entry,again;
   U8 source[1026],readback[1302];
@@ -33,7 +34,7 @@ I64 Main(I64 a,I64 b)
     if (j==2) entry.attr=0x900;
     if (j==3) entry.attr=0xA00;
     if (j==4) entry.attr=0;
-    if (I386RedSeaWrite(&v,&entry,0,source+1,1)!=-1) return 3;
+    if (I386RedSeaWrite(&v,&entry,0,source+1,1)!=-1) return 30+j;
   }
   entry.attr=0x800;
   entry.size=0x7FFFFFFFFFFFFFFF;

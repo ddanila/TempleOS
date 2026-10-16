@@ -3,7 +3,7 @@
 #include "/Kernel/I386/CompilerRuntime.HH"
 #include "/Kernel/I386/FileRuntime.HH"
 //Boot diagnostics also borrow the mounted volume and resident source helpers.
-#define I386_COMPILER_PROBE_VERSION 17
+#define I386_COMPILER_PROBE_VERSION 18
 //Borrowed for a synchronous call only. The probe registers no callbacks or tasks.
 class CI386CompilerProbe {
   U32 version,bytes;
@@ -27,5 +27,6 @@ class CI386CompilerProbe {
   Bool persist_modules;
   //Disposable QEMU secondary IDE master, never the running C: volume.
   Bool format_target;
+  CI386Ata *target_disk;
 };
 #endif

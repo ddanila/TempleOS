@@ -5,7 +5,8 @@
 #include "/Kernel/I386/ModuleFile.HH"
 I64 Main(I64 a,I64 b)
 {
-  CI386Ata disk;CI386RedSea v;CI386RedSeaEntry entry;
+  CI386Ata disk;CBlkDev public_record;
+  disk.signature=0;disk.public_device=&public_record;CI386RedSea v;CI386RedSeaEntry entry;
   CI386ModuleHeader header;CI386Heap heap;U8 *image;
   I64 capacity,i;I64 (*entry_point)(I64 x,I64 y);
   if(!I386AtaIdentify(&disk,0,0) || !I386RedSeaMount(&v,&disk,2048) ||

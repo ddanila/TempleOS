@@ -11769,7 +11769,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Release current-task-owned block devices, including devices with no remaining drive associations; preserve unrelated ownership, invalid signatures, non-initialization flags and caller state.",
-      "oracle": "docs/i386-block-release.md: eight mask-31 original cases cover associated/orphan devices, ownership/signature filtering, exact record restoration and repeated release. Full physical-device table, media initialization/deletion and lifecycle remain unqualified.",
+      "oracle": "docs/i386-block-release.md: sixteen mask-31 original/native cases cover associated/orphan devices and all 26 canonical slots, ownership/signature/lock filtering, exact restoration and repeated release. General allocation, media initialization/deletion and lifecycle remain unqualified.",
       "tests": [
         {
           "target": "original-drive-device-lookup",
@@ -11812,6 +11812,27 @@
           "result": "fail",
           "evidence": "build/i386-c4-block-release-red/result.json",
           "scope": "Canonical drive identity and cases 0-3 pass; first orphan case 4 fails after restoration; later cases do not run. Inputs unchanged."
+        },
+        {
+          "target": "original-canonical-block-release",
+          "command": "python3 tools/test-i386-block-release-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-block-table-reference/result.json",
+          "scope": "Sixteen original cases including all 26 table slots; unchanged inputs."
+        },
+        {
+          "target": "rebuilt-original-canonical-block-release",
+          "command": "python3 tools/test-i386-block-release-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-block-table-current/result.json",
+          "scope": "Same sixteen cases on rebuilt original; unchanged inputs."
+        },
+        {
+          "target": "native-canonical-block-release",
+          "command": "python3 tools/test-i386-block-release.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-block-table-native/result.json",
+          "scope": "Sixteen cases/21 commands at 64 MiB, canonical drive/device identity and exact fixture delivery; unchanged inputs."
         }
       ]
     },

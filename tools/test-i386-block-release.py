@@ -10,7 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"tests/guest/i386-block-release-reference/Contract.HC"
 COMMANDS = [('U0 BRGate(){BlkDevsRelease;}',[]),
             ('#include "C:/Native.HC"',[]),
-            ("BRRecord(Drv2Let()-'A')==Fs->cur_dv;",['1'])]+[(f'BRCheck({i});',['31']) for i in range(8)]+[('6*7;',['42'])]
+            ("BRRecord(Drv2Let()-'A')==Fs->cur_dv;",['1']),
+            ('BRHasDevice;',['1'])]+[(f'BRCheck({i});',['31']) for i in range(8)]+[(f'BRTableCheck({i});',['31']) for i in range(8)]+[('6*7;',['42'])]
 
 
 if any(len(c[0])>255 for c in COMMANDS):
@@ -39,11 +40,11 @@ def main():
         parser.error('Use a fresh output directory')
     sha = lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     runner = ROOT/'tools/i386-kernel-input.py'
-    pins = {str(p):sha(p) for p in [source, runner, FIXTURE, FIXTURE.with_name('Native.HC'), ROOT/'Kernel/FontStd.HC', ROOT/'tools/package-i386-native-image.py', ROOT/'tools/build-i386-kernel.py', Path(__file__).resolve()]}
+    pins = {str(p):sha(p) for p in [source, runner, FIXTURE, FIXTURE.with_name('Native.HC'), FIXTURE.with_name('Table.HC'), ROOT/'Kernel/FontStd.HC', ROOT/'tools/package-i386-native-image.py', ROOT/'tools/build-i386-kernel.py', Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
     packaging = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
-        source, working, additions={'/Contract.HC':FIXTURE.read_bytes(),'/Native.HC':FIXTURE.with_name('Native.HC').read_bytes()})
+        source, working, additions={'/Contract.HC':FIXTURE.read_bytes(),'/Native.HC':FIXTURE.with_name('Native.HC').read_bytes(),'/Table.HC':FIXTURE.with_name('Table.HC').read_bytes()})
     report = dict(result='running', scope='Original block-device release with and without drive associations, ownership/signature filtering and exact restoration',
                   packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:
@@ -56,8 +57,9 @@ def main():
                            'rejection_prefixes':('INPUT REJECT ','WINMGR window exception '),
                            'command_timeout':120})
         build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
-        delivered=build['mutated_file_contents'](working,{'/Contract.HC','/Native.HC'})
+        delivered=build['mutated_file_contents'](working,{'/Contract.HC','/Native.HC','/Table.HC'})
         if delivered.get('/Native.HC')!=FIXTURE.with_name('Native.HC').read_bytes():raise ValueError('Native table adapter differs from source')
+        if delivered.get('/Table.HC')!=FIXTURE.with_name('Table.HC').read_bytes():raise ValueError('Block-table fixture differs from source')
         saved=delivered.get('/Contract.HC')
         if saved!=FIXTURE.read_bytes():raise ValueError('Guest block-device release fixture differs from source')
         report['guest_fixture_sha256']=sha(FIXTURE)

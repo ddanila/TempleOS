@@ -32,7 +32,8 @@ Bool ReadMatch(CI386RedSea *v,CI386Heap *heap,I64 directory,U8 *path,I64 kind,I6
 I64 FileLoadTest()
 {
   CI386Heap heap,small;
-  CI386Ata disk;
+  CI386Ata disk;CBlkDev public_record;
+  disk.signature=0;disk.public_device=&public_record;
   CI386RedSea v;
   U8 *p;
   I64 i,size,attr,old_disk,old_volume;

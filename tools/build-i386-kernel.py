@@ -234,7 +234,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 122:
+    if struct.unpack_from('<I', module, version_offset)[0] != 123:
         raise ValueError('Unexpected console version')
     entry_names=('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug', 'ConsoleRootHeaders', 'NativeWinMgrEnsure')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
@@ -364,7 +364,7 @@ def file_runtime_layout(module):
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 58:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 59:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         cancel_wait_offset=8+exports['I386FileRuntimeCancelWait'][1],
@@ -471,7 +471,7 @@ def compiler_probe_layout(module):
     if exports.get('compiler_probe_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-probe version')
     version_offset = 32+exports['compiler_probe_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 17:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 18:
         raise ValueError('Unexpected compiler-probe version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'KernelLog'))
@@ -1918,7 +1918,7 @@ def verify_native_target_format(disk, exports, out):
         work.mkdir(parents=True,exist_ok=True)
         with (work/'runner.log').open('w') as log:
             subprocess.run([sys.executable,str(ROOT/'tools/guest-run.py'),str(boot),
-                '--i386-disk','--target-disk',str(target),'--out',str(work),
+                '--i386-disk','--ram-mib','16','--target-disk',str(target),'--out',str(work),
                 '--timeout','1200'],cwd=ROOT,stdout=log,stderr=log,check=True)
         text=(work/'debug.log').read_text()
         phases=[int(line.split()[2],16) for line in text.splitlines()
@@ -2586,7 +2586,7 @@ def main():
                 log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=58, image_address=file_address, image_bytes=file_size,
+        result['file_runtime'] = dict(version=59, image_address=file_address, image_bytes=file_size,
             retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, read_raw_address=file_read_raw, install_boot_address=file_install_boot, arc_entry_address=file_address+files_layout['arc_entry_offset'],
             write_public_address=file_write_public,
             read_stored_address=file_read_stored,
@@ -2651,7 +2651,7 @@ def main():
                 not (log.index('DEFINE PROBE ') < log.index('PROBE MODULE ') < log.index('STARTUP disk module')) or
                 not (log.rindex('DEFINE PROBE ') < log.index('PROBE RELEASE ') < log.index('DONE native kernel'))):
             raise ValueError('Compiler-probe placement, lifetime or reclamation mismatch')
-        result['compiler_probe'] = dict(module='CompilerProbe', version=17, image_address=probe_address,
+        result['compiler_probe'] = dict(module='CompilerProbe', version=18, image_address=probe_address,
             image_bytes=probe_size, temporary_heap_bytes=probe_span, reclaimed_heap_bytes=probe_span,
             phases=['boot', 'task'], lifetime='released after task probe')
         branch_recovery = [line.split() for line in log.splitlines() if line.startswith('BRANCH RECOVERY ')]
@@ -3162,7 +3162,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=122,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=123,image_bytes=csize,retained_heap_bytes=cspan,
             service_addresses=dict(zip(console_layout['entry_names'],entries)),
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         # Both header attempts complete exactly these unused forward classes.

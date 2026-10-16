@@ -10,9 +10,9 @@ class CI386Ata {
   U32 signature,sectors,cylinders,heads,sectors_per_track;
   U16 io,control;
   U8 drive,lba,flush;
-  //Same lifetime as the identified physical disk; mounted volumes borrow this
-  //canonical public record. Optional retained IDENTIFY/file/RAM records are NULL.
-  CBlkDev public_device;
+  //Caller binds a lifetime-stable public record before identify. Kernel handles
+  //borrow canonical table slots; standalone protocol fixtures own their records.
+  CBlkDev *public_device;
 };
 //Internal shared protocol: optional synchronous poll callback, IF clear on return.
 //The caller owns channel exclusion, callback lifetime and touched initialization.

@@ -11,22 +11,21 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
-### Orphan block-device release regression (2026-10-16)
+### Canonical block-device table migration (2026-10-16)
 
-The original BlkDevsRelease walks the full physical-device table. The native
-adapter instead discovers devices through drive records, so an owned device
-becomes invisible when its last drive association disappears. Eight original
-and rebuilt-original mask-31 cases pass with unchanged inputs. The same native
-runner passes the four associated-device cases, then fails the first orphan
-case after restoring all borrowed records; inputs are unchanged.
-
-The required fix is a canonical 26-record CBlkDev table shared by ATA metadata,
-channel forwarding, mounted drives and the complete release loop. CI386Ata's
-embedded public record must not become a second identity. Boot/secondary-target,
-installation/format and standalone protocol callers need lifetime migration and
-regression coverage. See docs/i386-block-release.md. This is a failing regression
-checkpoint, not implementation or qualification of the physical-device table.
-C1-C5 and all 686 inventory qualifications remain open.
+ConsoleRuntime 123 replaces mounted-drive-based device discovery with a direct
+26-record kernel-owned table. ATA handles borrow those canonical records;
+channel forwarding and mounted drives preserve the same identity. Boot and
+secondary-target slots are persistent, including installation and format probes.
+FileRuntime 59 and CompilerProbe 18 carry the changed ABI. Both original controls
+pass all 16 orphan/full-table release cases with unchanged inputs. Bootstrap,
+cross-build, ATA and task/ATA pass; all 1506 source/24 build-input hashes match.
+The 8 MiB gate passes all nine checks in 54.848084 seconds, unchanged inputs and
+no build provider. Native release passes all 16 cases/21 commands at 64 MiB with unchanged inputs.
+RedSea, installation/format and full diagnostic validation are in progress; old
+RedSea write/create fixture mismatches are preserved as failures. See docs/i386-block-release.md for evidence and the
+preceding failing orphan regression. General device allocation and media lifecycle
+remain unfinished; all 686 inventory qualifications and C1–C5 remain open.
 
 ### Complete device-wide deletion and compact immediate pushes (2026-10-16)
 

@@ -14,7 +14,8 @@ U0 BindInit(CI386ModuleBinding *bindings)
 }
 I64 Main(I64 a,I64 b)
 {
-  CI386Ata disk;
+  CI386Ata disk;CBlkDev public_record;
+  disk.signature=0;disk.public_device=&public_record;
   CI386RedSea v;
   CI386RedSeaEntry entries[2];
   CI386Heap heap;

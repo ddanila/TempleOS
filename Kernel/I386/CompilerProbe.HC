@@ -80,7 +80,7 @@ U32 compiler_probe_version=I386_COMPILER_PROBE_VERSION;
 I64 Main(CI386CompilerProbe *probe,I64 bytes)
 {
   if(!probe || bytes!=sizeof(CI386CompilerProbe) || probe->bytes!=bytes ||
-      probe->version!=compiler_probe_version || !probe->heap || !probe->compiler ||
+      probe->version!=compiler_probe_version || !probe->target_disk || !probe->heap || !probe->compiler ||
       !probe->symbols || !probe->i64_type || !probe->runtime_image ||
       !probe->volume || !probe->source_read || !probe->source_pop ||
       probe->phase<0 || probe->phase>1) return 0;

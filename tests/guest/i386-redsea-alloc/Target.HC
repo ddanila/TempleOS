@@ -17,7 +17,8 @@ Bool OwnedFlush(U8 *context,CI386Ata *disk)
 {no_warn context;return I386AtaFlush(disk);}
 I64 Main(I64 a,I64 b)
 {
-  CI386Ata disk;
+  CI386Ata disk;CBlkDev public_record;
+  disk.signature=0;disk.public_device=&public_record;
   CI386RedSea v,bad;
   U8 sector[512];
   I64 i,first,second,whole,owned=0,fault;

@@ -1,11 +1,10 @@
 # Block-device release independent of mounted drives
 
 The complete original BlkDevsRelease walks all 26 canonical block-device
-records. ConsoleRuntime 122 includes that loop, but its record adapter finds
+records. ConsoleRuntime 122 included that loop, but its record adapter found
 devices through the drive table and substitutes an empty record for missing
-associations. It therefore misses a still-owned physical device when no drive
-points to it. The adapter does not yet establish the original routine's full
-semantics.
+associations. It therefore missed a still-owned physical device when no drive
+points to it. The regression below captures that older adapter's incomplete semantics.
 
 The shared eight-case oracle borrows the caller's actual backing device (following
 its lock-forwarding chain), saves all drive records, and optionally removes every
@@ -51,3 +50,61 @@ unrelated records, then run ATA decode/transfer/task exclusion, mounted identity
 owner cancellation, installation/target workflows and the minimal/full diagnostic
 memory gates. The bounded orphan oracle alone does not qualify the whole physical
 device/media lifecycle. C1–C5 remain open.
+
+## Canonical table migration (2026-10-16)
+
+ConsoleRuntime 123 now indexes the kernel-owned 26-record CBlkDev array directly.
+Its NativeBlockRecords data export binds through the validated config argument;
+all 305 export names and bindings match. CI386Ata borrows a lifetime-stable record
+instead of embedding a second identity. Boot and secondary-target handles use
+slots 0 and 1, respectively. ATA metadata, channel forwarding and CDrv.bd all
+refer to those records. Installation copy and compiler format/create probes use
+the persistent secondary-target handle. File services version 59 and compiler
+probe version 18 reject stale ABI combinations. Standalone protocol fixtures own
+explicit records and bind them before identify.
+
+Eight additional original cases cover every slot, with none/all/even/boundary
+ownership patterns, mixed invalid signatures and unlocked records. They check
+exact bytes, repeat release, canonical backing-device identity, caller state and
+heap accounting, restoring all records before assertion. Both original and
+rebuilt-original controls pass all 16 cases with unchanged inputs:
+
+- build/i386-c4-block-table-reference/result.json
+- build/i386-c4-block-table-current/result.json
+
+The bootstrap and cross-build pass, with all 1506 source and 24 build-input
+hashes matching. ATA and task/ATA regressions pass, including null borrowed-record
+rejection, stable re-identify, transfers and ownership/channel behavior. The
+8 MiB gate passes nine interactive checks in 54.848084 seconds, with no build
+provider and unchanged execution inputs. Evidence is under
+build/i386-c4-block-table-{cross,ata,ata-tasks,startup}.
+
+Native release also passes all 16 cases/21 commands at 64 MiB, including both
+canonical identity preflights and exact delivery of all three fixture files.
+Its execution inputs are unchanged (build/i386-c4-block-table-native/result.json).
+RedSea mount/read/allocation/delete/replace/load/low-memory-load/load-set/bind
+all pass (build/i386-c4-block-table-redsea-results.json). Installation/format and
+full diagnostics are being validated separately.
+
+The first format harness run selected the old fixed 8 MiB guest profile and
+exhausted memory in ModuleCheck.HC before reaching the format probe. The harness
+now explicitly selects 16 MiB for this full diagnostic workflow. The first
+installation-copy attempt stopped at the boot checksum marker because its old
+harness patched flags without refreshing the extended checksum; all three flag
+patches now refresh it. Failed artifacts are retained under
+build/i386-c4-block-table-target and
+build/i386-c4-block-table-install-copy-checksum-red. These harness-only changes
+postdate the cross-build; pre-harness-fix-audit.json records matching build inputs
+before those edits. Production source hashes remain unchanged.
+
+Standalone RedSea write returns case 3: its old fixture expects resident-bit
+records to be rejected, but the unchanged write implementation has permitted
+them since a4193484. Creation returns combined case 2. Splitting its assertions without changing
+expectations isolates return 28: the full-directory case expects failure despite
+the existing directory-growth implementation. Likewise, write return 33 isolates
+its resident-attribute case. The isolated artifacts have a -isolated suffix.
+These failures remain open, preserved under build/i386-c4-block-table-redsea-write
+and -redsea-create; they are not counted as passes or silently weakened.
+The fixed boot/secondary-target topology does not implement general mount-slot
+allocation, BlkDevInit or the remaining media lifecycle. All 686 inventory entries
+and C1–C5 remain unqualified/open.

@@ -5,34 +5,38 @@
 extern Bool I386AtaDecode(CI386Ata *disk,U16 *words,I64 channel,I64 drive);
 I64 DecodeTest()
 {
-  CI386Ata disk;
+  CI386Ata disk;CBlkDev public_record;
+  disk.signature=0;disk.public_device=&public_record;
   U16 words[256];
   U8 *bytes;
   I64 i,j;
   bytes=&disk;
   for (i=0;i<256;i++) words[i]=0;
   words[1]=100; words[3]=4; words[6]=17;
+  disk.public_device=0;
+  if(I386AtaDecode(&disk,words,1,1) || disk.signature || disk.public_device)return 65;
+  disk.public_device=&public_record;
   if (!I386AtaDecode(&disk,words,1,1) || disk.sectors!=6800 || disk.lba ||
       disk.cylinders!=100 || disk.heads!=4 || disk.sectors_per_track!=17 ||
       disk.io!=0x170 || disk.control!=0x376 || disk.drive!=1) return 20;
-  if(disk.public_device.bd_signature!=BD_SIGNATURE_VAL || disk.public_device.type!=BDT_ATA ||
-      disk.public_device.flags!=BDF_INITIALIZED || disk.public_device.unit!=1 ||
-      disk.public_device.base0!=0x170 || disk.public_device.base1!=0x374 ||
-      disk.public_device.blk_size!=512 || disk.public_device.max_blk!=6799 ||
-      disk.public_device.max_reads!=1 || disk.public_device.max_writes!=1 ||
-      disk.public_device.dev_id_record || disk.public_device.first_drv_let ||
-      disk.public_device.RAM_dsk || disk.public_device.file_dsk_name ||
-      disk.public_device.file_dsk || disk.public_device.lock_fwding ||
-      disk.public_device.owning_task || disk.public_device.locked_flags) return 60;
+  if(disk.public_device->bd_signature!=BD_SIGNATURE_VAL || disk.public_device->type!=BDT_ATA ||
+      disk.public_device->flags!=BDF_INITIALIZED || disk.public_device->unit!=1 ||
+      disk.public_device->base0!=0x170 || disk.public_device->base1!=0x374 ||
+      disk.public_device->blk_size!=512 || disk.public_device->max_blk!=6799 ||
+      disk.public_device->max_reads!=1 || disk.public_device->max_writes!=1 ||
+      disk.public_device->dev_id_record || disk.public_device->first_drv_let ||
+      disk.public_device->RAM_dsk || disk.public_device->file_dsk_name ||
+      disk.public_device->file_dsk || disk.public_device->lock_fwding ||
+      disk.public_device->owning_task || disk.public_device->locked_flags) return 60;
   //Re-identifying the same device must retain its mount/initialization state.
-  disk.public_device.first_drv_let='D';
-  disk.public_device.flags|=BDF_INIT_IN_PROGRESS;
-  if(!I386AtaDecode(&disk,words,1,1) || disk.public_device.first_drv_let!='D' ||
-      !(disk.public_device.flags&BDF_INIT_IN_PROGRESS))return 63;
+  disk.public_device->first_drv_let='D';
+  disk.public_device->flags|=BDF_INIT_IN_PROGRESS;
+  if(!I386AtaDecode(&disk,words,1,1) || disk.public_device->first_drv_let!='D' ||
+      !(disk.public_device->flags&BDF_INIT_IN_PROGRESS))return 63;
   words[53]=1; words[54]=80; words[55]=8; words[56]=32;
   if (!I386AtaDecode(&disk,words,0,0) || disk.sectors!=20480 || disk.lba ||
       disk.cylinders!=80 || disk.heads!=8 || disk.sectors_per_track!=32) return 21;
-  if(disk.public_device.first_drv_let || disk.public_device.flags!=BDF_INITIALIZED)
+  if(disk.public_device->first_drv_let || disk.public_device->flags!=BDF_INITIALIZED)
     return 64; //A different physical channel/unit starts a new identity.
   //An explicitly valid current translation must not fall back to default geometry.
   for (j=0;j<5;j++) {
@@ -46,6 +50,7 @@ I64 DecodeTest()
     if (I386AtaDecode(&disk,words,0,0)) return 22;
     for (i=0;i<sizeof(CI386Ata);i++) if (bytes[i]!=0xA5) return 23;
   }
+  disk.signature=0;disk.public_device=&public_record;
   //LBA disks remain usable even when they do not report usable CHS geometry.
   words[49]=0x200; words[60]=0xFFFF; words[61]=0xFFFF;
   if (!I386AtaDecode(&disk,words,0,0) || !disk.lba || disk.sectors!=0x10000000 ||
@@ -155,12 +160,12 @@ I64 WriteTest(CI386Ata *disk)
     disk->lba=(j<2);
     for (i=0;i<512;i++) source[i+1]=((i*19)^(i>>2)^(j*67)^0xA6)&255;
     if (!I386AtaWrite(disk,lba,source+1)) return 46;
-    if(!(disk->public_device.flags&BDF_LAST_WAS_WRITE))return 61;
+    if(!(disk->public_device->flags&BDF_LAST_WAS_WRITE))return 61;
     if (!I386AtaFlush(disk)) return 55;
     //Read CHS writes using LBA, independently exercising the address mapping.
     disk->lba=TRUE;
     if (!I386AtaRead(disk,lba,readback+1)) return 47;
-    if(disk->public_device.flags&BDF_LAST_WAS_WRITE)return 62;
+    if(disk->public_device->flags&BDF_LAST_WAS_WRITE)return 62;
     for (i=0;i<512;i++)
       if (source[i+1]!=(((i*19)^(i>>2)^(j*67)^0xA6)&255) ||
           readback[i+1]!=source[i+1]) return 48;
@@ -172,7 +177,8 @@ I64 WriteTest(CI386Ata *disk)
 }
 I64 Main(I64 a,I64 b)
 {
-  CI386Ata disk,absent;
+  CI386Ata disk,absent;CBlkDev public_record,absent_record;
+  disk.public_device=&public_record;absent.public_device=&absent_record;
   U8 buffer[514];
   I64 i,j,lba,result;
   result=DecodeTest();

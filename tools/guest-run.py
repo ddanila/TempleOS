@@ -15,6 +15,8 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--timeout', type=float, default=180)
     parser.add_argument('--i386-disk', action='store_true', help='Run a protected-mode test disk with VGA and 8 MiB RAM')
+    parser.add_argument('--ram-mib', type=int, choices=(8,16), default=8,
+                        help='RAM for an i386 disk run; full diagnostics require 16 MiB')
     parser.add_argument('--target-disk', type=Path, help='Attach a separate secondary IDE target to an i386 disk run')
     parser.add_argument('--qmp-stdio', action='store_true',
                         help='Control QEMU over stdio when Unix sockets are unavailable')
@@ -36,7 +38,7 @@ def main():
            '-qmp', qmp_arg]
     if args.i386_disk:
         cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg',
-               '-cpu', '486', '-m', '8', '-nic', 'none',
+               '-cpu', '486', '-m', str(args.ram_mib), '-nic', 'none',
                '-drive', f'file={args.iso.resolve()},format=raw,if=ide',
                '-display', 'none', '-no-reboot', '-debugcon', f'file:{log}',
                '-qmp', qmp_arg]

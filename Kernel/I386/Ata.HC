@@ -43,7 +43,7 @@ Bool I386AtaDecode(CI386Ata *disk,U16 *words,I64 channel,I64 drive)
   U8 *bytes;
   I64 i;
   Bool lba,same_device;
-  if (!disk || !words || channel<0 || channel>1 || drive<0 || drive>1 ||
+  if (!disk || !disk->public_device || !words || channel<0 || channel>1 || drive<0 || drive>1 ||
       (words[0]&0x8000)) return FALSE;
   if ((words[106]&0xD000)==0x5000 && (words[117]!=256 || words[118])) return FALSE;
   cylinders=words[1]; heads=words[3]; spt=words[6];
@@ -58,7 +58,7 @@ Bool I386AtaDecode(CI386Ata *disk,U16 *words,I64 channel,I64 drive)
     if (sectors>0x10000000) sectors=0x10000000;
   }
   if (!sectors) return FALSE;
-  bd=&disk->public_device;
+  bd=disk->public_device;
   same_device=disk->signature==0x41543332 && bd->bd_signature==BD_SIGNATURE_VAL &&
     bd->type==BDT_ATA && disk->drive==drive &&
     ((!channel && disk->io==0x1F0 && disk->control==0x3F6) ||
@@ -85,7 +85,7 @@ public Bool I386AtaIdentifyPolled(CI386Ata *disk,I64 channel,I64 drive,I64 polls
 {//Boot-owned compatibility ports, IF clear. Leave device IRQs disabled.
   U16 words[256],io=0x1F0,control=0x3F6;
   I64 i;
-  if (!disk || channel<0 || channel>1 || drive<0 || drive>1 || polls<1 || polls>100000)
+  if (!disk || !disk->public_device || channel<0 || channel>1 || drive<0 || drive>1 || polls<1 || polls>100000)
     return FALSE;
   if (channel) { io=0x170; control=0x376; }
   if (poll) poll->touched=TRUE;
@@ -106,7 +106,7 @@ public Bool I386AtaTransfer(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,Bool wri
   I64 i,cylinder,track;
   U16 io;
   U8 device,sector,cl,ch,command=0x20;
-  if (!disk || disk->signature!=0x41543332 || !buffer || polls<1 || polls>100000 ||
+  if (!disk || !disk->public_device || disk->signature!=0x41543332 || !buffer || polls<1 || polls>100000 ||
       lba<0 || lba>=disk->sectors || lba>=0x10000000 || disk->drive>1 ||
       !((disk->io==0x1F0 && disk->control==0x3F6) ||
         (disk->io==0x170 && disk->control==0x376))) return FALSE;
@@ -134,8 +134,8 @@ public Bool I386AtaTransfer(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,Bool wri
   OutU8(io+1,0); OutU8(io+2,1);
   OutU8(io+3,sector); OutU8(io+4,cl); OutU8(io+5,ch);
   OutU8(io+7,command); I386AtaPause(disk->control);
-  if(write)disk->public_device.flags|=BDF_LAST_WAS_WRITE;
-  else disk->public_device.flags&=~BDF_LAST_WAS_WRITE;
+  if(write)disk->public_device->flags|=BDF_LAST_WAS_WRITE;
+  else disk->public_device->flags&=~BDF_LAST_WAS_WRITE;
   if (!I386AtaWait(io,8,8,TRUE,polls,poll)) return FALSE;
   if (write) {
     for (i=0;i<256;i++) OutU16(io,words[i]);
@@ -160,7 +160,7 @@ public Bool I386AtaWrite(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls=100000)
 public Bool I386AtaFlushPolled(CI386Ata *disk,I64 polls,CI386AtaPoll *poll)
 {//Unsupported is failure, never an implied durable no-op. Same boot ownership.
   U16 io;
-  if (!disk || disk->signature!=0x41543332 || !disk->flush || polls<1 || polls>100000 ||
+  if (!disk || !disk->public_device || disk->signature!=0x41543332 || !disk->flush || polls<1 || polls>100000 ||
       disk->drive>1 || !((disk->io==0x1F0 && disk->control==0x3F6) ||
                         (disk->io==0x170 && disk->control==0x376))) return FALSE;
   io=disk->io;

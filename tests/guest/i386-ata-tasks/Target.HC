@@ -23,6 +23,7 @@ CI386Cpu cpu;
 CI386Heap heap;
 CI386AtaChannel channel,other;
 CI386Ata disks[2];
+CBlkDev public_records[2];
 CI386OwnedTask *workers[3];
 U32 errors,completed,competitors,queued,observed,ticks,keys,irq_owned,failed,poll_steps,timer_owned,keys_owned,failed_queued;
 extern Bool I386AtaWait(U16 io,U8 mask,U8 wanted,Bool errors,I64 polls,CI386AtaPoll *poll);
@@ -66,6 +67,7 @@ I64 DiskTest()
       !I386DataSegment(control->cpu_descriptor,&cpu,sizeof(CI386Cpu)) ||
       !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x100000,32768) ||
       !I386AtaChannelInit(&channel,&scheduler,0) || !I386AtaChannelInit(&other,&scheduler,1)) return 1;
+  disks[0].public_device=&public_records[0];disks[1].public_device=&public_records[1];
   if(!I386AtaTaskIdentify(&channel,&disks[0],0) || !I386AtaTaskIdentify(&channel,&disks[1],1) ||
       disks[0].sectors!=32768 || disks[1].sectors!=32768 || channel.owner || channel.poisoned ||
       root.io_locks || (GetRFlags&0x200)) return 2;
