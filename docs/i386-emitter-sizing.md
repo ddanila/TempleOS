@@ -90,5 +90,11 @@ A fresh run in build/i386-c5-block-table-native-build uses the image from
 build/i386-c4-block-table-cross: CompilerRuntime 73, ConsoleRuntime 123 and
 FileRuntime 59. It selects the same ConsoleRuntime/EditorRuntime builds at
 16 MiB on TCG 486,-fpu with a 14400-second command limit. Its input-audit.json
-pins commit 66b4a08e, the immutable image/manifest and host runners. This run is
-pending, not qualified; neither are two complete native generations.
+pins commit 66b4a08e, the immutable image/manifest and host runners. This run
+now terminates with a command timeout during the first ConsoleRuntime build.
+The last function-start marker is `NativeWinToTop`, followed by backend/link
+progress. No ConsoleRuntime completion or EditorRuntime qualification is
+recorded. Several isolated timing checks paused the launcher and guest together;
+the wall-clock command deadline includes those pauses. This is a timeout, not
+the previous allocation failure, and neither complete native generation is
+qualified. Preserve the working disk and logs in the failed run directory.

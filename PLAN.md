@@ -302,8 +302,11 @@ program cases, preserved live memory and nine interactive checks. All 32
 free-list cases also pass through the new compiler, with unchanged inputs. The source-pinned Console/Editor native rebuild in
 `build/i386-c5-emitter-measure-native-build` now fails allocating 0x19233 bytes
 at StrIMatchCore.HC (largest available span 0x14000). A fresh CompilerRuntime 73
-retry is live in `build/i386-c5-block-table-native-build`, pinned to 66b4a08e.
-Neither that retry nor two native release generations are yet qualified. See docs/i386-emitter-sizing.md.
+retry in `build/i386-c5-block-table-native-build`, pinned to 66b4a08e, now ends
+at its 14400-second command timeout during ConsoleRuntime (`NativeWinToTop`
+is the last function-start marker). It includes deliberate timing-isolation
+pauses; this is not another observed allocation rejection. Console completion,
+EditorRuntime and two native release generations remain unqualified. See docs/i386-emitter-sizing.md.
 All 686 inventory entries and C1-C5 remain unqualified.
 
 ### Complete original RedSea free-list teardown (2026-10-16)
