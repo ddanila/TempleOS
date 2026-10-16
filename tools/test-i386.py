@@ -1100,7 +1100,18 @@ def main():
         expected_disk[2054*512:2054*512+700] = bytes(
             ((i*17)^(i>>2)^0x95)&255 for i in range(700))
         expected_disk[2056*512:2056*512+len(created_source)] = created_source
+        #Full non-root directory relocation: preserve old bytes, publish the
+        #new parent extent, free the old sector, and retain a zero terminator.
+        expected_disk[2049*512] = 0xF7
+        expected_disk[2049*512+1] = 3
+        struct.pack_into('<qq', expected_disk, 2051*512+3*64+40, 2058, 1024)
+        expected_disk[2058*512:2059*512] = redsea_before[2053*512:2054*512]
+        struct.pack_into('<qq', expected_disk, 2058*512+40, 2058, 1024)
+        expected_disk[2059*512:2060*512] = bytes(512)
+        expected_disk[2059*512:2059*512+64] = struct.pack(
+            '<H38sqqQ', 0x800, b'FullDirectory', 0, 0, 0)
         if disk.read_bytes() != expected_disk:
+            (OUT/'expected-create.img').write_bytes(expected_disk)
             raise RuntimeError('RedSea file creation differs from expected data/bitmap/directory bytes')
         commands = [int(line.rsplit('cmd 0x', 1)[1], 16)
                     for line in ata_trace.read_text().splitlines()
@@ -1108,6 +1119,8 @@ def main():
         writes_flushes = [command for command in commands if command in (0x30, 0xE7)]
         expected_order = [0x30,0x30,0x30,0xE7,0x30,0xE7,
                           0x30,0x30,0xE7,0x30,0xE7,0x30,0xE7,0xE7,0x30,0xE7]
+        expected_order += [0x30,0x30,0x30,0xE7,0x30,0xE7,0xE7,
+                           0x30,0xE7,0xE7,0x30,0xE7]
         if writes_flushes[-len(expected_order):] != expected_order:
             raise RuntimeError('RedSea publication lacks expected data/terminator/directory flush ordering')
     if args.redsea_delete:

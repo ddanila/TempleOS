@@ -28,12 +28,11 @@ I64 Main(I64 a,I64 b)
       I386RedSeaWrite(&v,&entry,1299,source+1,2)!=-1 ||
       I386RedSeaWrite(&v,&entry,1301,source+1,0)!=-1 ||
       I386RedSeaWrite(&v,&entry,0,(0xFFFFFFF0)(U8 *),32)!=-1) return 2;
-  for (j=0;j<5;j++) {
+  for (j=0;j<4;j++) {
     entry.attr=0x801;
     if (j==1) entry.attr=0x810;
     if (j==2) entry.attr=0x900;
-    if (j==3) entry.attr=0xA00;
-    if (j==4) entry.attr=0;
+    if (j==3) entry.attr=0;
     if (I386RedSeaWrite(&v,&entry,0,source+1,1)!=-1) return 30+j;
   }
   entry.attr=0x800;
@@ -45,6 +44,10 @@ I64 Main(I64 a,I64 b)
     offset=509; count=520; seed=0x67;
     if (j==1) { offset=0; count=512; seed=0xA9; }
     if (j==2) { offset=1295; count=5; seed=0x3C; }
+    //Resident/compressed flags do not change raw stored-byte writes.
+    entry.attr=0xA00;
+    if (j==1) entry.attr=0xC00;
+    if (j==2) entry.attr=0xE00;
     Pattern(source+1,1024,seed);
     if (I386RedSeaWrite(&v,&entry,offset,source+1,count)!=count || !I386AtaFlush(&disk))
       return 5;
@@ -52,6 +55,7 @@ I64 Main(I64 a,I64 b)
       if (source[i+1]!=(((i*29)^(i>>3)^seed)&255)) return 6;
     if (source[0]!=0xA5 || source[1025]!=0xA5) return 7;
   }
+  entry.attr=0x800;
   if (I386RedSeaWrite(&v,&entry,1300,source+1,0)!=0 ||
       I386RedSeaRead(&v,&entry,0,readback+1,1300)!=1300) return 8;
   for (i=0;i<1300;i++) {

@@ -11,6 +11,17 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Refresh RedSea write and directory-growth regressions (2026-10-16)
+
+The remaining migrated RedSea fixtures now cover current behavior: raw writes
+accept resident/compressed attributes, while a full non-root directory grows.
+Both pass instruction audit and exact whole-disk comparison. Growth additionally
+checks remounted parent/child identity, preserved timestamps, bitmap reclamation,
+terminators and ATA write/flush ordering. The original filesystem source confirms
+resident is an on-disk caching attribute; full public cache compatibility remains
+open. Older failing fixtures remain preserved. See docs/i386-redsea.md. Production
+code is unchanged; the live C5 build remains pinned to 66b4a08e.
+
 ### Canonical block-device table migration (2026-10-16)
 
 ConsoleRuntime 123 replaces mounted-drive-based device discovery with a direct
@@ -25,8 +36,8 @@ The 8 MiB gate passes all nine checks in 54.848084 seconds, unchanged inputs and
 no build provider. Native release passes all 16 cases/21 commands at 64 MiB with unchanged inputs.
 Drive-deletion regressions (8 device-wide and 56 per-drive cases), nine public
 task-cancellation cases, installation copy/recovery, target format/reboot and D:
-mount/document writes pass. Nine RedSea suites pass; old write/create fixture
-mismatches remain recorded as failures. Full 16 MiB diagnostics pass in
+mount/document writes pass. Nine RedSea suites passed at this checkpoint; the old write/create fixture
+mismatches were later resolved by the refreshed regressions above. Full 16 MiB diagnostics pass in
 248.920648 seconds of startup, with both preserved-memory phases, 128 push-word
 cases, 22 publication/28 program cases, nine interactive/VGA checks and unchanged
 execution inputs. See docs/i386-block-release.md for evidence and the

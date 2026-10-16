@@ -123,3 +123,11 @@ and -redsea-create; they are not counted as passes or silently weakened.
 The fixed boot/secondary-target topology does not implement general mount-slot
 allocation, BlkDevInit or the remaining media lifecycle. All 686 inventory entries
 and C1–C5 remain unqualified/open.
+
+
+The write/create mismatches above were subsequently resolved by refreshing their
+fixtures to cover resident/compressed raw writes and successful full-directory
+growth. Both pass exact whole-image and instruction audits; creation also checks
+write/flush ordering. See docs/i386-redsea.md and the i386-c4-redsea-write-flags-current /
+i386-c4-redsea-growth-current artifacts. The older failed evidence is retained.
+No production behavior was changed to obtain these passes.

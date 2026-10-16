@@ -23,7 +23,7 @@ allocation bits or establish consistency between all extents and the bitmap.
 Find accepts one exact, case-sensitive name of 1–37 bytes and a directory sector.
 It validates the directory self record, streams subsequent directory sectors,
 skips deleted records and stops at the first zero name or declared directory end.
-Live records require terminated names, contiguous non-resident storage and an
+Live records require terminated names, contiguous storage and an
 in-volume extent. It returns 1 on success, 0 when absent and -1 for invalid input,
 malformed metadata or disk error. The destination entry changes only on success.
 Nested traversal is explicit: find a directory, then search its returned block.
@@ -34,7 +34,7 @@ It validates the extent, clips the request at EOF and rejects destination ranges
 that cross the 32-bit address-space boundary. It copies from one sector
 buffer, so partial sectors and files larger than the scratch buffer do not require
 whole-file allocation. RedSea and ATA each use a 512-byte sector buffer on the
-stack, in addition to normal frames. Directory/resident/deleted records and negative ranges
+stack, in addition to normal frames. Directory/deleted records and negative ranges
 are rejected. Compressed files are returned as raw stored bytes; this interface
 does not expand `.Z` files. A failure before copying any bytes returns -1;
 a later I/O failure returns the number already copied, leaving the remaining
@@ -43,7 +43,7 @@ do not modify the output. Callers must handle short reads.
 
 `RedSeaWrite.HC` adds `I386RedSeaWrite` for raw updates within an existing file's
 fixed extent. The entire requested range must fit the declared size; writes are
-not clipped or grown. Read-only, directory, deleted, resident and non-contiguous
+not clipped or grown. Read-only, directory, deleted and non-contiguous
 entries are rejected. Partial sectors are read before modification, preserving
 neighboring file bytes and the final sector's padding. Whole sectors are written
 directly. The source buffer remains unchanged. The API returns the number of
@@ -52,7 +52,10 @@ changed on the device. There is no rollback. Zero-length valid writes return 0.
 Callers explicitly flush via `I386AtaFlush(volume->disk)` when required.
 
 These low-level writes leave size, timestamp, attributes and allocation metadata
-unchanged. They operate on raw stored bytes even for compressed files. Creation,
+unchanged. They operate on raw stored bytes even for resident or compressed files. The
+resident bit is a higher-level caching attribute: original RedSeaFileWrite
+preserves it on disk, and FileRead handles the Adam hash-table cache. These raw
+operations neither create nor invalidate that cache. Creation,
 growth, metadata updates, recompression and public FileWrite semantics require
 higher-level services and are not implied by this interface.
 
@@ -174,7 +177,9 @@ durability is still outside the QEMU evidence.
 
 `python3 tools/test-i386.py --redsea-create` verifies a new 700-byte file, HolyC
 source and an empty file, deleted-slot reuse, cross-sector append/terminators,
-invalid/duplicate/full/read-only rejection and remount/readback. The host checks
+invalid/duplicate/read-only rejection, full non-root directory relocation and
+remount/readback. Growth preserves existing entries and timestamps, updates the
+parent extent, frees the old allocation and retains a zero terminator. The host checks
 exact data, bitmap and directory bytes across the entire image. A QEMU command
 trace checks data/terminator/publication write-and-flush ordering. It uses the
 existing 256-sector runner stage, which ends at 0x30000 below the 0x90000 stack,
@@ -203,3 +208,30 @@ matching reachable extents.
 Crash-atomic directory growth, legacy cache policy, cache and task locking,
 decompression, public file APIs, complete image consistency checks and
 physical 386/IDE validation remain pending.
+
+
+## Refreshed write and growth regressions (2026-10-16)
+
+The earlier standalone write test rejected the resident bit, although the
+implementation had allowed it since a4193484. The original RedSeaFileWrite stores
+that flag with the contiguous attribute and writes the data; original FileRead
+applies caching above the raw filesystem layer. The updated fixture exercises
+partial/full/tail writes with resident, compressed and combined attributes. The
+whole-image comparison still requires unchanged metadata, padding and unrelated
+sectors, plus the deliberately confirmed sector of a partial I/O failure.
+
+The creation test previously expected a full non-root directory to remain full.
+It now grows that directory after its original file-creation cases and checks
+remounted lookup, preserved children and the parent link. The independent host
+oracle compares the entire disk, including the moved self record and unchanged
+timestamps, parent extent, freed old allocation, new allocation and terminator.
+It also requires the extended ATA write/flush sequence. Initial expected-image
+authoring incorrectly zeroed two preserved timestamps; the exact comparison
+rejected all sixteen bytes before that expectation was corrected.
+
+Both refreshed suites pass with instruction audits. Evidence is in
+build/i386-c4-redsea-write-flags-current and build/i386-c4-redsea-growth-current;
+build/i386-c4-redsea-fixture-input-audit.json pins their inputs. The preceding
+failures remain under build/i386-c4-block-table-redsea-{write,create} and their
+-isolated variants. This changes tests and documentation only; it does not
+qualify the complete public resident-file cache or crash-atomic directory growth.

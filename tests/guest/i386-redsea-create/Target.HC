@@ -20,7 +20,6 @@ I64 Main(I64 a,I64 b)
   if (I386RedSeaCreate(&v,v.root,"Bad",0,1)!=-1) return 25;
   if (I386RedSeaCreate(&v,v.root,"Bad",buffer,-1)!=-1) return 26;
   if (I386RedSeaCreate(&v,v.root,"Bad",(0xFFFFFFF0)(U8 *),32)!=-1) return 27;
-  if (I386RedSeaCreate(&v,2053,"FullDirectory",0,0)!=0) return 28;
   if (I386RedSeaCreate(&v,2057,"ReadOnly",0,0)!=-1) return 29;
   disk.flush=FALSE;
   if (I386RedSeaCreate(&v,v.root,"NoFlush",0,0)!=-1) return 3;
@@ -44,6 +43,16 @@ I64 Main(I64 a,I64 b)
   if (I386RedSeaFind(&again,again.root,"EmptyNew",&entry)!=1 || entry.block || entry.size ||
       I386RedSeaFind(&again,again.root,"Ghost",&entry)!=0 ||
       I386RedSeaFind(&again,again.root,"Ghost2",&entry)!=0) return 12;
+  //A full non-root directory grows and its parent publishes the new extent.
+  if (I386RedSeaCreate(&v,2053,"FullDirectory",0,0)!=1 ||
+      !I386RedSeaMount(&again,&disk,2048) ||
+      I386RedSeaFind(&again,again.root,"Full",&entry)!=1 ||
+      entry.block!=2058 || entry.size!=1024) return 28;
+  if (I386RedSeaFind(&again,2058,"FullDirectory",&entry)!=1 ||
+      entry.block || entry.size ||
+      I386RedSeaFind(&again,2058,"F5",&entry)!=1 ||
+      I386RedSeaFind(&again,2058,"..",&entry)!=1 || entry.block!=again.root)
+    return 30;
   return 0;
 }
 #include "/Kernel/I386/Ata.HC"
