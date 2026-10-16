@@ -11,6 +11,17 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original device-context load integration candidate (2026-10-16)
+
+ConsoleRuntime 130 integrates original DCLoad and ExpandBuf bodies over the
+retained dictionary service and task-owned allocators. Original/rebuilt-original
+controls pass eleven load/expansion checks and produce identical raw and 7/8-bit
+compressed GR buffers with both palette modes. Final bootstrap/cross-build pass
+with all 1520 source and 24 build inputs unchanged. The native four-command suite
+passes all eleven checks, and bitmap insertion passes its six-check/four-buffer
+regression with unchanged inputs. Resource gates are pending; GRRead, DocGR, full Type and original terminal startup remain open.
+See docs/i386-dc-load.md. All 686 inventory entries and C1–C5 remain unqualified.
+
 ### Original bitmap document integration candidate (2026-10-16)
 
 ConsoleRuntime 129 now shares the complete original DC2Sprite and DocSprite

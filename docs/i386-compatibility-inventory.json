@@ -2155,6 +2155,24 @@
           "evidence": "build/i386-c1-exact-buffer-checks/fixed-graphics-8m/result.json",
           "scope": "Native fixed 640x480 buffers, ownership, capacity, zeroing and twenty context checks; original parity and other services remain unqualified",
           "intentional_difference": "Native DCNew uses exact-page pixel-body growth; MSize/DCSize reflect smaller actual backing capacity, with unchanged pixel dimensions/content"
+        },
+        {
+          "command": "python3 tools/test-i386-dc-load.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-dc-load-full-reference/result.json",
+          "scope": "DCLoad raw/7-bit/8-bit pixels and palettes, reset metadata, distinct parent/default task ownership, independent storage; ExpandBuf empty/raw output, invalid types and oversized-size rejection/recovery; eleven checks; unchanged inputs; malformed dictionaries and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-dc-load.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-dc-load-full-rebuilt/result.json",
+          "scope": "DCLoad raw/7-bit/8-bit pixels and palettes, reset metadata, distinct parent/default task ownership, independent storage; ExpandBuf empty/raw output, invalid types and oversized-size rejection/recovery; eleven checks; unchanged inputs; malformed dictionaries and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-dc-load.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-dc-load-native/result.json",
+          "scope": "DCLoad raw/7-bit/8-bit pixels and palettes, reset metadata, distinct parent/default task ownership, independent storage; ExpandBuf empty/raw output, invalid types and oversized-size rejection/recovery; eleven checks; unchanged inputs; malformed dictionaries and whole-file qualification remain open"
         }
       ]
     },
@@ -12581,7 +12599,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-dc-load.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-dc-load-full-reference/result.json",
+          "scope": "DCLoad raw/7-bit/8-bit pixels and palettes, reset metadata, distinct parent/default task ownership, independent storage; ExpandBuf empty/raw output, invalid types and oversized-size rejection/recovery; eleven checks; unchanged inputs; malformed dictionaries and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-dc-load.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-dc-load-full-rebuilt/result.json",
+          "scope": "DCLoad raw/7-bit/8-bit pixels and palettes, reset metadata, distinct parent/default task ownership, independent storage; ExpandBuf empty/raw output, invalid types and oversized-size rejection/recovery; eleven checks; unchanged inputs; malformed dictionaries and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-dc-load.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-dc-load-native/result.json",
+          "scope": "DCLoad raw/7-bit/8-bit pixels and palettes, reset metadata, distinct parent/default task ownership, independent storage; ExpandBuf empty/raw output, invalid types and oversized-size rejection/recovery; eleven checks; unchanged inputs; malformed dictionaries and whole-file qualification remain open"
+        }
+      ]
     },
     {
       "path": "Kernel/Display.HC",

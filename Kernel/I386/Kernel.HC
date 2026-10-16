@@ -868,7 +868,7 @@ editor_load_done:
 
 U0 KernelConsoleLoad()
 {
-  CI386ModuleBinding bindings[59];
+  CI386ModuleBinding bindings[60];
   U8 *float_names="I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0",*float_name=float_names;
   U8 *public_names="_MALLOC\0_CALLOC\0_FREE\0_MSIZE2\0_MALLOC_IDENT\0_STR_NEW\0_MEMCPY\0_MEMSET\0_HASH_TABLE_NEW\0_HASH_DEFINE_LIST_ADD\0_DEFINE_LIST_LOAD\0";
   U8 *local_names="MAlloc\0CAlloc\0Free\0MSize2\0MAllocIdent\0StrNew\0MemCpy\0MemSet\0HashTableNew\0HashDefineLstAdd\0DefineLstLoad\0";
@@ -908,8 +908,9 @@ U0 KernelConsoleLoad()
   KernelBinding(&bindings[56],"_ROUND_I64"); bindings[56].name="RoundI64";
   KernelBinding(&bindings[57],"cnts");
   KernelBinding(&bindings[58],"char_bmp_filename");
+  KernelBinding(&bindings[59],"I386ArcEntryGet");
   kernel_console_image=KernelServiceLoad("/Modules/I386/ConsoleRuntime.t32m","CONSOLE ",
-    bindings,59,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
+    bindings,60,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
   kernel_console_config.drive_records=kernel_volumes.drives;

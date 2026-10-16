@@ -2063,7 +2063,9 @@ U0 ConsoleDocumentStart()
 
 #include "/Kernel/I386/Date.HC"
 
+#include "/Kernel/I386/PublicExpandRuntime.HC"
 #include "/Kernel/I386/GraphicsContext.HC"
+#include "/Adam/Gr/DCLoadCore.HC"
 
 #include "/Kernel/I386/PublicResident.HC"
 public I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0)
