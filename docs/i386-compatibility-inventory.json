@@ -12067,7 +12067,7 @@
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
       "reference_workflow": "Resolve current/lowercase/boot/home drive aliases; reset the directory via same-drive Drv; reject an invalid drive without state change; inspect real backing-device identity and flags. Delete isolated drive records under nested/forwarded locks with caller/root allocations and verify complete record clearing. Delete all drives belonging to a device across the complete canonical table, including unmounted slots and a null device argument.",
-      "oracle": "docs/i386-directory-context.md: nine original drive-state cases require mask 31, caller document roles and exact heap recovery; includes initialization-in-progress context deletion. Original B: RAM maps to native C: ATA. No cross-drive switch, remapping, removable media or allocation-failure qualification. docs/i386-drive-delete.md adds 48 mask-63 DrvDel cases, including non-RedSea retained nodes and exact cleanup; this does not qualify the full drive-table/media lifecycle. Eight further mounted-record cases verify non-throwing uppercase/lowercase drive/device lookup rejects deletion without republishing the record. docs/i386-drive-device-delete.md adds eight mask-63 full-table deletion cases, with context-independent table access, matched clearing, unmatched preservation and exact allocation recovery. docs/i386-drive-slot.md defines 42 preparation/selection/default/alias/error cases; original/native behavior passes; memory gates are pending and full mounting remains unqualified.",
+      "oracle": "docs/i386-directory-context.md: nine original drive-state cases require mask 31, caller document roles and exact heap recovery; includes initialization-in-progress context deletion. Original B: RAM maps to native C: ATA. No cross-drive switch, remapping, removable media or allocation-failure qualification. docs/i386-drive-delete.md adds 48 mask-63 DrvDel cases, including non-RedSea retained nodes and exact cleanup; this does not qualify the full drive-table/media lifecycle. Eight further mounted-record cases verify non-throwing uppercase/lowercase drive/device lookup rejects deletion without republishing the record. docs/i386-drive-device-delete.md adds eight mask-63 full-table deletion cases, with context-independent table access, matched clearing, unmatched preservation and exact allocation recovery. docs/i386-drive-slot.md defines 42 preparation/selection/default/alias/error cases; original/native behavior passes; memory gates are pending and full mounting remains unqualified. docs/i386-drive-map.md adds fifteen mapping/I/O/context cases; native map migration is missing.",
       "tests": [
         {
           "target": "original-drive-state",
@@ -12229,6 +12229,27 @@
           "result": "pass",
           "evidence": "build/i386-c4-drive-slot-native/result.json",
           "scope": "42 original cases/46 commands at 64 MiB, canonical identity, exact fixture delivery and unchanged inputs; not full mounting or teardown."
+        },
+        {
+          "target": "original-drive-map",
+          "command": "python3 tools/test-i386-drive-map-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-map-reference-complete/result.json",
+          "scope": "15 cases including external-record read/find, real mapped I/O and child Cd; owned print output, exact restoration and unchanged inputs."
+        },
+        {
+          "target": "rebuilt-original-drive-map",
+          "command": "python3 tools/test-i386-drive-map-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-map-current-complete/result.json",
+          "scope": "Same 15 cases on rebuilt original, unchanged inputs."
+        },
+        {
+          "target": "native-drive-map-missing",
+          "command": "python3 tools/test-i386-drive-map.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-drive-map-native-complete/result.json",
+          "scope": "Missing DrvMap rejected at preflight; later mapped-I/O and backing-image checks do not run."
         }
       ]
     },

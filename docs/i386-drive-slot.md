@@ -53,3 +53,8 @@ work cannot invalidate their source checks. Pending gates are not counted as pas
 These routines prepare records and choose letters. They do not supply the full
 mount allocator, mapping, FAT initialization, media initialization or resource
 teardown. All 686 inventory entries and C1–C5 remain unqualified/open.
+
+The queued 8 MiB gate subsequently passes all nine checks in 58.410043 seconds,
+with no build provider and all four execution pins unchanged
+(build/i386-c4-drive-slot-startup). C5 resumed afterward; the separate 16 MiB
+diagnostic gate is now running against the isolated f038f05e source snapshot.

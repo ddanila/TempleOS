@@ -11,6 +11,19 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Drive-letter mapping baseline (2026-10-16)
+
+Fifteen original and rebuilt-original cases pass for mapping aliases, external
+records (including invalid signatures and real reads through a mounted-record
+copy), mapped read/find/write, directory
+creation/change and child-task access,
+with exact restoration and unchanged inputs. The native preflight rejects missing
+DrvMap. File operations currently index volumes directly by letter, so a correct
+port requires an independent letter map and changes throughout file/context
+resolution. See docs/i386-drive-map.md; a lookup-only adapter would not satisfy
+these workflows. Original task-birth directory semantics also need comparison
+with native private-context cloning. C1–C5 remain open.
+
 ### Original drive-slot API candidate (2026-10-16)
 
 Both original controls pass 42 drive-record preparation and free-letter cases,
@@ -21,7 +34,9 @@ bodies over the canonical drive table. Bootstrap/cross-build and the rebuilt
 original control pass with unchanged inputs. Native behavior passes 42 cases/46
 commands; drive deletion (56 cases) and block-slot selection (20 cases) also pass
 with unchanged inputs. Memory gates are queued behind the active guests using an
-isolated committed source snapshot. See docs/i386-drive-slot.md for corrected alias expectations and the
+isolated committed source snapshot. The queued 8 MiB gate subsequently passes
+all nine checks in 58.410043 seconds with unchanged inputs; 16 MiB diagnostics
+are now running. See docs/i386-drive-slot.md for corrected alias expectations and the
 scope boundary: this is not full mounting or resource teardown. C1–C5 remain open.
 
 ### Original block-device slot-selection candidate (2026-10-16)
@@ -35,7 +50,8 @@ bootstrap/cross-build pass with unchanged inputs. The 8 MiB gate passes all nine
 checks in 58.009153 seconds, unchanged inputs and no build provider. Native slot
 selection passes twenty cases/24 commands; the block-release regression passes
 sixteen cases/21 commands. Both preserve their execution inputs. The full 16 MiB
-diagnostic gate remains in progress.
+diagnostic gate subsequently passes both memory phases, 128 push-word cases,
+22 publication/28 program cases and nine interactive/VGA checks with unchanged inputs.
 See docs/i386-block-slot.md, including
 the original logging isolation required while borrowing physical-device records.
 This does not implement mounting or the remaining media lifecycle; C1–C5 remain open.

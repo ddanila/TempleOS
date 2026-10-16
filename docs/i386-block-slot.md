@@ -50,8 +50,10 @@ execution inputs and no build provider (i386-c4-block-slot-startup). Native slot
 including canonical backing-device identity and exact fixture delivery, with
 unchanged inputs (i386-c4-block-slot-native). The existing block-release suite
 also passes all sixteen cases/21 commands with unchanged inputs
-(i386-c4-block-slot-release-regression). The full 16 MiB diagnostic gate is still
-running separately and is not yet counted as passing.
+(i386-c4-block-slot-release-regression). The full 16 MiB diagnostic gate also passes with unchanged execution inputs
+(i386-c4-block-slot-diagnostics). It covers both preserved-memory phases, 128
+push-word cases, 22 publication/28 program cases and all nine interactive/VGA
+checks. Startup took 229.430475 seconds.
 
 The API initializes an available record; it does not implement BlkDevInit, mount
 allocation, device deletion, or general media lifecycle. Boot and secondary-target
