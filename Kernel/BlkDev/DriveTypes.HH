@@ -1,6 +1,7 @@
 #ifndef DRIVE_TYPES_INCLUDED
 #define DRIVE_TYPES_INCLUDED
 #include "/Kernel/DateTypes.HH"
+#include "/Kernel/BlkDev/FileSystemTypes.HH"
 #ifndef CTask
 extern class CTask;
 #endif

@@ -11996,8 +11996,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": "Resolve current/lowercase/boot/home drive aliases; reset the directory via same-drive Drv; reject an invalid drive without state change; inspect real backing-device identity and flags.",
-      "oracle": "docs/i386-directory-context.md: nine original drive-state cases require mask 31, caller document roles and exact heap recovery; includes initialization-in-progress context deletion. Original B: RAM maps to native C: ATA. No cross-drive switch, remapping, removable media or allocation-failure qualification.",
+      "reference_workflow": "Resolve current/lowercase/boot/home drive aliases; reset the directory via same-drive Drv; reject an invalid drive without state change; inspect real backing-device identity and flags. Delete isolated drive records under nested/forwarded locks with caller/root allocations and verify complete record clearing.",
+      "oracle": "docs/i386-directory-context.md: nine original drive-state cases require mask 31, caller document roles and exact heap recovery; includes initialization-in-progress context deletion. Original B: RAM maps to native C: ATA. No cross-drive switch, remapping, removable media or allocation-failure qualification. docs/i386-drive-delete.md adds 48 mask-63 DrvDel cases, including non-RedSea retained nodes and exact cleanup; this does not qualify the full drive-table/media lifecycle.",
       "tests": [
         {
           "target": "original-drive-state",
@@ -12040,6 +12040,34 @@
           "result": "pass",
           "evidence": "build/i386-c4-drive-lookup-native/result.json",
           "scope": "Fifteen commands, twelve original mask-31 cases at 64 MiB on 486,-fpu; not full Drv/media initialization, remapping or minimal profile qualification"
+        },
+        {
+          "target": "original-drive-delete",
+          "command": "python3 tools/test-i386-drive-delete-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-delete-final-reference/result.json",
+          "scope": "All 48 original masks 63 with unchanged inputs."
+        },
+        {
+          "target": "rebuilt-original-drive-delete",
+          "command": "python3 tools/test-i386-drive-delete-reference.py --current-system --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-delete-final-current/result.json",
+          "scope": "All 48 cases after sharing the complete original body and filesystem constants; unchanged inputs."
+        },
+        {
+          "target": "native-drive-delete-missing-binding",
+          "command": "python3 tools/test-i386-drive-delete.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-c4-drive-delete-public-red/result.json",
+          "scope": "Prior image rejects the public-call preflight before behavior executes; unchanged inputs."
+        },
+        {
+          "target": "native-drive-delete",
+          "command": "python3 tools/test-i386-drive-delete.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c4-drive-delete-native/result.json",
+          "scope": "All 48 cases/51 commands at 64 MiB on 486,-fpu; unchanged inputs and exact guest fixture. Not complete filesystem or minimal-profile qualification."
         }
       ]
     },

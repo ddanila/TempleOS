@@ -795,13 +795,7 @@ class CISOPriDesc
 //Drive locked_flags
 
 //See $LK,"ST_DRV_TYPES",A="MN:ST_DRV_TYPES"$
-#define FSt_NULL	0
-#define FSt_REDSEA	1 //Supported
-#define FSt_FAT32	2 //Supported except for short names, to some degree
-#define FSt_ISO9660	3 //Not Supported
-#define FSt_NTFS	4 //Not Supported
-#define FSt_UNKNOWN	5
-#define FSt_TYPES_NUM	6
+#include "/Kernel/BlkDev/FileSystemTypes.HH"
 #define FSG_TYPE_MASK	0x7FFF
 //File system type flags
 #define FStf_DISABLE	15

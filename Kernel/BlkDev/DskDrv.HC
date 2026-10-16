@@ -33,14 +33,7 @@ U8 DrvNextFreeLet(U8 first_drv_let='C')
   return 0; //Never gets here.
 }
 
-U0 DrvDel(CDrv *dv)
-{//Delete drv
-  if (dv->fs_type==FSt_REDSEA && dv->next_free)
-    RedSeaFreeFreeLst(dv);
-  Free(dv->cur_fat_blk);
-  Free(dv->fis);
-  MemSet(dv,0,sizeof(CDrv));
-}
+#include "/Kernel/BlkDev/DriveDeleteCore.HC"
 
 U0 DrvBlkDevDel(CBlkDev *bd)
 {//Delete drv's of BlkDev

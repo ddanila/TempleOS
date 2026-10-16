@@ -10,6 +10,7 @@ public _extern _LET_TO_BLOCK_DEV CBlkDev *Let2BlkDev(U8 drv_let=0,Bool except=TR
 public _extern _DRV_IS_WRITABLE CBlkDev *DrvIsWritable(U8 drv_let=0,Bool except=FALSE);
 public _extern _BLOCK_DEV_LOCK Bool BlkDevLock(CBlkDev *bd);
 public _extern _BLOCK_DEV_UNLOCK Bool BlkDevUnlock(CBlkDev *bd,Bool rst=FALSE);
+public _extern _DRV_DEL U0 DrvDel(CDrv *dv);
 public _extern _DRV_LOCK Bool DrvLock(CDrv *dv);
 public _extern _DRV_UNLOCK Bool DrvUnlock(CDrv *dv,Bool rst=FALSE);
 public _extern _DRVS_RELEASE U0 DrvsRelease();
