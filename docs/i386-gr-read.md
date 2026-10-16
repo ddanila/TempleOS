@@ -32,7 +32,11 @@ unchanged in `build/i386-c2-gr-read-cross/input-audit.json`. The native four-com
 suite passes all fourteen checks with unchanged inputs in
 `build/i386-c2-gr-read-native`. The preceding Console-130 image rejects the
 fixture at ExtDft in `build/i386-c2-gr-read-native-red`, also with unchanged
-inputs. Resource gates are pending.
+inputs. The isolated 8 MiB gate fails its 60-second startup limit at
+61.817467 seconds, while all nine behavior/VGA checks pass with no build-provider
+load and unchanged execution pins. This failure is retained in
+`build/i386-c2-gr-read-startup`; the gate coordinator resumed C5 and skipped its
+dependent diagnostics. Startup performance remains open.
 
 The preceding DCLoad candidate's initial 61.118576-second startup failure and
 controlled 58.007704-second pass remain recorded in

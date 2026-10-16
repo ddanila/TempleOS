@@ -19,7 +19,9 @@ and rebuilt-original controls pass fourteen extension, file, compression,
 ownership and document-insertion checks. Bootstrap/cross-build pass with all
 1523 source and 24 build inputs unchanged. The native four-command suite passes
 all fourteen checks with unchanged inputs; the preceding image rejects the
-fixture at ExtDft. Resource gates are pending;
+fixture at ExtDft. The isolated 8 MiB gate fails the startup limit at 61.817467
+seconds with nine passing behavior/VGA checks and unchanged pins; performance
+qualification remains open;
 full Type, raw DocDump and original terminal startup remain open. See
 docs/i386-gr-read.md. All 686 inventory entries and C1–C5 remain unqualified.
 
@@ -35,7 +37,9 @@ regression with unchanged inputs. The isolated 8 MiB gate fails the 60-second
 startup limit at 61.118576 seconds, despite nine passing behavior checks and
 unchanged pins. A controlled repeat passes at 58.007704 seconds, compared with
 56.245635 seconds for Console-129 under the same isolation. Timing margin remains
-limited and the 16 MiB gate is outstanding; GRRead, DocGR, full Type and original terminal startup remain open.
+limited. The separate 16 MiB diagnostics pass all 128 push-word, 22 publication
+and 28 program cases, both memory phases and nine interactive/VGA checks with
+unchanged execution pins; GRRead, DocGR, full Type and original terminal startup remain open.
 See docs/i386-dc-load.md. All 686 inventory entries and C1–C5 remain unqualified.
 
 ### Original bitmap document integration candidate (2026-10-16)

@@ -60,7 +60,9 @@ seconds; the preceding Console-129 image passes at 56.245635 seconds under the
 same isolation. Both preserve all execution inputs. The comparison and sampled
 header-phase timestamps are in `build/i386-c2-dc-load-startup-compare.json`.
 The first failure remains evidence of limited timing margin, not a behavior
-failure or an erased result. The 16 MiB diagnostic gate remains outstanding. GRRead, DocGR, complete
+failure or an erased result. The separate 16 MiB diagnostic gate now passes all 128 push-word, 22
+publication and 28 program cases, both memory phases and nine interactive/VGA
+checks with unchanged execution pins in `build/i386-c2-dc-load-diagnostics`. GRRead, DocGR, complete
 Type, original terminal startup and C1–C5 acceptance remain open. This suite does
 not qualify malformed compressed dictionary streams or complete source files.
 
