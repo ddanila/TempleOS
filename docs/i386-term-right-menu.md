@@ -73,7 +73,10 @@ the only changed module. The isolated 8 MiB startup gate passes in 58.406789 sec
 `build/i386-c2-term-right-menu-startup`, including all nine behavior/VGA checks,
 no build-provider loads and all four input hashes verified. The C5 launcher and
 guest were paused together during this gate and resumed afterward. The 16 MiB
-diagnostics remain running.
+diagnostics pass in `build/i386-c2-term-right-menu-diagnostics`: startup
+226.308863 seconds, all 128 immediate-push, 22 publication and 28 program cases,
+both memory phases, nine behavior/VGA commands, no build-provider loads and
+all four input hashes verified.
 
 ```sh
 python3 tools/test-i386-term-right-menu.py --out ORIGINAL

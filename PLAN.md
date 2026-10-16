@@ -11,6 +11,26 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Complete editor dialog dispatch candidate (2026-10-16)
+
+ConsoleRuntime 136 and EditorRuntime 5 expose the existing full EdFindReplace and
+EdGoToLine implementations through the optional editor service record. The
+original control passes six form/chooser accept-cancel and replacement cases,
+with three exact serialized documents and three entry-tag transcripts. The
+fixture directly formats a numeric field and selects ALL before real Esc or
+ShiftEsc; it does not qualify keyboard editing/navigation. Fixture file-write
+return-value mistakes are preserved and corrected by read-back verification.
+The native prompt exposed RSAC_* constants missing from caller scope; the
+original constants are now shared through public headers. Fresh bootstrap and
+cross-build/386 audit pass with all 1533 source and 24 build pins unchanged.
+The full native contract passes all nine commands and six exact captures at both
+64 and 8 MiB, with the manager active and unchanged inputs. Provider/source
+delivery and wrong-version recovery pass nineteen and twenty-one commands; the
+constant fix leaves every compiled module byte-identical. Isolated startup and
+16 MiB diagnostics are queued; the 8 MiB functional timing was not isolated.
+Full DocPutKey and
+C1–C5 remain open. See docs/i386-editor-dialogs.md.
+
 ### Original PostMsgWait dependency candidate (2026-10-16)
 
 ConsoleRuntime 135 shares the original PostMsgWait body, backed by the existing
@@ -22,7 +42,10 @@ semantics. The preceding native image rejects the missing service as expected.
 Both bootstrap generations, cross-build and the 386 audit pass with 1532 source
 and 24 build-input hashes unchanged. Native validation passes mask 255 and all
 three commands with unchanged execution inputs. Resource gates are queued after
-the preceding WinBorder gates. Full DocPutKey
+the preceding WinBorder gates. The first startup run records 58.461398 seconds
+and nine passing checks, but a six-second overlap with a reference guest makes
+its isolated timing invalid; a fresh isolated run is required. The 16 MiB
+diagnostics remain running. Full DocPutKey
 and C1–C5 qualification remain open. See docs/i386-post-msg-wait.md.
 
 ### Original WinBorder dependency candidate (2026-10-16)
@@ -34,7 +57,10 @@ invalid-task rejection. The initial cross-build exposed a missing forward
 declaration, then a NULL macro ordering issue in that declaration. Both failures
 are retained. Corrected bootstrap/cross-build pass with all 1531 source and 24
 build-input hashes unchanged. Native validation passes all three commands and
-mask 31 with unchanged execution inputs; isolated resource gates are queued.
+mask 31 with unchanged execution inputs. The isolated 8 MiB gate passes all
+nine behavior/VGA checks with unchanged pins and no build-provider loads, but
+61.670895-second startup exceeds the 60-second target; its dependent diagnostics
+did not launch.
 This service advances the full DocPutKey dependency graph; native menu
 button activation remains unqualified. See docs/i386-win-border.md.
 
@@ -57,7 +83,9 @@ the pre-fix image stalls at update count 55 and the fixed image progresses from
 57 to 71. Only WindowManager.HC and ConsoleRuntime differ across those builds.
 The isolated 8 MiB startup gate passes in 58.406789 seconds, including all nine
 behavior/VGA checks, no build-provider loads and four unchanged input pins.
-The 16 MiB diagnostic gate remains running. Full terminal callback
+The 16 MiB diagnostic gate passes with 226.308863-second startup, all 128/22/28
+compiler/publication cases, both memory phases, nine interactive/VGA checks and
+four unchanged input pins. Full terminal callback
 and startup integration remain open. See docs/i386-term-right-menu.md.
 All inventory entries and C1–C5 remain unqualified.
 

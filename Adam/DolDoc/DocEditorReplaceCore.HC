@@ -1,6 +1,4 @@
-#define RSAC_REPLACE	0
-#define RSAC_SKIP	1
-#define RSAC_ALL	2
+#include "/Adam/DolDoc/DocReplaceMenuTypes.HH"
 
 I64 PopUpReplaceSkipAllCancel(U8 *header=NULL,U8 *footer=NULL)
 {

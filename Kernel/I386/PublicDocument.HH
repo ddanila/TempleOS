@@ -112,9 +112,12 @@ public _extern _DOC_2_PLAIN_TEXT U8 *Doc2PlainText(CDoc *doc,CDocEntry *entry);
 public _extern _DOC_FORM Bool DocForm(U8 *data,U8 *class_name=lastclass,I64 flags=0,U8 *header=0,U8 *footer=0);
 public _extern _POP_UP_FORM Bool PopUpForm(U8 *data,U8 *class_name=lastclass,I64 flags=DOF_SIZE_MIN,U8 *header=0,U8 *footer=0);
 public _extern _DOC_GO_TO_LINE Bool DocGoToLine(CDoc *doc,I64 line_num);
+public _extern _ED_FIND_REPLACE I64 EdFindReplace(CDoc *doc);
+public _extern _ED_GO_TO_LINE U0 EdGoToLine(CDoc *doc);
 public _extern _ED_REPLACE I64 EdReplace(CDoc *doc,U8 *find,U8 *replace,
   Bool sel=TRUE,Bool match_case=TRUE,Bool whole_labels=FALSE);
 #include "/Adam/DolDoc/DocFindPromptTypes.HH"
+#include "/Adam/DolDoc/DocReplaceMenuTypes.HH"
 public _extern _DOC_CLEAR U0 DocClear(CDoc *doc=NULL,Bool clear_holds=FALSE);
 public _extern _DOC_SPRITE CDocEntry *DocSprite(CDoc *doc=NULL,U8 *elems,U8 *fmt=NULL);
 public _extern _DOC_GR U0 DocGR(CDoc *doc=NULL,U8 *filename);

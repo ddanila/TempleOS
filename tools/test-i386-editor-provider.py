@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PROVIDER = '/Modules/I386/EditorRuntime.t32m'
 SOURCES = ('Kernel/I386/EditorRuntime.HC', 'Kernel/I386/EditorRuntime.HH', 'Kernel/I386/EditorDispatch.HC',
            'Adam/DolDoc/DocClassFormCore.HC', 'Adam/DolDoc/DocFormPopupCore.HC',
-           'Adam/DolDoc/DocFindCore.HC', 'Adam/DolDoc/DocEditorReplaceCore.HC', 'Adam/DolDoc/DocFindPromptTypes.HH',
+           'Adam/DolDoc/DocFindCore.HC', 'Adam/DolDoc/DocEditorReplaceCore.HC', 'Adam/DolDoc/DocFindPromptTypes.HH', 'Adam/DolDoc/DocReplaceMenuTypes.HH',
            'Compiler/OptClassFwdCore.HC', 'Compiler/MemberLookup.HC', 'Kernel/StrFindCore.HC', 'Kernel/StringFindFlags.HH', 'Adam/DolDoc/DocEditorSearchCore.HC')
 
 def sha(path):
@@ -38,7 +38,7 @@ def layout(module):
             raise ValueError('Missing real editor entry: '+name)
     if exports.get('editor_version', (0,))[0] != 3:
         raise ValueError('Missing editor version')
-    if struct.unpack_from('<I', module, 32+exports['editor_version'][1])[0] != 4:
+    if struct.unpack_from('<I', module, 32+exports['editor_version'][1])[0] != 5:
         raise ValueError('Wrong editor version')
     return dict(image_bytes=size+8, required_entries=list(names), external_imports=[],
                 locally_resolved_references=len(imports))

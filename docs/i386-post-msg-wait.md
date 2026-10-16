@@ -36,8 +36,14 @@ cross-build and the 386 audit pass in `build/i386-c2-post-msg-wait-cross`, with
 all 1532 source and 24 build-input hashes unchanged. The native contract passes mask 255 and all three commands in
 `build/i386-c2-post-msg-wait-native`, with unchanged execution inputs and exact
 VGA checkpoints. This is a 64 MiB functional run with the window manager paused.
-Resource gates are queued against the committed snapshot, after the preceding
-WinBorder gates so that isolated 8 MiB guests cannot overlap. C1–C5 and all inventory entries remain unqualified.
+The first 8 MiB run records 58.461398-second startup and nine passing checks
+with unchanged input hashes, but its isolated timing is invalid: the editor
+dialog reference guest started after the coordinator checked for other guests,
+overlapping about six seconds. `build/i386-c2-post-msg-wait-startup/isolation-invalid.json`
+records the evidence. Preserve this result and perform a fresh isolated run.
+The committed-snapshot 16 MiB diagnostics remain running. Future guest launches
+must wait until an isolated gate finishes; waiting for a predecessor alone can
+race a successor coordinator. C1–C5 and all inventory entries remain unqualified.
 
 ```sh
 python3 tools/test-i386-post-msg-wait.py --out ORIGINAL

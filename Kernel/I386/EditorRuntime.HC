@@ -108,5 +108,6 @@ I64 Main(CI386EditorServices*services,I64 bytes)
  services->str_find=&StrFind;services->find_next=&EdFindNext;services->sel_all=&EdSelAll;
  services->find_paired=&EdFindPaired;services->go_to_fun=&EdGoToFun;services->sel_fun=&EdSelFun;
  services->form=&DocForm;services->popup=&PopUpForm;services->replace=&EdReplace;services->go_to_line=&DocGoToLine;
+ services->find_replace=&EdFindReplace;services->prompt_go_to_line=&EdGoToLine;
  return 1;
 }

@@ -1054,6 +1054,18 @@
           "result": "pass",
           "evidence": "build/i386-c2-editor-replace-search/result.json",
           "scope": "Bounded search/pairing/selection regression, not all original DocFind.HC workflows"
+        },
+        {
+          "command": "python3 tools/test-i386-editor-dialogs.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-editor-dialogs-reference-tags/result.json",
+          "scope": "Original six dialog cases: line form accept/cancel, find form cancel, prompted ALL/menu cancel, non-prompted replacement; three serialized documents plus entry-tag transcripts; fixture sets field/selection directly then posts Esc/ShiftEsc, not keyboard editing/navigation or full file qualification"
+        },
+        {
+          "command": "python3 tools/test-i386-editor-dialogs.py IMAGE --ram-mib 8 --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c2-editor-dialogs-native-8m/result.json",
+          "scope": "Console136/Editor5 full dialog dispatch: all six cases/nine commands and six exact serialized/entry-tag captures match original at 8 and 64 MiB with unchanged inputs; fixture formats field/selects ALL then posts Esc/ShiftEsc; not keyboard navigation, isolated startup timing or full DocPutKey qualification"
         }
       ]
     },

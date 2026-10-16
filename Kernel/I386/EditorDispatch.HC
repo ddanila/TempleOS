@@ -44,3 +44,8 @@ I64 EdReplace(CDoc*doc,U8*find,U8*replace,Bool sel=TRUE,Bool match_case=TRUE,Boo
 {if(!doc)return -1;NativeEditorRequire;return (*native_editor_services.replace)(doc,find,replace,sel,match_case,whole_labels);}
 Bool DocGoToLine(CDoc*doc,I64 line_num)
 {if(!doc)return FALSE;NativeEditorRequire;return (*native_editor_services.go_to_line)(doc,line_num);}
+
+I64 EdFindReplace(CDoc*doc)
+{NativeEditorRequire;return (*native_editor_services.find_replace)(doc);}
+U0 EdGoToLine(CDoc*doc)
+{NativeEditorRequire;(*native_editor_services.prompt_go_to_line)(doc);}

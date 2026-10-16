@@ -29,8 +29,11 @@ Both failure logs are retained. The final bootstrap passes both generations, and
 audit with all 1531 source and 24 build-input hashes unchanged. The native contract passes all three commands and mask 31 in
 `build/i386-c2-win-border-native`, with all execution inputs unchanged and exact
 VGA checkpoints. This functional run uses 64 MiB with the window manager paused;
-it does not replace the isolated 8 MiB startup or 16 MiB diagnostic gates. Those
-resource gates are queued against the committed snapshot. Full document key
+it does not replace the isolated 8 MiB startup or 16 MiB diagnostic gates. The isolated 8 MiB gate in `build/i386-c2-win-border-startup` passes all nine
+behavior/VGA checks with four unchanged pins and no build-provider loads, but
+61.670895-second startup exceeds the 60-second target. The coordinator stopped
+there, so its dependent 16 MiB diagnostics did not launch. This timing failure
+remains open. Full document key
 dispatch, terminal startup and all C1–C5 qualification remain open.
 
 ```sh
@@ -41,8 +44,8 @@ python3 tools/test-i386-win-border.py IMAGE --out NATIVE
 The remaining DocPutKey integration graph includes AutoComplete/
 ACFillIn/ACDFillin/ACDDef/ACMan, directory contexts and file selection, editor
 code/widget/macro/sprite tools, FindWiz, and God application services. EdFindReplace
-and EdGoToLine already exist in EditorRuntime but still need provider dispatch
-from ConsoleRuntime. This callable-name audit is not a complete dependency proof:
+and EdGoToLine now have full provider dispatch from ConsoleRuntime; see
+`docs/i386-editor-dialogs.md`. This callable-name audit is not a complete dependency proof:
 shared globals, types and constants must also be checked when compiling the full
 original body. PostMsgWait now shares its complete original body using the existing
 MemoryRuntime PostMsg provider and NativeTaskWait; see
