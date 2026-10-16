@@ -128,6 +128,10 @@ I64 PublicationTest(U8 *source,U8 *bitmap)
     if(!volumes[0].signature && (!I386RedSeaMount(&volumes[0],&disks[0],2048) ||
         !I386RedSeaTaskBind(&volumes[0],&volume_io)))return 82;
     if(root.io_locks || channel.owner || channel.head || channel.tail)return 83;
+    //Recovery may acquire the raw channel and close through the volume API.
+    //That must not leave a public device owner blocking the next file task.
+    if(!channel.public_device || channel.public_device->owning_task ||
+        Bt(&channel.public_device->locked_flags,BDlf_LOCKED))return 114;
   }
   return 0;
 }

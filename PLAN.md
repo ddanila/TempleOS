@@ -11,6 +11,27 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Operation-specific drive-lock release (2026-10-16)
+
+Twenty shared oracle cases now distinguish whole-file read/write, which release
+an outer drive/device lock, from FileFind, which retains it. Both pinned and
+rebuilt original controls pass; the native regression passes all 25 commands
+with unchanged inputs in `build/i386-c4-drive-lock-policy-native`. The adapter
+uses an explicit active-session marker so raw ATA recovery retains its normal
+release policy. The 8 MiB ATA foundation suite passes, including a new recovery
+ownership check and independent identity verification of 809 compiled sources.
+
+Bootstrap passes both generations. `build/i386-c4-drive-lock-policy-final-cross`
+builds a 578,944-byte kernel with all 1491 source and 24 build-input pins matching.
+It is byte-identical to the image used for the passing native lock and normal
+8 MiB startup tests. The test-only ATA loading reservation grew another 4 KiB,
+retaining the 32 KiB stack and descriptor boundary. Detailed failure evidence
+and artifact paths are in `docs/i386-directory-context.md`.
+
+The detached C5 selected-module build below remains live on its earlier
+9d64ad4b source snapshot; it does not qualify this latest change. All 686
+inventory entries remain unqualified, and C1-C5 remain open.
+
 ### Native drive/device locking integration (2026-10-16)
 
 The complete original lock/unlock and release routines are now shared with the

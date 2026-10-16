@@ -19,6 +19,7 @@ Bool I386RedSeaBegin(CI386RedSea *volume)
       }
       SetRFlags(GetRFlags|0x200);I386SchedYield(task->owner);I386IrqSave;
     }
+    volume->public_drive_active=TRUE;
     volume->public_drive_unlock=!Bt(&dv->locked_flags,DVlf_LOCKED);
     if(volume->public_drive_unlock) {
       LBts(&dv->locked_flags,DVlf_LOCKED);dv->owning_task=task;
@@ -35,15 +36,17 @@ Bool I386RedSeaEnd(CI386RedSea *volume)
 #ifdef I386_REDSEA_TASK_LOCKS
   CDrv *dv=volume->public_drive;
   CI386AtaChannel *channel=volume->io->context;
-  Bool unlock=volume->public_drive_unlock,result;
-  //Like original DrvUnlock, releasing a newly acquired drive also releases
-  //its device, even when the caller already held only the device lock.
-  if(dv && unlock)channel->public_unlock=TRUE;
+  Bool active=volume->public_drive_active,unlock=volume->public_drive_unlock,result;
+  //The drive operation decides whether its device is released. Conditional
+  //lookup retains both locks when the caller already owns the drive, even if
+  //the transaction had to reacquire the device. Whole-file calls force release.
+  if(active && dv)channel->public_unlock=unlock;
   result=(*volume->io->end)(volume->io->context);
-  if(result && dv && unlock) {
+  if(result && active && dv && unlock) {
     dv->owning_task=0;LBtr(&dv->locked_flags,DVlf_LOCKED);
     volume->public_drive_unlock=FALSE;
   }
+  if(result)volume->public_drive_active=FALSE;
   return result;
 #else
   return (*volume->io->end)(volume->io->context);

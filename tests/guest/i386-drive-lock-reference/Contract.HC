@@ -38,6 +38,7 @@ Bool LKSetup(U8 letter)
 }
 I64 LKContract(I64 mode)
 {
+ CDirEntry entry;
  CBlkDev a,b,c;CTask *child=NULL;I64 i,m=0,before=Fs->data_heap->used_u8s;
  I64 device_flags=LKDevice->flags;
  Bool ok=FALSE,held=FALSE,caught=FALSE;U8 *data;I64 size;
@@ -94,6 +95,27 @@ I64 LKContract(I64 mode)
   held=BlkDevLock(LKDevice);data=FileRead(LKPath,&size);
   ok=held&&data&&size==4&&!LKDevice->owning_task&&!Bt(&LKDevice->locked_flags,BDlf_LOCKED);
   Free(data);if(LKDevice->owning_task==Fs)BlkDevUnlock(LKDevice);
+ }
+ if(14<=mode<=17){
+  held=DrvLock(LKDrive);ok=held;
+  if(mode==15||mode==17)ok=BlkDevUnlock(LKDevice)&&ok;
+  if(mode<16){
+   data=FileRead(LKPath,&size);ok=ok&&data&&size==4;Free(data);
+  }else ok=ok&&FileWrite(LKPath,"more",4)>0;
+  ok=ok&&!LKDrive->owning_task&&!Bt(&LKDrive->locked_flags,DVlf_LOCKED)&&
+    !LKDevice->owning_task&&!Bt(&LKDevice->locked_flags,BDlf_LOCKED);
+  if(LKDrive->owning_task==Fs)DrvUnlock(LKDrive);
+  if(LKDevice->owning_task==Fs)BlkDevUnlock(LKDevice);
+ }
+ if(mode==18||mode==19){
+  held=DrvLock(LKDrive);ok=held;
+  if(mode==19)ok=BlkDevUnlock(LKDevice)&&ok;
+  ok=ok&&FileFind(LKPath,&entry,FUF_JUST_FILES);
+  Free(entry.full_name);
+  ok=ok&&LKDrive->owning_task==Fs&&Bt(&LKDrive->locked_flags,DVlf_LOCKED)&&
+    LKDevice->owning_task==Fs&&Bt(&LKDevice->locked_flags,BDlf_LOCKED);
+  if(LKDrive->owning_task==Fs)DrvUnlock(LKDrive);
+  if(LKDevice->owning_task==Fs)BlkDevUnlock(LKDevice);
  }
  //Keep lock cases independent of interrupted media initialization. Original
  //RAM-drive entry can set INIT_IN_PROGRESS before waiting on the device lock.

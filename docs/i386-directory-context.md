@@ -561,3 +561,61 @@ A replacement C5 selected-module build is live in
 16 MiB, TCG 486,-fpu. Its detached launcher PID is recorded beside the output
 folder. This remains pending evidence; the selected-module run does not by
 itself satisfy two complete native release generations.
+
+## Operation-specific outer-lock release (2026-10-16)
+
+The next four oracle cases disproved an assumption that an outer drive lock
+would survive whole-file I/O. Original RedSeaFileRead and RedSeaFilesDel call
+DrvUnlock unconditionally after DrvLock. FileWrite reaches the latter through
+RedSeaFileWrite. Both read and write therefore release the drive and device,
+even when the caller already owned the drive or had separately released only
+its device. The exploratory `build/i386-c4-drive-lock-nested-reference` records
+four masks of 30 for that incorrect preservation expectation; the earlier
+native adapter also diverged when it reacquired only the device.
+
+Original RedSeaFileFind instead stores DrvLock's return value and unlocks only
+when it newly acquired the drive. Its outer-drive cases retain both locks,
+including a device reacquired after an explicit BlkDevUnlock. The final twenty
+cases distinguish these policies and restore ownership/flags before returning.
+`build/i386-c4-drive-lock-release-policy-reference` passes twenty masks of 31.
+The prior image rejects the corrected whole-file contract at case 14 in
+`build/i386-c4-drive-lock-release-policy-red`, with unchanged inputs.
+
+`RedSeaFileSession.HC` gives whole-file read/load/write transactions an explicit
+unconditional-drive-release policy without changing the existing session ABI.
+Other operations keep conditional release. At session end, the drive's policy
+now determines public device release even if the channel had to reacquire that
+device. The physical channel is always released; a retained outer public lock
+continues to protect its caller. The original public lock routines are unchanged.
+FileRuntime version 57 identifies this behavior change.
+
+Recovery also uses raw channel acquisition followed by volume cleanup. The first
+release-policy adapter incorrectly applied a stale drive policy there, leaving
+the device owned and blocking the next publication worker. The 8 MiB foundation
+regression failed at its unchanged 1,000-turn bound in
+`build/i386-c4-drive-lock-policy-ata-active-red`. An explicit active-drive-session
+marker now limits policy overrides to transactions begun through the drive
+adapter. Recovery retains the channel's normal release policy. A new ownership
+assertion checks that recovery leaves no device owner or lock bit behind.
+
+`build/i386-c4-drive-lock-policy-ata-green` passes the complete ATA foundation
+suite and instruction audit; an independent compiler-ISO comparison verifies
+all 809 Kernel, Compiler and fixture sources. The initial fixture exceeded its
+537,088-byte transport allowance by 26 bytes (`...policy-active-size-red`). Its
+test-only allowance is now 1,056 sectors: code ends at 0x94000, the downward
+32 KiB stack ends at 0x9C000, descriptor scratch starts at 0x9C000, and the heap
+starts at 1 MiB. Production boot reservations are unchanged.
+
+The latest rebuilt-original control also passes all twenty cases with unchanged
+inputs in `build/i386-c4-drive-lock-policy-active-reference`.
+
+Final validation: `build/i386-c4-drive-lock-policy-native` passes all 25 commands
+and twenty masks at 64 MiB with unchanged inputs and byte-identical delivered
+fixture. `build/i386-c4-drive-lock-policy-startup` passes normal 8 MiB startup,
+nine commands, exact VGA restoration and the interactive budget without loading
+the Build provider. Bootstrap passes both generations. The final cross build
+has a 578,944-byte kernel, with all 1491 source and 24 build-input pins matching.
+`build/i386-c4-drive-lock-policy-image-identity.json` verifies that the final
+cross image is byte-identical to the active-cross image used by those tests.
+Full desktop/application compatibility and two complete native release
+generations remain unqualified.

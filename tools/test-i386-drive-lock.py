@@ -9,7 +9,7 @@ import runpy
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"tests/guest/i386-drive-lock-reference/Contract.HC"
 COMMANDS = [('Bool LKGate(CBlkDev*b){return BlkDevLock(b);}',[]),
-            ('#include "C:/Contract.HC"',[]),("LKSetup('C');",['1'])]+[(f'LKCheck({i});',['31']) for i in range(14)]+[('Free(LKPath);LKPath=NULL;',['0x0']),('6*7;',['42'])]
+            ('#include "C:/Contract.HC"',[]),("LKSetup('C');",['1'])]+[(f'LKCheck({i});',['31']) for i in range(20)]+[('Free(LKPath);LKPath=NULL;',['0x0']),('6*7;',['42'])]
 
 
 if any(len(c[0])>255 for c in COMMANDS):

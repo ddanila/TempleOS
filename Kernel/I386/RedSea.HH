@@ -16,7 +16,7 @@ class CI386RedSea {
   I64 start,sectors,first,root;
   CI386RedSeaIo *io;
   CDrv *public_drive;
-  Bool public_drive_unlock;
+  Bool public_drive_unlock,public_drive_active;
 };
 class CI386RedSeaEntry {
   U16 attr;

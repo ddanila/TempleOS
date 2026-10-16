@@ -1,3 +1,4 @@
+#include "/Kernel/I386/RedSeaFileSession.HC"
 #include "/Kernel/I386/FileRead.HH"
 #include "/Kernel/I386/Cpu.HH"
 U8 *I386RedSeaReadAll(CI386RedSea *volume,CI386Heap *heap,CI386RedSeaEntry *entry,I64 *size)
@@ -19,7 +20,7 @@ U8 *I386RedSeaFileRead(CI386RedSea *volume,CI386Heap *heap,I64 directory,U8 *pat
   CI386RedSeaEntry entry;
   U8 *result=0;
   I64 bytes;
-  if(GetRFlags&0x200 || !heap || !I386RedSeaBegin(volume)) return 0;
+  if(GetRFlags&0x200 || !heap || !I386RedSeaBeginFile(volume)) return 0;
   if(I386RedSeaResolve(volume,directory,path,&entry)==1) result=I386RedSeaReadAll(volume,heap,&entry,&bytes);
   if(!I386RedSeaEnd(volume)) { if(result) I386HeapFree(heap,result); return 0; }
   if(result && size) *size=bytes;

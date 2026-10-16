@@ -1,3 +1,4 @@
+#include "/Kernel/I386/RedSeaFileSession.HC"
 #include "/Kernel/I386/TaskFileRead.HH"
 #include "/Kernel/I386/Cpu.HH"
 //Original public FileWrite establishes missing parents before attempting the file.
@@ -53,7 +54,7 @@ I64 I386TaskFileWriteCore(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr
         while(*cursor) { if(*cursor=='/') leaf=cursor+1; cursor++; }
         if(public_mode && volume && volume->io && *leaf &&
             !I386TaskWriteParents(volume,absolute,leaf))goto file_write_release;
-        if(volume && volume->io && *leaf && I386RedSeaBegin(volume)) {
+        if(volume && volume->io && *leaf && I386RedSeaBeginFile(volume)) {
           if(leaf==path+1) parent.block=volume->root;
           else {
             leaf[-1]=0;

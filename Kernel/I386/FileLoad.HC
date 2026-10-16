@@ -1,3 +1,4 @@
+#include "/Kernel/I386/RedSeaFileSession.HC"
 #include "/Kernel/I386/FileLoad.HH"
 #include "/Kernel/I386/Cpu.HH"
 I64 I386RedSeaParentFind(CI386RedSea *volume,CI386Heap *heap,I64 directory,
@@ -62,7 +63,7 @@ U8 *I386RedSeaFileLoad(CI386RedSea *volume,CI386Heap *heap,I64 directory,
   CI386RedSeaEntry entry;
   I64 found,bytes=0,attributes;
   U8 *raw,*result=0;
-  if(GetRFlags&0x200 || !heap || !path || !I386RedSeaBegin(volume)) return 0;
+  if(GetRFlags&0x200 || !heap || !path || !I386RedSeaBeginFile(volume)) return 0;
   if(raw_bytes) found=I386RedSeaResolve(volume,directory,path,&entry);
   else found=I386RedSeaFileLocate(volume,heap,directory,path,&entry,scan_parents);
   if(found!=1) goto file_load_done;
