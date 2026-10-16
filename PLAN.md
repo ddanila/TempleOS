@@ -11,6 +11,27 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original FIFO dependency checkpoint (2026-10-16)
+
+MemoryRuntime 30 exports all fourteen original U8/I64 FIFO functions through
+shared byte-identical bodies and canonical record types. Both bootstrap
+generations and the cross-build/386 audit pass, with 1535 source and 24 build
+pins unchanged. The final 256-value producer/consumer contract passes mask 127
+on the pinned original and all three native commands at both 8 and 64 MiB,
+with unchanged execution inputs. Tests cover empty/full/wrap/peek/flush,
+wide values, ring operations under both interrupt states, task ownership and
+heap used-byte recovery. Native startup observations were not isolated;
+FIFO-specific resource gates remain pending. Original parameter-name fidelity
+in the new declarations still needs correction and revalidation. See
+docs/i386-fifo.md. All 686 inventory entries and C1–C5 remain unqualified.
+
+At this checkpoint the existing Compiler74 C5 native ConsoleRuntime/EditorRuntime
+build and the preceding editor candidate's 16 MiB diagnostics are still running;
+neither is recorded as passing evidence. Their reports are
+`build/i386-c5-array-literal-native-build/result.json` and
+`build/i386-c2-editor-dialogs-gates.json`. No new long-running gates are launched
+for this documentation/commit checkpoint.
+
 ### Complete editor dialog dispatch candidate (2026-10-16)
 
 ConsoleRuntime 136 and EditorRuntime 5 expose the existing full EdFindReplace and
@@ -26,8 +47,10 @@ cross-build/386 audit pass with all 1533 source and 24 build pins unchanged.
 The full native contract passes all nine commands and six exact captures at both
 64 and 8 MiB, with the manager active and unchanged inputs. Provider/source
 delivery and wrong-version recovery pass nineteen and twenty-one commands; the
-constant fix leaves every compiled module byte-identical. Isolated startup and
-16 MiB diagnostics are queued; the 8 MiB functional timing was not isolated.
+constant fix leaves every compiled module byte-identical. Isolated 8 MiB startup
+passes in 58.909313 seconds with nine behavior/VGA
+checks, no build-provider loads and four unchanged pins. Its 16 MiB diagnostics
+are running; the separate 8 MiB dialog timing was not isolated.
 Full DocPutKey and
 C1–C5 remain open. See docs/i386-editor-dialogs.md.
 
@@ -45,7 +68,8 @@ three commands with unchanged execution inputs. Resource gates are queued after
 the preceding WinBorder gates. The first startup run records 58.461398 seconds
 and nine passing checks, but a six-second overlap with a reference guest makes
 its isolated timing invalid; a fresh isolated run is required. The 16 MiB
-diagnostics remain running. Full DocPutKey
+diagnostics pass in 230.641331 seconds, with all 128/22/28 cases, both memory
+phases and nine interactive/VGA checks; four pins are unchanged. Full DocPutKey
 and C1–C5 qualification remain open. See docs/i386-post-msg-wait.md.
 
 ### Original WinBorder dependency candidate (2026-10-16)

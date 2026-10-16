@@ -41,7 +41,10 @@ with unchanged input hashes, but its isolated timing is invalid: the editor
 dialog reference guest started after the coordinator checked for other guests,
 overlapping about six seconds. `build/i386-c2-post-msg-wait-startup/isolation-invalid.json`
 records the evidence. Preserve this result and perform a fresh isolated run.
-The committed-snapshot 16 MiB diagnostics remain running. Future guest launches
+The committed-snapshot 16 MiB diagnostics pass in
+`build/i386-c2-post-msg-wait-diagnostics`: 230.641331-second startup, all 128/22/28
+compiler/publication cases, both memory phases, nine interactive/VGA checks, no
+build-provider loads and four unchanged input hashes. Future guest launches
 must wait until an isolated gate finishes; waiting for a predecessor alone can
 race a successor coordinator. C1–C5 and all inventory entries remain unqualified.
 

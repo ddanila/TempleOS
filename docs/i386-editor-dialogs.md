@@ -70,9 +70,10 @@ version`, with unchanged inputs: repeated rejection, in-guest repair, successful
 retry, cached reuse after disk corruption, restored module bytes, caller heap,
 directory and roles. Editor version rejection now mutates version 5 to the
 previous version 4. The earlier wrong-version recovery result applies to the
-identical compiled modules, as confirmed by constants-comparison.json. Fresh
-isolated startup and 16 MiB diagnostics are queued against the committed
-candidate; C1–C5 and all inventory entries remain unqualified.
+identical compiled modules, as confirmed by constants-comparison.json. The committed candidate's isolated 8 MiB startup passes in 58.909313 seconds
+in `build/i386-c2-editor-dialogs-startup`, with all nine behavior/VGA checks,
+no build-provider loads and four unchanged input pins. Its 16 MiB diagnostics
+remain running in `build/i386-c2-editor-dialogs-diagnostics`; C1–C5 and all inventory entries remain unqualified.
 
 ```sh
 python3 tools/test-i386-editor-dialogs.py --out ORIGINAL
