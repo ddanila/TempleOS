@@ -19,11 +19,17 @@ channel forwarding and mounted drives preserve the same identity. Boot and
 secondary-target slots are persistent, including installation and format probes.
 FileRuntime 59 and CompilerProbe 18 carry the changed ABI. Both original controls
 pass all 16 orphan/full-table release cases with unchanged inputs. Bootstrap,
-cross-build, ATA and task/ATA pass; all 1506 source/24 build-input hashes match.
+cross-build, ATA and task/ATA pass; all 1506 source/24 build-input hashes matched
+at build time. Later test-harness fixes are recorded separately.
 The 8 MiB gate passes all nine checks in 54.848084 seconds, unchanged inputs and
 no build provider. Native release passes all 16 cases/21 commands at 64 MiB with unchanged inputs.
-RedSea, installation/format and full diagnostic validation are in progress; old
-RedSea write/create fixture mismatches are preserved as failures. See docs/i386-block-release.md for evidence and the
+Drive-deletion regressions (8 device-wide and 56 per-drive cases), nine public
+task-cancellation cases, installation copy/recovery, target format/reboot and D:
+mount/document writes pass. Nine RedSea suites pass; old write/create fixture
+mismatches remain recorded as failures. Full 16 MiB diagnostics pass in
+248.920648 seconds of startup, with both preserved-memory phases, 128 push-word
+cases, 22 publication/28 program cases, nine interactive/VGA checks and unchanged
+execution inputs. See docs/i386-block-release.md for evidence and the
 preceding failing orphan regression. General device allocation and media lifecycle
 remain unfinished; all 686 inventory qualifications and C1–C5 remain open.
 
@@ -55,8 +61,8 @@ The final 16 MiB diagnostic gate also passes (startup 246.119320 seconds):
 22 publication/28 program cases and all nine interactive checks, with unchanged
 execution inputs. Earlier failures and the reverted parser-storage
 experiment are retained in docs/i386-drive-device-delete.md,
-docs/i386-immediate-push.md and docs/i386-parser-scratch.md. The ongoing C5 native
-build remains pinned to CompilerRuntime 72 and commit 0bed4c3a. All 686 inventory
+docs/i386-immediate-push.md and docs/i386-parser-scratch.md. That C5 native build later failed on CompilerRuntime 72 (0bed4c3a);
+a fresh CompilerRuntime 73 build is pending in i386-c5-block-table-native-build. All 686 inventory
 entries remain unqualified; C1-C5 are open.
 
 ### Preserve deleted mounted drive identities (2026-10-16)
@@ -92,7 +98,7 @@ phases, 22 publication/28 program cases and all nine interactive checks, with
 unchanged execution inputs.
 See docs/i386-drive-delete.md. Full drive-table/media initialization,
 Drv/DirContext and C1-C5 remain open; all 686 inventory entries remain
-unqualified. The live C5 emitter rebuild uses its earlier 0bed4c3a source epoch.
+unqualified. The earlier C5 emitter rebuild used 0bed4c3a and later failed; see the retry below.
 
 ### Measure backend output before buffer allocation (2026-10-16)
 
@@ -105,9 +111,11 @@ version bytes. Normal 8 MiB startup passes in 55.579832 seconds with all nine
 commands and unchanged inputs. The full 16 MiB gate passes both native pressure phases reproducing the C5
 117144-byte hole/102136-byte output, all 32 backend cases, 22 publication/28
 program cases, preserved live memory and nine interactive checks. All 32
-free-list cases also pass through the new compiler, with unchanged inputs. A source-pinned Console/Editor native rebuild is
-live in `build/i386-c5-emitter-measure-native-build`. Neither it nor two native
-release generations are yet qualified. See docs/i386-emitter-sizing.md.
+free-list cases also pass through the new compiler, with unchanged inputs. The source-pinned Console/Editor native rebuild in
+`build/i386-c5-emitter-measure-native-build` now fails allocating 0x19233 bytes
+at StrIMatchCore.HC (largest available span 0x14000). A fresh CompilerRuntime 73
+retry is live in `build/i386-c5-block-table-native-build`, pinned to 66b4a08e.
+Neither that retry nor two native release generations are yet qualified. See docs/i386-emitter-sizing.md.
 All 686 inventory entries and C1-C5 remain unqualified.
 
 ### Complete original RedSea free-list teardown (2026-10-16)

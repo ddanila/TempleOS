@@ -68,10 +68,27 @@ selected-module build and two complete native generations remain unqualified;
 a synthetic allocation case alone cannot establish those outcomes.
 
 
-A new selected-module build is live in
+The selected-module build was launched in
 `build/i386-c5-emitter-measure-native-build`, at 16 MiB on TCG 486,-fpu.
 Its launcher PID is recorded beside the directory and its input boundary pins
 all source/build hashes, host runners and the immutable starting disk in
 `build/i386-c5-emitter-measure-native-input-boundary.json`. ConsoleRuntime and
 EditorRuntime are selected. The old failure artifacts remain intact; this is
 an independent run, not a resumed or reclassified result.
+
+
+### Terminal native build result and compact-push retry (2026-10-16)
+
+The CompilerRuntime 72 run in build/i386-c5-emitter-measure-native-build now
+terminates with failure. During ConsoleRuntime compilation, StrIMatchCore.HC
+requests 0x19233 bytes with a largest available span of 0x14000. The guest reports
+PARSER CODE ALLOCATION REJECT, then BUILD MODULE REJECT with OutMem. The runner
+records result=fail after cleanup; EditorRuntime is not reached. This is the
+0bed4c3a source epoch and does not test CompilerRuntime 73's compact pushes.
+
+A fresh run in build/i386-c5-block-table-native-build uses the image from
+build/i386-c4-block-table-cross: CompilerRuntime 73, ConsoleRuntime 123 and
+FileRuntime 59. It selects the same ConsoleRuntime/EditorRuntime builds at
+16 MiB on TCG 486,-fpu with a 14400-second command limit. Its input-audit.json
+pins commit 66b4a08e, the immutable image/manifest and host runners. This run is
+pending, not qualified; neither are two complete native generations.

@@ -82,9 +82,24 @@ build/i386-c4-block-table-{cross,ata,ata-tasks,startup}.
 Native release also passes all 16 cases/21 commands at 64 MiB, including both
 canonical identity preflights and exact delivery of all three fixture files.
 Its execution inputs are unchanged (build/i386-c4-block-table-native/result.json).
+Device-wide drive deletion passes all eight cases/12 commands with unchanged
+inputs; the existing drive-deletion regression passes 56 cases/59 commands. All
+nine public task-cancellation cases pass with the source image unchanged. Their
+evidence uses the same build/i386-c4-block-table prefix with -drive-device,
+-drive-regression and -task-kill suffixes.
+
 RedSea mount/read/allocation/delete/replace/load/low-memory-load/load-set/bind
-all pass (build/i386-c4-block-table-redsea-results.json). Installation/format and
-full diagnostics are being validated separately.
+all pass (build/i386-c4-block-table-redsea-results.json). Installation copy also
+passes the independent target boot and interruption/retry at sectors 8192 and
+32768, with the source image unchanged
+(build/i386-c4-block-table-cross/install-copy/result.json). Target-format/reboot and normal D: mount/document writes also pass at the
+16 MiB diagnostic profile, with unchanged inputs
+(build/i386-c4-block-table-target-16/result.json). The full 16 MiB diagnostic gate also passes, with startup in 248.920648
+seconds, 128 push-word cases, 32 backend cases, 22 publication/28 program cases,
+both preserved-memory phases and all nine interactive/VGA checks. Its four
+execution pins remain unchanged (build/i386-c4-block-table-diagnostics/result.json
+and input-audit.json). The diagnostic profile is separate from the 8 MiB
+interactive startup budget; its interactive_budget_pass field is false by design.
 
 The first format harness run selected the old fixed 8 MiB guest profile and
 exhausted memory in ModuleCheck.HC before reaching the format probe. The harness
