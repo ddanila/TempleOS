@@ -88,3 +88,26 @@ unchanged inputs and the original 5,400-second total. This does not qualify
 continuous rich-document rendering while WinMgr is suspended: losing the
 welcome from the displayed surface in that state remains an implementation gap.
 Nor does it qualify the full desktop or C1–C5.
+
+When WinMgr is suspended and a rich view is needed, the native terminal now
+composes the window list synchronously instead of blitting the stale plain
+surface. Two frames are needed because the frame pipeline reads text cells
+before window drawing recalculates them. Exact 8 and 64 MiB VGA checks pass
+for the welcome, suspended input, `DocClear` and a subsequent command with
+unchanged inputs (`build/i386-suspended-clear-final-8m` and
+`build/i386-suspended-clear-final-64m`); focused long-command VGA checks also
+pass (`build/i386-suspended-rich-double-8m` and
+`build/i386-suspended-rich-double-64m`). Both original rebuilds and the native
+cross-build/386 audit pass (`build/i386-suspended-rich-double-cross`).
+
+A separate 64 MiB keyboard/log-driven TimeClock run with WinMgr suspended
+matches the original record and report bytes across a cold reboot
+(`build/i386-suspended-rich-report-paced`), with unchanged inputs. The fixture
+paces input at one second per key: an earlier faster cold-reboot attempt lost
+input after a queue reset (`build/i386-suspended-rich-report-log`). The strict
+TimeClock VGA runner instead timed out when application `Load.HC` cleared the
+screen and displayed its actual instructions; its old expected transcript is
+not valid for that state (`build/i386-suspended-rich-double-report`). These
+checks do not establish general callback/reentrancy behavior or responsiveness;
+the two full frames per update are a performance cost. Isolated startup timing
+and complete desktop qualification remain open.

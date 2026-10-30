@@ -36,6 +36,16 @@ U0 ConsolePresentText(CI386Text *surface)
     task=terminal->task;task_num=task->task_num;
     if(sys_focus_task!=task)return;
   } else if(surface!=&console_default_text || native_terminal_root)return;
+  //When the manager is suspended, keep a rich document visible by composing
+  //the real window list synchronously instead of replacing it with stale text.
+  if(task && NativeWindowNeeded(TRUE)) {
+    //Window drawing updates text cells after the frame's text layer was read.
+    //A second frame displays those newly recalculated document cells.
+    if(!NativeWindowPresent(FALSE) || !NativeWindowPresent(FALSE)) {
+      KernelLog("SUSPENDED DOCUMENT PRESENT FAILED ");KernelHex(Fs->except_ch);KernelLog("\n");
+    }
+    return;
+  }
   try {
     //Recursion leaves dirty rows pending; foreign callers wait cooperatively.
     if(!NativeGraphicsTextLock(&scope))goto console_present_done;

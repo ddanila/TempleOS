@@ -139,6 +139,7 @@ CTask *native_window_worker;
 I64 native_window_fault_task;
 U0 (*native_window_sleep)(I64 ms);
 extern Bool NativeWindowOwnsView();
+extern Bool NativeWindowNeeded(Bool coverage=FALSE);
 extern U0 NativeWinMgrEnsure();
 extern Bool NativeWinMgrStart();
 extern U0 WinMax(CTask *task=0);

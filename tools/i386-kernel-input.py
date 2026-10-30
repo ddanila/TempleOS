@@ -340,7 +340,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
 
             def submit(source, answers, name, hotkey=False, frame=None, timeout=30,
                        interaction=None, typing_colors=None, return_colors=None):
-                nonlocal rows,submitted,mouse_host_x,mouse_host_y,command_log_start,welcome,heading
+                nonlocal rows,submitted,mouse_host_x,mouse_host_y,command_log_start
                 if groups is not None and active_group is not None and active_group not in groups:
                     return
                 submitted+=1
@@ -503,12 +503,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     rejection_message='Guest command returned a rejected answer on VGA'
                 if mutation is not None and name==mutation['checkpoint']:
                     rejected_rows=(rows[:-1]+typed_rows(source)+mutation['answers']+['> '])[-60:]
-                if welcome and name=='window-manager-pause':
-                    #Suspending WinMgr exposes the retained plain VGA surface.
-                    welcome=False
-                    heading=['TempleOS i386','HolyC console','']
-                    rows=(heading+typed_rows(source)+answers+['> '])[-60:]
-                elif interaction is not None and not interaction.get('preserve_history',False):
+                if interaction is not None and not interaction.get('preserve_history',False):
                     rows=list(interaction.get('return_rows',heading+answers+['> ']))[-60:]
                 else:
                     rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
