@@ -57,3 +57,23 @@ entry or C1–C5 milestone is marked complete by these component tests.
 The independent [terminal startup reference](i386-terminal-startup.md) now
 passes exact fresh/welcome/cleared document comparisons on the pinned original
 system, confirming the retained setting without executing TimeClock.
+
+The root terminal now inserts the complete original `Doc/Start.DD` through
+`DocType`, after the existing native heading. This retains the welcome's held
+word-wrap command through `DocClear`. A keyboard/log-driven 64 MiB run checks
+the exact original TimeClock typed records and full report bytes, then repeats
+the report after a cold reboot; it passes with unchanged inputs
+(`build/i386-welcome-report-reboot-paced`). The application package comes from
+`build/i386-welcome-timeclock-package`, which preserves the three original
+source files. Both original rebuild generations and the native cross-build/386
+audit pass (`build/i386-welcome-insertion-cross`).
+
+This is not a full terminal-startup or desktop qualification: the existing
+native heading is still present, the original terminal menu, callback and task
+orchestration remain open, and the new runner does not check VGA pixels. The
+existing strict report and 8 MiB drive-map runners time out on their initial
+old-heading pixel expectation (`build/i386-welcome-timeclock-report` and
+`build/i386-welcome-boot-8m`); both guests reached startup. Their VGA and
+minimal-profile gates remain unqualified until an independent oracle covers the
+new screen. Two earlier keyboard-driven reboot attempts also timed out after
+input queue resets; the successful paced run is retained separately.

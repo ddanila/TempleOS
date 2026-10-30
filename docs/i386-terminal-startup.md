@@ -40,3 +40,14 @@ service but does not run the original terminal startup sequence. Desktop task or
 remains separate outstanding work. Preserve the minimal 8 MiB boot contract
 while implementing the full desktop profile. No inventory entry or milestone
 is qualified by this reference test.
+
+The native root terminal now calls the original `DocType` on `Doc/Start.DD`
+after its existing native heading. The welcome is visible and its held
+word-wrap entry survives clearing, as confirmed by the exact TimeClock report
+and cold-reboot comparison in `build/i386-welcome-report-reboot-paced`. This
+is still a partial startup sequence: the native heading precedes the original
+welcome and `DocTermNew`, its right-click callback, border/menu setup and the
+original desktop tasks are not integrated. Existing startup VGA expectations
+must be revised against independent evidence; the 8 MiB and strict VGA gates
+currently time out at the old heading expectation. See
+[i386-timeclock-native.md](i386-timeclock-native.md) for the tested scope.

@@ -207,6 +207,8 @@ U0 NativeTerminalTranscriptStart()
     }
     doc->flags=flags;
   } catch { doc->flags=flags; }
+  if(terminal==native_terminal_root && !DocType(doc,"::/Doc/Start.DD"))
+    throw('Welcome');
   terminal->transcript_started=TRUE;
 }
 U0 NativeTerminalAdoptRoot() { NativeTerminalCreate(TRUE); }
