@@ -57,3 +57,9 @@ No native cache qualification is claimed.
 rebuild generations pass, and the rebuilt original kernel passes cache mask 15
 (`build/i386-cache-stride-working`). The native cache is not yet implemented
 or tested.
+
+The expanded pinned-original cache contract passes mask 63 with unchanged
+inputs (`build/i386-block-cache-extended-reference`). It also checks a read
+with cached leading and trailing sectors around an uncached middle sector, and
+that cache entries for two drives do not alias. This is original behavior
+evidence, not a native cache result.

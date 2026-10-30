@@ -16,5 +16,19 @@ I64 BCContract()
   if(ok && BlkRead(&dv,buf,1,1) && buf[0]==77 && storage[512]==77)mask|=4;
   DskCacheInvalidate(&dv);MemSet(buf,0,1536);ok=BlkRead(&dv,buf,0,3);
   if(ok && buf[0]==44 && buf[512]==77 && buf[1024]==66)mask|=8;
+  DskCacheInvalidate(&dv);
+  storage[0]=12;storage[512]=23;storage[1024]=34;
+  BlkRead(&dv,buf,0,1);BlkRead(&dv,buf,2,1);
+  storage[0]=45;storage[512]=56;storage[1024]=67;
+  MemSet(buf,0,1536);ok=BlkRead(&dv,buf,0,3);
+  if(ok && buf[0]==12 && buf[512]==56 && buf[1024]==34)mask|=16;
+  {
+    CDrv dv2;CBlkDev bd2;U8 *storage2=CAlloc(2048);
+    MemCpy(&dv2,&dv,sizeof(CDrv));MemCpy(&bd2,&bd,sizeof(CBlkDev));
+    dv2.bd=&bd2;bd2.RAM_dsk=storage2;storage2[0]=88;
+    MemSet(buf,0,512);ok=BlkRead(&dv2,buf,0,1);
+    if(ok && buf[0]==88 && BlkRead(&dv,buf,0,1) && buf[0]==12)mask|=32;
+    DskCacheInvalidate(&dv2);Free(storage2);
+  }
   DskCacheInvalidate(&dv);Free(storage);Free(buf);Free(src);return mask;
 }

@@ -117,6 +117,13 @@ passes four commands covering every field and file flags with unchanged inputs;
 its concurrent startup timing is not an isolated gate. File-backed I/O and
 full media initialization remain open. See docs/i386-block-io.md.
 
+### Expanded original block cache reference (2026-10-30)
+
+The expanded pinned-original contract passes mask 63 with unchanged inputs.
+In addition to the prior cache checks, it covers mixed leading/trailing hits
+and drive isolation. Native cache and block I/O remain unqualified. See
+docs/i386-block-io.md.
+
 ### Pointer-width-aware block cache hash (2026-10-30)
 
 DskCacheHash uses two pointer widths per bucket, matching allocation and
