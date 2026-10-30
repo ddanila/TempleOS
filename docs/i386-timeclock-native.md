@@ -77,3 +77,14 @@ old-heading pixel expectation (`build/i386-welcome-timeclock-report` and
 minimal-profile gates remain unqualified until an independent oracle covers the
 new screen. Two earlier keyboard-driven reboot attempts also timed out after
 input queue resets; the successful paced run is retained separately.
+
+The strict VGA runner now specifies the actual document states created by the
+unchanged application: `Install.HC` clears the terminal and displays its
+instructions, and `TimeRep` clears it again and displays the report. It checks
+those text and color cells against the original font rather than expecting the
+obsolete plain transcript. With WinMgr suspended and the synchronous rich
+redraw, the 64 MiB first boot and cold reboot pass all seven requested
+commands, exact VGA checks, original record/report bytes, and the 5,400-second
+total, with unchanged inputs (`build/i386-suspended-rich-report-vga`). This
+is scoped to those states; desktop startup, general callbacks, physical input,
+performance and full application qualification remain open.

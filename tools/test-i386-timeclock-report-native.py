@@ -43,11 +43,25 @@ def main():
     report['packaging'] = runpy.run_path(str(package))['package'](
         source,working,additions={'/ReportNative.HC':FIXTURE.read_bytes()})
     run_input = runpy.run_path(str(runner))['run_input']
-    def execute(commands,destination):
+    load_line='After Loading, type PunchIn;, PunchOut; or TimeRep;'
+    report_lines=['IN  09/04/98 01:30:00:','start','','OUT 09/04/98 03:00:00:',
+                  'finish','','Week Total:01:30:00','1','> ']
+    row_styles={load_line:[(20,28,2),(30,39,2),(43,51,2)],
+                report_lines[0]:[(0,len(report_lines[0]),4)],
+                report_lines[3]:[(0,len(report_lines[3]),4)],
+                report_lines[6]:[(0,len(report_lines[6]),4)]}
+    def execute(commands,destination,reopening=False):
+        styles={}
+        if args.welcome:
+            if not reopening:
+                styles[1]={'return_rows':[load_line,'You might want to make PLUGINS for hot keys.','','','> ']}
+                styles[2]={'return_rows':report_lines}
+            else:
+                styles[1]={'return_rows':report_lines}
         return run_input(working,destination,snapshot=False,ram_mib=64,cpu='486,-fpu',accel='tcg',qmp_stdio=True,welcome=args.welcome,
                          startup_check={'status':'ok','answers':[],'commands':commands,
                                         'rejected_answers':['0'],'rejection_prefixes':('INPUT REJECT ',),
-                                        'command_timeout':120})
+                                        'command_timeout':120,'row_styles':row_styles,'command_styles':styles})
     try:
         report['behavior'] = execute(COMMANDS,out/'qemu')
         files = read_files(working,{'/report-records.DATA','/report-first.DD','/ReportNative.HC'}|set(expected_sources))
@@ -61,7 +75,7 @@ def main():
             raise ValueError('Native report differs from exact original DolDoc golden')
         report['logical_file_sha256'] = hashlib.sha256(files['/report-records.DATA']).hexdigest()
         report['report_sha256'] = hashlib.sha256(files['/report-first.DD']).hexdigest()
-        report['reopen'] = execute(REOPEN,out/'reopen')
+        report['reopen'] = execute(REOPEN,out/'reopen',True)
         reopened = read_files(working,{'/report-reopened.DD'})['/report-reopened.DD']
         if reopened != files['/report-first.DD']:
             raise ValueError('Report changed after cold reboot')

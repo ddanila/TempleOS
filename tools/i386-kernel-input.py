@@ -275,6 +275,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                             default_colors.update({(row,col):2 for col in range(2,len(line))})
                         elif input_started:
                             default_colors.update({(row,col):2 for col in range(len(line))})
+                        if startup_check is not None:
+                            for start,end,color in startup_check.get('row_styles',{}).get(line,()):
+                                default_colors.update({(row,col):color for col in range(start,end)})
                     default_colors.update(colors or {});colors=default_colors
                 expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer,canvas_color)
                 expected_cursor=None
@@ -339,7 +342,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 return [text[index:index+width] for index in range(0,len(text)+1,width)]
 
             def submit(source, answers, name, hotkey=False, frame=None, timeout=30,
-                       interaction=None, typing_colors=None, return_colors=None):
+                       interaction=None, typing_colors=None, return_colors=None, return_rows=None):
                 nonlocal rows,submitted,mouse_host_x,mouse_host_y,command_log_start
                 if groups is not None and active_group is not None and active_group not in groups:
                     return
@@ -503,7 +506,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     rejection_message='Guest command returned a rejected answer on VGA'
                 if mutation is not None and name==mutation['checkpoint']:
                     rejected_rows=(rows[:-1]+typed_rows(source)+mutation['answers']+['> '])[-60:]
-                if interaction is not None and not interaction.get('preserve_history',False):
+                if return_rows is not None:
+                    rows=list(return_rows)[-60:]
+                elif interaction is not None and not interaction.get('preserve_history',False):
                     rows=list(interaction.get('return_rows',heading+answers+['> ']))[-60:]
                 else:
                     rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
@@ -520,7 +525,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     style=startup_check.get('command_styles',{}).get(index,{})
                     submit(source,answers,f'startup-command-{index:02}',
                            timeout=startup_check.get('command_timeout',30),interaction=interaction,
-                           typing_colors=style.get('typing_colors'),return_colors=style.get('return_colors'))
+                           typing_colors=style.get('typing_colors'),return_colors=style.get('return_colors'),
+                           return_rows=style.get('return_rows'))
                 result={'result':'pass','cpu':cpu,'ram_mib':ram_mib,'startup_status':status,
                         'boot_mode':'diagnostic' if diagnostics else 'interactive',
                         'startup_seconds':startup_seconds,'commands':len(startup_check['commands']),
