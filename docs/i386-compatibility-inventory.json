@@ -12721,8 +12721,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": "Tear down null, empty and populated RedSea free lists under direct/forwarded and nested drive/device locks, with caller-owned and root-owned nodes; repeat teardown and inspect metadata and heap recovery.",
-      "oracle": "docs/i386-redsea-free-list.md: 32 cases require mask 63 with exact caller/owner heap recovery. A single private extern and input settling precede measurement. This covers the complete teardown routine, not list construction, filesystem allocation, disk I/O or full media/drive initialization.",
+      "reference_workflow": "Tear down null, empty and populated RedSea free lists under direct/forwarded and nested drive/device locks, with caller-owned and root-owned nodes; repeat teardown and inspect metadata and heap recovery. Compare initialized RedSea drive sector and bitmap fields against its actual boot sector.",
+      "oracle": "docs/i386-redsea-free-list.md: 32 cases require mask 63 with exact caller/owner heap recovery. A single private extern and input settling precede measurement. This covers the complete teardown routine, not list construction, filesystem allocation, disk I/O or full media/drive initialization. The RedSeaInit metadata fixture compares the mounted drive record with the on-disk header; it does not establish complete initialization or FAT cache behavior.",
       "tests": [
         {
           "target": "original-redsea-free-list",
@@ -12751,6 +12751,20 @@
           "result": "pass",
           "evidence": "build/i386-c4-redsea-free-list-settled-native/result.json",
           "scope": "All 32 cases/35 commands at 64 MiB on 486,-fpu, unchanged inputs and byte-identical guest fixture; not full filesystem or minimal-memory qualification."
+        },
+        {
+          "target": "original-redsea-drive-fields",
+          "command": "python3 tools/test-i386-redsea-drive-fields.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-redsea-drive-fields-original/result.json",
+          "scope": "Five boot-header and public-drive metadata checks, mask 31"
+        },
+        {
+          "target": "native-redsea-drive-fields",
+          "command": "python3 tools/test-i386-redsea-drive-fields.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-redsea-drive-fields-native/result.json",
+          "scope": "Metadata checks against the actual mounted volume at 64 MiB; also passes at 8 MiB; not full RedSeaInit"
         }
       ]
     },

@@ -229,6 +229,8 @@ Both original rebuild generations and the corrected 386 cross-build/audit pass
 (`build/i386-redsea-drive-fields-native`). The existing drive-map regression
 timed out at the obsolete initial console screen, before executing its cases
 (`build/i386-redsea-drive-fields-map`); it is being rerun with welcome-screen
-expectations. The 8 MiB metadata check also passes with unchanged inputs
+expectations and passes all 15 drive-map cases and 20 commands with unchanged
+inputs (`build/i386-redsea-drive-fields-map-welcome`). The 8 MiB metadata check
+also passes with unchanged inputs
 (`build/i386-redsea-drive-fields-native-8m`). These concurrent guest runs do not
 qualify startup timing. C1–C5 remain open.
