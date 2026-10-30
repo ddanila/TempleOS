@@ -103,3 +103,8 @@ native build remains in progress at
 The shared keyboard helper also passes the 8 MiB initial welcome-pixel
 regression with unchanged inputs (`build/i386-keyboard-helper-welcome-8m`);
 this concurrent run does not qualify startup timing.
+
+The emulated-keyboard runner has been extended to check cancelled descriptions
+against the original punch-command oracle as well. Its expanded run is in
+progress at `build/i386-timeclock-keyboard-cancel-native`; the earlier passing
+result covers only the two nonempty descriptions.
