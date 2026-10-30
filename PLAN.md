@@ -49,6 +49,12 @@ backing. Foundation samples also include heap scanning (53/203), symbol lookup
 (49/203) and module validation (27/203). These are statistical samples under
 concurrent workloads, not timings or call counts. Investigate redundant scans
 while preserving full heap integrity checks; no optimization is yet qualified.
+Source inspection identifies repeated ownership lookups in `I386LexSnapshotValid`
+for each saved parent and active file, as well as compiler-control/task ownership
+lookups. `I386HeapSize` deliberately validates the entire arena and checks totals
+before returning even for an early match. Any batched lookup must preserve those
+corruption checks, pointer ownership, and interrupt/lifetime exclusion; merely
+using block headers or caching unchecked results would weaken the contract.
 
 The preceding editor candidate's 16 MiB diagnostics pass in 240.203069 seconds,
 with 128 immediate-push, 22 publication and 28 program-publication cases, both
