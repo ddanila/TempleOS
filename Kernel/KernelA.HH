@@ -833,12 +833,7 @@ public class CBlkDevGlbls
   Bool	dvd_boot_is_good,ins_unit,pad[3];
 };
 
-#help_index "File/Internal"
-public class CDirContext
-{
-  CDrv	*old_dv,*dv;
-  U8	*old_dir,*mask;
-};
+#include "/Kernel/BlkDev/DirContextTypes.HH"
 
 #help_index "File/CFile"
 #define FFB_NEXT_BLK		I64_MAX

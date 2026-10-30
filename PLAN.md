@@ -63,6 +63,15 @@ with 128 immediate-push, 22 publication and 28 program-publication cases, both
 memory phases and nine behavior/VGA checks. The report is
 `build/i386-c2-editor-dialogs-gates.json`.
 
+### Canonical directory-context record (2026-10-30)
+
+The byte-identical original CDirContext record is shared by KernelA and native
+PublicFiles. Both bootstrap generations, cross-build and 386 audit pass with
+1536 source and 24 build inputs unchanged. Native field-size/offset validation
+passes three commands with unchanged inputs at 64 MiB; concurrent startup is
+not a timing gate. The complete Drv/media services and DirContextNew/Del remain
+unimplemented. See docs/i386-directory-context.md; C1–C5 remain open.
+
 ### Lexer snapshot validation candidate (2026-10-30)
 
 `I386LexSnapshotValid` now validates each parent file once per walk under

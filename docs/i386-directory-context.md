@@ -2,8 +2,9 @@
 
 Full original DocPutKey changes the document's directory context through
 DirContextDel/DirContextNew. Their complete source is
-Kernel/BlkDev/DskDirContext.HC, and CDirContext is declared in Kernel/KernelA.HH.
-The native public binding is still missing. No runtime directory-context port
+Kernel/BlkDev/DskDirContext.HC, and the canonical CDirContext record is shared
+through Kernel/BlkDev/DirContextTypes.HH. The native public service binding is
+still missing. No runtime directory-context port
 or completed desktop milestone is claimed by this test-first checkpoint.
 
 The shared fixture tests/guest/i386-directory-context-reference/Context.HC
@@ -627,3 +628,15 @@ has a 578,944-byte kernel, with all 1491 source and 24 build-input pins matching
 cross image is byte-identical to the active-cross image used by those tests.
 Full desktop/application compatibility and two complete native release
 generations remain unqualified.
+
+## Shared context record (2026-10-30)
+
+The original CDirContext declaration is byte-identical in the shared header,
+included by KernelA and the native PublicFiles header. Both original rebuild
+generations and the native cross-build/386 audit pass; 1536 source and 24 build
+inputs match in `build/i386-dircontext-types-cross`. The native 64 MiB field
+layout check passes all three commands with unchanged inputs in
+`build/i386-dircontext-types-native`; its executed runner is preserved there.
+It checks all four field offsets and record size, not directory operations. Its
+60.909667-second startup observation was concurrent and is not a timing gate.
+Full Drv, block-device initialization and DirContextNew/Del remain open.
