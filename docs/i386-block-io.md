@@ -196,5 +196,12 @@ The first native 64 MiB fixture passed its read/write, range, zero-count,
 read-only and preowned-lock checks with unchanged inputs in
 `build/i386-raw-blocks-native-64m`. A subsequent change adds checks after a
 queued lock acquisition for changes to the device, filesystem or volume bounds;
-validation of that changed version is pending. The original two-generation
-rebuild and 386 cross-build passed before this last change. C1–C5 remain open.
+the original two-generation rebuild, 386 cross-build/audit and basic native
+sector contract all pass for that changed version (`build/rebuild-test`,
+`build/i386-raw-blocks-revalidated-cross`, and
+`build/i386-raw-blocks-revalidated-native`). A separate contention fixture
+changes the drive size while a read waits on the device lock. It fails on the
+earlier image, with unchanged inputs (`build/i386-raw-block-race-before`);
+the current image passes the same fixture with unchanged inputs
+(`build/i386-raw-block-race-after`). This exercises a size change, not all
+possible drive remaps or device mutations. C1–C5 remain open.
