@@ -448,6 +448,11 @@ I64 TaskFilesTest()
   first=I386TaskFilesDrive(&task_volumes,'C');
   same=I386TaskFilesDrive(&task_volumes,'E');
   second=I386TaskFilesDrive(&task_volumes,'D');
+  if(task_volumes.block_globals.drvs!=task_volumes.drives ||
+      task_volumes.block_globals.let_to_drv['C'-'A']!=first ||
+      task_volumes.block_globals.let_to_drv['D'-'A']!=second ||
+      task_volumes.block_globals.let_to_drv['E'-'A']!=same ||
+      sizeof(task_volumes.block_globals.let_to_drv)/sizeof(CDrv *)!=32)return 120;
   if(!first || !same || !second || first==same || first->bd!=same->bd ||
       first->bd==second->bd || first->bd!=disks[0].public_device ||
       second->bd!=disks[1].public_device || first->bd->first_drv_let!='C' ||

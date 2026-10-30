@@ -122,7 +122,9 @@ full media initialization remain open. See docs/i386-block-io.md.
 The native volume table now stores its existing drive map in the canonical
 CBlkDevGlbls array, sets drvs on initialization, and passes the same array to
 the console. Both original rebuilds, 386 cross-build/audit with 1545 source and
-24 build inputs unchanged, and native ATA/task test pass. Native drive-map
+24 build inputs unchanged, and native ATA/task test pass. The ATA/task fixture
+also checks the global drive pointer, C/D/E map identities and 32-entry extent.
+Native drive-map
 contracts pass all 20 commands at 8 and 64 MiB with unchanged inputs; startup
 observations were concurrent. The isolated 8 MiB gate passes nine behavior/VGA
 checks, with no build-provider loads and four unchanged inputs, but misses the

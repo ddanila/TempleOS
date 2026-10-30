@@ -95,3 +95,9 @@ build-provider loads and four unchanged inputs, but misses the 60-second target
 at 61.386673 seconds (`build/i386-drive-global-map-startup`). The 16 MiB
 diagnostics are running. Full block-device state and cache integration remain
 open.
+
+The native ATA/task fixture also verifies that `block_globals.drvs` points to
+the volume table's live records, that the C, D, and E entries refer to the
+same identities returned by lookup, and that the map has 32 entries. Its
+remapping and mounted-file checks pass with these assertions enabled
+(`python3 tools/test-i386.py --ata-tasks`).
