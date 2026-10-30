@@ -26,3 +26,8 @@ concurrent tasks or error cleanup. C1–C5 remain open.
 The final image also passes an 8 MiB ordinary-include and drive-fields smoke
 check (`build/i386-keymap-sort-smoke-8m`), not a startup-timing or full
 minimal-profile qualification.
+
+The native `DocMax` and real single-core `Reboot` services required by the
+original key-map UI are now public; see
+[document visibility and limits](i386-document-visibility.md) and
+[native reboot](i386-reboot.md). The complete key-map UI remains unbound.

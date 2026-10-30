@@ -13316,9 +13316,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Invoke the original PC reboot service in a disposable virtual machine; other kernel initialization remains separately unqualified.",
+      "oracle": "Pinned original QEMU exits on reset; the native run additionally records a QMP guest-reset shutdown event. Physical hardware and SMP remain unqualified.",
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-reboot.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-reboot-original-v4/result.json",
+          "scope": "Pinned original guest reboot with QEMU no-reboot"
+        },
+        {
+          "command": "python3 tools/test-i386-reboot.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-reboot-native-v2/result.json",
+          "scope": "Native guest command causes QMP guest-reset event; not physical hardware or SMP"
+        }
+      ]
     },
     {
       "path": "Kernel/KMathA.HC",
