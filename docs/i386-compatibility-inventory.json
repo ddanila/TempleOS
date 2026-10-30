@@ -1738,6 +1738,12 @@
       "oracle": null,
       "tests": [
         {
+          "command": "python3 tools/test-i386-doc-max.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-max-native-v1/result.json",
+          "scope": "Previous maximum, zero, default and absent document, mask 15; not automatic document truncation"
+        },
+        {
           "command": "python3 tools/test-i386-doc-visibility.py --shared --out OUT",
           "result": "pass",
           "evidence": "build/i386-doc-visibility-shared-original-v1/result.json",

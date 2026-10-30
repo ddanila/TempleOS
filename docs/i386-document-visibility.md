@@ -20,3 +20,14 @@ The preceding native image rejected the missing `DocCursor` binding
 An 8 MiB ordinary-include and drive-fields smoke check also passes with
 unchanged inputs (`build/i386-doc-visibility-smoke-8m`); it is not a startup
 timing or full minimal-profile qualification.
+
+The original `DocMax` body is also shared and published. The pinned original,
+shared original and native image pass previous-value, zero, default and absent
+document checks (mask 15; `build/i386-doc-max-original-v1`,
+`build/i386-doc-max-shared-original-v1`, `build/i386-doc-max-native-v1`;
+runner `tools/test-i386-doc-max.py`). The prior native image rejects the
+missing binding (`build/i386-doc-max-native-red`). Both bootstrap generations,
+the 386 cross-build/audit and an 8 MiB ordinary-include smoke test pass
+(`build/doc-max-rebuild-v2.log`, `build/i386-doc-max-cross-v1`,
+`build/i386-doc-max-smoke-8m`). Automatic document truncation, concurrent
+updates and the full minimal-profile timing gate are not covered.
