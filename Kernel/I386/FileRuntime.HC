@@ -37,6 +37,7 @@ import Bool I386SchedWake(CI386Scheduler *scheduler,CI386Task *task);
 import Bool I386SchedYield(CI386Scheduler *scheduler);
 extern Bool I386TaskCd(U8 *dirname,Bool make_dirs);
 extern I64 I386TaskFileFind(CI386Heap *heap,U8 *filename,CDirEntry *entry,I64 flags);
+extern Bool I386TaskRawBlocks(CDrv *drive,U8 *buffer,I64 block,I64 count,Bool write);
 extern I64 I386TaskFileWritePublic(U8 *filename,U8 *buffer,I64 size,I64 datetime,I64 attr,CI386WriteCache *cache=0);
 extern Bool I386TaskFileWrite(U8 *filename,U8 *buffer,I64 size,I64 attr=0);
 extern Bool I386TaskDirMk(U8 *filename,I64 entry_cnt=0);
@@ -153,7 +154,7 @@ Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
   else {binding->name="I386FileVolumeSame";binding->address=(&I386FileVolumeSame+0)(U64);}
   return TRUE;
 }
-#assert sizeof(CI386FileServices)==120
+#assert sizeof(CI386FileServices)==124
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
@@ -168,6 +169,7 @@ I64 Main(CI386FileServices *services,I64 bytes)
   services->tmp_filename=&I386FileRuntimeTmpFilename;
   services->drive_alias=&I386FileRuntimeDriveAlias;
   services->drive_lookup=&I386FileRuntimeDriveLookup;
+  services->raw_blocks=&I386TaskRawBlocks;
   services->cancel_wait=&I386FileRuntimeCancelWait;
   services->write=&I386TaskFileWrite; services->write_public=&I386TaskFileWritePublic;
   services->dir_mk=&I386TaskDirMk;
@@ -205,6 +207,7 @@ I64 Main(CI386FileServices *services,I64 bytes)
 #include "/Kernel/I386/Compress.HC"
 #include "/Kernel/I386/TaskFileWrite.HC"
 #include "/Kernel/I386/TaskFileFind.HC"
+#include "/Kernel/I386/TaskRawBlocks.HC"
 #include "/Kernel/I386/InstallBootArea.HC"
 #include "/Kernel/I386/TaskCompiler.HC"
 

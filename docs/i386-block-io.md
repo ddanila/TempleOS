@@ -181,3 +181,20 @@ inputs (`build/i386-dsk-cache-concurrency-native-final`). This samples one
 cooperative scheduling pattern; it does not establish exhaustive concurrency,
 block I/O integration, or interrupt-level safety. Its 59.201660-second startup
 was concurrent and is not an isolated timing gate.
+
+## Private RedSea sector transport (2026-10-30)
+
+A private `I386RawBlocks` service is being developed as a hardware backend for
+future original block services. It transfers sectors only on mapped, mounted
+RedSea ATA volumes, borrows the task's file state, retains the existing drive
+and channel locking, checks range and read-only state, and flushes writes.
+Callers remain responsible for metadata and cache coherence; a failed write
+may have partially transferred sectors. This is not the public `BlkRead` or
+`BlkWrite` implementation and does not provide RAM, FAT, ISO or cache support.
+
+The first native 64 MiB fixture passed its read/write, range, zero-count,
+read-only and preowned-lock checks with unchanged inputs in
+`build/i386-raw-blocks-native-64m`. A subsequent change adds checks after a
+queued lock acquisition for changes to the device, filesystem or volume bounds;
+validation of that changed version is pending. The original two-generation
+rebuild and 386 cross-build passed before this last change. C1–C5 remain open.
