@@ -4,9 +4,9 @@ U0 PEDriver(CTask *caller)
   CTask *popup;CDoc *doc;
   while(TRUE) {
     popup=caller->popup_task;
-    if(popup && TaskValidate(popup) && Bt(&popup->task_flags,TASKf_AWAITING_MSG)) {
+    if(popup && TaskValidate(popup)) {
       doc=popup->display_doc;
-      if(doc && doc->win_task==popup && doc->desc!='Menu') {
+      if(doc && doc->win_task==popup && StrFind("popup-ed-input.DD",doc->filename.name)) {
         pe_seen++;
         PostMsg(popup,MSG_KEY_DOWN,'Z',0);
         if(pe_mode)PostMsg(popup,MSG_KEY_DOWN,CH_SHIFT_ESC,0);

@@ -12,5 +12,6 @@ restoration of terminal attributes, scroll offsets, title, document cursor
 visibility, window bounds, working directory and VGA palette. All eight checks
 pass with unchanged inputs (`build/i386-task-settings-reference-v3`). Sound,
 autocomplete, task suspension, failure cleanup and cross-task behavior remain
-outside this fixture. The native red check is running at
-`build/i386-task-settings-native-red`. C1–C5 remain open.
+outside this fixture. The native fixture is rejected earlier at the missing public `DirCur` binding
+(`build/i386-task-settings-native-red`); this is a prerequisite of the
+settings contract as well as of the original implementation. C1–C5 remain open.
