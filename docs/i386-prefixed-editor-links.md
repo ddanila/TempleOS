@@ -166,3 +166,21 @@ ordinary-include/drive-fields smoke pass (`build/doc-parent-edit-rebuild-v1.log`
 `build/i386-doc-parent-edit-cross-v1`, `build/i386-doc-parent-edit-smoke-8m`).
 These cases do not qualify all directory contexts, parent-search orders,
 failures, editor flags or link types.
+
+`Ed` now routes two-letter editor-link prefixes through the original
+`EdLinkCvt` before selecting an implemented file or borrowed-document path.
+This lets `MN:` source-symbol links resolve recursively to those supported link
+types; unsupported converted types remain unimplemented. Original, shared
+original and native tests cover uppercase and lowercase `MN:` resolving to a
+source symbol whose target is an in-memory line link, including a real edit,
+target lifetime, locks and task roles. A missing symbol in bail mode is also
+checked (`build/i386-doc-symbol-link-original-v2`,
+`build/i386-doc-symbol-link-shared-v2`, `build/i386-doc-symbol-link-native-v1`;
+runner `tools/test-i386-doc-symbol-link.py`). The previous native image failed
+the symbol session after treating the link as a filename
+(`build/i386-doc-symbol-link-native-red-v1`). Both original bootstrap
+generations, the cross-build/386 audit, the parent-file regression and an 8 MiB
+ordinary-include/drive-fields smoke pass (`build/doc-symbol-link-rebuild-v1.log`,
+`build/i386-doc-symbol-link-cross-v1`, `build/i386-doc-symbol-parent-regression-v1`,
+`build/i386-doc-symbol-link-smoke-8m`). This does not qualify all symbol target
+types, address links, dictionary/help/Bible links, popup or error handling.

@@ -1137,6 +1137,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-parent-link-native-v1/result.json",
           "scope": "Bail parent lookup for exact and compressed alternate; bounded cases, not full directory-context qualification"
+        },
+        {
+          "target": "original-symbol-editor-link",
+          "command": "python3 tools/test-i386-doc-symbol-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-symbol-link-original-v2/result.json",
+          "scope": "Upper/lower MN: source symbol resolving to in-memory line link, real edit, lifetime/locks/roles and missing symbol bail; not all targets"
+        },
+        {
+          "target": "shared-symbol-editor-link",
+          "command": "python3 tools/test-i386-doc-symbol-link.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-symbol-link-shared-v2/result.json",
+          "scope": "Upper/lower MN: source symbol resolving to in-memory line link, real edit, lifetime/locks/roles and missing symbol bail; not all targets"
+        },
+        {
+          "target": "native-symbol-editor-link",
+          "command": "python3 tools/test-i386-doc-symbol-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-symbol-link-native-v1/result.json",
+          "scope": "Upper/lower MN: source symbol resolving to in-memory line link, real edit, lifetime/locks/roles and missing symbol bail; not all targets"
         }
       ]
     },
@@ -1726,6 +1747,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-parent-link-native-v1/result.json",
           "scope": "Bail parent lookup for exact and compressed alternate; bounded cases, not full directory-context qualification"
+        },
+        {
+          "target": "original-symbol-editor-link",
+          "command": "python3 tools/test-i386-doc-symbol-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-symbol-link-original-v2/result.json",
+          "scope": "Upper/lower MN: source symbol resolving to in-memory line link, real edit, lifetime/locks/roles and missing symbol bail; not all targets"
+        },
+        {
+          "target": "shared-symbol-editor-link",
+          "command": "python3 tools/test-i386-doc-symbol-link.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-symbol-link-shared-v2/result.json",
+          "scope": "Upper/lower MN: source symbol resolving to in-memory line link, real edit, lifetime/locks/roles and missing symbol bail; not all targets"
+        },
+        {
+          "target": "native-symbol-editor-link",
+          "command": "python3 tools/test-i386-doc-symbol-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-symbol-link-native-v1/result.json",
+          "scope": "Upper/lower MN: source symbol resolving to in-memory line link, real edit, lifetime/locks/roles and missing symbol bail; not all targets"
         }
       ]
     },

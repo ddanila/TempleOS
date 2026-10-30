@@ -1583,15 +1583,7 @@ public Bool Ed(U8 *filename,I64 flags=0)
   Bool accept,result=FALSE,other_found=FALSE,borrowed=FALSE;
   if(!filename || !*filename) return FALSE;
   try {
-    if((ToUpper(filename[0])=='F' &&
-        (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='L' ||
-         ToUpper(filename[1])=='F' || ToUpper(filename[1])=='A') ||
-        ToUpper(filename[0])=='P' &&
-        (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='L' ||
-         ToUpper(filename[1])=='F') ||
-        ToUpper(filename[0])=='A' &&
-        (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='A' ||
-         ToUpper(filename[1])=='F' || ToUpper(filename[1])=='L')) && filename[2]==':') {
+    if(filename[1] && filename[2]==':') {
       link_type=EdLinkCvt(filename,&resolved,&needle,&line,flags);
       if(LK_DOC<=link_type<=LK_DOC_LINE) borrowed=TRUE;
       else if(link_type==LK_PLAIN || link_type==LK_PLAIN_LINE || link_type==LK_PLAIN_FIND)
