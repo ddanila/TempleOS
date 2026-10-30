@@ -63,6 +63,16 @@ with 128 immediate-push, 22 publication and 28 program-publication cases, both
 memory phases and nine behavior/VGA checks. The report is
 `build/i386-c2-editor-dialogs-gates.json`.
 
+### Original block-device initializer source (2026-10-30)
+
+The complete original BlkDevInit body is shared byte-for-byte, including RAM,
+ISO-file, ATA, ATAPI and cache branches. Both original rebuild generations and
+the rebuilt-original nine-case drive-state oracle pass with unchanged inputs.
+The cross-build/386 audit passes with 1537 source and 24 build hashes unchanged.
+The oracle does not qualify all initializer branches. The native binding and
+its underlying media, formatting and cache dependencies remain open; no drive
+or directory-context milestone is closed. See docs/i386-directory-context.md.
+
 ### Canonical directory-context record (2026-10-30)
 
 The byte-identical original CDirContext record is shared by KernelA and native

@@ -640,3 +640,16 @@ layout check passes all three commands with unchanged inputs in
 It checks all four field offsets and record size, not directory operations. Its
 60.909667-second startup observation was concurrent and is not a timing gate.
 Full Drv, block-device initialization and DirContextNew/Del remain open.
+
+## Original block-device initializer source (2026-10-30)
+
+The complete `BlkDevInit` body is shared unchanged in
+`Kernel/BlkDev/BlockDevInitCore.HC`; all RAM, ISO-file, ATA, ATAPI and cache
+branches remain present. Both original rebuild generations and the cross-build/
+386 audit pass, with 1537 source and 24 build-input hashes unchanged in
+`build/i386-blockdev-init-share-cross`. The rebuilt original drive-state control passes its nine existing cases with unchanged
+inputs in `build/i386-blockdev-init-share-reference`. That control covers
+lookup, same-drive reset, errors and restoration, not all initializer branches.
+The native provider is not yet bound: its formatting, file-backed media, ATA,
+ATAPI and cache dependencies must retain their original behavior. This
+extraction alone does not implement Drv or DirContextNew/Del.
