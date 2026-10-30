@@ -43,6 +43,8 @@ def guest(image,out,commands,ram_mib=64,capture_input=False,key_delay=.3):
         for ch in text:
             if ch=='\n':press('ret');time.sleep(key_delay);continue
             if ch=='\x1b':press('esc');time.sleep(key_delay);continue
+            if ch=='\x1c':
+                key('shift',True);press('esc');key('shift',False);time.sleep(key_delay);continue
             shift=ch.isupper() or ch in SHIFTED;name=PLAIN.get(ch,ch.lower())
             if shift:key('shift',True)
             press(name)

@@ -27,7 +27,7 @@ def main():
         if {n:hashlib.sha256(v).hexdigest() for n,v in files.items()}!=expected:raise ValueError('TimeClock source differs from original')
         shutil.copyfile(source,image)
         guest=runpy.run_path(str(helper))['guest']
-        guest(image,out/'first',['#include "C:/Apps/TimeClock/Load.HC"',('PunchIn;','alpha\nbeta\n\x1b'),('PunchOut;','finish\n\x1b'),('PunchIn;','\x1b'),('PunchOut;','\x1b'),SAVE,'PhysicalSave;'],64,True)
+        guest(image,out/'first',['#include "C:/Apps/TimeClock/Load.HC"',('PunchIn;','alpha\nbeta\n\x1b'),('PunchOut;','finish\n\x1b'),('PunchIn;','discard\x1c'),('PunchOut;','\x1b'),SAVE,'PhysicalSave;'],64,True)
         first=read(image,{'/physical.DATA'})['/physical.DATA'];records=decode(first)
         if [(kind,desc) for kind,date,desc in records]!=[(1,b'alpha\nbeta\n'),(2,b'finish\n'),(1,b''),(2,b'')]:raise ValueError('Punch records differ from original input contract')
         if any(records[i][1]<records[i-1][1] for i in range(1,len(records))):raise ValueError('Punch dates went backwards')

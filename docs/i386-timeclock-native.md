@@ -105,7 +105,8 @@ regression with unchanged inputs (`build/i386-keyboard-helper-welcome-8m`);
 this concurrent run does not qualify startup timing.
 
 The emulated-keyboard runner has been extended to check empty descriptions.
-Its expanded run is in progress at `build/i386-timeclock-keyboard-cancel-native`;
-the earlier passing result covers only the two nonempty descriptions. Despite
-the run directory name, this uses Escape to accept empty input; the original
-cancellation path uses Shift+Escape and remains to be tested.
+The expanded run passes across a cold reboot with unchanged inputs
+(`build/i386-timeclock-keyboard-cancel-native`). Despite the run directory
+name and its stated scope, it uses Escape to accept empty input. A corrected
+run enters text and uses Shift+Escape to cancel it; that run is in progress
+at `build/i386-timeclock-keyboard-shift-escape-native`.
