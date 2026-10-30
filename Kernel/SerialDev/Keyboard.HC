@@ -97,62 +97,7 @@ U0 KbdTypeMatic(U8 delay)
   }
 }
 
-I64 Char2ScanCode(I64 ch,I64 sc_flags=0)
-{//ASCII val to scan code (Slow).
-  I64 i;
-  U8 *table;
-  if (sc_flags) {
-    table=NORMAL_KEY_SCAN_DECODE_TABLE;
-    if (sc_flags & SCF_CTRL || ch<26)
-      table=CTRL_KEY_SCAN_DECODE_TABLE;
-    else if (sc_flags & SCF_SHIFT || 'A'<=ch<='Z') {
-      if (!(sc_flags & SCF_CAPS))
-	table=SHIFT_KEY_SCAN_DECODE_TABLE;
-    } else {
-      if (sc_flags & SCF_CAPS)
-	table=SHIFT_KEY_SCAN_DECODE_TABLE;
-    }
-    for (i=0;i<0x50;i++)
-      if (table[i]==ch)
-	return i|sc_flags;
-    return sc_flags;
-  } else {
-    table=NORMAL_KEY_SCAN_DECODE_TABLE;
-    for (i=0;i<0x50;i++)
-      if (table[i]==ch)
-	return i;
-    table=SHIFT_KEY_SCAN_DECODE_TABLE;
-    for (i=0;i<0x50;i++)
-      if (table[i]==ch)
-	return i|SCF_SHIFT;
-    table=CTRL_KEY_SCAN_DECODE_TABLE;
-    for (i=0;i<0x50;i++)
-      if (table[i]==ch)
-	return i|SCF_CTRL;
-    return 0;
-  }
-}
-
-U8 ScanCode2Char(I64 sc)
-{//Scan code to ASCII val.
-  U8 *table=NORMAL_KEY_SCAN_DECODE_TABLE;
-  if (sc&SCF_E0_PREFIX)
-    return 0;
-  if (sc&SCF_CTRL)
-    table=CTRL_KEY_SCAN_DECODE_TABLE;
-  else if (sc&SCF_SHIFT) {
-    if (!(sc&SCF_CAPS))
-      table=SHIFT_KEY_SCAN_DECODE_TABLE;
-  } else {
-    if (sc&SCF_CAPS)
-      table=SHIFT_KEY_SCAN_DECODE_TABLE;
-  }
-  sc&=0x7F;
-  if (sc>=0x50)
-    return 0;
-  else
-    return table[sc];
-}
+#include "/Kernel/SerialDev/KeyScanTranslateCore.HC"
 
 U8 scan_code_map[0x100]={
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -200,58 +145,7 @@ U8 num_lock_map[0x100]={
 
 #include "/Kernel/KeyNameCore.HC"
 
-U8 *ScanCode2KeyName(I64 sc)
-{//Scan code to key name.
-  I64 ch;
-  U8 buf[STR_LEN],*st;
-  *buf=0;
-  if (sc&SCF_CTRL)
-    CatPrint(buf,"CTRL ");
-  if (sc&SCF_ALT)
-    CatPrint(buf,"ALT ");
-  if (sc&SCF_SHIFT)
-    CatPrint(buf,"SHIFT ");
-  if (sc&SCF_NO_SHIFT)
-    CatPrint(buf,"      ");
-  if (ch=ScanCode2Char(sc&255)) {
-    st=Char2KeyName(ch,FALSE);
-    StrCpy(buf+StrLen(buf),st);
-    Free(st);
-  } else {
-    switch (sc&255) {
-      case SC_BACKSPACE:CatPrint(buf,"BACK");	break;
-      case SC_CAPS:	CatPrint(buf,"CAPS");	break;
-      case SC_NUM:	CatPrint(buf,"NUM");	break;
-      case SC_SCROLL:	CatPrint(buf,"SCROLL");	break;
-      case SC_CURSOR_UP:CatPrint(buf,"UP");	break;
-      case SC_CURSOR_DOWN:CatPrint(buf,"DOWN");	break;
-      case SC_CURSOR_LEFT:CatPrint(buf,"LEFT");	break;
-      case SC_CURSOR_RIGHT:CatPrint(buf,"RIGHT"); break;
-      case SC_PAGE_UP:	CatPrint(buf,"PAGE_UP");  break;
-      case SC_PAGE_DOWN:CatPrint(buf,"PAGE_DOWN");break;
-      case SC_HOME:	CatPrint(buf,"HOME");	break;
-      case SC_END:	CatPrint(buf,"END");	break;
-      case SC_INS:	CatPrint(buf,"INS");	break;
-      case SC_DELETE:	CatPrint(buf,"DELETE");	break;
-      case SC_F1:	CatPrint(buf,"F1");	break;
-      case SC_F2:	CatPrint(buf,"F2");	break;
-      case SC_F3:	CatPrint(buf,"F3");	break;
-      case SC_F4:	CatPrint(buf,"F4");	break;
-      case SC_F5:	CatPrint(buf,"F5");	break;
-      case SC_F6:	CatPrint(buf,"F6");	break;
-      case SC_F7:	CatPrint(buf,"F7");	break;
-      case SC_F8:	CatPrint(buf,"F8");	break;
-      case SC_F9:	CatPrint(buf,"F9");	break;
-      case SC_F10:	CatPrint(buf,"F10");	break;
-      case SC_F11:	CatPrint(buf,"F11");	break;
-      case SC_F12:	CatPrint(buf,"F12");	break;
-      case SC_GUI:	CatPrint(buf,"WINDOWS");  break;
-      case SC_PRTSCRN1:	CatPrint(buf,"PRTSCRN1"); break;
-      case SC_PRTSCRN2:	CatPrint(buf,"PRTSCRN2"); break;
-    }
-  }
-  return StrNew(buf);
-}
+#include "/Kernel/SerialDev/KeyScanNameCore.HC"
 
 U0 KbdBuildSC(U8 raw_byte,Bool in_irq,U8 *_last_raw_byte,I64 *_last_sc)
 {

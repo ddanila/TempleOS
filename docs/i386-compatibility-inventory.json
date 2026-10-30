@@ -14359,9 +14359,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Compare public scan decoding, inverse character mapping and key-name strings across modifier combinations; retain separate physical input coverage.",
+      "oracle": "Exact 186880-byte tables compare 256 inputs under ten modifier sets across pinned original, rebuilt original and native. This does not qualify the complete keyboard driver or key-map UI.",
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-public-scan-translation.py --rebuilt-original --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-scan-translation-rebuilt-original-v1/result.json",
+          "scope": "Rebuilt original scan and inverse conversion and key-name table; compare hash with pinned original"
+        },
+        {
+          "command": "python3 tools/test-i386-public-scan-translation.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-scan-translation-native-v2/result.json",
+          "scope": "Exact conversion and key-name bytes against pinned original under ten modifier sets"
+        }
+      ]
     },
     {
       "path": "Kernel/SerialDev/MakeSerialDev.HC",

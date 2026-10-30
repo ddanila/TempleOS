@@ -5,6 +5,9 @@
 #include "/Kernel/KeyDevTypes.HH"
 #include "/Kernel/ScanFlags.HH"
 #include "/Kernel/GetStrFlags.HH"
+public _extern _CHAR_2_SCAN_CODE I64 Char2ScanCode(I64 ch,I64 sc_flags=0);
+public _extern _SCAN_CODE_2_CHAR U8 ScanCode2Char(I64 sc);
+public _extern _SCAN_CODE_2_KEY_NAME U8 *ScanCode2KeyName(I64 sc);
 public _extern _KEYDEV CKeyDevGlbls keydev;
 public _extern _CHAR_2_KEY_NAME U8 *Char2KeyName(I64 ch,Bool include_ctrl=TRUE);
 public _extern _KEY_DESC_SET U0 KeyDescSet(U8 *fmt,...);

@@ -56,3 +56,12 @@ After publishing `tS`, the same diagnostic advances to the unbound
 (`build/i386-autocomplete-stream-probe-v4`). It still uses deliberately
 throwing stream providers; the real `FOpen` dependency and autocomplete
 execution remain unimplemented. See [elapsed seconds](i386-elapsed-seconds.md).
+
+The original scan-code conversion and naming services required by key maps
+are now public on native and have an exhaustive bounded differential fixture;
+see [scan translation](i386-scan-translation.md). The compile-only stream
+probe still stops at `KeyMapFamily` on `ACTask.HC` line 180
+(`build/i386-autocomplete-scan-translation-probe-v1`). The key-map routines
+need their remaining dependencies and careful pointer-width handling: their
+original pointer array is sorted as 64-bit slots. Real streams and autocomplete
+remain open.
