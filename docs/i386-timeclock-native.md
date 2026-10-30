@@ -89,10 +89,12 @@ total, with unchanged inputs (`build/i386-suspended-rich-report-vga`). This
 is scoped to those states; desktop startup, general callbacks, physical input,
 performance and full application qualification remain open.
 
-A separate in-progress keyboard test exercises the unchanged TimeClock
+A separate keyboard test exercises the unchanged TimeClock
 `PunchIn` and `PunchOut` commands using QEMU PS/2 key events, including
 multiline descriptions. It reads the resulting typed records and checks them
-again after a cold reboot. The test is retained in
+again after a cold reboot. At 64 MiB, both records match the entered
+descriptions and the saved bytes survive a cold reboot; all pinned inputs
+remain unchanged. The test is retained in
 `tools/test-i386-timeclock-keyboard.py`; its run is recorded in
 `build/i386-timeclock-keyboard-native`. This is an emulated-keyboard test,
 not a physical-hardware or full application qualification. The longer retained
