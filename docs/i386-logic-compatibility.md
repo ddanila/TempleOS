@@ -187,3 +187,23 @@ No native synthesis case has run.
 The candidate also passes an 8 MiB ordinary-include and drive-fields smoke
 check (`build/i386-public-sprite-smoke-8m`), not full minimal-profile or
 startup timing qualification.
+
+The native console now publishes all four original-layout progress records and
+their 20 named field aliases. An independent fixture verifies alias addresses
+and bidirectional writes on the pinned original and the native image (mask 63,
+unchanged inputs; `build/i386-public-progress-original-v1`,
+`build/i386-public-progress-native-v1`; runner
+`tools/test-i386-public-progress.py`). The prior native image lacks the public
+record (`build/i386-public-progress-native-red`). This covers shared state,
+not progress bar display, reset, registry timing, concurrent updates or full
+desktop integration. Both bootstrap generations and the native cross-build
+and instruction audit pass (`build/public-progress-rebuild-v1.log`,
+`build/i386-public-progress-cross-v1`).
+
+Logic now gets past `progress1` and is rejected at line 524 immediately after
+its unbound `ProgressBarsRst` call (`build/i386-logic-native-public-progress-v1`).
+The fixture independently verifies the line 524 `progress1_max` assignment's
+public binding; no native synthesis case has run.
+The candidate also passes an 8 MiB ordinary-include and drive-fields smoke
+check (`build/i386-public-progress-smoke-8m`), not full minimal-profile or
+startup timing qualification.

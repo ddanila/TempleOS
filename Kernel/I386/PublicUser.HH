@@ -22,6 +22,7 @@
 #include "/Kernel/I386/PublicMacro.HH"
 #include "/Kernel/I386/PublicMenu.HH"
 #include "/Kernel/I386/PublicExecution.HH"
+#include "/Kernel/I386/PublicProgress.HH"
 #ifdef I386_GRAPHICS_STARTED
 #include "/Kernel/I386/PublicRaster.HH"
 #endif
