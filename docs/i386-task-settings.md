@@ -62,3 +62,18 @@ available, but the unchanged source load next rejects `FOpen`; dictionary
 assets are also absent from the tested native image. See
 [autocomplete state evidence](i386-autocomplete-state.md). The actual task,
 initialization and settings stack remain open.
+
+The complete original `SettingsPush`, `SettingsPop2` and `SettingsPop` bodies
+are now shared byte-for-byte through `Adam/TaskSettingsCore.HC`; the original
+`TaskSettings.HC` retains its help index and includes that core. Original-system
+runs using the extracted source pass the nested-restoration mask 255 and the
+task-lifecycle mask 127 with unchanged inputs
+(`build/i386-task-settings-shared-original` and
+`build/i386-task-settings-tasks-shared-original`). Both runners accept
+`--shared` to repeat these checks against the current source. These checks do
+not cover autocomplete, audio waveform, cross-task behavior or failure cleanup.
+Both bootstrap generations and the 386 cross-build/audit pass
+(`build/rebuild-test`, `build/i386-task-settings-shared-cross`). The native
+stack remains unbound pending its full dependencies, including the
+real autocomplete lifecycle and drive initialization; Budget and C1–C5 remain
+open.

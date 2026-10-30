@@ -3751,9 +3751,31 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Push nested task settings and restore document, terminal, window, palette and directory state; exercise song and animation task suspension, replacement and resumption including TSF_SAME_SONG.",
+      "oracle": "The original fixtures compare settings restoration and task lifecycle against masks 255 and 127. They do not cover autocomplete, audio waveform, cross-task operation or failure cleanup; native settings functions remain unbound.",
+      "tests": [
+        {
+          "target": "shared-original-settings",
+          "command": "python3 tools/test-i386-task-settings.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-task-settings-shared-original/result.json",
+          "scope": "Nested task/document/window/palette/directory restoration, mask 255"
+        },
+        {
+          "target": "shared-original-task-lifecycle",
+          "command": "python3 tools/test-i386-task-settings-tasks.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-task-settings-tasks-shared-original/result.json",
+          "scope": "Song and animation suspension, replacement and resumption, mask 127"
+        },
+        {
+          "target": "native-settings",
+          "command": "python3 tools/test-i386-task-settings.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-task-settings-native-red-v2/result.json",
+          "scope": "Preceding native image rejected at missing SettingsPush before settings cases ran"
+        }
+      ]
     },
     {
       "path": "Adam/Training.HC",

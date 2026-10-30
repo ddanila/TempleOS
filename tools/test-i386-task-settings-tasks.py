@@ -13,16 +13,18 @@ ROOT=Path(__file__).resolve().parents[1]
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk',type=Path,nargs='?')
+    parser.add_argument('--shared',action='store_true',help='Use current shared original settings sources')
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
     parser.add_argument('--out',type=Path,required=True)
     args=parser.parse_args()
+    if args.disk and args.shared:parser.error('--shared is only for the original-system run')
     out=args.out.resolve()
     if out.exists():parser.error('Use a fresh output directory')
     out.mkdir(parents=True)
     fixture=ROOT/'tests/guest/i386-task-settings-tasks/Contract.HC'
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     inputs=[Path(__file__).resolve(),fixture]
-    report=dict(result='running',mode='native' if args.disk else 'pinned-original',
+    report=dict(result='running',mode='native' if args.disk else 'shared' if args.shared else 'pinned-original',
                 scope='Original settings song and animation suspension, replacement task cleanup, resumption and TSF_SAME_SONG behavior; not audio waveform, autocomplete or failure cleanup qualification')
     if args.disk:
         inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC')]
@@ -31,6 +33,10 @@ def main():
         reference=runpy.run_path(str(inputs[-3]))
         overlay=out/'overlay';overlay.mkdir()
         report['reference_sha256']=reference['restore_reference'](overlay)
+        if args.shared:
+            for name in ('Adam/TaskSettings.HC','Adam/TaskSettingsCore.HC'):
+                path=ROOT/name;inputs.append(path)
+                target=overlay/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(path.read_bytes())
     report['input_sha256']={str(p):sha(p) for p in inputs}
     try:
         if args.disk:
