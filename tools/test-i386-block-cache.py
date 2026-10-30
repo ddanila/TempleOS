@@ -23,7 +23,7 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     inputs=[Path(__file__).resolve(),fixture]
     report=dict(result='running',mode='native' if args.disk else 'pinned-original',
-                scope='RAM-backed mixed hit/miss reads, drive isolation, write coherence and invalidation; not ATA or ISO qualification')
+                scope='RAM-backed mixed hit/miss reads, drive isolation, write coherence and drive-specific invalidation; not eviction, ATA or ISO qualification')
     if args.disk:
         inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','Kernel/FontStd.HC')]
     else:
@@ -36,7 +36,7 @@ def main():
         if args.disk:
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions={'/BlockCache.HC':fixture.read_bytes()})
-            commands=[('#include "C:/BlockCache.HC"',[]),('BCContract;',['63']),('6*7;',['42'])]
+            commands=[('#include "C:/BlockCache.HC"',[]),('BCContract;',['127']),('6*7;',['42'])]
             report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](disk,out/'guest',snapshot=False,ram_mib=args.ram_mib,cpu='486,-fpu',accel='tcg',qmp_stdio=True,startup_check={'status':'ok','answers':[],'commands':commands,'command_timeout':120,'rejection_prefixes':('INPUT REJECT ',)})
             files=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,{'/BlockCache.HC'})
             if files['/BlockCache.HC']!=fixture.read_bytes():raise ValueError('Delivered fixture changed')
@@ -48,7 +48,7 @@ def main():
             subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(overlay),'--output',str(iso)],cwd=ROOT,check=True)
             report['iso_sha256']=sha(iso)
             subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),'--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
-            if 'BLOCK CACHE MASK 63\n' not in (out/'guest/debug.log').read_text():raise ValueError('Original block cache contract failed')
+            if 'BLOCK CACHE MASK 127\n' not in (out/'guest/debug.log').read_text():raise ValueError('Original block cache contract failed')
         report['result']='pass'
     except Exception as exc:
         report.update(result='fail',error=str(exc));raise

@@ -28,7 +28,11 @@ I64 BCContract()
     dv2.bd=&bd2;bd2.RAM_dsk=storage2;storage2[0]=88;
     MemSet(buf,0,512);ok=BlkRead(&dv2,buf,0,1);
     if(ok && buf[0]==88 && BlkRead(&dv,buf,0,1) && buf[0]==12)mask|=32;
-    DskCacheInvalidate(&dv2);Free(storage2);
+    storage[0]=99;
+    DskCacheInvalidate(&dv2);
+    MemSet(buf,0,512);ok=BlkRead(&dv,buf,0,1);
+    if(ok && buf[0]==12)mask|=64;
+    Free(storage2);
   }
   DskCacheInvalidate(&dv);Free(storage);Free(buf);Free(src);return mask;
 }

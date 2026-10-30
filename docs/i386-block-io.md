@@ -64,6 +64,11 @@ with cached leading and trailing sectors around an uncached middle sector, and
 that cache entries for two drives do not alias. This is original behavior
 evidence, not a native cache result.
 
+The pinned-original contract now also checks that invalidating one drive does
+not discard another drive's cached sector. The expanded mask 127 passes with
+unchanged inputs (`build/i386-block-cache-selective-reference`). Eviction,
+concurrency, ATA, ISO and native cache behavior remain unqualified.
+
 The original `CCacheBlk` and `CBlkDevGlbls` declarations are shared in
 `Kernel/BlkDev/BlockGlobalsTypes.HH` and included by the native public file
 header. Both original rebuild generations and the 386 cross-build/audit pass.
