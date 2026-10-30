@@ -197,3 +197,14 @@ I64 ExePutS(U8 *buf,U8 *filename=NULL,I64 flags=0,
   return value;
 }
 #include "/Compiler/ExePrintCore.HC"
+
+I64 ExePrint2(U8 *fmt,...)
+{//Prompt expressions require a compilation error to unwind to the caller.
+  I64 value=0;
+  U8 *buf=StrPrintJoin(NULL,fmt,argc,argv);
+  try {
+    if(!ConsoleSourceResult(buf,NULL,0,&value,NULL,TRUE))throw('Compiler',TRUE);
+  } catch {Free(buf);}
+  Free(buf);
+  return value;
+}

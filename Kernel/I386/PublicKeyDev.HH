@@ -1,5 +1,7 @@
 #ifndef I386_PUBLIC_KEYDEV_INCLUDED
 #define I386_PUBLIC_KEYDEV_INCLUDED
+#include "/Kernel/NumericLimits.HH"
+#include "/Kernel/TimeTypes.HH"
 #include "/Kernel/KeyDevTypes.HH"
 #include "/Kernel/ScanFlags.HH"
 #include "/Kernel/GetStrFlags.HH"
@@ -13,6 +15,9 @@ public _extern _KEY_DEV_REM U0 KeyDevRem(CKeyDevEntry *entry);
 public _extern _SCAN_KEY Bool ScanKey(I64 *ch=0,I64 *sc=0,Bool echo=FALSE);
 public _extern _GET_KEY I64 GetKey(I64 *sc=0,Bool echo=FALSE,Bool raw_cursor=FALSE);
 public _extern _GET_STR U8 *GetStr(U8 *msg=NULL,U8 *dft=NULL,I64 flags=0);
+public _extern _GET_I64 I64 GetI64(U8 *msg=NULL,I64 dft=0,I64 lo=I64_MIN,I64 hi=I64_MAX);
+public _extern _GET_F64 F64 GetF64(U8 *msg=NULL,F64 dft=0,F64 lo=F64_MIN,F64 hi=F64_MAX);
+public _extern _GET_DATE CDate GetDate(U8 *msg=NULL,CDate dft=I64_MIN,CDate lo=I64_MIN,CDate hi=I64_MAX);
 public _extern _DOC_GET_STR2 U8 *DocGetStr2(I64 flags=0);
 public _extern _FP_GETSTR2 U8 *(*fp_getstr2)(I64 flags=0);
 #endif

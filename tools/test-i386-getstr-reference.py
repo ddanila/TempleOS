@@ -47,7 +47,7 @@ def main():
         for name in ('Kernel/SerialDev/Message.HC', 'Kernel/GetStrCore.HC',
                      'Kernel/KeyGetCore.HC', 'Kernel/KeyScanCore.HC',
                      'Kernel/KeyDescFlag.HH', 'Kernel/GetStrFlags.HH', 'Adam/DolDoc/DocGet.HC',
-                     'Adam/DolDoc/DocGetStrCore.HC', 'Adam/DolDoc/DocGetKeyCore.HC',
+                     'Adam/DolDoc/DocGetStrCore.HC', 'Adam/DolDoc/DocGetNumberCore.HC', 'Adam/DolDoc/DocGetKeyCore.HC',
                      'Adam/DolDoc/DocScanLineCore.HC'):
             path = ROOT/name
             (overlay/name).parent.mkdir(parents=True, exist_ok=True)

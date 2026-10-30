@@ -130,3 +130,20 @@ export. A separate JIT invocation checks the source's exact four binary bytes
 and size (`build/i386-document-include-aot-v1`; runner
 `tools/test-i386-document-include-aot.py`). This does not execute or install
 the emitted module or establish general AOT document compatibility.
+
+The shared original `GetI64`, `GetF64` and `GetDate` prompt helpers are now
+published by the native console. Scripted original and native runs check
+integer defaults and expressions, range retry, exact floating-point result
+bits and a date default (mask 31; `build/i386-numeric-prompt-original-v7`).
+The native test additionally verifies that an invalid expression is rejected
+and the next expression succeeds (mask 63; `build/i386-numeric-prompt-native-v4`).
+The original invalid-expression probe entered its debugger
+(`build/i386-numeric-prompt-original-v6`) and is not a differential pass.
+Physical keyboard input and cancellation require separate checks. Both bootstrap
+generations and the native cross-build/audit pass
+(`build/numeric-prompt-rebuild-v5.log`, `build/i386-numeric-prompt-cross-v5`).
+The unchanged Logic load advances to missing `GrPrint` at line 190
+(`build/i386-logic-native-numeric-v2`); no native synthesis case has run.
+An 8 MiB ordinary-include and RedSea drive-fields smoke test also passes with
+unchanged inputs (`build/i386-numeric-prompt-smoke-8m`); this is not a full
+minimal-profile or startup timing qualification.
