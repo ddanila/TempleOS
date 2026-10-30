@@ -58,7 +58,14 @@ Bool I386LexPop(CI386Heap *heap,CCmpCtrl *cc,Bool restore=TRUE)
   Bool result=FALSE,found,pinned;
   if(!cc || !(snapshot=cc->lex_prs_stk) ||
       !I386LexSnapshotValid(heap,cc,snapshot)) goto done;
-  if(!I386LexSnapshotsPin(heap,cc,snapshot->active,&pinned)) goto done;
+  //The head is already valid under IRQ exclusion. Validate the remaining
+  //snapshots before mutation without rescanning the head; this call only
+  //checked validity, and its pin result was not used.
+  {
+    CI386LexSnapshot *tail;
+    for(tail=snapshot->file.next;tail;tail=tail->file.next)
+      if(!I386LexSnapshotValid(heap,cc,tail)) goto done;
+  }
   if(restore) {
     found=snapshot->active==cc->lex_include_stk;
     for(saved=snapshot->parents;saved;saved=saved->next)

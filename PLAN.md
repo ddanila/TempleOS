@@ -117,6 +117,17 @@ passes four commands covering every field and file flags with unchanged inputs;
 its concurrent startup timing is not an isolated gate. File-backed I/O and
 full media initialization remain open. See docs/i386-block-io.md.
 
+### Lexer snapshot pop validation candidate (2026-10-30)
+
+The 386 lexer pop validates the head snapshot once, then validates each tail
+snapshot before mutation under the same interrupt exclusion. The preceding
+pin calculation's result was unused. This retains complete heap validation
+for every snapshot, including corrupted-tail rejection, while avoiding a
+duplicate head scan. Both original rebuild generations, the native lexer-state
+and snapshot-boundary tests, and the 386 cross-build/audit pass with 1545
+source and 24 build inputs unchanged. Isolated resource gates are pending; no
+startup improvement is yet claimed. See docs/i386-lex-pop-validation.md.
+
 ### Native block-device array in shared globals (2026-10-30)
 
 The kernel supplies the console's block-device array through the same
