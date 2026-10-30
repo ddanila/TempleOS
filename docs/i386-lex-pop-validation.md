@@ -13,5 +13,9 @@ tail snapshots and later heap corruption; the cross-build and 386 audit pass
 with 1545 source and 24 build inputs unchanged (`build/i386-lex-pop-tail-cross`).
 The isolated 8 MiB run passes nine behavior/VGA checks, loads no build provider,
 and preserves four inputs, but takes 61.890326 seconds and misses the 60-second
-target (`build/i386-lex-pop-tail-startup`). The 16 MiB diagnostics are running.
-This is not evidence of a measured speedup or C1–C5 completion.
+target (`build/i386-lex-pop-tail-startup`). The 16 MiB diagnostics pass at
+227.653492 seconds with 128 immediate-push, 22 publication and 28
+program-publication cases, both memory phases, nine behavior/VGA checks, no
+build-provider loads and four unchanged inputs (`build/i386-lex-pop-tail-diagnostics`).
+The interactive timing gate remains failed. This is not evidence of a measured
+speedup or C1–C5 completion.

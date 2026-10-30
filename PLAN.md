@@ -128,8 +128,10 @@ and snapshot-boundary tests, and the 386 cross-build/audit pass with 1545
 source and 24 build inputs unchanged. The isolated 8 MiB gate passes nine
 behavior/VGA checks with no build-provider loads and four unchanged inputs,
 but misses the 60-second target at 61.890326 seconds. The 16 MiB diagnostics
-are running; no startup improvement is claimed. See
-docs/i386-lex-pop-validation.md.
+pass at 227.653492 seconds with 128 immediate-push, 22 publication and 28
+program-publication cases, both memory phases, nine behavior/VGA checks, no
+build-provider loads and four unchanged inputs. No startup improvement is
+claimed. See docs/i386-lex-pop-validation.md.
 
 ### Native block-device array in shared globals (2026-10-30)
 
