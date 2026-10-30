@@ -139,8 +139,11 @@ Native drive-map
 contracts pass all 20 commands at 8 and 64 MiB with unchanged inputs; startup
 observations were concurrent. The isolated 8 MiB gate passes nine behavior/VGA
 checks, with no build-provider loads and four unchanged inputs, but misses the
-60-second target at 61.386673 seconds. The 16 MiB diagnostics are running;
-public blkdev state, cache and block I/O remain open. See docs/i386-block-io.md.
+60-second target at 61.386673 seconds. The 16 MiB diagnostics pass at
+233.926988 seconds with 128 immediate-push, 22 publication and 28
+program-publication cases, both memory phases, nine behavior/VGA checks, no
+build-provider loads, and four unchanged inputs. Public blkdev state, cache and
+block I/O remain open. See docs/i386-block-io.md.
 
 ### Shared block cache and global records (2026-10-30)
 

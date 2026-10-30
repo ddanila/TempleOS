@@ -93,8 +93,11 @@ and 62.366616 seconds respectively) were concurrent, not isolated timing
 gates. The isolated 8 MiB gate passes nine behavior/VGA checks with no
 build-provider loads and four unchanged inputs, but misses the 60-second target
 at 61.386673 seconds (`build/i386-drive-global-map-startup`). The 16 MiB
-diagnostics are running. Full block-device state and cache integration remain
-open.
+diagnostics pass at 233.926988 seconds, with 128 immediate-push, 22 publication
+and 28 program-publication cases, both memory phases, nine behavior/VGA checks,
+no build-provider loads, and four unchanged inputs
+(`build/i386-drive-global-map-diagnostics`). The isolated timing gate remains
+failed. Full block-device state and cache integration remain open.
 
 The native ATA/task fixture also verifies that `block_globals.drvs` points to
 the volume table's live records, that the C, D, and E entries refer to the
