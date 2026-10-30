@@ -63,3 +63,11 @@ inputs (`build/i386-block-cache-extended-reference`). It also checks a read
 with cached leading and trailing sectors around an uncached middle sector, and
 that cache entries for two drives do not alias. This is original behavior
 evidence, not a native cache result.
+
+The original `CCacheBlk` and `CBlkDevGlbls` declarations are shared in
+`Kernel/BlkDev/BlockGlobalsTypes.HH` and included by the native public file
+header. Both original rebuild generations and the 386 cross-build/audit pass.
+A native record check timed out after the first declaration command reported
+`COMMAND OK`, before its remaining field checks; inputs were unchanged
+(`build/i386-block-globals-native/record-result.json`). The native record
+layout and cache behavior are not yet qualified.

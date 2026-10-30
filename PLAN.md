@@ -117,6 +117,14 @@ passes four commands covering every field and file flags with unchanged inputs;
 its concurrent startup timing is not an isolated gate. File-backed I/O and
 full media initialization remain open. See docs/i386-block-io.md.
 
+### Shared block cache and global records (2026-10-30)
+
+The original CCacheBlk and CBlkDevGlbls declarations are shared with the
+native public file header. Both original rebuilds and the 386 cross-build and
+instruction audit pass. A native record check timed out after its first command
+reported success, before field verification, with inputs unchanged; native
+layout and cache behavior remain unqualified. See docs/i386-block-io.md.
+
 ### Expanded original block cache reference (2026-10-30)
 
 The expanded pinned-original contract passes mask 63 with unchanged inputs.
