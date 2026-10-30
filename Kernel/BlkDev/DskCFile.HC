@@ -1,10 +1,4 @@
-I64 FSize(CFile *f)
-{//Report size of opened file in bytes.
-  if (f)
-    return f->de.size;
-  else
-    return 0;
-}
+#include "/Kernel/BlkDev/CFileSizeCore.HC"
 
 CFile *FOpen(U8 *filename,U8 *flags,I64 cnt=0)
 {//Allows flags "r","w","w+". "c" for contiguous.

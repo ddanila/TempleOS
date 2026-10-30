@@ -56,6 +56,7 @@ public _extern _I386_BUILD_MODULE I64 I386BuildModule(
 //Link six boot modules to a flat file at 0x11000; publication is separate.
 public _extern _I386_BUILD_BOOT_IMAGE I64 I386BuildBootImage(
   U8 *kernel_module,U8 *helper_directory,U8 *target);
+public _extern _FSIZE I64 FSize(CFile *f);
 public _extern _FILE_READ U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0);
 public _extern _CD Bool Cd(U8 *dirname=0,Bool make_dirs=FALSE);
 public _extern _EXT_DFT U8 *ExtDft(U8 *filename,U8 *extension);

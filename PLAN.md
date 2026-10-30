@@ -63,6 +63,14 @@ with 128 immediate-push, 22 publication and 28 program-publication cases, both
 memory phases and nine behavior/VGA checks. The report is
 `build/i386-c2-editor-dialogs-gates.json`.
 
+### Original FSize accessor (2026-10-30)
+
+ConsoleRuntime 137 publishes the complete, byte-identical original FSize
+function. The pinned-original contract passes mask 15; bootstrap, cross-build
+and 386 audit pass with 1540 source and 24 build hashes unchanged. Native
+64 and 8 MiB each pass three commands with unchanged inputs. Both startup
+observations were concurrent; isolated resource gates remain open. File opening and I/O remain unimplemented. See docs/i386-fsize.md.
+
 ### Canonical file-backed device record (2026-10-30)
 
 The original CFile record and flags are shared byte-for-byte with the native
