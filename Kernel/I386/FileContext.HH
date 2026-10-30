@@ -3,6 +3,8 @@
 #include "/Kernel/I386/FilePaths.HH"
 #include "/Kernel/I386/FileLoad.HH"
 #include "/Kernel/BlkDev/DriveTypes.HH"
+#include "/Kernel/BlkDev/BlockSize.HH"
+#include "/Kernel/BlkDev/BlockGlobalsTypes.HH"
 //Physical mounted backends and independent public drive-letter mappings.
 class CI386ResidentFile {
   CI386ResidentFile *next;
@@ -14,7 +16,7 @@ class CI386FileVolumes {
   CI386RedSea *letter[26]; CI386ResidentFile *resident; CI386Heap *resident_heap;
   //Stable public identities share the lifetime of the mounted-volume table.
   CDrv drives[26];
-  CDrv *drive_map[26];
+  CBlkDevGlbls block_globals;
   Bool map_initialized;
   //Publication state survives public DrvDel clearing the identity itself.
   U32 initialized_drives;

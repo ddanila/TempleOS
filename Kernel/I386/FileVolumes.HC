@@ -31,12 +31,13 @@ CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive)
   I64 i;
   if(!volumes || drive<'A' || drive>'Z')return 0;
   if(!volumes->map_initialized) {
-    for(i=0;i<26;i++)volumes->drive_map[i]=&volumes->drives[i];
+    volumes->block_globals.drvs=volumes->drives;
+    for(i=0;i<26;i++)volumes->block_globals.let_to_drv[i]=&volumes->drives[i];
     volumes->map_initialized=TRUE;
   }
   for(i=0;i<26;i++)if(volumes->letter[i] && !(volumes->initialized_drives&(1<<i)))
     I386TaskFilesDriveInit(volumes,'A'+i);
-  return volumes->drive_map[drive-'A'];
+  return volumes->block_globals.let_to_drv[drive-'A'];
 }
 Bool I386FileVolumeSame(CI386RedSea *a,CI386RedSea *b)
 {

@@ -79,3 +79,15 @@ original and all three commands on 64 MiB native, with inputs unchanged
 body endpoints, array extent and field adjacency; it is not a complete layout
 audit or cache behavior test. The 62.216726-second native startup observation
 was concurrent and is not an isolated timing gate.
+
+The native volume table now stores its drive map in the canonical
+`CBlkDevGlbls.let_to_drv` array and sets `drvs` to its existing drive records
+on lazy initialization. Console mapping and file lookup use that same array;
+no public `blkdev` global or cache provider is published yet. Both original
+rebuild generations, the 386 cross-build/audit (1545 source and 24 build
+inputs unchanged), and the native ATA/task test pass. The native drive-map
+contract passes all 20 commands at 8 and 64 MiB with unchanged inputs in
+`build/i386-drive-global-map-native-8m` and
+`build/i386-drive-global-map-native`. Their startup observations (61.862676
+and 62.366616 seconds respectively) were concurrent, not isolated timing
+gates. Full block-device state and cache integration remain open.

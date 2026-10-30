@@ -117,6 +117,16 @@ passes four commands covering every field and file flags with unchanged inputs;
 its concurrent startup timing is not an isolated gate. File-backed I/O and
 full media initialization remain open. See docs/i386-block-io.md.
 
+### Native drive map in shared block globals (2026-10-30)
+
+The native volume table now stores its existing drive map in the canonical
+CBlkDevGlbls array, sets drvs on initialization, and passes the same array to
+the console. Both original rebuilds, 386 cross-build/audit with 1545 source and
+24 build inputs unchanged, and native ATA/task test pass. Native drive-map
+contracts pass all 20 commands at 8 and 64 MiB with unchanged inputs; startup
+observations were concurrent. Isolated resource gates, public blkdev state,
+cache and block I/O remain open. See docs/i386-block-io.md.
+
 ### Shared block cache and global records (2026-10-30)
 
 The original CCacheBlk and CBlkDevGlbls declarations are shared with the

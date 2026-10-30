@@ -914,7 +914,7 @@ U0 KernelConsoleLoad()
   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
   kernel_console_config.drive_records=kernel_volumes.drives;
-  kernel_console_config.drive_map=kernel_volumes.drive_map;
+  kernel_console_config.drive_map=kernel_volumes.block_globals.let_to_drv;
   kernel_console_config.block_records=kernel_block_devices;
   kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;
   kernel_console_config.input=&kernel_input; kernel_console_config.jiffies=&cnts.jiffies;

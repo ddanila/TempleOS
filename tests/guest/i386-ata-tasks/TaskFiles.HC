@@ -391,11 +391,11 @@ I64 MappedStageTest()
 {//Retained external-record view, owned reservation and shared quarantine/retry.
   CI386TaskFiles *owner=root.file_state;
   CI386ModuleStage *unit;CI386TaskModuleStage *stage;
-  CDrv copy,*source=I386TaskFilesDrive(&task_volumes,'C'),*saved=task_volumes.drive_map['X'-'A'];
+  CDrv copy,*source=I386TaskFilesDrive(&task_volumes,'C'),*saved=task_volumes.block_globals.let_to_drv['X'-'A'];
   U8 bytes[65];I64 i,used=heap.used,allocations=heap.allocations;
   for(i=0;i<sizeof(CDrv);i++)(&copy)(U8 *)[i]=source(U8 *)[i];
   for(i=0;i<65;i++)bytes[i]=i+1;
-  copy.drv_let='X';task_volumes.drive_map['X'-'A']=&copy;
+  copy.drv_let='X';task_volumes.block_globals.let_to_drv['X'-'A']=&copy;
   unit=I386TaskModuleStageNew("X:/Mapped.t32m",65);stage=unit;
   if(!unit || stage->volume==&volumes[0] || stage->volume->public_drive!=&copy ||
       stage->volume->disk!=&disks[0] || stage->volume->backing!=&volumes[0])return 114;
@@ -425,7 +425,7 @@ I64 MappedStageTest()
   if(!(*owner->stage->cleanup)(owner->stage->context) || owner->stage ||
       heap.used!=used || heap.allocations!=allocations || volumes[0].signature ||
       root.io_locks || channel.owner || copy.owning_task || copy.locked_flags)return 112;
-  task_volumes.drive_map['X'-'A']=saved;
+  task_volumes.block_globals.let_to_drv['X'-'A']=saved;
   if(!I386RedSeaMount(&volumes[0],&disks[0],2048) ||
       !I386RedSeaTaskBind(&volumes[0],&volume_io) ||
       !I386TaskFilesDriveInit(&task_volumes,'C'))return 113;
