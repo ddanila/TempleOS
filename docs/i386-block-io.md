@@ -42,3 +42,9 @@ The complete original `BlkRead` and `BlkWrite` bodies are now shared through
 the prior original bodies, and both original rebuild generations pass
 (`build/rebuild-test`). This prepares the source for a native provider; it
 does not bind or implement the native dependencies or qualify block I/O.
+
+A separate pinned-original cache contract passes mask 15 with unchanged inputs
+(`build/i386-block-cache-reference`). On a private RAM-backed drive it checks
+cached reads after underlying storage changes, write coherence, and cache
+invalidation. It does not cover cache eviction, concurrency, ATA, or ISO.
+The native control is running; no native cache qualification is claimed.

@@ -117,6 +117,13 @@ passes four commands covering every field and file flags with unchanged inputs;
 its concurrent startup timing is not an isolated gate. File-backed I/O and
 full media initialization remain open. See docs/i386-block-io.md.
 
+### Original block cache reference (2026-10-30)
+
+The pinned-original private RAM-drive contract passes mask 15 for cached reads,
+write coherence and invalidation, with execution inputs unchanged. Eviction,
+concurrency, ATA and ISO are not covered; the native control is running. See
+docs/i386-block-io.md.
+
 ### Shared original block I/O bodies (2026-10-30)
 
 The complete original BlkRead and BlkWrite bodies are extracted byte-for-byte
