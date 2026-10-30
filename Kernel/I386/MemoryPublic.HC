@@ -145,6 +145,16 @@ U8 *MemoryCAligned(I64 size,I64 alignment,CTask *selector=0,I64 misalignment=0)
   return ptr;
 }
 
+I64 MemoryCompare(U8 *left,U8 *right,I64 count)
+{//The original comparison is unsigned and clears the direction flag.
+  I64 i;
+  asm { CLD }
+  for(i=0;i<count;i++) {
+    if(left[i]<right[i])return -1;
+    if(left[i]>right[i])return 1;
+  }
+  return 0;
+}
 U8 *MemoryCopy(U8 *dst,U8 *src,I64 count)
 {//The public MemCpy primitive copies forward; it is not MemMove.
   I64 i;

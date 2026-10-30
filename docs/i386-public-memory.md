@@ -382,3 +382,16 @@ and all nine interactive/presentation commands at 16 MiB. The committed-input
 audit pins this run to d1dd500b and confirms all 1501 source hashes and recorded
 execution inputs were unchanged. This closes the diagnostic failure described
 above; it does not qualify complete C1-C5 compatibility.
+
+The public `MemCmp` binding now compares unsigned bytes and returns -1, 0 or 1
+for the first mismatch, clearing the direction flag as the original does. The
+pinned-original and 64 MiB native fixtures pass mask 31 for equality, zero
+length, first/final mismatches, prefixes and high-bit ordering, with unchanged
+inputs (`build/i386-memcmp-reference` and `build/i386-memcmp-native`). Both
+original rebuild generations and the native cross-build/386 audit pass
+(`build/i386-memcmp-cross`). A 16 MiB diagnostic run passes both memory probe
+phases, including a direction-flag check, and three selected text/VGA commands
+(`build/i386-memcmp-diagnostics`). Its 228.061685-second startup and the native
+fixture's 63.819592-second startup were concurrent; neither is an isolated
+interactive timing gate. Invalid-address and negative-count behavior were not
+exercised.
