@@ -121,3 +121,13 @@ agreement but a missing held word-wrap entry from the original welcome document.
 This C2 startup gap remains a failing report gate; see
 [i386-timeclock-native.md](i386-timeclock-native.md). Full application qualification
 remains open.
+
+The native TimeClock evidence has advanced beyond those earlier checkpoints:
+unchanged application source now passes a 64 MiB emulated-keyboard punch-in and
+punch-out with multiline descriptions and byte-identical record recovery after a
+cold reboot (`build/i386-timeclock-keyboard-native`). A separate strict VGA run
+checks the original installation and report screens and exact report bytes
+across reboot (`build/i386-suspended-rich-report-vga`). These are distinct
+scoped workflows; the latter suspends WinMgr and the keyboard run does not
+check the full VGA image. They do not establish full application or desktop
+compatibility. See [the current native evidence](i386-timeclock-native.md).
