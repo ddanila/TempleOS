@@ -123,3 +123,10 @@ The unchanged TimeClock keyboard workflow also passes on this image, including
 multiline entry, cancellation and cold-reboot record recovery with unchanged
 inputs (`build/i386-doc-file-bridge-timeclock-keyboard`). This is not full
 application or startup qualification.
+
+A native ahead-of-time build now also compiles a nested source document with
+binary and binary-size entries, persists the module and verifies its function
+export. A separate JIT invocation checks the source's exact four binary bytes
+and size (`build/i386-document-include-aot-v1`; runner
+`tools/test-i386-document-include-aot.py`). This does not execute or install
+the emitted module or establish general AOT document compatibility.
