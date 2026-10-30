@@ -208,3 +208,27 @@ possible drive remaps or device mutations. The basic sector contract also
 passes at 8 MiB with unchanged inputs
 (`build/i386-raw-blocks-revalidated-native-8m`); this is not the full minimal
 profile or a startup timing qualification. C1–C5 remain open.
+
+## Mounted RedSea drive fields (2026-10-30)
+
+Mounted native RedSea drive records now initialize the original `CDrv` values
+for sectors per cluster (`spc=1`), the bitmap's represented-data origin
+(`data_area`), and both bitmap sector addresses (`fat1` and `fat2`). They are
+derived from the already validated mounted volume, matching the calculations in
+the original `RedSeaInit`. This supplies metadata needed by the original
+cluster and file-stream services; it does not allocate the original FAT cache
+or implement media initialization, public block I/O or `FOpen`.
+
+The original-system fixture reads its actual RedSea boot sector through
+`BlkRead` and passes all five header/record checks with unchanged inputs
+(`build/i386-redsea-drive-fields-original`). The preceding native image fails
+the same aggregate check after reading its header through the private sector
+transport, with unchanged inputs (`build/i386-redsea-drive-fields-native-red`).
+Both original rebuild generations and the corrected 386 cross-build/audit pass
+(`build/rebuild-test`, `build/i386-redsea-drive-fields-cross`). The corrected image passes the 64 MiB metadata contract with unchanged inputs
+(`build/i386-redsea-drive-fields-native`). The existing drive-map regression
+timed out at the obsolete initial console screen, before executing its cases
+(`build/i386-redsea-drive-fields-map`); it is being rerun with welcome-screen
+expectations. The 8 MiB metadata check also passes with unchanged inputs
+(`build/i386-redsea-drive-fields-native-8m`). These concurrent guest runs do not
+qualify startup timing. C1–C5 remain open.

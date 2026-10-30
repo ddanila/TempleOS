@@ -18,6 +18,10 @@ CDrv *I386TaskFilesDriveInit(CI386FileVolumes *volumes,U8 drive)
   }
   identity->drv_let=drive; identity->fs_type=1; //Canonical FSt_REDSEA.
   identity->drv_offset=volume->start; identity->size=volume->sectors;
+  //Match RedSeaInit: the bitmap begins after the boot sector, and its
+  //first represented block precedes the first allocatable data block.
+  identity->spc=1;identity->data_area=volume->first-1;
+  identity->fat1=identity->fat2=volume->start+1;
   identity->root_clus=volume->root;
   identity->bd=volume->disk->public_device;
   if(!identity->bd->first_drv_let)identity->bd->first_drv_let=drive;
