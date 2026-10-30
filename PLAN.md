@@ -63,6 +63,13 @@ with 128 immediate-push, 22 publication and 28 program-publication cases, both
 memory phases and nine behavior/VGA checks. The report is
 `build/i386-c2-editor-dialogs-gates.json`.
 
+### Shared original cluster traversal sources (2026-10-30)
+
+The complete original ClusNumNext and FAT-cache clean/set bodies are extracted
+byte-for-byte into shared cores. Both original rebuild generations pass. The
+native bindings and block I/O dependencies remain open; this does not qualify
+native traversal. See docs/i386-clus-next.md.
+
 ### Cluster traversal reference fixture in progress (2026-10-30)
 
 A new ClusNumNext fixture and runner exercise the original RedSea and FAT32

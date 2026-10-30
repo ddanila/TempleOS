@@ -24,3 +24,9 @@ python3 tools/test-i386-clus-next.py IMAGE --out NATIVE
 ```
 
 The result artifacts are local and are not part of the commit.
+
+The full original `ClusNumNext`, `DrvFATBlkClean`, and `DrvFATBlkSet`
+bodies are now shared byte-for-byte through `Kernel/BlkDev/ClusNextCore.HC`
+and `Kernel/BlkDev/DriveFATCacheCore.HC`. Both original rebuild generations
+pass (`build/rebuild-test`). This source preparation does not bind the native
+functions or implement their block I/O dependencies.
