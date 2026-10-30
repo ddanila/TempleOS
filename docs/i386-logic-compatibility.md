@@ -19,6 +19,10 @@ document stream, and the shared expression parser handles their tokens. File
 includes currently load a zero-terminated byte buffer through
 `I386LexIncludeTake`, so this result identifies a document-backed include gap;
 it does not establish that changing only the include attachment is sufficient.
+The current document branch returns EOF at the end of a document, and
+`I386LexFileAdvance` rejects document children; compiler-control cleanup also
+requires a document destructor callback for owned document inputs. Those
+boundaries must be extended together before attaching document includes.
 
 To close the gap, preserve the full serialized DolDoc and binary records,
 parse them with original document semantics, attach an owned document as the
