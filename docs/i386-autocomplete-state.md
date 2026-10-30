@@ -23,3 +23,7 @@ original, but the native image lacks the original `ACWords.DATA` and
 `ACDefs.DATA` assets. Loading, initialization, dictionary storage, the visible
 autocomplete task and complete settings behavior remain open; no C1–C5
 milestone is qualified by this checkpoint.
+
+The full original block-backed file-stream bodies and a ten-check original
+reference are now available for the `FOpen` dependency. The native stream
+fixture still rejects before execution; see [file stream evidence](i386-cfile-stream.md).
