@@ -159,3 +159,17 @@ commands and VGA checks with unchanged inputs
 concurrent and is not an isolated timing gate. The native cache routines are
 not yet initialized, connected to block I/O, or behavior-tested, and no public
 block I/O or cache qualification is claimed.
+
+The native console now publishes internal cache-core bindings for use by later
+block I/O integration. A direct guest fixture initializes a private cache,
+checks mixed leading/trailing hits, a miss on another drive, drive-specific
+invalidation, capacity eviction and teardown, then verifies another command
+still runs. It passes mask 127 at 8 and 64 MiB with unchanged inputs
+(`build/i386-dsk-cache-core-native-8m` and
+`build/i386-dsk-cache-core-native-extern`). Both original rebuilds and the
+native cross-build/386 instruction audit pass
+(`build/i386-dsk-cache-core-test-cross`). The startup observations of 59.050788
+and 59.142578 seconds were concurrent, not isolated timing gates. These direct
+cache-core checks do not establish concurrent behavior or integration with
+`BlkRead`, `BlkWrite`, removable devices, ATA or ISO; the cache is still not
+initialized on startup.
