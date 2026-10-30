@@ -173,3 +173,11 @@ and 59.142578 seconds were concurrent, not isolated timing gates. These direct
 cache-core checks do not establish concurrent behavior or integration with
 `BlkRead`, `BlkWrite`, removable devices, ATA or ISO; the cache is still not
 initialized on startup.
+
+A separate 64 MiB native cache-core fixture runs two spawned tasks, each writing
+and reading the same sector 64 times. Every completed read must contain one
+whole writer's pattern. Both tasks completed and the test passed with unchanged
+inputs (`build/i386-dsk-cache-concurrency-native-final`). This samples one
+cooperative scheduling pattern; it does not establish exhaustive concurrency,
+block I/O integration, or interrupt-level safety. Its 59.201660-second startup
+was concurrent and is not an isolated timing gate.
