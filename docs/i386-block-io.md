@@ -71,3 +71,11 @@ A native record check timed out after the first declaration command reported
 `COMMAND OK`, before its remaining field checks; inputs were unchanged
 (`build/i386-block-globals-native/record-result.json`). The native record
 layout and cache behavior are not yet qualified.
+
+A fixture-based record check subsequently passes mask 15 on the pinned
+original and all three commands on 64 MiB native, with inputs unchanged
+(`build/i386-block-globals-reference` and
+`build/i386-block-globals-native-fixture`). It covers selected cache fields,
+body endpoints, array extent and field adjacency; it is not a complete layout
+audit or cache behavior test. The 62.216726-second native startup observation
+was concurrent and is not an isolated timing gate.

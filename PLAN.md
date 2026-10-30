@@ -122,8 +122,11 @@ full media initialization remain open. See docs/i386-block-io.md.
 The original CCacheBlk and CBlkDevGlbls declarations are shared with the
 native public file header. Both original rebuilds and the 386 cross-build and
 instruction audit pass. A native record check timed out after its first command
-reported success, before field verification, with inputs unchanged; native
-layout and cache behavior remain unqualified. See docs/i386-block-io.md.
+reported success, before field verification, with inputs unchanged. A separate
+fixture subsequently passes selected field and layout checks with mask 15 on
+the pinned original and all three commands on 64 MiB native, with unchanged
+inputs and concurrent startup. Complete layout and cache behavior remain
+unqualified. See docs/i386-block-io.md.
 
 ### Expanded original block cache reference (2026-10-30)
 
