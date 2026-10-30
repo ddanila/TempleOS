@@ -17,8 +17,9 @@ public CGrGlbls gr;
 U32 *MemSetU32(U32 *dst,I64 value,I64 count)
 {
   I64 i;
+  asm { CLD }
   for(i=0;i<count;i++) dst[i]=value;
-  return dst;
+  return dst+count;
 }
 U8 *(*native_graphics_body_calloc)(I64 size,CTask *task);
 U8 *NativeGraphicsBodyCAlloc(I64 size,CTask *task=NULL)

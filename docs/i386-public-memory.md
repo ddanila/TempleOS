@@ -395,3 +395,14 @@ phases, including a direction-flag check, and three selected text/VGA commands
 fixture's 63.819592-second startup were concurrent; neither is an isolated
 interactive timing gate. Invalid-address and negative-count behavior were not
 exercised.
+
+The native public memory API now includes `MemSetU8`, `MemSetU16`, `MemSetU32`
+and `MemSetI64`. The existing 16- and 32-bit graphics/window helpers now return
+the end pointer and clear the direction flag; the 64-bit helper follows the
+same convention. The pinned original and 64 MiB native fixtures pass mask 15
+for unaligned fills, value truncation, end pointers, zero-length calls and
+surrounding bytes, with unchanged inputs (`build/i386-memset-wide-reference`
+and `build/i386-memset-wide-native`). Both original rebuild generations and
+the native cross-build/386 audit pass (`build/i386-memset-wide-cross`). The
+native 64.018787-second startup was concurrent, not an isolated timing gate.
+The fixture does not exercise negative counts or direction-flag state.

@@ -24,8 +24,9 @@ extern U0 TaskDerivedValsUpdate(CTask *task=NULL,Bool update_z_buf=TRUE);
 U16 *MemSetU16(U16 *dst,I64 value,I64 count)
 {
   I64 i;
+  asm { CLD }
   for(i=0;i<count;i++) dst[i]=value;
-  return dst;
+  return dst+count;
 }
 #include "/Adam/Gr/GrWindowVisibility.HC"
 U0 WinZBufUpdate()

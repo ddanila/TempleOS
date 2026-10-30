@@ -20,6 +20,10 @@ public _extern _CALLOC_ALIGNED U8 *CAllocAligned(I64 size,I64 alignment,CTask *m
 public _extern _MEMCPY U8 *MemCpy(U8 *dst,U8 *src,I64 cnt);
 public _extern _MEMCMP I64 MemCmp(U8 *ptr1,U8 *ptr2,I64 cnt);
 public _extern _MEMSET U8 *MemSet(U8 *dst,I64 val,I64 cnt);
+public _extern _MEMSET U8 *MemSetU8(U8 *dst,I64 val,I64 U8cnt);
+public _extern _MEMSET_U16 U16 *MemSetU16(U16 *dst,I64 val,I64 U16cnt);
+public _extern _MEMSET_U32 U32 *MemSetU32(U32 *dst,I64 val,I64 U32cnt);
+public _extern _MEMSET_I64 I64 *MemSetI64(I64 *dst,I64 val,I64 I64cnt);
 public _extern _MALLOC_IDENT U8 *MAllocIdent(U8 *src,CTask *mem_task=0);
 public _extern _STR_NEW U8 *StrNew(U8 *src,CTask *mem_task=0);
 public _extern _MEM_MEASURE_START Bool MemMeasureStart(CTask *task=0);
