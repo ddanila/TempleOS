@@ -11,7 +11,7 @@ Bool NativeWindowNeeded(Bool coverage=FALSE)
   if(NativeLegacyViewActive(sys_focus_task))return FALSE;
   if(TaskValidate(sys_focus_task) &&
       !Bt(&sys_focus_task->display_flags,DISPLAYf_NOT_RAW))return FALSE;
-  if(gr.fp_final_scrn_update || gr.fp_wall_paper)return TRUE;
+  if(NativeProgressVisible || gr.fp_final_scrn_update || gr.fp_wall_paper)return TRUE;
   do {
     if(!TaskValidate(task))return FALSE;
     if(task!=native_window_worker && !NativeRenderOwnerClosing(task) &&

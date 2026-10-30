@@ -218,7 +218,8 @@ runner `tools/test-i386-progress-reset.py`). The prior image rejected the
 missing reset service (`build/i386-progress-reset-native-red`). Both bootstrap
 generations and the 386 cross-build/audit pass
 (`build/progress-reset-rebuild-v1.log`, `build/i386-progress-reset-cross-v1`).
-The timing hook's registry implementation and visual progress bars remain open.
+The timing hook's registry implementation remains open. Progress-bar display now has initial
+pixel and frame checks; see [progress rendering](i386-progress-bars.md).
 Unchanged Logic advances to the missing `SettingsPush` at line 569
 (`build/i386-logic-native-progress-reset-v1`); no native synthesis case ran.
 The candidate also passes an 8 MiB ordinary-include and drive-fields smoke

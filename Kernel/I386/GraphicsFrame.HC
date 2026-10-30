@@ -120,10 +120,23 @@ Bool NativeGraphicsStart()
   WinZBufUpdate;
   return TRUE;
 }
+Bool NativeProgressVisible()
+{
+  I64 i;
+  for(i=0;i<PROGRESS_BARS_NUM;i++)if(sys_progresses[i].max)return TRUE;
+  return FALSE;
+}
+U0 NativeGraphicsFinal(CDC *dc)
+{
+  DrawProgressBars(dc);
+  if(gr.fp_final_scrn_update)(*gr.fp_final_scrn_update)(dc);
+}
 Bool NativeGraphicsPresentChecked(U0 (*draw)(CDC *dc),Bool blink,Bool (*admit)())
 {//Root-owned storage; managed callers serialize presentation through one lease.
   Bool result=FALSE;
+  U0 (*final_draw)(CDC *dc);
   CNativeGraphicsScope scope;
+  final_draw=NULL;
   if(!NativeGraphicsReady ||
       gr.dc->dc_signature!=DCS_SIGNATURE_VAL || gr.dc2->dc_signature!=DCS_SIGNATURE_VAL ||
       gr.dc->width_internal!=640 || gr.dc->height!=480 ||
@@ -138,8 +151,9 @@ Bool NativeGraphicsPresentChecked(U0 (*draw)(CDC *dc),Bool blink,Bool (*admit)()
     WinZBufUpdate;
     if(admit && !(*admit)())goto graphics_present_done;
     if(admit && I386TaskSelf==native_window_worker)NativeGraphicsScopeRefreshBegin(&scope);
+    if(NativeProgressVisible || gr.fp_final_scrn_update)final_draw=&NativeGraphicsFinal;
     GraphicsFrameCore(gr.dc2,gr.dc,gr.text_base,text.font,blink,
-      gr.pan_text_x,gr.pan_text_y,gr.hide_col,gr.hide_row,draw,gr.fp_final_scrn_update);
+      gr.pan_text_x,gr.pan_text_y,gr.hide_col,gr.hide_row,draw,final_draw);
     GraphicsPlanarSplitCore(graphics_planes,gr.dc2->body);
     result=I386VgaSplitRows(graphics_planes,0,480);
     if(result) {
