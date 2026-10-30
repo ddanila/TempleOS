@@ -21,16 +21,28 @@ on the pinned original and all three native commands at both 8 and 64 MiB,
 with unchanged execution inputs. Tests cover empty/full/wrap/peek/flush,
 wide values, ring operations under both interrupt states, task ownership and
 heap used-byte recovery. Native startup observations were not isolated;
-FIFO-specific resource gates remain pending. Original parameter-name fidelity
-in the new declarations still needs correction and revalidation. See
+FIFO-specific resource gates remain pending. The declarations now preserve the
+original parameter names; both original rebuild generations pass, while the
+combined native cross-build and runtime validation remain in progress. See
 docs/i386-fifo.md. All 686 inventory entries and C1–C5 remain unqualified.
 
-At this checkpoint the existing Compiler74 C5 native ConsoleRuntime/EditorRuntime
-build and the preceding editor candidate's 16 MiB diagnostics are still running;
-neither is recorded as passing evidence. Their reports are
-`build/i386-c5-array-literal-native-build/result.json` and
-`build/i386-c2-editor-dialogs-gates.json`. No new long-running gates are launched
-for this documentation/commit checkpoint.
+The pinned Compiler74 C5 native build failed while packing ConsoleRuntime:
+`DocCollapse` was compiled twice because ConsoleRuntime included its core both
+through DocRecalcLib and directly. The failure is preserved in
+`build/i386-c5-array-literal-native-build/result.json` and its guest debug log;
+EditorRuntime was not reached. The candidate removes the redundant direct
+include. Both bootstrap generations and the cross-build/386 audit pass with
+1535 source and 24 build inputs unchanged. A fresh native build is running in
+`build/i386-c5-deduplicate-native-build`. The 8 MiB FIFO contract passes all
+three commands, and the 64 MiB document-transform contract passes all 14
+commands, both with unchanged inputs. Their concurrent startup observations are
+not isolated timing qualification; the native build and resource gates remain
+open.
+
+The preceding editor candidate's 16 MiB diagnostics pass in 240.203069 seconds,
+with 128 immediate-push, 22 publication and 28 program-publication cases, both
+memory phases and nine behavior/VGA checks. The report is
+`build/i386-c2-editor-dialogs-gates.json`.
 
 ### Complete editor dialog dispatch candidate (2026-10-16)
 

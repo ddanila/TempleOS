@@ -36,10 +36,12 @@ to ring operations; construction/deletion use the original caller flags.
 The final native runs pause the window manager and were not isolated. Their
 63.221146-second (8 MiB) and 62.968430-second (64 MiB) startup observations do
 not qualify the startup budget. An isolated FIFO-candidate startup gate and
-16 MiB diagnostics remain pending. Before further qualification, restore the
-original b/_b and q/_q parameter names in the new public/forward declarations;
-this checkpoint uses `value` there, though the shared function bodies retain
-original names. Rebuild and validate that metadata change separately.
+16 MiB diagnostics remain pending. The public and forward declarations now preserve the original b/_b and q/_q
+parameter names. Both original rebuild generations and the combined cross-build
+and 386 audit pass with that correction. The 8 MiB FIFO contract passes all
+three commands with unchanged inputs in `build/i386-c5-deduplicate-fifo-names-8m`.
+Its 61.725797-second startup observation was concurrent and is not an isolated
+resource qualification.
 All C1–C5 milestones and all 686 inventory entries remain unqualified.
 
 ```sh

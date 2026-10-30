@@ -25,16 +25,16 @@ public _extern _STRCPY U0 StrCpy(U8 *dst,U8 *src);
 #help_index "Data Types/Fifo"
 public _extern _FIFO_U8_NEW CFifoU8 *FifoU8New(I64 size,CTask *mem_task=0);
 public _extern _FIFO_U8_DEL U0 FifoU8Del(CFifoU8 *f);
-public _extern _FIFO_U8_INS Bool FifoU8Ins(CFifoU8 *f,U8 value);
-public _extern _FIFO_U8_REM Bool FifoU8Rem(CFifoU8 *f,U8 *value);
-public _extern _FIFO_U8_PEEK Bool FifoU8Peek(CFifoU8 *f,U8 *value);
+public _extern _FIFO_U8_INS Bool FifoU8Ins(CFifoU8 *f,U8 b);
+public _extern _FIFO_U8_REM Bool FifoU8Rem(CFifoU8 *f,U8 *_b);
+public _extern _FIFO_U8_PEEK Bool FifoU8Peek(CFifoU8 *f,U8 *_b);
 public _extern _FIFO_U8_FLUSH U0 FifoU8Flush(CFifoU8 *f);
 public _extern _FIFO_U8_CNT I64 FifoU8Cnt(CFifoU8 *f);
 public _extern _FIFO_I64_NEW CFifoI64 *FifoI64New(I64 size,CTask *mem_task=0);
 public _extern _FIFO_I64_DEL U0 FifoI64Del(CFifoI64 *f);
-public _extern _FIFO_I64_INS Bool FifoI64Ins(CFifoI64 *f,I64 value);
-public _extern _FIFO_I64_REM Bool FifoI64Rem(CFifoI64 *f,I64 *value);
-public _extern _FIFO_I64_PEEK Bool FifoI64Peek(CFifoI64 *f,I64 *value);
+public _extern _FIFO_I64_INS Bool FifoI64Ins(CFifoI64 *f,I64 q);
+public _extern _FIFO_I64_REM Bool FifoI64Rem(CFifoI64 *f,I64 *_q);
+public _extern _FIFO_I64_PEEK Bool FifoI64Peek(CFifoI64 *f,I64 *_q);
 public _extern _FIFO_I64_FLUSH U0 FifoI64Flush(CFifoI64 *f);
 public _extern _FIFO_I64_CNT I64 FifoI64Cnt(CFifoI64 *f);
 #endif

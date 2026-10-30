@@ -73,7 +73,9 @@ previous version 4. The earlier wrong-version recovery result applies to the
 identical compiled modules, as confirmed by constants-comparison.json. The committed candidate's isolated 8 MiB startup passes in 58.909313 seconds
 in `build/i386-c2-editor-dialogs-startup`, with all nine behavior/VGA checks,
 no build-provider loads and four unchanged input pins. Its 16 MiB diagnostics
-remain running in `build/i386-c2-editor-dialogs-diagnostics`; C1–C5 and all inventory entries remain unqualified.
+pass in `build/i386-c2-editor-dialogs-diagnostics` in 240.203069 seconds,
+with 128 immediate-push, 22 publication and 28 program-publication cases, both
+memory phases, nine interactive/VGA checks and unchanged input hashes; C1–C5 and all inventory entries remain unqualified.
 
 ```sh
 python3 tools/test-i386-editor-dialogs.py --out ORIGINAL

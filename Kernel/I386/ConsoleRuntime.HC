@@ -1121,7 +1121,6 @@ import CCntsGlbls cnts;
 #include "/Kernel/KeyNameCore.HC"
 #include "/Kernel/KeyDescriptionCore.HC"
 
-#include "/Adam/DolDoc/DocCollapseCore.HC"
 #include "/Adam/DolDoc/DocTransformCore.HC"
 
 #include "/Kernel/I386/EditorDispatch.HC"
