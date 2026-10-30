@@ -1575,28 +1575,34 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
 extern Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
 #include "/Adam/DolDoc/EdLinkTypes.HH"
 public Bool Ed(U8 *filename,I64 flags=0)
-{//File-level editor subset; convert file, line, search and anchor links with the original parser.
+{//File-level editor subset; convert file and plain-text links with the original parser.
   CDoc *doc=NULL;
   U8 *resolved=NULL,*needle=NULL;
-  I64 link_type=LK_FILE,line=1;
+  I64 link_type=LK_FILE,line=1,doc_flags=0;
   Bool accept,result=FALSE;
   if(!filename || !*filename || flags) return FALSE;
   try {
-    if(ToUpper(filename[0])=='F' &&
+    if((ToUpper(filename[0])=='F' &&
         (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='L' ||
-         ToUpper(filename[1])=='F' || ToUpper(filename[1])=='A') && filename[2]==':') {
+         ToUpper(filename[1])=='F' || ToUpper(filename[1])=='A') ||
+        ToUpper(filename[0])=='P' &&
+        (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='L' ||
+         ToUpper(filename[1])=='F')) && filename[2]==':') {
       link_type=EdLinkCvt(filename,&resolved,&needle,&line);
-      if((link_type!=LK_FILE && link_type!=LK_FILE_LINE &&
-          link_type!=LK_FILE_FIND && link_type!=LK_FILE_ANCHOR) || !resolved) goto ed_done;
+      if(link_type==LK_PLAIN || link_type==LK_PLAIN_LINE || link_type==LK_PLAIN_FIND)
+        doc_flags=DOCF_PLAIN_TEXT|DOCF_NO_CURSOR;
+      else if(link_type!=LK_FILE && link_type!=LK_FILE_LINE &&
+          link_type!=LK_FILE_FIND && link_type!=LK_FILE_ANCHOR) goto ed_done;
+      if(!resolved) goto ed_done;
       filename=resolved;
     }
     result=FileFind(filename,NULL,FUF_JUST_FILES);
-    doc=DocRead(filename);
-    if(!doc) doc=DocNew(filename,Fs);
+    doc=DocRead(filename,doc_flags);
+    if(!doc) { doc=DocNew(filename,Fs);if(doc)doc->flags|=doc_flags; }
     if(!doc) goto ed_done;
     if(result) {
-      if(link_type==LK_FILE_LINE) result=DocGoToLine(doc,line);
-      else if(link_type==LK_FILE_FIND) result=DocFind(doc,I64_MIN,needle,line);
+      if(link_type==LK_FILE_LINE || link_type==LK_PLAIN_LINE) result=DocGoToLine(doc,line);
+      else if(link_type==LK_FILE_FIND || link_type==LK_PLAIN_FIND) result=DocFind(doc,I64_MIN,needle,line);
       else if(link_type==LK_FILE_ANCHOR) result=DocAnchorFind(doc,needle);
     }
     accept=DocEd(doc);
@@ -1611,6 +1617,8 @@ ed_done:
   Free(resolved);Free(needle);
   return result;
 }
+
+#include "/Adam/DolDoc/PlainCore.HC"
 
 class CNativeHelpLink
 {

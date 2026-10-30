@@ -1025,6 +1025,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-search-public-native-v1/result.json",
           "scope": "Public line, search and anchor contract; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "original-plain-editor-links",
+          "command": "python3 tools/test-i386-doc-plain-links.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-plain-links-original-v2/result.json",
+          "scope": "PI/PF/PL uppercase/lowercase and Plain() edit/save sessions, literal markup, cursor position and task roles; not all editor behavior"
+        },
+        {
+          "target": "shared-plain-editor-links",
+          "command": "python3 tools/test-i386-doc-plain-links.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-plain-links-shared-v1/result.json",
+          "scope": "PI/PF/PL uppercase/lowercase and Plain() edit/save sessions, literal markup, cursor position and task roles; not all editor behavior"
+        },
+        {
+          "target": "native-plain-editor-links",
+          "command": "python3 tools/test-i386-doc-plain-links.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-plain-links-native-v1/result.json",
+          "scope": "PI/PF/PL uppercase/lowercase and Plain() edit/save sessions, literal markup, cursor position and task roles; not all editor behavior"
         }
       ]
     },
@@ -1502,6 +1523,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-search-public-native-v1/result.json",
           "scope": "Public line, search and anchor contract; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "original-plain-editor-links",
+          "command": "python3 tools/test-i386-doc-plain-links.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-plain-links-original-v2/result.json",
+          "scope": "PI/PF/PL uppercase/lowercase and Plain() edit/save sessions, literal markup, cursor position and task roles; not all editor behavior"
+        },
+        {
+          "target": "shared-plain-editor-links",
+          "command": "python3 tools/test-i386-doc-plain-links.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-plain-links-shared-v1/result.json",
+          "scope": "PI/PF/PL uppercase/lowercase and Plain() edit/save sessions, literal markup, cursor position and task roles; not all editor behavior"
+        },
+        {
+          "target": "native-plain-editor-links",
+          "command": "python3 tools/test-i386-doc-plain-links.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-plain-links-native-v1/result.json",
+          "scope": "PI/PF/PL uppercase/lowercase and Plain() edit/save sessions, literal markup, cursor position and task roles; not all editor behavior"
         }
       ]
     },

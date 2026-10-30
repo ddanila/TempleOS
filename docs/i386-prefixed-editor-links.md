@@ -2,11 +2,10 @@
 
 The original `Ed` accepts editor links, including `FI:` filenames and line,
 anchor, find, dictionary and help links. The native `Ed` remains a file-level
-editor subset. It now sends `FI:`, `FL:`, `FF:` and `FA:` links through the original `EdLinkCvt` converter before
-opening the file. `FL:` positions the cursor with the original line-navigation
+editor subset. It now sends `FI:`, `FL:`, `FF:`, `FA:`, `PI:`, `PF:` and `PL:`
+links through the original `EdLinkCvt` converter before opening the file. `FL:` positions the cursor with the original line-navigation
 service; `FF:` and `FA:` use the original document search and anchor routines.
-Other
-prefixed link types and nonzero editor flags still require the full original
+Other prefixed link types and nonzero editor flags still require the full original
 editor path.
 
 `tools/test-i386-doc-prefixed-link.py` exercises a real `FI:` link through
@@ -72,3 +71,19 @@ generations, the native cross-build/386 audit, the `FL:` regression, and an
 `build/i386-doc-find-fl-regression-v1`, `build/i386-doc-find-link-smoke-8m`).
 These tests cover bounded targets, not every search occurrence, missing-link
 editor behavior, other link types, flags, popup or physical mouse delivery.
+
+Plain-text `PI:`, `PF:` and `PL:` links now set the original plain-text and
+no-cursor document flags; the shared original `Plain()` function is public on
+native. Seven original, shared-original and native edit-and-save sessions cover
+uppercase and lowercase prefixes and a direct `Plain()` call. They verify the
+selected edit location and that `$RED$` is retained literally
+(`build/i386-doc-plain-links-original-v2`,
+`build/i386-doc-plain-links-shared-v1`, `build/i386-doc-plain-links-native-v1`;
+runner `tools/test-i386-doc-plain-links.py`). Both original bootstrap
+generations, the native cross-build/386 audit, the `FF:` regression and an 8 MiB
+ordinary-include/drive-fields smoke check pass (`build/doc-plain-links-rebuild-v2.log`,
+`build/i386-doc-plain-links-cross-v2`, `build/i386-doc-plain-ff-regression-v1`,
+`build/i386-doc-plain-links-smoke-8m`). The first cross-build lacked the
+formatter forward declaration (`build/i386-doc-plain-links-cross-v1`). These
+bounded checks do not establish all markup, nonzero editor flags, error
+cleanup, popup or physical mouse behavior.
