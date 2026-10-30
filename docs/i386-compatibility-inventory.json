@@ -4097,9 +4097,24 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Load the original Budget modules and account template, insert three out-of-order transactions, then regenerate the document for BANK and RENT account views.",
+      "oracle": "The executable original reference checks exact serialized DolDoc bytes after normalizing transaction addresses, transaction order, running balances, and distinct stable row identities across both views. Interactive forms, input, reboot, full Budget behavior and native report parity remain open.",
+      "tests": [
+        {
+          "target": "original-account-view",
+          "command": "python3 tools/test-i386-budget-report-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-budget-report-reference-v1/result.json",
+          "scope": "Three constructed transactions, two account views and exact serialized documents; not interactive, reboot or full application coverage"
+        },
+        {
+          "target": "native-load",
+          "command": "python3 tools/test-i386-budget-native-load.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-budget-current-native-load/result.json",
+          "scope": "Original loader stops at missing SettingsPush before installation and account views"
+        }
+      ]
     },
     {
       "path": "Apps/Budget/BgtStrs.HC",

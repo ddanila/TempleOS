@@ -168,3 +168,20 @@ ConsoleRuntime 141 adds the original `PopUpEd` wrapper. The Budget loader now
 reaches `SettingsPush` in `BgtMain.HC` line 182 and rejects there
 (`build/i386-budget-native-load-v5`). The popup-editor reference and native
 input-path check remain scoped as described in [popup editor evidence](i386-popup-ed.md).
+
+The pinned original now has an executable account-view reference for Budget.
+Three deliberately out-of-order constructed transactions are inserted and
+`BgtRegen` renders both BANK and RENT views. The checked documents preserve
+chronological order, descriptions, amounts and running balances (BANK: 100, 80,
+50; RENT: 0, 0, 30), and the three row identities are distinct and remain the
+same between views. Exact document bytes are compared after normalizing only
+those runtime addresses. The original reference passes with unchanged inputs
+(`build/i386-budget-report-reference-v1`; runner
+`tools/test-i386-budget-report-reference.py`). The initial capture reused freed
+buffers and is retained in `build/i386-budget-report-reference-probe`; the
+corrected capture keeps both buffers live. This is a constructed-data
+component oracle, not interactive entry, save/reboot, native report parity or
+full Budget qualification. On the current raw-block image the unchanged
+Budget loader still stops at SettingsPush in `BgtMain.HC` line 182, with
+unchanged inputs (`build/i386-budget-current-native-load`); no native account
+view ran.
