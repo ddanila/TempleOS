@@ -18,15 +18,7 @@ U8 *LinkedLstCopy(U8 **_lst,CTask *mem_task=NULL)
   return res;
 }
 
-I64 LinkedLstCnt(U8 **_lst)
-{//Count of nodes in linked-list.
-  I64 res=0;
-  while (_lst) {
-    res++;
-    _lst=*_lst;
-  }
-  return res;
-}
+#include "/Kernel/LinkedLstCntCore.HC"
 
 I64 LinkedLstSize(U8 **_lst)
 {//Mem size of all nodes in linked-list.

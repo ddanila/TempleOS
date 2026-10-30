@@ -149,3 +149,9 @@ workflow (`build/i386-budget-native-load-v1`). The guest log and unchanged
 input hashes preserve this dependency failure. The runner's installation check
 now distinguishes the home directory from the packaged source directory; that
 check has not yet been reached.
+
+MemoryRuntime 32 now exports the shared original `LinkedLstCnt` body; original
+and native list contracts pass, and the unchanged Budget loader advances to
+`QSortI64` at `BgtStrs.HC` line 97 (`build/i386-budget-native-load-v2`).
+The load is still rejected and Install has not run. See
+[linked-list count evidence](i386-linked-list-count.md).
