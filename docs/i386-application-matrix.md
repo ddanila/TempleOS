@@ -185,3 +185,10 @@ full Budget qualification. On the current raw-block image the unchanged
 Budget loader still stops at SettingsPush in `BgtMain.HC` line 182, with
 unchanged inputs (`build/i386-budget-current-native-load`); no native account
 view ran.
+
+Logic now has a pinned-original synthesis oracle covering all ten gate modes,
+with a known truth table and checked input wiring per mode. The unchanged native
+loader is blocked at its embedded DolDoc binary initializer before synthesis.
+See [Logic compatibility](i386-logic-compatibility.md) for the evidence and
+the document-backed include work; the interactive and graphics workflows remain
+unqualified.
