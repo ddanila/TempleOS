@@ -29,4 +29,7 @@ python3 tools/test-i386-adam-alloc.py IMAGE --out NATIVE
 The committed candidate's isolated 8 MiB gate passed all nine behavior/VGA
 checks with no build-provider loads and four unchanged inputs, but missed the
 60-second startup budget at 62.845757 seconds (`build/i386-adam-alloc-startup`).
-Its 16 MiB diagnostics are running.
+Its 16 MiB diagnostics pass in `build/i386-adam-alloc-diagnostics` at
+231.902702 seconds, with 128 immediate-push, 22 publication and 28 program
+publication cases, both memory phases, nine behavior/VGA checks, no build
+provider and four unchanged inputs.

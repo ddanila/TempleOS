@@ -92,8 +92,10 @@ NULL. Both original rebuild generations and cross-build/386 audit pass with
 commands with unchanged inputs; the 8 MiB contract also passes all three
 commands with unchanged inputs. Both startup observations were concurrent;
 the isolated 8 MiB gate passes its nine behavior/VGA checks but misses the
-60-second target at 62.845757 seconds with four unchanged inputs; 16 MiB
-diagnostics are running. Full media initialization remains open. See docs/i386-adam-allocation.md.
+60-second target at 62.845757 seconds with four unchanged inputs. The 16 MiB
+diagnostics pass in 231.902702 seconds, with all 128/22/28 compiler and
+publication cases, both memory phases, nine behavior/VGA checks and four
+unchanged inputs. Full media initialization remains open. See docs/i386-adam-allocation.md.
 
 ### Original block-device initializer source (2026-10-30)
 
