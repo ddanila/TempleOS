@@ -941,6 +941,27 @@
           "result": "pass",
           "evidence": "build/i386-c4-mouse-present-final-sprite/result.json",
           "scope": "Native editor adapter: saved/reopened original packed rectangle, pointer XOR over blue pixels and movement restoring clean inclusive edges, 12 commands and full VGA checks; not original whole-file or all editor gestures"
+        },
+        {
+          "target": "original-prefixed-editor-link",
+          "command": "python3 tools/test-i386-doc-prefixed-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-prefixed-link-original-v2/result.json",
+          "scope": "FI: link activation, real editor edit/save and lock/role restoration; not all link types"
+        },
+        {
+          "target": "shared-prefixed-editor-link",
+          "command": "python3 tools/test-i386-doc-prefixed-link.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-prefixed-link-shared-original-v1/result.json",
+          "scope": "FI: link activation, real editor edit/save and lock/role restoration; not all link types"
+        },
+        {
+          "target": "native-prefixed-editor-link",
+          "command": "python3 tools/test-i386-doc-prefixed-link.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-prefixed-link-native-red-v2/result.json",
+          "scope": "FI: link incorrectly treated as literal path; editor save fails; not full native editor qualification"
         }
       ]
     },
@@ -1299,7 +1320,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-prefixed-editor-link",
+          "command": "python3 tools/test-i386-doc-prefixed-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-prefixed-link-original-v2/result.json",
+          "scope": "FI: link activation, real editor edit/save and lock/role restoration; not all link types"
+        },
+        {
+          "target": "shared-prefixed-editor-link",
+          "command": "python3 tools/test-i386-doc-prefixed-link.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-prefixed-link-shared-original-v1/result.json",
+          "scope": "FI: link activation, real editor edit/save and lock/role restoration; not all link types"
+        },
+        {
+          "target": "native-prefixed-editor-link",
+          "command": "python3 tools/test-i386-doc-prefixed-link.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-prefixed-link-native-red-v2/result.json",
+          "scope": "FI: link incorrectly treated as literal path; editor save fails; not full native editor qualification"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocMacro.HC",
