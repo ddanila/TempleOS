@@ -69,7 +69,9 @@ ConsoleRuntime 137 publishes the complete, byte-identical original FSize
 function. The pinned-original contract passes mask 15; bootstrap, cross-build
 and 386 audit pass with 1540 source and 24 build hashes unchanged. Native
 64 and 8 MiB each pass three commands with unchanged inputs. Both startup
-observations were concurrent; isolated resource gates remain open. File opening and I/O remain unimplemented. See docs/i386-fsize.md.
+observations were concurrent. The isolated 8 MiB gate passes nine behavior/VGA
+checks but misses the 60-second target at 63.648558 seconds with four inputs
+unchanged; 16 MiB diagnostics are running. File opening and I/O remain unimplemented. See docs/i386-fsize.md.
 
 ### Canonical file-backed device record (2026-10-30)
 

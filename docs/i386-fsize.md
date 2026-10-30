@@ -21,3 +21,8 @@ was concurrent. Isolated resource gates remain open.
 python3 tools/test-i386-fsize.py --out ORIGINAL
 python3 tools/test-i386-fsize.py IMAGE --out NATIVE
 ```
+
+The committed candidate's isolated 8 MiB startup gate passes all nine
+behavior/VGA checks, loads no build provider and preserves all four inputs,
+but takes 63.648558 seconds and misses the 60-second target
+(`build/i386-fsize-startup`). The 16 MiB diagnostics are running.
