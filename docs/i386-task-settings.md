@@ -41,3 +41,12 @@ and the cross-build/386 audit pass (`build/rebuild-test`,
 qualify startup timing. The settings fixture on the preceding image reaches the
 missing `SettingsPush` binding (`build/i386-task-settings-native-red-v2`), and
 the stack, autocomplete and task lifecycle remain open.
+
+A second original-system reference exercises the task portion of the stack:
+song and animation tasks are suspended and detached on push, replacement
+tasks are killed on pop, saved tasks are resumed, and `TSF_SAME_SONG` preserves
+the active song task. All seven checks pass with unchanged inputs
+(`build/i386-task-settings-tasks-reference-v1`). This records task lifecycle
+behavior without claiming audio-output, autocomplete, failure-cleanup or native
+settings-stack coverage. The executable is
+`tools/test-i386-task-settings-tasks.py`.
