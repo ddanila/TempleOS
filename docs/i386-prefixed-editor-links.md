@@ -5,8 +5,8 @@ anchor, find, dictionary and help links. The native `Ed` remains a file-level
 editor subset. It now sends `FI:`, `FL:`, `FF:`, `FA:`, `PI:`, `PF:`, `PL:`, `AI:`, `AA:`, `AF:` and `AL:`
 links through the original `EdLinkCvt` converter before opening the file. `FL:` positions the cursor with the original line-navigation
 service; `FF:` and `FA:` use the original document search and anchor routines.
-Other prefixed link types and nonzero editor flags still require the full original
-editor path.
+Other prefixed link types and the full editor flag and directory-context
+behavior still require the complete original editor path.
 
 `tools/test-i386-doc-prefixed-link.py` exercises a real `FI:` link through
 `DocEntryRun`: it writes a test file, queues a character and Escape, and checks
@@ -123,3 +123,22 @@ and an 8 MiB ordinary-include/drive-fields smoke pass
 `build/i386-doc-exit-memory-regression-v1`, `build/i386-doc-exit-action-smoke-8m`).
 This is one callback action on a live borrowed document; other entry actions,
 errors and file/desktop workflows still need coverage.
+
+`Ed` now honors `EDF_BAIL`, `EDF_WAS_WRITE`, `EDF_COLLAPSE` and
+`EDF_UNCOLLAPSE` for the integrated file and in-memory link paths. Nonzero
+flags use the existing original `DocEd` path with `DOF_DONT_HOME`. An 11-case
+contract passes on pinned original, shared original and native: noninteractive
+bail, write-result reporting on accepted/discarded file and borrowed-document
+sessions, collapse/uncollapse, a missing line, and existing/missing files
+(`build/i386-doc-editor-flags-original-v2`,
+`build/i386-doc-editor-flags-shared-v1`, `build/i386-doc-editor-flags-native-v1`;
+runner `tools/test-i386-doc-editor-flags.py`). The old native image fails the
+first bail case (`build/i386-doc-editor-flags-native-red-v1`); an earlier
+original fixture reused its existing filename for the missing-file case and
+was corrected (`build/i386-doc-editor-flags-original-v1`). Both bootstrap
+generations, the cross-build/386 audit, exit-action regression and 8 MiB
+ordinary-include/drive-fields smoke pass (`build/doc-editor-flags-rebuild-v1.log`,
+`build/i386-doc-editor-flags-cross-v1`, `build/i386-doc-flags-exit-regression-v1`,
+`build/i386-doc-editor-flags-smoke-8m`). The contract checks return values and
+roles for bounded paths, not parent-directory resolution, every DOF combination,
+file content after write, or exceptional cleanup.

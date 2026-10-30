@@ -1581,7 +1581,7 @@ public Bool Ed(U8 *filename,I64 flags=0)
   U8 *resolved=NULL,*needle=NULL;
   I64 link_type=LK_FILE,line=1,doc_flags=0;
   Bool accept,result=FALSE,borrowed=FALSE;
-  if(!filename || !*filename || flags) return FALSE;
+  if(!filename || !*filename) return FALSE;
   try {
     if((ToUpper(filename[0])=='F' &&
         (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='L' ||
@@ -1592,7 +1592,7 @@ public Bool Ed(U8 *filename,I64 flags=0)
         ToUpper(filename[0])=='A' &&
         (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='A' ||
          ToUpper(filename[1])=='F' || ToUpper(filename[1])=='L')) && filename[2]==':') {
-      link_type=EdLinkCvt(filename,&resolved,&needle,&line);
+      link_type=EdLinkCvt(filename,&resolved,&needle,&line,flags);
       if(LK_DOC<=link_type<=LK_DOC_LINE) borrowed=TRUE;
       else if(link_type==LK_PLAIN || link_type==LK_PLAIN_LINE || link_type==LK_PLAIN_FIND)
         doc_flags=DOCF_PLAIN_TEXT|DOCF_NO_CURSOR;
@@ -1606,23 +1606,33 @@ public Bool Ed(U8 *filename,I64 flags=0)
       if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) { doc=NULL;goto ed_done; }
       result=TRUE;
     } else {
-      result=FileFind(filename,NULL,FUF_JUST_FILES);
+      if(flags&EDF_BAIL) result=FileFind(filename,NULL,FUF_JUST_FILES|FUF_Z_OR_NOT_Z|FUF_SCAN_PARENTS);
+      else result=FileFind(filename,NULL,FUF_JUST_FILES);
       doc=DocRead(filename,doc_flags);
       if(!doc) { doc=DocNew(filename,Fs);if(doc)doc->flags|=doc_flags; }
     }
     if(!doc) goto ed_done;
+    if(flags&EDF_COLLAPSE) DocCollapse(TRUE,doc);
+    else if(flags&EDF_UNCOLLAPSE) DocCollapse(FALSE,doc);
     if(result) {
       if(link_type==LK_FILE_LINE || link_type==LK_PLAIN_LINE || link_type==LK_DOC_LINE) result=DocGoToLine(doc,line);
       else if(link_type==LK_FILE_FIND || link_type==LK_PLAIN_FIND || link_type==LK_DOC_FIND) result=DocFind(doc,I64_MIN,needle,line);
       else if(link_type==LK_FILE_ANCHOR || link_type==LK_DOC_ANCHOR) result=DocAnchorFind(doc,needle);
       else if(borrowed) DocCenter(doc,RECALCt_NORMAL);
     }
-    accept=DocEd(doc);
-    if(accept) {
-      DocLock(doc);entry=doc->cur_entry;
-      if(entry!=doc) DocEntryRun(doc,entry,TRUE);
-      DocUnlock(doc);
-      if(!borrowed && !DocWrite(doc)) result=FALSE;
+    if(flags&EDF_WAS_WRITE) result=FALSE;
+    if(!(flags&EDF_BAIL)) {
+      if(flags) accept=DocEd(doc,flags|DOF_DONT_HOME);
+      else accept=DocEd(doc);
+      if(accept) {
+        DocLock(doc);entry=doc->cur_entry;
+        if(entry!=doc) DocEntryRun(doc,entry,TRUE);
+        DocUnlock(doc);
+        if(!borrowed) {
+          if(!DocWrite(doc)) result=FALSE;
+          else if(flags&EDF_WAS_WRITE) result=TRUE;
+        }
+      }
     }
     if(!borrowed) DocDel(doc);doc=NULL;
   } catch {

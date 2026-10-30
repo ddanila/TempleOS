@@ -1088,6 +1088,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-editor-exit-action-native-v1/result.json",
           "scope": "Escape triggers unlocked selected-entry callback and MSG_CMD; Shift-Escape skips; target lifetime, locks and task roles checked"
+        },
+        {
+          "target": "original-editor-flags",
+          "command": "python3 tools/test-i386-doc-editor-flags.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-flags-original-v2/result.json",
+          "scope": "11 bounded EDF_BAIL, EDF_WAS_WRITE, collapse/uncollapse, missing line and file result/role cases; not all flags or exceptional paths"
+        },
+        {
+          "target": "shared-editor-flags",
+          "command": "python3 tools/test-i386-doc-editor-flags.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-flags-shared-v1/result.json",
+          "scope": "11 bounded EDF_BAIL, EDF_WAS_WRITE, collapse/uncollapse, missing line and file result/role cases; not all flags or exceptional paths"
+        },
+        {
+          "target": "native-editor-flags",
+          "command": "python3 tools/test-i386-doc-editor-flags.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-flags-native-v1/result.json",
+          "scope": "11 bounded EDF_BAIL, EDF_WAS_WRITE, collapse/uncollapse, missing line and file result/role cases; not all flags or exceptional paths"
         }
       ]
     },
@@ -1628,6 +1649,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-editor-exit-action-native-v1/result.json",
           "scope": "Escape triggers unlocked selected-entry callback and MSG_CMD; Shift-Escape skips; target lifetime, locks and task roles checked"
+        },
+        {
+          "target": "original-editor-flags",
+          "command": "python3 tools/test-i386-doc-editor-flags.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-flags-original-v2/result.json",
+          "scope": "11 bounded EDF_BAIL, EDF_WAS_WRITE, collapse/uncollapse, missing line and file result/role cases; not all flags or exceptional paths"
+        },
+        {
+          "target": "shared-editor-flags",
+          "command": "python3 tools/test-i386-doc-editor-flags.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-flags-shared-v1/result.json",
+          "scope": "11 bounded EDF_BAIL, EDF_WAS_WRITE, collapse/uncollapse, missing line and file result/role cases; not all flags or exceptional paths"
+        },
+        {
+          "target": "native-editor-flags",
+          "command": "python3 tools/test-i386-doc-editor-flags.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-flags-native-v1/result.json",
+          "scope": "11 bounded EDF_BAIL, EDF_WAS_WRITE, collapse/uncollapse, missing line and file result/role cases; not all flags or exceptional paths"
         }
       ]
     },
