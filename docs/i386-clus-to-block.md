@@ -16,7 +16,10 @@ all three commands with unchanged inputs in `build/i386-clus-to-block-native`.
 Its 64.675399-second startup observation was concurrent and is not a timing gate.
 The 8 MiB functional check also passes mask 15 and all three commands with
 unchanged inputs in `build/i386-clus-to-block-native-8m`; its 61.356126-second
-startup observation was concurrent. Isolated resource gates remain pending.
+startup observation was concurrent. The isolated 8 MiB run passes all nine
+behavior/VGA checks, loads no build provider, and preserves all four inputs,
+but misses the 60-second target at 63.398598 seconds
+(`build/i386-clus-to-block-startup`). The 16 MiB diagnostics are running.
 
 ```sh
 python3 tools/test-i386-clus-to-block.py --out ORIGINAL

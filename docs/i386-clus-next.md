@@ -8,13 +8,17 @@ checks cover RedSea traversal, FAT32 chains and end-of-chain, FAT cache block
 transitions, mirrored dirty FAT writes, retained outer locks, and invalid drive
 and filesystem errors. The expected aggregate mask is 127.
 
-The pinned-original run is queued behind the isolated Clus2Blk resource gate;
-neither the fixture nor its expected result has been verified yet. No native
-cluster traversal implementation or compatibility qualification is implied by
-this test preparation. The preceding Clus2Blk implementation and its current
+The pinned-original reference passes mask 127 with all five execution inputs
+unchanged (`build/i386-clus-next-reference`). This establishes the fixture's
+covered original behaviors; it does not establish native cluster traversal or
+compatibility qualification. The preceding Clus2Blk implementation and its current
 validation are described in `docs/i386-clus-to-block.md`.
 
-The queued coordinator records its state in
-`build/i386-clus-next-reference-queue.json` and will put the reference results
-in `build/i386-clus-next-reference`. These build artifacts are local and are
-not part of the commit.
+The reference runner can be repeated with:
+
+```sh
+python3 tools/test-i386-clus-next.py --out ORIGINAL
+python3 tools/test-i386-clus-next.py IMAGE --out NATIVE
+```
+
+The result artifacts are local and are not part of the commit.

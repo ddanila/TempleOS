@@ -67,10 +67,9 @@ memory phases and nine behavior/VGA checks. The report is
 
 A new ClusNumNext fixture and runner exercise the original RedSea and FAT32
 traversal contract, including FAT block transitions and mirrored dirty-block
-writeback on a private RAM-backed device. The pinned-original reference is
-queued behind the isolated Clus2Blk resource gate; it has not yet run, so the
-fixture and expected mask 127 are unverified. Native ClusNumNext, block I/O,
-and their resource gates remain open. See docs/i386-clus-next.md.
+writeback on a private RAM-backed device. The pinned-original reference passes
+mask 127 with all five execution inputs unchanged. Native ClusNumNext, block
+I/O, and their resource gates remain open. See docs/i386-clus-next.md.
 
 ### Original cluster-to-block mapping candidate (2026-10-30)
 
@@ -79,8 +78,10 @@ The pinned-original contract passes mask 15 for RedSea and FAT32 mapping and
 invalid-drive/unsupported-filesystem exceptions. Both rebuild generations and
 cross-build/386 audit pass with 1541 source and 24 build hashes unchanged. The
 64 and 8 MiB native contracts each pass three commands with unchanged inputs;
-both startup observations were concurrent. Isolated resource gates, cluster
-traversal and block I/O remain open. See
+both startup observations were concurrent. The isolated 8 MiB gate passes nine
+behavior/VGA checks with no build-provider loads and four unchanged inputs, but
+misses the 60-second target at 63.398598 seconds. The 16 MiB diagnostics are
+running; cluster traversal and block I/O remain open. See
 docs/i386-clus-to-block.md.
 
 ### Original FSize accessor (2026-10-30)
