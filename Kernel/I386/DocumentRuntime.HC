@@ -1570,16 +1570,19 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
   NativeDocEditConsoleRestore;
   KernelLog("DOC EDIT end\n"); return result;
 }
+#include "/Kernel/FileFindFlags.HH"
+extern Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
 public Bool Ed(U8 *filename,I64 flags=0)
 {//File-level editor subset: Escape saves, Shift-Escape discards this session.
   CDoc *doc;
   Bool accept,result=FALSE;
   if(!filename || !*filename || flags) return FALSE;
+  result=FileFind(filename,NULL,FUF_JUST_FILES);
   doc=DocRead(filename);
   if(!doc) doc=DocNew(filename,Fs);
   if(!doc) return FALSE;
   accept=DocEd(doc);
-  if(accept) result=DocWrite(doc);
+  if(accept && !DocWrite(doc)) result=FALSE;
   DocDel(doc);
   return result;
 }

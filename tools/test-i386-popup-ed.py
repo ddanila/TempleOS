@@ -26,9 +26,9 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     inputs=[Path(__file__).resolve(),fixture]
     report=dict(result='running',mode='native' if args.disk else 'shared' if args.shared else 'pinned-original',
-                scope='PopupEd with a simple file, posted edit key, accept and cancel, resulting bytes and caller role restoration; not full editor or physical keyboard qualification')
+                scope='PopupEd with existing and new files, posted edit key, accept and cancel, resulting bytes and caller role restoration; not full editor or physical keyboard qualification')
     if args.disk:report['ram_mib']=args.ram_mib
-    modes=list(range(2))
+    modes=list(range(4))
     captures=[f'popup-ed{i}.DD' for i in modes]+[f'popup-ed-result{i}.TXT' for i in modes]
     if args.disk:
         baseline=json.loads((args.reference/'result.json').read_text())

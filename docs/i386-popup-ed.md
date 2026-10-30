@@ -28,3 +28,15 @@ the original; all recorded caller roles and output pointer match
 unchanged Budget loader advances past `PopUpEd` and rejects at `SettingsPush`
 (`BgtMain.HC` line 182, `build/i386-budget-native-load-v5`).
 Neither run qualifies the full editor, Budget workflow, or C1–C5 milestones.
+
+The expanded original reference checks existing and new files with both
+acceptance and cancellation (`build/i386-popup-ed-reference-v6`). For these
+ordinary file cases the return value reflects whether the file existed on entry;
+the accepted new file is still written, and cancelling a new file leaves it
+absent. ConsoleRuntime 143 applies that return behavior to the native editor
+subset. Both bootstrap generations and the cross-build/386 audit pass
+(`build/rebuild-test`, `build/i386-editor-result-cross`). The four-case native
+comparison passes with exact file and return/state captures and unchanged inputs
+(`build/i386-popup-ed-native-v4`); this concurrent run does not qualify startup
+timing. Full `Ed` link, flag,
+error and editor behavior remain open.
