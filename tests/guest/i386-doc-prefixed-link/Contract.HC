@@ -1,11 +1,11 @@
-I64 DocPrefixedLinkSession()
+I64 DocPrefixedLinkSession(Bool lower=FALSE)
 {
   CDoc *d,*put=DocPut,*display=DocDisplay,*border=DocBorder;
   CDocEntry e;I64 result,action=0,mask=0,size=0;U8 *data;
   U8 *name="C:/LinkTarget.DD",*initial="alpha\n",*link;
   if(FileWrite(name,initial,StrLen(initial))>0)mask|=1;
   d=DocNew;MemSet(&e,0,sizeof(e));
-  link=MStrPrint("FI:%s",name);
+  if(lower)link=MStrPrint("fi:%s",name);else link=MStrPrint("FI:%s",name);
   e.de_flags=DOCEF_LINK|DOCEF_TAG;e.tag=link;d->cmd_U8=CH_SPACE;
   FlushMsgs;Msg(MSG_KEY_DOWN,'Z',0);Msg(MSG_KEY_DOWN,CH_ESC,0);
   result=DocEntryRun(d,&e,TRUE,&action);

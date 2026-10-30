@@ -962,6 +962,20 @@
           "result": "fail",
           "evidence": "build/i386-doc-prefixed-link-native-red-v2/result.json",
           "scope": "FI: link incorrectly treated as literal path; editor save fails; not full native editor qualification"
+        },
+        {
+          "target": "original-fi-editor-link-session",
+          "command": "python3 tools/test-i386-doc-prefixed-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-fi-link-original-v2/result.json",
+          "scope": "FI: and fi: actual editor activation, edit and save with lock/role restoration; other link types and flags remain open"
+        },
+        {
+          "target": "native-fi-editor-link-session",
+          "command": "python3 tools/test-i386-doc-prefixed-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-fi-link-native-v1/result.json",
+          "scope": "FI: and fi: actual editor activation, edit and save with lock/role restoration; other link types and flags remain open"
         }
       ]
     },
@@ -1341,6 +1355,20 @@
           "result": "fail",
           "evidence": "build/i386-doc-prefixed-link-native-red-v2/result.json",
           "scope": "FI: link incorrectly treated as literal path; editor save fails; not full native editor qualification"
+        },
+        {
+          "target": "original-fi-editor-link-session",
+          "command": "python3 tools/test-i386-doc-prefixed-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-fi-link-original-v2/result.json",
+          "scope": "FI: and fi: actual editor activation, edit and save with lock/role restoration; other link types and flags remain open"
+        },
+        {
+          "target": "native-fi-editor-link-session",
+          "command": "python3 tools/test-i386-doc-prefixed-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-fi-link-native-v1/result.json",
+          "scope": "FI: and fi: actual editor activation, edit and save with lock/role restoration; other link types and flags remain open"
         }
       ]
     },

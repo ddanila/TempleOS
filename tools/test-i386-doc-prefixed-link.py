@@ -25,7 +25,7 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     files={'/Probe/PrefixedLink.HC':contract.read_bytes()}
     inputs=[Path(__file__).resolve(),fixture,contract]
-    report=dict(result='running',mode='native' if args.disk else 'shared-original' if args.shared else 'pinned-original',scope='Actual FI: DocEntryRun link activation, queued edit and save, resulting file and task document restoration; not popup or mouse delivery')
+    report=dict(result='running',mode='native' if args.disk else 'shared-original' if args.shared else 'pinned-original',scope='Actual uppercase and lowercase FI: DocEntryRun link activation, queued edit and save, resulting file and task document restoration; not popup or mouse delivery')
     if args.disk:
         inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC')]
     else:
@@ -41,7 +41,7 @@ def main():
         if args.disk:
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions=files)
-            commands=['#include "C:/Probe/PrefixedLink.HC"',"if(DocPrefixedLinkSession!=31)throw('Link',TRUE);",'6*7;']
+            commands=['#include "C:/Probe/PrefixedLink.HC"',"if(DocPrefixedLinkSession(FALSE)!=31||DocPrefixedLinkSession(TRUE)!=31)throw('Link',TRUE);",'6*7;']
             runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk,out/'guest',commands,64,True)
             delivered=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,set(files))
             if delivered!=files:raise ValueError('Delivered include files changed')
@@ -53,7 +53,7 @@ def main():
             subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(overlay),'--output',str(iso)],cwd=ROOT,check=True)
             report['iso_sha256']=sha(iso)
             subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),'--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
-            if 'DOC PREFIXED LINK MASK 31\n' not in (out/'guest/debug.log').read_text():raise ValueError('Original link session failed')
+            if 'DOC PREFIXED LINK MASK 31 31\n' not in (out/'guest/debug.log').read_text():raise ValueError('Original link session failed')
         report['result']='pass'
     except Exception as exc:
         report.update(result='fail',error=str(exc));raise

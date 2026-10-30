@@ -1573,20 +1573,35 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
 }
 #include "/Kernel/FileFindFlags.HH"
 extern Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
+#include "/Adam/DolDoc/EdLinkTypes.HH"
 public Bool Ed(U8 *filename,I64 flags=0)
-{//File-level editor subset: Escape saves, Shift-Escape discards this session.
-  CDoc *doc;
+{//File-level editor subset; use the original conversion for FI: file links.
+  CDoc *doc=NULL;
+  U8 *resolved=NULL;
   Bool accept,result=FALSE;
   if(!filename || !*filename || flags) return FALSE;
-  result=FileFind(filename,NULL,FUF_JUST_FILES);
-  doc=DocRead(filename);
-  if(!doc) doc=DocNew(filename,Fs);
-  if(!doc) return FALSE;
-  accept=DocEd(doc);
-  if(accept && !DocWrite(doc)) result=FALSE;
-  DocDel(doc);
+  try {
+    if(ToUpper(filename[0])=='F' && ToUpper(filename[1])=='I' && filename[2]==':') {
+      if(EdLinkCvt(filename,&resolved)!=LK_FILE || !resolved) goto ed_done;
+      filename=resolved;
+    }
+    result=FileFind(filename,NULL,FUF_JUST_FILES);
+    doc=DocRead(filename);
+    if(!doc) doc=DocNew(filename,Fs);
+    if(!doc) goto ed_done;
+    accept=DocEd(doc);
+    if(accept && !DocWrite(doc)) result=FALSE;
+    DocDel(doc);doc=NULL;
+  } catch {
+    if(doc) DocDel(doc);
+    Free(resolved);
+    throw;
+  }
+ed_done:
+  Free(resolved);
   return result;
 }
+
 class CNativeHelpLink
 {
   I64 start,end,line,occurrence;
