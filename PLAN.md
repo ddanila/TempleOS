@@ -72,8 +72,9 @@ NULL. Both original rebuild generations and cross-build/386 audit pass with
 1538 source and 24 build hashes unchanged. Native 64 MiB passes all three
 commands with unchanged inputs; the 8 MiB contract also passes all three
 commands with unchanged inputs. Both startup observations were concurrent;
-isolated resource gates remain open. Full media
-initialization remains open. See docs/i386-adam-allocation.md.
+the isolated 8 MiB gate passes its nine behavior/VGA checks but misses the
+60-second target at 62.845757 seconds with four unchanged inputs; 16 MiB
+diagnostics are running. Full media initialization remains open. See docs/i386-adam-allocation.md.
 
 ### Original block-device initializer source (2026-10-30)
 
@@ -81,6 +82,8 @@ The complete original BlkDevInit body is shared byte-for-byte, including RAM,
 ISO-file, ATA, ATAPI and cache branches. Both original rebuild generations and
 the rebuilt-original nine-case drive-state oracle pass with unchanged inputs.
 The cross-build/386 audit passes with 1537 source and 24 build hashes unchanged.
+A separate pinned-original flag oracle passes mask 7 for already-initialized
+and unsupported-device retry behavior; it does not initialize actual media.
 The oracle does not qualify all initializer branches. The native binding and
 its underlying media, formatting and cache dependencies remain open; no drive
 or directory-context milestone is closed. See docs/i386-directory-context.md.

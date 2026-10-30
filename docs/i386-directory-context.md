@@ -653,3 +653,13 @@ lookup, same-drive reset, errors and restoration, not all initializer branches.
 The native provider is not yet bound: its formatting, file-backed media, ATA,
 ATAPI and cache dependencies must retain their original behavior. This
 extraction alone does not implement Drv or DirContextNew/Del.
+
+The pinned-original `BlkDevInit` flag oracle passes mask 7 in
+`build/i386-blockdev-init-reference` with unchanged inputs. It checks an already
+initialized device, then an unsupported device type in a copied record: the
+first call returns false but leaves INITIALIZED set and clears INIT_IN_PROGRESS;
+a second call returns true without changing flags. No actual media is initialized
+by those cases. The native negative control in `build/i386-blockdev-init-native-red` rejected
+the fixture at include time with unchanged inputs; the rejection did not identify
+a precise missing symbol, and no native contract case ran. The native service
+remains missing.

@@ -25,3 +25,8 @@ for full block-device initialization, which remains unimplemented natively.
 python3 tools/test-i386-adam-alloc.py --out ORIGINAL
 python3 tools/test-i386-adam-alloc.py IMAGE --out NATIVE
 ```
+
+The committed candidate's isolated 8 MiB gate passed all nine behavior/VGA
+checks with no build-provider loads and four unchanged inputs, but missed the
+60-second startup budget at 62.845757 seconds (`build/i386-adam-alloc-startup`).
+Its 16 MiB diagnostics are running.
