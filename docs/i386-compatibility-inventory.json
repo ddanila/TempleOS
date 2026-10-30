@@ -1109,6 +1109,34 @@
           "result": "pass",
           "evidence": "build/i386-doc-editor-flags-native-v1/result.json",
           "scope": "11 bounded EDF_BAIL, EDF_WAS_WRITE, collapse/uncollapse, missing line and file result/role cases; not all flags or exceptional paths"
+        },
+        {
+          "target": "original-parent-editor-link",
+          "command": "python3 tools/test-i386-doc-parent-edit.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-parent-edit-original-v2/result.json",
+          "scope": "Non-bail parent-file line edit and child save; bounded cases, not full directory-context qualification"
+        },
+        {
+          "target": "shared-parent-editor-link",
+          "command": "python3 tools/test-i386-doc-parent-edit.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-parent-edit-shared-v1/result.json",
+          "scope": "Non-bail parent-file line edit and child save; bounded cases, not full directory-context qualification"
+        },
+        {
+          "target": "native-parent-editor-link",
+          "command": "python3 tools/test-i386-doc-parent-edit.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-parent-edit-native-v1/result.json",
+          "scope": "Non-bail parent-file line edit and child save; bounded cases, not full directory-context qualification"
+        },
+        {
+          "target": "native-parent-editor-link",
+          "command": "python3 tools/test-i386-doc-parent-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-parent-link-native-v1/result.json",
+          "scope": "Bail parent lookup for exact and compressed alternate; bounded cases, not full directory-context qualification"
         }
       ]
     },
@@ -1670,6 +1698,34 @@
           "result": "pass",
           "evidence": "build/i386-doc-editor-flags-native-v1/result.json",
           "scope": "11 bounded EDF_BAIL, EDF_WAS_WRITE, collapse/uncollapse, missing line and file result/role cases; not all flags or exceptional paths"
+        },
+        {
+          "target": "original-parent-editor-link",
+          "command": "python3 tools/test-i386-doc-parent-edit.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-parent-edit-original-v2/result.json",
+          "scope": "Non-bail parent-file line edit and child save; bounded cases, not full directory-context qualification"
+        },
+        {
+          "target": "shared-parent-editor-link",
+          "command": "python3 tools/test-i386-doc-parent-edit.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-parent-edit-shared-v1/result.json",
+          "scope": "Non-bail parent-file line edit and child save; bounded cases, not full directory-context qualification"
+        },
+        {
+          "target": "native-parent-editor-link",
+          "command": "python3 tools/test-i386-doc-parent-edit.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-parent-edit-native-v1/result.json",
+          "scope": "Non-bail parent-file line edit and child save; bounded cases, not full directory-context qualification"
+        },
+        {
+          "target": "native-parent-editor-link",
+          "command": "python3 tools/test-i386-doc-parent-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-parent-link-native-v1/result.json",
+          "scope": "Bail parent lookup for exact and compressed alternate; bounded cases, not full directory-context qualification"
         }
       ]
     },

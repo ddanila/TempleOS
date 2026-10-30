@@ -1580,7 +1580,7 @@ public Bool Ed(U8 *filename,I64 flags=0)
   CDocEntry *entry;
   U8 *resolved=NULL,*needle=NULL;
   I64 link_type=LK_FILE,line=1,doc_flags=0;
-  Bool accept,result=FALSE,borrowed=FALSE;
+  Bool accept,result=FALSE,other_found=FALSE,borrowed=FALSE;
   if(!filename || !*filename) return FALSE;
   try {
     if((ToUpper(filename[0])=='F' &&
@@ -1607,14 +1607,15 @@ public Bool Ed(U8 *filename,I64 flags=0)
       result=TRUE;
     } else {
       if(flags&EDF_BAIL) result=FileFind(filename,NULL,FUF_JUST_FILES|FUF_Z_OR_NOT_Z|FUF_SCAN_PARENTS);
-      else result=FileFind(filename,NULL,FUF_JUST_FILES);
+      else if(!(result=FileFind(filename,NULL,FUF_JUST_FILES)))
+        other_found=FileFind(filename,NULL,FUF_JUST_FILES|FUF_Z_OR_NOT_Z|FUF_SCAN_PARENTS);
       doc=DocRead(filename,doc_flags);
       if(!doc) { doc=DocNew(filename,Fs);if(doc)doc->flags|=doc_flags; }
     }
     if(!doc) goto ed_done;
     if(flags&EDF_COLLAPSE) DocCollapse(TRUE,doc);
     else if(flags&EDF_UNCOLLAPSE) DocCollapse(FALSE,doc);
-    if(result) {
+    if(result || other_found) {
       if(link_type==LK_FILE_LINE || link_type==LK_PLAIN_LINE || link_type==LK_DOC_LINE) result=DocGoToLine(doc,line);
       else if(link_type==LK_FILE_FIND || link_type==LK_PLAIN_FIND || link_type==LK_DOC_FIND) result=DocFind(doc,I64_MIN,needle,line);
       else if(link_type==LK_FILE_ANCHOR || link_type==LK_DOC_ANCHOR) result=DocAnchorFind(doc,needle);

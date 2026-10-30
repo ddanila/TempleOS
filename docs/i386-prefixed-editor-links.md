@@ -142,3 +142,27 @@ ordinary-include/drive-fields smoke pass (`build/doc-editor-flags-rebuild-v1.log
 `build/i386-doc-editor-flags-smoke-8m`). The contract checks return values and
 roles for bounded paths, not parent-directory resolution, every DOF combination,
 file content after write, or exceptional cleanup.
+
+For a non-bail line link whose file exists only in a parent directory, native
+`Ed` now records the original's separate parent match and performs the requested
+navigation while retaining the original return behavior. A real session
+compares the pinned original, shared original and native: it opens parent
+content, edits line 2, saves the child path and verifies the parent remains
+unchanged (`build/i386-doc-parent-edit-original-v2`,
+`build/i386-doc-parent-edit-shared-v1`, `build/i386-doc-parent-edit-native-v1`;
+runner `tools/test-i386-doc-parent-edit.py`). The previous native image fails
+that session (`build/i386-doc-parent-edit-native-red-v1`). The first original
+fixture incorrectly expected a false return even though successful line
+navigation returns true (`build/i386-doc-parent-edit-original-v1`).
+
+A separate bail-mode test checks parent lookup for exact and compressed
+alternate filenames. It passes on the original, previous native image and
+updated native image (`build/i386-doc-parent-link-original-v2`,
+`build/i386-doc-parent-link-native-red-v1`, `build/i386-doc-parent-link-native-v1`;
+runner `tools/test-i386-doc-parent-link.py`). The previous native result is a
+pass despite its output directory's historical `red` name. Both original
+bootstrap generations, the cross-build/386 audit and an 8 MiB
+ordinary-include/drive-fields smoke pass (`build/doc-parent-edit-rebuild-v1.log`,
+`build/i386-doc-parent-edit-cross-v1`, `build/i386-doc-parent-edit-smoke-8m`).
+These cases do not qualify all directory contexts, parent-search orders,
+failures, editor flags or link types.
