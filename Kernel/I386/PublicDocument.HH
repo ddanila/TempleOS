@@ -7,6 +7,9 @@
 public _extern _DOC_LINK_FILE U8 *DocLinkFile(U8 *link_st,CTask *mem_task=NULL);
 public _extern _ED_LINK_CVT I64 EdLinkCvt(U8 *link_st,
   U8 **_filename=NULL,U8 **_needle_str=NULL,I64 *_num=NULL,I64 edf_dof_flags=0);
+public _extern _DOC_CURSOR Bool DocCursor(Bool show=OFF,CDoc *doc=NULL);
+public _extern _DOC_HIGHLIGHT_CURSOR Bool DocHighlightCursor(Bool show=OFF,CDoc *doc=NULL);
+public _extern _DOC_SCROLL Bool DocScroll(Bool val=OFF,CDoc *doc=NULL);
 public _extern _DOC_LOCK Bool DocLock(CDoc *doc);
 public _extern _DOC_UNLOCK Bool DocUnlock(CDoc *doc);
 public _extern _DOC_PUT CDoc *DocPut(CTask *task=0);

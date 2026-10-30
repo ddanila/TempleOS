@@ -43,3 +43,10 @@ case-insensitive comparison binding it rejects `StrICmp`
 (`build/i386-autocomplete-stream-probe-v2`). These test providers cannot perform
 file I/O; neither diagnostic establishes autocomplete behavior. See
 [case-insensitive comparisons](i386-string-comparisons.md).
+
+After publishing `DocCursor` and the related document visibility controls,
+the same compile-only stream probe gets past that call and rejects the missing
+`tS` public binding at `ACTask.HC` line 89
+(`build/i386-autocomplete-stream-probe-v3`). The probe's stream functions
+still throw if called, so this does not implement or qualify autocomplete.
+See [document visibility controls](i386-document-visibility.md).
