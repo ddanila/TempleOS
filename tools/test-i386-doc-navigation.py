@@ -30,7 +30,7 @@ def main():
     if args.original:
         files += [ROOT / p for p in ('Adam/DolDoc/DocFind.HC', 'Adam/DolDoc/DocFindCore.HC', 'Adam/DolDoc/DocRecalc.HC', 'Adam/DolDoc/DocRecalcCore.HC', 'Adam/DolDoc/DocRecalcLib.HC', 'Adam/DolDoc/DocNavigationCore.HC', 'Adam/DolDoc/DocLink.HC', 'Adam/DolDoc/DocLinkFileCore.HC', 'Adam/DolDoc/EdLinkCvtCore.HC', 'Adam/DolDoc/EdLinkTypes.HH', 'Adam/God/BibleTypes.HH', 'Adam/God/GodBible.HC', 'Adam/God/BibleInitCore.HC', 'Kernel/DocTypes.HH', 'tools/build-iso.py', 'tools/guest-run.py', 'build/rebuild-test/overlay/0000Boot/0000Kernel.BIN.C', 'build/rebuild-test/overlay/Compiler/Compiler.BIN')]
     else:
-        files += [args.disk.resolve(), ROOT / 'tools/i386-kernel-input.py', ROOT / 'tools/build-i386-kernel.py']
+        files += [args.disk.resolve()] + [ROOT / p for p in ('tools/i386-kernel-input.py','tools/build-i386-kernel.py','tools/package-i386-native-image.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC')]
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     pins = {str(p): sha(p) for p in files}
     report = dict(result='running', input_sha256=pins, scope='DocGoToLine, DocFind and DocAnchorFind null handling, exact selected entry, case-insensitive occurrence, missing target and caller heap after deletion; not full editor dispatch')
@@ -51,32 +51,19 @@ def main():
                 raise ValueError('Original parser contract did not pass all six checks')
         else:
             disk = out / 'working.img'
-            shutil.copyfile(args.disk, disk)
-            commands = [('HashFind("DocGoToLine",Fs->hash_table,~0)!=NULL;', ['1'])]
-            source = fixture.read_text()
-            commands += [(f'U8 *dp_source=CAlloc({len(source)+1});', []),
-                         ('U0 DPTransfer(I64 offset,U8 *text,I64 size){MemCpy(dp_source+offset,text,size);}', [])]
-            for offset in range(0, len(source), 60):
-                chunk = source[offset:offset+60]
-                command = f'DPTransfer({offset},{json.dumps(chunk.replace(chr(36), chr(36)*2))},{len(chunk)});'
-                if len(command)>255:
-                    raise ValueError('Parser fixture transfer exceeds console capacity')
-                commands.append((command, []))
-            commands += [(f'FileWrite("C:/RectContract.HC",dp_source,{len(source)})>0;', ['1']),
-                         ('Free(dp_source);', []), ('#include "C:/RectContract.HC"', []),
-                         ('JRContract(67);', ['63']), ('6*7;', ['42'])]
-            report['behavior'] = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input'](disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, snapshot=False, startup_check={'status':'ok', 'answers':[], 'commands':commands})
-        if not args.original:
-            saved = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk, {'/RectContract.HC'}).get('/RectContract.HC')
-            report['guest_fixture_sha256'] = hashlib.sha256(saved).hexdigest() if saved is not None else None
-            if saved != fixture.read_bytes():
-                raise ValueError('Guest fixture differs byte-for-byte from the pinned source')
+            files = {'/Probe/DocNavigation.HC': fixture.read_bytes()}
+            report['packaging'] = runpy.run_path(str(ROOT / 'tools/package-i386-native-image.py'))['package'](args.disk.resolve(), disk, additions=files)
+            commands = ['#include "C:/Probe/DocNavigation.HC"', "if(JRContract(67)!=63)throw('Nav',TRUE);", '6*7;']
+            runpy.run_path(str(ROOT / 'tools/test-i386-timeclock-welcome.py'))['guest'](disk, out / 'behavior', commands, 64, True)
+            saved = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))['mutated_file_contents'](disk, set(files))
+            if saved != files: raise ValueError('Delivered navigation fixture changed')
         report['result'] = 'pass'
     except Exception as error:
         report.update(result='fail', error=str(error))
         raise
     finally:
         changed = [p for p, digest in pins.items() if sha(Path(p)) != digest]
+        report['inputs_unchanged'] = not changed
         if changed:
             report.update(result='fail', error='Parser contract inputs changed', changed_inputs=changed)
         (out / 'result.json').write_text(json.dumps(report, indent=2)+'\n')

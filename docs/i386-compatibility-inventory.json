@@ -990,6 +990,41 @@
           "result": "pass",
           "evidence": "build/i386-doc-line-link-native-v1/result.json",
           "scope": "FL: and fl: actual editor activation, edit at requested second line and save with lock/role restoration; other line numbers and link types remain open"
+        },
+        {
+          "target": "original-ff-text-search-link-session",
+          "command": "python3 tools/test-i386-doc-find-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-link-original-v1/result.json",
+          "scope": "FF: text-search link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "native-ff-text-search-link-session",
+          "command": "python3 tools/test-i386-doc-find-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-link-native-v1/result.json",
+          "scope": "FF: text-search link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "original-fa-anchor-link-session",
+          "command": "python3 tools/test-i386-doc-anchor-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-anchor-link-original-v1/result.json",
+          "scope": "FA: anchor link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "native-fa-anchor-link-session",
+          "command": "python3 tools/test-i386-doc-anchor-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-anchor-link-native-v1/result.json",
+          "scope": "FA: anchor link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "native-public-line,-search-and-anchor-contract",
+          "command": "python3 tools/test-i386-doc-navigation.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-public-native-v1/result.json",
+          "scope": "Public line, search and anchor contract; bounded cases, not full editor or desktop"
         }
       ]
     },
@@ -1115,6 +1150,41 @@
           "result": "pass",
           "evidence": "build/i386-c2-editor-dialogs-native-8m/result.json",
           "scope": "Console136/Editor5 full dialog dispatch: all six cases/nine commands and six exact serialized/entry-tag captures match original at 8 and 64 MiB with unchanged inputs; fixture formats field/selects ALL then posts Esc/ShiftEsc; not keyboard navigation, isolated startup timing or full DocPutKey qualification"
+        },
+        {
+          "target": "original-ff-text-search-link-session",
+          "command": "python3 tools/test-i386-doc-find-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-link-original-v1/result.json",
+          "scope": "FF: text-search link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "native-ff-text-search-link-session",
+          "command": "python3 tools/test-i386-doc-find-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-link-native-v1/result.json",
+          "scope": "FF: text-search link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "original-fa-anchor-link-session",
+          "command": "python3 tools/test-i386-doc-anchor-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-anchor-link-original-v1/result.json",
+          "scope": "FA: anchor link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "native-fa-anchor-link-session",
+          "command": "python3 tools/test-i386-doc-anchor-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-anchor-link-native-v1/result.json",
+          "scope": "FA: anchor link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "native-public-line,-search-and-anchor-contract",
+          "command": "python3 tools/test-i386-doc-navigation.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-public-native-v1/result.json",
+          "scope": "Public line, search and anchor contract; bounded cases, not full editor or desktop"
         }
       ]
     },
@@ -1397,6 +1467,41 @@
           "result": "pass",
           "evidence": "build/i386-doc-line-link-native-v1/result.json",
           "scope": "FL: and fl: actual editor activation, edit at requested second line and save with lock/role restoration; other line numbers and link types remain open"
+        },
+        {
+          "target": "original-ff-text-search-link-session",
+          "command": "python3 tools/test-i386-doc-find-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-link-original-v1/result.json",
+          "scope": "FF: text-search link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "native-ff-text-search-link-session",
+          "command": "python3 tools/test-i386-doc-find-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-link-native-v1/result.json",
+          "scope": "FF: text-search link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "original-fa-anchor-link-session",
+          "command": "python3 tools/test-i386-doc-anchor-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-anchor-link-original-v1/result.json",
+          "scope": "FA: anchor link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "native-fa-anchor-link-session",
+          "command": "python3 tools/test-i386-doc-anchor-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-anchor-link-native-v1/result.json",
+          "scope": "FA: anchor link session; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "native-public-line,-search-and-anchor-contract",
+          "command": "python3 tools/test-i386-doc-navigation.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-public-native-v1/result.json",
+          "scope": "Public line, search and anchor contract; bounded cases, not full editor or desktop"
         }
       ]
     },

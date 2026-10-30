@@ -1575,34 +1575,40 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
 extern Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
 #include "/Adam/DolDoc/EdLinkTypes.HH"
 public Bool Ed(U8 *filename,I64 flags=0)
-{//File-level editor subset; convert FI: and FL: using the original link parser.
+{//File-level editor subset; convert file, line, search and anchor links with the original parser.
   CDoc *doc=NULL;
-  U8 *resolved=NULL;
+  U8 *resolved=NULL,*needle=NULL;
   I64 link_type=LK_FILE,line=1;
   Bool accept,result=FALSE;
   if(!filename || !*filename || flags) return FALSE;
   try {
     if(ToUpper(filename[0])=='F' &&
-        (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='L') && filename[2]==':') {
-      link_type=EdLinkCvt(filename,&resolved,NULL,&line);
-      if((link_type!=LK_FILE && link_type!=LK_FILE_LINE) || !resolved) goto ed_done;
+        (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='L' ||
+         ToUpper(filename[1])=='F' || ToUpper(filename[1])=='A') && filename[2]==':') {
+      link_type=EdLinkCvt(filename,&resolved,&needle,&line);
+      if((link_type!=LK_FILE && link_type!=LK_FILE_LINE &&
+          link_type!=LK_FILE_FIND && link_type!=LK_FILE_ANCHOR) || !resolved) goto ed_done;
       filename=resolved;
     }
     result=FileFind(filename,NULL,FUF_JUST_FILES);
     doc=DocRead(filename);
     if(!doc) doc=DocNew(filename,Fs);
     if(!doc) goto ed_done;
-    if(result && link_type==LK_FILE_LINE) result=DocGoToLine(doc,line);
+    if(result) {
+      if(link_type==LK_FILE_LINE) result=DocGoToLine(doc,line);
+      else if(link_type==LK_FILE_FIND) result=DocFind(doc,I64_MIN,needle,line);
+      else if(link_type==LK_FILE_ANCHOR) result=DocAnchorFind(doc,needle);
+    }
     accept=DocEd(doc);
     if(accept && !DocWrite(doc)) result=FALSE;
     DocDel(doc);doc=NULL;
   } catch {
     if(doc) DocDel(doc);
-    Free(resolved);
+    Free(resolved);Free(needle);
     throw;
   }
 ed_done:
-  Free(resolved);
+  Free(resolved);Free(needle);
   return result;
 }
 

@@ -45,6 +45,11 @@ I64 EdReplace(CDoc*doc,U8*find,U8*replace,Bool sel=TRUE,Bool match_case=TRUE,Boo
 Bool DocGoToLine(CDoc*doc,I64 line_num)
 {if(!doc)return FALSE;NativeEditorRequire;return (*native_editor_services.go_to_line)(doc,line_num);}
 
+Bool DocFind(CDoc*doc,I64 start=I64_MIN,U8*needle=NULL,I64 occurrence=1)
+{if(!doc)return FALSE;NativeEditorRequire;return (*native_editor_services.doc_find)(doc,start,needle,occurrence);}
+Bool DocAnchorFind(CDoc*doc,U8*needle)
+{if(!doc)return FALSE;NativeEditorRequire;return (*native_editor_services.doc_anchor_find)(doc,needle);}
+
 I64 EdFindReplace(CDoc*doc)
 {NativeEditorRequire;return (*native_editor_services.find_replace)(doc);}
 U0 EdGoToLine(CDoc*doc)

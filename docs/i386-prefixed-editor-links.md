@@ -1,10 +1,11 @@
 # Prefixed editor links
 
 The original `Ed` accepts editor links, including `FI:` filenames and line,
-anchor, find, dictionary and help links. The native `Ed` remains a file-level editor subset. It now sends `FI:` file
-and `FL:` links through the original `EdLinkCvt` converter before opening the
-file. `FL:` additionally positions the cursor with the original line-navigation
-service. Other
+anchor, find, dictionary and help links. The native `Ed` remains a file-level
+editor subset. It now sends `FI:`, `FL:`, `FF:` and `FA:` links through the original `EdLinkCvt` converter before
+opening the file. `FL:` positions the cursor with the original line-navigation
+service; `FF:` and `FA:` use the original document search and anchor routines.
+Other
 prefixed link types and nonzero editor flags still require the full original
 editor path.
 
@@ -52,3 +53,22 @@ previous FI session and 8 MiB ordinary-include/drive-fields smoke also pass
 (`build/i386-doc-fl-fi-regression-v1`, `build/i386-doc-fl-link-smoke-8m`).
 This does not establish every line number, missing files, other link types,
 flags, mouse input or popup navigation.
+
+The native editor provider now exports the original `DocFind` and
+`DocAnchorFind` routines through version 6 of its interface. The direct
+original/native navigation contract checks line selection, case-insensitive
+occurrence selection, anchor selection, missing targets and heap recovery
+(`build/i386-doc-search-public-original-v1`,
+`build/i386-doc-search-public-native-v1`). Real `FF:`/`ff:` and `FA:`/`fa:`
+link sessions pass on original and native, including edits at the selected
+text or anchor and saving (`build/i386-doc-find-link-original-v1`,
+`build/i386-doc-find-link-native-v1`, `build/i386-doc-anchor-link-original-v1`,
+`build/i386-doc-anchor-link-native-v1`). The anchor test checks the insertion
+location against bytes captured from the original
+(`build/i386-doc-anchor-link-original-trace-v1`). Both original bootstrap
+generations, the native cross-build/386 audit, the `FL:` regression, and an
+8 MiB ordinary-include/drive-fields smoke check pass
+(`build/doc-find-link-rebuild-v1.log`, `build/i386-doc-find-link-cross-v1`,
+`build/i386-doc-find-fl-regression-v1`, `build/i386-doc-find-link-smoke-8m`).
+These tests cover bounded targets, not every search occurrence, missing-link
+editor behavior, other link types, flags, popup or physical mouse delivery.

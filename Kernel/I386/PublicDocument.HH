@@ -122,6 +122,8 @@ public _extern _DOC_LOAD U0 DocLoad(CDoc *doc,U8 *source,I64 bytes);
 public _extern _DOC_2_PLAIN_TEXT U8 *Doc2PlainText(CDoc *doc,CDocEntry *entry);
 public _extern _DOC_FORM Bool DocForm(U8 *data,U8 *class_name=lastclass,I64 flags=0,U8 *header=0,U8 *footer=0);
 public _extern _POP_UP_FORM Bool PopUpForm(U8 *data,U8 *class_name=lastclass,I64 flags=DOF_SIZE_MIN,U8 *header=0,U8 *footer=0);
+public _extern _DOC_FIND Bool DocFind(CDoc *doc,I64 start=I64_MIN,U8 *needle=NULL,I64 occurrence=1);
+public _extern _DOC_ANCHOR_FIND Bool DocAnchorFind(CDoc *doc,U8 *needle);
 public _extern _DOC_GO_TO_LINE Bool DocGoToLine(CDoc *doc,I64 line_num);
 public _extern _ED_FIND_REPLACE I64 EdFindReplace(CDoc *doc);
 public _extern _ED_GO_TO_LINE U0 EdGoToLine(CDoc *doc);

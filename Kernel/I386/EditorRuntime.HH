@@ -2,7 +2,7 @@
 #define I386_EDITOR_RUNTIME_INCLUDED
 #include "/Kernel/I386/DocAccess.HH"
 #include "/Kernel/I386/KernelSymbols.HH"
-#define I386_EDITOR_VERSION 5
+#define I386_EDITOR_VERSION 6
 class CI386EditorBindings {
  U32 version,bytes;
  U32 *alpha_numeric;
@@ -57,6 +57,8 @@ class CI386EditorServices {
  Bool (*popup)(U8 *data,U8 *class_name,I64 flags,U8 *header,U8 *footer);
  I64 (*replace)(CDoc *doc,U8 *find,U8 *replacement,Bool selected,Bool match_case,Bool whole_labels);
  Bool (*go_to_line)(CDoc *doc,I64 line);
+ Bool (*doc_find)(CDoc *doc,I64 start,U8 *needle,I64 occurrence);
+ Bool (*doc_anchor_find)(CDoc *doc,U8 *needle);
  I64 (*find_replace)(CDoc *doc);
  U0 (*prompt_go_to_line)(CDoc *doc);
 };
