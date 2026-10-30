@@ -27,17 +27,24 @@ Bool I386LexSnapshotValid(CI386Heap *heap,CCmpCtrl *cc,CI386LexSnapshot *snapsho
 {
   CI386LexSavedFile *saved;
   CLexFile *parent;
+  U32 flags=I386IrqSave;
+  Bool result=FALSE;
   if(I386HeapSize(heap,snapshot)!=sizeof(CI386LexSnapshot) ||
       snapshot->signature!=I386_LEX_SNAPSHOT_MAGIC || snapshot->heap!=heap ||
-      snapshot->control!=cc) return FALSE;
+      snapshot->control!=cc) goto done;
   parent=snapshot->active;
-  for(saved=snapshot->parents;saved;saved=saved->next) {
+  saved=snapshot->parents;
+  if(saved && !I386LexFileOwned(heap,cc,parent)) goto done;
+  for(;saved;saved=saved->next) {
+    //The preceding active file is already validated under IRQ exclusion.
     if(I386HeapSize(heap,saved)!=sizeof(CI386LexSavedFile) ||
-        !I386LexFileOwned(heap,cc,parent) || parent->next!=saved->active ||
-        !I386LexFileOwned(heap,cc,saved->active)) return FALSE;
+        parent->next!=saved->active ||
+        !I386LexFileOwned(heap,cc,saved->active)) goto done;
     parent=saved->active;
   }
-  return TRUE;
+  result=TRUE;
+done:
+  I386IrqRestore(flags); return result;
 }
 Bool I386LexSnapshotsPin(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file,Bool *pinned)
 {

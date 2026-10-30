@@ -40,8 +40,10 @@ not isolated timing qualification; the native build and resource gates remain
 open. The committed candidate's isolated 8 MiB gate passed nine behavior/VGA
 checks with no build-provider loads but missed the 60-second budget at
 60.962218 seconds (`build/i386-c5-deduplicate-startup`). The retained build
-resumed and 16 MiB diagnostics are running in
-`build/i386-c5-deduplicate-diagnostics`.
+resumed and 16 MiB diagnostics pass in
+`build/i386-c5-deduplicate-diagnostics` at 239.549427 seconds, with all
+128 immediate-push, 22 publication and 28 program-publication cases, both
+memory phases and nine behavior/VGA checks.
 A sampled profile of the same candidate (`build/i386-c5-deduplicate-startup-profile`)
 places 321 of 416 root-header samples in I386HeapScanSelect. Sampled stacks
 include heap-size validation from lexer snapshots, compiler ownership and memory
@@ -60,6 +62,31 @@ The preceding editor candidate's 16 MiB diagnostics pass in 240.203069 seconds,
 with 128 immediate-push, 22 publication and 28 program-publication cases, both
 memory phases and nine behavior/VGA checks. The report is
 `build/i386-c2-editor-dialogs-gates.json`.
+
+### Lexer snapshot validation candidate (2026-10-30)
+
+`I386LexSnapshotValid` now validates each parent file once per walk under
+interrupt exclusion, retaining the full-arena validation for each ownership
+lookup and checking every saved node and link. The existing lexer-state and
+dedicated nested-snapshot regressions pass, including malformed links with
+interrupts enabled and disabled. The dedicated regression also passes with a later heap block corrupted after
+the target snapshot, verifying that the complete arena remains checked. Both original rebuild generations and the cross-build/386 audit pass; 1535 source and 24 build-input hashes match.
+Evidence is in `build/i386-lex-parent-validation` and
+`build/i386-lex-parent-cross`.
+
+A candidate sampled profile has 302/406 root-header samples in heap scanning,
+compared with 321/416 in the prior profile. Concurrent workloads and sampling
+make these figures unsuitable as a performance comparison. The isolated baseline misses the 60-second budget at 60.536382 seconds in
+`build/i386-lex-parent-baseline-startup`. The initially queued candidate run
+rejected its baseline source snapshot before boot; the corrected candidate
+snapshot matches all source and build hashes, and its isolated run is recorded in
+`build/i386-lex-parent-candidate-fixed-startup`. The intervening corruption regression means the runs are not a contiguous pair.
+The corrected isolated candidate passes at 59.681142 seconds with all nine
+behavior/VGA checks and no build-provider loads, in
+`build/i386-lex-parent-candidate-fixed-startup`; its four inputs match. This
+single non-contiguous comparison does not establish a controlled speedup.
+A candidate 16 MiB diagnostic gate remains pending. The separate 16 MiB diagnostics passed against the previously committed image;
+its C5 native build continues. C1–C5 remain open.
 
 ### Complete editor dialog dispatch candidate (2026-10-16)
 

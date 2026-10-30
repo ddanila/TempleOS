@@ -32,6 +32,11 @@ I64 NativeSnapshotNestedTest()
   CCmpCtrl cc,other;
   CLexFile *root,*outer,*inner;
   CI386LexSnapshot *snapshot;
+  CI386LexSavedFile *saved;
+  CLexFile *saved_active;
+  U8 *later;
+  CI386HeapBlock *later_block;
+  U32 irq;
   U8 *bytes=&cc;
   I64 i,lines=0,used=state_heap.used,count=state_heap.allocations;
   for(i=0;i<sizeof(CCmpCtrl);i++) bytes[i]=0;
@@ -46,6 +51,23 @@ I64 NativeSnapshotNestedTest()
       !I386LexPush(&state_heap,&cc) || InputRead(&cc,&lines)!='y' ||
       InputRead(&cc,&lines)!='a' || InputRead(&cc,&lines)!='b' ||
       InputRead(&cc,&lines)!='Z' || cc.lex_include_stk!=root) return 713;
+  //Reject a mismatched parent link and preserve both interrupt states.
+  snapshot=cc.lex_prs_stk; saved=snapshot->parents;
+  if(!saved || !I386LexSnapshotValid(&state_heap,&cc,snapshot)) return 726;
+  saved_active=saved->active; saved->active=inner;
+  irq=GetRFlags; I386IrqSave;
+  if(I386LexSnapshotValid(&state_heap,&cc,snapshot) || GetRFlags&0x200) return 727;
+  SetRFlags(irq|0x200);
+  if(I386LexSnapshotValid(&state_heap,&cc,snapshot) || !(GetRFlags&0x200)) return 728;
+  I386IrqRestore(irq); saved->active=saved_active;
+  //A later corrupt allocation must invalidate an earlier matching snapshot.
+  later=I386HeapAllocHigh(&state_heap,32);
+  if(!later || later<=(snapshot+0)(U8 *)) return 729;
+  later_block=later-16; later_block->reserved=1;
+  if(I386LexSnapshotValid(&state_heap,&cc,snapshot)) return 730;
+  later_block->reserved=0;
+  if(!I386LexSnapshotValid(&state_heap,&cc,snapshot) ||
+      !I386HeapFree(&state_heap,later)) return 731;
   //Corrupt ownership in a deeper save point must reject before mutation.
   snapshot=cc.lex_prs_stk->next; snapshot->control=&other;
   i=state_heap.used;
