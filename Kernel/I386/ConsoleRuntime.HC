@@ -437,6 +437,26 @@ extern U0 NativeTextBaseRestore();
 extern Bool ConsoleDisplay();
 extern U0 ConsoleKeys(I64 unused);
 extern U0 ConsoleSubmit(U8 *line);
+U32 NativeMemFillFlags()
+{ U32 flags=GetRFlags;asm { CLD } return flags; }
+Bool NativeMemFillFlagsCheck()
+{//Diagnostic boot: typed fills must clear DF even for zero-length calls.
+  U16 w[2],*wp;U32 d[2],*dp,flags;I64 q[2],*qp;
+  SetRFlags(GetRFlags|0x400);wp=MemSetU16(w,0x1234,2);flags=NativeMemFillFlags;
+  if(wp!=w+2 || flags&0x400 || w[0]!=0x1234 || w[1]!=0x1234) return FALSE;
+  SetRFlags(GetRFlags|0x400);dp=MemSetU32(d,0x12345678,2);flags=NativeMemFillFlags;
+  if(dp!=d+2 || flags&0x400 || d[0]!=0x12345678 || d[1]!=0x12345678) return FALSE;
+  SetRFlags(GetRFlags|0x400);qp=MemSetI64(q,0x123456789ABCDEF0,2);flags=NativeMemFillFlags;
+  if(qp!=q+2 || flags&0x400 || q[0]!=0x123456789ABCDEF0 || q[1]!=0x123456789ABCDEF0) return FALSE;
+  SetRFlags(GetRFlags|0x400);wp=MemSetU16(NULL,0,0);flags=NativeMemFillFlags;
+  if(wp || flags&0x400) return FALSE;
+  SetRFlags(GetRFlags|0x400);dp=MemSetU32(NULL,0,0);flags=NativeMemFillFlags;
+  if(dp || flags&0x400) return FALSE;
+  SetRFlags(GetRFlags|0x400);qp=MemSetI64(NULL,0,0);flags=NativeMemFillFlags;
+  if(qp || flags&0x400) return FALSE;
+  return TRUE;
+}
+
 extern Bool ConsoleSource(U8 *source,U8 *filename,I64 flags=0);
 extern I64 ExePutS(U8 *buf,U8 *filename=NULL,I64 flags=0,CLexHashTableContext *htc=NULL);
 extern I64 ExePrint(U8 *fmt,...);
@@ -458,6 +478,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
       config->compiler->version!=I386_COMPILER_SERVICES_VERSION ||
       config->compiler->bytes!=sizeof(CI386CompilerServices) || !config->compiler->input || !config->compiler->break_poll ||
       !config->pit_ticks || !config->jiffies || !config->input_poll || !config->doc_diagnostic_load || !config->editor_load || config->pit_divisor<2 || config->pit_divisor>65536 || !config->files || !config->drive_records || !config->drive_map || !config->block_records || !config->block_globals || config->drive_map!=config->block_globals->let_to_drv || config->block_records!=config->block_globals->blkdevs || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
+  if(config->defer_root_headers && !NativeMemFillFlagsCheck) return FALSE;
   provider=HashFind("_ADAM_TASK",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=3 || !provider->val) return FALSE;
   native_highlight_root=provider->val;

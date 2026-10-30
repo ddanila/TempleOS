@@ -406,3 +406,12 @@ and `build/i386-memset-wide-native`). Both original rebuild generations and
 the native cross-build/386 audit pass (`build/i386-memset-wide-cross`). The
 native 64.018787-second startup was concurrent, not an isolated timing gate.
 The fixture does not exercise negative counts or direction-flag state.
+
+The diagnostic console initialization now checks that each 16-, 32- and
+64-bit fill clears an initially set direction flag for both nonempty and
+zero-length calls, as well as checking values and end pointers. A 16 MiB
+diagnostic boot and its console command pass with the source disk unchanged
+(`build/i386-memset-flags-diagnostics`); both original rebuild generations and
+the native cross-build/386 audit pass (`build/i386-memset-flags-cross`). The
+229.701550-second diagnostic startup was concurrent and does not qualify the
+isolated interactive timing gate.
