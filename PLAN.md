@@ -91,7 +91,10 @@ and 386 audit pass with 1540 source and 24 build hashes unchanged. Native
 64 and 8 MiB each pass three commands with unchanged inputs. Both startup
 observations were concurrent. The isolated 8 MiB gate passes nine behavior/VGA
 checks but misses the 60-second target at 63.648558 seconds with four inputs
-unchanged; 16 MiB diagnostics are running. File opening and I/O remain unimplemented. See docs/i386-fsize.md.
+unchanged. The 16 MiB diagnostics pass at 246.678221 seconds with all 128
+immediate-push, 22 publication and 28 program-publication cases, both memory
+phases, nine behavior/VGA checks, no build-provider loads, and four inputs
+unchanged. File opening and I/O remain unimplemented. See docs/i386-fsize.md.
 
 ### Canonical file-backed device record (2026-10-30)
 
