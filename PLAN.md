@@ -124,8 +124,10 @@ CBlkDevGlbls array, sets drvs on initialization, and passes the same array to
 the console. Both original rebuilds, 386 cross-build/audit with 1545 source and
 24 build inputs unchanged, and native ATA/task test pass. Native drive-map
 contracts pass all 20 commands at 8 and 64 MiB with unchanged inputs; startup
-observations were concurrent. Isolated resource gates, public blkdev state,
-cache and block I/O remain open. See docs/i386-block-io.md.
+observations were concurrent. The isolated 8 MiB gate passes nine behavior/VGA
+checks, with no build-provider loads and four unchanged inputs, but misses the
+60-second target at 61.386673 seconds. The 16 MiB diagnostics are running;
+public blkdev state, cache and block I/O remain open. See docs/i386-block-io.md.
 
 ### Shared block cache and global records (2026-10-30)
 

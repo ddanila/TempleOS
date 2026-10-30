@@ -90,4 +90,8 @@ contract passes all 20 commands at 8 and 64 MiB with unchanged inputs in
 `build/i386-drive-global-map-native-8m` and
 `build/i386-drive-global-map-native`. Their startup observations (61.862676
 and 62.366616 seconds respectively) were concurrent, not isolated timing
-gates. Full block-device state and cache integration remain open.
+gates. The isolated 8 MiB gate passes nine behavior/VGA checks with no
+build-provider loads and four unchanged inputs, but misses the 60-second target
+at 61.386673 seconds (`build/i386-drive-global-map-startup`). The 16 MiB
+diagnostics are running. Full block-device state and cache integration remain
+open.
