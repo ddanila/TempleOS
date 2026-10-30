@@ -1825,7 +1825,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-document-link-session",
+          "command": "python3 tools/test-i386-doc-link-session.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-link-session-original-v2/result.json",
+          "scope": "DocEntryRun activates actual editor; queued character and Escape save file, with document roles and lock restored; no mouse or popup"
+        },
+        {
+          "target": "shared-document-link-session",
+          "command": "python3 tools/test-i386-doc-link-session.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-link-session-shared-v1/result.json",
+          "scope": "DocEntryRun activates actual editor; queued character and Escape save file, with document roles and lock restored; no mouse or popup"
+        },
+        {
+          "target": "native-document-link-session",
+          "command": "python3 tools/test-i386-doc-link-session.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-link-session-native-v2/result.json",
+          "scope": "DocEntryRun activates actual editor; queued character and Escape save file, with document roles and lock restored; no mouse or popup"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocTerm.HC",
@@ -1902,6 +1924,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-left-link-native-v1/result.json",
           "scope": "Default callback installation and no-link lock plus controlled editor/popup branches; not interactive link navigation"
+        },
+        {
+          "target": "original-document-link-session",
+          "command": "python3 tools/test-i386-doc-link-session.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-link-session-original-v2/result.json",
+          "scope": "DocEntryRun activates actual editor; queued character and Escape save file, with document roles and lock restored; no mouse or popup"
+        },
+        {
+          "target": "shared-document-link-session",
+          "command": "python3 tools/test-i386-doc-link-session.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-link-session-shared-v1/result.json",
+          "scope": "DocEntryRun activates actual editor; queued character and Escape save file, with document roles and lock restored; no mouse or popup"
+        },
+        {
+          "target": "native-document-link-session",
+          "command": "python3 tools/test-i386-doc-link-session.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-link-session-native-v2/result.json",
+          "scope": "DocEntryRun activates actual editor; queued character and Escape save file, with document roles and lock restored; no mouse or popup"
         }
       ]
     },

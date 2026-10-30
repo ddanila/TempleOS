@@ -24,5 +24,18 @@ mismatch warning for the test-only `LLCallback` declaration. The 8 MiB
 ordinary-include and drive-fields smoke check also passes
 (`build/i386-doc-left-link-smoke-8m`).
 
-Interactive link navigation, callback failures and the original terminal
-right-click path remain unqualified. C1–C5 remain open.
+A subsequent session exercises the real default callback through `DocEntryRun`:
+it creates a file, queues a character and Escape, opens the linked file in the
+real editor, verifies the saved character, and checks document roles and lock
+restoration. The pinned and shared originals pass all five checks
+(`build/i386-doc-link-session-original-v2`,
+`build/i386-doc-link-session-shared-v1`; runner
+`tools/test-i386-doc-link-session.py`). The first original attempt tried to
+write to the boot medium `T:` and timed out; tracing located the write and the
+fixture now uses original writable RAM drive `B:`. The native fixture uses its
+writable `C:` disk and passes the same five checks with unchanged inputs
+(`build/i386-doc-link-session-native-v2`).
+
+This is a programmatic activation with queued input, not physical mouse input or
+popup navigation. Callback failures and the original terminal right-click path
+remain unqualified. C1–C5 remain open.
