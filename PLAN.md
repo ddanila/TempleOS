@@ -125,8 +125,10 @@ CBlkDevGlbls record used for the drive map. Both original rebuilds and the
 Native 64 MiB block-slot and drive-map contracts pass 24 and 20 commands with
 unchanged inputs; startup observations were concurrent. A drive-state fixture
 rejects at missing Drv before cases run, also with unchanged inputs. Public
-globals, full initialization and isolated resource gates remain open. See
-docs/i386-block-io.md.
+globals and full initialization remain open. The isolated 8 MiB gate passes
+nine behavior/VGA checks, loads no build provider, and preserves four inputs,
+but misses the 60-second target at 61.537205 seconds. The 16 MiB diagnostics
+are running. See docs/i386-block-io.md.
 
 ### Native drive map in shared block globals (2026-10-30)
 

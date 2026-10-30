@@ -113,4 +113,7 @@ commands respectively with unchanged inputs (`build/i386-block-globals-device-sl
 and `build/i386-block-globals-device-map`); their startup observations were
 concurrent. A drive-state fixture rejected at missing `Drv` before its cases
 ran (`build/i386-block-globals-device-native`), with unchanged inputs. Public
-block globals and full device initialization remain open.
+block globals and full device initialization remain open. The isolated 8 MiB
+startup passes all nine behavior/VGA checks, loads no build provider, and
+preserves all four inputs, but misses the 60-second target at 61.537205 seconds
+(`build/i386-block-globals-device-startup`). The 16 MiB diagnostics are running.
