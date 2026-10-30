@@ -24571,3 +24571,13 @@ with a regression first. Preserve page/batch rounding, alignment, ownership,
 reserve retention and safe trim order. Evidence: the two
 `build/i386-string-padding-*-compiler*-probe/result.json` files and
 `build/i386-string-padding-selfhost-memory-comparison.json`.
+
+## Retained C5 two-module build (2026-10-30)
+
+The retained 16 MiB native build completed and audited ConsoleRuntime and
+EditorRuntime, with one shared build-provider load. ConsoleRuntime produced
+2,380,860 bytes and 904 exports; EditorRuntime produced 73,706 bytes and 49
+exports. Evidence: `build/i386-c5-shared-bitfield-native-build/result.json`.
+This run used its frozen earlier source image and covers only these two modules;
+it does not qualify the current source, a complete native self-hosted build,
+installed generations, or the startup budget. C1–C5 remain open.
