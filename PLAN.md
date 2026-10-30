@@ -63,6 +63,17 @@ with 128 immediate-push, 22 publication and 28 program-publication cases, both
 memory phases and nine behavior/VGA checks. The report is
 `build/i386-c2-editor-dialogs-gates.json`.
 
+### Original cluster-to-block mapping candidate (2026-10-30)
+
+ConsoleRuntime 138 is prepared to publish the complete original Clus2Blk body.
+The pinned-original contract passes mask 15 for RedSea and FAT32 mapping and
+invalid-drive/unsupported-filesystem exceptions. Both rebuild generations and
+cross-build/386 audit pass with 1541 source and 24 build hashes unchanged. The
+64 and 8 MiB native contracts each pass three commands with unchanged inputs;
+both startup observations were concurrent. Isolated resource gates, cluster
+traversal and block I/O remain open. See
+docs/i386-clus-to-block.md.
+
 ### Original FSize accessor (2026-10-30)
 
 ConsoleRuntime 137 publishes the complete, byte-identical original FSize

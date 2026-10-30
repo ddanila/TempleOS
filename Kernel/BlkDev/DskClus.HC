@@ -28,18 +28,7 @@ I64 ClusNumNext(CDrv *dv,I64 c,I64 cnt=1)
   return c;
 }
 
-I64 Clus2Blk(CDrv *dv,I64 c)
-{//Drv clus num to blk num.
-  DrvChk(dv);
-  switch (dv->fs_type) {
-    case FSt_REDSEA:
-      return c;
-    case FSt_FAT32:
-      return dv->data_area+c*dv->spc;
-    default:
-      throw('Drv');
-  }
-}
+#include "/Kernel/BlkDev/ClusToBlockCore.HC"
 
 I64 ClusBlkRead(CDrv *dv,U8 *buf,I64 c,I64 blks)
 {//Accepts blk count, so padding on last clus is not read.
