@@ -2052,6 +2052,7 @@ U0 ConsoleDocumentStart()
   }
   DocGlobalsInit;
   DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
+  DefinePrint("DD_OS_NAME_VERSION","TempleOS V%0.2f",sys_os_version);
   if(!HashFind("ST_RAW_TYPES",Fs->hash_table,HTT_DEFINE_STR))
     DefineLstLoad("ST_RAW_TYPES",RAW_TYPE_NAMES_LIST);
   DocInit;

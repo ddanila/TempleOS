@@ -51,3 +51,23 @@ original desktop tasks are not integrated. Existing startup VGA expectations
 must be revised against independent evidence; the 8 MiB and strict VGA gates
 currently time out at the old heading expectation. See
 [i386-timeclock-native.md](i386-timeclock-native.md) for the tested scope.
+
+The native console now exposes the original `sys_os_version` value and creates
+`DD_OS_NAME_VERSION` using the original `DefinePrint` format before inserting
+the welcome. This restores the centered version title. The focused initial
+screen fixture compares all 640×480 pixels against a frame assembled from the
+original font and welcome text, allowing either cursor blink state. It passes at
+8 and 64 MiB with unchanged inputs (`build/i386-welcome-screen-8m` and
+`build/i386-welcome-screen-64m`). Both original rebuild generations and the
+native cross-build/386 audit pass (`build/i386-welcome-version-cross`). The
+keyboard/log-driven exact TimeClock report and cold-reboot comparison also pass
+with unchanged inputs (`build/i386-welcome-version-report-log`).
+
+The pixel fixture covers the initial screen only; it does not qualify command
+input, the full original desktop or isolated startup timing. The existing
+plain-text VGA harness still fails after input because the welcome document
+switches the console to syntax-highlighted document rendering. An attempted
+welcome-screen adaptation matched the initial frame but timed out while typing
+(`build/i386-welcome-version-text-8m-cursor` and
+`build/i386-welcome-version-report-cursor`); it was not retained as a passing
+oracle. The full VGA and minimal-profile gates remain open.
