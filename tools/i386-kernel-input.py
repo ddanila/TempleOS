@@ -133,7 +133,7 @@ def command_rejection(text, start, prefixes):
     return None
 
 
-def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180,qmp_stdio=False,audio_wav=None,keep_window_manager=False):
+def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180,qmp_stdio=False,audio_wav=None,keep_window_manager=False,welcome=False):
     from PIL import Image
     if groups is not None and (not groups or set(groups)-set(GROUPS)):
         raise ValueError('Select one or more known test groups')
@@ -262,7 +262,26 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                                      'observation_seconds':time.monotonic()-started}
 
             def screen(rows,name,timeout=30,rejected_rows=None,colors=None,backgrounds=None,underlines=None,pixels=None,pointer=None,rejection_message=None,canvas_color=15):
+                if welcome:
+                    default_colors={};underlines=set(underlines or ());input_started=False
+                    for row,line in enumerate(rows):
+                        if line==' '*33+'TempleOS V5.03':
+                            default_colors.update({(row,col):5 for col in range(33,47)})
+                        if line=='Help & Index, Quick Start: Cmd line':
+                            cells={(row,col) for col in (*range(12),*range(14,35))}
+                            default_colors.update({cell:4 for cell in cells});underlines.update(cells)
+                        if line.startswith('> ') and not input_started:
+                            input_started=True
+                            default_colors.update({(row,col):2 for col in range(2,len(line))})
+                        elif input_started:
+                            default_colors.update({(row,col):2 for col in range(len(line))})
+                    default_colors.update(colors or {});colors=default_colors
                 expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer,canvas_color)
+                expected_cursor=None
+                if welcome and rows and len(rows[-1])<80:
+                    x=len(rows[-1])*8;y=(len(rows)-1)*8
+                    cursor=dict(pixels or {});cursor.update({(x+dx,y+dy):0 for dy in range(8) for dx in range(8)})
+                    expected_cursor=console_pixels(rows,colors,backgrounds,underlines,cursor,pointer,canvas_color)
                 rejected=console_pixels(rejected_rows) if rejected_rows is not None else None
                 path=out/f'{name}.ppm'
                 def matches():
@@ -274,7 +293,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                             if rejection_message:
                                 raise RuntimeError(f'{name}: {rejection_message}')
                             raise MutationDetected(f'{name}: observed injected faulty answer')
-                        return image.size==(640,480) and pixels==expected
+                        return image.size==(640,480) and (pixels==expected or pixels==expected_cursor)
                 wait_for(matches,timeout=timeout)
                 with Image.open(path) as image: image.save(out/f'{name}.png')
 
@@ -284,6 +303,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=1200 if diagnostics else startup_timeout)
             startup_seconds=time.monotonic()-startup_started
             heading=['TempleOS i386','HolyC console','']
+            if welcome:
+                heading+=[' '*33+'TempleOS V5.03','',' '*25+'Public Domain Operating System',
+                          '','Help & Index, Quick Start: Cmd line','']
             status='ok' if startup_check is None else startup_check['status']
             evidence=log.read_text()
             if evidence.count('PUBLIC HEADERS ok\n')!=1:
@@ -313,11 +335,12 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 text='> '+source
                 #The VGA terminal wraps immediately at column 80, including a
                 #blank cursor row when the final character exactly fills a row.
-                return [text[index:index+80] for index in range(0,len(text)+1,80)]
+                width=79 if welcome else 80
+                return [text[index:index+width] for index in range(0,len(text)+1,width)]
 
             def submit(source, answers, name, hotkey=False, frame=None, timeout=30,
                        interaction=None, typing_colors=None, return_colors=None):
-                nonlocal rows,submitted,mouse_host_x,mouse_host_y,command_log_start
+                nonlocal rows,submitted,mouse_host_x,mouse_host_y,command_log_start,welcome,heading
                 if groups is not None and active_group is not None and active_group not in groups:
                     return
                 submitted+=1
@@ -480,7 +503,12 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     rejection_message='Guest command returned a rejected answer on VGA'
                 if mutation is not None and name==mutation['checkpoint']:
                     rejected_rows=(rows[:-1]+typed_rows(source)+mutation['answers']+['> '])[-60:]
-                if interaction is not None and not interaction.get('preserve_history',False):
+                if welcome and name=='window-manager-pause':
+                    #Suspending WinMgr exposes the retained plain VGA surface.
+                    welcome=False
+                    heading=['TempleOS i386','HolyC console','']
+                    rows=(heading+typed_rows(source)+answers+['> '])[-60:]
+                elif interaction is not None and not interaction.get('preserve_history',False):
                     rows=list(interaction.get('return_rows',heading+answers+['> ']))[-60:]
                 else:
                     rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
@@ -2061,6 +2089,7 @@ def main():
     parser.add_argument('--group',action='append',choices=GROUPS,help='Repeat to select groups; omitted runs the full console suite')
     parser.add_argument('--list-groups',action='store_true')
     parser.add_argument('--diagnostics',action='store_true',help='Expect the diagnostic boot image')
+    parser.add_argument('--welcome',action='store_true',help='Expect the welcome-document console screen')
     parser.add_argument('--keep-window-manager',action='store_true',help='Leave WinMgr running during component-group sessions')
     parser.add_argument('--ram-mib',type=int,choices=(8,16,64,128),default=8,
                         help='Guest RAM profile (default: 8 MiB)')
@@ -2090,7 +2119,7 @@ def main():
     try:
         result=run_input(disk,args.out,diagnostics=args.diagnostics,groups=args.group,
                          cpu=args.cpu,qmp_stdio=args.qmp_stdio,ram_mib=args.ram_mib,
-                         snapshot=not args.writable_copy,keep_window_manager=args.keep_window_manager)
+                         snapshot=not args.writable_copy,keep_window_manager=args.keep_window_manager,welcome=args.welcome)
     finally:
         if provenance is not None:
             unchanged=hashlib.sha256(source.read_bytes()).hexdigest()==source_hash

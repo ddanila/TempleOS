@@ -71,3 +71,20 @@ welcome-screen adaptation matched the initial frame but timed out while typing
 (`build/i386-welcome-version-text-8m-cursor` and
 `build/i386-welcome-version-report-cursor`); it was not retained as a passing
 oracle. The full VGA and minimal-profile gates remain open.
+
+The input harness now has an explicit `welcome` mode for the initial document
+view. It checks the 79-column wrap, green transcript and cursor as well as the
+welcome frame. When the harness suspends WinMgr, the current runtime exposes its
+retained plain VGA surface; the harness verifies that actual transition rather
+than claiming the welcome is still displayed. With that scope, an 8 MiB run
+passes the long setup command and a subsequent arithmetic command with exact
+VGA checks and unchanged source (`build/i386-welcome-input-8m-transition`). Its
+62.813557-second startup was concurrent and is not an isolated timing gate.
+
+The strict 64 MiB TimeClock report runner now accepts `--welcome`. Its exact
+VGA checks, original typed records and full report bytes pass on first boot and
+again after cold reboot (`build/i386-welcome-version-report-transition`), with
+unchanged inputs and the original 5,400-second total. This does not qualify
+continuous rich-document rendering while WinMgr is suspended: losing the
+welcome from the displayed surface in that state remains an implementation gap.
+Nor does it qualify the full desktop or C1–C5.

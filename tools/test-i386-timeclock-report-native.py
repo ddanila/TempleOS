@@ -19,6 +19,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--welcome', action='store_true', help='Expect the welcome-document startup screen')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     if out.exists():
@@ -43,7 +44,7 @@ def main():
         source,working,additions={'/ReportNative.HC':FIXTURE.read_bytes()})
     run_input = runpy.run_path(str(runner))['run_input']
     def execute(commands,destination):
-        return run_input(working,destination,snapshot=False,ram_mib=64,cpu='486,-fpu',accel='tcg',qmp_stdio=True,
+        return run_input(working,destination,snapshot=False,ram_mib=64,cpu='486,-fpu',accel='tcg',qmp_stdio=True,welcome=args.welcome,
                          startup_check={'status':'ok','answers':[],'commands':commands,
                                         'rejected_answers':['0'],'rejection_prefixes':('INPUT REJECT ',),
                                         'command_timeout':120})
