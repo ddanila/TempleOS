@@ -128,7 +128,9 @@ rejects at missing Drv before cases run, also with unchanged inputs. Public
 globals and full initialization remain open. The isolated 8 MiB gate passes
 nine behavior/VGA checks, loads no build provider, and preserves four inputs,
 but misses the 60-second target at 61.537205 seconds. The 16 MiB diagnostics
-are running. See docs/i386-block-io.md.
+pass at 232.471277 seconds with 128 immediate-push, 22 publication and 28
+program-publication cases, both memory phases, nine behavior/VGA checks, no
+build-provider loads, and four unchanged inputs. See docs/i386-block-io.md.
 
 ### Native drive map in shared block globals (2026-10-30)
 
