@@ -170,3 +170,20 @@ Both bootstrap generations and the native cross-build/audit pass
 The candidate also passes an 8 MiB ordinary-include and drive-fields smoke
 check (`build/i386-public-graphics-text-smoke-8m`), not full minimal-profile
 or startup timing qualification.
+
+The existing shared `Sprite3` renderer and `GrLine` are now public. A packed
+sprite and line fixture passes on both pinned original and native (mask 127,
+unchanged inputs; `build/i386-public-sprite-original-v1`,
+`build/i386-public-sprite-native-v1`; runner
+`tools/test-i386-public-sprite.py`). It checks point, translation, color,
+single-element behavior, state restoration and a horizontal line, not the
+complete sprite or line renderer. The prior native image rejects the missing
+`Sprite3` binding (`build/i386-public-sprite-native-red`). Both bootstrap
+generations and the 386 cross-build/audit pass
+(`build/public-sprite-rebuild-v1.log`, `build/i386-public-sprite-cross-v1`).
+Unchanged Logic now passes `Sprite3` and `GrLine`, reaching the missing
+`progress1` global on line 273 (`build/i386-logic-native-public-sprite-v1`).
+No native synthesis case has run.
+The candidate also passes an 8 MiB ordinary-include and drive-fields smoke
+check (`build/i386-public-sprite-smoke-8m`), not full minimal-profile or
+startup timing qualification.

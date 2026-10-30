@@ -12,4 +12,6 @@ public _extern _GR_PRINT3 I64 GrPrint3(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *fmt,.
 public _extern _GR_VPRINT3 I64 GrVPrint3(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *fmt,...);
 public _extern _GR_TEXT_BOX3 Bool GrTextBox3(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *s,I64 border=2);
 public _extern _GR_TEXT_DIAMOND3 Bool GrTextDiamond3(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *s,I64 border=2);
+public _extern _SPRITE3 U0 Sprite3(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elems,Bool just_one_elem=FALSE);
+public _extern _GR_LINE Bool GrLine(CDC *dc=gr.dc,I64 x1,I64 y1,I64 x2,I64 y2,I64 step=1,I64 start=0);
 #endif
