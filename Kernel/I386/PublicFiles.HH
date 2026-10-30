@@ -4,6 +4,9 @@
 #include "/Kernel/BlkDev/FreeListTypes.HH"
 #include "/Kernel/BlkDev/DriveTypes.HH"
 #include "/Kernel/BlkDev/DirContextTypes.HH"
+#include "/Kernel/DirEntryTypes.HH"
+#include "/Kernel/NumericLimits.HH"
+#include "/Kernel/BlkDev/CFileTypes.HH"
 #include "/Kernel/BlkDev/BlockDevTypes.HH"
 #include "/Kernel/BlkDev/BlockSize.HH"
 public _extern _BLOCK_DEV_NEXT_FREE_SLOT CBlkDev *BlkDevNextFreeSlot(U8 first_drv_let,I64 type);

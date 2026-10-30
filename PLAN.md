@@ -63,6 +63,15 @@ with 128 immediate-push, 22 publication and 28 program-publication cases, both
 memory phases and nine behavior/VGA checks. The report is
 `build/i386-c2-editor-dialogs-gates.json`.
 
+### Canonical file-backed device record (2026-10-30)
+
+The original CFile record and flags are shared byte-for-byte with the native
+public file header. Both original rebuild generations, cross-build and 386
+audit pass with 1539 source and 24 build hashes unchanged. A 64 MiB native test
+passes four commands covering every field and file flags with unchanged inputs;
+its concurrent startup timing is not an isolated gate. File-backed I/O and
+full media initialization remain open. See docs/i386-block-io.md.
+
 ### Original block I/O reference (2026-10-30)
 
 The pinned-original public BlkRead/BlkWrite contract passes mask 31 for private

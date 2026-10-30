@@ -24,3 +24,15 @@ block I/O and C1–C5 remain open.
 python3 tools/test-i386-block-io.py --out ORIGINAL
 python3 tools/test-i386-block-io.py IMAGE --out NATIVE
 ```
+
+## File-backed device record (2026-10-30)
+
+The complete original `CFile` record and file flags are shared byte-for-byte
+through `Kernel/BlkDev/CFileTypes.HH`, included by KernelA and native PublicFiles.
+Both original rebuild generations and the cross-build/386 audit pass with 1539
+source and 24 build inputs unchanged in `build/i386-cfile-types-cross`. A native
+64 MiB field-access check covers all record fields, nested directory-entry data
+and file flags, passing four commands with unchanged inputs in
+`build/i386-cfile-types-native`; the executed runner is preserved there. Its
+61.722402-second concurrent startup is not an isolated timing qualification.
+FOpen, FBlkRead/FBlkWrite, block I/O and media initialization remain open.
