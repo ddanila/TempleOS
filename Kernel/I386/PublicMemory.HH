@@ -49,3 +49,5 @@ public _extern _FIFO_I64_CNT I64 FifoI64Cnt(CFifoI64 *f);
 #endif
 
 public _extern _LINKED_LST_CNT I64 LinkedLstCnt(U8 **_lst);
+
+public _extern _QSORT_I64 U0 QSortI64(I64 *base,I64 num,I64 (*fp_compare)(I64 e1,I64 e2));

@@ -155,3 +155,9 @@ and native list contracts pass, and the unchanged Budget loader advances to
 `QSortI64` at `BgtStrs.HC` line 97 (`build/i386-budget-native-load-v2`).
 The load is still rejected and Install has not run. See
 [linked-list count evidence](i386-linked-list-count.md).
+
+MemoryRuntime 33 exports the original `QSortI64` body. The original and native
+ascending, descending, duplicate and pointer-callback checks pass; see
+[sort evidence](i386-qsort-i64.md). Unchanged Budget loading now reaches
+`BgtMain.HC` line 50 and rejects at `PopUpOk`
+(`build/i386-budget-native-load-v3`), before installation or a workflow.
