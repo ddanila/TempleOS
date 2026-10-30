@@ -146,3 +146,16 @@ contract passes 20 commands and VGA checks with unchanged inputs
 concurrent and is not an isolated timing gate. The expanded cache fixture on
 the earlier pinned native image still rejects at missing `BlkRead`, with
 unchanged inputs (`build/i386-block-cache-eviction-native-red`).
+
+The native console module now compiles the original disk-cache routines using
+the kernel-owned block globals and root-task allocation. The original and
+native builds select those globals through `DskCacheGlobals`. Both original
+rebuild generations pass, and a rebuilt-original guest passes the cache
+contract with mask 255 (`build/i386-cache-core-original-working`). The native
+cross-build and 386 instruction audit pass
+(`build/i386-cache-core-cross-final`); a 64 MiB native drive-map run passes 20
+commands and VGA checks with unchanged inputs
+(`build/i386-cache-core-native-map`). Its 62.778933-second startup was
+concurrent and is not an isolated timing gate. The native cache routines are
+not yet initialized, connected to block I/O, or behavior-tested, and no public
+block I/O or cache qualification is claimed.

@@ -252,6 +252,15 @@ CDrv *NativeDriveLookup(U8 letter)
 #include "/Kernel/BlkDev/DriveWritableCore.HC"
 #include "/Kernel/BlkDev/BlockDevLockCore.HC"
 #include "/Kernel/BlkDev/DriveLockCore.HC"
+//Use the original cache implementation against the same kernel-owned globals.
+//Cache initialization and block I/O wiring are separate from console startup.
+extern U8 *ACAlloc(I64 size);
+U8 *AMAlloc(I64 size)
+{ return MAlloc(size,I386TaskSelf->owner->root); }
+CBlkDevGlbls *DskCacheGlobals()
+{ return console_config->block_globals; }
+#define I386_DSK_CACHE_GLOBALS 1
+#include "/Kernel/BlkDev/DskCache.HC"
 #include "/Kernel/BlkDev/FreeListTypes.HH"
 #include "/Kernel/BlkDev/RedSeaFreeFreeListCore.HC"
 #include "/Kernel/BlkDev/DriveDeleteCore.HC"
