@@ -100,3 +100,23 @@ native cross-build/386 audit pass (`build/i386-bit-field-or-cross`). The native
 62.462171-second startup observation was concurrent, not an isolated timing
 gate. These vectors do not test invalid addresses, concurrent modification, or
 full archive compression.
+
+The original streaming compression functions and `CompressBuf` are now shared
+from `Kernel/ArcCompressCore.HC` and `Kernel/CompressBufCore.HC`; their extracted
+source bytes match the original sections. Native public headers and console
+exports expose the compression, control, and streaming expansion calls. Both
+original rebuild generations and the native cross-build/386 audit pass
+(`build/i386-public-compress-cross`).
+
+Public native `CompressBuf` produces byte-identical archives to the original
+for eight empty, single-byte, repeated, dictionary-recycling and incompressible
+seven/eight-bit cases (`build/i386-public-compress-parity-final`); the source
+disk remains unchanged. The original and native two-stage compression and
+expansion fixture passes mask 3 for seven-bit and eight-bit streams, with
+unchanged inputs (`build/i386-arc-stream-reference-compare` and
+`build/i386-arc-stream-native-compare`). Those streaming checks do not cover
+all buffer boundaries or error paths. Their native startup observations of
+60.001324 and 60.353620 seconds were concurrent, not isolated timing gates.
+The initial streaming fixture was rejected on the native image at missing
+`MemCmp` before executing its cases (`build/i386-arc-stream-native`); the final
+fixture uses its own byte comparison.

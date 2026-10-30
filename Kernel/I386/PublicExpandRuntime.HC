@@ -7,3 +7,5 @@ import U0 I386ArcEntryGet(CArcCtrl *c);
 //Initialized from the native arena before public console services run.
 U64 mem_mapped_space;
 #include "/Kernel/ExpandBufCore.HC"
+#include "/Kernel/ArcCompressCore.HC"
+#include "/Kernel/CompressBufCore.HC"
