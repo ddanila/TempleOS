@@ -11,5 +11,7 @@ Both original rebuild generations pass (`build/rebuild-test`). The native
 lexer-state and snapshot-boundary tests pass, including rejected corrupted
 tail snapshots and later heap corruption; the cross-build and 386 audit pass
 with 1545 source and 24 build inputs unchanged (`build/i386-lex-pop-tail-cross`).
-Isolated startup and 16 MiB diagnostic gates remain pending. This is a
-performance candidate, not evidence of a measured speedup or C1–C5 completion.
+The isolated 8 MiB run passes nine behavior/VGA checks, loads no build provider,
+and preserves four inputs, but takes 61.890326 seconds and misses the 60-second
+target (`build/i386-lex-pop-tail-startup`). The 16 MiB diagnostics are running.
+This is not evidence of a measured speedup or C1–C5 completion.

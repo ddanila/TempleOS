@@ -125,8 +125,11 @@ pin calculation's result was unused. This retains complete heap validation
 for every snapshot, including corrupted-tail rejection, while avoiding a
 duplicate head scan. Both original rebuild generations, the native lexer-state
 and snapshot-boundary tests, and the 386 cross-build/audit pass with 1545
-source and 24 build inputs unchanged. Isolated resource gates are pending; no
-startup improvement is yet claimed. See docs/i386-lex-pop-validation.md.
+source and 24 build inputs unchanged. The isolated 8 MiB gate passes nine
+behavior/VGA checks with no build-provider loads and four unchanged inputs,
+but misses the 60-second target at 61.890326 seconds. The 16 MiB diagnostics
+are running; no startup improvement is claimed. See
+docs/i386-lex-pop-validation.md.
 
 ### Native block-device array in shared globals (2026-10-30)
 
