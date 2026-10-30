@@ -1362,6 +1362,27 @@
           "result": "pass",
           "evidence": "build/i386-c4-render-document-replace-verified/result.json",
           "scope": "44-command native lifecycle session: replace displayed document during yielding render, cancel old renderer, fresh renderer evaluates replacement, restore display pointer, exact heap and presentation reuse; not automatic refresh or whole-file qualification"
+        },
+        {
+          "target": "original-document-left-link",
+          "command": "python3 tools/test-i386-doc-left-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-left-link-original-v2/result.json",
+          "scope": "Default callback installation and no-link lock plus controlled editor/popup branches; not interactive link navigation"
+        },
+        {
+          "target": "shared-document-left-link",
+          "command": "python3 tools/test-i386-doc-left-link.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-left-link-shared-original-v1/result.json",
+          "scope": "Default callback installation and no-link lock plus controlled editor/popup branches; not interactive link navigation"
+        },
+        {
+          "target": "native-document-left-link",
+          "command": "python3 tools/test-i386-doc-left-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-left-link-native-v1/result.json",
+          "scope": "Default callback installation and no-link lock plus controlled editor/popup branches; not interactive link navigation"
         }
       ]
     },
@@ -1860,6 +1881,27 @@
           "result": "pass",
           "evidence": "build/i386-c2-term-right-menu-refresh-native/result.json",
           "scope": "Four native commands: covered popup ShiftEsc, advancing refresh, eleven buttons and restored roles; full button menu remains failing"
+        },
+        {
+          "target": "original-document-left-link",
+          "command": "python3 tools/test-i386-doc-left-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-left-link-original-v2/result.json",
+          "scope": "Default callback installation and no-link lock plus controlled editor/popup branches; not interactive link navigation"
+        },
+        {
+          "target": "shared-document-left-link",
+          "command": "python3 tools/test-i386-doc-left-link.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-left-link-shared-original-v1/result.json",
+          "scope": "Default callback installation and no-link lock plus controlled editor/popup branches; not interactive link navigation"
+        },
+        {
+          "target": "native-document-left-link",
+          "command": "python3 tools/test-i386-doc-left-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-left-link-native-v1/result.json",
+          "scope": "Default callback installation and no-link lock plus controlled editor/popup branches; not interactive link navigation"
         }
       ]
     },

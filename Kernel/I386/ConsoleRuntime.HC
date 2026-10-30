@@ -53,6 +53,7 @@ extern U0 NativeSrvTaskCont();
 extern U0 NativeSrvCmdLine(I64 dummy=0);
 extern I64 NativePopUp(U8 *buf,CTask *parent=0,CTask **_pu_task=0);
 extern I64 NativePopUpPrint(U8 *fmt,...);
+extern I64 EdLeftClickLink(CDoc *doc,CDocEntry *doc_e);
 extern I64 DocEntryRun(CDoc *doc,CDocEntry *entry,Bool exited,I64 *has_action=0);
 extern I64 DocMenu(CDoc *doc,I64 flags=0);
 extern I64 PopUpMenu(CDoc *doc,I64 flags=0);
@@ -253,6 +254,7 @@ U8 *NativeEdLinkTmpFilename()
 #include "/Adam/DolDoc/DocBorderCallbacksCore.HC"
 #include "/Adam/DolDoc/DocBorderNewCore.HC"
 #include "/Adam/DolDoc/DocEntryLinkCore.HC"
+#include "/Adam/DolDoc/EdLeftClickLinkCore.HC"
 #include "/Kernel/I386/MenuRuntime.HC"
 #include "/Kernel/I386/MacroRuntime.HC"
 Bool (*native_raw_bit_equ)(U8 *bit_field,I64 bit,Bool val);

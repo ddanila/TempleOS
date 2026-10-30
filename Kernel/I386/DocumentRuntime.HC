@@ -126,6 +126,7 @@ public CDoc *DocNew(U8 *filename=NULL,CTask *task=NULL)
     doc->dollar_buf_size=84; doc->dollar_buf=NativeDocMAlloc(84,task);
     doc->find_replace->scan_fwd=TRUE; doc->find_replace->match_case=TRUE;
     doc->find_replace->pmt=TRUE; doc->max_entries=I64_MAX;
+    doc->left_click_link=&EdLeftClickLink;
     doc->win_task=task; doc->mem_task=task;
     NativeDocRstUnlocked(doc,FALSE); doc->doc_signature=DOC_SIGNATURE_VAL;
   } catch {
