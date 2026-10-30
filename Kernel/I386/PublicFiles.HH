@@ -62,6 +62,6 @@ public _extern _FSIZE I64 FSize(CFile *f);
 public _extern _FILE_READ U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0);
 public _extern _CD Bool Cd(U8 *dirname=0,Bool make_dirs=FALSE);
 public _extern _EXT_DFT U8 *ExtDft(U8 *filename,U8 *extension);
-#endif
 
 public _extern _DIR_CUR U8 *DirCur(CTask *task=NULL,CTask *mem_task=NULL);
+#endif

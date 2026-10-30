@@ -27,4 +27,9 @@ public _extern _GRAPHICS_PRESENT Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=
 public _extern _DC_2_SPRITE U8 *DC2Sprite(CDC *dc);
 public _extern _DC_LOAD CDC *DCLoad(U8 *src,I64 *_size=NULL,CTask *task=NULL);
 public _extern _GR_READ CDC *GRRead(U8 *filename,CTask *task=NULL);
+
+public _extern _GR_PALETTE_COLOR_SET U0 GrPaletteColorSet(I64 color_num,CBGR48 bgr48);
+public _extern _GR_PALETTE_COLOR_GET CBGR48 GrPaletteColorGet(I64 color_num);
+public _extern _GR_PALETTE_GET U0 GrPaletteGet(CBGR48 *bgr48);
+public _extern _GR_PALETTE_SET U0 GrPaletteSet(CBGR48 *bgr48);
 #endif

@@ -20,3 +20,8 @@ ConsoleRuntime 142 now exports the shared original `DirCur` body. Original
 and native current-directory copy checks pass; see
 [current-directory evidence](i386-dir-cur.md). This resolves that fixture
 prerequisite, not the settings stack itself.
+
+ConsoleRuntime 144 also exports hardware-backed palette get/set services. The
+original and native 16-color DAC reference, restoration and interrupt-state
+checks pass; see [VGA palette evidence](i386-vga-palette.md). Autocomplete and
+the full settings lifecycle remain to be implemented.
