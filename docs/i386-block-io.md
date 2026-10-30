@@ -204,4 +204,7 @@ changes the drive size while a read waits on the device lock. It fails on the
 earlier image, with unchanged inputs (`build/i386-raw-block-race-before`);
 the current image passes the same fixture with unchanged inputs
 (`build/i386-raw-block-race-after`). This exercises a size change, not all
-possible drive remaps or device mutations. C1–C5 remain open.
+possible drive remaps or device mutations. The basic sector contract also
+passes at 8 MiB with unchanged inputs
+(`build/i386-raw-blocks-revalidated-native-8m`); this is not the full minimal
+profile or a startup timing qualification. C1–C5 remain open.
