@@ -63,6 +63,15 @@ with 128 immediate-push, 22 publication and 28 program-publication cases, both
 memory phases and nine behavior/VGA checks. The report is
 `build/i386-c2-editor-dialogs-gates.json`.
 
+### Cluster traversal reference fixture in progress (2026-10-30)
+
+A new ClusNumNext fixture and runner exercise the original RedSea and FAT32
+traversal contract, including FAT block transitions and mirrored dirty-block
+writeback on a private RAM-backed device. The pinned-original reference is
+queued behind the isolated Clus2Blk resource gate; it has not yet run, so the
+fixture and expected mask 127 are unverified. Native ClusNumNext, block I/O,
+and their resource gates remain open. See docs/i386-clus-next.md.
+
 ### Original cluster-to-block mapping candidate (2026-10-30)
 
 ConsoleRuntime 138 is prepared to publish the complete original Clus2Blk body.
