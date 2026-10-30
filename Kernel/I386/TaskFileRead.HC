@@ -1,8 +1,20 @@
 #include "/Kernel/I386/TaskFileRead.HH"
 #include "/Kernel/I386/Cpu.HH"
 U8 *(*task_public_read)(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr)=0;
+class CI386IncludeDocumentCallbacks {
+  CDoc *(*create)(U8 *filename,U8 *source,I64 size);
+  U0 (*destroy)(U8 *context,CDoc *doc);
+};
+CI386IncludeDocumentCallbacks task_public_doc;
 U0 I386TaskFilePublicReader(U8 *callback)
 { task_public_read=callback; }
+U0 I386TaskFilePublicDocument(U8 *create,U8 *destroy)
+{
+  U32 flags=I386IrqSave;
+  if(create && destroy) {task_public_doc.create=create;task_public_doc.destroy=destroy;}
+  else {task_public_doc.create=0;task_public_doc.destroy=0;}
+  I386IrqRestore(flags);
+}
 U8 *I386TaskFileReadMode(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr,U8 **name,Bool raw,Bool stored=FALSE)
 {
   U32 flags=I386IrqSave;
@@ -58,6 +70,9 @@ Bool I386LexTaskFileInclude(U8 *context,CI386Heap *heap,CCmpCtrl *cc,U8 *filenam
   CI386FileVolumes *volumes;
   Bool result=FALSE;
   U8 *extended=0,*name=0,*source=0;
+  CDoc *doc=0;I64 size=0;
+  CI386IncludeDocumentCallbacks callbacks;
+  callbacks.create=task_public_doc.create;callbacks.destroy=task_public_doc.destroy;
   state=I386TaskFilesBorrow(task,&paths,&volumes);
   if(state) {
     if(task->owner && task_public_read) {
@@ -65,16 +80,28 @@ Bool I386LexTaskFileInclude(U8 *context,CI386Heap *heap,CCmpCtrl *cc,U8 *filenam
         extended=I386ExtDft(heap,filename,"HC.Z");
         if(extended)name=I386FileNameAbs(heap,&paths,extended);
         if(name) {
-          try {source=task_public_read(heap,name,0,0);}
+          try {
+            source=task_public_read(heap,name,&size,0);
+            if(source && callbacks.create && callbacks.destroy) {
+              doc=(*callbacks.create)(name,source,size);
+              if(doc && I386LexIncludeDocTake(heap,cc,name,doc,callbacks.destroy,0)) {
+                doc=0;result=TRUE;
+              }
+              if(doc) {(*callbacks.destroy)(0,doc);doc=0;}
+              I386HeapFree(heap,source);source=0;
+            } else if(source) {
+              result=I386LexIncludeTake(heap,cc,name,source,FALSE);
+              if(!result)I386HeapFree(heap,source);
+              source=0;
+            }
+          }
           catch {
+            if(doc)(*callbacks.destroy)(0,doc);
+            if(source)I386HeapFree(heap,source);
             I386HeapFree(heap,name);
             if(extended)I386HeapFree(heap,extended);
             I386TaskFilesRelease(state);I386IrqRestore(flags);I386TaskSelf->catch_except=FALSE;
           }
-        }
-        if(source) {
-          result=I386LexIncludeTake(heap,cc,name,source,FALSE);
-          if(!result)I386HeapFree(heap,source);
         }
         if(name)I386HeapFree(heap,name);
         if(extended)I386HeapFree(heap,extended);

@@ -914,6 +914,21 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   if(config->defer_root_headers) return TRUE;
   return ConsoleRootHeaders;
 }
+CDoc *NativeIncludeDocumentCreate(U8 *name,U8 *source,I64 size)
+{
+  CDoc *doc=0;
+  if(!NativeDocReadRecordsValid(source,size))return 0;
+  try {
+    doc=DocNew(name,Fs);
+    if(doc)DocLoad(doc,source,size);
+  } catch {
+    if(doc)DocDel(doc);
+    Fs->catch_except=FALSE;
+  }
+  return doc;
+}
+U0 NativeIncludeDocumentDestroy(U8 *context,CDoc *doc)
+{ DocDel(doc); }
 Bool ConsoleRootHeaders()
 {
   //Publish the resident reader with root declarations, after early diagnostics.
@@ -930,6 +945,7 @@ Bool ConsoleRootHeaders()
   if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
       "RootUserHeaders.HC",I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
   KernelLog("ROOT USER HEADERS ok\n");
+  console_config->files->public_document(&NativeIncludeDocumentCreate,&NativeIncludeDocumentDestroy);
   return TRUE;
 }
 Bool ConsoleCancelRead(CI386Task *task)

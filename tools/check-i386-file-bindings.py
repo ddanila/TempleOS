@@ -37,7 +37,7 @@ def check(kernel, runtime):
     if any(index >= len(providers) for index in indices):
         raise ValueError('File binding index is outside published providers')
     imports = set(re.findall(r'^import\s+[^;]*?\b(\w+)\s*\((?!\*)', runtime, re.M))
-    imports.update(re.findall(r'^import\s+[^;]*?\(\*(\w+)\)\s*\(', runtime, re.M))
+    imports.update(re.findall(r'^import\s+[^;(]*?\(\*(\w+)\)\s*\(', runtime, re.M))
     supplied = [providers[index] for index in indices] + [name for _, name in named]
     if len(set(supplied)) != total:
         raise ValueError('Duplicate File binding names')

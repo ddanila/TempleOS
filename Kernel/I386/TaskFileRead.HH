@@ -3,6 +3,7 @@
 #include "/Kernel/I386/TaskFiles.HH"
 #include "/Compiler/I386/LexFileRead.HH"
 public extern U0 I386TaskFilePublicReader(U8 *callback);
+public extern U0 I386TaskFilePublicDocument(U8 *create,U8 *destroy);
 //Current-task bootstrap services, preserving IF. Borrowed configuration stays live
 //and stable across scheduling; worker volumes must have a task-owned session.
 public extern U8 *I386TaskFileRead(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0);

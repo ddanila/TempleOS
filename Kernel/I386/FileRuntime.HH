@@ -5,7 +5,7 @@
 #include "/Kernel/I386/TaskCompiler.HH"
 #include "/Kernel/I386/ModuleBind.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_FILE_SERVICES_VERSION 62
+#define I386_FILE_SERVICES_VERSION 63
 //Caller-owned interface. Code is borrowed from a kernel-lifetime retained module.
 #include "/Kernel/DirEntryTypes.HH"
 class CI386WriteCache {
@@ -59,5 +59,8 @@ class CI386FileServices {
   CDrv *(*drive_lookup)(U8 letter);
   //Private mounted-RedSea sector transport; caller owns cache coherence.
   Bool (*raw_blocks)(CDrv *drive,U8 *buffer,I64 block,I64 count,Bool write);
+  //Console-lifetime document services for source includes, installed after
+  //the initial root headers have been compiled.
+  U0 (*public_document)(U8 *create,U8 *destroy);
 };
 #endif

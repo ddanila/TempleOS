@@ -25,6 +25,8 @@ import I64 I386RedSeaFind(CI386RedSea *volume,I64 directory,U8 *name,CI386RedSea
 import I64 I386RedSeaResolve(CI386RedSea *volume,I64 directory,U8 *path,CI386RedSeaEntry *entry);
 import U8 *I386RedSeaReadAll(CI386RedSea *volume,CI386Heap *heap,CI386RedSeaEntry *entry,I64 *size=0);
 import Bool I386LexIncludeTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
+import Bool I386LexIncludeDocTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,CDoc *doc,
+  U0 (*document)(U8 *context,CDoc *document),U8 *context=0);
 import Bool I386RedSeaBegin(CI386RedSea *volume);
 import Bool I386RedSeaEnd(CI386RedSea *volume);
 import Bool I386RedSeaValid(CI386RedSea *volume);
@@ -154,13 +156,14 @@ Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
   else {binding->name="I386FileVolumeSame";binding->address=(&I386FileVolumeSame+0)(U64);}
   return TRUE;
 }
-#assert sizeof(CI386FileServices)==124
+#assert sizeof(CI386FileServices)==128
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
   services->version=file_runtime_version; services->bytes=sizeof(CI386FileServices);
   services->include=&I386LexTaskFileInclude; services->read=&I386TaskFileRead;
   services->public_reader=&I386TaskFilePublicReader; services->read_raw=&I386TaskFileReadRaw; services->read_stored=&I386TaskFileReadStored; services->expand=&I386ExpandBuf; services->find_public=&I386TaskFileFind; services->cd=&I386TaskCd;
+  services->public_document=&I386TaskFilePublicDocument;
   services->install_boot=&I386TaskInstallBoot;
   services->install_image=&I386TaskInstallBootImage;
   services->name_abs=&I386TaskFileNameAbs;

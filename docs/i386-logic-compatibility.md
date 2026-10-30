@@ -9,18 +9,18 @@ with unchanged inputs (`build/i386-logic-reference-v1`; runner
 `tools/test-i386-logic-reference.py`). This is a component oracle, not the
 interactive prompt, drawing, cancellation or complete application workflow.
 
-The current native image packages the pinned Logic source unchanged, but its
+An earlier native image packaged the pinned Logic source unchanged, but its
 Load script is rejected at the `$IB` initializer in `Logic.HC` line 73 with a
 missing-expression error and unchanged inputs
 (`build/i386-logic-native-load-v1`; runner
 `tools/test-i386-application-native-load.py`). No native synthesis case ran.
 The native lexer already handles `DOCT_INS_BIN` and `DOCT_INS_BIN_SIZE` in a
-document stream, and the shared expression parser handles their tokens. File
-includes currently load a zero-terminated byte buffer through
+document stream, and the shared expression parser handles their tokens. At that point file
+includes loaded a zero-terminated byte buffer through
 `I386LexIncludeTake`, so this result identifies a document-backed include gap;
 it does not establish that changing only the include attachment is sufficient.
-The current document branch returns EOF at the end of a document, and
-`I386LexFileAdvance` rejects document children; compiler-control cleanup also
+At that point the document branch returned EOF at the end of a document, and
+`I386LexFileAdvance` rejected document children; compiler-control cleanup also
 requires a document destructor callback for owned document inputs. Those
 boundaries must be extended together before attaching document includes.
 
@@ -47,10 +47,8 @@ The i386 lexer now has an internal owned-document child primitive. It rejects
 invalid and already-owned documents, retains a per-child destructor, resumes
 the parent when the child reaches EOF, and retains an exhausted child while a
 lexer snapshot still refers to it. The destructor must return normally and be
-safe with interrupts masked. This is not connected to file includes: compiler
-control teardown must first dispatch the per-child destructor during error and
-cancellation cleanup, and actual document creation/ownership must be wired into
-the file path. Existing raw and borrowed-root behavior remains in place.
+safe with interrupts masked. At that stage this was not connected to file includes; compiler control teardown
+and the file path still needed to dispatch and transfer ownership. Existing raw and borrowed-root behavior remains in place.
 
 The native lexer foundation fixture now exercises normal document-child EOF,
 return to a raw parent, snapshot discard and restore, duplicate and wrong-heap
@@ -84,8 +82,8 @@ changes. Both bootstrap generations and the 386 cross-build/audit pass
 (`build/rebuild-test`, `build/i386-doc-child-control-cross`), as does an 8 MiB
 ordinary-include smoke check with unchanged inputs
 (`build/i386-doc-child-control-8m`). This smoke run is not a startup timing
-gate. Real file-to-document attachment, interrupt-safe real document teardown,
-cancellation during loading, and native Logic remain open.
+gate. At that stage real file-to-document attachment, interrupt-safe real document
+teardown, cancellation during loading, and native Logic remained open.
 
 A focused deletion fixture now loads the actual Logic document repeatedly and
 checks `DocDel` with interrupts masked and enabled. On both the pinned original
@@ -96,3 +94,27 @@ returns to its warmed baseline after each deletion (mask 15, unchanged inputs;
 check; it does not establish safety during task exit, cancellation or
 compiler-owned document teardown. The native run was not an isolated startup
 timing measurement.
+
+Post-bootstrap file includes now load the serialized source into a DolDoc using
+the original document loader, transfer ownership to the lexer child, and free
+the original source buffer. Root-header bootstrap still uses raw file input.
+A nested include fixture checks the exact embedded binary bytes and size on
+the pinned original and on the 64 MiB native image (mask 3;
+`build/i386-document-include-original-v2` and
+`build/i386-document-include-native-v1`). The prior image fails that fixture
+at the binary initializer (`build/i386-document-include-native-red`). Repeated
+includes and exact warmed task-heap recovery pass on both original and native;
+the native run also exercises compiler-error unwind and a successful later
+include (`build/i386-document-include-cleanup-original-v3` and
+`build/i386-document-include-cleanup-native-v3`).
+
+The unchanged Logic application now advances past its embedded binary
+initializer and fails on the missing `GetI64` at line 112
+(`build/i386-logic-native-load-bridge-v1`). No native synthesis case has run.
+Both bootstrap generations and the 386 cross-build/audit pass
+(`build/doc-file-bridge-rebuild-v2.log`,
+`build/i386-doc-file-bridge-cross-v2`); an ordinary include smoke check also
+passes at 8 MiB (`build/i386-doc-file-bridge-smoke-8m`). These checks do not
+qualify cancellation or task death while loading, out-of-memory behavior,
+ahead-of-time module building, general document parity, or startup timing.
+C1–C5 remain open.
