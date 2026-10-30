@@ -88,3 +88,13 @@ commands, exact VGA checks, original record/report bytes, and the 5,400-second
 total, with unchanged inputs (`build/i386-suspended-rich-report-vga`). This
 is scoped to those states; desktop startup, general callbacks, physical input,
 performance and full application qualification remain open.
+
+A separate in-progress keyboard test exercises the unchanged TimeClock
+`PunchIn` and `PunchOut` commands using QEMU PS/2 key events, including
+multiline descriptions. It reads the resulting typed records and checks them
+again after a cold reboot. The test is retained in
+`tools/test-i386-timeclock-keyboard.py`; its run is recorded in
+`build/i386-timeclock-keyboard-native`. This is an emulated-keyboard test,
+not a physical-hardware or full application qualification. The longer retained
+native build remains in progress at
+`build/i386-c5-shared-bitfield-native-build`.

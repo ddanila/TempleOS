@@ -4,9 +4,12 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import runpy
+import struct
 import subprocess
 import time
+from PIL import Image
 
 ROOT=Path(__file__).resolve().parents[1]
 PLAIN={'\\':'backslash','|':'backslash','~':'grave_accent','^':'6','%':'5','#':'3','$':'4','!':'1','<':'comma','>':'dot',',':'comma',"'":'apostrophe',' ':'spc',';':'semicolon','.':'dot','-':'minus','=':'equal','/':'slash','?':'slash','(':'9',')':'0','{':'bracket_left','}':'bracket_right','*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe',':':'semicolon'}
@@ -36,21 +39,48 @@ def guest(image,out,commands,ram_mib=64,capture_input=False,key_delay=.3):
     def key(name,down):
         call('input-send-event',events=[{'type':'key','data':{'down':down,'key':{'type':'qcode','data':name}}}])
     def press(name):key(name,True);key(name,False)
+    def type_text(text):
+        for ch in text:
+            if ch=='\n':press('ret');time.sleep(key_delay);continue
+            if ch=='\x1b':press('esc');time.sleep(key_delay);continue
+            shift=ch.isupper() or ch in SHIFTED;name=PLAIN.get(ch,ch.lower())
+            if shift:key('shift',True)
+            press(name)
+            if shift:key('shift',False)
+            time.sleep(key_delay)
+    def wait_text(needle):
+        values=re.findall(rb'0x[0-9A-Fa-f]{16}',(ROOT/'Kernel/FontStd.HC').read_bytes())
+        font=b''.join(struct.pack('<Q',int(value,16)) for value in values)
+        if len(font)!=2048:raise ValueError('Unexpected font')
+        pattern=[font[ord(ch)*8+y] for ch in needle for y in range(8)]
+        path=out/'input-prompt.ppm'
+        def matches(_):
+            call('screendump',filename=str(path))
+            with Image.open(path) as image:
+                pix=image.convert('RGB').load()
+                for row in range(60):
+                    for col in range(81-len(needle)):
+                        for n in range(len(needle)):
+                            if any(sum((pix[(col+n)*8+x,row*8+y]!=(255,255,255))<<x for x in range(8))!=pattern[n*8+y] for y in range(8)):break
+                        else:return True
+            return False
+        wait(matches,timeout=180)
     try:
         json.loads(p.stdout.readline());call('qmp_capabilities')
         wait(lambda text:'DONE native kernel startup\n' in text)
         time.sleep(5);call('screendump',filename=str(out/'initial.ppm'))
-        for index,source in enumerate(commands):
+        for index,item in enumerate(commands):
+            source,interactive=(item if isinstance(item,tuple) else (item,None))
             start=len(log.read_text())
-            for ch in source:
-                shift=ch.isupper() or ch in SHIFTED; name=PLAIN.get(ch,ch.lower())
-                if shift:key('shift',True)
-                press(name)
-                if shift:key('shift',False)
-                time.sleep(key_delay)
+            type_text(source)
             if capture_input:
                 time.sleep(1);call('screendump',filename=str(out/f'typed-{index}.ppm'))
             press('ret')
+            if interactive is not None:
+                wait(lambda text:'INPUT LINE '+source+'\n' in text[start:])
+                time.sleep(3)
+                wait_text('Press <ESC> when done.')
+                type_text(interactive)
             text=wait(lambda s:any(marker in s[start:] for marker in ('COMMAND OK\n','INPUT REJECT ','COMMAND ERROR\n')))
             if 'INPUT REJECT ' in text[start:] or 'COMMAND ERROR\n' in text[start:]:raise ValueError(text[start:][-500:])
             if 'INPUT LINE '+source+'\n' not in text[start:]:raise ValueError('Incorrect input line: '+source)
