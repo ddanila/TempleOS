@@ -161,3 +161,10 @@ ascending, descending, duplicate and pointer-callback checks pass; see
 [sort evidence](i386-qsort-i64.md). Unchanged Budget loading now reaches
 `BgtMain.HC` line 50 and rejects at `PopUpOk`
 (`build/i386-budget-native-load-v3`), before installation or a workflow.
+
+ConsoleRuntime 140 exports the original button-popup builders; the original and
+native seven-case comparisons pass with exact documents and results.
+ConsoleRuntime 141 adds the original `PopUpEd` wrapper. The Budget loader now
+reaches `SettingsPush` in `BgtMain.HC` line 182 and rejects there
+(`build/i386-budget-native-load-v5`). The popup-editor reference and native
+input-path check remain scoped as described in [popup editor evidence](i386-popup-ed.md).

@@ -18,8 +18,9 @@ successful write to zero (`build/i386-button-popup-native-v1`). A diagnostic
 rerun completed all seven choices and matched all seven documents, but its
 raw truncated block numbers differed across systems
 (`build/i386-button-popup-native-v2`). The fixture now verifies the saved
-bytes by reading the file back. A fresh native comparison is running at
-`build/i386-button-popup-native-v3`. The unchanged Budget loader
+bytes by reading the file back. The corrected native comparison passes all seven cases and exact document
+and result captures with unchanged inputs (`build/i386-button-popup-native-v3`).
+This concurrent run does not qualify startup timing. The unchanged Budget loader
 now reaches `PopUpEd` at `BgtMain.HC` line 53 and is rejected there
 (`build/i386-budget-native-load-v4`), before Install. No full application or
 C1–C5 qualification is claimed.
