@@ -11,6 +11,12 @@ section stage vstart=0x10000 align=1
 bits 32
     cld
 %ifdef ATA_STAGE_TEST
+%define TEST_NEEDS_A20
+%endif
+%ifdef COMPILER_GRAPH_TEST
+%define TEST_NEEDS_A20
+%endif
+%ifdef TEST_NEEDS_A20
     ;Enable A20 for the fixture heap at 1 MiB, preserving other fast-gate bits.
     in al,0x92
     and al,0xFE

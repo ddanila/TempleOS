@@ -1,6 +1,15 @@
 //Explicit boundaries preserve enclosing compilation, even with deferred documents.
 I64 unwind_documents;
+I64 unwind_owned_documents;
 U32 unwind_flags;
+U0 UnwindOwnedDocument(U8 *context,CDoc *document)
+{
+  if(context!=&root || !root.compiler_busy || !root.lifetime_refs ||
+      (GetRFlags&0x200)!=unwind_flags || !document ||
+      document->doc_signature!=DOC_SIGNATURE_VAL) errors++;
+  unwind_owned_documents++;
+  if(!I386HeapFree(&heap,document))errors++;
+}
 U0 UnwindDocument(U8 *context,CDoc *document)
 {
   if(context!=&root || !root.compiler_busy || !root.lifetime_refs ||
@@ -43,6 +52,40 @@ I64 UnwindRootTest()
         !I386CmpCtrlUnwind(&root,&root.next_cc) || heap.used!=used ||
         heap.allocations!=allocations || !I386HeapValid(&heap) ||
         (GetRFlags&0x200)!=unwind_flags) return 54;
+    SetRFlags(flags);
+  }
+  for(enabled=0;enabled<2;enabled++) {
+    CDoc *doc;
+    unwind_flags=enabled*0x200;
+    SetRFlags((flags&~0x200)|unwind_flags);
+    inner=I386TaskCmpCtrlNew(&task_compiler);
+    doc=I386HeapAlloc(&heap,sizeof(CDoc),TRUE);
+    if(!inner || !doc)return 55;
+    doc->doc_signature=DOC_SIGNATURE_VAL;doc->head.next=doc;
+    if(!I386LexIncludeDocTake(&heap,inner,"Owned",doc,&UnwindOwnedDocument,&root) ||
+        !I386CmpCtrlEnter(&heap,inner) || !I386LexPush(&heap,inner) ||
+        !I386CmpCtrlUnwind(&root,&root.next_cc))return 56;
+    if(unwind_owned_documents!=enabled+1 || errors || root.active_controls ||
+        root.lifetime_refs || root.compiler_busy || root.compiler_cleanup_failed ||
+        heap.used!=used || heap.allocations!=allocations || !I386HeapValid(&heap) ||
+        (GetRFlags&0x200)!=unwind_flags)return 57;
+    SetRFlags(flags);
+  }
+  //Direct teardown must exclude reentrant compilation even when discarding a
+  //snapshot releases an already exhausted, detached document child.
+  {
+    CDoc *detached_doc;I64 lines=0;
+    SetRFlags(flags|0x200);unwind_flags=0;
+    inner=I386TaskCmpCtrlNew(&task_compiler,"P",CCF_DONT_FREE_BUF);
+    detached_doc=I386HeapAlloc(&heap,sizeof(CDoc),TRUE);
+    if(!inner || !detached_doc)return 58;
+    detached_doc->doc_signature=DOC_SIGNATURE_VAL;detached_doc->head.next=detached_doc;
+    if(!I386LexIncludeDocTake(&heap,inner,"Detached",detached_doc,&UnwindOwnedDocument,&root) ||
+        !I386CmpCtrlEnter(&heap,inner) || !I386LexPush(&heap,inner) ||
+        I386LexRawChar(&heap,inner,&lines)!='P' || !I386CmpCtrlDel(&heap,inner))return 59;
+    if(unwind_owned_documents!=3 || errors || root.active_controls || root.lifetime_refs ||
+        root.compiler_busy || heap.used!=used || heap.allocations!=allocations ||
+        !I386HeapValid(&heap) || !(GetRFlags&0x200))return 60;
     SetRFlags(flags);
   }
   return 0;

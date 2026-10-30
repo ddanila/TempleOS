@@ -62,7 +62,7 @@ I64 ScopeTest()
   cpu.addr=&cpu; cpu.scheduler=&scheduler;
   if(!I386SchedInit(&scheduler,&root,swap) ||
       !I386DataSegment(control->cpu_descriptor,&cpu,sizeof(CI386Cpu)) ||
-      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x78000,65536)) return 1;
+      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x100000,65536)) return 1;
   OutU8(0x21,255); OutU8(0xA1,255);
   symbols=I386HashTableNew(&heap,8);
   if(!symbols || !I386TaskSymbolsInit(&root,&heap,symbols) ||
@@ -193,10 +193,15 @@ U0 Grandchild(I64 unused)
 #include "/Kernel/I386/HashTable.HC"
 #include "/Compiler/I386/SymbolDelete.HC"
 #include "/Kernel/I386/TaskSymbols.HC"
+//This fixture mounts no disks; reject all volume operations.
+Bool I386RedSeaValid(CI386RedSea *volume) {return FALSE;}
+Bool I386RedSeaEnd(CI386RedSea *volume) {return FALSE;}
 #include "/Kernel/I386/TaskFiles.HC"
 
 #include "/Compiler/ControlInit.HC"
+#include "/Compiler/I386/LexState.HC"
 #include "/Compiler/I386/LexFiles.HC"
+#include "/Compiler/I386/LexInput.HC"
 #include "/Compiler/I386/Control.HC"
 #include "/Kernel/BlkDev/FileNames.HC"
 #include "/Kernel/I386/FilePaths.HC"

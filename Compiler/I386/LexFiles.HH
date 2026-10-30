@@ -2,6 +2,16 @@
 #define I386_LEX_FILES_INCLUDED
 #include "/Compiler/LexFiles.HH"
 #include "/Kernel/I386/Heap.HH"
+//Private allocation wrapper; shared with compiler-control cleanup.
+class CI386LexFile
+{
+  CLexFile file;
+  CI386Heap *heap;
+  CCmpCtrl *control;
+  U32 signature;
+  U0 (*document)(U8 *context,CDoc *document);
+  U8 *document_context;
+};
 //Copy borrowed name/source into an owned child. Allocation failure leaves input state unchanged.
 public extern Bool I386LexIncludeCopy(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
 //Transfer a distinct owned, NUL-terminated source allocation on success only.

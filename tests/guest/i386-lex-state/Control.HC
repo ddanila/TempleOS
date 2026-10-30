@@ -1,5 +1,18 @@
 #include "/Compiler/I386/Control.HC"
 I64 control_documents,control_code_labels;
+I64 control_owned_documents;
+U0 ControlOwnedDocument(U8 *context,CDoc *document)
+{
+  if(context!=&control_owned_documents || !document || document->doc_signature!=DOC_SIGNATURE_VAL)
+    state_free_errors++;
+  control_owned_documents++;StateFree(document);
+}
+CDoc *ControlNewDocument()
+{
+  CDoc *doc=StateAlloc(sizeof(CDoc));
+  if(doc) {doc->doc_signature=DOC_SIGNATURE_VAL;doc->head.next=doc;}
+  return doc;
+}
 U0 ControlCodeLabel(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)
 {
   if(context!=&control_code_labels || !undefined || !name || name[0]!='X' ||
@@ -78,6 +91,22 @@ I64 NativeControlTest()
   used=state_heap.used;
   if(I386CmpCtrlDel(&state_heap,cc) || state_heap.used!=used ||
       !I386CmpCtrlDel(&state_heap,cc,&ControlDocument,&control_documents) || control_documents!=1) return 80;
+  //Owned document children use their own cleanup, including under snapshots,
+  //even when the control has no document callback or has a different one.
+  for(i=0;i<2;i++) {
+    CDoc *first,*second;
+    cc=I386CmpCtrlNew(&state_heap,"P",CCF_DONT_FREE_BUF,"OwnedDocs",0,char_bmp_alpha_numeric);
+    first=ControlNewDocument;second=ControlNewDocument;
+    if(!cc || !first || !second ||
+        !I386LexIncludeDocTake(&state_heap,cc,"First",first,&ControlOwnedDocument,&control_owned_documents) ||
+        !I386LexIncludeDocTake(&state_heap,cc,"Second",second,&ControlOwnedDocument,&control_owned_documents) ||
+        !I386LexPush(&state_heap,cc))return 104;
+    if(i) {
+      if(!I386CmpCtrlDel(&state_heap,cc,&ControlDocument,&control_documents))return 105;
+    } else if(!I386CmpCtrlDel(&state_heap,cc))return 106;
+    if(control_owned_documents!=2*(i+1) || control_documents!=1 || state_free_errors ||
+        state_heap.used || state_heap.allocations || !I386HeapValid(&state_heap))return 107;
+  }
   //Preserve public root-retention semantics, even for a generated prompt buffer.
   for(i=0;i<2;i++) {
     SetRFlags(flags|0x200);

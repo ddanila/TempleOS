@@ -9,10 +9,12 @@
 %error Function corpus stage must fit below physical 0x70000
 %endif
 %elifdef COMPILER_GRAPH_TEST
-%define BOOT_SECTORS_LIMIT 832
-;Compiler graph fixture uses its first arena at 0x78000.
-%if BOOT_SECTORS < 1 || BOOT_SECTORS > 832
-%error Compiler graph test stage must fit below physical 0x78000
+%define BOOT_SECTORS_LIMIT 1056
+%define BOOT_STACK_TOP 0x9C000
+;Code ends at 0x94000, below the 32 KiB stack and descriptor scratch.
+;The compiler graph fixture uses its first arena at 1 MiB.
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 1056
+%error Compiler graph test stage must fit below physical 0x94000
 %endif
 %elifdef ATA_STAGE_TEST
 %define BOOT_SECTORS_LIMIT 1056

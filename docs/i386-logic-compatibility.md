@@ -65,3 +65,24 @@ and the 386 cross-build/audit pass (`build/rebuild-test`,
 fixture with unchanged inputs (`build/i386-lex-document-child-8m-v3`); it is
 not a complete minimal-profile or startup timing gate. The original loader and release
 qualification remain open; these are private lexer mechanics, not Logic parity.
+
+Compiler-control cleanup now dispatches each active owned document child to its
+registered destructor, retaining the prior callback behavior for unregistered
+or root documents. Direct cleanup marks the task's compiler busy before
+snapshot discard can release a detached child; a task fixture reproduced that
+reentrancy gap as runner result 60 (`build/doc-child-control-unwind-v6.log`).
+The corrected fixture passes with active children under both interrupt states,
+and with a snapshot-retained detached child and exact heap recovery
+(`build/doc-child-control-unwind-v7.log`). The separate control fixture checks
+multiple children and callback precedence, and the lexer and ATA task fixtures
+also pass (`build/doc-child-control-fixture-v2.log`,
+`build/doc-child-control-lexer-v2.log`,
+`build/doc-child-control-ata-fixture.log`). The task fixture uses rejecting
+RedSea stubs because it mounts no disks, and its larger source uses a separate
+1 MiB test heap and 0x9C000 descriptor scratch; these are not production boot
+changes. Both bootstrap generations and the 386 cross-build/audit pass
+(`build/rebuild-test`, `build/i386-doc-child-control-cross`), as does an 8 MiB
+ordinary-include smoke check with unchanged inputs
+(`build/i386-doc-child-control-8m`). This smoke run is not a startup timing
+gate. Real file-to-document attachment, interrupt-safe real document teardown,
+cancellation during loading, and native Logic remain open.

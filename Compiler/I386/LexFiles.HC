@@ -5,15 +5,6 @@
 #include "/Kernel/I386/Cpu.HH"
 #define I386_LEX_FILE_MAGIC 0x4C464931
 U8 i386_doc_zero=0;
-class CI386LexFile
-{
-  CLexFile file;
-  CI386Heap *heap;
-  CCmpCtrl *control;
-  U32 signature;
-  U0 (*document)(U8 *context,CDoc *document);
-  U8 *document_context;
-};
 class CI386LexFileRelease
 {
   CI386Heap *heap;

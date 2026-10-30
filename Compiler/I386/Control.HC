@@ -95,6 +95,7 @@ class CI386CmpRelease {
   U8 *context;
   Bool ok;
   CCmpCtrl *control;
+  CLexFile *file;
   U0 (*label)(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined);
 };
 Bool I386ParserPayloadRelease(CI386CmpRelease *state,CI386ParserAllocation *record)
@@ -151,7 +152,14 @@ U0 I386CmpReleaseAllocation(U8 *context,U8 *allocation)
 U0 I386CmpReleaseDocument(U8 *context,CDoc *document)
 {
   CI386CmpRelease *state=context;
-  (*state->document)(state->context,document);
+  CI386LexFile *owned=state->file;
+  U32 irq=I386IrqSave;
+  Bool local_owner=owned && I386LexFileOwned(state->heap,state->control,&owned->file) && owned->document;
+  I386IrqRestore(irq);
+  if(local_owner)
+    (*owned->document)(owned->document_context,document);
+  else if(state->document) (*state->document)(state->context,document);
+  else state->ok=FALSE;
 }
 Bool I386CmpControlValid(CI386Heap *heap,CCmpCtrl *cc)
 {
@@ -210,12 +218,13 @@ Bool I386CmpCtrlLeave(CI386Heap *heap,CCmpCtrl *cc)
   I386CmpUnlink(owned);
   I386IrqRestore(irq); return TRUE;
 }
-Bool I386CmpReleaseReady(CCmpCtrl *cc,U0 (*document)(U8 *context,CDoc *document))
+Bool I386CmpReleaseReady(CI386Heap *heap,CCmpCtrl *cc,U0 (*document)(U8 *context,CDoc *document))
 {
   CLexFile *file;
   for(file=cc->lex_include_stk;file;file=file->next)
-    if((file->next || !(cc->flags&CCF_DONT_FREE_BUF)) && file->flags&LFSF_DOC && file->doc && !document)
-      return FALSE;
+    if((file->next || !(cc->flags&CCF_DONT_FREE_BUF)) && file->flags&LFSF_DOC && file->doc && !document) {
+      if(!I386LexFileOwned(heap,cc,file) || !file(CI386LexFile *)->document)return FALSE;
+    }
   return TRUE;
 }
 Bool I386CmpCtrlDelete(CI386Heap *heap,CCmpCtrl *cc,
@@ -226,29 +235,39 @@ Bool I386CmpCtrlDelete(CI386Heap *heap,CCmpCtrl *cc,
   CLexFileRelease owner;
   CI386CmpRelease state;
   U32 irq=I386IrqSave;
-  Bool pinned;
+  Bool pinned,acquired_busy=FALSE;
   if(!I386CmpControlValid(heap,cc) || owned->code_busy) goto control_delete_failed;
   task=owned->task;
   if(task && (!task->lifetime_refs || !I386CmpTaskOwnerValid(task,heap,task->hash_table) ||
       task->compiler_busy && !draining)) goto control_delete_failed;
   if(owned->active && !I386CmpActiveValid(owned)) goto control_delete_failed;
-  if(!I386CmpReleaseReady(cc,document)) goto control_delete_failed;
+  if(!I386CmpReleaseReady(heap,cc,document)) goto control_delete_failed;
   if(!I386LexSnapshotsPin(heap,cc,cc->lex_include_stk,&pinned)) goto control_delete_failed;
+  //Discarding a snapshot can release a detached document and invoke its
+  //destructor, so exclude reentrant compilation before draining snapshots.
+  if(task && !draining) {task->compiler_busy=1;acquired_busy=TRUE;}
   while(cc->lex_prs_stk)
     if(!I386LexPop(heap,cc,FALSE)) goto control_delete_failed;
   if(owned->active) I386CmpUnlink(owned);
   owned->signature=0;
   if(task) task->compiler_busy=1;
   I386IrqRestore(irq);
-  state.heap=heap; state.document=document; state.context=context; state.ok=TRUE; state.control=cc;
+  state.heap=heap; state.document=document; state.context=context; state.ok=TRUE; state.control=cc;state.file=0;
   owner.context=&state; owner.allocation=&I386CmpReleaseAllocation; owner.document=&I386CmpReleaseDocument;
   I386CmpCodeRelease(cc,&state);
+  //Remember the current owner while the shared release helper detaches it.
+  while(cc->lex_include_stk) {
+    state.file=cc->lex_include_stk;
+    LexFileReleaseTop(cc,&owner);
+  }
+  state.file=0;
   CmpCtrlRelease(cc,&owner);
   irq=I386IrqSave;
   if(task) { task->lifetime_refs--; if(!draining) task->compiler_busy=0; }
   I386IrqRestore(irq);
   return state.ok;
 control_delete_failed:
+  if(acquired_busy)task->compiler_busy=0;
   I386IrqRestore(irq); return FALSE;
 }
 Bool I386CmpCtrlDel(CI386Heap *heap,CCmpCtrl *cc,
@@ -276,7 +295,7 @@ Bool I386CmpCtrlUnwind(CI386Task *task,CCmpCtrl *boundary)
     if(count>=task->active_controls || node==&task->next_cc || !I386CmpControlValid(scope->heap,node)) goto control_drain_failed;
     owned=node;
     if(owned->task!=task || !I386CmpActiveValid(owned) ||
-        !I386CmpReleaseReady(node,owned->document)) goto control_drain_failed;
+        !I386CmpReleaseReady(scope->heap,node,owned->document)) goto control_drain_failed;
     node=node->last;
   }
   if(boundary!=&task->next_cc) {
