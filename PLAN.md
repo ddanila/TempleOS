@@ -63,6 +63,16 @@ with 128 immediate-push, 22 publication and 28 program-publication cases, both
 memory phases and nine behavior/VGA checks. The report is
 `build/i386-c2-editor-dialogs-gates.json`.
 
+### Original block I/O reference (2026-10-30)
+
+The pinned-original public BlkRead/BlkWrite contract passes mask 31 for private
+RAM-backed transfers, zero counts, bounds and read-only exceptions, and outer
+lock retention. Earlier undefined-extern and source-inclusion fixture failures
+are preserved; the corrected fixture uses original public bindings. ATA, ISO,
+cache, removable media and native block I/O remain unqualified. The native
+control rejects the fixture at missing BlkRead before any case runs, with
+unchanged inputs. See docs/i386-block-io.md.
+
 ### Adam-owned allocation helpers (2026-10-30)
 
 MemoryRuntime 31 publishes the complete original AMAlloc, ACAlloc,
