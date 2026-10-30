@@ -42,6 +42,13 @@ checks with no build-provider loads but missed the 60-second budget at
 60.962218 seconds (`build/i386-c5-deduplicate-startup`). The retained build
 resumed and 16 MiB diagnostics are running in
 `build/i386-c5-deduplicate-diagnostics`.
+A sampled profile of the same candidate (`build/i386-c5-deduplicate-startup-profile`)
+places 321 of 416 root-header samples in I386HeapScanSelect. Sampled stacks
+include heap-size validation from lexer snapshots, compiler ownership and memory
+backing. Foundation samples also include heap scanning (53/203), symbol lookup
+(49/203) and module validation (27/203). These are statistical samples under
+concurrent workloads, not timings or call counts. Investigate redundant scans
+while preserving full heap integrity checks; no optimization is yet qualified.
 
 The preceding editor candidate's 16 MiB diagnostics pass in 240.203069 seconds,
 with 128 immediate-push, 22 publication and 28 program-publication cases, both
