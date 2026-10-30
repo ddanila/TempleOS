@@ -100,3 +100,6 @@ remain unchanged. The test is retained in
 not a physical-hardware or full application qualification. The longer retained
 native build remains in progress at
 `build/i386-c5-shared-bitfield-native-build`.
+The shared keyboard helper also passes the 8 MiB initial welcome-pixel
+regression with unchanged inputs (`build/i386-keyboard-helper-welcome-8m`);
+this concurrent run does not qualify startup timing.
