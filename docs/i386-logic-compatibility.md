@@ -118,3 +118,8 @@ passes at 8 MiB (`build/i386-doc-file-bridge-smoke-8m`). These checks do not
 qualify cancellation or task death while loading, out-of-memory behavior,
 ahead-of-time module building, general document parity, or startup timing.
 C1–C5 remain open.
+
+The unchanged TimeClock keyboard workflow also passes on this image, including
+multiline entry, cancellation and cold-reboot record recovery with unchanged
+inputs (`build/i386-doc-file-bridge-timeclock-keyboard`). This is not full
+application or startup qualification.

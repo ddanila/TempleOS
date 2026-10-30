@@ -4440,7 +4440,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Load unchanged Logic source and synthesize each of its ten supported NOT, two-input and three-input gates from known truth-table inputs; check selected input wiring and results.",
-      "oracle": "The pinned-original gate fixture checks mask 1023, the selected gate, source truth tables, first-pass output and output identity. Native loading stops at embedded DolDoc binary references; interactive entry, drawing, full synthesis and cleanup remain open.",
+      "oracle": "The pinned-original gate fixture checks mask 1023, the selected gate, source truth tables, first-pass output and output identity. Native loading passes the embedded DolDoc binary references and stops at missing GetI64; interactive entry, drawing, full synthesis and cleanup remain open.",
       "tests": [
         {
           "target": "original-logic-synthesis",
@@ -4453,8 +4453,8 @@
           "target": "native-logic-load",
           "command": "python3 tools/test-i386-application-native-load.py IMAGE --app Logic --out OUT",
           "result": "fail",
-          "evidence": "build/i386-logic-native-load-v1/result.json",
-          "scope": "Unchanged source rejected at embedded binary initializer line 73 before any synthesis case"
+          "evidence": "build/i386-logic-native-load-bridge-v1/result.json",
+          "scope": "Unchanged source passes embedded binary initializer and is rejected at missing GetI64 on line 112 before any synthesis case"
         },
         {
           "target": "original-logic-document",
