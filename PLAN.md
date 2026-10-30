@@ -116,7 +116,10 @@ The corrected isolated candidate passes at 59.681142 seconds with all nine
 behavior/VGA checks and no build-provider loads, in
 `build/i386-lex-parent-candidate-fixed-startup`; its four inputs match. This
 single non-contiguous comparison does not establish a controlled speedup.
-A candidate 16 MiB diagnostic gate remains pending. The separate 16 MiB diagnostics passed against the previously committed image;
+The candidate's 16 MiB diagnostics pass at 233.941503 seconds in
+`build/i386-lex-parent-diagnostics`, with 128 immediate-push, 22 publication,
+28 program-publication cases, both memory phases, nine behavior/VGA checks,
+no build-provider loads and four unchanged input hashes. The separate 16 MiB diagnostics passed against the previously committed image;
 its C5 native build continues. C1–C5 remain open.
 
 ### Complete editor dialog dispatch candidate (2026-10-16)
