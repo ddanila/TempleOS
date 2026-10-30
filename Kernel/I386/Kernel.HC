@@ -917,6 +917,7 @@ U0 KernelConsoleLoad()
   kernel_console_config.drive_map=kernel_volumes.block_globals.let_to_drv;
   kernel_volumes.block_globals.blkdevs=kernel_block_devices;
   kernel_console_config.block_records=kernel_volumes.block_globals.blkdevs;
+  kernel_console_config.block_globals=&kernel_volumes.block_globals;
   kernel_console_config.types=kernel_types.by_raw; kernel_console_config.reader=&kernel_reader;
   kernel_console_config.input=&kernel_input; kernel_console_config.jiffies=&cnts.jiffies;
   kernel_console_config.mouse=&kernel_mouse;

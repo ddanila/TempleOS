@@ -436,7 +436,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   if(!task || !task->hash_table || console_config || !config || !config->heap || !config->compiler ||
       config->compiler->version!=I386_COMPILER_SERVICES_VERSION ||
       config->compiler->bytes!=sizeof(CI386CompilerServices) || !config->compiler->input || !config->compiler->break_poll ||
-      !config->pit_ticks || !config->jiffies || !config->input_poll || !config->doc_diagnostic_load || !config->editor_load || config->pit_divisor<2 || config->pit_divisor>65536 || !config->files || !config->drive_records || !config->drive_map || !config->block_records || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
+      !config->pit_ticks || !config->jiffies || !config->input_poll || !config->doc_diagnostic_load || !config->editor_load || config->pit_divisor<2 || config->pit_divisor>65536 || !config->files || !config->drive_records || !config->drive_map || !config->block_records || !config->block_globals || config->drive_map!=config->block_globals->let_to_drv || config->block_records!=config->block_globals->blkdevs || !config->includes || !config->types || !config->reader || !config->input) return FALSE;
   provider=HashFind("_ADAM_TASK",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=3 || !provider->val) return FALSE;
   native_highlight_root=provider->val;

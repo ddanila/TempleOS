@@ -134,3 +134,15 @@ publication cases, both memory phases, nine behavior/VGA checks, no build
 provider loads, and four unchanged inputs
 (`build/i386-block-globals-device-diagnostics`). The interactive timing gate
 remains failed.
+
+Console configuration now also receives the kernel-owned `CBlkDevGlbls`
+itself and checks that its drive map and block-device array match the existing
+console pointers. The console service version is 139. This supplies shared
+state for block I/O integration; it does not publish `blkdev` or implement the
+cache. Both original rebuild generations and the 386 cross-build/audit pass
+(`build/i386-block-globals-console-cross-final`). The native 64 MiB drive-map
+contract passes 20 commands and VGA checks with unchanged inputs
+(`build/i386-block-globals-console-map`); its 59.102222-second startup was
+concurrent and is not an isolated timing gate. The expanded cache fixture on
+the earlier pinned native image still rejects at missing `BlkRead`, with
+unchanged inputs (`build/i386-block-cache-eviction-native-red`).
