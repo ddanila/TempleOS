@@ -207,3 +207,20 @@ public binding; no native synthesis case has run.
 The candidate also passes an 8 MiB ordinary-include and drive-fields smoke
 check (`build/i386-public-progress-smoke-8m`), not full minimal-profile or
 startup timing qualification.
+
+`ProgressBarsRst` now looks up the task-visible `ProgressBarsRegTf` function
+or system export, invokes it with the path before clearing all four records,
+and propagates callback exceptions. The pinned original and native fixture
+check complete record clearing; the native fixture additionally checks hook
+lookup, argument, ordering and exception behavior
+(`build/i386-progress-reset-original-v2`, `build/i386-progress-reset-native-v2`;
+runner `tools/test-i386-progress-reset.py`). The prior image rejected the
+missing reset service (`build/i386-progress-reset-native-red`). Both bootstrap
+generations and the 386 cross-build/audit pass
+(`build/progress-reset-rebuild-v1.log`, `build/i386-progress-reset-cross-v1`).
+The timing hook's registry implementation and visual progress bars remain open.
+Unchanged Logic advances to the missing `SettingsPush` at line 569
+(`build/i386-logic-native-progress-reset-v1`); no native synthesis case ran.
+The candidate also passes an 8 MiB ordinary-include and drive-fields smoke
+check (`build/i386-progress-reset-smoke-8m`), not full minimal-profile or
+startup timing qualification.

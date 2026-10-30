@@ -22,4 +22,5 @@ public _extern SYS_PROGRESS4_T0 F64 progress4_t0;
 public _extern SYS_PROGRESS4_TF F64 progress4_tf;
 public _extern SYS_PROGRESS4_DESC U8 progress4_desc[PROGRESS_DESC_LEN];
 public _extern SYS_PROGRESSES CProgress sys_progresses[PROGRESS_BARS_NUM];
+public _extern _PROGRESS_BARS_RST U0 ProgressBarsRst(U8 *path=NULL);
 #endif
