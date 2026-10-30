@@ -12754,6 +12754,27 @@
           "result": "pass",
           "evidence": "build/files-find-match-public-native-v2/result.json",
           "scope": "Seven groups for filename masks, all six type filters, direct wildcard matching and caller heap recovery; not whole-file qualification"
+        },
+        {
+          "target": "pinned-file-extension-public",
+          "command": "python3 tools/test-i386-file-extension-public.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-file-extension-public-original-v1/result.json",
+          "scope": "Seven bounded groups: extension scan, removal, change, suffix detection/toggle, return pointers and caller heap recovery; not full file API"
+        },
+        {
+          "target": "shared-file-extension-public",
+          "command": "python3 tools/test-i386-file-extension-public.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-file-extension-public-shared-original-v1/result.json",
+          "scope": "Seven bounded groups: extension scan, removal, change, suffix detection/toggle, return pointers and caller heap recovery; not full file API"
+        },
+        {
+          "target": "native-file-extension-public",
+          "command": "python3 tools/test-i386-file-extension-public.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-file-extension-public-native-v1/result.json",
+          "scope": "Seven bounded groups: extension scan, removal, change, suffix detection/toggle, return pointers and caller heap recovery; not full file API"
         }
       ]
     },

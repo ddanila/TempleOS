@@ -1,17 +1,7 @@
 #include "/Kernel/BlkDev/FileNames.HC"
 #include "/Kernel/BlkDev/FilePaths.HC"
 
-U8 *FileExtRem(U8 *src,U8 *dst=NULL)
-{//Remove filename extension from str.
-  U8 *ptr;
-  if (ptr=FileExtDot(src)) {
-    if (dst)
-      StrCpy(dst,ptr+1);
-    *ptr=0;
-  } else if (dst)
-    *dst=0;
-  return dst;
-}
+#include "/Kernel/BlkDev/FileExtRemCore.HC"
 
 #include "/Kernel/BlkDev/FilesFindMatchCore.HC"
 
@@ -60,14 +50,7 @@ U8 *FileNameAbs(U8 *_filename,I64 fuf_flags=0)
   return FileNameAbsCore(_filename,fuf_flags,&FileNameAbsConstruct);
 }
 
-U8 *ExtChg(U8 *filename,U8 *extension)
-{//Change filename extension.
-  U8 *res=MAlloc(StrLen(filename)+1+StrLen(extension)+1);
-  StrCpy(res,filename);
-  if (FileExtDot(filename))
-    FileExtRem(res);
-  return CatPrint(res,".%s",extension);
-}
+#include "/Kernel/BlkDev/ExtChgCore.HC"
 
 #include "/Kernel/BlkDev/ExtDftCore.HC"
 
@@ -90,12 +73,7 @@ CDirEntry *Cd2DirEntry(CDirEntry *tmpde,U8 *abs_name)
 
 #include "/Kernel/BlkDev/FileNameCheckCore.HC"
 
-U8 *ToggleZorNotZ(U8 *name)
-{//MAlloc name with Z if not Z or vice versa.
-  I64 size=StrLen(name)+3;
-  if(IsDotZ(name)) size-=2;
-  return FileNameWriteToggle(MAlloc(size),name);
-}
+#include "/Kernel/BlkDev/ToggleZorNotZCore.HC"
 
 U8 *FileNameTmpTxt()
 {//Make pretty-safe tmp filename in home dir.

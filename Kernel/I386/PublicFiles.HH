@@ -64,6 +64,12 @@ public _extern _CLUS_TO_BLOCK I64 Clus2Blk(CDrv *dv,I64 c);
 public _extern _FSIZE I64 FSize(CFile *f);
 public _extern _FILE_READ U8 *FileRead(U8 *filename,I64 *_size=0,I64 *_attr=0);
 public _extern _CD Bool Cd(U8 *dirname=0,Bool make_dirs=FALSE);
+public _extern _FILE_EXT_DOT U8 *FileExtDot(U8 *src);
+public _extern _FILE_EXT_REM U8 *FileExtRem(U8 *src,U8 *dst=NULL);
+public _extern _EXT_CHG U8 *ExtChg(U8 *filename,U8 *extension);
+public _extern _IS_DOT_C Bool IsDotC(U8 *filename);
+public _extern _IS_DOT_Z Bool IsDotZ(U8 *filename);
+public _extern _TOGGLE_ZOR_NOT_Z U8 *ToggleZorNotZ(U8 *name);
 public _extern _EXT_DFT U8 *ExtDft(U8 *filename,U8 *extension);
 
 public _extern _DIR_CUR U8 *DirCur(CTask *task=NULL,CTask *mem_task=NULL);
