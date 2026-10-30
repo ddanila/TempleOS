@@ -110,6 +110,13 @@ passes four commands covering every field and file flags with unchanged inputs;
 its concurrent startup timing is not an isolated gate. File-backed I/O and
 full media initialization remain open. See docs/i386-block-io.md.
 
+### Shared original block I/O bodies (2026-10-30)
+
+The complete original BlkRead and BlkWrite bodies are extracted byte-for-byte
+into a shared core. Both original rebuild generations pass. Native binding and
+the cache, file-backed, ATA and ATAPI dependencies remain open; this source
+preparation does not qualify block I/O. See docs/i386-block-io.md.
+
 ### Original block I/O reference (2026-10-30)
 
 The pinned-original public BlkRead/BlkWrite contract passes mask 31 for private

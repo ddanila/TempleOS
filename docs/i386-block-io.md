@@ -36,3 +36,9 @@ and file flags, passing four commands with unchanged inputs in
 `build/i386-cfile-types-native`; the executed runner is preserved there. Its
 61.722402-second concurrent startup is not an isolated timing qualification.
 FOpen, FBlkRead/FBlkWrite, block I/O and media initialization remain open.
+
+The complete original `BlkRead` and `BlkWrite` bodies are now shared through
+`Kernel/BlkDev/BlockReadWriteCore.HC`. The extraction is byte-identical to
+the prior original bodies, and both original rebuild generations pass
+(`build/rebuild-test`). This prepares the source for a native provider; it
+does not bind or implement the native dependencies or qualify block I/O.
