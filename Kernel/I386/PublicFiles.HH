@@ -1,6 +1,7 @@
 #ifndef I386_PUBLIC_FILES_INCLUDED
 #define I386_PUBLIC_FILES_INCLUDED
 #include "/Kernel/DateTypes.HH"
+#include "/Kernel/FileMaskTypes.HH"
 #include "/Kernel/BlkDev/FreeListTypes.HH"
 #include "/Kernel/BlkDev/DriveTypes.HH"
 #include "/Kernel/BlkDev/DirContextTypes.HH"
@@ -10,6 +11,8 @@
 #include "/Kernel/BlkDev/BlockDevTypes.HH"
 #include "/Kernel/BlkDev/BlockSize.HH"
 #include "/Kernel/BlkDev/BlockGlobalsTypes.HH"
+public _extern _FILES_FIND_MATCH Bool FilesFindMatch(U8 *test_name,U8 *files_find_mask,I64 fuf_flags=0);
+public _extern _WILD_MATCH Bool WildMatch(U8 *test_str,U8 *wild_str);
 public _extern _BLOCK_DEV_NEXT_FREE_SLOT CBlkDev *BlkDevNextFreeSlot(U8 first_drv_let,I64 type);
 public _extern _LET_TO_DRV CDrv *Let2Drv(U8 drv_let=0,Bool except=TRUE);
 public _extern _BLOCK_DEV_CHECK CBlkDev *BlkDevChk(CBlkDev *bd,Bool except=TRUE);

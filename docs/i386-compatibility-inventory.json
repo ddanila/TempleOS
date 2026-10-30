@@ -12740,6 +12740,20 @@
           "result": "pass",
           "evidence": "build/i386-c2-gr-read-native/result.json",
           "scope": "Eight ExtDft cases, four raw/7-bit/8-bit GR records, distinct parent/default task ownership, default extension and nested compression, packed document bitmap bytes, explicit/default DocGR and missing-file NULL; fourteen checks; unchanged inputs; diagnostic text, rendering and whole-file qualification remain open"
+        },
+        {
+          "target": "original-file-mask-matching",
+          "command": "python3 tools/test-i386-files-find-match.py --original --out OUT",
+          "result": "pass",
+          "evidence": "build/files-find-match-public-original-v3/result.json",
+          "scope": "Seven groups for filename masks, all six type filters, direct wildcard matching and caller heap recovery; not whole-file qualification"
+        },
+        {
+          "target": "native-file-mask-matching",
+          "command": "python3 tools/test-i386-files-find-match.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/files-find-match-public-native-v2/result.json",
+          "scope": "Seven groups for filename masks, all six type filters, direct wildcard matching and caller heap recovery; not whole-file qualification"
         }
       ]
     },
@@ -14640,6 +14654,20 @@
           "result": "pass",
           "evidence": "build/i386-c4-string-util-compact-native/result.json",
           "scope": "Eleven public-API contracts at 64 MiB; compact candidate still fails 8 MiB normal startup and is not release qualified"
+        },
+        {
+          "target": "original-file-mask-matching",
+          "command": "python3 tools/test-i386-files-find-match.py --original --out OUT",
+          "result": "pass",
+          "evidence": "build/files-find-match-public-original-v3/result.json",
+          "scope": "Seven groups for filename masks, all six type filters, direct wildcard matching and caller heap recovery; not whole-file qualification"
+        },
+        {
+          "target": "native-file-mask-matching",
+          "command": "python3 tools/test-i386-files-find-match.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/files-find-match-public-native-v2/result.json",
+          "scope": "Seven groups for filename masks, all six type filters, direct wildcard matching and caller heap recovery; not whole-file qualification"
         }
       ]
     },

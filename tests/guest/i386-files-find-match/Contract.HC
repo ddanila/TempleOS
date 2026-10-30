@@ -18,5 +18,7 @@ I64 JRContract(I64 unused)
      FM("A.PRJ","*",FUF_JUST_AOT,TRUE) && FM("A.IN","*",FUF_JUST_AOT,FALSE) &&
      FM("A.HH","*",FUF_JUST_JIT,TRUE) && FM("A.PRJ","*",FUF_JUST_JIT,FALSE) &&
      FM("A.GR.Z","*",FUF_JUST_GR,TRUE) && FM("A.HC","*",FUF_JUST_GR,FALSE))mask|=32;
+  if(WildMatch("ABC.HC","A?C.*") && WildMatch("AXXXB.HC","A*B.*") &&
+     !WildMatch("abc.hc","*.HC") && !WildMatch("A.HC","*.DD"))mask|=64;
   return mask;
 }
