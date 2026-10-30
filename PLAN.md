@@ -63,6 +63,18 @@ with 128 immediate-push, 22 publication and 28 program-publication cases, both
 memory phases and nine behavior/VGA checks. The report is
 `build/i386-c2-editor-dialogs-gates.json`.
 
+### Adam-owned allocation helpers (2026-10-30)
+
+MemoryRuntime 31 publishes the complete original AMAlloc, ACAlloc,
+AMAllocIdent and AStrNew wrappers. The pinned-original child-task contract
+passes mask 31 for ownership, zeroing, identity and string copying including
+NULL. Both original rebuild generations and cross-build/386 audit pass with
+1538 source and 24 build hashes unchanged. Native 64 MiB passes all three
+commands with unchanged inputs; the 8 MiB contract also passes all three
+commands with unchanged inputs. Both startup observations were concurrent;
+isolated resource gates remain open. Full media
+initialization remains open. See docs/i386-adam-allocation.md.
+
 ### Original block-device initializer source (2026-10-30)
 
 The complete original BlkDevInit body is shared byte-for-byte, including RAM,

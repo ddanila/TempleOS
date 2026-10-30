@@ -387,10 +387,7 @@ _extern _MHEAP_CTRL CHeapCtrl *MHeapCtrl(U8 *src); //$LK,"CHeapCtrl",A="MN:CHeap
 _extern _MALLOC U8 *MAlloc(I64 size,CTask *mem_task=NULL); //Alloc memory chunk.
 //Accepts a $LK,"CTask",A="MN:CTask"$ or $LK,"CHeapCtrl",A="MN:CHeapCtrl"$. NULL allocs off current task's heap.
 
-U8 *AMAlloc(I64 size)
-{//Alloc memory in Adam's heap.
-  return MAlloc(size,adam_task);
-}
+
 
 U8 *CAlloc(I64 size,CTask *mem_task=NULL)
 {//Accepts a $LK,"CTask",A="MN:CTask"$ or $LK,"CHeapCtrl",A="MN:CHeapCtrl"$.  NULL allocs off current task's heap.
@@ -399,17 +396,11 @@ U8 *CAlloc(I64 size,CTask *mem_task=NULL)
   return res;
 }
 
-U8 *ACAlloc(I64 size)
-{//Alloc and set to zero memory in Adam's heap.
-  return CAlloc(size,adam_task);
-}
+
 
 #include "/Kernel/Mem/AllocCopy.HC"
 
-U8 *AMAllocIdent(U8 *src)
-{//Alloc in Adam's heap, ident copy of heap node.
-  return MAllocIdent(src,adam_task);
-}
+
 
 U8 *MAllocAligned(I64 size,I64 alignment,
 	CTask *mem_task=NULL,I64 misalignment=0)
@@ -434,7 +425,6 @@ U8 *CAllocAligned(I64 size,I64 alignment,
   return res;
 }
 
-U8 *AStrNew(U8 *buf)
-{//Alloc copy of string in Adam's heap.
-  return StrNew(buf,adam_task);
-}
+
+
+#include "/Kernel/Mem/AdamAllocCore.HC"

@@ -5,6 +5,10 @@
 #include "/Kernel/MemoryTypes.HH"
 #include "/Kernel/FifoTypes.HH"
 #help_index "Memory/Heap"
+public _extern _AMALLOC U8 *AMAlloc(I64 size);
+public _extern _ACALLOC U8 *ACAlloc(I64 size);
+public _extern _AMALLOC_IDENT U8 *AMAllocIdent(U8 *src);
+public _extern _ASTR_NEW U8 *AStrNew(U8 *buf);
 public _extern _MALLOC U8 *MAlloc(I64 size,CTask *mem_task=0);
 public _extern _FREE U0 Free(U8 *addr);
 public _extern _MSIZE I64 MSize(U8 *src);

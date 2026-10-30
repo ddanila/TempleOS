@@ -38,7 +38,7 @@ CI386BackingPool memory_pool;
 CI386Task *memory_root;
 CTask *adam_task;
 U32 memory_runtime_version=I386_MEMORY_SERVICES_VERSION;
-CI386KernelSymbol memory_exports[64];
+CI386KernelSymbol memory_exports[68];
 U0 (*memory_owner_retire)(CI386Task *task);
 Bool (*memory_file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap);
 CSema memory_semas[SEMA_SEMAS_NUM];
@@ -67,6 +67,10 @@ extern U0 MemoryProbe(I64 phase);
 extern U0 Yield();
 extern U0 Sleep(I64 mS);
 extern U0 SleepUntil(I64 wake_jiffy);
+extern U8 *AMAlloc(I64 size);
+extern U8 *ACAlloc(I64 size);
+extern U8 *AMAllocIdent(U8 *src);
+extern U8 *AStrNew(U8 *buf);
 extern CFifoU8 *FifoU8New(I64 size,CTask *mem_task=0);
 extern U0 FifoU8Del(CFifoU8 *f);
 extern Bool FifoU8Ins(CFifoU8 *f,U8 b);
@@ -85,7 +89,7 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
 {//Reserve startup pages early; subsequent public backing grows on demand.
   U32 flags=I386IrqSave;
   Bool result=FALSE;
-  U8 *addresses[64],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0_SCAN_MSG\0_GET_MSG\0_FLUSH_MSGS\0_SYS_SEMAS\0_SYS_MACRO_HEAD\0_SYS_MACRO_TASK\0_KILL\0_HASH_REM_DEL\0_ADAM_TASK\0I386PostKeyTimed\0I386ScanKeyTimed\0I386CAllocExact\0I386TaskOwnerRetireHook\0I386TaskFileBirthHook\0_FIFO_U8_NEW\0_FIFO_U8_DEL\0_FIFO_U8_INS\0_FIFO_U8_REM\0_FIFO_U8_PEEK\0_FIFO_U8_FLUSH\0_FIFO_U8_CNT\0_FIFO_I64_NEW\0_FIFO_I64_DEL\0_FIFO_I64_INS\0_FIFO_I64_REM\0_FIFO_I64_PEEK\0_FIFO_I64_FLUSH\0_FIFO_I64_CNT\0";
+  U8 *addresses[68],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0_SCAN_MSG\0_GET_MSG\0_FLUSH_MSGS\0_SYS_SEMAS\0_SYS_MACRO_HEAD\0_SYS_MACRO_TASK\0_KILL\0_HASH_REM_DEL\0_ADAM_TASK\0I386PostKeyTimed\0I386ScanKeyTimed\0I386CAllocExact\0I386TaskOwnerRetireHook\0I386TaskFileBirthHook\0_FIFO_U8_NEW\0_FIFO_U8_DEL\0_FIFO_U8_INS\0_FIFO_U8_REM\0_FIFO_U8_PEEK\0_FIFO_U8_FLUSH\0_FIFO_U8_CNT\0_FIFO_I64_NEW\0_FIFO_I64_DEL\0_FIFO_I64_INS\0_FIFO_I64_REM\0_FIFO_I64_PEEK\0_FIFO_I64_FLUSH\0_FIFO_I64_CNT\0_AMALLOC\0_ACALLOC\0_AMALLOC_IDENT\0_ASTR_NEW\0";
   I64 i;
   if(memory_root || !symbols || !symbols->body || symbols->locked_flags ||
       !root || !root->gs || !root->owner || root->owner->root!=root ||
@@ -140,7 +144,9 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols)
   addresses[61]=&FifoI64Peek;
   addresses[62]=&FifoI64Flush;
   addresses[63]=&FifoI64Cnt;
-  for(i=0;i<64;i++) {
+  addresses[64]=&AMAlloc; addresses[65]=&ACAlloc;
+  addresses[66]=&AMAllocIdent; addresses[67]=&AStrNew;
+  for(i=0;i<68;i++) {
     memory_exports[i].str=names; memory_exports[i].type=HTT_EXPORT_SYS_SYM;
     memory_exports[i].kind=1;
     if(i>=39 && i<=41 || i==44 || i==48 || i==49) memory_exports[i].kind=3;
@@ -337,3 +343,8 @@ import Bool I386TaskDestroy(CI386OwnedTask *owned);
 #define MAlloc MemoryAlloc
 #define Free MemoryFree
 #include "/Kernel/FifoCore.HC"
+
+#define CAlloc MemoryCAlloc
+#define MAllocIdent MemoryIdent
+#define StrNew MemoryStrNew
+#include "/Kernel/Mem/AdamAllocCore.HC"
