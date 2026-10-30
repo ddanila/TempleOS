@@ -101,3 +101,13 @@ the volume table's live records, that the C, D, and E entries refer to the
 same identities returned by lookup, and that the map has 32 entries. Its
 remapping and mounted-file checks pass with these assertions enabled
 (`python3 tools/test-i386.py --ata-tasks`).
+
+The kernel now initializes `block_globals.blkdevs` to the existing device
+array and supplies that same pointer to the console. Both original rebuilds
+and the 386 cross-build/audit pass with 1545 source and 24 build inputs
+unchanged. Native 64 MiB device-slot and drive-map contracts pass 24 and 20
+commands respectively with unchanged inputs (`build/i386-block-globals-device-slot`
+and `build/i386-block-globals-device-map`); their startup observations were
+concurrent. A drive-state fixture rejected at missing `Drv` before its cases
+ran (`build/i386-block-globals-device-native`), with unchanged inputs. Public
+block globals and full device initialization remain open.

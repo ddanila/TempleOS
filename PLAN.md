@@ -117,6 +117,17 @@ passes four commands covering every field and file flags with unchanged inputs;
 its concurrent startup timing is not an isolated gate. File-backed I/O and
 full media initialization remain open. See docs/i386-block-io.md.
 
+### Native block-device array in shared globals (2026-10-30)
+
+The kernel supplies the console's block-device array through the same
+CBlkDevGlbls record used for the drive map. Both original rebuilds and the
+386 cross-build/audit pass with 1545 source and 24 build inputs unchanged.
+Native 64 MiB block-slot and drive-map contracts pass 24 and 20 commands with
+unchanged inputs; startup observations were concurrent. A drive-state fixture
+rejects at missing Drv before cases run, also with unchanged inputs. Public
+globals, full initialization and isolated resource gates remain open. See
+docs/i386-block-io.md.
+
 ### Native drive map in shared block globals (2026-10-30)
 
 The native volume table now stores its existing drive map in the canonical
