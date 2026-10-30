@@ -11,7 +11,9 @@ and filesystem errors. The expected aggregate mask is 127.
 The pinned-original reference passes mask 127 with all five execution inputs
 unchanged (`build/i386-clus-next-reference`). This establishes the fixture's
 covered original behaviors; it does not establish native cluster traversal or
-compatibility qualification. The preceding Clus2Blk implementation and its current
+compatibility qualification. The native control rejects the fixture at
+`ClusNumNext` during inclusion, before any contract case runs; all inputs are
+unchanged (`build/i386-clus-next-native-red`). The preceding Clus2Blk implementation and its current
 validation are described in `docs/i386-clus-to-block.md`.
 
 The reference runner can be repeated with:

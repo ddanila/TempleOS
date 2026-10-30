@@ -68,8 +68,9 @@ memory phases and nine behavior/VGA checks. The report is
 A new ClusNumNext fixture and runner exercise the original RedSea and FAT32
 traversal contract, including FAT block transitions and mirrored dirty-block
 writeback on a private RAM-backed device. The pinned-original reference passes
-mask 127 with all five execution inputs unchanged. Native ClusNumNext, block
-I/O, and their resource gates remain open. See docs/i386-clus-next.md.
+mask 127 with all five execution inputs unchanged. The native control rejects
+the fixture at the missing ClusNumNext binding before any case runs, with inputs
+unchanged. Native ClusNumNext, block I/O, and their resource gates remain open. See docs/i386-clus-next.md.
 
 ### Original cluster-to-block mapping candidate (2026-10-30)
 
