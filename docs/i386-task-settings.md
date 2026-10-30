@@ -50,3 +50,9 @@ the active song task. All seven checks pass with unchanged inputs
 behavior without claiming audio-output, autocomplete, failure-cleanup or native
 settings-stack coverage. The executable is
 `tools/test-i386-task-settings-tasks.py`.
+
+The autocomplete control's task-death dependency is now available through
+the shared original `BirthWait` and `DeathWait` services. Their ordinary and
+user-task `send_exit` contracts pass on original and native systems; see
+[task wait evidence](i386-birth-death-wait.md). Autocomplete itself and the
+settings stack are still incomplete.
