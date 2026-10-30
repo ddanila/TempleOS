@@ -23,3 +23,14 @@ Both bootstrap generations and the 386 cross-build/audit pass
 An 8 MiB ordinary-include and drive-fields smoke check passes with unchanged
 inputs (`build/i386-progress-bars-smoke-8m`); it is not a full minimal-profile
 or startup-timing gate. C1–C5 remain open.
+
+A subsequent differential test compares four entire 640×480 packed frames
+against the pinned original, with no differing bytes: half-filled; capped
+value with a custom label; fixed completion-time text; and four simultaneous
+bars (`build/i386-progress-frame-compare-v2`, runner
+`tools/test-i386-progress-frame-compare.py`). Inputs remained unchanged. It
+does not compare live elapsed-time text, concurrency or all window modes.
+The native automatic-refresh fixture also checks that a cleared bar disappears
+on a later frame (`build/i386-progress-bars-native-clear-v1`); the extracted
+original renderer still passes its pixel fixture with the updated runner
+(`build/i386-progress-bars-shared-original-v2`).

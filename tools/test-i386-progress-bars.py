@@ -27,7 +27,7 @@ def main():
     files={'/Probe/ProgressBars.HC':contract.read_bytes()}
     if args.disk:files['/Probe/ProgressFrame.HC']=frame.read_bytes()
     inputs=[Path(__file__).resolve(),fixture,contract,frame]
-    report=dict(result='running',mode='native' if args.disk else 'shared-original' if args.shared else 'pinned-original',scope='Offscreen empty, half-full and full bar pixels on original and native, and native automatic refresh, explicit frame composition and final callback; not registry timing or concurrent update qualification')
+    report=dict(result='running',mode='native' if args.disk else 'shared-original' if args.shared else 'pinned-original',scope='Offscreen empty, half-full and full bar pixels on original and native, and native automatic refresh, bar removal, explicit frame composition and final callback; not registry timing or concurrent update qualification')
     if args.disk:
         inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC')]
     else:
@@ -43,7 +43,7 @@ def main():
         if args.disk:
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions=files)
-            commands=['#include "C:/Probe/ProgressBars.HC"',"if(ProgressBarsContract!=7)throw('Progress',TRUE);",'#include "C:/Probe/ProgressFrame.HC"',"if(ProgressFrameContract!=7)throw('Progress',TRUE);",'6*7;']
+            commands=['#include "C:/Probe/ProgressBars.HC"',"if(ProgressBarsContract!=7)throw('Progress',TRUE);",'#include "C:/Probe/ProgressFrame.HC"',"if(ProgressFrameContract!=15)throw('Progress',TRUE);",'6*7;']
             runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk,out/'guest',commands,64,True)
             delivered=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,set(files))
             if delivered!=files:raise ValueError('Delivered include files changed')

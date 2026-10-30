@@ -18,5 +18,7 @@ I64 ProgressFrameContract()
   if(NativeGraphicsPresent && progress_final_calls && gr.dc2->body[0]==RED &&
      gr.dc2->body[180*gr.dc2->width_internal+100]==LTGREEN)mask|=4;
   gr.fp_final_scrn_update=saved_final;
+  updates=winmgr.updates;sys_progresses[0].max=0;Sleep(1500);
+  if(winmgr.updates>updates && gr.dc2->body[180*gr.dc2->width_internal+100]!=LTGREEN)mask|=8;
   MemCpy(sys_progresses,saved,sizeof(saved));return mask;
 }
