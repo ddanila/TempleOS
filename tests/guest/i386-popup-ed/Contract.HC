@@ -21,7 +21,7 @@ I64 PECheck(I64 mode)
 {
   CDoc *put=DocPut,*display=DocDisplay,*border=DocBorder;
   CTask *old=Fs->popup_task,*popup=NULL,*driver;
-  U8 *name,*data,*capture;I64 value,size;
+  U8 *name,*data,*capture,*record;I64 value,size;
   name=MStrPrint("%c:/popup-ed-input.DD",pe_drive);
   FileWrite(name,"alpha\n",6);pe_mode=mode;pe_seen=0;
   driver=Spawn(&PEDriver,Fs,"Popup editor input",-1,Fs,16384);
@@ -31,6 +31,9 @@ I64 PECheck(I64 mode)
   if(!data)return FALSE;
   capture=MStrPrint("%c:/popup-ed%d.DD",pe_drive,mode);
   FileWrite(capture,data,size);Free(capture);Free(data);
+  record=MStrPrint("%d %d %d %d %d %d %d\n",value,pe_seen,!popup,DocPut==put,DocDisplay==display,DocBorder==border,Fs->popup_task==old);
+  capture=MStrPrint("%c:/popup-ed-result%d.TXT",pe_drive,mode);
+  FileWrite(capture,record,StrLen(record));Free(capture);Free(record);
   if(!value)return FALSE;
   return pe_seen==1 && !popup && DocPut==put && DocDisplay==display &&
     DocBorder==border && Fs->popup_task==old;

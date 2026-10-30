@@ -102,18 +102,7 @@ U8 *FileNameTmpTxt()
   return MStrPrint("~/SysTmp%X.DD.Z",GetTSC>>8&0xFFFFFFFF);
 }
 
-U8 *DirCur(CTask *task=NULL,CTask *mem_task=NULL)
-{//MAlloc copy of cur dir with drv letter.
-  U8 *st;
-  if (!task) task=Fs;
-  if (!task->cur_dir)
-    return NULL;
-  st=MAlloc(StrLen(task->cur_dir)+3,mem_task);
-  *st=Drv2Let(task->cur_dv);
-  st[1]=':';
-  StrCpy(st+2,task->cur_dir);
-  return st;
-}
+#include "/Kernel/BlkDev/DirCurCore.HC"
 
 U8 *DirFile(U8 *dirname,U8 *name=NULL,U8 *_extension=NULL)
 {/*Strips file from dirname, scans for file upward until found or

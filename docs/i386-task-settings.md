@@ -15,3 +15,8 @@ autocomplete, task suspension, failure cleanup and cross-task behavior remain
 outside this fixture. The native fixture is rejected earlier at the missing public `DirCur` binding
 (`build/i386-task-settings-native-red`); this is a prerequisite of the
 settings contract as well as of the original implementation. C1–C5 remain open.
+
+ConsoleRuntime 142 now exports the shared original `DirCur` body. Original
+and native current-directory copy checks pass; see
+[current-directory evidence](i386-dir-cur.md). This resolves that fixture
+prerequisite, not the settings stack itself.

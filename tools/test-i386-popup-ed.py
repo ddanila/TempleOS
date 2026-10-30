@@ -29,7 +29,7 @@ def main():
                 scope='PopupEd with a simple file, posted edit key, accept and cancel, resulting bytes and caller role restoration; not full editor or physical keyboard qualification')
     if args.disk:report['ram_mib']=args.ram_mib
     modes=list(range(2))
-    captures=[f'popup-ed{i}.DD' for i in modes]
+    captures=[f'popup-ed{i}.DD' for i in modes]+[f'popup-ed-result{i}.TXT' for i in modes]
     if args.disk:
         baseline=json.loads((args.reference/'result.json').read_text())
         if baseline.get('result')!='pass' or baseline.get('mode')!='pinned-original':raise ValueError('Need passing original control')
