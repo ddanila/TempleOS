@@ -108,5 +108,6 @@ The emulated-keyboard runner has been extended to check empty descriptions.
 The expanded run passes across a cold reboot with unchanged inputs
 (`build/i386-timeclock-keyboard-cancel-native`). Despite the run directory
 name and its stated scope, it uses Escape to accept empty input. A corrected
-run enters text and uses Shift+Escape to cancel it; that run is in progress
-at `build/i386-timeclock-keyboard-shift-escape-native`.
+run enters text and uses Shift+Escape to cancel it; this passes with an empty
+description and byte-identical cold-reboot recovery, with unchanged inputs
+(`build/i386-timeclock-keyboard-shift-escape-native`).

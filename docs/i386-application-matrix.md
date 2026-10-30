@@ -141,3 +141,11 @@ inputs remain unchanged (`build/i386-budget-storage-reference-v3`; runner
 menu, report, reboot, or native application behavior. An earlier probe using a
 decimal literal produced a slightly different F64 value from host IEEE 125.50;
 the whole-unit fixture avoids depending on that literal conversion behavior.
+
+The first native Budget load probe packages all eleven pinned original files
+without source edits. Its Load command is rejected at the missing public
+`LinkedLstCnt` in `BgtStrs.HC` line 87, before Install or any application
+workflow (`build/i386-budget-native-load-v1`). The guest log and unchanged
+input hashes preserve this dependency failure. The runner's installation check
+now distinguishes the home directory from the packaged source directory; that
+check has not yet been reached.
