@@ -9,6 +9,7 @@ U8 *NativeDocStrMatch(U8 *needle,U8 *haystack)
 {
   U8 *at=haystack;
   I64 i;
+  if(!needle || !haystack)return NULL;
   while(TRUE) {
     i=0;
     while(needle[i] && at[i]==needle[i]) i++;

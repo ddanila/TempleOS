@@ -20,3 +20,18 @@ open.
 An 8 MiB ordinary-include and drive-fields smoke check also passes with
 unchanged inputs (`build/i386-stricmp-smoke-8m`); it does not measure the
 startup budget or qualify the complete minimal profile.
+
+The native console now also publishes `StrMatch` and `StrNCmp`. Their existing
+internal helpers now preserve the original null-argument substring behavior
+and negative-limit bounded comparison behavior. The pinned original and native
+fixtures pass mask 15, including all 65,536 initial byte pairs and substring
+edge cases (`build/i386-strmatch-original-v1`, `build/i386-strmatch-native-v1`;
+runner `tools/test-i386-strmatch.py`). The previous image rejected the missing
+binding (`build/i386-strmatch-native-red`). Existing eight-case string scanner
+and six-case DolDoc dollar parser integration fixtures also pass on native
+(`build/i386-string-integration-v1`; runner
+`tools/test-i386-string-integration.py`). Both bootstrap generations and the
+386 cross-build/audit pass (`build/strmatch-rebuild-v1.log`,
+`build/i386-strmatch-cross-v1`), as does an 8 MiB ordinary-include and
+drive-fields smoke test (`build/i386-strmatch-smoke-8m`). These results do not
+qualify all scanner or document behavior or startup timing.

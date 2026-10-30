@@ -1,5 +1,7 @@
 #ifndef I386_PUBLIC_FORMAT_INCLUDED
 #define I386_PUBLIC_FORMAT_INCLUDED
+public _extern _STRMATCH U8 *StrMatch(U8 *needle,U8 *haystack);
+public _extern _STRNCMP I64 StrNCmp(U8 *left,U8 *right,I64 n);
 public _extern _STRICMP I64 StrICmp(U8 *st1,U8 *st2);
 public _extern _STRNICMP I64 StrNICmp(U8 *st1,U8 *st2,I64 n);
 #include "/Kernel/I386/PublicKeyDev.HH"

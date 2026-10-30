@@ -65,3 +65,9 @@ probe still stops at `KeyMapFamily` on `ACTask.HC` line 180
 need their remaining dependencies and careful pointer-width handling: their
 original pointer array is sorted as 64-bit slots. Real streams and autocomplete
 remain open.
+
+Key-map labels now use explicit eight-byte sorting slots and have an original
+live-output comparison and a native comparator fixture. The UI and its
+remaining providers are still unbound; see [key-map sorting](i386-keymap-sort.md).
+The native substring and bounded string comparison APIs needed by that code are
+also available; see [string comparisons](i386-string-comparisons.md).

@@ -11,7 +11,8 @@ U32 char_bmp_safe_dollar[16]={
 };
 I64 NativeScanStrNCmp(U8 *left,U8 *right,I64 count)
 {
-  while(count-->0) {
+  while(count) {
+    count--;
     if(*left<*right) return -1;
     if(*left>*right) return 1;
     if(!*left) return 0;

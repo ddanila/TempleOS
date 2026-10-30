@@ -68,35 +68,9 @@ U0 KeyMapCtrlAltFamily(Bool no_shift,Bool shift)
     }
 }
 
-U0 KMComparePrepare(U8 *buf,I64 *src)
-{
-  I64 i,*dst=buf;
-  U8 *ptr;
-  if (src) {
-    *dst++=*src++;
-    *dst++=*src++;
-    *dst++=*src++;
-    *dst++=*src++;
-    *dst(U8 *)=0;
-    if (ptr=StrMatch("SHIFT",buf)) {
-      for (i=0;i<5;i++)
-	ptr[i]=CH_SHIFT_SPACE;
-      if (ptr=StrMatch("$$",buf))
-	*ptr=255;
-    }
-  } else
-    *buf=0;
-}
+#include "/Adam/KeyMapSortCore.HC"
 
-I64 KMCompare(U8 *e1,U8 *e2)
-{
-  U8 buf1[STR_LEN],buf2[STR_LEN];
-  KMComparePrepare(buf1,e1);
-  KMComparePrepare(buf2,e2);
-  return StrCmp(buf1,buf2);
-}
-
-U0 KeyMapFamily2(U8 **entries,CTask *task,I64 scf)
+U0 KeyMapFamily2(I64 *entries,CTask *task,I64 scf)
 {
   I64 i,arg1,arg2;
   for (i=0;i<256;i++) {
@@ -113,14 +87,14 @@ U0 KeyMapFamily2(U8 **entries,CTask *task,I64 scf)
       Sleep(1); //Open loop because might be no response.  TODO: Drops msgs.
     }
     if (*keydev.desc && StrNCmp(keydev.desc,"Char  /",7))
-      entries[i]=KeyMapKeyMStrPrint(arg2,keydev.hndlr,keydev.desc,task);
+      entries[i]=KeyMapKeyMStrPrint(arg2,keydev.hndlr,keydev.desc,task)(I64);
   }
 }
 
 U0 KeyMapFamily(CTask *task,I64 scf,Bool no_shift,Bool shift)
 {
-  I64 i,cnt=0;
-  U8 **entries=CAlloc(2*256*sizeof(U8 *)),**ptr=entries;
+  I64 i,cnt=0,*entries=CAlloc(2*256*sizeof(I64)),*ptr=entries;
+  U8 *entry;
   if (no_shift) {
     if (shift)
       KeyMapFamily2(ptr,task,scf+SCF_NO_SHIFT);
@@ -137,8 +111,9 @@ U0 KeyMapFamily(CTask *task,I64 scf,Bool no_shift,Bool shift)
   QSortI64(entries,cnt,&KMCompare);
   for (i=0;i<cnt;i++)
     if (entries[i]) {
-      "%s",entries[i];
-      Free(entries[i]);
+      entry=entries[i](U8 *);
+      "%s",entry;
+      Free(entry);
     }
   Free(entries);
 }
