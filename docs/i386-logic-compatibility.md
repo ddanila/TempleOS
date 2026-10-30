@@ -86,3 +86,13 @@ ordinary-include smoke check with unchanged inputs
 (`build/i386-doc-child-control-8m`). This smoke run is not a startup timing
 gate. Real file-to-document attachment, interrupt-safe real document teardown,
 cancellation during loading, and native Logic remain open.
+
+A focused deletion fixture now loads the actual Logic document repeatedly and
+checks `DocDel` with interrupts masked and enabled. On both the pinned original
+and 64 MiB native image, the interrupt state is preserved and task-heap usage
+returns to its warmed baseline after each deletion (mask 15, unchanged inputs;
+`build/i386-document-irq-delete-original` and
+`build/i386-document-irq-delete-native`). This is an uncontended current-task
+check; it does not establish safety during task exit, cancellation or
+compiler-owned document teardown. The native run was not an isolated startup
+timing measurement.
