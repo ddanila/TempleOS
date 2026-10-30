@@ -3752,7 +3752,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Push nested task settings and restore document, terminal, window, palette and directory state; exercise song and animation task suspension, replacement and resumption including TSF_SAME_SONG.",
-      "oracle": "The original fixtures compare settings restoration and task lifecycle against masks 255 and 127. They do not cover autocomplete, audio waveform, cross-task operation or failure cleanup; native settings functions remain unbound.",
+      "oracle": "The original fixtures compare local settings restoration and task lifecycle against masks 255 and 127, and nested restoration on another task against mask 31. Autocomplete, audio waveform and failure cleanup remain unqualified; native settings functions remain unbound.",
       "tests": [
         {
           "target": "shared-original-settings",
@@ -3767,6 +3767,20 @@
           "result": "pass",
           "evidence": "build/i386-task-settings-tasks-shared-original/result.json",
           "scope": "Song and animation suspension, replacement and resumption, mask 127"
+        },
+        {
+          "target": "shared-original-remote-settings",
+          "command": "python3 tools/test-i386-task-settings-remote.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-task-settings-remote-shared-v1/result.json",
+          "scope": "Nested restoration of fields on a spawned task, mask 31; not complete cross-task behavior"
+        },
+        {
+          "target": "native-settings-compile-probe",
+          "command": "python3 tools/test-i386-settings-compile.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-settings-compile-v1/result.json",
+          "scope": "Compile shared settings bodies with an explicitly throwing autocomplete probe; no settings execution"
         },
         {
           "target": "native-settings",

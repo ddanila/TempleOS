@@ -1,5 +1,7 @@
 #ifndef I386_PUBLIC_FORMAT_INCLUDED
 #define I386_PUBLIC_FORMAT_INCLUDED
+public _extern _STRICMP I64 StrICmp(U8 *st1,U8 *st2);
+public _extern _STRNICMP I64 StrNICmp(U8 *st1,U8 *st2,I64 n);
 #include "/Kernel/I386/PublicKeyDev.HH"
 #include "/Kernel/StringFindFlags.HH"
 public _extern _STR_FIND U8 *StrFind(U8 *needle,U8 *haystack_str,I64 flags=0);

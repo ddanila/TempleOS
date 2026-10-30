@@ -77,3 +77,17 @@ Both bootstrap generations and the 386 cross-build/audit pass
 stack remains unbound pending its full dependencies, including the
 real autocomplete lifecycle and drive initialization; Budget and C1–C5 remain
 open.
+
+The current native image compiles the complete shared settings bodies when an
+explicitly throwing autocomplete test provider is supplied
+(`build/i386-settings-compile-v1`; runner `tools/test-i386-settings-compile.py`).
+The probe never executes settings and does not implement autocomplete. A new
+remote-task fixture checks nested stack order and restoration of another
+spawned task's attributes, scrolling and title on the pinned original and the
+shared original implementation (mask 31, unchanged inputs;
+`build/i386-task-settings-remote-original-v1`,
+`build/i386-task-settings-remote-shared-v1`; runner
+`tools/test-i386-task-settings-remote.py`). The current native image rejects
+`SettingsPush` before executing the fixture
+(`build/i386-task-settings-remote-native-red-v1`). This is not complete
+cross-task, autocomplete, failure-cleanup or settings-stack qualification.

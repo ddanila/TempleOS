@@ -33,3 +33,13 @@ including an original-system-compressed word archive with the proper RedSea
 attribute. Native lookup and full expansion pass with byte-identical readback; see
 [dictionary asset evidence](i386-autocomplete-assets.md). This does not change
 the default image or resolve the missing `FOpen` dependency.
+
+On the current image the unchanged loader still rejects `FOpen`
+(`build/i386-autocomplete-native-current-v1`). A compile-only diagnostic with
+explicitly throwing stream functions advances past that dependency: before the
+case-insensitive comparison binding it rejects `StrICmp`
+(`build/i386-autocomplete-stream-probe-v1`), and after that binding it reaches
+`ACTask.HC` line 32, immediately after the unbound `DocCursor` call
+(`build/i386-autocomplete-stream-probe-v2`). These test providers cannot perform
+file I/O; neither diagnostic establishes autocomplete behavior. See
+[case-insensitive comparisons](i386-string-comparisons.md).
