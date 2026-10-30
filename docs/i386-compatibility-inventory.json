@@ -976,6 +976,20 @@
           "result": "pass",
           "evidence": "build/i386-doc-fi-link-native-v1/result.json",
           "scope": "FI: and fi: actual editor activation, edit and save with lock/role restoration; other link types and flags remain open"
+        },
+        {
+          "target": "original-fl-editor-link-session",
+          "command": "python3 tools/test-i386-doc-line-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-line-link-original-v2/result.json",
+          "scope": "FL: and fl: actual editor activation, edit at requested second line and save with lock/role restoration; other line numbers and link types remain open"
+        },
+        {
+          "target": "native-fl-editor-link-session",
+          "command": "python3 tools/test-i386-doc-line-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-line-link-native-v1/result.json",
+          "scope": "FL: and fl: actual editor activation, edit at requested second line and save with lock/role restoration; other line numbers and link types remain open"
         }
       ]
     },
@@ -1369,6 +1383,20 @@
           "result": "pass",
           "evidence": "build/i386-doc-fi-link-native-v1/result.json",
           "scope": "FI: and fi: actual editor activation, edit and save with lock/role restoration; other link types and flags remain open"
+        },
+        {
+          "target": "original-fl-editor-link-session",
+          "command": "python3 tools/test-i386-doc-line-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-line-link-original-v2/result.json",
+          "scope": "FL: and fl: actual editor activation, edit at requested second line and save with lock/role restoration; other line numbers and link types remain open"
+        },
+        {
+          "target": "native-fl-editor-link-session",
+          "command": "python3 tools/test-i386-doc-line-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-line-link-native-v1/result.json",
+          "scope": "FL: and fl: actual editor activation, edit at requested second line and save with lock/role restoration; other line numbers and link types remain open"
         }
       ]
     },

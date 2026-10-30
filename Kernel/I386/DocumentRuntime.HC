@@ -1575,20 +1575,24 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
 extern Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
 #include "/Adam/DolDoc/EdLinkTypes.HH"
 public Bool Ed(U8 *filename,I64 flags=0)
-{//File-level editor subset; use the original conversion for FI: file links.
+{//File-level editor subset; convert FI: and FL: using the original link parser.
   CDoc *doc=NULL;
   U8 *resolved=NULL;
+  I64 link_type=LK_FILE,line=1;
   Bool accept,result=FALSE;
   if(!filename || !*filename || flags) return FALSE;
   try {
-    if(ToUpper(filename[0])=='F' && ToUpper(filename[1])=='I' && filename[2]==':') {
-      if(EdLinkCvt(filename,&resolved)!=LK_FILE || !resolved) goto ed_done;
+    if(ToUpper(filename[0])=='F' &&
+        (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='L') && filename[2]==':') {
+      link_type=EdLinkCvt(filename,&resolved,NULL,&line);
+      if((link_type!=LK_FILE && link_type!=LK_FILE_LINE) || !resolved) goto ed_done;
       filename=resolved;
     }
     result=FileFind(filename,NULL,FUF_JUST_FILES);
     doc=DocRead(filename);
     if(!doc) doc=DocNew(filename,Fs);
     if(!doc) goto ed_done;
+    if(result && link_type==LK_FILE_LINE) result=DocGoToLine(doc,line);
     accept=DocEd(doc);
     if(accept && !DocWrite(doc)) result=FALSE;
     DocDel(doc);doc=NULL;
