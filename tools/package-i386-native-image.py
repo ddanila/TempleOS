@@ -42,7 +42,7 @@ def snapshot(image):
     return walk(root, ''), files, directories
 
 
-def package(source, output, additions=None):
+def package(source, output, additions=None, addition_attributes=None):
     if output.exists() or source.resolve() == output.resolve():
         raise ValueError('Use a fresh output image; source images are immutable')
     helper = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))
@@ -59,6 +59,9 @@ def package(source, output, additions=None):
         raise ValueError('Unexpected native image size')
     tree, files, directories = snapshot(original)
     additions = additions or {}
+    addition_attributes = addition_attributes or {}
+    if set(addition_attributes)-set(additions):
+        raise ValueError('Attributes refer to a file that is not being added')
     for path, payload in sorted(additions.items()):
         parts = path.split('/')[1:]
         if not path.startswith('/') or not parts or any(
@@ -66,6 +69,15 @@ def package(source, output, additions=None):
             raise ValueError('Invalid added path: '+path)
         if not isinstance(payload, bytes):
             raise ValueError('Added payload must be bytes')
+        file_attr = addition_attributes.get(path, 0x800)
+        if file_attr not in (0x800, 0xC00):
+            raise ValueError('Unsupported added file attributes')
+        if file_attr == 0xC00:
+            if not path.upper().endswith('.Z') or len(payload) < 17:
+                raise ValueError('Compressed addition needs a .Z archive')
+            compressed, expanded, kind = struct.unpack_from('<qqB', payload)
+            if compressed != len(payload) or expanded < 0 or kind not in (1, 2, 3):
+                raise ValueError('Invalid compressed addition header')
         node = tree
         parent = ''
         for part in parts[:-1]:
@@ -79,8 +91,8 @@ def package(source, output, additions=None):
             node = child
         if parts[-1] in node:
             raise ValueError('Added file would replace an existing entry: '+path)
-        node[parts[-1]] = (0x800, 0, payload)
-        files[path] = (0x800, 0, payload)
+        node[parts[-1]] = (file_attr, 0, payload)
+        files[path] = (file_attr, 0, payload)
     image = bytearray(len(original))
     image[:START * 512] = original[:START * 512]
     first = start + blocks + 1
@@ -147,6 +159,7 @@ def package(source, output, additions=None):
                 source_filesystem=before, packaged_filesystem=after,
                 source_unchanged=True,
                 added_files={name:hashlib.sha256(data).hexdigest() for name,data in sorted(additions.items())},
+                added_attributes={name:addition_attributes.get(name, 0x800) for name in sorted(additions)},
                 scope='Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification')
 
 

@@ -16,7 +16,7 @@ PLAIN={'\\':'backslash','|':'backslash','~':'grave_accent','^':'6','%':'5','#':'
 SHIFTED=set('(){}*+&_"<>#!%$|~:?^')
 
 
-def guest(image,out,commands,ram_mib=64,capture_input=False,key_delay=.3):
+def guest(image,out,commands,ram_mib=64,capture_input=False,key_delay=.3,command_timeout=180):
     out.mkdir(); log=out/'debug.log'
     cmd=['qemu-system-i386','-machine','pc','-accel','tcg','-cpu','486,-fpu','-m',str(ram_mib),'-nic','none','-drive',f'file={image},format=raw,if=ide','-display','none','-no-reboot','-debugcon',f'file:{log}','-qmp','stdio']
     p=subprocess.Popen(cmd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,text=True,bufsize=1)
@@ -83,7 +83,7 @@ def guest(image,out,commands,ram_mib=64,capture_input=False,key_delay=.3):
                 time.sleep(3)
                 wait_text('Press <ESC> when done.')
                 type_text(interactive)
-            text=wait(lambda s:any(marker in s[start:] for marker in ('COMMAND OK\n','INPUT REJECT ','COMMAND ERROR\n')))
+            text=wait(lambda s:any(marker in s[start:] for marker in ('COMMAND OK\n','INPUT REJECT ','COMMAND ERROR\n')),timeout=command_timeout)
             if 'INPUT REJECT ' in text[start:] or 'COMMAND ERROR\n' in text[start:]:raise ValueError(text[start:][-500:])
             if 'INPUT LINE '+source+'\n' not in text[start:]:raise ValueError('Incorrect input line: '+source)
             #The log marker precedes the console task returning to its input loop.
