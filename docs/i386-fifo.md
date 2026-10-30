@@ -49,3 +49,8 @@ python3 tools/test-i386-fifo.py --out ORIGINAL
 python3 tools/test-i386-fifo.py IMAGE --out NATIVE
 python3 tools/test-i386-fifo.py IMAGE --ram-mib 8 --out NATIVE_8M
 ```
+
+The committed combined candidate's isolated 8 MiB startup gate passed all nine
+behavior/VGA checks and loaded no build provider, but took 60.962218 seconds,
+exceeding the 60-second target (`build/i386-c5-deduplicate-startup`). Its
+16 MiB diagnostics are running; this timing failure remains unqualified.

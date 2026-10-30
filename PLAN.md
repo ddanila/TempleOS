@@ -37,7 +37,11 @@ include. Both bootstrap generations and the cross-build/386 audit pass with
 three commands, and the 64 MiB document-transform contract passes all 14
 commands, both with unchanged inputs. Their concurrent startup observations are
 not isolated timing qualification; the native build and resource gates remain
-open.
+open. The committed candidate's isolated 8 MiB gate passed nine behavior/VGA
+checks with no build-provider loads but missed the 60-second budget at
+60.962218 seconds (`build/i386-c5-deduplicate-startup`). The retained build
+resumed and 16 MiB diagnostics are running in
+`build/i386-c5-deduplicate-diagnostics`.
 
 The preceding editor candidate's 16 MiB diagnostics pass in 240.203069 seconds,
 with 128 immediate-push, 22 publication and 28 program-publication cases, both
