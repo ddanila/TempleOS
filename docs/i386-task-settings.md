@@ -25,3 +25,19 @@ ConsoleRuntime 144 also exports hardware-backed palette get/set services. The
 original and native 16-color DAC reference, restoration and interrupt-state
 checks pass; see [VGA palette evidence](i386-vga-palette.md). Autocomplete and
 the full settings lifecycle remain to be implemented.
+
+The original `CTaskSettings` declaration and `TSF_SAME_SONG` flag are now
+shared through `Kernel/TaskSettingsTypes.HH`, making the complete record
+available to native callers. The reference record is 392 bytes on the original
+64-bit system and 368 bytes on i386; the native pointer slots are four bytes,
+while the non-pointer fields retain their original widths. The independent
+architecture-specific layout and field checks pass on the original and native
+systems (`build/i386-task-settings-record-reference-v2`,
+`build/i386-task-settings-record-native-v2`) with unchanged inputs. The first
+comparison incorrectly required equal offsets across architectures and is
+retained at `build/i386-task-settings-record-native`. Both bootstrap generations
+and the cross-build/386 audit pass (`build/rebuild-test`,
+`build/i386-task-settings-record-cross`); the concurrent native run does not
+qualify startup timing. The settings fixture on the preceding image reaches the
+missing `SettingsPush` binding (`build/i386-task-settings-native-red-v2`), and
+the stack, autocomplete and task lifecycle remain open.

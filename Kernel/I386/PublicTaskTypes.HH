@@ -39,9 +39,6 @@ extern class CCtrl;
 #ifndef CMenu
 extern class CMenu;
 #endif
-#ifndef CTaskSettings
-extern class CTaskSettings;
-#endif
 #ifndef CMathODE
 extern class CMathODE;
 #endif
@@ -54,6 +51,7 @@ extern class CHashFun;
 #ifndef CCmpCtrl
 extern class CCmpCtrl;
 #endif
+#include "/Kernel/TaskSettingsTypes.HH"
 #include "/Kernel/WindowScrollTypes.HH"
 #include "/Kernel/JobCtrlTypes.HH"
 #include "/Kernel/JobTypes.HH"
