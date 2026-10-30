@@ -78,3 +78,13 @@ before running its vectors (`build/i386-c5-shared-bitfield-native`). It does
 not qualify the shared function's public availability or behavior. A new
 retained Console/Editor build from the corrected image is running in
 `build/i386-c5-shared-bitfield-native-build`; its outcome remains pending.
+
+`BFieldExtU32` is now declared in the native public kernel header and bound to
+the shared console implementation. Both original rebuild generations and the
+native cross-build/386 audit pass (`build/i386-c5-public-bitfield-cross`). The
+8 MiB native fixture resolves the public name and passes mask 63 over 99,072
+pattern/start/width combinations against the bit-by-bit oracle, including the
+normalized original-width comparisons (`build/i386-c5-public-bitfield-native`).
+The fixture delivered to the guest matches its pinned source. Its 59.546351-second
+startup observation was concurrent and is not an isolated timing gate. Raw
+wider original-ABI return parity remains outside this fixture's scope.
