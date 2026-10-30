@@ -4455,6 +4455,20 @@
           "result": "fail",
           "evidence": "build/i386-logic-native-load-v1/result.json",
           "scope": "Unchanged source rejected at embedded binary initializer line 73 before any synthesis case"
+        },
+        {
+          "target": "original-logic-document",
+          "command": "python3 tools/test-i386-logic-document.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-logic-document-original/result.json",
+          "scope": "Ten source binary payloads and 20 sprite/insert links against serialized original"
+        },
+        {
+          "target": "native-logic-document",
+          "command": "python3 tools/test-i386-logic-document.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-logic-document-native/result.json",
+          "scope": "Same actual source document at 64 MiB; not compiling it or general document compatibility"
         }
       ]
     },

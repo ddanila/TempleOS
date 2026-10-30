@@ -31,3 +31,14 @@ errors, cancellation and snapshot/unwind paths. Check nested includes and
 binary identity, and test both interactive compilation and native module
 building. Avoid treating embedded graphics as empty strings or editing Logic
 around its original source. C1–C5 remain open.
+
+The unchanged Logic document has now been tested independently of compilation.
+On both the pinned original and the current 64 MiB native image, `DocRead`
+produces all ten binary records with byte-identical payloads and links all ten
+sprite entries and ten inline-binary entries to their numbered records. The
+fixture compares each record to the serialized file and checks the entry types
+and links, passing mask 31 with unchanged inputs
+(`build/i386-logic-document-original` and `build/i386-logic-document-native`;
+runner `tools/test-i386-logic-document.py`). This demonstrates that the current
+loader handles this real document; it does not establish general DolDoc parity,
+rendering, child-include attachment or document cleanup during compiler unwind.
