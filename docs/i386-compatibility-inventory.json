@@ -1158,6 +1158,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-symbol-link-native-v1/result.json",
           "scope": "Upper/lower MN: source symbol resolving to in-memory line link, real edit, lifetime/locks/roles and missing symbol bail; not all targets"
+        },
+        {
+          "target": "original-address-editor-link",
+          "command": "python3 tools/test-i386-doc-address-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-address-link-original-v2/result.json",
+          "scope": "Upper/lower AD: function-address resolution to file line, edit/save and roles, plus zero-address bail; not arbitrary address ranges"
+        },
+        {
+          "target": "shared-address-editor-link",
+          "command": "python3 tools/test-i386-doc-address-link.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-address-link-shared-v1/result.json",
+          "scope": "Upper/lower AD: function-address resolution to file line, edit/save and roles, plus zero-address bail; not arbitrary address ranges"
+        },
+        {
+          "target": "native-address-editor-link",
+          "command": "python3 tools/test-i386-doc-address-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-address-link-native-v2/result.json",
+          "scope": "Upper/lower AD: function-address resolution to file line, edit/save and roles, plus zero-address bail; not arbitrary address ranges"
         }
       ]
     },
@@ -1768,6 +1789,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-symbol-link-native-v1/result.json",
           "scope": "Upper/lower MN: source symbol resolving to in-memory line link, real edit, lifetime/locks/roles and missing symbol bail; not all targets"
+        },
+        {
+          "target": "original-address-editor-link",
+          "command": "python3 tools/test-i386-doc-address-link.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-address-link-original-v2/result.json",
+          "scope": "Upper/lower AD: function-address resolution to file line, edit/save and roles, plus zero-address bail; not arbitrary address ranges"
+        },
+        {
+          "target": "shared-address-editor-link",
+          "command": "python3 tools/test-i386-doc-address-link.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-address-link-shared-v1/result.json",
+          "scope": "Upper/lower AD: function-address resolution to file line, edit/save and roles, plus zero-address bail; not arbitrary address ranges"
+        },
+        {
+          "target": "native-address-editor-link",
+          "command": "python3 tools/test-i386-doc-address-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-address-link-native-v2/result.json",
+          "scope": "Upper/lower AD: function-address resolution to file line, edit/save and roles, plus zero-address bail; not arbitrary address ranges"
         }
       ]
     },

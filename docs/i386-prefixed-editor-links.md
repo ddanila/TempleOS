@@ -184,3 +184,18 @@ ordinary-include/drive-fields smoke pass (`build/doc-symbol-link-rebuild-v1.log`
 `build/i386-doc-symbol-link-cross-v1`, `build/i386-doc-symbol-parent-regression-v1`,
 `build/i386-doc-symbol-link-smoke-8m`). This does not qualify all symbol target
 types, address links, dictionary/help/Bible links, popup or error handling.
+
+The existing address-link path now has a real editor-session comparison:
+`AD:` and `ad:` resolve a function address to its source file and line, edit
+that line, save the file and restore task roles. A zero-address bail case is
+also checked. Pinned original, shared original and native pass
+(`build/i386-doc-address-link-original-v2`,
+`build/i386-doc-address-link-shared-v1`, `build/i386-doc-address-link-native-v2`;
+runner `tools/test-i386-doc-address-link.py`). The first fixture incorrectly
+assigned an in-memory link as source metadata, but `SrcEdLink` constructs a
+file-and-line link; the original timed out in that invalid fixture and the
+native test failed (`build/i386-doc-address-link-original-v1`,
+`build/i386-doc-address-link-native-v1`). This verifies one function address
+with explicit source metadata, not arbitrary address ranges, missing debug
+metadata, popup navigation or error cleanup. No runtime code changed for this
+checkpoint.
