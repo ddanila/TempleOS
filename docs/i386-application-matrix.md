@@ -131,3 +131,13 @@ across reboot (`build/i386-suspended-rich-report-vga`). These are distinct
 scoped workflows; the latter suspends WinMgr and the keyboard run does not
 check the full VGA image. They do not establish full application or desktop
 compatibility. See [the current native evidence](i386-timeclock-native.md).
+
+A first Budget component reference now runs the original Load and Install
+scripts, constructs a single BANK-to-RENT transaction for 125 whole units,
+writes the application data and string files, and reopens them in the same
+session. The independently packed record and exact string table match, and
+inputs remain unchanged (`build/i386-budget-storage-reference-v3`; runner
+`tools/test-i386-budget-reference.py`). This does not exercise Budget's form,
+menu, report, reboot, or native application behavior. An earlier probe using a
+decimal literal produced a slightly different F64 value from host IEEE 125.50;
+the whole-unit fixture avoids depending on that literal conversion behavior.
