@@ -71,3 +71,9 @@ live-output comparison and a native comparator fixture. The UI and its
 remaining providers are still unbound; see [key-map sorting](i386-keymap-sort.md).
 The native substring and bounded string comparison APIs needed by that code are
 also available; see [string comparisons](i386-string-comparisons.md).
+
+The key-map public routines are now bound; a compile-only diagnostic advances
+to the unbound `DocTermNew` call in `ACTask.HC` line 221
+(`build/i386-autocomplete-keymap-probe-v1`). The diagnostic uses deliberately
+throwing stream providers and does not qualify autocomplete execution. See
+[key-map sorting](i386-keymap-sort.md).

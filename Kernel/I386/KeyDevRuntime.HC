@@ -1,6 +1,7 @@
 #include "/Kernel/KeyDevTypes.HH"
 #include "/Kernel/ScanFlags.HH"
 Bool native_keydev_ready;
+U8 *native_ctrl_alt_callbacks[26],*native_ctrl_alt_plain[26],*native_ctrl_alt_shifted[26];
 U8 *ACAlloc(I64 size)
 {
   return CAlloc(size,I386TaskSelf->owner->root);
@@ -96,6 +97,12 @@ U0 NativeKeyDevStart()
 {
   if(native_keydev_ready) return;
   MemSet(&keydev,0,sizeof(CKeyDevGlbls));
+  MemSet(native_ctrl_alt_callbacks,0,sizeof(native_ctrl_alt_callbacks));
+  MemSet(native_ctrl_alt_plain,0,sizeof(native_ctrl_alt_plain));
+  MemSet(native_ctrl_alt_shifted,0,sizeof(native_ctrl_alt_shifted));
+  keydev.fp_ctrl_alt_cbs=native_ctrl_alt_callbacks;
+  keydev.ctrl_alt_no_shift_descs=native_ctrl_alt_plain;
+  keydev.ctrl_alt_shift_descs=native_ctrl_alt_shifted;
   QueInit(&keydev.put_key_head);
   KeyDevAdd(&NativeKeyDevFilterKey,&NativeKeyDevFilterString,0x40000000,FALSE);
   KeyDevAdd(&KDRawPutKey,&KDRawPutS,0x60000000,FALSE);

@@ -3825,8 +3825,8 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": "Collect and sort key-description labels for normal and shifted scan-code families; compare output after fixed-width slot adaptation.",
-      "oracle": "Pinned and shared original live output is byte-identical for controlled handlers; the native comparator fixture checks seven slots and canaries. Full key-map UI and modifier families remain unqualified.",
+      "reference_workflow": "Collect key-description labels and invoke the key-map UI with controlled handlers and a registered Ctrl-Alt callback.",
+      "oracle": "Pinned and shared original and native tests cover controlled normal/shift descriptions, registered Ctrl-Alt callback output and complete KeyMap invocation. Physical Ctrl-Alt dispatch and default callback registration remain unqualified.",
       "tests": [
         {
           "command": "python3 tools/test-i386-keymap-family-original.py --out OUT",
@@ -3839,6 +3839,18 @@
           "result": "pass",
           "evidence": "build/i386-keymap-sort-native-v2/result.json",
           "scope": "Shared comparator and seven explicit I64 slots; not native key-map UI"
+        },
+        {
+          "command": "python3 tools/test-i386-keymap-public.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-keymap-public-shared-original-v3/result.json",
+          "scope": "Controlled normal/shift collection, registered Ctrl-Alt callback and complete KeyMap invocation; mask 31"
+        },
+        {
+          "command": "python3 tools/test-i386-keymap-public.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-keymap-public-native-v2/result.json",
+          "scope": "Controlled normal/shift collection, registered Ctrl-Alt callback and complete KeyMap invocation; mask 31"
         }
       ]
     },

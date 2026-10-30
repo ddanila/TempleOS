@@ -14,9 +14,8 @@ original, shared original and native system (mask 7;
 `build/i386-keymap-sort-original-v2`,
 `build/i386-keymap-sort-shared-original-v1`,
 `build/i386-keymap-sort-native-v2`; runner `tools/test-i386-keymap-sort.py`).
-The native fixture compiles the shared comparator directly; it does not execute
-the native key-map UI, which remains unbound along with its remaining
-services. The initial original fixture cast an array incorrectly and faulted
+That native fixture compiles the shared comparator directly; it does not execute
+the native key-map UI. The initial original fixture cast an array incorrectly and faulted
 (`build/i386-keymap-sort-original-v1`); the corrected fixture uses its address.
 
 Both bootstrap generations and the 386 cross-build/audit pass
@@ -30,4 +29,19 @@ minimal-profile qualification.
 The native `DocMax` and real single-core `Reboot` services required by the
 original key-map UI are now public; see
 [document visibility and limits](i386-document-visibility.md) and
-[native reboot](i386-reboot.md). The complete key-map UI remains unbound.
+[native reboot](i386-reboot.md). The shared original key-map routines and Ctrl-Alt callback setter are now
+published on native. The native callback arrays have kernel-lifetime storage.
+The controlled public API test covers normal and shifted descriptions, a
+registered Ctrl-Alt callback, and a complete `KeyMap` invocation. Physical
+Ctrl-Alt dispatch and registration of the original default callbacks remain
+unimplemented, so the full original UI remains unqualified. The native export
+data bitmap was also enlarged and checked at compile time to cover all exports.
+
+The pinned and shared original public API tests pass (mask 31;
+`build/i386-keymap-public-original-v3` and
+`build/i386-keymap-public-shared-original-v3`; runner
+`tools/test-i386-keymap-public.py`). The same controlled contract passes
+on native (`build/i386-keymap-public-native-v2`), with unchanged inputs.
+
+The final native image also passes the 8 MiB ordinary-include and drive-fields
+smoke check (`build/i386-keymap-public-smoke-8m`), with unchanged inputs.

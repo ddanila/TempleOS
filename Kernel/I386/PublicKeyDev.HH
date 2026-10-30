@@ -8,6 +8,10 @@
 public _extern _CHAR_2_SCAN_CODE I64 Char2ScanCode(I64 ch,I64 sc_flags=0);
 public _extern _SCAN_CODE_2_CHAR U8 ScanCode2Char(I64 sc);
 public _extern _SCAN_CODE_2_KEY_NAME U8 *ScanCode2KeyName(I64 sc);
+public _extern _CTRL_ALT_CB_SET U0 CtrlAltCBSet(U8 ch,U0 (*callback)(I64 sc),U8 *plain=NULL,U8 *shifted=NULL,Bool in_irq=FALSE);
+public _extern _KEY_MAP_FAMILY U0 KeyMapFamily(CTask *task,I64 scf,Bool no_shift,Bool shift);
+public _extern _KEY_MAP_CTRL_ALT_FAMILY U0 KeyMapCtrlAltFamily(Bool no_shift,Bool shift);
+public _extern _KEY_MAP U0 KeyMap(CTask *task=NULL);
 public _extern _KEYDEV CKeyDevGlbls keydev;
 public _extern _CHAR_2_KEY_NAME U8 *Char2KeyName(I64 ch,Bool include_ctrl=TRUE);
 public _extern _KEY_DESC_SET U0 KeyDescSet(U8 *fmt,...);
