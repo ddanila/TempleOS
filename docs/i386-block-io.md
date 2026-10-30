@@ -47,4 +47,6 @@ A separate pinned-original cache contract passes mask 15 with unchanged inputs
 (`build/i386-block-cache-reference`). On a private RAM-backed drive it checks
 cached reads after underlying storage changes, write coherence, and cache
 invalidation. It does not cover cache eviction, concurrency, ATA, or ISO.
-The native control is running; no native cache qualification is claimed.
+The native control rejects the fixture at the missing `BlkRead` binding before
+any cache case runs, with unchanged inputs (`build/i386-block-cache-native-red`).
+No native cache qualification is claimed.

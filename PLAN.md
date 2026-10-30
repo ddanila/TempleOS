@@ -121,7 +121,8 @@ full media initialization remain open. See docs/i386-block-io.md.
 
 The pinned-original private RAM-drive contract passes mask 15 for cached reads,
 write coherence and invalidation, with execution inputs unchanged. Eviction,
-concurrency, ATA and ISO are not covered; the native control is running. See
+concurrency, ATA and ISO are not covered. The native control rejects the fixture
+at missing BlkRead before any case runs, with unchanged inputs. See
 docs/i386-block-io.md.
 
 ### Shared original block I/O bodies (2026-10-30)
