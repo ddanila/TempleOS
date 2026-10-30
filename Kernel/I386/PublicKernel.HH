@@ -19,6 +19,7 @@
 #include "/Kernel/I386/PublicTerminal.HH"
 #include "/Kernel/I386/Bit.HH"
 public _extern _BIT_FIELD_EXT_U32 U32 BFieldExtU32(U8 *bit_field,I64 bit,I64 size);
+public _extern _BIT_FIELD_OR_U32 U0 BFieldOrU32(U8 *bit_field,I64 bit,U32 pattern);
 #include "/Kernel/I386/Queue.HH"
 #include "/Kernel/DocTypes.HH"
 #include "/Kernel/TimeTypes.HH"

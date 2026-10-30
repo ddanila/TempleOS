@@ -88,3 +88,15 @@ normalized original-width comparisons (`build/i386-c5-public-bitfield-native`).
 The fixture delivered to the guest matches its pinned source. Its 59.546351-second
 startup observation was concurrent and is not an isolated timing gate. Raw
 wider original-ABI return parity remains outside this fixture's scope.
+
+The native kernel also publishes `BFieldOrU32`, used by the original archive
+compressor. Its implementation performs the original unaligned eight-byte
+read/OR/write using a shifted U32 pattern. The pinned original and 64 MiB
+native fixtures pass mask 15 for four patterns at 128 bit positions against an
+independent per-bit oracle, checking the surrounding 32-byte buffer; inputs
+are unchanged (`build/i386-bit-field-or-reference` and
+`build/i386-bit-field-or-native`). Both original rebuild generations and the
+native cross-build/386 audit pass (`build/i386-bit-field-or-cross`). The native
+62.462171-second startup observation was concurrent, not an isolated timing
+gate. These vectors do not test invalid addresses, concurrent modification, or
+full archive compression.
