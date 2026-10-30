@@ -56,3 +56,9 @@ the shared original `BirthWait` and `DeathWait` services. Their ordinary and
 user-task `send_exit` contracts pass on original and native systems; see
 [task wait evidence](i386-birth-death-wait.md). Autocomplete itself and the
 settings stack are still incomplete.
+
+The original autocomplete state records and `ac`/`acd` globals are now
+available, but the unchanged source load next rejects `FOpen`; dictionary
+assets are also absent from the tested native image. See
+[autocomplete state evidence](i386-autocomplete-state.md). The actual task,
+initialization and settings stack remain open.

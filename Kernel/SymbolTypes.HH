@@ -30,11 +30,7 @@ public class CHashReg:CHash
   U8	reg_num,reg_type;
 };
 
-public class CHashAC:CHash
-{
-  I32	num;
-  U32	hits;
-};
+#include "/Kernel/AutoCompleteHashTypes.HH"
 
 public class CHashExport:CHashSrcSym
 {

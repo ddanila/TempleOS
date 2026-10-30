@@ -9,6 +9,7 @@
 #include "/Kernel/I386/PublicDocument.HH"
 #include "/Kernel/I386/PublicFiles.HH"
 #include "/Kernel/I386/PublicHash.HH"
+#include "/Kernel/I386/PublicAutoComplete.HH"
 #include "/Kernel/I386/PublicTextBase.HH"
 #include "/Kernel/I386/PublicMath.HH"
 #include "/Kernel/I386/PublicDate.HH"
