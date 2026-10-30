@@ -81,8 +81,11 @@ cross-build/386 audit pass with 1541 source and 24 build hashes unchanged. The
 64 and 8 MiB native contracts each pass three commands with unchanged inputs;
 both startup observations were concurrent. The isolated 8 MiB gate passes nine
 behavior/VGA checks with no build-provider loads and four unchanged inputs, but
-misses the 60-second target at 63.398598 seconds. The 16 MiB diagnostics are
-running; cluster traversal and block I/O remain open. See
+misses the 60-second target at 63.398598 seconds. The 16 MiB diagnostics pass
+at 235.646118 seconds with 128 immediate-push, 22 publication and 28
+program-publication cases, both memory phases, nine behavior/VGA checks, no
+build-provider loads, and four unchanged inputs. Cluster traversal and block
+I/O remain open. See
 docs/i386-clus-to-block.md.
 
 ### Original FSize accessor (2026-10-30)

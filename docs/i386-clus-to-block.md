@@ -19,7 +19,12 @@ unchanged inputs in `build/i386-clus-to-block-native-8m`; its 61.356126-second
 startup observation was concurrent. The isolated 8 MiB run passes all nine
 behavior/VGA checks, loads no build provider, and preserves all four inputs,
 but misses the 60-second target at 63.398598 seconds
-(`build/i386-clus-to-block-startup`). The 16 MiB diagnostics are running.
+(`build/i386-clus-to-block-startup`). The 16 MiB diagnostics pass at
+235.646118 seconds with 128 immediate-push, 22 publication and 28
+program-publication cases, both memory phases, nine behavior/VGA checks, no
+build-provider loads, and all four inputs unchanged
+(`build/i386-clus-to-block-diagnostics`). The interactive timing gate remains
+failed.
 
 ```sh
 python3 tools/test-i386-clus-to-block.py --out ORIGINAL
