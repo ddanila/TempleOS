@@ -1046,6 +1046,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-plain-links-native-v1/result.json",
           "scope": "PI/PF/PL uppercase/lowercase and Plain() edit/save sessions, literal markup, cursor position and task roles; not all editor behavior"
+        },
+        {
+          "target": "original-memory-editor-links",
+          "command": "python3 tools/test-i386-doc-memory-links.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-memory-links-original-v4/result.json",
+          "scope": "AI/AA/AF/AL uppercase/lowercase editing of live borrowed documents, selected positions, lifetime, lock and task roles; no invalid-address or error qualification"
+        },
+        {
+          "target": "shared-memory-editor-links",
+          "command": "python3 tools/test-i386-doc-memory-links.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-memory-links-shared-v2/result.json",
+          "scope": "AI/AA/AF/AL uppercase/lowercase editing of live borrowed documents, selected positions, lifetime, lock and task roles; no invalid-address or error qualification"
+        },
+        {
+          "target": "native-memory-editor-links",
+          "command": "python3 tools/test-i386-doc-memory-links.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-memory-links-native-v2/result.json",
+          "scope": "AI/AA/AF/AL uppercase/lowercase editing of live borrowed documents, selected positions, lifetime, lock and task roles; no invalid-address or error qualification"
         }
       ]
     },
@@ -1544,6 +1565,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-plain-links-native-v1/result.json",
           "scope": "PI/PF/PL uppercase/lowercase and Plain() edit/save sessions, literal markup, cursor position and task roles; not all editor behavior"
+        },
+        {
+          "target": "original-memory-editor-links",
+          "command": "python3 tools/test-i386-doc-memory-links.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-memory-links-original-v4/result.json",
+          "scope": "AI/AA/AF/AL uppercase/lowercase editing of live borrowed documents, selected positions, lifetime, lock and task roles; no invalid-address or error qualification"
+        },
+        {
+          "target": "shared-memory-editor-links",
+          "command": "python3 tools/test-i386-doc-memory-links.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-memory-links-shared-v2/result.json",
+          "scope": "AI/AA/AF/AL uppercase/lowercase editing of live borrowed documents, selected positions, lifetime, lock and task roles; no invalid-address or error qualification"
+        },
+        {
+          "target": "native-memory-editor-links",
+          "command": "python3 tools/test-i386-doc-memory-links.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-memory-links-native-v2/result.json",
+          "scope": "AI/AA/AF/AL uppercase/lowercase editing of live borrowed documents, selected positions, lifetime, lock and task roles; no invalid-address or error qualification"
         }
       ]
     },

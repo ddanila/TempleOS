@@ -2,7 +2,7 @@
 
 The original `Ed` accepts editor links, including `FI:` filenames and line,
 anchor, find, dictionary and help links. The native `Ed` remains a file-level
-editor subset. It now sends `FI:`, `FL:`, `FF:`, `FA:`, `PI:`, `PF:` and `PL:`
+editor subset. It now sends `FI:`, `FL:`, `FF:`, `FA:`, `PI:`, `PF:`, `PL:`, `AI:`, `AA:`, `AF:` and `AL:`
 links through the original `EdLinkCvt` converter before opening the file. `FL:` positions the cursor with the original line-navigation
 service; `FF:` and `FA:` use the original document search and anchor routines.
 Other prefixed link types and nonzero editor flags still require the full original
@@ -87,3 +87,22 @@ ordinary-include/drive-fields smoke check pass (`build/doc-plain-links-rebuild-v
 formatter forward declaration (`build/i386-doc-plain-links-cross-v1`). These
 bounded checks do not establish all markup, nonzero editor flags, error
 cleanup, popup or physical mouse behavior.
+
+In-memory `AI:`, `AA:`, `AF:` and `AL:` links now edit the borrowed target
+document without writing or deleting it. Eight uppercase/lowercase sessions
+compare original and native editing at the original selected position and check
+target lifetime, locks and caller document roles
+(`build/i386-doc-memory-links-original-v4`,
+`build/i386-doc-memory-links-shared-v2`, `build/i386-doc-memory-links-native-v2`;
+runner `tools/test-i386-doc-memory-links.py`). Original output traces used to
+set the four expected edit positions are in
+`build/i386-doc-memory-links-original-trace-v4`. Both original bootstrap
+generations, the 386 cross-build/audit, the `FF:` file-link regression and an
+8 MiB ordinary-include/drive-fields smoke pass
+(`build/doc-memory-links-rebuild-v1.log`, `build/i386-doc-memory-links-cross-v1`,
+`build/i386-doc-memory-ff-regression-v1`, `build/i386-doc-memory-links-smoke-8m`).
+The first native fixture rejected an overlong exception literal before executing
+its contract (`build/i386-doc-memory-links-native-v1`). Tests use live valid
+documents and zero editor flags; invalid addresses, error unwinding, the
+original post-editor entry action, popup and physical mouse delivery remain
+unqualified.

@@ -1575,11 +1575,11 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
 extern Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
 #include "/Adam/DolDoc/EdLinkTypes.HH"
 public Bool Ed(U8 *filename,I64 flags=0)
-{//File-level editor subset; convert file and plain-text links with the original parser.
+{//File and borrowed-document subset using the original editor-link parser.
   CDoc *doc=NULL;
   U8 *resolved=NULL,*needle=NULL;
   I64 link_type=LK_FILE,line=1,doc_flags=0;
-  Bool accept,result=FALSE;
+  Bool accept,result=FALSE,borrowed=FALSE;
   if(!filename || !*filename || flags) return FALSE;
   try {
     if((ToUpper(filename[0])=='F' &&
@@ -1587,29 +1587,40 @@ public Bool Ed(U8 *filename,I64 flags=0)
          ToUpper(filename[1])=='F' || ToUpper(filename[1])=='A') ||
         ToUpper(filename[0])=='P' &&
         (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='L' ||
-         ToUpper(filename[1])=='F')) && filename[2]==':') {
+         ToUpper(filename[1])=='F') ||
+        ToUpper(filename[0])=='A' &&
+        (ToUpper(filename[1])=='I' || ToUpper(filename[1])=='A' ||
+         ToUpper(filename[1])=='F' || ToUpper(filename[1])=='L')) && filename[2]==':') {
       link_type=EdLinkCvt(filename,&resolved,&needle,&line);
-      if(link_type==LK_PLAIN || link_type==LK_PLAIN_LINE || link_type==LK_PLAIN_FIND)
+      if(LK_DOC<=link_type<=LK_DOC_LINE) borrowed=TRUE;
+      else if(link_type==LK_PLAIN || link_type==LK_PLAIN_LINE || link_type==LK_PLAIN_FIND)
         doc_flags=DOCF_PLAIN_TEXT|DOCF_NO_CURSOR;
       else if(link_type!=LK_FILE && link_type!=LK_FILE_LINE &&
           link_type!=LK_FILE_FIND && link_type!=LK_FILE_ANCHOR) goto ed_done;
       if(!resolved) goto ed_done;
       filename=resolved;
     }
-    result=FileFind(filename,NULL,FUF_JUST_FILES);
-    doc=DocRead(filename,doc_flags);
-    if(!doc) { doc=DocNew(filename,Fs);if(doc)doc->flags|=doc_flags; }
+    if(borrowed) {
+      doc=Str2I64(filename,10,NULL);
+      if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) { doc=NULL;goto ed_done; }
+      result=TRUE;
+    } else {
+      result=FileFind(filename,NULL,FUF_JUST_FILES);
+      doc=DocRead(filename,doc_flags);
+      if(!doc) { doc=DocNew(filename,Fs);if(doc)doc->flags|=doc_flags; }
+    }
     if(!doc) goto ed_done;
     if(result) {
-      if(link_type==LK_FILE_LINE || link_type==LK_PLAIN_LINE) result=DocGoToLine(doc,line);
-      else if(link_type==LK_FILE_FIND || link_type==LK_PLAIN_FIND) result=DocFind(doc,I64_MIN,needle,line);
-      else if(link_type==LK_FILE_ANCHOR) result=DocAnchorFind(doc,needle);
+      if(link_type==LK_FILE_LINE || link_type==LK_PLAIN_LINE || link_type==LK_DOC_LINE) result=DocGoToLine(doc,line);
+      else if(link_type==LK_FILE_FIND || link_type==LK_PLAIN_FIND || link_type==LK_DOC_FIND) result=DocFind(doc,I64_MIN,needle,line);
+      else if(link_type==LK_FILE_ANCHOR || link_type==LK_DOC_ANCHOR) result=DocAnchorFind(doc,needle);
+      else if(borrowed) DocCenter(doc,RECALCt_NORMAL);
     }
     accept=DocEd(doc);
-    if(accept && !DocWrite(doc)) result=FALSE;
-    DocDel(doc);doc=NULL;
+    if(accept && !borrowed && !DocWrite(doc)) result=FALSE;
+    if(!borrowed) DocDel(doc);doc=NULL;
   } catch {
-    if(doc) DocDel(doc);
+    if(doc && !borrowed) DocDel(doc);
     Free(resolved);Free(needle);
     throw;
   }
