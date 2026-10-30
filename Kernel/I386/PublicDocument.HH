@@ -87,6 +87,11 @@ public _extern _DOC_MENU I64 DocMenu(CDoc *doc,I64 flags=0);
 #include "/Adam/DolDoc/TermRightMenuTypes.HH"
 public _extern _POP_UP_TERM_RIGHT I64 PopUpTermRight(U8 *header);
 public _extern _POP_UP_MENU I64 PopUpMenu(CDoc *doc,I64 flags=0);
+public _extern _POP_UP_1 I64 PopUp1(U8 *b1,I64 n1,U8 *header=NULL,U8 *footer=NULL);
+public _extern _POP_UP_2 I64 PopUp2(U8 *b1,I64 n1,U8 *b2,I64 n2,U8 *header=NULL,U8 *footer=NULL);
+public _extern _POP_UP_OK Bool PopUpOk(U8 *header=NULL,U8 *footer=NULL);
+public _extern _POP_UP_NO_YES Bool PopUpNoYes(U8 *header=NULL,U8 *footer=NULL);
+public _extern _POP_UP_CANCEL_OK Bool PopUpCancelOk(U8 *header=NULL,U8 *footer=NULL);
 public _extern _POP_UP_PICK_LST I64 PopUpPickLst(U8 *list);
 public _extern _ED_CUR_U8 I64 EdCurU8(CDoc *doc);
 public _extern _ED_CURSOR_LEFT U0 EdCursorLeft(CDoc *doc,I64 sc=I64_MIN);
