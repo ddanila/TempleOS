@@ -147,3 +147,26 @@ The unchanged Logic load advances to missing `GrPrint` at line 190
 An 8 MiB ordinary-include and RedSea drive-fields smoke test also passes with
 unchanged inputs (`build/i386-numeric-prompt-smoke-8m`); this is not a full
 minimal-profile or startup timing qualification.
+
+The native console now publishes its existing shared original graphics text
+functions, including 2D and 3D formatted text and text composites. A public
+API fixture checks formatted horizontal and vertical text and right-edge
+clipping against font-derived pixels on the pinned original and native image
+(mask 7, unchanged inputs; `build/i386-public-graphics-text-original-v2`,
+`build/i386-public-graphics-text-native-v1`; runner
+`tools/test-i386-public-graphics-text.py`). The prior native image rejects
+`GrPrint` (`build/i386-public-graphics-text-native-red`). An independent
+left-edge clipping expectation fails on the pinned original (mask 5,
+`build/i386-public-graphics-text-original-v1`); the shared renderer already
+contains a left-alignment correction, so this is not a claim of original
+left-edge parity. The public 3D and composite bindings are not covered by this
+fixture.
+
+Both bootstrap generations and the native cross-build/audit pass
+(`build/public-graphics-text-rebuild-v1.log`,
+`build/i386-public-graphics-text-cross-v1`). The unchanged Logic load passes
+`GrPrint` and stops at missing `Sprite3` on line 206
+(`build/i386-logic-native-public-text-v1`); no native synthesis case has run.
+The candidate also passes an 8 MiB ordinary-include and drive-fields smoke
+check (`build/i386-public-graphics-text-smoke-8m`), not full minimal-profile
+or startup timing qualification.
