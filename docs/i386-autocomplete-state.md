@@ -30,6 +30,6 @@ fixture still rejects before execution; see [file stream evidence](i386-cfile-st
 
 A separate 64 MiB disk candidate now packages both pinned dictionary assets,
 including an original-system-compressed word archive with the proper RedSea
-attribute. Native lookup and full expansion are being checked; see
+attribute. Native lookup and full expansion pass with byte-identical readback; see
 [dictionary asset evidence](i386-autocomplete-assets.md). This does not change
 the default image or resolve the missing `FOpen` dependency.

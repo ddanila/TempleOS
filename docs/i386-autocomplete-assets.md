@@ -19,8 +19,9 @@ validly formed archive header and rejects invalid attributes without producing
 an output image. The additive package regression passes with compressed and
 ordinary files, idempotence, and ten rejection cases.
 
-A 64 MiB native guest is checking exact lookup, complete word-list expansion and
-byte-identical readback at `build/i386-autocomplete-assets-native`. The 8 MiB initial welcome-screen regression for the shared input helper passes
+A 64 MiB native guest passed dictionary lookup, complete word-list expansion
+and byte-identical readback with unchanged inputs
+(`build/i386-autocomplete-assets-native`). The 8 MiB initial welcome-screen regression for the shared input helper passes
 with unchanged inputs (`build/i386-autocomplete-helper-welcome-8m`); its
 concurrent startup is not a timing qualification. `FOpen` and block reads, dictionary initialization,
 suggestions and C1–C5 remain open.
