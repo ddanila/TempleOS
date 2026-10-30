@@ -2,7 +2,7 @@ I64 bp_mode,bp_drive,bp_seen;
 Bool bp_saved;
 U0 BPDriver(CTask *caller)
 {
-  CTask *popup;CDoc *doc;CDocEntry *entry,*chosen;U8 *buf,*name;I64 size,wanted;
+  CTask *popup;CDoc *doc;CDocEntry *entry,*chosen;U8 *buf,*name,*check;I64 size,wanted,check_size;
   wanted=1;
   if(bp_mode==0 || bp_mode==1)wanted=42;
   if(bp_mode==2 || bp_mode==5)wanted=0;
@@ -17,7 +17,9 @@ U0 BPDriver(CTask *caller)
           if(entry->type_u8==DOCT_BTTN && entry->de_flags&DOCEF_LEFT_EXP && entry->left_exp==wanted)chosen=entry;
         if(chosen) {
           bp_seen++;buf=DocSave(doc,&size);name=MStrPrint("%c:/button-popup%d.DD",bp_drive,bp_mode);
-          bp_saved=FileWrite(name,buf,size);Free(name);Free(buf);
+          FileWrite(name,buf,size);check=FileRead(name,&check_size);
+          bp_saved=check && check_size==size && !MemCmp(check,buf,size);
+          Free(check);Free(name);Free(buf);
           doc->cur_entry=chosen;doc->cur_col=0;DocUnlock(doc);
           if(bp_mode==1)PostMsg(popup,MSG_KEY_DOWN,CH_SHIFT_ESC,0);
           else PostMsg(popup,MSG_KEY_DOWN,CH_ESC,0);
