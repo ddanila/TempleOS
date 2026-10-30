@@ -61,3 +61,20 @@ python3 tools/test-i386.py --arc-expand
 python3 tools/test-i386.py --arc
 python3 tools/build-i386-kernel.py --test
 ```
+
+The retained Console/Editor native build based on the FIFO candidate failed at
+module packing: two function definitions were named `NativeArcBFieldExtU32`
+(`build/i386-c5-deduplicate-native-build`). The archive-specific macro had
+also renamed the later sprite bit-field definition. The console now includes
+one shared `BFieldExtU32` implementation before the archive and sprite code,
+without that alias. Both original rebuild generations and the cross-build and
+386 audit pass (`build/i386-c5-shared-bitfield-cross`). The native public
+FileRead fixture passes all 24 commands, including expanded and alternate `.Z`
+reads, with its source disk unchanged (`build/i386-c5-shared-bitfield-file-read`).
+Its 59.103013-second startup was concurrent, not an isolated timing gate.
+
+The public bit-field fixture timed out at its first lookup for `BFieldExtU32`,
+before running its vectors (`build/i386-c5-shared-bitfield-native`). It does
+not qualify the shared function's public availability or behavior. A new
+retained Console/Editor build from the corrected image is running in
+`build/i386-c5-shared-bitfield-native-build`; its outcome remains pending.

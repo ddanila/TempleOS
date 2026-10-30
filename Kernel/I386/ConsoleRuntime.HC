@@ -159,6 +159,7 @@ public Bool MouseGet(I64 *x,I64 *y,I64 *buttons=0,I64 *packets=0)
 }
 I64 console_diagnostic_line;
 U8 console_diagnostic_filename[256];
+#include "/Kernel/BitFieldExtractCore.HC"
 #include "/Kernel/I386/DocumentRuntime.HC"
 #include "/Kernel/I386/InstallTree.HC"
 #include "/Kernel/I386/BuildModuleDispatch.HC"
@@ -345,7 +346,6 @@ extern I64 GrBlot3(CDC *dc,I64 x1,I64 y1,I64 z1,CDC *img);
 #include "/Adam/Gr/GrCurves3Core.HC"
 #include "/Adam/Gr/GrSplines3Core.HC"
 #include "/Adam/Gr/GrMeshCore.HC"
-#include "/Kernel/BitFieldExtractCore.HC"
 #include "/Adam/Gr/SpriteRenderCore.HC"
 //Song strings use the existing scheduler-root-owned provider defined below.
 extern U8 *NativeAStrNew(U8 *text);
