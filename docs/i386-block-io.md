@@ -50,3 +50,10 @@ invalidation. It does not cover cache eviction, concurrency, ATA, or ISO.
 The native control rejects the fixture at the missing `BlkRead` binding before
 any cache case runs, with unchanged inputs (`build/i386-block-cache-native-red`).
 No native cache qualification is claimed.
+
+`DskCacheHash` now computes its bucket stride as two pointer widths, matching
+`DskCacheInit`'s allocation and initialization. This keeps the original
+16-byte stride on x86-64 and permits an 8-byte stride on 32-bit. Both original
+rebuild generations pass, and the rebuilt original kernel passes cache mask 15
+(`build/i386-cache-stride-working`). The native cache is not yet implemented
+or tested.

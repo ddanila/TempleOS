@@ -117,6 +117,14 @@ passes four commands covering every field and file flags with unchanged inputs;
 its concurrent startup timing is not an isolated gate. File-backed I/O and
 full media initialization remain open. See docs/i386-block-io.md.
 
+### Pointer-width-aware block cache hash (2026-10-30)
+
+DskCacheHash uses two pointer widths per bucket, matching allocation and
+initialization rather than assuming a 16-byte bucket. Both original rebuild
+generations pass, and the rebuilt original kernel passes the cache contract
+mask 15. The 32-bit cache remains unimplemented and unqualified. See
+docs/i386-block-io.md.
+
 ### Original block cache reference (2026-10-30)
 
 The pinned-original private RAM-drive contract passes mask 15 for cached reads,

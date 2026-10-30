@@ -40,7 +40,7 @@ U0 DskCacheInit(I64 size_in_U8s)
 I64 DskCacheHash(I64 blk)
 {
   I64 i=blk & (DSK_CACHE_HASH_SIZE-1);
-  return blkdev.cache_hash_table(U8 *)+i<<4-offset(CCacheBlk.next_hash);
+  return blkdev.cache_hash_table(U8 *)+i*sizeof(U8 *)*2-offset(CCacheBlk.next_hash);
 }
 
 U0 DskCacheQueRem(CCacheBlk *tmpc)
