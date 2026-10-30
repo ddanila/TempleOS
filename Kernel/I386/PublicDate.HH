@@ -2,6 +2,7 @@
 #define I386_PUBLIC_DATE_INCLUDED
 #include "/Kernel/DateTypes.HH"
 public _extern _NOW CDate Now();
+public _extern _TS F64 tS();
 public _extern _YEAR_START_DATE I64 YearStartDate(I64 year);
 public _extern _STRUCT_TO_DATE CDate Struct2Date(CDateStruct *ds);
 public _extern _DAY_OF_WEEK I64 DayOfWeek(I64 day);

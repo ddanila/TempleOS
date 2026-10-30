@@ -50,3 +50,9 @@ the same compile-only stream probe gets past that call and rejects the missing
 (`build/i386-autocomplete-stream-probe-v3`). The probe's stream functions
 still throw if called, so this does not implement or qualify autocomplete.
 See [document visibility controls](i386-document-visibility.md).
+
+After publishing `tS`, the same diagnostic advances to the unbound
+`KeyMapFamily` call in `ACTask.HC` line 180
+(`build/i386-autocomplete-stream-probe-v4`). It still uses deliberately
+throwing stream providers; the real `FOpen` dependency and autocomplete
+execution remain unimplemented. See [elapsed seconds](i386-elapsed-seconds.md).
