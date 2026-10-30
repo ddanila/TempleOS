@@ -168,8 +168,10 @@ lex_step:
         entry=entry->next;
       }
       if(entry!=doc) goto lex_step;
-      cc->last_U16=TK_EOF; return TK_EOF;
+      if(!file->next) {cc->last_U16=TK_EOF; return TK_EOF;}
+      goto lex_child_end;
     }
+lex_child_end:
     if(file->next) {
       if(!I386LexFileAdvance(heap,cc)) {
         if(end) cc->cur_buf_ptr=end-1;

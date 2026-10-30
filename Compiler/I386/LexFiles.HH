@@ -13,6 +13,11 @@ public extern Bool I386LexFileAdvance(CI386Heap *heap,CCmpCtrl *cc);
 public extern Bool I386LexFileReleaseDetached(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file);
 //Borrow the caller-locked document as the root source; no ownership transfer.
 public extern Bool I386LexAttachDocRoot(CI386Heap *heap,CCmpCtrl *cc,CDoc *doc);
+//Transfer a distinct child document on success. The destructor must return
+//normally, work with interrupts masked, and remain valid until all snapshots
+//release the child. Compiler-control teardown must supply equivalent cleanup.
+public extern Bool I386LexIncludeDocTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,CDoc *doc,
+  U0 (*document)(U8 *context,CDoc *document),U8 *context=0);
 //File/name and owned raw buffers belong to heap; document lifetime uses the callback.
 //Drain saved positions before popping. Caller must update its current buffer pointer.
 public extern Bool I386LexFilePop(CI386Heap *heap,CCmpCtrl *cc,

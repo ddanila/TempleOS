@@ -42,3 +42,26 @@ and links, passing mask 31 with unchanged inputs
 runner `tools/test-i386-logic-document.py`). This demonstrates that the current
 loader handles this real document; it does not establish general DolDoc parity,
 rendering, child-include attachment or document cleanup during compiler unwind.
+
+The i386 lexer now has an internal owned-document child primitive. It rejects
+invalid and already-owned documents, retains a per-child destructor, resumes
+the parent when the child reaches EOF, and retains an exhausted child while a
+lexer snapshot still refers to it. The destructor must return normally and be
+safe with interrupts masked. This is not connected to file includes: compiler
+control teardown must first dispatch the per-child destructor during error and
+cancellation cleanup, and actual document creation/ownership must be wired into
+the file path. Existing raw and borrowed-root behavior remains in place.
+
+The native lexer foundation fixture now exercises normal document-child EOF,
+return to a raw parent, snapshot discard and restore, duplicate and wrong-heap
+attachment rejection, invalid entry-list rejection, registered-destructor
+precedence and exactly-once release. The combined lexer fixture passes its
+386 execution and instruction audit (`build/lex-document-child-foundation-v5.log`);
+separate snapshot-boundary and compiler-control regressions also pass
+(`build/lex-document-child-snapshot-v3.log`,
+`build/lex-document-child-control-v3.log`). Both original bootstrap generations
+and the 386 cross-build/audit pass (`build/rebuild-test`,
+`build/i386-lex-document-child-cross-v3`). An 8 MiB native smoke run also passes an ordinary file include and sector
+fixture with unchanged inputs (`build/i386-lex-document-child-8m-v3`); it is
+not a complete minimal-profile or startup timing gate. The original loader and release
+qualification remain open; these are private lexer mechanics, not Logic parity.

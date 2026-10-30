@@ -18,11 +18,11 @@ I64 NativeFilesTest()
   CmpCtrlSeed(&cc,CCF_DONT_FREE_BUF,0,0);
   if(I386LexFilePush(0,&cc) || I386LexFilePush(&state_heap,0) ||
       I386LexFilePop(&state_heap,&cc) || I386LexFilePop(&state_heap,0)) return 31;
-  for(size=24;size<80;size+=8) {
+  for(size=24;size<88;size+=8) {
     if(!I386HeapInit(&small,0x61000,size) || I386LexFilePush(&small,&cc) ||
         small.used || small.allocations || cc.lex_include_stk) return 32;
   }
-  if(!I386HeapInit(&small,0x61000,80) || !I386LexFilePush(&small,&cc) ||
+  if(!I386HeapInit(&small,0x61000,88) || !I386LexFilePush(&small,&cc) ||
       !I386LexFilePop(&small,&cc) || small.used || small.allocations || cc.lex_include_stk) return 45;
   SetRFlags(GetRFlags|0x200);
   root=I386LexFilePush(&state_heap,&cc);

@@ -18,6 +18,7 @@ extern I64 LexFilesTest();
 extern I64 NativeFilesTest();
 extern I64 LexRawInputTest();
 extern I64 NativeInputTest();
+extern I64 NativeDocChildTest();
 extern I64 NativeTakeTest();
 extern I64 NativeSnapshotBoundaryTest();
 I64 Main(I64 unused,I64 unused2)
@@ -44,6 +45,8 @@ I64 Main(I64 unused,I64 unused2)
   result=NativeFilesTest;
   if(result) return result;
   result=NativeInputTest;
+  if(result) return result;
+  result=NativeDocChildTest;
   if(result) return result;
   result=NativeTakeTest;
   if(result) return result;
@@ -107,7 +110,7 @@ I64 NativeStateTest()
 }
 
 #include "/Compiler/I386/LexFiles.HC"
-#assert sizeof(CI386LexFile)==64
+#assert sizeof(CI386LexFile)==72
 #include "T:/Files.HC"
 #include "T:/NativeFiles.HC"
 

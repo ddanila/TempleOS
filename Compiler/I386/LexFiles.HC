@@ -11,6 +11,8 @@ class CI386LexFile
   CI386Heap *heap;
   CCmpCtrl *control;
   U32 signature;
+  U0 (*document)(U8 *context,CDoc *document);
+  U8 *document_context;
 };
 class CI386LexFileRelease
 {
@@ -74,12 +76,14 @@ Bool I386LexSnapshotsSourceFree(CI386Heap *heap,CCmpCtrl *cc,U8 *source)
   return TRUE;
 }
 Bool I386LexFileReleaseDetached(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file)
-{//Only exhausted raw children detach. Roots and documents retain their release rules.
+{//An exhausted child stays alive until its last snapshot releases it.
   CI386LexFile *owned=file;
-  if(!I386LexFileOwned(heap,cc,file) || !file->next || file->flags&LFSF_DOC ||
-      file->buf && !I386HeapSize(heap,file->buf) ||
+  if(!I386LexFileOwned(heap,cc,file) || !file->next ||
+      file->flags&LFSF_DOC && (!file->doc || !owned->document) ||
+      !(file->flags&LFSF_DOC) && file->buf && !I386HeapSize(heap,file->buf) ||
       file->full_name && !I386HeapSize(heap,file->full_name)) return FALSE;
-  if(file->buf && !I386HeapFree(heap,file->buf)) return FALSE;
+  if(file->flags&LFSF_DOC) (*owned->document)(owned->document_context,file->doc);
+  else if(file->buf && !I386HeapFree(heap,file->buf)) return FALSE;
   if(file->full_name && !I386HeapFree(heap,file->full_name)) return FALSE;
   owned->signature=0; return I386HeapFree(heap,file);
 }
@@ -89,8 +93,9 @@ Bool I386LexFileAdvance(CI386Heap *heap,CCmpCtrl *cc)
   U32 flags=I386IrqSave;
   Bool pinned,result=FALSE;
   if(!cc || !(file=cc->lex_include_stk) || !file->next ||
-      !I386LexFileOwned(heap,cc,file) || file->flags&LFSF_DOC ||
+      !I386LexFileOwned(heap,cc,file) ||
       !I386LexSnapshotsPin(heap,cc,file,&pinned)) goto done;
+  if(file->flags&LFSF_DOC && (!file->doc || !file(CI386LexFile *)->document)) goto done;
   if(file->next->flags&LFSF_DOC && (!file->next->doc ||
       file->next->doc->doc_signature!=DOC_SIGNATURE_VAL || !file->next->cur_entry)) goto done;
   if(pinned) { cc->lex_include_stk=file->next; result=TRUE; }
@@ -139,6 +144,47 @@ Bool I386LexAttachDocRoot(CI386Heap *heap,CCmpCtrl *cc,CDoc *doc)
 done:
   I386IrqRestore(flags); return okay;
 }
+Bool I386LexIncludeDocTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,CDoc *doc,
+  U0 (*document)(U8 *context,CDoc *document),U8 *context=0)
+{
+  CI386LexFile *file=0;
+  CI386LexSnapshot *snapshot;
+  CI386LexSavedFile *saved;
+  CLexFile *parent;
+  U8 *owned_name=0;
+  I64 n=1,i;
+  U32 flags=I386IrqSave;
+  Bool result=FALSE;
+  if(!heap || !cc || !cc->lex_include_stk || !name || !doc ||
+      doc->doc_signature!=DOC_SIGNATURE_VAL || !doc->head.next || !document ||
+      cc->flags&CCF_PMT || cc->opts&OPTF_ECHO) goto doc_done;
+  parent=cc->lex_include_stk;
+  if(!I386LexFileOwned(heap,cc,parent) || parent->flags&LFSF_DOC && (!parent->doc ||
+      parent->doc->doc_signature!=DOC_SIGNATURE_VAL || !parent->cur_entry))goto doc_done;
+  for(parent=cc->lex_include_stk;parent;parent=parent->next)
+    if(parent->flags&LFSF_DOC && parent->doc==doc)goto doc_done;
+  for(snapshot=cc->lex_prs_stk;snapshot;snapshot=snapshot->file.next) {
+    if(!I386LexSnapshotValid(heap,cc,snapshot))goto doc_done;
+    if(snapshot->file.flags&LFSF_DOC && snapshot->file.doc==doc)goto doc_done;
+    for(saved=snapshot->parents;saved;saved=saved->next)
+      if(saved->file.flags&LFSF_DOC && saved->file.doc==doc)goto doc_done;
+  }
+  while(name[n-1])n++;
+  file=I386HeapAlloc(heap,sizeof(CI386LexFile),TRUE);
+  if(file)owned_name=I386HeapAlloc(heap,n,FALSE);
+  if(!owned_name)goto doc_done;
+  for(i=0;i<n;i++)owned_name[i]=name[i];
+  file->heap=heap;file->control=cc;file->signature=I386_LEX_FILE_MAGIC;
+  file->document=document;file->document_context=context;
+  file->file.full_name=owned_name;file->file.doc=doc;file->file.flags=LFSF_DOC;
+  file->file.cur_entry=doc;file->file.line_start=doc->head.next;
+  file->file.line_num=1;file->file.buf_ptr=&i386_doc_zero;
+  LexBackupLastChar(cc);LexFileAttach(cc,&file->file);cc->cur_buf_ptr=&i386_doc_zero;
+  result=TRUE;
+doc_done:
+  if(!result) {if(owned_name)I386HeapFree(heap,owned_name);if(file)I386HeapFree(heap,file);}
+  I386IrqRestore(flags);return result;
+}
 //Keep the caller's document context distinct from the allocator context.
 class CI386LexFileDispatch
 {
@@ -162,6 +208,7 @@ Bool I386LexFilePop(CI386Heap *heap,CCmpCtrl *cc,
   if(!cc || !(file=cc->lex_include_stk) ||
       I386HeapSize(heap,file)!=sizeof(CI386LexFile)) goto checked;
   if(file->signature!=I386_LEX_FILE_MAGIC || file->heap!=heap || file->control!=cc) goto checked;
+  if(file->document) {document=file->document;context=file->document_context;}
   if(!I386LexSnapshotsPin(heap,cc,&file->file,&pinned) || pinned) goto checked;
   if((file->file.next || !(cc->flags&CCF_DONT_FREE_BUF)) &&
       file->file.flags&LFSF_DOC && file->file.doc && !document) goto checked;
