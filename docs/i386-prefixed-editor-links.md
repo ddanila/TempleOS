@@ -103,6 +103,23 @@ generations, the 386 cross-build/audit, the `FF:` file-link regression and an
 `build/i386-doc-memory-ff-regression-v1`, `build/i386-doc-memory-links-smoke-8m`).
 The first native fixture rejected an overlong exception literal before executing
 its contract (`build/i386-doc-memory-links-native-v1`). Tests use live valid
-documents and zero editor flags; invalid addresses, error unwinding, the
-original post-editor entry action, popup and physical mouse delivery remain
-unqualified.
+documents and zero editor flags; invalid addresses, error unwinding, general post-editor actions, popup and
+physical mouse delivery remain unqualified.
+
+On an accepted editor exit, native now runs the current document entry through
+`DocEntryRun` before saving or returning, matching the original sequence;
+Shift-Escape skips it. Original, shared-original and native tests cover an
+actual in-memory link whose selected entry has a callback: Escape runs the
+callback unlocked and posts its command result, while Shift-Escape does neither.
+They check the target, locks and caller document roles
+(`build/i386-doc-editor-exit-action-original-v1`,
+`build/i386-doc-editor-exit-action-shared-v1`,
+`build/i386-doc-editor-exit-action-native-v1`; runner
+`tools/test-i386-doc-editor-exit-action.py`). The earlier native image fails
+that contract (`build/i386-doc-editor-exit-action-native-red-v1`). Both
+bootstrap generations, the cross-build/386 audit, the in-memory-link regression
+and an 8 MiB ordinary-include/drive-fields smoke pass
+(`build/doc-exit-action-rebuild-v1.log`, `build/i386-doc-exit-action-cross-v1`,
+`build/i386-doc-exit-memory-regression-v1`, `build/i386-doc-exit-action-smoke-8m`).
+This is one callback action on a live borrowed document; other entry actions,
+errors and file/desktop workflows still need coverage.

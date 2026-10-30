@@ -1067,6 +1067,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-memory-links-native-v2/result.json",
           "scope": "AI/AA/AF/AL uppercase/lowercase editing of live borrowed documents, selected positions, lifetime, lock and task roles; no invalid-address or error qualification"
+        },
+        {
+          "target": "original-editor-exit-action",
+          "command": "python3 tools/test-i386-doc-editor-exit-action.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-exit-action-original-v1/result.json",
+          "scope": "Escape triggers unlocked selected-entry callback and MSG_CMD; Shift-Escape skips; target lifetime, locks and task roles checked"
+        },
+        {
+          "target": "shared-editor-exit-action",
+          "command": "python3 tools/test-i386-doc-editor-exit-action.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-exit-action-shared-v1/result.json",
+          "scope": "Escape triggers unlocked selected-entry callback and MSG_CMD; Shift-Escape skips; target lifetime, locks and task roles checked"
+        },
+        {
+          "target": "native-editor-exit-action",
+          "command": "python3 tools/test-i386-doc-editor-exit-action.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-exit-action-native-v1/result.json",
+          "scope": "Escape triggers unlocked selected-entry callback and MSG_CMD; Shift-Escape skips; target lifetime, locks and task roles checked"
         }
       ]
     },
@@ -1586,6 +1607,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-memory-links-native-v2/result.json",
           "scope": "AI/AA/AF/AL uppercase/lowercase editing of live borrowed documents, selected positions, lifetime, lock and task roles; no invalid-address or error qualification"
+        },
+        {
+          "target": "original-editor-exit-action",
+          "command": "python3 tools/test-i386-doc-editor-exit-action.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-exit-action-original-v1/result.json",
+          "scope": "Escape triggers unlocked selected-entry callback and MSG_CMD; Shift-Escape skips; target lifetime, locks and task roles checked"
+        },
+        {
+          "target": "shared-editor-exit-action",
+          "command": "python3 tools/test-i386-doc-editor-exit-action.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-exit-action-shared-v1/result.json",
+          "scope": "Escape triggers unlocked selected-entry callback and MSG_CMD; Shift-Escape skips; target lifetime, locks and task roles checked"
+        },
+        {
+          "target": "native-editor-exit-action",
+          "command": "python3 tools/test-i386-doc-editor-exit-action.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-editor-exit-action-native-v1/result.json",
+          "scope": "Escape triggers unlocked selected-entry callback and MSG_CMD; Shift-Escape skips; target lifetime, locks and task roles checked"
         }
       ]
     },

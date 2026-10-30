@@ -1577,6 +1577,7 @@ extern Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
 public Bool Ed(U8 *filename,I64 flags=0)
 {//File and borrowed-document subset using the original editor-link parser.
   CDoc *doc=NULL;
+  CDocEntry *entry;
   U8 *resolved=NULL,*needle=NULL;
   I64 link_type=LK_FILE,line=1,doc_flags=0;
   Bool accept,result=FALSE,borrowed=FALSE;
@@ -1617,7 +1618,12 @@ public Bool Ed(U8 *filename,I64 flags=0)
       else if(borrowed) DocCenter(doc,RECALCt_NORMAL);
     }
     accept=DocEd(doc);
-    if(accept && !borrowed && !DocWrite(doc)) result=FALSE;
+    if(accept) {
+      DocLock(doc);entry=doc->cur_entry;
+      if(entry!=doc) DocEntryRun(doc,entry,TRUE);
+      DocUnlock(doc);
+      if(!borrowed && !DocWrite(doc)) result=FALSE;
+    }
     if(!borrowed) DocDel(doc);doc=NULL;
   } catch {
     if(doc && !borrowed) DocDel(doc);
