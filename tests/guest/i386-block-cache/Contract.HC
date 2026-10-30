@@ -34,5 +34,17 @@ I64 BCContract()
     if(ok && buf[0]==12)mask|=64;
     Free(storage2);
   }
+  {
+    CDrv dv3;CBlkDev bd3;I64 sectors=blkdev.cache_size/512+1;
+    U8 *storage3=CAlloc(sectors*512),*bulk=CAlloc(sectors*512);
+    MemCpy(&dv3,&dv,sizeof(CDrv));MemCpy(&bd3,&bd,sizeof(CBlkDev));
+    dv3.bd=&bd3;dv3.size=sectors;bd3.RAM_dsk=storage3;
+    storage3[0]=13;storage3[(sectors-1)*512]=37;
+    ok=sectors>1 && BlkRead(&dv3,bulk,0,sectors);
+    storage3[0]=46;storage3[(sectors-1)*512]=70;
+    if(ok && BlkRead(&dv3,buf,0,1) && buf[0]==46 &&
+       BlkRead(&dv3,buf,sectors-1,1) && buf[0]==37)mask|=128;
+    DskCacheInvalidate(&dv3);Free(storage3);Free(bulk);
+  }
   DskCacheInvalidate(&dv);Free(storage);Free(buf);Free(src);return mask;
 }

@@ -66,8 +66,15 @@ evidence, not a native cache result.
 
 The pinned-original contract now also checks that invalidating one drive does
 not discard another drive's cached sector. The expanded mask 127 passes with
-unchanged inputs (`build/i386-block-cache-selective-reference`). Eviction,
-concurrency, ATA, ISO and native cache behavior remain unqualified.
+unchanged inputs (`build/i386-block-cache-selective-reference`). That check
+does not cover eviction, concurrency, ATA, ISO or native cache behavior.
+
+The reference fixture also reads one sector more than the configured cache
+capacity, then checks that the first sector was evicted and the last remains
+cached. The pinned original passes mask 255 with unchanged inputs
+(`build/i386-block-cache-eviction-reference`). This tests capacity replacement,
+not a complete eviction-order or concurrency contract. Native cache behavior,
+ATA and ISO remain unqualified.
 
 The original `CCacheBlk` and `CBlkDevGlbls` declarations are shared in
 `Kernel/BlkDev/BlockGlobalsTypes.HH` and included by the native public file
