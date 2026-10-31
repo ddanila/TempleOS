@@ -212,8 +212,12 @@ passes the same bail-mode contract using an image with the first 400 lines of
 the repository's `Misc/Bible.TXT`, including Genesis 1:1
 (`build/i386-doc-bible-sample-native-v1`; runner
 `tools/test-i386-doc-bible-link.py`). That sample was packaged as the uncompressed
-`/Misc/Bible.TXT` in a minimal image built from the native cross-build exports;
-it does not establish full-file performance or non-bail editing. The complete
+`/Misc/Bible.TXT` in a minimal image built from the native cross-build exports.
+`tools/build-i386-bible-sample.py BUILD --out OUT` reconstructs this profile
+from the current workspace sources and records its inputs; its later output
+(`build/i386-doc-bible-sample-image-v3`) differs from the tested image only in
+two subsequently modified kernel source files; repeated packaging at the same
+source state is byte-identical to `build/i386-doc-bible-sample-image-v2`. The sample does not establish full-file performance or non-bail editing. The complete
 Bible test remains running in `build/i386-doc-bible-link-native-v1` and does
 not yet establish a result.
 Both original bootstrap generations, the native cross-build and 386 audit,
