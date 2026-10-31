@@ -11,6 +11,17 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Document cleanup validation performance (2026-10-31)
+
+Backing validation now sorts batches of up to 256 owned regions with an
+in-place gap sort, retaining complete heap and ownership checks for lists of
+any length. Both rebuild generations, native and portable corruption tests,
+task heaps, cross-build audits, and the 8 MiB drive-fields smoke pass. A
+3,200-line Bible profile passed with lower observed cleanup time than the
+earlier batch-64 image; both runs overlapped other guests. The full-content
+Bible-link test is still running. Full C1–C5 qualification remains open; see
+[Bible load profiling](docs/i386-bible-load-profile.md).
+
 ### Standalone public task header diagnostic (2026-10-31)
 
 `PublicTask.HH` now expresses the false `DeathWait` default without relying on

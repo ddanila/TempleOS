@@ -217,3 +217,32 @@ QMP-paused cleanup samples, 503 landed in `I386MemBackingValid`, called through
 `I386MemBackingTrim` and `MemoryFree`
 (`build/i386-bible-cleanup-batches-6400-v1`). These samples identify hot code;
 they are not timing qualification.
+
+## Larger batches and gap sorting
+
+The next candidate raises the private validation batch from 64 to 256 region
+addresses and sorts each batch with an in-place gap sort. Validation still
+checks the complete heap and every owned region under interrupt exclusion;
+longer lists continue through additional batches. The private scratch array
+grows by 768 bytes. The gap sort avoids the many shifts observed for the
+previous insertion sort on reversed region order.
+
+Both compiler rebuild generations, native and portable heap suites, the
+task-heap lifecycle suite, and the minimal and full-content cross-builds with
+386 audits pass (`build/i386-backing-gap256-rebuild-v1.log`,
+`build/i386-backing-gap256-test-v1.log`,
+`build/i386-backing-gap256-source-test-v1.log`,
+`build/i386-backing-gap256-task-heaps-v1.log`,
+`build/i386-backing-gap256-cross-v1`,
+`build/i386-backing-gap256-full-cross-v1`). The heap suite compares the
+validator to the earlier independent oracle and tests a corrupted record and
+cycle beyond the 256-region boundary. The 8 MiB drive-fields smoke also passes
+with unchanged inputs (`build/i386-backing-gap256-smoke-v1`). The bounded Bible
+performance profile passed with unchanged inputs at 56 and 102 regions
+(`build/i386-bible-load-gap256-medium-v1`). At 3,200 lines it measured 32.4
+seconds total and 12.8 seconds cleanup, versus 50.4 and 26.2 seconds for the
+earlier 64-region-batch image with the same region count
+(`build/i386-bible-load-batches-candidate-v1`). Both measurements overlapped
+other QEMU guests and are approximate, not a hardware benchmark. The complete
+Bible-link test on the full-content image is still running; the bounded result
+does not establish full-file completion.

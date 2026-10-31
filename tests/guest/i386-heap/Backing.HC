@@ -54,11 +54,11 @@ I64 BackingManyRegionTest()
 {
   CI386BackingPool *pool=&backing_pool;
   CI386BackingRegion *node,*next,*reverse,*saved_next;
-  CMemBlk *pages[70];I64 i;U32 saved_request;
-  if(!I386HeapInit(&backing_heap,0x40000,0x40000) ||
+  CMemBlk *pages[270];I64 i;U32 saved_request;
+  if(!I386HeapInit(&backing_heap,0x40000,0x50000) ||
       !I386MemBackingInit(pool,&backing_heap,512))return 490;
-  for(i=0;i<64;i++) if(!(pages[i]=I386MemPageAlloc(pool,1,TRUE)))return 491;
-  if(pool->owned_count!=64 || !BackingValidationOracle(pool) || !I386MemBackingValid(pool))return 496;
+  for(i=0;i<I386_BACKING_BATCH;i++) if(!(pages[i]=I386MemPageAlloc(pool,1,TRUE)))return 491;
+  if(pool->owned_count!=I386_BACKING_BATCH || !BackingValidationOracle(pool) || !I386MemBackingValid(pool))return 496;
   reverse=NULL;node=pool->owned;
   while(node) { next=node->next_owned;node->next_owned=reverse;reverse=node;node=next; }
   pool->owned=reverse;
@@ -66,9 +66,9 @@ I64 BackingManyRegionTest()
   reverse=NULL;node=pool->owned;
   while(node) { next=node->next_owned;node->next_owned=reverse;reverse=node;node=next; }
   pool->owned=reverse;
-  for(i=64;i<70;i++) if(!(pages[i]=I386MemPageAlloc(pool,1,TRUE)))return 491;
-  if(pool->owned_count<=64 || !BackingValidationOracle(pool) || !I386MemBackingValid(pool))return 492;
-  node=pool->owned;for(i=0;i<65;i++) node=node->next_owned;
+  for(i=I386_BACKING_BATCH;i<270;i++) if(!(pages[i]=I386MemPageAlloc(pool,1,TRUE)))return 491;
+  if(pool->owned_count<=I386_BACKING_BATCH || !BackingValidationOracle(pool) || !I386MemBackingValid(pool))return 492;
+  node=pool->owned;for(i=0;i<I386_BACKING_BATCH+1;i++) node=node->next_owned;
   saved_request=node->request;node->request++;
   if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 500;
   node->request=saved_request;
@@ -78,7 +78,7 @@ I64 BackingManyRegionTest()
   pool->owned_count--;
   if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 493;
   pool->owned_count++;
-  for(i=0;i<70;i++) if(!I386MemPageFree(pool,pages[i]))return 494;
+  for(i=0;i<270;i++) if(!I386MemPageFree(pool,pages[i]))return 494;
   if(I386MemBackingTrim(pool)<=0 || pool->owned_count ||
       !I386MemBackingDestroy(pool) || !I386HeapValid(&backing_heap))return 495;
   return 0;

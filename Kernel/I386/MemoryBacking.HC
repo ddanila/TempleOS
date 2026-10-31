@@ -2,13 +2,14 @@
 #include "/Kernel/I386/Cpu.HH"
 extern Bool I386MemBackingGrow(CI386PublicPool *pool,I64 pages);
 //Single CPU; callers cannot re-enter validation while IRQs are masked.
-U32 i386_backing_region_scratch[64];
+#define I386_BACKING_BATCH 256
+U32 i386_backing_region_scratch[I386_BACKING_BATCH];
 Bool I386MemBackingValid(CI386BackingPool *pool)
 {
   CI386BackingRegion *region,*cursor;
   CI386HeapBlock *block;
   CI386Heap *heap;
-  U32 flags=I386IrqSave,count=0,chunk,i,j,offset,target;
+  U32 flags=I386IrqSave,count=0,chunk,gap,i,j,offset,target;
   I64 retained=0;
   U64 address,base,heap_base;
   Bool result=FALSE;
@@ -21,18 +22,24 @@ Bool I386MemBackingValid(CI386BackingPool *pool)
   heap_base=(heap->base+0)(U64);cursor=pool->owned;
   while(cursor) {
     chunk=0;
-    while(cursor && chunk<64) {
+    while(cursor && chunk<I386_BACKING_BATCH) {
       if(count>=pool->owned_count || heap->size<sizeof(CI386BackingRegion)) goto done;
       address=(cursor+0)(U64);
       if(address<heap_base+sizeof(CI386HeapBlock) ||
           address-heap_base>heap->size-sizeof(CI386BackingRegion)) goto done;
-      target=address;j=chunk;
-      while(j && i386_backing_region_scratch[j-1]>target) {
-        i386_backing_region_scratch[j]=i386_backing_region_scratch[j-1];j--;
-      }
-      i386_backing_region_scratch[j]=target;chunk++;count++;
+      i386_backing_region_scratch[chunk]=address;chunk++;count++;
       cursor=cursor->next_owned;
     }
+    //Sort in place with fewer shifts on reverse-ordered regions. The final gap
+    //of one preserves exact ascending block matching.
+    for(gap=chunk/2;gap;gap=gap/2)
+      for(i=gap;i<chunk;i++) {
+        target=i386_backing_region_scratch[i];j=i;
+        while(j>=gap && i386_backing_region_scratch[j-gap]>target) {
+          i386_backing_region_scratch[j]=i386_backing_region_scratch[j-gap];j-=gap;
+        }
+        i386_backing_region_scratch[j]=target;
+      }
     offset=0;
     for(i=0;i<chunk;i++) {
       target=i386_backing_region_scratch[i]-(heap->base+0)(U32)-sizeof(CI386HeapBlock);
