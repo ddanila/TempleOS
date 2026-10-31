@@ -1,25 +1,63 @@
 #include "/Kernel/I386/MemoryBacking.HH"
 #include "/Kernel/I386/Cpu.HH"
 extern Bool I386MemBackingGrow(CI386PublicPool *pool,I64 pages);
+I64 I386MemBackingValidatedSize(CI386Heap *heap,U8 *ptr)
+{//Caller holds IRQs masked and has validated the complete heap chain.
+  U32 address=(ptr+0)(U32),base=(heap->base+0)(U32),target,offset=0;
+  CI386HeapBlock *block;
+  if(address<base || address-base<sizeof(CI386HeapBlock) || address-base>=heap->size) return -1;
+  target=address-base-sizeof(CI386HeapBlock);
+#ifdef I386_HEAP_SOURCE_BUILD
+  while(offset<target) {
+    block=heap->base+offset;
+    offset+=block->span;
+  }
+#else
+  //The complete chain was validated above; walk its U32 spans without
+  //repeating the expensive invariant checks for every owned region.
+  asm {
+    MOV ESI,U32 &heap[EBP]
+    MOV ESI,U32 CI386Heap.base[ESI]
+    MOV EDX,U32 &target[EBP]
+    XOR EAX,EAX
+@@10:
+    CMP EAX,EDX
+    JAE @@20
+    MOV ECX,U32 CI386HeapBlock.span[ESI]
+    ADD EAX,ECX
+    ADD ESI,ECX
+    JMP @@10
+@@20:
+    MOV U32 &offset[EBP],EAX
+  }
+#endif
+  if(offset!=target) return -1;
+  block=heap->base+offset;
+  if(block->tag!=I386_HEAP_USED) return -1;
+  return block->requested;
+}
 Bool I386MemBackingValid(CI386BackingPool *pool)
 {
   CI386BackingRegion *region;
-  U32 count=0;
+  U32 flags=I386IrqSave,count=0;
   I64 retained=0;
   U64 address,base;
+  Bool result=FALSE;
   if(!pool || pool->backing_signature!=I386_BACKING_SIGNATURE ||
       pool->grow!=&I386MemBackingGrow || !I386MemPoolValid(pool) ||
-      !pool->heap || !I386HeapValid(pool->heap)) return FALSE;
+      !pool->heap || !I386HeapValid(pool->heap)) goto done;
   for(region=pool->owned;region;region=region->next_owned) {
     if(count++>=pool->owned_count || region->pool && region->pool!=pool ||
-        I386HeapSize(pool->heap,region)!=region->request ||
+        I386MemBackingValidatedSize(pool->heap,region)!=region->request ||
         region->reserve_hold>1 || region->request<sizeof(CI386BackingRegion)+512 ||
-        (region->span+0)(U64)<(region->request+0)(U64)+sizeof(CI386HeapBlock)) return FALSE;
+        (region->span+0)(U64)<(region->request+0)(U64)+sizeof(CI386HeapBlock)) goto done;
     address=(region+0)(U64); base=(region->base+0)(U64);
-    if(base<address+sizeof(CI386BackingRegion) || base+region->size>address+region->request) return FALSE;
+    if(base<address+sizeof(CI386BackingRegion) || base+region->size>address+region->request) goto done;
     retained+=region->span;
   }
-  return count==pool->owned_count && retained==pool->retained;
+  result=count==pool->owned_count && retained==pool->retained;
+done:
+  I386IrqRestore(flags);return result;
 }
 Bool I386MemBackingInit(CI386BackingPool *pool,CI386Heap *heap,I64 quantum=65536)
 {

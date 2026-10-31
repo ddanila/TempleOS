@@ -53,11 +53,8 @@ def main():
     watcher = threading.Thread(target=observe, daemon=True)
     watcher.start()
     try:
-        checks = [f'!BibleProfile("C:/Probe/Bible{n}.TXT",{n})' for n in lengths]
-        command = 'if(' + '||'.join(checks) + ")throw('BP',TRUE);"
-        if len(command) > 255:
-            raise ValueError('Profile command exceeds the native input limit')
-        commands = ['#include "C:/Probe/BibleProfile.HC"', command, '6*7;']
+        commands = ['#include "C:/Probe/BibleProfile.HC"',
+                    "if(!BibleProfileAll)throw('BP',TRUE);", '6*7;']
         runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](
             working, out/'guest', commands, 64, True, command_timeout=1200)
         observed = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](working, set(files))

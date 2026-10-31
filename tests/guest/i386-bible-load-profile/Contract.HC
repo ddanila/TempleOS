@@ -23,3 +23,12 @@ I64 BibleProfile(U8 *name,I64 lines)
   BPMark("free-end",lines);
   return 1;
 }
+
+I64 BibleProfileAll()
+{
+  if(!BibleProfile("C:/Probe/Bible400.TXT",400))return FALSE;
+  if(!BibleProfile("C:/Probe/Bible800.TXT",800))return FALSE;
+  if(!BibleProfile("C:/Probe/Bible1200.TXT",1200))return FALSE;
+  if(!BibleProfile("C:/Probe/Bible1600.TXT",1600))return FALSE;
+  return TRUE;
+}

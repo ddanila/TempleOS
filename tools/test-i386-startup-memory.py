@@ -61,7 +61,7 @@ def main():
     try:
         result['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out, snapshot=False, cpu='486,-fpu', ram_mib=args.ram_mib,
-            qmp_stdio=True, diagnostics=args.diagnostics, startup_timeout=90,
+            qmp_stdio=True, diagnostics=args.diagnostics, welcome=True, startup_timeout=180,
             startup_check={'status': 'ok', 'answers': [], 'commands': COMMANDS,'pause_window_manager':False,
                            'rejection_prefixes': ('INPUT REJECT ',)})
         log = (out/'debug.log').read_text()

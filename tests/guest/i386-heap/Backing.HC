@@ -3,6 +3,46 @@ CI386BackingPool backing_pool;
 CI386Heap backing_heap;
 CHeapCtrl backing_heaps[2];
 extern I64 BackingPlaneBudgetTest();
+//The previous complete-scan implementation remains an independent oracle.
+Bool BackingValidationOracle(CI386BackingPool *pool)
+{
+  CI386BackingRegion *region;
+  U32 count=0;I64 retained=0;U64 address,base;
+  if(!pool || pool->backing_signature!=I386_BACKING_SIGNATURE ||
+      pool->grow!=&I386MemBackingGrow || !I386MemPoolValid(pool) ||
+      !pool->heap || !I386HeapValid(pool->heap)) return FALSE;
+  for(region=pool->owned;region;region=region->next_owned) {
+    if(count++>=pool->owned_count || region->pool && region->pool!=pool ||
+        I386HeapSize(pool->heap,region)!=region->request ||
+        region->reserve_hold>1 || region->request<sizeof(CI386BackingRegion)+512 ||
+        (region->span+0)(U64)<(region->request+0)(U64)+sizeof(CI386HeapBlock)) return FALSE;
+    address=(region+0)(U64);base=(region->base+0)(U64);
+    if(base<address+sizeof(CI386BackingRegion) || base+region->size>address+region->request) return FALSE;
+    retained+=region->span;
+  }
+  return count==pool->owned_count && retained==pool->retained;
+}
+I64 BackingValidationParity(CI386BackingPool *pool,U8 *private_bytes)
+{
+  CI386BackingRegion *region=pool->owned,*saved,*fake;
+  CI386HeapBlock *block=private_bytes-sizeof(CI386HeapBlock);
+  U32 flags=GetRFlags,request=region->request,hold=region->reserve_hold;
+  U32 reserved=block->reserved,count=pool->owned_count;
+  I64 retained=pool->retained,i;
+  if(!BackingValidationOracle(pool) || !I386MemBackingValid(pool)) return 480;
+  region->request++;if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 481;region->request=request;
+  region->reserve_hold=2;if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 482;region->reserve_hold=hold;
+  pool->owned_count++;if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 483;pool->owned_count=count;
+  pool->retained++;if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 484;pool->retained=retained;
+  block->reserved=1;if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 485;block->reserved=reserved;
+  //A plausible record inside a different live allocation is not a heap block.
+  fake=private_bytes+128;for(i=0;i<sizeof(CI386BackingRegion);i++) fake(U8 *)[i]=0;
+  saved=pool->owned;pool->owned=fake;
+  if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 486;
+  pool->owned=saved;
+  if(!BackingValidationOracle(pool) || !I386MemBackingValid(pool) || (GetRFlags^flags)&0x200) return 487;
+  return 0;
+}
 I64 PublicBackingTest()
 {
   CI386BackingPool *pool=&backing_pool;
@@ -34,6 +74,7 @@ I64 PublicBackingTest()
     c=I386MemAlloc(first,40000);
     if(!c || pool->owned_count!=3 || pool->owned->size>=pool->quantum ||
         pool->owned->size<40000 || !I386MemBackingValid(pool)) return 405;
+    if(i=BackingValidationParity(pool,private_bytes))return i;
     small_span=pool->retained-root_span-other_span;
     c[0]=0x39; c[39999]=0x93;
     before=backing_heap.used; retained=pool->retained;

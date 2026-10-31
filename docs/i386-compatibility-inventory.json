@@ -14878,7 +14878,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-backing-validation-profile",
+          "command": "python3 tools/test-i386-bible-load-profile.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-bible-load-profile-optimized-v3/result.json",
+          "scope": "Bounded 400–1600-line document workload with full backing-heap validation and timed cleanup; not full original allocator or application qualification"
+        }
+      ]
     },
     {
       "path": "Kernel/Mem/HeapCtrl.HC",
@@ -14912,7 +14920,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-backing-validation-profile",
+          "command": "python3 tools/test-i386-bible-load-profile.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-bible-load-profile-optimized-v3/result.json",
+          "scope": "Bounded 400–1600-line document workload with full backing-heap validation and timed cleanup; not full original allocator or application qualification"
+        }
+      ]
     },
     {
       "path": "Kernel/Mem/MakeMem.HC",
