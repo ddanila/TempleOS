@@ -16,6 +16,8 @@ def main():
     parser.add_argument('--build', required=True, type=Path)
     parser.add_argument('--out', required=True, type=Path)
     parser.add_argument('--force-unavailable', action='store_true')
+    parser.add_argument('--stack-test', choices=('conflict','uncovered','overflow','nonvolatile','forged'))
+    parser.add_argument('--expect-stack', choices=('verified','legacy','reject'))
     parser.add_argument('--expect-task-fallback', choices=('yes', 'no'),
                         help='Require the candidate boot log to show or omit the auxiliary task arena')
     parser.add_argument('--kernel-selection', choices=('selected', 'legacy'),
@@ -41,6 +43,7 @@ def main():
     command = ['nasm', '-f', 'bin', f'-DPAYLOAD_FNV={checksum}',
                f'-DKERNEL_FILE="{flat}"', '-l', str(listing),
                *(['-DBOOT_MAP_FAIL=1'] if args.force_unavailable else []),
+               *([f'-DBOOT_STACK_TEST_{args.stack_test.upper()}=1'] if args.stack_test else []),
                str(stage), '-o', str(image)]
     subprocess.run(command, cwd=ROOT, check=True)
     audit = runpy.run_path(str(ROOT/'tools/audit-i386-boot.py'))['audit'](image.read_bytes(), listing.read_text())
@@ -60,15 +63,28 @@ def main():
     report = dict(result='running', scope='BIOS E820 transport and 386 loader audit using an unchanged prior kernel; not new-kernel allocator qualification',
                   force_unavailable=args.force_unavailable, input_sha256=pins, boot_instruction_audit=audit)
     try:
-        report['behavior'] = runpy.run_path(str(runner))['run_input'](
-            working, out/'qemu', snapshot=False, ram_mib=64,
-            accel='tcg', cpu='486,-fpu', qmp_stdio=True, welcome=True,
-            startup_check={'status':'ok', 'answers':[], 'commands':commands})
+        try:
+            report['behavior'] = runpy.run_path(str(runner))['run_input'](
+                working, out/'qemu', snapshot=False, ram_mib=64,
+                accel='tcg', cpu='486,-fpu', qmp_stdio=True, welcome=True,
+                startup_check={'status':'ok', 'answers':[], 'commands':commands})
+        except RuntimeError:
+            log = (out/'qemu/debug.log').read_text()
+            if args.expect_stack != 'reject' or 'BOOT STACK reject\nFAIL native kernel\n' not in log:
+                raise
+            report['expected_boot_rejection'] = True
         if args.kernel_selection:
             log = (out/'qemu/debug.log').read_text()
             if f'BOOT MAP {args.kernel_selection}\n' not in log:
                 raise ValueError('Kernel did not report expected memory selection')
             report['kernel_selection'] = args.kernel_selection
+        if args.expect_stack:
+            log = (out/'qemu/debug.log').read_text()
+            if f'BOOT STACK {args.expect_stack}' not in log:
+                raise ValueError('Kernel did not report expected stack selection')
+            report['stack_selection'] = args.expect_stack
+        if args.stack_test:
+            report['stack_test'] = args.stack_test
         if args.expect_task_fallback:
             log = (out/'qemu/debug.log').read_text()
             present = 'TASK FALLBACK ARENA ' in log

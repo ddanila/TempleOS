@@ -50,8 +50,9 @@ task arena only when a complete firmware map identifies a conventional range
 that does not overlap the main heap or the stage/boot-stack reservations.
 The loader's real-mode bounce buffer at `0x6000`, real-mode stack at `0x9000`,
 handoff records below `0x6000`, and resident stage at `0x10000..0x11000` are
-outside the selected range; the protected-mode boot stack at
-`0x88000..0x90000` is explicitly reserved. Kernel module linking's legacy
+outside the selected range; at this checkpoint the protected-mode boot stack
+at `0x88000..0x90000` was explicitly reserved. A later verified placement is
+described below. Kernel module linking's legacy
 `0x11000` load address describes relocation of a generated file, not a live
 write into that address. This source review and the tests below are not a
 claim about all firmware implementations.
@@ -133,3 +134,62 @@ from 276,016 to 274,712 bytes and its largest free block rises from 210,608 to
 still needs 267,527 bytes. The runs overlapped other guests and are not timing
 qualification. Further capacity work must retain the full task stack and
 firmware reservations. C1–C5 remain open.
+
+## Firmware-verified root-stack placement (2026-10-31)
+
+The extended loader can now place its unchanged 32 KiB protected-mode root
+stack at the top of verified conventional RAM. It requires a complete E820
+map, a single volatile usable entry covering the entire candidate, no
+conflicting overlapping entry, no overflow in any map entry, and bounds below
+both the conventional-memory and EBDA limits. If the check fails it retains
+the established `0x88000..0x90000` stack. Only after the selector returns does
+the loader switch stacks and call the kernel. A separate handoff records the
+chosen base; the kernel independently checks the exact interval against the
+map and its current stack pointer before reserving it. The non-extended path
+retains the legacy reservation. This changes neither task stack sizes nor the
+requirement to exclude firmware and live stack memory.
+
+On the captured QEMU firmware map, the verified stack is
+`0x97c00..0x9fc00`; the task arena grows from 487,424 to 551,936 bytes. The
+normal and forced-unavailable map boots pass with unchanged inputs
+(`build/i386-high-stack-map-normal-v1`,
+`build/i386-high-stack-compact-map-unavailable-v1`). Injected overlapping
+reserved, uncovered, overflowing, and nonvolatile map entries all keep the
+legacy stack (`build/i386-high-stack-map-conflict-v1`,
+`build/i386-high-stack-map-uncovered-v1`,
+`build/i386-high-stack-map-overflow-v1`,
+`build/i386-high-stack-map-nonvolatile-v1`). The kernel rejects a forged stack
+handoff before boot continues (`build/i386-high-stack-compact-map-forged-v1`).
+These are emulated and injected maps, not a claim about every firmware.
+
+The first candidate boot hit its early fault handler because the selector
+clobbered the kernel-entry register; restoring that register fixed boot
+(`build/i386-high-stack-popup-8m-v1`, interrupted after the fault). The first
+two cross-builds also stopped at the 386 instruction audit because its
+mnemonic whitelist omitted `adc` and the `jna` alias for `jbe`; the gate and
+its mutation test now cover those 386 encodings. Both bootstrap generations
+and the compact full cross-build/386 audit pass
+(`build/i386-high-stack-compact-rebuild-v2.log`,
+`build/i386-high-stack-compact-cross-v1`). The compact validator retains the
+same checks and reduces the flat kernel by 1,128 bytes relative to the first
+working C validator.
+
+The expanded arena gets the 8 MiB `PopUpFile` workload past its earlier task
+allocation, but the case remains failed: it next requests a 153,600-byte
+terminal graphics buffer while the main arena's largest free block is 151,648
+bytes (`build/i386-high-stack-compact-popup-8m-v1`). A stopped capture of the
+preceding candidate identifies a partially used 8 KiB public backing region
+between a 28,144-byte free block and the 151,664-byte free block
+(`build/i386-high-stack-popup-heap-v1` and its `backing-audit.json`). The stop
+occurred after failure handling began; its counters are not a replacement for
+the failure log. Reclaiming live pages or assuming a firmware map is safe is
+not justified by this observation. The popup, timing gate and C1–C5 remain
+open.
+
+The compact image passes the 8 MiB InFile low-slot contract, the 64 MiB
+popup contract, and the 16 MiB diagnostic with unchanged inputs
+(`build/i386-high-stack-compact-infile-v1`,
+`build/i386-high-stack-compact-popup-64m-v1`,
+`build/i386-high-stack-compact-diagnostics-v1`). An isolated 8 MiB startup
+run passes all nine behavior and VGA checks but takes 65.861 seconds, above
+the unchanged 60-second gate (`build/i386-high-stack-compact-startup-v1`).

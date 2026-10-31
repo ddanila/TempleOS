@@ -12,6 +12,7 @@ class BootInstructionAuditTests(unittest.TestCase):
     def test_386_instructions_pass_in_both_modes(self):
         self.assertEqual(AUDIT['audit_code'](b'\xfa\xf4',16),2)
         self.assertEqual(AUDIT['audit_code'](b'\x0f\x20\xc0\xf4',32),2)
+        self.assertEqual(AUDIT['audit_code'](b'\x13\x57\x04\x76\x00',32),2)
 
     def test_later_cpu_and_fpu_instructions_fail(self):
         for bits in (16,32):

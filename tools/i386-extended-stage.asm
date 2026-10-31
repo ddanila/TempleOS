@@ -34,6 +34,7 @@ start32: mov ax,16
     mov es,ax
     mov ss,ax
     mov esp,0x90000
+    mov dword [0x5350],0 ; No extended-stack handoff until verified.
     cld
     mov edi,early_idt
     mov ecx,256
@@ -286,6 +287,50 @@ hash_loop:
     mov edx,cr0
     or edx,4
     mov cr0,edx
+    ; Test-only map mutations exercise rejection without altering production bytes.
+%ifdef BOOT_STACK_TEST_CONFLICT
+    mov ecx,[0x5048]
+    cmp ecx,32
+    jae fail32
+    imul ecx,ecx,24
+    add ecx,0x5050
+    mov dword [ecx],0x97000
+    mov dword [ecx+4],0
+    mov dword [ecx+8],0x1000
+    mov dword [ecx+12],0
+    mov dword [ecx+16],2
+    mov dword [ecx+20],1
+    inc dword [0x5048]
+%endif
+%ifdef BOOT_STACK_TEST_UNCOVERED
+    mov dword [0x5058],0x90000
+    mov dword [0x505C],0
+%endif
+%ifdef BOOT_STACK_TEST_NONVOLATILE
+    or dword [0x5064],2
+%endif
+%ifdef BOOT_STACK_TEST_OVERFLOW
+    mov ecx,[0x5048]
+    cmp ecx,32
+    jae fail32
+    imul ecx,ecx,24
+    add ecx,0x5050
+    mov dword [ecx],0xFFFFFFF0
+    mov dword [ecx+4],0xFFFFFFFF
+    mov dword [ecx+8],0x100
+    mov dword [ecx+12],0
+    mov dword [ecx+16],2
+    mov dword [ecx+20],1
+    inc dword [0x5048]
+%endif
+    ; No active frame survives the change: the kernel entry is called below.
+    call select_kernel_stack
+%ifdef BOOT_STACK_TEST_FORGED
+    mov dword [0x5350],0x53323349
+    mov dword [0x5354],0x90000
+%endif
+    mov esp,eax
+    mov eax,[payload_base]
     xor ebp,ebp
     push dword 0
     push dword 0
@@ -300,6 +345,90 @@ fail32:
     jmp fail32
 switch16:
     jmp word 24:pm16-$$
+
+; Prefer the highest 32 KiB below conventional/EBDA limits only when a
+; complete E820 map covers it with usable volatile RAM and no conflicting
+; entry overlaps it. Otherwise leave the established 0x88000 stack in place.
+select_kernel_stack:
+    cmp dword [0x5040],0x50324D49
+    jne .legacy
+    cmp dword [0x5044],1
+    jne .legacy
+    cmp dword [0x504C],1
+    jne .legacy
+    mov ecx,[0x5048]
+    test ecx,ecx
+    jz .legacy
+    cmp ecx,32
+    ja .legacy
+    mov eax,[0x5008]
+    shl eax,10
+    cmp eax,0xA0000
+    ja .legacy
+    mov edx,[0x5010]
+    test edx,edx
+    jz .limit
+    cmp edx,eax
+    jae .limit
+    mov eax,edx
+.limit:
+    and eax,0xFFFFFFF0
+    cmp eax,0x98000
+    jb .legacy
+    mov [stack_candidate_top],eax
+    sub eax,0x8000
+    mov [stack_candidate_base],eax
+    xor ebp,ebp
+    mov edi,0x5050
+.entry:
+    mov eax,[edi+8]
+    mov edx,[edi+12]
+    mov ebx,eax
+    or ebx,edx
+    jz .legacy
+    add eax,[edi]
+    adc edx,[edi+4]
+    jc .legacy
+    ; Ignore entries wholly before or after the proposed interval.
+    test edx,edx
+    jnz .end_after
+    cmp eax,[stack_candidate_base]
+    jbe .next
+.end_after:
+    cmp dword [edi+4],0
+    jne .next
+    mov ebx,[edi]
+    cmp ebx,[stack_candidate_top]
+    jae .next
+    cmp dword [edi+16],1
+    jne .legacy
+    cmp dword [edi+20],1
+    jne .legacy
+    cmp ebx,[stack_candidate_base]
+    ja .next
+    test edx,edx
+    jnz .covered
+    cmp eax,[stack_candidate_top]
+    jb .next
+.covered:
+    mov ebp,1
+.next:
+    add edi,24
+    dec ecx
+    jnz .entry
+    test ebp,ebp
+    jz .legacy
+    mov eax,[stack_candidate_base]
+    mov [0x5354],eax
+    mov dword [0x5350],0x53323349
+    mov eax,[stack_candidate_top]
+    ret
+.legacy:
+    mov eax,0x90000
+    ret
+stack_candidate_base: dd 0
+stack_candidate_top: dd 0
+
 a20_test:
     mov al,[0x5100]
     mov bl,[0x105100]

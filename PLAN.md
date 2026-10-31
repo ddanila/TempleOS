@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Firmware-verified root stack (2026-10-31)
+
+The extended loader can move the unchanged root stack into a fully verified
+conventional-memory interval, with independent kernel validation and legacy
+fallback. The larger task arena gets the 8 MiB popup past its prior task
+allocation, but it then fails a 153,600-byte terminal buffer allocation in
+the fragmented main heap. The minimal profile and C1–C5 remain open; see
+[low-memory evidence](docs/i386-low-arena.md).
+
 ### Task alignment-tail reclamation (2026-10-31)
 
 Task allocations now return unused trailing page-alignment padding while

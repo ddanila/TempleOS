@@ -8,7 +8,7 @@ import re
 import subprocess
 
 
-ALLOWED = set('''add and call cld cli cmp dec div hlt in inc int int3 ja jb jc jmp jnz jz
+ALLOWED = set('''adc add and call cld cli cmp dec div hlt in inc int int3 ja jb jbe jc jmp jna jnz jz
     lgdt lidt loop mov movzx imul jne jae jnc rep ret clc je or out pop push shl shr stc sti sub test xor'''.split())
 
 

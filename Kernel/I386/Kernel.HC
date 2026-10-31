@@ -139,15 +139,76 @@ extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
 extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
 I64 Main(CI386BootInfo *info,I64 unused)
 {
-  CI386MemRange reserved[2],arena,map_arena,low_arena;
+  CI386MemRange reserved[2],arena,map_arena,low_arena,stack_check[2],verified_stack;
   CI386InterruptServices services;
-  I64 pulse_used,reserved_count=1;
+  I64 pulse_used,reserved_count=1,stack_checks=1;
+  U32 *stack_handoff=0x5350,stack_base=0x88000;
+  Bool stack_bad=FALSE;
   Bool mouse_ready;
   CI386KernelSymbol *root_jobs_symbol;
   I64 (*root_jobs)(I64 flags,CTask *task);
   U32 root_flags;
   KernelLog("START native kernel\n");
-  reserved[0].base=0x88000; reserved[0].size=32768;
+  if(info && info->stage_end==0x11000 && stack_handoff[0]==0x53323349) {
+    //The native range arithmetic is bounded U32; reject before publishing
+    //either reservation. The old boot stack is always below 0x90000.
+    asm {
+      PUSH ESI
+      PUSH EDI
+      MOV ESI,U32 &stack_handoff[EBP]
+      MOV EAX,U32 4[ESI]
+      MOV U32 &stack_base[EBP],EAX
+      CMP EAX,0x90000
+      JB I32 @@10
+      CMP EAX,0x98000
+      JA I32 @@10
+      TEST EAX,15
+      JNZ I32 @@10
+      LEA EDI,U32 &stack_check[EBP]
+      MOV U32 [EDI],0
+      MOV U32 4[EDI],EAX
+      ADD EAX,32768
+      MOV U32 8[EDI],EAX
+      MOV EDX,0xA0000
+      SUB EDX,EAX
+      MOV U32 12[EDI],EDX
+      TEST EDX,EDX
+      JZ I32 @@11
+      MOV U32 &stack_checks[EBP],2
+      JMP I32 @@11
+@@10:
+      MOV U8 &stack_bad[EBP],1
+@@11:
+      POP EDI
+      POP ESI
+    }
+    if(stack_bad) { KernelLog("BOOT STACK reject\n");KernelStop; }
+    //Independently require the complete map to prove this exact interval.
+    if(!I386BootMapLowArena(info,I386_BOOT_MAP_ADDRESS,stack_check,stack_checks,&verified_stack))
+      stack_bad=TRUE;
+    asm {
+      PUSH ESI
+      LEA ESI,U32 &verified_stack[EBP]
+      MOV EAX,U32 &stack_base[EBP]
+      CMP U32 [ESI],EAX
+      JNE I32 @@20
+      CMP U32 4[ESI],32768
+      JNE I32 @@20
+      MOV EDX,ESP
+      CMP EDX,EAX
+      JB I32 @@20
+      ADD EAX,32768
+      CMP EDX,EAX
+      JB I32 @@21
+@@20:
+      MOV U8 &stack_bad[EBP],1
+@@21:
+      POP ESI
+    }
+    if(stack_bad) { KernelLog("BOOT STACK reject\n");KernelStop; }
+    KernelLog("BOOT STACK verified ");KernelHex(stack_base);KernelLog("\n");
+  } else KernelLog("BOOT STACK legacy\n");
+  reserved[0].base=stack_base; reserved[0].size=32768;
   if(info && info->stage_end==0x11000) {
     if(!I386BootImageReserve(info,I386_BOOT_IMAGE_ADDRESS,&reserved[1])) KernelStop;
     reserved_count=2;
@@ -174,7 +235,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   KernelLog("ARENA "); KernelHex(arena.base); KernelLog(" ");
   KernelHex(arena.size); KernelLog("\n");
   if(!I386TaskPlatformInit(&kernel_scheduler,&kernel_root,&kernel_cpu,
-      kernel_gdt,0x88000,32768,&kernel_heap) ||
+      kernel_gdt,stack_base,32768,&kernel_heap) ||
       !I386ExceptInstallNative(&KernelReport,&KernelFatal)) KernelStop;
   KernelStorage(info);
   I386PicInit;
