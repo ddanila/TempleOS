@@ -287,3 +287,18 @@ before the 120-second host timeout. This does not establish key consumption,
 retirement, or job wake behavior; in particular the absence of the later trace
 cannot be interpreted as proof that the popup remained valid for the full wait.
 The retained fixture now logs these additional boundaries.
+
+The independent-observer rerun resolves the earlier ambiguity. The original
+`TaskEnd` checks whether the exiting task is its parent's active popup; if so,
+it clears that pointer and kills the parent. The parent's teardown also kills
+its children, which included the former observer. With the driver instead
+parented outside the caller's task tree, the pinned original probe passes
+(`build/i386-popup-file-sync-original-v9`): after Shift-Esc is posted at the
+popup prompt, both popup and caller fail `TaskValidate`, and the caller does
+not return from `PopUpFile`. The test's input hashes remained unchanged. The
+previous zero-result and restored-caller assertions were invalid for this exit
+path; the new reference observation supersedes them. The native terminal still
+ignores Shift-Esc and its task-exit path does not yet reproduce this popup
+parent propagation. The native runner mode is disabled until a suitable
+independent native observer and implementation are available. This result is
+not complete terminal or C1–C5 qualification.

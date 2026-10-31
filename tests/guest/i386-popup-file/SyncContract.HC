@@ -8,7 +8,7 @@ I64 pfs_sent;
 U0 PFSDriver(CTask *caller)
 {
   CTask *popup; CDirEntry de;
-  I64 end=cnts.jiffies+5000;
+  I64 end=cnts.jiffies+5000,i;
   PFSTrace("PFS DRIVER START\n");
   while(cnts.jiffies<end) {
     popup=caller->popup_task;
@@ -24,10 +24,12 @@ U0 PFSDriver(CTask *caller)
       else PFSTrace("PFS RETIRED IMMEDIATE\n");
       Yield;
       PFSTrace("PFS YIELD RETURN\n");
-      end=cnts.jiffies+2000;
-      while(cnts.jiffies<end && TaskValidate(popup))Yield;
+      for(i=0;i<1000 && (TaskValidate(popup) || TaskValidate(caller));i++)Yield;
       if(TaskValidate(popup))PFSTrace("PFS POPUP STILL VALID\n");
       else PFSTrace("PFS POPUP RETIRED\n");
+      if(TaskValidate(caller))PFSTrace("PFS CALLER STILL VALID\n");
+      else PFSTrace("PFS CALLER RETIRED\n");
+      PFSTrace("DONE PFS OBSERVE\n");
       return;
     }
     Yield;
@@ -40,7 +42,7 @@ I64 PopUpFileSyncContract()
   CTask *old=Fs->popup_task,*popup=NULL,*driver;
   I64 result,mask=0;
   pfs_sent=0;
-  driver=Spawn(&PFSDriver,Fs,"PopUpFile exit driver",-1,Fs,16384);
+  driver=Spawn(&PFSDriver,Fs,"PopUpFile exit driver",-1,NULL,16384);
   PFSTrace("PFS CALL\n");
   result=PopUpFile("::/Probe/PFCase",FALSE,Fs,&popup);
   PFSTrace("PFS RETURN\n");

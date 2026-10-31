@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Probe synchronous PopUpFile Shift-Esc behavior; a timeout is inconclusive."""
+"""Probe original synchronous PopUpFile Shift-Esc task retirement."""
 import argparse
 import hashlib
 import json
@@ -16,6 +16,7 @@ def main():
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
     parser.add_argument('--out',type=Path,required=True)
     args=parser.parse_args()
+    if args.disk:parser.error('Native retirement probe is not yet implemented')
     out=args.out.resolve()
     if out.exists():parser.error('Use a fresh output directory')
     out.mkdir(parents=True)
@@ -24,7 +25,7 @@ def main():
     input_case=ROOT/'tests/guest/i386-popup-file/PFCase.HC'
     inputs=[Path(__file__).resolve(),fixture,input_case]
     report=dict(result='running',mode='native' if args.disk else 'pinned-original',
-                scope='Synchronous PopUpFile Shift-Esc exit and caller cleanup')
+                scope='Original synchronous PopUpFile Shift-Esc popup and caller retirement')
     if args.disk:
         inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','Kernel/FontStd.HC')]
     else:
@@ -52,7 +53,8 @@ def main():
             subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(overlay),'--output',str(iso)],cwd=ROOT,check=True)
             report['iso_sha256']=sha(iso)
             subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),'--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
-            if 'POPUPFILE MASK 31\n' not in (out/'guest/debug.log').read_text():raise ValueError('Original PopUpFile contract failed')
+            log=(out/'guest/debug.log').read_text()
+            if 'PFS POPUP RETIRED\n' not in log or 'PFS CALLER RETIRED\n' not in log or 'PFS RETURN\n' in log:raise ValueError('Original popup and caller retirement not observed')
         report['result']='pass'
     except Exception as exc:
         report.update(result='fail',error=str(exc));raise
