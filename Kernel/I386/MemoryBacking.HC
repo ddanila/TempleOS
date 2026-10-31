@@ -36,26 +36,81 @@ I64 I386MemBackingValidatedSize(CI386Heap *heap,U8 *ptr)
   if(block->tag!=I386_HEAP_USED) return -1;
   return block->requested;
 }
+//Single CPU; callers cannot re-enter validation while IRQs are masked.
+U32 i386_backing_region_scratch[64];
 Bool I386MemBackingValid(CI386BackingPool *pool)
 {
   CI386BackingRegion *region;
-  U32 flags=I386IrqSave,count=0;
+  CI386HeapBlock *block;
+  CI386Heap *heap;
+  U32 flags=I386IrqSave,count=0,i,j,offset=0,target;
   I64 retained=0;
-  U64 address,base;
+  U64 address,base,heap_base;
   Bool result=FALSE;
   if(!pool || pool->backing_signature!=I386_BACKING_SIGNATURE ||
       pool->grow!=&I386MemBackingGrow || !I386MemPoolValid(pool) ||
-      !pool->heap || !I386HeapValid(pool->heap)) goto done;
-  for(region=pool->owned;region;region=region->next_owned) {
-    if(count++>=pool->owned_count || region->pool && region->pool!=pool ||
-        I386MemBackingValidatedSize(pool->heap,region)!=region->request ||
-        region->reserve_hold>1 || region->request<sizeof(CI386BackingRegion)+512 ||
-        (region->span+0)(U64)<(region->request+0)(U64)+sizeof(CI386HeapBlock)) goto done;
-    address=(region+0)(U64); base=(region->base+0)(U64);
-    if(base<address+sizeof(CI386BackingRegion) || base+region->size>address+region->request) goto done;
-    retained+=region->span;
+      !(heap=pool->heap) || !I386HeapValid(heap)) goto done;
+  if(pool->owned_count>64) {
+    //No fixed limit on ownership: retain the existing bounded-memory path.
+    for(region=pool->owned;region;region=region->next_owned) {
+      if(count++>=pool->owned_count || region->pool && region->pool!=pool ||
+          I386MemBackingValidatedSize(heap,region)!=region->request ||
+          region->reserve_hold>1 || region->request<sizeof(CI386BackingRegion)+512 ||
+          (region->span+0)(U64)<(region->request+0)(U64)+sizeof(CI386HeapBlock)) goto done;
+      address=(region+0)(U64);base=(region->base+0)(U64);
+      if(base<address+sizeof(CI386BackingRegion) || base+region->size>address+region->request) goto done;
+      retained+=region->span;
+    }
+    result=count==pool->owned_count && retained==pool->retained;
+    goto done;
   }
-  result=count==pool->owned_count && retained==pool->retained;
+  //Bounds-check each link before reading it, then sort addresses without
+  //mutating the ownership list. Exact block membership is checked below.
+  heap_base=(heap->base+0)(U64);
+  for(region=pool->owned;region;region=region->next_owned) {
+    if(count>=pool->owned_count || heap->size<sizeof(CI386BackingRegion)) goto done;
+    address=(region+0)(U64);
+    if(address<heap_base+sizeof(CI386HeapBlock) ||
+        address-heap_base>heap->size-sizeof(CI386BackingRegion)) goto done;
+    target=address;
+    j=count;
+    while(j && i386_backing_region_scratch[j-1]>target) { i386_backing_region_scratch[j]=i386_backing_region_scratch[j-1];j--; }
+    i386_backing_region_scratch[j]=target;count++;
+  }
+  if(count!=pool->owned_count) goto done;
+  for(i=0;i<count;i++) {
+    target=i386_backing_region_scratch[i]-(heap->base+0)(U32)-sizeof(CI386HeapBlock);
+#ifdef I386_HEAP_SOURCE_BUILD
+    while(offset<target) { block=heap->base+offset;offset+=block->span; }
+#else
+    asm {
+      MOV ESI,U32 &heap[EBP]
+      MOV ESI,U32 CI386Heap.base[ESI]
+      MOV EAX,U32 &offset[EBP]
+      ADD ESI,EAX
+      MOV EDX,U32 &target[EBP]
+@@10:
+      CMP EAX,EDX
+      JAE @@20
+      MOV ECX,U32 CI386HeapBlock.span[ESI]
+      ADD EAX,ECX
+      ADD ESI,ECX
+      JMP @@10
+@@20:
+      MOV U32 &offset[EBP],EAX
+    }
+#endif
+    if(offset!=target) goto done;
+    block=heap->base+offset;region=i386_backing_region_scratch[i];
+    if(block->tag!=I386_HEAP_USED || block->requested!=region->request ||
+        region->pool && region->pool!=pool || region->reserve_hold>1 ||
+        region->request<sizeof(CI386BackingRegion)+512 ||
+        (region->span+0)(U64)<(region->request+0)(U64)+sizeof(CI386HeapBlock)) goto done;
+    address=(region+0)(U64);base=(region->base+0)(U64);
+    if(base<address+sizeof(CI386BackingRegion) || base+region->size>address+region->request) goto done;
+    retained+=region->span;offset+=block->span;
+  }
+  result=retained==pool->retained;
 done:
   I386IrqRestore(flags);return result;
 }

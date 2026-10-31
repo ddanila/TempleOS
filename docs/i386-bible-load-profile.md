@@ -90,3 +90,54 @@ the prior image in an isolated control checkout
 remain failed on timing; these two runs do not prove the startup target. The
 runner was updated to expect the current welcome screen, and its 60-second
 threshold was retained.
+
+A repeat cleanup sampler on the optimized image passed with unchanged inputs
+(`build/i386-bible-cleanup-pc-optimized-v1`). Of 58 samples, 46 landed in
+`I386MemBackingValidatedSize`, seven in its caller and five in the complete
+heap validator. This identifies the remaining per-region walk as a likely
+cleanup cost; the samples do not establish call counts or full-file latency.
+
+## Bounded multi-region walk
+
+A Memory 35 candidate handles up to 64 owned backing regions by collecting
+heap-range-checked link addresses into private scratch storage, sorting them,
+and checking exact allocated-block membership with one forward walk of the
+already validated heap. The entire operation masks interrupts; native memory
+services assume one CPU and no NMI callers. The ownership list is not mutated,
+and the previous per-region lookup remains the fallback above 64 regions. The
+private scratch avoids the initial candidate's 336-byte validator stack frame;
+the final native function reserves 80 bytes. This is a frame measurement, not
+proof for every task stack or reentrant execution.
+
+The native and portable heap tests compare the earlier validator with the new
+one for valid and corrupted records, a cyclic list, a forged interior pointer,
+and out-of-arena pointers. They exercise exactly 64 regions with both list
+orders and 70 regions through the fallback
+(`build/i386-backing-multilookup-final-test-v1.log`,
+`build/i386-backing-multilookup-final-source-test-v1.log`). The native task-heap
+ownership and lifecycle suite also passes
+(`build/i386-backing-multilookup-task-heaps-v1.log`). The final-version
+isolated checkout passed both bootstrap generations and its 386 cross-build
+(`build/i386-backing-multilookup-isolated-rebuild-v1.log`,
+`build/i386-backing-multilookup-candidate-tree/build/final-cross-v2`). The 8 MiB
+drive-fields smoke also passes (`build/i386-backing-multilookup-final-smoke-v1`).
+
+The final candidate's 1,600-line profile passed with unchanged inputs
+(`build/i386-bible-load-profile-multilookup-final-v1`): read took approximately
+7.4 seconds, insertion 2.1 seconds, cleanup 5.8 seconds, and total 15.4 seconds.
+The previous validated single-region walk measured 6.8, 5.5, 19.5 and 32.0
+seconds respectively. Both measurements overlapped another guest; these are
+approximate QEMU elapsed times, not a hardware benchmark. The fast path's bound
+means this does not establish performance for the complete Bible or for lists
+above 64 regions. The full-file test on the preceding image also timed out at its 20-minute
+command limit, with unchanged inputs
+(`build/i386-doc-bible-link-full-optimized-v1`). The final candidate full-content
+image passed its cross-build and 386 audit
+(`build/i386-backing-multilookup-candidate-tree/build/full-cross-v1`), and its
+full Bible-link test is running in
+`build/i386-doc-bible-link-full-multilookup-v1`.
+
+The final Memory 35 image passes its initial isolated memory probe in the 16 MiB
+diagnostic boot, then hits the same prior-image `PublicTask.HH` header failure
+(`build/i386-backing-multilookup-final-diagnostics-v1`); this remains a failed
+full diagnostic, not a diagnostic qualification.

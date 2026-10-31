@@ -34,13 +34,46 @@ I64 BackingValidationParity(CI386BackingPool *pool,U8 *private_bytes)
   region->reserve_hold=2;if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 482;region->reserve_hold=hold;
   pool->owned_count++;if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 483;pool->owned_count=count;
   pool->retained++;if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 484;pool->retained=retained;
+  saved=region->next_owned;region->next_owned=region;
+  if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 488;
+  region->next_owned=saved;
   block->reserved=1;if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 485;block->reserved=reserved;
   //A plausible record inside a different live allocation is not a heap block.
   fake=private_bytes+128;for(i=0;i<sizeof(CI386BackingRegion);i++) fake(U8 *)[i]=0;
   saved=pool->owned;pool->owned=fake;
   if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 486;
+  pool->owned=pool->heap->base-8;
+  if(I386MemBackingValid(pool))return 498;
+  pool->owned=pool->heap->base+pool->heap->size-8;
+  if(I386MemBackingValid(pool))return 499;
   pool->owned=saved;
   if(!BackingValidationOracle(pool) || !I386MemBackingValid(pool) || (GetRFlags^flags)&0x200) return 487;
+  return 0;
+}
+I64 BackingManyRegionTest()
+{
+  CI386BackingPool *pool=&backing_pool;
+  CI386BackingRegion *node,*next,*reverse;
+  CMemBlk *pages[70];I64 i;
+  if(!I386HeapInit(&backing_heap,0x40000,0x40000) ||
+      !I386MemBackingInit(pool,&backing_heap,512))return 490;
+  for(i=0;i<64;i++) if(!(pages[i]=I386MemPageAlloc(pool,1,TRUE)))return 491;
+  if(pool->owned_count!=64 || !BackingValidationOracle(pool) || !I386MemBackingValid(pool))return 496;
+  reverse=NULL;node=pool->owned;
+  while(node) { next=node->next_owned;node->next_owned=reverse;reverse=node;node=next; }
+  pool->owned=reverse;
+  if(!BackingValidationOracle(pool) || !I386MemBackingValid(pool))return 497;
+  reverse=NULL;node=pool->owned;
+  while(node) { next=node->next_owned;node->next_owned=reverse;reverse=node;node=next; }
+  pool->owned=reverse;
+  for(i=64;i<70;i++) if(!(pages[i]=I386MemPageAlloc(pool,1,TRUE)))return 491;
+  if(pool->owned_count<=64 || !BackingValidationOracle(pool) || !I386MemBackingValid(pool))return 492;
+  pool->owned_count--;
+  if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 493;
+  pool->owned_count++;
+  for(i=0;i<70;i++) if(!I386MemPageFree(pool,pages[i]))return 494;
+  if(I386MemBackingTrim(pool)<=0 || pool->owned_count ||
+      !I386MemBackingDestroy(pool) || !I386HeapValid(&backing_heap))return 495;
   return 0;
 }
 I64 PublicBackingTest()
@@ -118,6 +151,7 @@ I64 PublicBackingTest()
         backing_heap.allocations || !I386HeapValid(&backing_heap)) return 412;
   }
   if((GetRFlags^flags)&0x200) return 413;
+  if(i=BackingManyRegionTest)return i;
   return BackingPlaneBudgetTest;
 }
 
