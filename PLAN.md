@@ -38,7 +38,7 @@ out; see [Bible load profiling](docs/i386-bible-load-profile.md).
 A follow-up pointer-and-count upload loop passes both rebuild generations, VGA
 and 8 MiB tests, 386 audits, and paired graphics sessions with exact output.
 Frames measured 410–420 ms versus 440–450 ms on the indexed control, with
-other QEMU guests active. Its full Bible-link test remains in progress.
+other QEMU guests active. Its full Bible-link test timed out.
 
 Text rendering skips the preliminary clear only when unpanned, visible
 background cells cover the full surface. The poisoned-buffer original oracle,

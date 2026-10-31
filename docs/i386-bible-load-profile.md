@@ -360,7 +360,8 @@ commands and exact VGA checkpoints with unchanged source images
 Their four frame demos measured 410, 410, 410 and 420 ms on the pointer loop,
 versus 450, 440, 440 and 450 ms on the indexed control. Other QEMU guests
 overlapped these guest-jiffy measurements, so the timings are approximate. The
-full-link completion test remains in progress.
+full-link completion test timed out at its 20-minute command limit with
+unchanged inputs (`build/i386-doc-bible-link-full-vga-pointer-v1`).
 
 ## Fully covered text backgrounds
 
