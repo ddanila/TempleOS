@@ -285,3 +285,9 @@ passes with unchanged inputs at 56 and 102 regions
 30.3 seconds total and 10.6 seconds cleanup, compared with 32.4 and 12.8
 seconds for the portable gap sort on the prior image. Both runs overlapped
 other guests and are approximate. Neither establishes full-file completion.
+
+The 3,200-line cleanup sampler also passes with unchanged inputs on the 386
+sort image (`build/i386-bible-cleanup-asm-sort-3200-v1`): 32 of 54 samples
+were in `I386MemBackingValid`, 11 in `I386MemPoolValid`, and 10 in the heap
+chain validator. This remains a statistical sample rather than a timing test;
+it shows that backing validation still warrants investigation.
