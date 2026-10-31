@@ -539,6 +539,19 @@ addresses. Candidate, control, and two mixed placements each completed in
 interrupts disabled and does not reproduce the diagnostic guest's task or
 device state; it shows only that the recorded address shifts alone did not
 reproduce the slowdown.
+The same isolated benchmark with a working 1 kHz timer interrupt also
+completed ten loops in about 0.50 seconds in both layouts
+(`build/cache-layout-irq-bench.asm`, `build/cache-layout-irq-*.elf`). It does
+not reproduce the complete guest interrupt handlers or scheduler.
+Host-side debugger samples taken during paired diagnostic startups found
+`tb_invalidate_phys_range_fast` in five of twelve candidate samples and none
+of twelve control samples; related dirty-page and tree-lookup paths also
+appeared in the candidate. The candidate completed zero window updates versus
+66 for the control during the surrounding capture
+(`build/i386-cache-diag-host-candidate-v1`,
+`build/i386-cache-diag-host-control-v1`). Both inputs were unchanged. These
+samples suggest repeated code-page write checks even though no translation
+blocks were actually invalidated; the affected page is being investigated.
 The normal
 full-link test timed out at its 20-minute command limit with unchanged inputs
 (`build/i386-cache-mergesort-bible-full-v1`).
