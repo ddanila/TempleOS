@@ -427,3 +427,27 @@ statistical benchmark. The final candidate's paused profile recorded 19 of
 The first, larger-slot candidate exceeded the worker stack budget, and an
 intermediate compact candidate lacked module identity for overlapping buffers;
 neither was retained. Full C1–C5 qualification and the startup gate remain open.
+
+## Module validation offset experiment (2026-11-01)
+
+The compact-index boot profile sampled `I386ModuleValidParts` 28 times during
+foundation startup. An experiment changed its bounded record-position locals
+from I64 to U32 while retaining wide file-size validation and all range and
+patch checks. Both bootstrap generations, 181 target validator cases, the
+40-case native loader corpus, the full cross-build, the 386 audit and the
+loader stack audit passed (`build/i386-module-offset-u32-rebuild-v1.log`,
+`build/i386-module-offset-u32-check-v1.log`,
+`build/i386-module-offset-u32-loader-v1.log`,
+`build/i386-module-offset-u32-cross-v1`,
+`build/i386-module-offset-u32-stack-v1`).
+
+The isolated 8 MiB candidate completed all nine functional/VGA checks in
+62.502 seconds (`build/i386-module-offset-u32-startup-v1`), essentially the
+same as the prior candidate's 62.495 seconds; neither met the 60-second gate.
+That pair does not establish a useful speedup, so the offset change was
+reverted. Its patch is retained in `build/i386-module-offset-u32-v1.patch`.
+The validator corpus retains five new U32-maximum record-offset rejection cases
+for function, data, relative, address and named-pointer records. All 181 cases
+pass again on the restored validator after both bootstrap generations
+(`build/i386-module-offset-u32-restored-rebuild-v1.log`,
+`build/i386-module-offset-u32-restored-check-v1.log`). C1–C5 remain open.

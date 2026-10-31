@@ -140,6 +140,10 @@ def main():
     data_entries = entries+[(4,len(payload),8),(3,len(payload),'State')]
     with_data = module(payload+b'\0'*8, data_entries)
     cases.append(('valid-data',with_data,len(with_data),1,0))
+    # Record offsets near U32_MAX must be rejected before end arithmetic wraps.
+    for kind in (1,2,3,5,7):
+        bad = module(payload+b'\0'*8, data_entries+[(kind,0xFFFFFFFF,'Far')])
+        cases.append((f'overflow-record-kind-{kind}',bad,len(bad),0,0))
     for name, replacement in [
             ('empty-data-range', entries+[(4,len(payload),0),(3,len(payload),'State')]),
             ('wide-data-range', entries+[(4,len(payload),0xFFFFFFFF),(3,len(payload),'State')]),
