@@ -27,9 +27,11 @@ The 8 MiB fixture reached its contract but failed with an `OutMem` exception
 while creating the input-filter task, with unchanged inputs. An isolated repeat
 on the final-source full image failed in the same way
 (`build/i386-infile-native-8m-v1`, `build/i386-infile-native-8m-v2`). The
-logged callers map to `I386TaskCreateWithFiles` and `Spawn`; this does not
-identify whether fragmentation or total retained memory is the limiting factor.
-The 8 MiB resource gap remains open.
+logged callers map to `I386TaskCreateWithFiles` and `Spawn`. At failure the
+bootstrap arena had 242,680 bytes free for a 267,527-byte request, and its
+largest free payload was 193,632 bytes. Total free capacity was therefore
+insufficient for that request; fragmentation further reduced the largest
+available span. The 8 MiB resource gap remains open.
 
 These checks do not qualify arbitrary input files, cancellation, exceptional
 cleanup, the complete task/job API, or the terminal right-click workflow.
