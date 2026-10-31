@@ -1,5 +1,41 @@
 # Native bootstrap heap validation cost
 
+## Single-scan free experiment (2026-10-31)
+
+An experimental free path captured the preceding free block during the full
+heap validation, avoiding a second search before coalescing. An independent
+copy of the previous free algorithm and the candidate agree across all 24
+four-block free orders, invalid interior pointers and byte-for-byte resulting
+arenas. Both native and portable heap tests, task lifecycle, public heap,
+allocation cache, both rebuild generations, minimal and full-content 386
+cross-builds, and the complete 16 MiB diagnostic passed
+(`build/i386-heap-free-single-native-v2.log`,
+`build/i386-heap-free-single-source-v2.log`,
+`build/i386-heap-free-single-tasks-v1.log`,
+`build/i386-heap-free-single-public-v1.log`,
+`build/i386-heap-free-single-cache-v1.log`,
+`build/i386-heap-free-single-rebuild-v1.log`,
+`build/i386-heap-free-single-cross-v1`,
+`build/i386-heap-free-single-full-cross-v1`,
+`build/i386-heap-free-single-diagnostics-v1`). The diagnostic inputs were
+unchanged. The initial fixture used unsupported `continue` syntax and failed
+to compile; the corrected fixture passed on the prior implementation first
+(`build/i386-heap-free-single-baseline-v1.log`,
+`build/i386-heap-free-single-baseline-v2.log`,
+`build/i386-heap-free-single-baseline-source-v2.log`).
+
+Two sequential isolated 8 MiB comparisons measured 66.1 and 65.7 seconds for
+the candidate versus 65.1 and 64.9 for the source-matched control. All four
+runs completed nine checks, retained unchanged inputs and missed the
+60-second gate (`build/i386-heap-free-single-smoke-v1`,
+`build/i386-heap-free-single-control-v1`,
+`build/i386-heap-free-single-smoke-v2`,
+`build/i386-heap-free-single-control-v2`). The experiment was discarded for
+lack of a measured gain. The byte-for-byte free/coalescing fixture remains and
+passes on the restored native and portable implementations
+(`build/i386-heap-free-single-final-native-v1.log`,
+`build/i386-heap-free-single-final-source-v1.log`).
+
 ## Compiler-owner lookup candidate (2026-10-31)
 
 A normal 8 MiB boot sample on the page-isolated task-stack image recorded 368

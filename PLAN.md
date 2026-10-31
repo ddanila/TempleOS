@@ -38,6 +38,11 @@ The shadowing fix completed the isolated 8 MiB checks in 68.0 seconds, above
 the 60-second startup gate; the cause of the difference from the earlier
 65.0-second run has not been established.
 
+A single-scan heap-free experiment passed corruption, coalescing, rebuild and
+diagnostic checks but measured 65.7–66.1 seconds versus 64.9–65.1 for its
+source-matched control in isolated 8 MiB runs. It was discarded; its exhaustive
+four-block free-order fixture remains. See [heap profiling](docs/i386-heap-performance.md).
+
 The gap sort now has a tested 386 implementation and retains its portable
 guest-source implementation. Mixed-order and corrupted ownership-list tests,
 both rebuild generations, task heaps, both cross-build audits, and the 8 MiB

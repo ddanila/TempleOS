@@ -8,6 +8,7 @@ extern I64 PublicHeapTest();
 extern Bool I386HeapShrink(CI386Heap *hc,U8 *ptr,I64 size);
 extern I64 HeapShrinkTest();
 extern I64 HeapValidationTest(CI386Heap *hc,U8 *arena);
+extern I64 HeapFreeParityTest();
 I64 Main(I64 a,I64 b)
 {
   CI386Heap hc,other;
@@ -101,6 +102,8 @@ I64 Main(I64 a,I64 b)
   for (i=8200;i<8216;i++) if (guard[i]!=0xA5) return 26;
   i=HeapValidationTest(&hc,arena);
   if(i) return i;
+  i=HeapFreeParityTest;
+  if(i) return i;
   i=HeapShrinkTest;
   if(i) return i;
 #ifdef I386_HEAP_CORE_ONLY
@@ -123,5 +126,6 @@ U64 Hash(U8 *base,I64 size)
 #endif
 
 #include "Validation.HC"
+#include "FreeParity.HC"
 
 #include "Shrink.HC"
