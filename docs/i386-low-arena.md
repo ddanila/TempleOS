@@ -329,3 +329,20 @@ gate and full C1–C5 qualification remain open.
 The public cancellation regression also passes all nine cases at 64 MiB,
 including end-callback recovery and Shift-Esc message delivery
 (`build/i386-popup-exit-kill-64m-v1`); its source image was unchanged.
+
+A separate post-failure 8 MiB capture
+(`build/i386-popup-exit-heap-8m-v2`) confirms the main arena was also too
+fragmented and too full at the QMP stop: it held 6,512,608 of 6,669,312
+bytes, with a largest free payload of 132,784 bytes. The failing task request
+was 267,527 bytes; the auxiliary-arena failure log reported a largest free
+payload of 15,344 bytes. The captured main arena has about 156,704 bytes free
+including free-block metadata, so coalescing alone at that point cannot supply
+this request. The stop occurred after failure unwind and is not an exact
+allocation-time snapshot. The backing-region audit found 922,624 bytes held,
+908,800 bytes used and no unheld empty regions to reclaim
+(`build/i386-popup-exit-heap-8m-v2/backing-audit.json`). Its conventional-memory
+candidate calculation is inherited from an earlier boot-stack layout and must
+not be treated as a free or available range in this configuration. The capture
+and audit report unchanged inputs. The first capture attempt ended prematurely
+on the spawning command's completion, before the asynchronous failure
+(`build/i386-popup-exit-heap-8m-v1`); it supplied no heap evidence.
