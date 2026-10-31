@@ -3,7 +3,7 @@
 I64 OriginalTextRenderCheck()
 {
   CDC dc,*saved_dc=gr.dc2;
-  U8 *actual=MAlloc(307200),*expected=MAlloc(307200);
+  U8 *actual=MAlloc(307200),*storage=MAlloc(307202),*expected=storage+1;
   U32 *cells=MAlloc(19200),*saved_cells=gr.text_base;
   U64 *saved_font=text.font;
   I64 flags=GetRFlags,saved_ticks=cnts.jiffies,saved_x=gr.pan_text_x,saved_y=gr.pan_text_y;
@@ -27,8 +27,10 @@ I64 OriginalTextRenderCheck()
     MemSet(actual,0xA5,307200);
     GrUpdateTextBG; GrUpdateTextFG;
     //Detect pixels accidentally inherited from a previous frame.
+    storage[0]=0x39;storage[307201]=0xC6;
     MemSet(expected,0xA5,307200);
     TextRenderCore(expected,cells,sys_font_std,80,60,phase,px,py,hc,hr);
+    if(storage[0]!=0x39 || storage[307201]!=0xC6) { result=0; goto done; }
     for(i=0;i<307200;i++) if(actual[i]!=expected[i]) {
       result=-(1+phase*6+test); goto done;
     }
@@ -38,5 +40,5 @@ done:
   gr.pan_text_x=saved_x; gr.pan_text_y=saved_y; gr.hide_col=saved_col; gr.hide_row=saved_row;
   cnts.jiffies=saved_ticks; SetRFlags(flags);
   if(result<0) { "Text rendering mismatch: case %d pixel %d actual %d expected %d\n",-result,i,actual[i],expected[i]; }
-  Free(actual); Free(expected); Free(cells); return result;
+  Free(actual); Free(storage); Free(cells); return result;
 }

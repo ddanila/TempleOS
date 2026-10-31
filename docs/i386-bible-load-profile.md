@@ -382,3 +382,22 @@ Their four frame demos measured 380, 370, 400 and 410 ms on the candidate,
 versus 400, 410, 410 and 400 ms on the control. Other QEMU guests overlapped
 these guest-jiffy measurements, so they are approximate. The full Bible-link
 test remains in progress.
+
+## Wider text-background stores
+
+The renderer fills each eight-pixel background row with two U32 stores,
+while retaining the separate foreground pass and the prior pan and clipping
+logic. The original-renderer oracle now uses an unaligned, poisoned destination
+with guard bytes; the baseline and candidate pass all twelve blink/pan/hide
+comparisons (`build/i386-text-fill-baseline-v1.log`,
+`build/i386-text-fill-cross-v1.log`). Both compiler rebuild generations and
+the minimal and full-content cross-builds with 386 audits pass
+(`build/i386-text-fill-rebuild-v1.log`, `build/i386-text-fill-cross-v1`,
+`build/i386-text-fill-full-cross-v1`). The 8 MiB smoke passes with unchanged
+inputs (`build/i386-text-fill-smoke-v1`). Paired 64 MiB graphics sessions pass
+all 12 commands and exact VGA checkpoints with unchanged source images
+(`build/i386-text-fill-graphics-v1`, `build/i386-text-fill-control-v1`). Their
+four frame demos measured 330, 360, 350 and 370 ms, versus 380, 380, 420 and
+410 ms on the control. Other QEMU guests overlapped these guest-jiffy
+measurements, so the timings are approximate. The full Bible-link test remains
+in progress.

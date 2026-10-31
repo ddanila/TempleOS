@@ -46,6 +46,13 @@ both rebuilds, 386 audits, 8 MiB smoke, and paired exact-VGA graphics sessions
 pass. Unpanned frames measured 370–380 ms versus 400–410 ms on the control;
 other QEMU guests were active. Full Bible-link qualification remains open.
 
+Text background rows now use two U32 stores for their eight identical pixels.
+The original-renderer oracle passes with an unaligned, poisoned and guarded
+destination across its twelve cases. Both rebuilds, 386 audits, the 8 MiB
+smoke, and paired exact-VGA sessions pass. Candidate frames measured 330–370 ms
+versus 380–420 ms on the control, with other QEMU guests active. The full
+Bible-link test on this image remains in progress.
+
 ### Standalone public task header diagnostic (2026-10-31)
 
 `PublicTask.HH` now expresses the false `DeathWait` default without relying on

@@ -12,6 +12,7 @@ U0 TextRenderCore(U8 *pixels,U32 *cells,U8 *font,I64 cols,I64 rows,
 {
   I64 width=cols*8,height=rows*8,ncols=cols,nrows=rows,sx=0,sy=0,dx=0,dy=0;
   I64 row,col,x,y,pos,base,end=width*height-7*width-8,cell,attr,packed,ox,oy;
+  U32 background,*span;
   U8 glyph;
   if(pan_x>7) pan_x=7; if(pan_x< -7) pan_x=-7;
   if(pan_y>7) pan_y=7; if(pan_y< -7) pan_y=-7;
@@ -25,7 +26,11 @@ U0 TextRenderCore(U8 *pixels,U32 *cells,U8 *font,I64 cols,I64 rows,
   for(row=0;row<nrows;row++) for(col=0;col<ncols;col++) {
     cell=cells[(row+sy)*cols+col+sx]; attr=TextRenderAttr(cell,blink)>>4;
     base=(row*8+dy)*width+col*8+dx;
-    for(y=0;y<8;y++) for(x=0;x<8;x++) pixels[base+y*width+x]=attr;
+    background=attr*0x01010101;
+    for(y=0;y<8;y++) {
+      span=pixels+base+y*width;
+      span[0]=background;span[1]=background;
+    }
   }
   for(row=0;row<nrows;row++) for(col=0;col<ncols;col++) {
     cell=cells[(row+sy)*cols+col+sx]; attr=TextRenderAttr(cell,blink)&15;
