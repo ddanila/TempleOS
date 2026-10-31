@@ -442,3 +442,24 @@ unchanged inputs and neither completed the lookup
 window updates in 90.1 seconds and the control completed 310 in 90.0 seconds.
 Both guests ran concurrently and were paused for QMP samples; this is a
 comparative diagnostic, not a full-link completion or hardware benchmark.
+
+## Unrolled planar upload experiment
+
+An experimental candidate processed four source bytes per loop iteration while keeping
+four individual byte writes to VGA. Each validated row is 80 bytes, so the
+bounded upload length is divisible by four. Both rebuild generations, the
+native VGA oracle, and minimal and full-content cross-builds with 386 audits
+pass (`build/i386-vga-unroll-rebuild-v1.log`,
+`build/i386-vga-unroll-test-v1.log`, `build/i386-vga-unroll-cross-v1`,
+`build/i386-vga-unroll-full-cross-v1`). The 8 MiB smoke passes with unchanged
+inputs (`build/i386-vga-unroll-smoke-v1`). Paired graphics sessions pass all 12
+commands and exact VGA checkpoints with unchanged source images
+(`build/i386-vga-unroll-graphics-v1`, `build/i386-vga-unroll-control-v1`).
+Candidate frames measured 330, 330, 370 and 370 ms versus 330, 330, 360 and
+360 ms on the control. A 90-second full-link sample passed with unchanged
+inputs without completing the lookup, recording 292 window updates
+(`build/i386-bible-link-update-unroll-v1`); an earlier, separately timed control
+recorded 341 (`build/i386-bible-link-update-blank-v1`). These QEMU runs
+overlapped other guests and do not prove a regression, but provide no evidence
+of a gain. The unrolled code was therefore discarded. Its full-link completion
+test continues on the frozen experimental image.
