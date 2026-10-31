@@ -21,7 +21,7 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     inputs=[Path(__file__).resolve(),fixture]
     report=dict(result='running',mode='native',
-                scope='Reject a mounted drive size change while queued for the device lock; not full remap, public block API or concurrency qualification')
+                scope='Reject queued transfers after changes to drive size, offset, filesystem or read-only state; not full remap, public block API or concurrency qualification')
     inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC')]
     report['input_sha256']={str(p):sha(p) for p in inputs}
     try:

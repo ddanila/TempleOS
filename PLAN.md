@@ -18,8 +18,8 @@ separate task arena when the primary arena cannot fit a task. The 8 MiB InFile
 contract now passes and verifies successive input-filter tasks reuse the low
 slot. Task ownership/rollback fixtures, complete/unavailable map boots,
 bootstrap/cross-builds and the 16 MiB diagnostic pass. Public task cancellation
-and message regressions are in progress; the 60-second startup gate and full
-C1–C5 qualification remain open. See [low-memory evidence](docs/i386-low-arena.md).
+and message regressions pass at 64 MiB; isolated 8 MiB startup takes 63.500
+seconds and misses the 60-second gate. Full C1–C5 qualification remains open. See [low-memory evidence](docs/i386-low-arena.md).
 
 ### Conventional-memory selection for 8 MiB investigation (2026-10-31)
 
@@ -24783,3 +24783,12 @@ cases) and task cancellation (9 cases) pass at 64 MiB with the include-based
 fixture runner. An isolated 8 MiB startup run passes all nine behavior and VGA
 checks but takes 63.500 seconds, failing the 60-second gate
 (`build/i386-low-task-startup-isolated-v1/result.json`). C1–C5 remain open.
+
+## Queued raw-sector revalidation (2026-10-31)
+
+The private raw-sector contention fixture passes four drive/device change
+cases on the current full native image, extending the earlier size-only case.
+It covers offset, filesystem and read-only changes while queued, with input
+hashes unchanged (`build/i386-raw-block-race-expanded-v1`). This samples
+cooperative contention and does not provide public block I/O or qualify C1–C5;
+see `docs/i386-block-io.md`.

@@ -254,3 +254,16 @@ inputs (`build/i386-redsea-drive-fields-map-welcome`). The 8 MiB metadata check
 also passes with unchanged inputs
 (`build/i386-redsea-drive-fields-native-8m`). These concurrent guest runs do not
 qualify startup timing. C1–C5 remain open.
+
+## Queued sector-transfer revalidation (2026-10-31)
+
+The private raw-sector contention fixture now also changes the drive offset
+and filesystem while a read waits for the device lock, and sets the device
+read-only while a write waits. Alongside the existing size-change case, all
+four reject the queued operation and recover after restoring the fields on the
+current full native image (`build/i386-raw-block-race-expanded-v1`). Inputs and
+the delivered fixture were unchanged. The write uses the sector's existing
+contents and the guest runs on a snapshot. The fixture yields to the waiting
+task before each change; this samples cooperative contention and does not
+establish all remapping or device teardown cases. Public block I/O remains
+unimplemented.
