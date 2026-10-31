@@ -42,12 +42,12 @@ I64 I386FindSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches)
 //Overflow marks only its hash bucket; other buckets remain fully indexed.
 //The high head bit requests the original scan, preserving duplicate counts.
 class CI386SymbolSlot {
-  U8 *name;
-  U32 target,kind,next;
+  CI386ModuleRecord *record;
+  U32 next;
 };
 class CI386SymbolIndex {
   U32 heads[256];
-  CI386SymbolSlot slots[512];
+  CI386SymbolSlot slots[1024];
   Bool complete;
 };
 U32 I386SymbolBucket(U8 *name)
@@ -63,9 +63,10 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
   //Build without host arithmetic helpers or allocating scratch from the heap.
   U8 **next=modules;
   CI386SymbolSlot *slot;
-  U32 left=count,remaining,base=8,used=0;
-  #assert sizeof(CI386SymbolSlot)==16
+  U32 left=count,remaining,base=8,used=0,module_number=0;
+  #assert sizeof(CI386SymbolSlot)==8
   index->complete=FALSE;
+  if(count>0x200000) return;
   asm {
     MOV EBX,U32 &index[EBP]
     LEA EDI,U32 CI386SymbolIndex.heads[EBX]
@@ -95,20 +96,16 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
     JNE I32 @@60
 @@30:
     MOV EAX,U32 &used[EBP]
-    CMP EAX,512
+    CMP EAX,1024
     JE I32 @@80
     MOV EDX,EAX
-    SHL EDX,4
+    SHL EDX,3
     ADD EDX,EBX
     LEA EDX,U32 CI386SymbolIndex.slots[EDX]
     MOV U32 &slot[EBP],EDX
-    MOV U32 CI386SymbolSlot.kind[EDX],ECX
-    MOV EAX,U32 CI386ModuleRecord.offset[EDI]
-    ADD EAX,U32 &base[EBP]
-    MOV U32 CI386SymbolSlot.target[EDX],EAX
+    MOV U32 CI386SymbolSlot.record[EDX],EDI
     MOV ECX,U32 CI386ModuleRecord.name_offset[EDI]
     ADD ECX,ESI
-    MOV U32 CI386SymbolSlot.name[EDX],ECX
     XOR EAX,EAX
 @@40:
     MOVZX EDX,U8 [ECX]
@@ -129,6 +126,11 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
     LEA EAX,U32 CI386SymbolIndex.heads[EAX]
     MOV ECX,U32 [EAX]
     MOV EDX,U32 &slot[EBP]
+    PUSH EDX
+    MOV EDX,U32 &module_number[EBP]
+    SHL EDX,11
+    OR ECX,EDX
+    POP EDX
     MOV U32 CI386SymbolSlot.next[EDX],ECX
     MOV ECX,U32 &used[EBP]
     ADD ECX,1
@@ -139,6 +141,7 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
     SUB U32 &remaining[EBP],1
     JNZ I32 @@20
 @@70:
+    ADD U32 &module_number[EBP],1
     MOV EAX,U32 CI386ModuleHeader.code_size[ESI]
     ADD U32 &base[EBP],EAX
     SUB U32 &left[EBP],1
@@ -179,18 +182,19 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
   U32 j,used=0,base=8,bucket;
   I64 i;
   index->complete=FALSE;
+  if(count>0x200000) return;
   for(j=0;j<256;j++) index->heads[j]=0;
   for(i=0;i<count;i++) {
     h=modules[i]; r=modules[i]+h->records_offset;
     for(j=0;j<h->record_count;j++,r++)
       if(r->kind==I386_MODULE_EXPORT || r->kind==I386_MODULE_DATA_EXPORT) {
         bucket=I386SymbolBucket(modules[i]+r->name_offset);
-        if(used==512) {
+        if(used==1024) {
           index->heads[bucket]|=0x80000000;
         } else {
-          slot=&index->slots[used]; slot->name=modules[i]+r->name_offset;
-          slot->target=base+r->offset; slot->kind=r->kind;
-          slot->next=index->heads[bucket]; index->heads[bucket]=++used;
+          slot=&index->slots[used]; slot->record=r;
+          slot->next=index->heads[bucket]|i<<11;
+          index->heads[bucket]=++used;
         }
       }
     base+=h->code_size;
@@ -203,19 +207,28 @@ I64 I386IndexedSymbol(CI386SymbolIndex *index,U8 **modules,I64 count,
   U8 *name,I64 kind,I64 *matches)
 {
   CI386SymbolSlot *slot;
+  CI386ModuleRecord *record;
   U32 cursor;
-  I64 result=0;
+  I64 i,j,base,result=0;
   if(!index || !index->complete) return I386FindSymbol(modules,count,name,kind,matches);
   cursor=index->heads[I386SymbolBucket(name)];
   if(cursor&0x80000000) return I386FindSymbol(modules,count,name,kind,matches);
   *matches=0;
   while(cursor) {
-    slot=&index->slots[cursor-1];
-    if((!kind || kind==slot->kind) && I386NameEqual(slot->name,name)) {
-      (*matches)++; result=slot->target;
+    slot=&index->slots[cursor-1]; record=slot->record;
+    //The high bits retain the validated source-module ordinal, including
+    //when input buffers overlap or the same module is loaded more than once.
+    i=slot->next>>11; base=8;
+    for(j=0;j<i;j++) base+=modules[j](CI386ModuleHeader *)->code_size;
+    if((!kind || kind==record->kind) &&
+        I386NameEqual(modules[i]+record->name_offset,name)) {
+      (*matches)++; result=base+record->offset;
     }
-    cursor=slot->next;
+    cursor=slot->next&2047;
   }
+  //A repeated module pointer can occur at different loaded bases. Preserve
+  //the linear resolver's last-match result whenever a name is ambiguous.
+  if(*matches>1) return I386FindSymbol(modules,count,name,kind,matches);
   return result;
 }
 

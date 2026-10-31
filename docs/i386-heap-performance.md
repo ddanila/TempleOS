@@ -394,3 +394,36 @@ not justify the additional hot-loop work. The allocator change was reverted;
 the exact experimental patch remains in
 `build/i386-heap-free-single-v1.patch`. The profile, failed timing gate and
 candidate tests do not close the startup or C1–C5 requirements.
+
+## Compact loader symbol index (2026-11-01)
+
+The paused profile of the popup-exit build recorded 59 of 212 foundation
+samples in `I386FindSymbol`. ConsoleRuntime has 1,113 exports, so the former
+512-slot scratch index often fell back to a full scan. The loader now stores
+validated record pointers in 1,024 eight-byte slots, keeping the slot array's
+8 KiB size. Each link also encodes its source-module ordinal; this preserves
+identity for overlapping or repeated input buffers. Counts beyond the ordinal
+encoding and buckets beyond capacity fall back to the original full scan.
+Ambiguous matches also use that scan to preserve its last-match result.
+
+Both native and portable loader corpora pass 40 cases, with differential tests
+for mixed function/data exports, 1,024/1,025-entry capacity boundaries,
+duplicates and ordinal encoding (`build/i386-index-compact-loader-v3.log`,
+`build/i386-index-compact-portable-v3.log`). Both bootstrap generations and the
+full cross-build with 386 audit pass (`build/i386-index-compact-rebuild-v3.log`,
+`build/i386-index-compact-cross-v3`). The loader stack audit passes at
+16,332 of 16,384 bytes, leaving 52 bytes of the declared bound
+(`build/i386-index-compact-stack-v3`); this narrow remaining margin must be
+rechecked for future loader changes. The complete 16 MiB diagnostic passes
+(`build/i386-index-compact-diagnostics-v3`).
+
+An isolated 8 MiB run passes all nine functional and VGA checks but misses the
+60-second gate at 62.495 seconds (`build/i386-index-compact-startup-8m-v3`).
+A source-matched isolated control took 69.377 seconds
+(`build/i386-index-compact-control-8m-v2`); this single comparison is not a
+statistical benchmark. The final candidate's paused profile recorded 19 of
+177 foundation samples in `I386FindSymbol`, versus the previous 59 of 212
+(`build/i386-index-compact-profile-v1`). Sampling is not a timing measure.
+The first, larger-slot candidate exceeded the worker stack budget, and an
+intermediate compact candidate lacked module identity for overlapping buffers;
+neither was retained. Full C1–C5 qualification and the startup gate remain open.

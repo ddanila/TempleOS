@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Compact loader index (2026-11-01)
+
+The loader's bounded symbol index now holds 1,024 entries in the previous
+slot-array space while preserving source-module identity and full-scan fallback.
+Loader comparisons and the 16 MiB diagnostic pass. The isolated 8 MiB startup
+completes its functional checks in 62.495 seconds, still above the 60-second
+gate; the loader stack audit leaves 52 bytes of its declared budget. C1–C5
+remain open; see [heap performance evidence](docs/i386-heap-performance.md).
+
 ### Interactive popup exit and current memory evidence (2026-10-31)
 
 Shift-Esc now retires an active popup and its caller, matching the pinned
