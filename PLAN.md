@@ -11,6 +11,16 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Shared document entry activation (2026-11-01)
+
+The original actionable-character branch now dispatches through the shared
+entry-action implementation. The 13-case terminal-menu comparison passes on
+the pinned original, rebuilt original and native 64 MiB image, including exact
+menu documents and caller-role restoration. Full key dispatch, mouse navigation
+and selected terminal file operations remain open. The 16 MiB diagnostic passes;
+isolated 8 MiB startup takes 61.541 seconds and misses the 60-second gate.
+C1–C5 remain open; see [menu evidence](docs/i386-term-right-menu.md).
+
 ### Document key interception and undo components (2026-11-01)
 
 Native `DocPutKey` now supports the original pre-lock callback and default

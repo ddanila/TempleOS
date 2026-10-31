@@ -801,7 +801,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Typed dollar partial state, parsed foreground/color, macro command/attribute distinction, plain text and buffer growth. Remaining editor behavior and whole-file compatibility are unqualified."
+        "description": "Typed dollar partial state, parsed foreground/color, macro command/attribute distinction, plain text and buffer growth. Remaining editor behavior and whole-file compatibility are unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified."
       },
       "oracle": {
         "tool": "tools/test-i386-getstr-reference.py",
@@ -846,6 +846,20 @@
           "result": "pass",
           "evidence": "build/i386-c2-dollar-growth-native-install/result.json",
           "scope": "Installed native diagnostic runs growth-failure recovery at 8 MiB; not two complete native generations"
+        },
+        {
+          "target": "original-reference-terminal-menu-actions",
+          "command": "python3 tools/test-i386-term-right-menu.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-term-right-current-reference-v1/result.json",
+          "scope": "Thirteen real popup action/cancel cases and three menu documents; selected file operations and mouse navigation unqualified"
+        },
+        {
+          "target": "native-terminal-menu-actions-64m",
+          "command": "python3 tools/test-i386-term-right-menu.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-char-action-native-menu-v1/result.json",
+          "scope": "Same thirteen keyboard-driven popup cases and exact menu documents; full document and terminal behavior unqualified"
         }
       ]
     },
@@ -2072,7 +2086,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified."
+        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified."
       },
       "oracle": {
         "tool": "tools/test-i386-doc-put-key-reference.py",
@@ -2110,6 +2124,20 @@
           "result": "pass",
           "evidence": "build/i386-doc-put-key-core-native-8m-v1/result.json",
           "scope": "Same six cases on the minimal-memory profile; no full key-dispatch claim"
+        },
+        {
+          "target": "original-reference-terminal-menu-actions",
+          "command": "python3 tools/test-i386-term-right-menu.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-term-right-current-reference-v1/result.json",
+          "scope": "Thirteen real popup action/cancel cases and three menu documents; selected file operations and mouse navigation unqualified"
+        },
+        {
+          "target": "native-terminal-menu-actions-64m",
+          "command": "python3 tools/test-i386-term-right-menu.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-char-action-native-menu-v1/result.json",
+          "scope": "Same thirteen keyboard-driven popup cases and exact menu documents; full document and terminal behavior unqualified"
         }
       ]
     },
@@ -2507,8 +2535,18 @@
       ],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Terminal right-click menu action selection and cancellation in real popup tasks; selected file operations, mouse navigation and full terminal behavior remain unqualified."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-term-right-menu.py",
+        "checks": [
+          "Thirteen action/cancel and covered-popup cases",
+          "Three exact saved menu documents",
+          "Caller document roles, popup ownership and refresh progress"
+        ]
+      },
       "tests": [
         {
           "command": "python3 tools/test-i386-term-right-menu.py --out OUT",
@@ -2587,6 +2625,20 @@
           "result": "pass",
           "evidence": "build/i386-doc-link-session-native-v2/result.json",
           "scope": "DocEntryRun activates actual editor; queued character and Escape save file, with document roles and lock restored; no mouse or popup"
+        },
+        {
+          "target": "original-reference-terminal-menu-actions",
+          "command": "python3 tools/test-i386-term-right-menu.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-term-right-current-reference-v1/result.json",
+          "scope": "Thirteen real popup action/cancel cases and three menu documents; selected file operations and mouse navigation unqualified"
+        },
+        {
+          "target": "native-terminal-menu-actions-64m",
+          "command": "python3 tools/test-i386-term-right-menu.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-char-action-native-menu-v1/result.json",
+          "scope": "Same thirteen keyboard-driven popup cases and exact menu documents; full document and terminal behavior unqualified"
         }
       ]
     },

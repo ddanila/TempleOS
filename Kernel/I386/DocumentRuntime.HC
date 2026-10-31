@@ -162,6 +162,7 @@ extern CDocEntry *DocPrint(CDoc *doc=NULL,U8 *fmt,...);
 #include "/Kernel/PrintableBitmap.HH"
 U32 native_doc_printable[16]=CHAR_BMP_PRINTABLE_DATA;
 #include "/Adam/DolDoc/DocDollarInputCore.HC"
+#include "/Adam/DolDoc/DocCharActionCore.HC"
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   Bool unlock,printable;
@@ -177,8 +178,11 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
       DocUndoRestore(doc);
     else if(!ch && sc.u8[0]==SC_INS && !(sc&(SCF_SHIFT|SCF_CTRL|SCF_ALT|SCF_KEY_DESC)))
       doc->flags^=DOCF_OVERSTRIKE;
-    else if(!printable || sc.u32[0]&0x80000C00 ||
-        !DocDollarInputCore(doc,ch,printable)) DocBasicEditCore(doc,ch,sc);
+    else if(printable && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
+        DocDollarInputCore(doc,ch,printable)) {}
+    else if(printable && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
+        DocCharActionCore(doc,ch,sc)) {}
+    else DocBasicEditCore(doc,ch,sc);
   } catch { if(unlock) DocUnlock(doc); }
   if(unlock) DocUnlock(doc);
 }

@@ -425,6 +425,7 @@ U0 EdCharDel(CDoc *doc)
 
 #include "/Adam/DolDoc/DocDollarInputCore.HC"
 
+#include "/Adam/DolDoc/DocCharActionCore.HC"
 U0 EdCharIns(I64 ch,I64 sc,CDoc *doc)
 {
   Bool unlock=DocLock(doc);
@@ -435,17 +436,8 @@ U0 EdCharIns(I64 ch,I64 sc,CDoc *doc)
   if (DocDollarInputCore(doc,ch,Bt(char_bmp_printable,ch)))
     goto ic_done;
 
-  if ((ch==CH_SPACE || ch=='\n') &&
-	!(sc & (SCF_CTRL|SCF_SHIFT)) &&
-	doc_ce->de_flags &
-	(DOCEF_LINK|DOCEF_TREE|DOCEF_LST|DOCEF_CHECK_COLLAPSABLE|
-	DOCEF_LEFT_MACRO|DOCEF_LEFT_EXP|DOCEF_LEFT_CB|DOCEF_LEFT_IN_STR |
-	DOCEF_RIGHT_MACRO|DOCEF_RIGHT_EXP|DOCEF_RIGHT_CB|DOCEF_RIGHT_IN_STR)) {
-    doc->cmd_U8=ch;
-    DocEntryRun(doc,doc_ce,FALSE);
-    DocLock(doc);
+  if (DocCharActionCore(doc,ch,sc))
     goto ic_done;
-  }
   if (doc_ce->type_u8==DOCT_HEX_ED) {
     if (doc_ce->de_flags&DOCEF_DEREF_DATA &&
 	  !(doc_ce->de_flags&DOCEF_REMALLOC_DATA))

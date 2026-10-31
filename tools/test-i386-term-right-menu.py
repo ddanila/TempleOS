@@ -64,7 +64,7 @@ def main():
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions={'/TermRightMenu.HC':fixture.read_bytes()})
             commands=[('#include "C:/TermRightMenu.HC"',[]),('TMDrive(67);',[])]+[(f'TMChoose({i});',['1']) for i in modes]+[('6*7;',['42'])]
-            report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](disk,out/'guest',snapshot=False,ram_mib=64,cpu='486,-fpu',accel='tcg',qmp_stdio=True,startup_check={'status':'ok','answers':[],'commands':commands,'command_timeout':30 if args.refresh_only else 120,'pause_window_manager':False})
+            report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](disk,out/'guest',snapshot=False,ram_mib=64,cpu='486,-fpu',accel='tcg',qmp_stdio=True,welcome=True,startup_check={'status':'ok','answers':[],'commands':commands,'command_timeout':30 if args.refresh_only else 120,'pause_window_manager':False})
             files=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,{'/TermRightMenu.HC'}|{'/'+n for n in captures})
             if files['/TermRightMenu.HC']!=fixture.read_bytes():raise ValueError('Delivered fixture changed')
             observed={n:files['/'+n] for n in captures}

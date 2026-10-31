@@ -95,3 +95,33 @@ inventory entries and C1–C5 remain unqualified.
 The original `InFile` operation is now available natively and passes a scoped
 queued-execution comparison; see [InFile evidence](i386-infile.md). The
 right-click callback and its remaining dependencies are still open.
+
+## Shared character action dispatch (2026-11-01)
+
+The original `EdCharIns` actionable-entry branch is now shared through
+`DocCharActionCore.HC` and used by native `DocPutKey` after the same dollar
+input check. Space and Enter on entries with the original action flags set the
+command character, call the existing `DocEntryRun` path and restore the
+document lock. This is the original general entry-action branch, not a
+terminal-menu-specific handler; full original `DocPutKey` remains incomplete.
+
+The fresh pinned original and rebuilt-original controls pass thirteen cases
+with identical three saved menu documents
+(`build/i386-term-right-current-reference-v1`,
+`build/i386-doc-char-action-shared-reference-v2`). The current native baseline
+posted the first Space key and kept refreshing but did not return before its
+command timeout (`build/i386-term-right-current-native-red-v1`). The candidate
+passes all thirteen actions/cancel/covered cases with the same documents and
+unchanged inputs (`build/i386-doc-char-action-native-menu-v1`). It directly
+selects an entry and posts keyboard input: mouse navigation and execution of the
+selected terminal file operations remain unqualified. The six existing native
+DocPutKey component cases also pass (`build/i386-doc-char-action-key-v1`).
+
+Both bootstrap generations, the full cross-build/386 audit and 16 MiB startup
+diagnostic pass (`build/i386-doc-char-action-rebuild-v2.log`,
+`build/i386-doc-char-action-cross-v2`,
+`build/i386-doc-char-action-diagnostics-v1`). The first cross-build exposed a
+duplicate shared-helper definition; its image audit failed and the helper now
+has an include guard (`build/i386-doc-char-action-cross-v1`). Isolated 8 MiB
+startup completed all nine functional/VGA checks in 61.541 seconds, missing
+the 60-second gate (`build/i386-doc-char-action-startup-v1`). C1–C5 remain open.

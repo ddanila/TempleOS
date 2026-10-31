@@ -109,3 +109,9 @@ the older typed-dollar runner timed out while typing its long second
 definition, before a behavioral verdict (`build/i386-doc-put-key-core-dollar-
 v1`, `build/i386-doc-put-key-core-dollar-v2`); its prior coverage is not
 requalified by this change. Full original `DocPutKey` and C1–C5 remain open.
+
+The original actionable-character branch is now shared with the native
+wrapper. A 13-case terminal-menu comparison passes against the original,
+including action and cancellation values and exact serialized menu documents;
+see [terminal-menu evidence](i386-term-right-menu.md). This exercises Space on
+selected buttons and does not complete the original key dispatcher.
