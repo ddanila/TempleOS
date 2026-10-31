@@ -736,7 +736,7 @@ def audit_live_jit(log, out):
     return result
 
 
-def package_volume(disk, exports):
+def package_volume(disk, exports, content_profile="minimal"):
     """Write a RedSea volume after the reserved boot area; keep source bytes exact."""
     start = 2048
     if disk.stat().st_size < 16*1024*1024 or disk.stat().st_size % 512:
@@ -746,6 +746,10 @@ def package_volume(disk, exports):
     first=start+bitmap_blocks+1
     cursor=first
     image=bytearray(disk.read_bytes())
+    if content_profile not in ("minimal", "full"):
+        raise ValueError("Unknown content profile")
+    if content_profile == "full" and disk.stat().st_size < 64*1024*1024:
+        raise ValueError("Full content profile requires a disk of at least 64 MiB")
     tree={}
     for directory in ('Kernel','Compiler','Adam','Doc'):
         for path in sorted((ROOT/directory).rglob('*')):
@@ -754,6 +758,36 @@ def package_volume(disk, exports):
                 parts=path.relative_to(ROOT).parts
                 for part in parts[:-1]: node=node.setdefault(part,{})
                 node[parts[-1]]=path.read_bytes()
+    inventory_hashes = {}
+    if content_profile == "full":
+        inventory_path = ROOT/'docs/i386-compatibility-inventory.json'
+        inventory = json.loads(inventory_path.read_text())
+        revision = inventory['reference_revision']
+        reference_paths = set(subprocess.check_output(
+            ['git', 'ls-tree', '-r', '--name-only', revision], cwd=ROOT, text=True).splitlines())
+        listed_paths = [entry['path'] for entry in inventory['entries']]
+        if len(listed_paths) != len(set(listed_paths)) or set(listed_paths) != reference_paths:
+            raise ValueError('Compatibility inventory does not match its pinned Git tree')
+        seen = set()
+        for entry in inventory['entries']:
+            name = entry['path']
+            parts = name.split('/')
+            if not name or any(part in ('', '.', '..') for part in parts) or name.lower() in seen:
+                raise ValueError(f'Invalid or duplicate inventory path: {name}')
+            seen.add(name.lower())
+            source = ROOT.joinpath(*parts)
+            if not source.is_file() or source.is_symlink():
+                raise ValueError(f'Missing or unsupported inventory file: {name}')
+            payload = source.read_bytes()
+            inventory_hashes['/'+name] = hashlib.sha256(payload).hexdigest()
+            node = tree
+            for part in parts[:-1]:
+                node = node.setdefault(part, {})
+                if not isinstance(node, dict):
+                    raise ValueError(f'Inventory path collides with a file: {name}')
+            if isinstance(node.get(parts[-1]), dict):
+                raise ValueError(f'Inventory file collides with a directory: {name}')
+            node[parts[-1]] = payload
     packed = (exports/'IncludeInner.HC.Z').read_bytes()
     inner = (ROOT/'tools/guest/i386-kernel/IncludeInner.HC').read_bytes()
     if len(packed)<17 or struct.unpack_from('<qqB', packed) != (len(packed), len(inner), 2):
@@ -831,7 +865,8 @@ def package_volume(disk, exports):
     image[(start+1)*512:(start+1+bitmap_blocks)*512]=bitmap
     disk.write_bytes(image)
     return {'start':start,'sectors':sectors,'root':root,'bitmap_sectors':bitmap_blocks,
-            'first_free':cursor,'files':files}
+            'first_free':cursor,'files':files,'content_profile':content_profile,
+            'inventory_sha256':inventory_hashes}
 
 
 def verify_volume(disk, volume):
@@ -2366,10 +2401,14 @@ def main():
     parser.add_argument('--test',action='store_true',help='Boot with 8 MiB and verify startup, keyboard and VGA')
     parser.add_argument('--disk-mib',type=int,choices=(16,32,64),default=16,
                         help='Disk capacity; 32 MiB provides room for full native rebuild outputs')
+    parser.add_argument('--content-profile',choices=('minimal','full'),default='minimal',
+                        help='Full includes every current inventory file and requires a 64 MiB disk')
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-kernel',help='Isolated build output directory')
     parser.add_argument('--compiler-qmp-stdio',action='store_true',
                         help='Use QMP stdio for the original cross-compiler guest only')
     args=parser.parse_args()
+    if args.content_profile == 'full' and args.disk_mib < 64:
+        parser.error('--content-profile full requires --disk-mib 64')
     out=args.out.resolve()
     out.mkdir(parents=True,exist_ok=True)
     (out/'result.json').unlink(missing_ok=True)
@@ -2415,7 +2454,7 @@ def main():
     if disk.stat().st_size>2048*512:
         raise ValueError('Kernel stage exceeds its reserved 480 KiB load area')
     with disk.open('r+b') as stream: stream.truncate(args.disk_mib*1024*1024)
-    volume=package_volume(disk,exports)
+    volume=package_volume(disk,exports,args.content_profile)
     volume['verified_files']=verify_volume(disk,volume)
     normal_disk=disk
     diagnostic_image,diagnostics=diagnostic_disk(normal_disk,exports)
