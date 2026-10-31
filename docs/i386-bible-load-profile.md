@@ -291,3 +291,17 @@ sort image (`build/i386-bible-cleanup-asm-sort-3200-v1`): 32 of 54 samples
 were in `I386MemBackingValid`, 11 in `I386MemPoolValid`, and 10 in the heap
 chain validator. This remains a statistical sample rather than a timing test;
 it shows that backing validation still warrants investigation.
+
+## Full-link instruction sample
+
+`tools/profile-i386-bible-link.py` samples the first actual full-content Bible
+link lookup for a bounded period using a private image and QMP pauses. It does
+not require that lookup to finish and does not qualify its result or timing.
+On the 386-sort full-content image, a 90-second sample passed with unchanged
+inputs and recorded 413 instruction pointers before the first lookup ended
+(`build/i386-bible-link-sample-asm-sort-v1`). Of these, 343 were in the window
+worker's text rendering, planar conversion, or VGA presentation; 50 were in
+the kernel heap chain validator. The sample covers all scheduled guest tasks,
+not just the lookup task, and other QEMU guests ran concurrently. It identifies
+window presentation as a substantial observed cost but does not by itself
+prove why the full lookup has not completed.
