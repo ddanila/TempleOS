@@ -564,8 +564,14 @@ updates in 30 seconds with unchanged inputs
 (`build/i386-cache-stack-gap-diag-sample-v1`). This compares with one update
 for the original candidate and 116 for the preceding-image control in the
 earlier 30-second paired samples. The gap is an experiment, consumes stack
-space, and is not a proposed production fix. Full interactive diagnostics and
-the identity of the code sharing the original stack page are being checked.
+space, and is not a proposed production fix. The full 16 MiB diagnostic then
+passed all nine interactive checks, 22 publication cases, and 28 program
+publication cases; recorded input hashes were unchanged
+(`build/i386-cache-stack-gap-diagnostics-v1`). A filtered QEMU translation
+trace recorded 57 guest code blocks beginning on the original `0x3d4000`
+stack page during startup (`build/i386-cache-diag-stack-code-v1`), before the
+window worker used it. This supports a page-sharing explanation, though the
+source of every translated block and a general fix remain to be established.
 The normal
 full-link test timed out at its 20-minute command limit with unchanged inputs
 (`build/i386-cache-mergesort-bible-full-v1`).
