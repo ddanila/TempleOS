@@ -3,6 +3,7 @@
 //Single CPU, no NMI callers. All list/counter mutations run with IRQs masked.
 //This is the internal allocation core; public MAlloc/OutMem and task binding
 //must be supplied by the retained memory service before application exposure.
+#ifdef I386_HEAP_SOURCE_BUILD
 Bool I386MemPoolValid(CI386PublicPool *pool)
 {
   CI386PoolRegion *region,*last=0;
@@ -21,6 +22,78 @@ Bool I386MemPoolValid(CI386PublicPool *pool)
   }
   return count==pool->region_count && total==pool->size && used==pool->used_u8s;
 }
+#else
+// The native loop keeps the full shape check but avoids repeated wide
+// arithmetic for values whose valid totals must fit the U32 pool size.
+#assert offset(CMemRange.size)==20
+Bool I386MemPoolValid(CI386PublicPool *pool)
+{
+  U32 total=0,used=0,valid=0;
+  if(!pool || pool->signature!=I386_POOL_SIGNATURE || pool->size&511 ||
+      pool->alloced_u8s!=pool->size || !(0<=pool->used_u8s<=pool->size)) return FALSE;
+  asm {
+    MOV EBX,U32 &pool[EBP]
+    MOV ESI,U32 CI386PublicPool.regions[EBX]
+    XOR EDI,EDI
+    XOR ECX,ECX
+@@10:
+    TEST ESI,ESI
+    JZ I32 @@80
+    CMP ECX,U32 CI386PublicPool.region_count[EBX]
+    JAE I32 @@90
+    INC ECX
+    CMP U32 CI386PoolRegion.pool[ESI],EBX
+    JNE I32 @@90
+    CMP U32 CMemRange.last[ESI],EDI
+    JNE I32 @@90
+    CMP U32 CMemRange.type[ESI],MRT_RAM
+    JNE I32 @@90
+    CMP U32 CMemRange.flags[ESI],0
+    JNE I32 @@90
+    MOV EAX,U32 CMemRange.base[ESI]
+    TEST EAX,EAX
+    JZ I32 @@90
+    TEST EAX,511
+    JNZ I32 @@90
+    CMP U32 24[ESI],0
+    JNE I32 @@90
+    MOV EDX,U32 CMemRange.size[ESI]
+    CMP EDX,512
+    JB I32 @@90
+    TEST EDX,511
+    JNZ I32 @@90
+    ADD EAX,EDX
+    JNC @@20
+    TEST EAX,EAX
+    JNZ I32 @@90
+@@20:
+    ADD U32 &total[EBP],EDX
+    JC I32 @@90
+    MOV EAX,U32 CI386PoolRegion.used[ESI]
+    TEST EAX,511
+    JNZ I32 @@90
+    CMP EAX,EDX
+    JA I32 @@90
+    ADD U32 &used[EBP],EAX
+    JC I32 @@90
+    MOV EDI,ESI
+    MOV ESI,U32 CMemRange.next[ESI]
+    JMP I32 @@10
+@@80:
+    CMP ECX,U32 CI386PublicPool.region_count[EBX]
+    JNE @@90
+    MOV EAX,U32 &total[EBP]
+    CMP EAX,U32 CI386PublicPool.size[EBX]
+    JNE @@90
+    MOV EAX,U32 &used[EBP]
+    CMP EAX,U32 CBlkPool.used_u8s[EBX]
+    JNE @@90
+    MOV U32 &valid[EBP],1
+@@90:
+  }
+  return valid;
+}
+#endif
 CI386PoolRegion *I386MemBlockRegion(CI386PublicPool *pool,CMemBlk *block)
 {//Pool shape already validated; test address membership before reading the block.
   CI386PoolRegion *region;

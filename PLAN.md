@@ -48,8 +48,17 @@ queue without pending loss. Input edge cases, paired overflow/recovery sessions,
 both rebuilds, both cross-builds and the 16 MiB diagnostic pass. In 90-second
 full-link samples with window refresh suspended, heap-validator samples fell
 from 165/410 to 13/410; neither lookup completed. The concurrent 8 MiB run took
-66.9 seconds and missed the startup gate; the normal full-link test remains in
-progress. See [keyboard transport](docs/i386-keyboard.md).
+66.9 seconds and missed the startup gate; the normal full-link test timed out
+during its first lookup at the 20-minute command limit with unchanged inputs. See [keyboard transport](docs/i386-keyboard.md).
+
+The native pool validator now walks regions with bounded 386 arithmetic while
+retaining its portable implementation. An independent source oracle exercises
+valid and corrupt region lists, accounting, overflow and the 4 GiB boundary;
+both heap variants and rebuild generations pass. Both standalone cross-builds
+pass, as do the 16 MiB diagnostic and a 1,600/3,200-line Bible profile with
+unchanged inputs on candidate and control. The full-link test and 8 MiB startup
+run remain in progress. See
+[load profiling](docs/i386-bible-load-profile.md).
 
 The gap sort now has a tested 386 implementation and retains its portable
 guest-source implementation. Mixed-order and corrupted ownership-list tests,

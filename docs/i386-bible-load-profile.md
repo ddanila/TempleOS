@@ -454,6 +454,35 @@ free-span insertion during document allocation and 151 in the bootstrap heap
 chain validator; several of the latter stacks belonged to keyboard work. This
 is not a normal-desktop acceptance test or a direct timing measurement.
 
+## Pool validation region walk
+
+The native public-pool validator uses a bounded 386 region walk; the portable
+guest-source version retains the original expression-based implementation. The
+native walk rejects overflow of aggregate region sizes or usage because valid
+pool counters fit in 32 bits; it still accepts a region ending exactly at 4 GiB.
+An independent reference checks valid and malformed metadata, list cycles,
+counter corruption, aggregate overflow, and the address boundary without
+mutating the pool or regions. Both native and portable public heap suites pass
+(`build/i386-pool-fast-test-v2.log`,
+`build/i386-pool-fast-source-test-v2.log`), as do both bootstrap rebuild
+generations, minimal/full cross-builds with 386 audits, and the 16 MiB startup
+diagnostic (`build/i386-pool-fast-rebuild-v1.log`,
+`build/i386-pool-fast-cross-v1`, `build/i386-pool-fast-full-cross-v1`,
+`build/i386-pool-fast-diagnostics-v1`).
+
+The bounded 1,600/3,200-line profiles pass with unchanged inputs; at 3,200
+lines both observed 102 regions. The candidate took 11.4 seconds through free
+and the prior-image control 16.6 seconds. Other guests were active and the
+runs were sequential, so this is not an isolated comparison or full-file
+qualification (`build/i386-pool-fast-bible-medium-v1`,
+`build/i386-pool-fast-bible-control-v1`). A 90-second suspended-window
+full-link sample with unchanged inputs recorded 43 of 411 samples in the pool
+validator, versus 152 of 410 in an earlier control. The runs overlapped other
+guests, neither lookup completed, and this is not a timing comparison
+(`build/i386-pool-fast-bible-sample-v1`,
+`build/i386-keyboard-idle-bible-isolated-v1`). The full-link test and 8 MiB startup run remain in progress
+(`build/i386-pool-fast-bible-full-v1`, `build/i386-pool-fast-smoke-v1`).
+
 ## Idle keyboard polling
 
 The keyboard pump now bypasses exception-frame creation when its IRQ-protected
@@ -465,8 +494,9 @@ their inputs unchanged, had zero window updates and did not finish the lookup
 (`build/i386-keyboard-idle-bible-control-v1`,
 `build/i386-keyboard-idle-bible-isolated-v1`). This is not a completion or
 timing measurement. Input, diagnostic and loss-recovery evidence is recorded
-in [keyboard transport](i386-keyboard.md); the normal full-link test remains
-in progress (`build/i386-keyboard-idle-bible-full-v1`).
+in [keyboard transport](i386-keyboard.md). The normal full-link test timed out
+during its first lookup at the 20-minute command limit with inputs unchanged
+(`build/i386-keyboard-idle-bible-full-v1`).
 
 ## Cached free-span consolidation (unqualified candidate)
 

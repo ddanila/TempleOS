@@ -1,6 +1,7 @@
 #include "/Kernel/I386/Cpu.HC"
 #include "/Kernel/I386/Memory.HC"
 #include "MemoryLayout.HC"
+#include "PoolValidation.HC"
 CI386PublicPool public_pool;
 CHeapCtrl public_heaps[2];
 I64 requests[12]={0,1,4,5,100,1004,1005,1011,1024,4096,65536,131000};
@@ -15,6 +16,7 @@ I64 PublicHeapTest()
   I64 i,j,round,index,sizes[64],total,old,old_pool;
   U32 flags=GetRFlags,seed=0x12345678;
   if(!MemoryLayoutCheck) return 131;
+  if(i=PoolValidationTest) return i;
   if(I386MemPoolInit(pool,0x40001,0x40000) ||
       I386MemPoolInit(pool,0x40000,511) ||
       I386MemPoolInit(pool,0x40000,0x40001) ||

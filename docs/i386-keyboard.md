@@ -34,8 +34,9 @@ zero window updates and did not complete the lookup. These are paused samples,
 not elapsed-time or desktop acceptance results. An 8 MiB run completed all
 nine interactive checks with unchanged inputs but took 66.9 seconds with other
 guests active, above the 60-second startup gate
-(`build/i386-keyboard-idle-smoke-v1`). Full Bible-link and C1–C5 qualification
-remain open.
+(`build/i386-keyboard-idle-smoke-v1`). The normal full Bible-link test timed
+out during its first lookup at the 20-minute command limit with inputs unchanged
+(`build/i386-keyboard-idle-bible-full-v1`). C1–C5 qualification remains open.
 
 `Kernel/I386/Kbc.HH` and `Kbc.HC` provide raw 8042 access through ports 0x64
 (status/command) and 0x60 (data). These are bootstrap interfaces requiring one
