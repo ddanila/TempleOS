@@ -54,11 +54,21 @@ I64 BackingManyRegionTest()
 {
   CI386BackingPool *pool=&backing_pool;
   CI386BackingRegion *node,*next,*reverse,*saved_next;
+  CI386BackingRegion *order[I386_BACKING_BATCH];
   CMemBlk *pages[270];I64 i;U32 saved_request;
   if(!I386HeapInit(&backing_heap,0x40000,0x50000) ||
       !I386MemBackingInit(pool,&backing_heap,512))return 490;
   for(i=0;i<I386_BACKING_BATCH;i++) if(!(pages[i]=I386MemPageAlloc(pool,1,TRUE)))return 491;
   if(pool->owned_count!=I386_BACKING_BATCH || !BackingValidationOracle(pool) || !I386MemBackingValid(pool))return 496;
+  //Exercise a mixed address order as well as the ascending/reversed lists.
+  node=pool->owned;
+  for(i=0;i<I386_BACKING_BATCH;i++) { order[i]=node;node=node->next_owned; }
+  for(i=0;i<I386_BACKING_BATCH-1;i++)
+    order[(i*73)&(I386_BACKING_BATCH-1)]->next_owned=order[((i+1)*73)&(I386_BACKING_BATCH-1)];
+  order[((I386_BACKING_BATCH-1)*73)&(I386_BACKING_BATCH-1)]->next_owned=0;pool->owned=order[0];
+  if(!BackingValidationOracle(pool) || !I386MemBackingValid(pool))return 502;
+  for(i=0;i<I386_BACKING_BATCH-1;i++) order[i]->next_owned=order[i+1];
+  order[I386_BACKING_BATCH-1]->next_owned=0;pool->owned=order[0];
   reverse=NULL;node=pool->owned;
   while(node) { next=node->next_owned;node->next_owned=reverse;reverse=node;node=next; }
   pool->owned=reverse;

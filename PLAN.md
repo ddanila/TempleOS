@@ -22,6 +22,12 @@ earlier batch-64 image; both runs overlapped other guests. The full-content
 Bible-link test is still running. Full C1–C5 qualification remains open; see
 [Bible load profiling](docs/i386-bible-load-profile.md).
 
+The gap sort now has a tested 386 implementation and retains its portable
+guest-source implementation. Mixed-order and corrupted ownership-list tests,
+both rebuild generations, task heaps, both cross-build audits, and the 8 MiB
+smoke pass. A 3,200-line Bible profile also passes; full-file tests remain in
+progress.
+
 ### Standalone public task header diagnostic (2026-10-31)
 
 `PublicTask.HH` now expresses the false `DeathWait` default without relying on

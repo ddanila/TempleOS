@@ -10,6 +10,7 @@ Bool I386MemBackingValid(CI386BackingPool *pool)
   CI386HeapBlock *block;
   CI386Heap *heap;
   U32 flags=I386IrqSave,count=0,chunk,gap,i,j,offset,target;
+  U32 *scratch=i386_backing_region_scratch,limit;
   I64 retained=0;
   U64 address,base,heap_base;
   Bool result=FALSE;
@@ -32,6 +33,7 @@ Bool I386MemBackingValid(CI386BackingPool *pool)
     }
     //Sort in place with fewer shifts on reverse-ordered regions. The final gap
     //of one preserves exact ascending block matching.
+#ifdef I386_HEAP_SOURCE_BUILD
     for(gap=chunk/2;gap;gap=gap/2)
       for(i=gap;i<chunk;i++) {
         target=i386_backing_region_scratch[i];j=i;
@@ -40,6 +42,50 @@ Bool I386MemBackingValid(CI386BackingPool *pool)
         }
         i386_backing_region_scratch[j]=target;
       }
+#else
+    //The bootstrap compiler expands each indexed U32 operation to wide stack
+    //arithmetic; retain the same gap sort using bounded byte offsets here.
+    limit=chunk*4;
+    asm {
+      MOV EDI,U32 &scratch[EBP]
+      MOV EBX,U32 &chunk[EBP]
+      SHR EBX,1
+      SHL EBX,2
+@@10:
+      TEST EBX,EBX
+      JZ I32 @@90
+      MOV ECX,EBX
+@@20:
+      CMP ECX,U32 &limit[EBP]
+      JAE @@80
+      LEA EAX,U32 [EDI+ECX]
+      MOV EDX,U32 [EAX]
+@@30:
+      MOV ESI,EAX
+      SUB ESI,EDI
+      CMP ESI,EBX
+      JB @@40
+      MOV ESI,EAX
+      SUB ESI,EBX
+      CMP U32 [ESI],EDX
+      JBE @@40
+      PUSH EAX
+      MOV EAX,U32 [ESI]
+      MOV U32 [ESI+EBX],EAX
+      POP EAX
+      MOV EAX,ESI
+      JMP @@30
+@@40:
+      MOV U32 [EAX],EDX
+      ADD ECX,4
+      JMP @@20
+@@80:
+      SHR EBX,1
+      AND EBX,-4
+      JNZ I32 @@10
+@@90:
+    }
+#endif
     offset=0;
     for(i=0;i<chunk;i++) {
       target=i386_backing_region_scratch[i]-(heap->base+0)(U32)-sizeof(CI386HeapBlock);

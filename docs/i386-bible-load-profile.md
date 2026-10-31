@@ -264,3 +264,24 @@ passed with unchanged inputs. It recorded 46 of 65 samples in
 instructions in the validator precede its hand-written heap walk and lie in
 the generated sorting code. This identifies a remaining optimization target;
 the sample is not a timing measurement.
+
+## 386 gap sort
+
+The next candidate implements the same bounded gap sort using 386 instructions
+and byte offsets; guest-source builds retain the portable loop. The native and
+portable heap suites compare valid and corrupted ownership lists with the
+independent oracle, including a mixed address order and a cycle beyond the
+batch boundary (`build/i386-backing-asm-sort-mixed-test-v1.log`,
+`build/i386-backing-asm-sort-mixed-source-test-v1.log`). Both rebuild
+generations, the task-heap lifecycle suite, and the minimal native cross-build
+and 386 audit pass (`build/i386-backing-asm-sort-rebuild-v3.log`,
+`build/i386-backing-asm-sort-task-heaps-v3.log`,
+`build/i386-backing-asm-sort-cross-v3`). The full-content cross-build and 386
+audit also pass (`build/i386-backing-asm-sort-full-cross-v1`); its full
+Bible-link test is running. The 8 MiB drive-fields smoke passes with unchanged
+inputs (`build/i386-backing-asm-sort-smoke-v1`). The bounded Bible profile
+passes with unchanged inputs at 56 and 102 regions
+(`build/i386-bible-load-asm-sort-medium-v1`). At 3,200 lines, it observed
+30.3 seconds total and 10.6 seconds cleanup, compared with 32.4 and 12.8
+seconds for the portable gap sort on the prior image. Both runs overlapped
+other guests and are approximate. Neither establishes full-file completion.
