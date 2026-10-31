@@ -11,6 +11,13 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Document entry key-action comparison (2026-11-01)
+
+Seven direct Space/Enter action cases now match the pinned and rebuilt original
+at 8 and 64 MiB, including modifier suppression, callbacks, collapse, locks,
+roles and heap balance. Full key dispatch and mouse workflows remain open;
+see [document-key evidence](docs/i386-doc-put-key.md). C1–C5 remain open.
+
 ### Shared document entry activation (2026-11-01)
 
 The original actionable-character branch now dispatches through the shared

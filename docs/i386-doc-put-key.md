@@ -115,3 +115,20 @@ wrapper. A 13-case terminal-menu comparison passes against the original,
 including action and cancellation values and exact serialized menu documents;
 see [terminal-menu evidence](i386-term-right-menu.md). This exercises Space on
 selected buttons and does not complete the original key dispatcher.
+
+## Direct entry-action comparison (2026-11-01)
+
+A seven-case `DocPutKey` fixture compares Space/left-expression and
+Enter/right-expression messages, Shift-Space and Ctrl-Space suppression,
+left/right callbacks and collapsible-entry toggling. It checks callback lock
+state, final document lock and roles, message values and task-heap balance.
+The pinned original, the rebuilt original with the shared action helper, and
+native at both 64 and 8 MiB all return seven masks of 127 with unchanged inputs
+(`build/i386-doc-key-action-reference-v2`,
+`build/i386-doc-key-action-rebuilt-v1`,
+`build/i386-doc-key-action-native-64m-v1`,
+`build/i386-doc-key-action-native-8m-v1`). The first reference fixture used
+unsupported ternary syntax and stopped in the debugger before its verdict
+(`build/i386-doc-key-action-reference-v1`). The comparison does not exercise
+mouse selection, macros, links, arbitrary editor shortcuts or complete original
+`DocPutKey`; those and C1–C5 remain open.

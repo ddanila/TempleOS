@@ -801,7 +801,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Typed dollar partial state, parsed foreground/color, macro command/attribute distinction, plain text and buffer growth. Remaining editor behavior and whole-file compatibility are unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified."
+        "description": "Typed dollar partial state, parsed foreground/color, macro command/attribute distinction, plain text and buffer growth. Remaining editor behavior and whole-file compatibility are unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB."
       },
       "oracle": {
         "tool": "tools/test-i386-getstr-reference.py",
@@ -860,6 +860,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-char-action-native-menu-v1/result.json",
           "scope": "Same thirteen keyboard-driven popup cases and exact menu documents; full document and terminal behavior unqualified"
+        },
+        {
+          "target": "original-reference-document-key-actions",
+          "command": "python3 tools/test-i386-doc-key-action-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-key-action-reference-v2/result.json",
+          "scope": "Seven direct entry-action cases including modifiers, callbacks, collapse and locks"
+        },
+        {
+          "target": "native-document-key-actions-64m",
+          "command": "python3 tools/test-i386-doc-key-action.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-key-action-native-64m-v1/result.json",
+          "scope": "Same seven entry-action cases; full DocPutKey remains unqualified"
+        },
+        {
+          "target": "native-document-key-actions-8m",
+          "command": "python3 tools/test-i386-doc-key-action.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-key-action-native-8m-v1/result.json",
+          "scope": "Same seven entry-action cases at 8 MiB; full DocPutKey remains unqualified"
         }
       ]
     },
@@ -2086,7 +2107,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified."
+        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB."
       },
       "oracle": {
         "tool": "tools/test-i386-doc-put-key-reference.py",
@@ -2138,6 +2159,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-char-action-native-menu-v1/result.json",
           "scope": "Same thirteen keyboard-driven popup cases and exact menu documents; full document and terminal behavior unqualified"
+        },
+        {
+          "target": "original-reference-document-key-actions",
+          "command": "python3 tools/test-i386-doc-key-action-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-key-action-reference-v2/result.json",
+          "scope": "Seven direct entry-action cases including modifiers, callbacks, collapse and locks"
+        },
+        {
+          "target": "native-document-key-actions-64m",
+          "command": "python3 tools/test-i386-doc-key-action.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-key-action-native-64m-v1/result.json",
+          "scope": "Same seven entry-action cases; full DocPutKey remains unqualified"
+        },
+        {
+          "target": "native-document-key-actions-8m",
+          "command": "python3 tools/test-i386-doc-key-action.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-key-action-native-8m-v1/result.json",
+          "scope": "Same seven entry-action cases at 8 MiB; full DocPutKey remains unqualified"
         }
       ]
     },
