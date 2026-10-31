@@ -556,6 +556,16 @@ addresses between `0x3d404c` and `0x3d409c`, within the active window-worker
 stack page at `0x3d4000` (`build/i386-cache-diag-host-page-candidate-v1`).
 Its inputs were unchanged and it completed no window updates during sampling.
 The source of the code-page sharing remains under investigation.
+A temporary isolated worktree inserted a 4 KiB local stack gap in the window
+worker. Its two bootstrap generations and 386 cross-build passed; the sampled
+diagnostic image was byte-identical to the audited cross-build image. The
+compositor stack moved to page `0x3d3000`, and the guest completed 117 window
+updates in 30 seconds with unchanged inputs
+(`build/i386-cache-stack-gap-diag-sample-v1`). This compares with one update
+for the original candidate and 116 for the preceding-image control in the
+earlier 30-second paired samples. The gap is an experiment, consumes stack
+space, and is not a proposed production fix. Full interactive diagnostics and
+the identity of the code sharing the original stack page are being checked.
 The normal
 full-link test timed out at its 20-minute command limit with unchanged inputs
 (`build/i386-cache-mergesort-bible-full-v1`).
