@@ -2,6 +2,7 @@
 #define I386_LEX_FILES_INCLUDED
 #include "/Compiler/LexFiles.HH"
 #include "/Kernel/I386/Heap.HH"
+#define I386_LEX_FILE_MAGIC 0x4C464931
 //Private allocation wrapper; shared with compiler-control cleanup.
 class CI386LexFile
 {

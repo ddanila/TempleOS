@@ -75,6 +75,12 @@ I64 NativeSnapshotNestedTest()
   snapshot->active->next=later+16;saved->active=later+16;
   if(I386LexSnapshotValid(&state_heap,&cc,snapshot)) return 734;
   snapshot->active->next=parent_next;saved->active=saved_active;
+  //Snapshot creation must reject a forged parent without changing its state.
+  parent_next=inner->next;inner->next=later+16;cc.lex_include_stk=inner;
+  i=state_heap.used;
+  if(I386LexPush(&state_heap,&cc) || cc.lex_prs_stk!=snapshot ||
+      cc.lex_include_stk!=inner || state_heap.used!=i) return 736;
+  inner->next=parent_next;cc.lex_include_stk=root;
   if(!I386HeapFree(&state_heap,later)) return 735;
   //A later corrupt allocation must invalidate an earlier matching snapshot.
   later=I386HeapAllocHigh(&state_heap,32);

@@ -22,6 +22,11 @@ earlier batch-64 image; both runs overlapped other guests. Its full-content
 Bible-link test timed out. Full C1–C5 qualification remains open; see
 [Bible load profiling](docs/i386-bible-load-profile.md).
 
+Lexer snapshot creation also reuses the validated heap state after allocation;
+the pop path retains full validation after restoring file state. The forged
+parent test, both rebuilds, both cross-builds and the 16 MiB diagnostic pass.
+An isolated 8 MiB run took 65.0 seconds and still missed the 60-second gate.
+
 The gap sort now has a tested 386 implementation and retains its portable
 guest-source implementation. Mixed-order and corrupted ownership-list tests,
 both rebuild generations, task heaps, both cross-build audits, and the 8 MiB

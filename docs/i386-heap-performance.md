@@ -63,6 +63,29 @@ samples in `I386HeapScanSelect`, with another nine in the new known-size walk
 samples, not call counts or timing measurements. Heap validation remains a
 prominent startup cost.
 
+## Lexer push lookup candidate (2026-10-31)
+
+On successful snapshot allocation, the allocator has validated and updated
+the heap while interrupts remain excluded. Snapshot creation now uses the
+same block-boundary walk to verify its active file and parents before the next
+allocation, rather than repeating complete validations. The pop path retains
+its complete validation after restoring caller-provided file state.
+
+The forged-parent fixture passes before and after the change, along with the
+snapshot-boundary and compiler-owner suites
+(`build/i386-lex-push-scan-baseline-v1.log`,
+`build/i386-lex-push-scan-boundary-v1.log`,
+`build/i386-lex-push-scan-symbols-v1.log`). An initial rebuild correctly
+rejected changed inputs after the pop optimization was removed; the fresh two
+generations, minimal and full-content 386 cross-builds, and complete 16 MiB
+diagnostic pass (`build/i386-lex-push-scan-rebuild-v1.log`,
+`build/i386-lex-push-scan-rebuild-v2.log`, `build/i386-lex-push-scan-cross-v1`,
+`build/i386-lex-push-scan-full-cross-v1`, `build/i386-lex-push-scan-diagnostics-v1`).
+The diagnostic input hashes were unchanged. An isolated 8 MiB run completed
+all nine interactive checks with unchanged inputs but failed the 60-second
+gate at 65.0 seconds (`build/i386-lex-push-scan-smoke-v1`); the preceding
+image took 66.6 seconds in the earlier isolated run. C1–C5 remain open.
+
 Loading the complete document records at bce29e6 exposed a normal-startup
 regression: 60.612 seconds on the QEMU/486 8 MiB profile, compared with 25.038
 seconds before those records were published. Full diagnostic startup took

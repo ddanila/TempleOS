@@ -1,5 +1,6 @@
 #include "/Compiler/I386/LexState.HH"
 #include "/Compiler/I386/LexFiles.HH"
+#include "/Compiler/I386/LexFilesKnown.HC"
 #include "/Compiler/LexState.HC"
 #include "/Kernel/I386/Cpu.HH"
 U0 I386LexSavedCopy(CLexFile *source,CLexFile *dest)
@@ -21,10 +22,11 @@ Bool I386LexPush(CI386Heap *heap,CCmpCtrl *cc)
   snapshot->active=cc->lex_include_stk; snapshot->control=cc;
   snapshot->heap=heap; snapshot->signature=I386_LEX_SNAPSHOT_MAGIC;
   //Allocate all parent positions before changing the caller's input state.
+  //The successful allocation validated and updated the heap under IRQ exclusion.
   tail=&snapshot->parents;
-  if(I386LexFileOwned(heap,cc,snapshot->active)) {
+  if(I386LexFileOwnedKnown(heap,cc,snapshot->active)) {
     for(parent=snapshot->active->next;parent;parent=parent->next) {
-      if(!I386LexFileOwned(heap,cc,parent)) goto failed;
+      if(!I386LexFileOwnedKnown(heap,cc,parent)) goto failed;
       saved=I386HeapAlloc(heap,sizeof(CI386LexSavedFile),TRUE);
       if(!saved) goto failed;
       saved->active=parent; I386LexSavedCopy(parent,&saved->file);
