@@ -6780,6 +6780,27 @@
           "result": "pass",
           "evidence": "build/i386-exefile-native-8m-v1/result.json",
           "scope": "Same native contract at 8 MiB, unchanged inputs; concurrent startup is not timing qualification."
+        },
+        {
+          "target": "original-exefile2",
+          "command": "python3 tools/test-i386-exefile2.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile2-original-v3/result.json",
+          "scope": "Original ExePutS2/ExeFile2 success, explicit Compiler/Break and custom exception propagation, file extensions and recovery; malformed-source debugger path excluded."
+        },
+        {
+          "target": "native-exefile2",
+          "command": "python3 tools/test-i386-exefile2.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile2-native-v2/result.json",
+          "scope": "Native same mask 509 at 64 MiB, unchanged inputs; not full compiler or terminal qualification."
+        },
+        {
+          "target": "native-exeputs-exceptions",
+          "command": "python3 tools/test-i386-exe-puts-exceptions.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile2-puts-exceptions-v1/result.json",
+          "scope": "Ordinary ExePutS retains explicit Compiler/Break absorption and custom exception propagation; unchanged inputs."
         }
       ]
     },
@@ -6956,6 +6977,27 @@
           "result": "pass",
           "evidence": "build/i386-exefile-native-8m-v1/result.json",
           "scope": "Same native contract at 8 MiB, unchanged inputs; concurrent startup is not timing qualification."
+        },
+        {
+          "target": "original-exefile2",
+          "command": "python3 tools/test-i386-exefile2.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile2-original-v3/result.json",
+          "scope": "Original ExePutS2/ExeFile2 success, explicit Compiler/Break and custom exception propagation, file extensions and recovery; malformed-source debugger path excluded."
+        },
+        {
+          "target": "native-exefile2",
+          "command": "python3 tools/test-i386-exefile2.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile2-native-v2/result.json",
+          "scope": "Native same mask 509 at 64 MiB, unchanged inputs; not full compiler or terminal qualification."
+        },
+        {
+          "target": "native-exeputs-exceptions",
+          "command": "python3 tools/test-i386-exe-puts-exceptions.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile2-puts-exceptions-v1/result.json",
+          "scope": "Ordinary ExePutS retains explicit Compiler/Break absorption and custom exception propagation; unchanged inputs."
         }
       ]
     },

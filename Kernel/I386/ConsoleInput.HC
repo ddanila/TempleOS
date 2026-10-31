@@ -59,7 +59,8 @@ U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
   I386TextPut(&console_text,10);
 }
 Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
-  CDoc *document=NULL,Bool execute_api=FALSE,CLexHashTableContext *hash_context=NULL)
+  CDoc *document=NULL,Bool execute_api=FALSE,CLexHashTableContext *hash_context=NULL,
+  Bool throw_errors=FALSE)
 {
   CI386CommandInput input;
   CI386Task *task=I386TaskSelf;
@@ -92,14 +93,18 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
   if(!(flags&CCF_JUST_LOAD)) KernelLog("COMPILER BREAK ready\n");
   try {
     accepted=console_config->compiler->input(&input);
-    if(execute_api && input.exception=='OutMem')throw(input.exception,TRUE);
+    if(execute_api && (input.exception=='OutMem' || throw_errors && !accepted)) {
+      if(input.exception)throw(input.exception,TRUE);
+      throw('Compiler',TRUE);
+    }
     irq=I386IrqSave; console_break_task=previous_break; I386IrqRestore(irq);
     //A request arriving after the compiler's last checkpoint belongs here.
     I386TaskBreakPoll;
   } catch {
     irq=I386IrqSave; console_break_task=previous_break; I386IrqRestore(irq);
     //Unhandled catches return to the dispatcher, which advances to the caller.
-    if(!execute_api || task->except_ch=='Compiler' || task->except_ch=='Break') {
+    if(!execute_api || !throw_errors &&
+        (task->except_ch=='Compiler' || task->except_ch=='Break')) {
       task->catch_except=TRUE; accepted=FALSE;
       if(!execute_api)I386TextWrite(&console_text,"Exception\n");
       execution.diagnostics++;
@@ -196,6 +201,14 @@ I64 ExePutS(U8 *buf,U8 *filename=NULL,I64 flags=0,
   if(!accepted)return 0;
   return value;
 }
+I64 ExePutS2(U8 *buf,U8 *filename=NULL,I64 flags=0)
+{//Unlike ExePutS, propagate compilation and break exceptions to the caller.
+  I64 value=0;
+  if(!ConsoleSourceResult(buf,filename,flags,&value,NULL,TRUE,NULL,TRUE))
+    throw('Compiler',TRUE);
+  return value;
+}
+#include "/Compiler/ExeFile2Core.HC"
 #include "/Compiler/ExePrintCore.HC"
 
 I64 ExePrint2(U8 *fmt,...)

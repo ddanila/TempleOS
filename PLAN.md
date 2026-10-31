@@ -11,6 +11,14 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Throwing file execution (2026-10-31)
+
+Native now exports `ExePutS2` and the original `ExeFile2` wrapper. Successful
+execution, explicit Compiler/Break and custom exceptions, file extensions and
+recovery pass the original and native comparison. Malformed-source debugger
+behavior, `PopUpFile` and C1–C5 remain open; see
+[throwing execution evidence](docs/i386-exefile2.md).
+
 ### Original Adam and AdamFile services (2026-10-31)
 
 The root task now services its job queue and the original `Adam` and

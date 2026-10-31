@@ -650,15 +650,7 @@ I64 ExePrint2(U8 *fmt,...)
   return res;
 }
 
-I64 ExeFile2(U8 *name,I64 ccf_flags=0)
-{//throws exceptions
-  I64 res;
-  U8 *name2=ExtDft(name,"HC.Z"),*st=MStrPrint("#include \"%s\";",name2);
-  res=ExePutS2(st,name,ccf_flags);
-  Free(st);
-  Free(name2);
-  return res;
-}
+#include "/Compiler/ExeFile2Core.HC"
 
 I64 RunFile2(U8 *name,I64 ccf_flags=0,...)
 {//$LK,"ExeFile2",A="MN:ExeFile2"$() with args using $LK,"LastFun",A="MN:LastFun"$(). throws exceptions.

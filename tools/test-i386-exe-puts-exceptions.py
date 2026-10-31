@@ -30,7 +30,7 @@ def main():
     if args.original:
         files += [ROOT / p for p in ('Compiler/CMain.HC', 'Compiler/ExePrintCore.HC', 'Kernel/StrPrintCore.HC', 'Kernel/LexHashContextTypes.HH', 'tools/build-iso.py', 'tools/guest-run.py', 'build/rebuild-test/overlay/0000Boot/0000Kernel.BIN.C', 'build/rebuild-test/overlay/Compiler/Compiler.BIN')]
     else:
-        files += [args.disk.resolve(), ROOT / 'tools/i386-kernel-input.py', ROOT / 'tools/build-i386-kernel.py']
+        files += [args.disk.resolve(), ROOT / 'tools/i386-kernel-input.py', ROOT / 'tools/build-i386-kernel.py', ROOT / 'tools/package-i386-native-image.py']
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     pins = {str(p): sha(p) for p in files}
     report = dict(result='running', input_sha256=pins, scope='ExePutS returns zero for explicitly thrown Break and Compiler exceptions and propagates a custom runtime exception; not malformed-source debugger behavior or exception heap/control recovery')
@@ -51,21 +51,13 @@ def main():
                 raise ValueError('Original execution contract did not pass all three checks')
         else:
             disk = out / 'working.img'
-            shutil.copyfile(args.disk, disk)
-            commands = [('HashFind("ExePutS",Fs->hash_table,~0)!=NULL;', ['1'])]
-            source = fixture.read_text()
-            commands += [(f'U8 *dp_source=CAlloc({len(source)+1});', []),
-                         ('U0 DPTransfer(I64 offset,U8 *text,I64 size){MemCpy(dp_source+offset,text,size);}', [])]
-            for offset in range(0, len(source), 60):
-                chunk = source[offset:offset+60]
-                command = f'DPTransfer({offset},{json.dumps(chunk.replace(chr(36), chr(36)*2))},{len(chunk)});'
-                if len(command)>255:
-                    raise ValueError('Execution fixture transfer exceeds console capacity')
-                commands.append((command, []))
-            commands += [(f'FileWrite("C:/RectExceptions.HC",dp_source,{len(source)})>0;', ['1']),
-                         ('Free(dp_source);', []), ('#include "C:/RectExceptions.HC"', []),
-                         ('JRContract();', ['7']), ('6*7;', ['42'])]
-            report['behavior'] = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input'](disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, snapshot=False, startup_check={'status':'ok', 'answers':[], 'commands':commands})
+            report['packaging'] = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
+                args.disk.resolve(), disk, additions={'/RectExceptions.HC': fixture.read_bytes()})
+            commands = [('#include "C:/RectExceptions.HC"', []),
+                        ('JRContract();', ['7']), ('6*7;', ['42'])]
+            report['behavior'] = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input'](
+                disk, out / 'behavior', cpu='486,-fpu', ram_mib=64, qmp_stdio=True,
+                snapshot=False, welcome=True, startup_check={'status':'ok', 'answers':[], 'commands':commands})
         if not args.original:
             saved = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk, {'/RectExceptions.HC'}).get('/RectExceptions.HC')
             report['guest_fixture_sha256'] = hashlib.sha256(saved).hexdigest() if saved is not None else None
