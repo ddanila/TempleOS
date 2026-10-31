@@ -22,23 +22,27 @@ def main():
     ap.add_argument('disk', type=Path)
     ap.add_argument('--out', type=Path, required=True)
     ap.add_argument('--interval', type=float, default=.2)
+    ap.add_argument('--lines', type=int, default=1200)
     args = ap.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
-    if out.exists() or args.interval <= 0:
-        ap.error('Use a fresh output directory and a positive interval')
+    if out.exists() or args.interval <= 0 or args.lines < 300:
+        ap.error('Use a fresh output directory, positive interval, and at least 300 lines')
     fixture = ROOT/'tests/guest/i386-bible-load-profile/Contract.HC'
     bible = ROOT/'Misc/Bible.TXT'
     inputs = [source, fixture, bible, Path(__file__).resolve()] + [ROOT/p for p in (
         'tools/package-i386-native-image.py', 'tools/build-i386-kernel.py',
         'tools/profile-i386-boot.py', 'tools/test-i386-timeclock-welcome.py')]
     pins = {str(p): sha(p) for p in inputs}
-    sample = b''.join(bible.read_bytes().splitlines(keepends=True)[:1200])
-    files = {'/Probe/BibleProfile.HC': fixture.read_bytes(), '/Probe/Bible1200.TXT': sample}
+    lines = bible.read_bytes().splitlines(keepends=True)
+    if len(lines) < args.lines: raise ValueError('Bible source too short')
+    sample = b''.join(lines[:args.lines])
+    path = f'/Probe/Bible{args.lines}.TXT'
+    files = {'/Probe/BibleProfile.HC': fixture.read_bytes(), path: sample}
     out.mkdir(parents=True)
     working = out/'working.img'
     package = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))
     report = {'result':'running', 'input_sha256':pins,
-              'scope':'QMP-paused statistical PC and stack samples during 1200-line document cleanup; not a timing benchmark'}
+              'scope':'QMP-paused statistical PC and stack samples during document cleanup; not a timing benchmark', 'lines':args.lines}
     report['packaging'] = package['package'](source, working, additions=files)
     builder = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
     names = ('Kernel','CompilerRuntime','FileRuntime','MemoryRuntime','ConsoleRuntime')
@@ -94,8 +98,8 @@ def main():
             time.sleep(5)
             begin=len(log.read_text()); submit('#include "C:/Probe/BibleProfile.HC"')
             wait('COMMAND OK\n',start=begin); time.sleep(3)
-            begin=len(log.read_text()); submit('BibleProfile("C:/Probe/Bible1200.TXT",1200);')
-            wait('BIBLE PROFILE 1200 find-end\n',start=begin)
+            begin=len(log.read_text()); submit(f'BibleProfile("C:/Probe/Bible{args.lines}.TXT",{args.lines});')
+            wait(f'BIBLE PROFILE {args.lines} find-end\n',start=begin)
             text=log.read_text()
             for prefix,module in [('RUNTIME','CompilerRuntime'),('FILES','FileRuntime'),('MEMORY','MemoryRuntime'),('CONSOLE','ConsoleRuntime')]:
                 match=re.search(r'^'+prefix+r' ([0-9A-Fa-f]+) ',text,re.M)
@@ -108,7 +112,7 @@ def main():
                 return 'unmapped'
             deadline=time.monotonic()+900
             while time.monotonic()<deadline:
-                if 'BIBLE PROFILE 1200 free-end\n' in log.read_text()[begin:]: break
+                if f'BIBLE PROFILE {args.lines} free-end\n' in log.read_text()[begin:]: break
                 if proc.poll() is not None: raise RuntimeError('Guest stopped during cleanup')
                 command('stop')
                 regs=command('human-monitor-command',**{'command-line':'info registers'})

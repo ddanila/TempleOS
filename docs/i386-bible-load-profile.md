@@ -187,3 +187,20 @@ A subsequent task-header correction resolved the 16 MiB diagnostic's
 image (`build/i386-public-task-default-diagnostics-v1`). The earlier 8 MiB
 diagnostic heap exhaustion remains a separate, unresolved resource limit. See
 [public headers](i386-public-headers.md).
+
+The 8 MiB failure occurs while the diagnostic compiles the actual two-source
+native bundle, during frontend intermediate-code allocation. A QMP-paused
+sample of the same phase in the passing 16 MiB diagnostic observed bootstrap
+heap use of up to 6,816,232 bytes across 11 samples
+(`build/i386-diagnostic-bundle-heap-16m-v1`). The 8 MiB bootstrap arena is
+6,682,624 bytes, so the observed use alone exceeds it by 133,608 bytes; the
+actual phase peak may be higher. The heap's lifetime peak is not a useful
+phase peak here because earlier diagnostic tests deliberately exhaust it.
+`tools/profile-i386-bundle-heap.py` records these counters without modifying the
+input disk. This sample identifies a resource gap, not a timing measurement or
+an 8 MiB diagnostic pass.
+
+`tools/profile-i386-bible-cleanup.py` also accepts `--lines` to sample cleanup
+for other prefixes of the real Bible; a 6,400-line run is in progress against
+the batched validator. Its QMP-paused samples are for identifying hot code,
+not timing qualification.
