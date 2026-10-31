@@ -18,15 +18,18 @@ public U0 I386TaskReturn()
   I386SchedFinish(I386TaskSelf->owner);
   while (1) {}
 }
-public CI386OwnedTask *I386TaskCreateWithFiles(CI386Scheduler *s,CI386Heap *heap,
-  CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
-  U16 fs,U16 gs,I64 private_size,Bool queued,
+public CI386OwnedTask *I386TaskCreateWithFilesFallback(CI386Scheduler *s,
+  CI386Heap *heap,CI386Heap *fallback,CI386Task *parent,I64 stack_size,
+  U0 (*entry)(I64 arg),I64 arg,U16 fs,U16 gs,I64 private_size,Bool queued,
   Bool (*file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap))
 {//NULL-returning bootstrap API, not the full public Spawn/OutMem contract.
   CI386OwnedTask *owned;
   CI386Task *creator[1];
   CI386Heap *file_heap;
   U8 *stack_base;
+  CI386HeapBlock *block;
+  I64 scan_offset,need;
+  U64 base,end,other_base,other_end;
   I64 header=(sizeof(CI386OwnedTask)+offset(CTaskStk.stk_base)+7)&~7,total,stack_reserved;
   U32 flags,invalid[1];
   creator[0]=0;
@@ -182,6 +185,29 @@ public CI386OwnedTask *I386TaskCreateWithFiles(CI386Scheduler *s,CI386Heap *heap
 #endif
     if(invalid[0]) { I386IrqRestore(flags); return 0; }
   }
+  if(fallback) {
+    //Never use a second arena to hide corruption or overlapping ownership.
+    if(fallback==heap || !I386HeapValid(heap) || !I386HeapValid(fallback)) {
+      I386IrqRestore(flags); return 0;
+    }
+    base=(heap->base+0)(U64);end=base+heap->size;
+    other_base=(fallback->base+0)(U64);other_end=other_base+fallback->size;
+    if(base<other_end && other_base<end ||
+        base<(fallback+0)(U64)+sizeof(CI386Heap) && (fallback+0)(U64)<end ||
+        other_base<(heap+0)(U64)+sizeof(CI386Heap) && (heap+0)(U64)<other_end) {
+      I386IrqRestore(flags); return 0;
+    }
+    //With interrupts masked, the validated free-chain scan and allocation
+    //cannot race. Only the initial owned task block chooses the fallback;
+    //later clone failures retain the existing single-attempt rollback.
+    need=((total+7)&~7)+sizeof(CI386HeapBlock);scan_offset=0;
+    while(scan_offset<heap->size) {
+      block=heap->base+scan_offset;
+      if(block->tag==I386_HEAP_FREE && block->span>=need)break;
+      scan_offset+=block->span;
+    }
+    if(scan_offset==heap->size)heap=fallback;
+  }
   owned=I386HeapAlloc(heap,total,TRUE);
   if (!owned) { I386IrqRestore(flags); return 0; }
   owned->heap=heap; owned->allocation_size=total; owned->signature=0x54323349;
@@ -237,6 +263,15 @@ spawn_fail:
   I386IrqRestore(flags);
   return 0;
 }
+public CI386OwnedTask *I386TaskCreateWithFiles(CI386Scheduler *s,CI386Heap *heap,
+  CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
+  U16 fs,U16 gs,I64 private_size,Bool queued,
+  Bool (*file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap))
+{//Preserve the original constructor ABI and single-arena policy.
+  return I386TaskCreateWithFilesFallback(s,heap,0,parent,stack_size,entry,arg,
+    fs,gs,private_size,queued,file_birth);
+}
+
 public CI386OwnedTask *I386TaskCreateFrom(CI386Scheduler *s,CI386Heap *heap,
   CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
   U16 fs=0x18,U16 gs=0x20,I64 private_size=0,Bool queued=FALSE)

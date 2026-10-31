@@ -38,3 +38,10 @@ These checks do not qualify arbitrary input files, cancellation, exceptional
 cleanup, the complete task/job API, or the terminal right-click workflow.
 The latter still needs its other file operations, mounting and full terminal
 startup. C1–C5 remain open.
+
+The auxiliary task arena now allows the previously failing 8 MiB InFile
+contract to pass; both successive input-filter tasks used and reused the
+low-memory slot with unchanged inputs (`build/i386-low-task-infile-8m-v2`).
+The earlier failures remain useful baselines. This functional check does not
+pass the separate 60-second startup gate or qualify the full desktop. See
+[low-memory integration](i386-low-arena.md).

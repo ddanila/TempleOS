@@ -11,22 +11,32 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Auxiliary task arena (2026-10-31)
+
+The compact boot path now offers firmware-verified conventional memory as a
+separate task arena when the primary arena cannot fit a task. The 8 MiB InFile
+contract now passes and verifies successive input-filter tasks reuse the low
+slot. Task ownership/rollback fixtures, complete/unavailable map boots,
+bootstrap/cross-builds and the 16 MiB diagnostic pass. Public task cancellation
+and message regressions are in progress; the 60-second startup gate and full
+C1–C5 qualification remain open. See [low-memory evidence](docs/i386-low-arena.md).
+
 ### Conventional-memory selection for 8 MiB investigation (2026-10-31)
 
 A stopped post-failure heap audit finds no wholly unused public backing region;
 the captured firmware map describes a 487,424-byte low-memory candidate after
-excluding the boot stack. A new firmware-checked selector and its boundary
-fixture pass, but no allocator uses this range yet. Low-memory lifetime,
-ownership and fallback integration remain required; the 8 MiB InFile workload
-is still failing. See [low-memory evidence](docs/i386-low-arena.md).
+excluding the boot stack. The initial firmware-checked selector and its boundary
+fixture passed without an allocator using the range. The subsequent task-arena integration is
+described above. See [low-memory evidence](docs/i386-low-arena.md).
 
 ### Original InFile service (2026-10-31)
 
 The original `InFile` body is shared and exported on native. The original and
 native queued-execution fixtures pass their default/explicit extension, filter
 retirement and directory checks at 64 MiB; both rebuild generations, cross-builds
-and the 16 MiB diagnostic pass. The 8 MiB fixture reaches queued execution
-but runs out of memory. Terminal right-click integration and C1–C5 remain open. See
+and the 16 MiB diagnostic pass. The earlier 8 MiB fixture ran out of memory;
+the later auxiliary-arena candidate passes that contract. Terminal right-click
+integration and C1–C5 remain open. See
 [InFile evidence](docs/i386-infile.md).
 
 ### Block-I/O reference extension (2026-10-31)

@@ -11,6 +11,7 @@
 #include "/Kernel/I386/Frame.HH"
 #include "/Kernel/I386/Debug.HH"
 extern U0 PendingOwnedWorker(I64 unused);
+extern U0 FallbackOwnedWorker(I64 unused);
 U32 pending_owned_stage;
 extern I64 OwnedTaskTest();
 extern I64 JoinTest();
@@ -403,7 +404,7 @@ U0 BindTask(CI386Task *task)
 
 I64 OwnedTaskTest()
 {
-  CI386Heap heap;
+  CI386Heap heap,secondary;
   I64 cycle,i,j;
   U8 *p;
   if(Caller(0) || Caller(-1) || Caller(0x7FFFFFFFFFFFFFFF)) return 62;
@@ -497,8 +498,56 @@ I64 OwnedTaskTest()
   }
   p=I386HeapAlloc(&heap,32752);
   if (!p || !I386HeapFree(&heap,p)) return 48;
+  //A validated but exhausted primary must use the secondary; corrupt primary
+  //metadata must not be bypassed. The owned stack and task stay together.
+  if(!I386HeapInit(&secondary,0x6C000,0x4000))return 155;
+  if(I386TaskCreateWithFilesFallback(&scheduler,&heap,&heap,scheduler.root,
+      8192,&FallbackOwnedWorker,0,0x18,0x20,0,FALSE,0) || heap.used)return 162;
+  secondary.signature=0;
+  if(I386TaskCreateWithFilesFallback(&scheduler,&heap,&secondary,scheduler.root,
+      8192,&FallbackOwnedWorker,0,0x18,0x20,0,FALSE,0) || heap.used)return 163;
+  secondary.signature=I386_HEAP_MAGIC;
+  //Two controls describing the same valid physical arena must be rejected.
+  for(i=0;i<sizeof(CI386Heap);i++) (&secondary)(U8 *)[i]=(&heap)(U8 *)[i];
+  if(I386TaskCreateWithFilesFallback(&scheduler,&heap,&secondary,scheduler.root,
+      8192,&FallbackOwnedWorker,0,0x18,0x20,0,FALSE,0) || heap.used)return 164;
+  if(!I386HeapInit(&secondary,0x6C000,0x4000))return 165;
+  pending_owned_stage=0;
+  owned_tasks[0]=I386TaskCreateWithFilesFallback(&scheduler,&heap,&secondary,
+      scheduler.root,8192,&FallbackOwnedWorker,0,0x18,0x20,0,FALSE,0);
+  if(!owned_tasks[0] || owned_tasks[0]->heap!=&heap || secondary.used ||
+      !I386SchedActivate(&scheduler,&owned_tasks[0]->task) ||
+      !I386SchedYield(&scheduler) || pending_owned_stage!=1 ||
+      !owned_tasks[0]->task.finished || !I386TaskDestroy(owned_tasks[0]) ||
+      heap.used)return 161;
+  owned_tasks[0]=0;
+  p=I386HeapAlloc(&heap,49136);
+  if(!p)return 156;
+  heap.signature=0;
+  if(I386TaskCreateWithFilesFallback(&scheduler,&heap,&secondary,scheduler.root,
+      8192,&FallbackOwnedWorker,0,0x18,0x20,0,FALSE,0) || secondary.used) return 157;
+  heap.signature=I386_HEAP_MAGIC;
+  {
+    U8 *full=I386HeapAlloc(&secondary,0x3FF0);
+    if(!full || I386TaskCreateWithFilesFallback(&scheduler,&heap,&secondary,
+        scheduler.root,8192,&FallbackOwnedWorker,0,0x18,0x20,0,FALSE,0) ||
+        secondary.allocations!=1 || !I386HeapFree(&secondary,full))return 166;
+  }
+  pending_owned_stage=0;
+  owned_tasks[0]=I386TaskCreateWithFilesFallback(&scheduler,&heap,&secondary,
+      scheduler.root,8192,&FallbackOwnedWorker,0,0x18,0x20,0,FALSE,0);
+  if(!owned_tasks[0] || owned_tasks[0]->heap!=&secondary ||
+      !secondary.used || heap.allocations!=1 || !I386HeapValid(&heap) ||
+      !I386HeapValid(&secondary))return 158;
+  if(!I386SchedActivate(&scheduler,&owned_tasks[0]->task) ||
+      !I386SchedYield(&scheduler) || pending_owned_stage!=1 ||
+      !owned_tasks[0]->task.finished || !I386TaskDestroy(owned_tasks[0]))return 159;
+  owned_tasks[0]=0;
+  if(secondary.used || secondary.allocations || !I386HeapValid(&secondary) ||
+      !I386HeapFree(&heap,p) || heap.used || !I386HeapValid(&heap))return 160;
   return JoinTest;
 }
+U0 FallbackOwnedWorker(I64 unused) { pending_owned_stage++; }
 I64 CheckCurrentFrame()
 {
   CI386Task *task=I386TaskSelf;

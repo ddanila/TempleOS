@@ -27,6 +27,12 @@ public extern CI386OwnedTask *I386TaskCreateWithFiles(CI386Scheduler *s,CI386Hea
   CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,
   U16 fs,U16 gs,I64 private_size,Bool queued,
   Bool (*file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap));
+//Choose the secondary arena only when the validated primary has no fitting
+//task allocation. Both heaps must outlive the task and its cloned state.
+public extern CI386OwnedTask *I386TaskCreateWithFilesFallback(CI386Scheduler *s,
+  CI386Heap *primary,CI386Heap *fallback,CI386Task *parent,I64 stack_size,
+  U0 (*entry)(I64 arg),I64 arg,U16 fs,U16 gs,I64 private_size,Bool queued,
+  Bool (*file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap));
 public extern Bool I386TaskDestroy(CI386OwnedTask *owned);
 public extern U8 *I386TaskAlloc(I64 size,Bool zero=FALSE);
 public extern Bool I386TaskFree(U8 *ptr);

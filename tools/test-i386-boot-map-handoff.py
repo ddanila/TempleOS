@@ -16,6 +16,8 @@ def main():
     parser.add_argument('--build', required=True, type=Path)
     parser.add_argument('--out', required=True, type=Path)
     parser.add_argument('--force-unavailable', action='store_true')
+    parser.add_argument('--expect-task-fallback', choices=('yes', 'no'),
+                        help='Require the candidate boot log to show or omit the auxiliary task arena')
     parser.add_argument('--kernel-selection', choices=('selected', 'legacy'),
                         help='Also require the integrated kernel selection marker')
     args = parser.parse_args()
@@ -60,13 +62,19 @@ def main():
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=64,
-            accel='tcg', cpu='486,-fpu', qmp_stdio=True,
+            accel='tcg', cpu='486,-fpu', qmp_stdio=True, welcome=True,
             startup_check={'status':'ok', 'answers':[], 'commands':commands})
         if args.kernel_selection:
             log = (out/'qemu/debug.log').read_text()
             if f'BOOT MAP {args.kernel_selection}\n' not in log:
                 raise ValueError('Kernel did not report expected memory selection')
             report['kernel_selection'] = args.kernel_selection
+        if args.expect_task_fallback:
+            log = (out/'qemu/debug.log').read_text()
+            present = 'TASK FALLBACK ARENA ' in log
+            if present != (args.expect_task_fallback == 'yes'):
+                raise ValueError('Unexpected auxiliary task arena state')
+            report['task_fallback'] = args.expect_task_fallback
         report['result'] = 'pass'
     except Exception as exc:
         report.update(result='fail', error=str(exc))

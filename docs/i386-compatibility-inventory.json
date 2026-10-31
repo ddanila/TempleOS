@@ -13963,6 +13963,13 @@
           "result": "fail",
           "evidence": "build/i386-infile-native-8m-v2/result.json",
           "scope": "Isolated 8 MiB full-content run reaches queued execution then throws OutMem while creating the input-filter task; inputs unchanged. A separate concurrent attempt also failed."
+        },
+        {
+          "target": "native-infile-low-task-8m",
+          "command": "python3 tools/test-i386-infile.py IMAGE --ram-mib 8 --expect-low --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-low-task-infile-8m-v2/result.json",
+          "scope": "8 MiB native default/explicit extension contract; both input tasks run in and reuse the conventional arena after retirement, unchanged inputs. Not startup timing, arbitrary tasks, or complete job behavior."
         }
       ]
     },

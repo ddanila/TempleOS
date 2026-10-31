@@ -15,6 +15,7 @@ def main():
     parser.add_argument('disk',type=Path,nargs='?')
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--expect-low',action='store_true',help='Also require both input tasks to reuse a conventional-memory slot')
     args=parser.parse_args()
     out=args.out.resolve()
     if out.exists():parser.error('Use a fresh output directory')
@@ -37,7 +38,9 @@ def main():
         if args.disk:
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions={'/Probe/InFileContract.HC':fixture.read_bytes(),'/Probe/InputCase.IN':input_case.read_bytes()})
-            commands=[('#include "C:/Probe/InFileContract.HC"',[]),('IFFileContract;',['15']),('6*7;',['42'])]
+            commands=[('#include "C:/Probe/InFileContract.HC"',[]),('IFFileContract;',['15'])]
+            if args.expect_low: commands.append(('IFFileLowProof;',['1']))
+            commands.append(('6*7;',['42']))
             report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](disk,out/'guest',snapshot=False,ram_mib=args.ram_mib,cpu='486,-fpu',accel='tcg',qmp_stdio=True,welcome=True,startup_check={'status':'ok','answers':[],'commands':commands,'command_timeout':120,'rejection_prefixes':('INPUT REJECT ',)})
             files=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,{'/Probe/InFileContract.HC','/Probe/InputCase.IN'})
             if files['/Probe/InFileContract.HC']!=fixture.read_bytes() or files['/Probe/InputCase.IN']!=input_case.read_bytes():raise ValueError('Delivered fixture changed')

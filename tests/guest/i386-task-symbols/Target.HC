@@ -30,6 +30,10 @@ U32 white_space[8],errors,scope_done,protected_parent,selected_parent_ready;
 CI386CompilerServices control_services;
 CI386TaskCompilerConfig task_compiler,other_compiler;
 CCmpCtrl *retained_control;
+extern CI386TaskFiles *I386TaskFilesState(CI386Task *task,Bool require_directory);
+extern CI386TaskSymbols *I386TaskSymbolsValid(CI386Task *task);
+extern I64 FallbackFileSymbolsTest();
+extern U0 FallbackFileSymbolsWorker(I64 unused);
 extern I64 FactoryRootTest();
 extern I64 ActiveTest();
 extern I64 UnwindRootTest();
@@ -42,6 +46,32 @@ U0 (*swap)(CI386Context *old,CI386Context *next);
 extern I64 ScopeTest();
 extern U0 Worker(I64 id);
 extern U0 Grandchild(I64 unused);
+U0 FallbackFileSymbolsWorker(I64 unused) {}
+I64 FallbackFileSymbolsTest()
+{//A failed late clone must roll back the low task, file state and parent pins.
+  CI386Heap secondary;
+  CI386OwnedTask *child;
+  U8 *fillers[32];
+  I64 i,n=0,before=heap.used,allocations=heap.allocations;
+  while(n<32 && (fillers[n]=I386HeapAlloc(&heap,4096)))n++;
+  if(n==32 || !I386HeapInit(&secondary,0x110000,12288))return 270;
+  if(I386TaskCreateWithFilesFallback(&scheduler,&heap,&secondary,&root,4096,
+      &FallbackFileSymbolsWorker,0,0x18,0x20,0,FALSE,0) ||
+      secondary.used || secondary.allocations || root.lifetime_refs ||
+      !I386HeapValid(&secondary))return 271;
+  if(!I386HeapInit(&secondary,0x110000,65536))return 272;
+  child=I386TaskCreateWithFilesFallback(&scheduler,&heap,&secondary,&root,4096,
+      &FallbackFileSymbolsWorker,0,0x18,0x20,0,FALSE,0);
+  if(!child || child->heap!=&secondary || !I386TaskFilesState(&child->task,TRUE) ||
+      !I386TaskSymbolsValid(&child->task) || child->task.hash_table->next!=symbols ||
+      !I386SchedActivate(&scheduler,&child->task) || !I386SchedYield(&scheduler) ||
+      !child->task.finished || !I386TaskDestroy(child) || secondary.used ||
+      secondary.allocations || root.lifetime_refs || !I386HeapValid(&secondary))return 273;
+  for(i=0;i<n;i++) if(!I386HeapFree(&heap,fillers[i]))return 274;
+  if(heap.used!=before || heap.allocations!=allocations || !I386HeapValid(&heap))return 275;
+  return 0;
+}
+
 extern Bool RetainStorage(U8 value);
 U0 Bind(CI386Task *task)
 {
@@ -73,6 +103,7 @@ I64 ScopeTest()
   if(!I386TaskFilesInit(&root,&heap,&paths,&volumes)) return 3;
   if(!root.cur_dir || root.cur_dir[0]!='/' || root.cur_dir[1]) return 251;
   i=FactoryRootTest; if(i) return i;
+  i=FallbackFileSymbolsTest; if(i) return i;
   used=heap.used; allocations=heap.allocations;
   for(i=24;i<=512;i+=8)
     if(I386TaskSpawn(&scheduler,&heap,4096,&Worker,0,0x18,0x20,i) ||

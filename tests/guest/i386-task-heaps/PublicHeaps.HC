@@ -20,6 +20,8 @@ extern Bool PublicHeapCloneFailure(CI386Task *source,CI386Task *target,CI386Heap
 extern Bool SelectedParentTest(CI386Heap *heap);
 extern U0 SelectedParentWorker(I64 unused);
 extern Bool CreatorPinTest(CI386Heap *heap);
+extern Bool FallbackHeapHooksTest(CI386Heap *heap);
+extern U0 FallbackHeapWorker(I64 unused);
 extern U0 CreatorPinEntry(I64 unused);
 extern U0 CreatorPinChild(I64 unused);
 Bool CodeProviderTest(CI386TaskHeaps *state)
@@ -90,6 +92,7 @@ I64 PublicTaskHeapTest()
       I386TaskHeapsInit(root,&task_control_storage,&task_pool)) return 101;
   state=root->heap_state;
   if(!CodeProviderTest(state)) return 120;
+  if(!FallbackHeapHooksTest(&heap))return 124;
   task_pool.reclaim=&PublicHeapReclaim;
   if(I386MemPoolEmpty(&task_pool) || I386MemBackingDestroy(&task_pool) ||
       !I386MemBackingValid(&task_pool)) return 119;
@@ -167,6 +170,41 @@ I64 PublicTaskHeapTest()
   SetRFlags(flags);
   return 0;
 }
+U0 FallbackHeapWorker(I64 unused) {}
+Bool FallbackHeapHooksTest(CI386Heap *heap)
+{//The selected arena owns both the task and the cloned heap control.
+  CI386Heap secondary;
+  CI386OwnedTask *child;
+  CI386TaskHeaps *root_state=scheduler.root->heap_state,*child_state;
+  U8 *full;
+  I64 control_used=task_control_storage.used,pages=task_pool.used_u8s;
+  U32 flags=GetRFlags;
+  if(!I386HeapInit(heap,0x48000,0x6000) ||
+      !I386HeapInit(&secondary,0x4E000,0x6000) ||
+      !(full=I386HeapAlloc(heap,0x5FF0)))return FALSE;
+  scheduler.root->file_state=scheduler.root;
+  scheduler.root->file_clone=&PublicHeapCloneFailure;
+  scheduler.root->file_destroy=&PublicHeapFileDestroy;
+  if(I386TaskCreateWithFilesFallback(&scheduler,heap,&secondary,scheduler.root,
+      8192,&FallbackHeapWorker,0,0x18,0x20,0,FALSE,0) ||
+      secondary.used || secondary.allocations || root_state->children ||
+      scheduler.root->lifetime_refs || task_pool.used_u8s!=pages ||
+      heap_file_failures!=1)return FALSE;
+  scheduler.root->file_state=0;scheduler.root->file_clone=0;scheduler.root->file_destroy=0;
+  heap_file_failures=0;
+  child=I386TaskCreateWithFilesFallback(&scheduler,heap,&secondary,scheduler.root,
+      8192,&FallbackHeapWorker,0,0x18,0x20,0,FALSE,0);
+  if(!child || child->heap!=&secondary || !(child_state=child->task.heap_state) ||
+      child_state->storage!=&secondary || root_state->children!=1 ||
+      !I386SchedActivate(&scheduler,&child->task) || !I386SchedYield(&scheduler) ||
+      !child->task.finished || !I386TaskDestroy(child) || secondary.used ||
+      secondary.allocations || root_state->children || scheduler.root->lifetime_refs ||
+      task_pool.used_u8s!=pages || task_control_storage.used!=control_used ||
+      !I386HeapFree(heap,full) || !I386HeapInit(heap,0x48000,49152) ||
+      !I386HeapValid(&secondary) || (GetRFlags^flags)&0x200)return FALSE;
+  return TRUE;
+}
+
 U0 SelectedParentWorker(I64 unused) {}
 U0 CreatorPinEntry(I64 unused)
 {
