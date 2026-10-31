@@ -2010,6 +2010,27 @@
           "result": "pass",
           "evidence": "build/i386-adamfile-native-8m-v1/result.json",
           "scope": "Same native five-check comparison at 8 MiB; inputs unchanged; concurrent startup is not timing qualification."
+        },
+        {
+          "target": "original-popup-file",
+          "command": "python3 tools/test-i386-popup-file.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-popup-file-original-v3/result.json",
+          "scope": "Original asynchronous popup execution, extension handling, output task and retirement; warning and synchronous branches excluded."
+        },
+        {
+          "target": "native-popup-file",
+          "command": "python3 tools/test-i386-popup-file.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-popup-file-native-v1/result.json",
+          "scope": "Native same asynchronous contract at 64 MiB; unchanged inputs; not full servant or terminal qualification."
+        },
+        {
+          "target": "native-popup-file-8m",
+          "command": "python3 tools/test-i386-popup-file.py IMAGE --ram-mib 8 --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-popup-file-native-8m-v1/result.json",
+          "scope": "8 MiB guest exhausts conventional task arena while creating another task; unchanged inputs; startup not isolated."
         }
       ]
     },

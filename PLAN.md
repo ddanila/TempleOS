@@ -11,6 +11,14 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original PopUpFile wrapper (2026-10-31)
+
+The shared original `PopUpFile` wrapper passes an asynchronous file-execution
+comparison at 64 MiB. At 8 MiB the same fixture fails to allocate another
+267,527-byte task while the low task arena is already in use. Synchronous
+continuation, the minimal-memory failure and C1–C5 remain open; see
+[PopUpFile evidence](docs/i386-popup-file.md).
+
 ### Throwing file execution (2026-10-31)
 
 Native now exports `ExePutS2` and the original `ExeFile2` wrapper. Successful
