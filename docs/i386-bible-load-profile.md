@@ -200,6 +200,15 @@ phase peak here because earlier diagnostic tests deliberately exhaust it.
 input disk. This sample identifies a resource gap, not a timing measurement or
 an 8 MiB diagnostic pass.
 
+An optional heap snapshot in the profiler checks the physical block chain and
+its allocation totals against the sampled counters. In a second 16 MiB run,
+the highest sampled use was 6,819,560 bytes; that snapshot included 2,424
+allocations requesting 132 bytes each, or 319,968 requested bytes in total
+(`build/i386-diagnostic-bundle-histogram-16m-v1`). Frontend intermediate-code
+nodes use this request size, but the histogram alone does not prove the owner
+of each allocation or which nodes can safely be reclaimed. Inputs were
+unchanged and the native bundle diagnostic passed.
+
 `tools/profile-i386-bible-cleanup.py` also accepts `--lines` to sample cleanup
 for other prefixes of the real Bible; a 6,400-line run is in progress against
 the batched validator. Its QMP-paused samples are for identifying hot code,

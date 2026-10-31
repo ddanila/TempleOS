@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Sample bootstrap heap counters during the native bundle diagnostic."""
 import argparse
+from collections import Counter
 import hashlib
 import json
 from pathlib import Path
@@ -23,6 +24,8 @@ def main():
     ap.add_argument('--out',type=Path,required=True)
     ap.add_argument('--ram-mib',type=int,choices=(8,16),default=16)
     ap.add_argument('--interval',type=float,default=.25)
+    ap.add_argument('--heap-histogram',action='store_true',
+                    help='capture the heap at the largest sampled usage')
     args=ap.parse_args();disk=args.disk.resolve();out=args.out.resolve()
     if out.exists() or args.interval<=0:ap.error('Use a fresh output directory and positive interval')
     inputs=[disk,Path(__file__).resolve(),ROOT/'tools/build-i386-kernel.py']
@@ -44,6 +47,7 @@ def main():
     report={'result':'running','input_sha256':pins,'ram_mib':args.ram_mib,
             'scope':'QMP-paused bootstrap heap counter samples during root diagnostic bundle compilation; not timing qualification'}
     samples=[];proc=None
+    histogram=None
     try:
         with (out/'qemu.log').open('wb') as stderr:
             proc=subprocess.Popen(cmd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=stderr,bufsize=0)
@@ -77,6 +81,27 @@ def main():
                 base,size,used,peak,allocations,signature=(int(word,16) for word in words)
                 if signature!=0x48323349 or not base or used>peak or peak>size:raise ValueError('Invalid heap counter snapshot')
                 samples.append({'seconds':round(time.monotonic()-started,3),'size':size,'used':used,'peak':peak,'allocations':allocations,'done':done})
+                if args.heap_histogram and (histogram is None or used>histogram['used']):
+                    snapshot=out/'heap.bin'
+                    response=command('human-monitor-command',**{'command-line':f'pmemsave 0x{base:x} {size} "{snapshot}"'})
+                    if response:raise RuntimeError('Heap snapshot failed: '+response)
+                    data=snapshot.read_bytes();snapshot.unlink()
+                    counts=Counter();offset=total=count=0
+                    while offset<size:
+                        span,requested,tag,reserved=struct.unpack_from('<4I',data,offset)
+                        if span<24 or span%8 or span>size-offset or reserved:
+                            raise ValueError('Invalid heap snapshot block')
+                        if tag==0x55523349:
+                            if requested>span-16:raise ValueError('Invalid heap allocation size')
+                            counts[requested]+=1;total+=span;count+=1
+                        elif tag!=0x46523349 or requested:
+                            raise ValueError('Invalid heap snapshot tag')
+                        offset+=span
+                    if len(data)!=size or total!=used or count!=allocations:
+                        raise ValueError('Heap snapshot counters do not match')
+                    histogram={'used':used,'allocations':count,'requested_sizes':[
+                        {'bytes':n,'count':c,'requested_total':n*c}
+                        for n,c in sorted(counts.items(),key=lambda item:item[0]*item[1],reverse=True)]}
                 command('cont')
                 if done:break
                 time.sleep(args.interval)
@@ -86,6 +111,7 @@ def main():
         report.update(result='pass',samples=len(samples),heap_address=address,
                       first=samples[0],max_used=max(s['used'] for s in samples),
                       max_allocations=max(s['allocations'] for s in samples),last=samples[-1])
+        if histogram is not None:(out/'heap-histogram.json').write_text(json.dumps(histogram,indent=2)+'\n')
     except Exception as exc:
         report.update(result='fail',error=str(exc));raise
     finally:
