@@ -1,3 +1,28 @@
+I64 NativePublicationGuardTest()
+{
+  CCmpCtrl cc;CI386IdentSink sink;CI386HeapBlock *fake,*later;
+  U8 *old,*tail;I64 used,peak,count;U32 flags=I386IrqSave;
+  old=I386HeapAlloc(&ident_heap,64,TRUE);tail=I386HeapAlloc(&ident_heap,8,TRUE);
+  if(!old || !tail)return 170;
+  IdentZero(&cc,sizeof(cc));sink.heap=&ident_heap;sink.out_of_memory=FALSE;
+  fake=old;fake->span=24;fake->requested=8;fake->tag=I386_HEAP_USED;
+  cc.cur_str=old+16;cc.cur_str_len=8;cc.token=77;
+  used=ident_heap.used;peak=ident_heap.peak;count=ident_heap.allocations;
+  if(I386IdentPublish(&sink,&cc,"Good",5,0) || sink.out_of_memory ||
+      cc.cur_str!=old+16 || cc.cur_str_len!=8 || cc.token!=77 ||
+      ident_heap.used!=used || ident_heap.peak!=peak || ident_heap.allocations!=count ||
+      fake->span!=24 || fake->requested!=8 || fake->tag!=I386_HEAP_USED) return 171;
+  cc.cur_str=old;later=tail-16;later->reserved=1;
+  if(I386IdentPublish(&sink,&cc,"Good",5,0) || sink.out_of_memory ||
+      cc.cur_str!=old || cc.token!=77 || later->reserved!=1 ||
+      ident_heap.used!=used || ident_heap.peak!=peak || ident_heap.allocations!=count) return 172;
+  later->reserved=0;
+  if(!I386IdentPublish(&sink,&cc,"Good",5,0) || StrCmp(cc.cur_str,"Good") ||
+      cc.cur_str_len!=5 || cc.token!=TK_IDENT ||
+      !I386HeapFree(&ident_heap,tail) || !I386HeapFree(&ident_heap,cc.cur_str) ||
+      ident_heap.used || ident_heap.allocations || !I386HeapValid(&ident_heap)) return 173;
+  I386IrqRestore(flags);return 0;
+}
 I64 NativeTokenTest()
 {
   CCmpCtrl cc; CLexFile parent; CI386Heap small; CHashTable table; CHash *bucket=0;

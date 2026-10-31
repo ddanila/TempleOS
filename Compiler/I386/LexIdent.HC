@@ -23,7 +23,7 @@ I64 I386LexIdentScan(CI386Heap *heap,CCmpCtrl *cc,I64 ch,U8 *buf,I64 capacity,CH
   //The normal lookup may already have found that define; avoid counting it twice.
   if(*entry && (*entry)->type&HTT_DEFINE_STR) return length;
   //The private define table follows the module symbol table in the chain.
-  if(!(cc->flags&CCF_NO_DEFINES) && cc->htc.define_hash_table &&
+  if(!cc->local_var_entry && !(cc->flags&CCF_NO_DEFINES) && cc->htc.define_hash_table &&
       (define=HashFind(buf,cc->htc.define_hash_table,HTT_DEFINE_STR)))
     *entry=define;
   return length;

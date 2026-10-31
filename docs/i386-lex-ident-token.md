@@ -20,6 +20,29 @@ and chained string macros use the same owned include/parent-replay machinery.
 This helper does not parse #define directives or dispatch the resulting numeric,
 string or punctuation tokens; those are full-lexer integration work.
 
+The native fallback for the separate define table previously searched that
+table even after a local member matched. This expanded a global define in place
+of the local identifier. The fallback now runs only when there is no local
+match, matching the pinned original lexer at revision
+`c26482bb6ad3f80106d28504ec5db3c6a360732c`. A focused scanner case failed
+before the fix and passes after it (`build/i386-lex-shadow-baseline-v1.log`,
+`build/i386-lex-shadow-ident-v1.log`). The full define fixture, which exercises
+the shared original behavior as well as native execution, also passes after
+failing on the preceding image at its local-shadowing case
+(`build/i386-ident-guard-define-control-v1.log`,
+`build/i386-ident-guard-define-trace-v2.log`,
+`build/i386-lex-shadow-define-v1.log`). Native token and conditional suites,
+both bootstrap generations, and minimal and full-content cross-builds pass
+(`build/i386-lex-shadow-tokens-v1.log`, `build/i386-lex-shadow-cond-v1.log`,
+`build/i386-lex-shadow-rebuild-v1.log`, `build/i386-lex-shadow-cross-v1`,
+`build/i386-lex-shadow-full-cross-v1`). The complete 16 MiB diagnostic passes
+with unchanged recorded input hashes (`build/i386-lex-shadow-diagnostics-v1`).
+An isolated 8 MiB run completed all nine checks with unchanged inputs but
+missed the 60-second startup gate at 68.0 seconds
+(`build/i386-lex-shadow-smoke-v1`); the preceding image measured 65.0 seconds
+in an earlier isolated run. These single runs do not establish the cause of
+the difference. Full C1–C5 qualification remains open.
+
 ## Ownership and failure
 
 Published cur_str uniquely owns its allocation in the supplied heap; it must not

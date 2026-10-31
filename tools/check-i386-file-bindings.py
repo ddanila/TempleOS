@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the kernel's explicit FileRuntime binding contract before building."""
+"""Check the kernel's explicit file and compiler runtime binding contracts."""
 import argparse
 from pathlib import Path
 import re
@@ -47,6 +47,25 @@ def check(kernel, runtime):
     return total
 
 
+def check_compiler(kernel, runtime):
+    array = re.search(r'U8 kernel_compiler_bindings\[(\d+)\]=\{([^}]+)\};', kernel)
+    names = re.search(r'\*names="([^"]+)"', kernel)
+    if not array or not names:
+        raise ValueError('Review compiler binding checker: source structure changed')
+    indices = [int(value.strip()) for value in array[2].split(',')]
+    providers = names[1].split(r'\0')[:-1]
+    if len(indices) != int(array[1]) or len(set(indices)) != len(indices):
+        raise ValueError('Compiler binding array has wrong or duplicate initializer count')
+    if any(index >= len(providers) for index in indices):
+        raise ValueError('Compiler binding index is outside published providers')
+    imports = set(re.findall(r'^import\s+[^;]*?\b(\w+)\s*\((?!\*)', runtime, re.M))
+    imports.update(re.findall(r'^import\s+[^;]*?\b(\w+)\s*\[[^]]*\]\s*;', runtime, re.M))
+    missing = imports - {providers[index] for index in indices}
+    if missing:
+        raise ValueError('Compiler imports missing from kernel bindings: '+', '.join(sorted(missing)))
+    return len(indices)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, default=ROOT)
@@ -54,6 +73,9 @@ def main():
     count = check((args.root/'Kernel/I386/Kernel.HC').read_text(),
                   (args.root/'Kernel/I386/FileRuntime.HC').read_text())
     print(f'PASS: {count} explicit FileRuntime bindings and consistent loader counts')
+    count = check_compiler((args.root/'Kernel/I386/Kernel.HC').read_text(),
+                           (args.root/'Kernel/I386/CompilerRuntime.HC').read_text())
+    print(f'PASS: {count} explicit CompilerRuntime bindings cover declared imports')
 
 
 if __name__ == '__main__':

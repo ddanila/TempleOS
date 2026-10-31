@@ -63,6 +63,19 @@ samples in `I386HeapScanSelect`, with another nine in the new known-size walk
 samples, not call counts or timing measurements. Heap validation remains a
 prominent startup cost.
 
+An experimental guarded allocation combined token ownership verification and
+first-fit selection into one complete heap scan. Native and portable heap
+tests and the identifier fixture passed, but an isolated 8 MiB run took 66.5
+seconds versus 65.0 seconds for the preceding image, with all nine checks
+complete (`build/i386-ident-guard-heap-v2.log`,
+`build/i386-ident-guard-heap-source-v2.log`,
+`build/i386-ident-guard-ident-v3.log`, `build/i386-ident-guard-smoke-v2`,
+`build/i386-lex-push-scan-smoke-v1`). The experiment was discarded. Its first
+image also failed boot because the compiler loader lacked the new import
+binding (`build/i386-ident-guard-smoke-v1`); a compiler-binding coverage check
+was retained and verifies that declared imports are present in the kernel's
+explicit binding list. Both measured startup runs missed the 60-second gate.
+
 ## Lexer push lookup candidate (2026-10-31)
 
 On successful snapshot allocation, the allocator has validated and updated

@@ -27,6 +27,17 @@ the pop path retains full validation after restoring file state. The forged
 parent test, both rebuilds, both cross-builds and the 16 MiB diagnostic pass.
 An isolated 8 MiB run took 65.0 seconds and still missed the 60-second gate.
 
+The native lexer now preserves the original local-member precedence over the
+separate define table. A focused scanner test and the previously failing full
+define fixture pass, as do token and conditional suites, both rebuilds,
+both cross-builds and the 16 MiB diagnostic. The guarded-allocation performance experiment was discarded
+after a 66.5-second 8 MiB run; the preceding image took 65.0 seconds. See
+[identifier tokens](docs/i386-lex-ident-token.md) and
+[heap profiling](docs/i386-heap-performance.md).
+The shadowing fix completed the isolated 8 MiB checks in 68.0 seconds, above
+the 60-second startup gate; the cause of the difference from the earlier
+65.0-second run has not been established.
+
 The gap sort now has a tested 386 implementation and retains its portable
 guest-source implementation. Mixed-order and corrupted ownership-list tests,
 both rebuild generations, task heaps, both cross-build audits, and the 8 MiB

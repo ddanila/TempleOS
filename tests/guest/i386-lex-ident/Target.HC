@@ -14,12 +14,14 @@ extern I64 NativeIdentTest();
 extern I64 NativeIncludeTest();
 extern I64 MacroTest();
 extern I64 NativeTokenTest();
+extern I64 NativePublicationGuardTest();
 I64 Main(I64 unused,I64 unused2)
 {
   I64 result;
   if(!I386HeapInit(&ident_heap,0x40000,65536)) return 1;
   result=MacroTest; if(result) return result;
   result=NativeTokenTest; if(result) return result;
+  result=NativePublicationGuardTest; if(result) return result;
   result=IdentTest; if(result) return result;
   result=IdentLookupTest; if(result) return result;
   result=IdentFailureTest; if(result) return result;
