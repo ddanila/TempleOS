@@ -30,7 +30,7 @@ public CI386OwnedTask *I386TaskCreateWithFilesFallback(CI386Scheduler *s,
   CI386HeapBlock *block;
   I64 scan_offset,need;
   U64 base,end,other_base,other_end;
-  I64 header=(sizeof(CI386OwnedTask)+offset(CTaskStk.stk_base)+7)&~7,total,stack_reserved;
+  I64 header=(sizeof(CI386OwnedTask)+offset(CTaskStk.stk_base)+7)&~7,total,stack_reserved,actual;
   U32 flags,invalid[1];
   creator[0]=0;
 #if I386_TASK_IMPLEMENTATION_ASM
@@ -213,6 +213,15 @@ public CI386OwnedTask *I386TaskCreateWithFilesFallback(CI386Scheduler *s,
   owned->heap=heap; owned->allocation_size=total; owned->signature=0x54323349;
   //The public descriptor directly precedes the page-aligned usable stack.
   stack_base=(((owned+0)(U64)+header+4095)&~4095)(U8 *);
+  //Only alignment padding before the stack is needed. Return the unused tail
+  //while retaining the complete page-rounded stack and private heap extent.
+  actual=(stack_base+0)(U64)-(owned+0)(U64)+stack_reserved+private_size;
+  if(actual<total) {
+    if(!I386HeapShrink(heap,owned,actual)) {
+      I386HeapFree(heap,owned); I386IrqRestore(flags); return 0;
+    }
+    total=actual;owned->allocation_size=actual;
+  }
   owned->task.stk=stack_base-offset(CTaskStk.stk_base);
   owned->task.stk->stk_size=stack_size;
   if (private_size) {

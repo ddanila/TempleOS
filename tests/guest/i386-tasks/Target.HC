@@ -483,6 +483,9 @@ I64 OwnedTaskTest()
     if(!pending || pending->task.owner!=&scheduler ||
         ((&pending->task.stk->stk_base)(U64)&4095) ||
         pending->local_heap.base!=(&pending->task.stk->stk_base)(U8 *)+8192+(cycle&1)*4096 ||
+        pending->allocation_size!=((&pending->task.stk->stk_base)(U64)+
+          ((8192+(cycle&1)*8+4095)&~4095)+4096-(pending+0)(U64)) ||
+        I386HeapSize(&heap,pending)!=pending->allocation_size ||
         pending->task.next_task!=&pending->task || pending->task.last_task!=&pending->task ||
         pending->task.next || pending->task.last || heap.allocations!=1 ||
         I386TaskDestroy(pending)) return 151;

@@ -94,3 +94,42 @@ qualification.
 An isolated 8 MiB startup run passed all nine interactive behavior and VGA
 checks, but took 63.500 seconds and therefore failed the 60-second gate
 (`build/i386-low-task-startup-isolated-v1/result.json`).
+
+## Popup allocation and task-tail reclamation (2026-10-31)
+
+`tools/profile-i386-popup-file-heap.py` captures the actual 8 MiB popup
+failure on the Console 181 image, with unchanged inputs
+(`build/i386-popup-file-heap-v1`). The log identifies task creation as the
+failed allocation. QMP stopped the guest after failure handling had started,
+inside public-memory reclamation, so these are not the exact allocator-failure
+counters: the main arena then had 201,936 bytes free in total and a 149,088
+byte largest free block. The independently checked public backing chains
+contained 15 live regions and no wholly unused, unheld region
+(`build/i386-popup-file-heap-v1/backing-audit.json`). The captured firmware map
+ends conventional usable memory at `0x9fc00`; the live protected-mode boot
+stack still occupies `0x88000..0x90000`. The map alone does not authorize moving
+that stack or using its reservation.
+
+Task creation now shrinks its owned allocation to the actual end of the
+page-rounded stack and private-heap extent after alignment. It keeps the full
+requested stack, its page isolation, all private storage and normal ownership;
+only unused trailing alignment slack is returned. An added task fixture checks
+the allocation's exact retained size and fails on the prior implementation
+(`build/i386-task-tail-test-red-v1.log`). The native task, inherited heap and
+symbol, retained-core and heap tests pass, as do both bootstrap generations
+the full cross-build/386 audit and the 16 MiB diagnostic (`build/i386-task-tail-tasks-v1.log`,
+`build/i386-task-tail-heaps-v1.log`, `build/i386-task-tail-symbols-v1.log`,
+`build/i386-task-tail-retained-v1.log`, `build/i386-task-tail-heap-v1.log`,
+`build/i386-task-tail-rebuild-v1.log`, `build/i386-task-tail-full-cross-v1`,
+`build/i386-task-tail-diagnostics-v1`).
+The 8 MiB InFile contract, including low-slot reuse, remains passing with
+unchanged inputs (`build/i386-task-tail-infile-8m-v1`). The 64 MiB popup
+contract also remains passing (`build/i386-task-tail-popup-64m-v1`).
+
+The 8 MiB popup contract still fails `OutMem` with unchanged inputs
+(`build/i386-task-tail-popup-8m-v1`). The low arena's logged used count falls
+from 276,016 to 274,712 bytes and its largest free block rises from 210,608 to
+211,912 bytes, a 1,304-byte recovery in this workload; the next requested task
+still needs 267,527 bytes. The runs overlapped other guests and are not timing
+qualification. Further capacity work must retain the full task stack and
+firmware reservations. C1–C5 remain open.

@@ -2031,6 +2031,13 @@
           "result": "fail",
           "evidence": "build/i386-popup-file-native-8m-v1/result.json",
           "scope": "8 MiB guest exhausts conventional task arena while creating another task; unchanged inputs; startup not isolated."
+        },
+        {
+          "target": "native-popup-file-task-tail-8m",
+          "command": "python3 tools/test-i386-popup-file.py IMAGE --ram-mib 8 --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-task-tail-popup-8m-v1/result.json",
+          "scope": "After task alignment-tail reclamation the 8 MiB asynchronous popup still fails task allocation; inputs unchanged; not an isolated startup measurement."
         }
       ]
     },

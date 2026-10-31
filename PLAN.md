@@ -11,6 +11,14 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Task alignment-tail reclamation (2026-10-31)
+
+Task allocations now return unused trailing page-alignment padding while
+retaining the full stack and private heap. Lifecycle, ownership and heap
+fixtures pass, as does the 8 MiB InFile contract. The 8 MiB PopUpFile case
+still fails the next task allocation; the capture and 1,304-byte observed
+recovery are recorded in [low-memory evidence](docs/i386-low-arena.md).
+
 ### Original PopUpFile wrapper (2026-10-31)
 
 The shared original `PopUpFile` wrapper passes an asynchronous file-execution
