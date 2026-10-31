@@ -172,9 +172,10 @@ the fixed fallback boundary but does not establish full-file completion or
 linear scaling.
 
 The Memory 36 full-content image passed the cross-build and 386 audit
-(`build/i386-backing-batches-full-cross-v1`). The complete Bible-link test is running on the Memory 36 image in
-`build/i386-doc-bible-link-full-batches-v1`; it is independent of these bounded
-tests.
+(`build/i386-backing-batches-full-cross-v1`). The complete Bible-link test on
+that image timed out in its first link at the 20-minute command limit, with
+unchanged inputs (`build/i386-doc-bible-link-full-batches-v1`); it is independent
+of these bounded tests.
 
 The Memory 36 16 MiB diagnostic also passed its initial isolated memory probe
 and then reached the same prior-image `PublicTask.HH` failure
@@ -210,6 +211,9 @@ of each allocation or which nodes can safely be reclaimed. Inputs were
 unchanged and the native bundle diagnostic passed.
 
 `tools/profile-i386-bible-cleanup.py` also accepts `--lines` to sample cleanup
-for other prefixes of the real Bible; a 6,400-line run is in progress against
-the batched validator. Its QMP-paused samples are for identifying hot code,
-not timing qualification.
+for other prefixes of the real Bible. A 6,400-line run on the batched validator
+passed with unchanged inputs and observed 194 backing regions. Of 555
+QMP-paused cleanup samples, 503 landed in `I386MemBackingValid`, called through
+`I386MemBackingTrim` and `MemoryFree`
+(`build/i386-bible-cleanup-batches-6400-v1`). These samples identify hot code;
+they are not timing qualification.
