@@ -318,7 +318,10 @@ Bool DocBasicEditCore(CDoc *doc,I64 ch=0,I64 sc=0)
       }
     }
   } else if(0x20<=ch<0x100) {
-    if(IsEditableText(entry)) {
+    if(doc->flags&DOCF_OVERSTRIKE && IsEditableText(entry) &&
+        doc->cur_col<entry->max_col && entry->tag[doc->cur_col]) {
+      entry->tag[doc->cur_col++]=ch;
+    } else if(IsEditableText(entry)) {
       length=StrLen(entry->tag); column=doc->cur_col;
       if(column<entry->min_col) column=entry->min_col;
       if(column>length) column=length;

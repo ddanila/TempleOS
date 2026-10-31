@@ -2070,8 +2070,18 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-doc-put-key-reference.py",
+        "checks": [
+          "Callback data, key and lock state",
+          "Default document, text and overstrike flag",
+          "Seeded undo, document roles and allocation balance"
+        ]
+      },
       "tests": [
         {
           "target": "native-owned-text-capacity",
@@ -2079,6 +2089,27 @@
           "result": "pass",
           "evidence": "build/i386-c2-doc-capacity-final-checks/capacity-64m/result.json",
           "scope": "Ordinary native edit core: owned spare capacity, overlapping insertion, growth/failure and aligned tags; full original key-device behavior remains unqualified"
+        },
+        {
+          "target": "original-reference-put-key-components",
+          "command": "python3 tools/test-i386-doc-put-key-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-put-key-reference-explicit-v1/result.json",
+          "scope": "Six cases with explicit nonzero flag comparison; full key dispatch unqualified"
+        },
+        {
+          "target": "native-put-key-components-64m",
+          "command": "python3 tools/test-i386-doc-put-key.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-put-key-core-native-v2/result.json",
+          "scope": "Six matching bounded document-key cases"
+        },
+        {
+          "target": "native-put-key-components-8m",
+          "command": "python3 tools/test-i386-doc-put-key.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-put-key-core-native-8m-v1/result.json",
+          "scope": "Same six cases on the minimal-memory profile; no full key-dispatch claim"
         }
       ]
     },
@@ -15277,21 +15308,21 @@
           "command": "python3 tools/test-i386-bible-load-profile.py IMAGE --out OUT",
           "result": "pass",
           "evidence": "build/i386-bible-load-profile-optimized-v3/result.json",
-          "scope": "Bounded 400–1600-line document workload with full backing-heap validation and timed cleanup; not full original allocator or application qualification"
+          "scope": "Bounded 400\u20131600-line document workload with full backing-heap validation and timed cleanup; not full original allocator or application qualification"
         },
         {
           "target": "native-multi-region-backing-profile",
           "command": "python3 tools/test-i386-bible-load-profile.py IMAGE --out OUT",
           "result": "pass",
           "evidence": "build/i386-bible-load-profile-multilookup-final-v1/result.json",
-          "scope": "Bounded 400–1600-line workload; full heap validation plus sorted ownership checks for up to 64 regions and tested fallback; full allocator/application qualification remains open"
+          "scope": "Bounded 400\u20131600-line workload; full heap validation plus sorted ownership checks for up to 64 regions and tested fallback; full allocator/application qualification remains open"
         },
         {
           "target": "native-batched-backing-profile",
           "command": "python3 tools/test-i386-bible-load-profile.py IMAGE --large --out OUT",
           "result": "pass",
           "evidence": "build/i386-bible-load-batches-large-v1/result.json",
-          "scope": "1600–6400-line document workload across 56–194 backing regions; native allocator and full application qualification remain open"
+          "scope": "1600\u20136400-line document workload across 56\u2013194 backing regions; native allocator and full application qualification remain open"
         }
       ]
     },
@@ -15333,21 +15364,21 @@
           "command": "python3 tools/test-i386-bible-load-profile.py IMAGE --out OUT",
           "result": "pass",
           "evidence": "build/i386-bible-load-profile-optimized-v3/result.json",
-          "scope": "Bounded 400–1600-line document workload with full backing-heap validation and timed cleanup; not full original allocator or application qualification"
+          "scope": "Bounded 400\u20131600-line document workload with full backing-heap validation and timed cleanup; not full original allocator or application qualification"
         },
         {
           "target": "native-multi-region-backing-profile",
           "command": "python3 tools/test-i386-bible-load-profile.py IMAGE --out OUT",
           "result": "pass",
           "evidence": "build/i386-bible-load-profile-multilookup-final-v1/result.json",
-          "scope": "Bounded 400–1600-line workload; full heap validation plus sorted ownership checks for up to 64 regions and tested fallback; full allocator/application qualification remains open"
+          "scope": "Bounded 400\u20131600-line workload; full heap validation plus sorted ownership checks for up to 64 regions and tested fallback; full allocator/application qualification remains open"
         },
         {
           "target": "native-batched-backing-profile",
           "command": "python3 tools/test-i386-bible-load-profile.py IMAGE --large --out OUT",
           "result": "pass",
           "evidence": "build/i386-bible-load-batches-large-v1/result.json",
-          "scope": "1600–6400-line document workload across 56–194 backing regions; native allocator and full application qualification remain open"
+          "scope": "1600\u20136400-line document workload across 56\u2013194 backing regions; native allocator and full application qualification remain open"
         }
       ]
     },

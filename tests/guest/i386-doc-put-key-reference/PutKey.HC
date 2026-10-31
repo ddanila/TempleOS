@@ -18,7 +18,7 @@ I64 PKContract(I64 mode)
   pk_calls=0;pk_consume=mode==0;pk_unlocked=FALSE;pk_data=FALSE;
   if(mode<2){d->user_put_key=&PKHook;d->user_put_data=d;}
   if(mode==2)Fs->put_doc=d;
-  if(mode==4){DocPutKey(d,0,SC_INS);action_ok=d->flags&DOCF_OVERSTRIKE;}
+  if(mode==4){DocPutKey(d,0,SC_INS);action_ok=(d->flags&DOCF_OVERSTRIKE)!=0;}
   if(mode==5){d->flags|=DOCF_ALLOW_UNDO;DocCaptureUndo(d,TRUE);}
   if(mode==2)DocPutKey(NULL,'X',0);else DocPutKey(d,'X',0);
   if(mode<2)hook_ok=pk_calls==1&&pk_ch=='X'&&!pk_sc&&pk_unlocked&&pk_data;

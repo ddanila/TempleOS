@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Document key interception and undo components (2026-11-01)
+
+Native `DocPutKey` now supports the original pre-lock callback and default
+document, plus the tested plain-text overstrike and undo paths. Six bounded
+cases pass on the pinned original and native at 64 and 8 MiB. The complete
+original key dispatch and a separately observed high-bit-to-Bool discrepancy
+remain open. Isolated 8 MiB startup takes 61.091 seconds, above the 60-second
+gate. C1–C5 remain open; see [document-key evidence](docs/i386-doc-put-key.md).
+
 ### Parser token ownership check (2026-11-01)
 
 Token-string ownership now reuses the immediately preceding complete heap

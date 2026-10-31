@@ -73,3 +73,39 @@ PlaySysMacro, picker/tool invocations and global state. Private provider aliases
 must preserve the original service contract and resource ownership. Compile the
 full body, then require direct input, actual chooser, normal editor, GetStr and
 TimeClock workflows on the delivered normal image. C1–C5 remain incomplete.
+
+## Callback, undo and overstrike components (2026-11-01)
+
+The native wrapper now resolves a null argument through `DocPut`, invokes
+`user_put_key` before locking and honors consumption, marks undo dirty for the
+original scan-code set and invokes `DocCaptureUndo`. It handles the original
+Alt-Backspace undo dispatch and unmodified Insert overstrike toggle; the
+retained plain-text editor replaces an existing character when overstrike is
+set. These are components of the original dispatcher, not its complete menu,
+selection, character-entry or shortcut behavior.
+
+The pinned original and native at both 64 and 8 MiB pass the six-case fixture
+with exact text, callback/lock state, roles and allocation balance
+(`build/i386-doc-put-key-reference-explicit-v1`,
+`build/i386-doc-put-key-core-native-v2`,
+`build/i386-doc-put-key-core-native-8m-v1`). The native baseline with the
+current welcome-screen runner failed the callback case before the change
+(`build/i386-doc-put-key-current-native-red-v2`); an earlier run timed out at
+the outdated initial-screen expectation. The fixture now compares the 64-bit
+overstrike flag explicitly with zero. Before that correction, the same
+original fixture returned 63 while native returned 61 despite producing the
+expected overstruck text (`build/i386-doc-put-key-current-reference-v1`,
+`build/i386-doc-put-key-inspect-v1`). The direct assignment of that bit-32
+expression to `Bool` therefore remains a separate observed compiler
+compatibility difference; the explicit comparison does not qualify it.
+
+Both bootstrap generations, the full cross-build/386 audit and the 16 MiB
+startup diagnostic pass (`build/i386-doc-put-key-core-rebuild-v2.log`,
+`build/i386-doc-put-key-core-cross-v2`,
+`build/i386-doc-put-key-core-diagnostics-v1`). The isolated 8 MiB startup
+completed all nine functional/VGA checks but took 61.091 seconds and missed the
+60-second gate (`build/i386-doc-put-key-core-startup-v1`). Two attempts to run
+the older typed-dollar runner timed out while typing its long second
+definition, before a behavioral verdict (`build/i386-doc-put-key-core-dollar-
+v1`, `build/i386-doc-put-key-core-dollar-v2`); its prior coverage is not
+requalified by this change. Full original `DocPutKey` and C1–C5 remain open.

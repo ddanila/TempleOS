@@ -7,6 +7,8 @@ public _intern 0x15 CTask *Fs();
 #include "/Kernel/DefineTypes.HH"
 #include "/Kernel/ColorNames.HH"
 #include "/Kernel/TimeTypes.HH"
+#include "/Kernel/ScanFlags.HH"
+#include "/Kernel/ScanCodes.HH"
 import U8 *MAlloc(I64 size,CTask *task=0);
 import U8 *CAlloc(I64 size,CTask *task=0);
 import U0 Free(U8 *allocation);
@@ -163,11 +165,19 @@ U32 native_doc_printable[16]=CHAR_BMP_PRINTABLE_DATA;
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   Bool unlock,printable;
-  if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) return;
+  if(!doc && !(doc=DocPut) || doc->doc_signature!=DOC_SIGNATURE_VAL) return;
+  //The original callback runs before locking and can consume the key.
+  if(doc->user_put_key && (*doc->user_put_key)(doc,doc->user_put_data,ch,sc)) return;
   unlock=DocLock(doc);
   try {
+    if(!Bt(doldoc.clean_scan_codes,sc.u8[0])) doc->flags|=DOCF_UNDO_DIRTY;
+    DocCaptureUndo(doc);
     printable=0<=ch<512 && Bt(native_doc_printable,ch);
-    if(!printable || sc.u32[0]&0x80000C00 ||
+    if(ch==CH_BACKSPACE && sc&SCF_ALT && !(sc&(SCF_SHIFT|SCF_CTRL|SCF_KEY_DESC)))
+      DocUndoRestore(doc);
+    else if(!ch && sc.u8[0]==SC_INS && !(sc&(SCF_SHIFT|SCF_CTRL|SCF_ALT|SCF_KEY_DESC)))
+      doc->flags^=DOCF_OVERSTRIKE;
+    else if(!printable || sc.u32[0]&0x80000C00 ||
         !DocDollarInputCore(doc,ch,printable)) DocBasicEditCore(doc,ch,sc);
   } catch { if(unlock) DocUnlock(doc); }
   if(unlock) DocUnlock(doc);
