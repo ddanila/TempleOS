@@ -86,6 +86,16 @@ both bootstrap generations, both cross-builds and the 16 MiB diagnostic pass.
 An 8 MiB run with another guest active took 70.6 seconds and still failed the
 60-second gate. See [heap profiling](docs/i386-heap-performance.md).
 
+Lexer snapshot validation now reuses its complete heap check for related
+records under interrupt exclusion. Nested corruption and ownership tests,
+both rebuild generations, both cross-builds and the 16 MiB diagnostic pass;
+the first boundary test exited without its expected output and a fresh run
+passed. Sequential isolated 8 MiB runs measured 66.6 seconds versus 70.6 for
+the preceding image, both above the 60-second gate. The full Bible lookup on
+the earlier task-stack image timed out. See
+[heap profiling](docs/i386-heap-performance.md) and
+[Bible load profiling](docs/i386-bible-load-profile.md).
+
 ### Standalone public task header diagnostic (2026-10-31)
 
 `PublicTask.HH` now expresses the false `DeathWait` default without relying on

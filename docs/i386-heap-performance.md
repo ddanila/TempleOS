@@ -27,6 +27,36 @@ ran concurrently. The preceding page-isolated image took 76.7 seconds alone,
 so these observations suggest a gain but are not a controlled timing comparison.
 The 60-second gate and full C1–C5 qualification remain open.
 
+## Lexer snapshot lookup candidate (2026-10-31)
+
+Snapshot validation now performs one complete heap validation, then checks
+its saved files and active files by walking the already validated block
+boundaries under the same interrupt exclusion. The shared boundary-walk helper
+is also used by compiler-owner validation. No heap mutation or callback
+occurs between validation and the lookups.
+
+The nested snapshot fixture checks forged interior saved-file and active-file
+headers, a corrupt later block and interrupt restoration. The baseline passes
+(`build/i386-lex-snapshot-scan-baseline-v1.log`). The first candidate run
+exited without its expected runner output
+(`build/i386-lex-snapshot-scan-boundary-v1.log`); replaying its runner image
+and a complete fresh run passed (`build/i386-lex-snapshot-scan-boundary-v2.log`).
+Task-symbol tests, both bootstrap generations, minimal and full-content
+cross-builds and the full 16 MiB diagnostic also pass with recorded diagnostic
+input hashes unchanged (`build/i386-lex-snapshot-scan-symbols-v1.log`,
+`build/i386-lex-snapshot-scan-rebuild-v1.log`,
+`build/i386-lex-snapshot-scan-cross-v1`,
+`build/i386-lex-snapshot-scan-full-cross-v1`,
+`build/i386-lex-snapshot-scan-diagnostics-v1`).
+
+In sequential isolated 8 MiB runs the candidate took 66.6 seconds and the
+source-matched preceding image took 70.6 seconds. Both completed all nine
+interactive checks with unchanged inputs and failed the 60-second gate
+(`build/i386-lex-snapshot-scan-smoke-v2`,
+`build/i386-lex-snapshot-scan-control-v1`). The earlier concurrent candidate
+run took 68.0 seconds (`build/i386-lex-snapshot-scan-smoke-v1`). C1–C5 and the
+startup gate remain open.
+
 Loading the complete document records at bce29e6 exposed a normal-startup
 regression: 60.612 seconds on the QEMU/486 8 MiB profile, compared with 25.038
 seconds before those records were published. Full diagnostic startup took

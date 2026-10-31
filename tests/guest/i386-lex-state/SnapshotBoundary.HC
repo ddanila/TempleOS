@@ -33,7 +33,8 @@ I64 NativeSnapshotNestedTest()
   CLexFile *root,*outer,*inner;
   CI386LexSnapshot *snapshot;
   CI386LexSavedFile *saved;
-  CLexFile *saved_active;
+  CLexFile *saved_active,*parent_next;
+  CI386LexSavedFile *saved_head;
   U8 *later;
   CI386HeapBlock *later_block;
   U32 irq;
@@ -60,6 +61,21 @@ I64 NativeSnapshotNestedTest()
   SetRFlags(irq|0x200);
   if(I386LexSnapshotValid(&state_heap,&cc,snapshot) || !(GetRFlags&0x200)) return 728;
   I386IrqRestore(irq); saved->active=saved_active;
+  //A forged block header inside a live allocation is not a saved-file record.
+  later=I386HeapAllocHigh(&state_heap,sizeof(CI386LexFile)+16,TRUE);
+  if(!later) return 732;
+  later_block=later;later_block->span=sizeof(CI386LexSavedFile)+16;
+  later_block->requested=sizeof(CI386LexSavedFile);later_block->tag=I386_HEAP_USED;
+  saved_head=snapshot->parents;snapshot->parents=later+16;
+  if(I386LexSnapshotValid(&state_heap,&cc,snapshot)) return 733;
+  snapshot->parents=saved_head;
+  //Nor can an interior pointer masquerade as the next active file.
+  later_block->span=sizeof(CI386LexFile)+16;later_block->requested=sizeof(CI386LexFile);
+  parent_next=snapshot->active->next;saved_active=saved->active;
+  snapshot->active->next=later+16;saved->active=later+16;
+  if(I386LexSnapshotValid(&state_heap,&cc,snapshot)) return 734;
+  snapshot->active->next=parent_next;saved->active=saved_active;
+  if(!I386HeapFree(&state_heap,later)) return 735;
   //A later corrupt allocation must invalidate an earlier matching snapshot.
   later=I386HeapAllocHigh(&state_heap,32);
   if(!later || later<=(snapshot+0)(U8 *)) return 729;

@@ -3,6 +3,7 @@
 #include "/Kernel/DocTypes.HH"
 #include "/Compiler/LexFiles.HC"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/HeapKnown.HC"
 #define I386_LEX_FILE_MAGIC 0x4C464931
 U8 i386_doc_zero=0;
 class CI386LexFileRelease
@@ -16,6 +17,12 @@ Bool I386LexFileOwned(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file)
   return I386HeapSize(heap,file)==sizeof(CI386LexFile) &&
     owned->signature==I386_LEX_FILE_MAGIC && owned->heap==heap && owned->control==cc;
 }
+Bool I386LexFileOwnedKnown(CI386Heap *heap,CCmpCtrl *cc,CLexFile *file)
+{//The caller has validated the unchanged heap under IRQ exclusion.
+  CI386LexFile *owned=file;
+  return I386HeapKnownSize(heap,file,sizeof(CI386LexFile)) &&
+    owned->signature==I386_LEX_FILE_MAGIC && owned->heap==heap && owned->control==cc;
+}
 Bool I386LexSnapshotValid(CI386Heap *heap,CCmpCtrl *cc,CI386LexSnapshot *snapshot)
 {
   CI386LexSavedFile *saved;
@@ -27,12 +34,12 @@ Bool I386LexSnapshotValid(CI386Heap *heap,CCmpCtrl *cc,CI386LexSnapshot *snapsho
       snapshot->control!=cc) goto done;
   parent=snapshot->active;
   saved=snapshot->parents;
-  if(saved && !I386LexFileOwned(heap,cc,parent)) goto done;
+  if(saved && !I386LexFileOwnedKnown(heap,cc,parent)) goto done;
   for(;saved;saved=saved->next) {
     //The preceding active file is already validated under IRQ exclusion.
-    if(I386HeapSize(heap,saved)!=sizeof(CI386LexSavedFile) ||
+    if(!I386HeapKnownSize(heap,saved,sizeof(CI386LexSavedFile)) ||
         parent->next!=saved->active ||
-        !I386LexFileOwned(heap,cc,saved->active)) goto done;
+        !I386LexFileOwnedKnown(heap,cc,saved->active)) goto done;
     parent=saved->active;
   }
   result=TRUE;

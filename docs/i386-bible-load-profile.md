@@ -589,6 +589,9 @@ candidate took 76.7 seconds and the source-matched prior image took 77.0
 seconds; both completed their interactive checks but failed the 60-second
 startup gate with unchanged inputs (`build/i386-task-page-alignment-smoke-v2`,
 `build/i386-task-page-control-smoke-v1`). Full qualification remains open.
+The full-content Bible-link test on the page-isolated task-stack image timed
+out during its first lookup at the 20-minute command limit, with inputs
+unchanged (`build/i386-task-page-alignment-bible-full-v1`).
 The normal
 full-link test timed out at its 20-minute command limit with unchanged inputs
 (`build/i386-cache-mergesort-bible-full-v1`).
