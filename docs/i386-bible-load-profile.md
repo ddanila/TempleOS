@@ -551,7 +551,11 @@ appeared in the candidate. The candidate completed zero window updates versus
 (`build/i386-cache-diag-host-candidate-v1`,
 `build/i386-cache-diag-host-control-v1`). Both inputs were unchanged. These
 samples suggest repeated code-page write checks even though no translation
-blocks were actually invalidated; the affected page is being investigated.
+blocks were actually invalidated. A follow-up captured QEMU's checked write
+addresses between `0x3d404c` and `0x3d409c`, within the active window-worker
+stack page at `0x3d4000` (`build/i386-cache-diag-host-page-candidate-v1`).
+Its inputs were unchanged and it completed no window updates during sampling.
+The source of the code-page sharing remains under investigation.
 The normal
 full-link test timed out at its 20-minute command limit with unchanged inputs
 (`build/i386-cache-mergesort-bible-full-v1`).
