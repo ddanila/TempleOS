@@ -11,6 +11,16 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Interactive popup exit and current memory evidence (2026-10-31)
+
+Shift-Esc now retires an active popup and its caller, matching the pinned
+original in the 64 MiB comparison. The 8 MiB fixture still exhausts memory
+before reaching the exit check. A captured allocation audit identifies both
+fully occupied graphics buffers; the 16 MiB diagnostic startup passes, while
+an isolated 8 MiB startup completes its functional checks in 66.213 seconds and
+misses the 60-second gate. C1–C5 remain open; see
+[low-memory evidence](docs/i386-low-arena.md).
+
 ### Backing placement and split task state (2026-10-31)
 
 The previously failing 8 MiB asynchronous PopUpFile comparison now passes.

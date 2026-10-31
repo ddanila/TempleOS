@@ -346,3 +346,18 @@ not be treated as a free or available range in this configuration. The capture
 and audit report unchanged inputs. The first capture attempt ended prematurely
 on the spawning command's completion, before the asynchronous failure
 (`build/i386-popup-exit-heap-8m-v1`); it supplied no heap evidence.
+
+The graphics allocation audit follows the captured ConsoleRuntime exports to
+both live `CDC.body` pointers using the i386 record layout. Each body occupies
+its own fully used 307,712-byte backing region: `graphics_persistent` contains
+one 307,200-byte body and `graphics_frame` contains the other
+(`build/i386-popup-exit-heap-8m-v2/graphics-audit.json`). These are live drawing
+contexts used by the presentation path, not empty backing regions; the audit
+does not establish that either can be reclaimed. Input hashes were unchanged.
+
+For the popup-exit build, the 16 MiB diagnostic startup passes its storage and
+presentation checks (`build/i386-popup-exit-diagnostics-16m-v1`). An isolated
+8 MiB interactive run completes all nine command and VGA checks, but fails the
+60-second startup gate at 66.213 seconds
+(`build/i386-popup-exit-startup-8m-isolated-v1`). These checks do not establish
+the 8 MiB synchronous popup workload or complete C1–C5 qualification.
