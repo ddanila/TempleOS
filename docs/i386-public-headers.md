@@ -161,3 +161,27 @@ audit pass. A focused 8 MiB no-FPU guest check evaluates all eighteen values
 from the loaded native public header with exact VGA and unchanged input disk
 (`build/i386-public-message-codes-native/result.json`). Message service APIs
 remain unpublished; constants alone do not qualify message delivery.
+
+## Task wait default in standalone kernel headers
+
+`PublicTask.HH` declares `DeathWait`'s false default as `0`, matching the
+original value without depending on the `FALSE` macro from the later user
+header. Previously, the diagnostic's standalone `PublicKernel.HH` load failed
+at that declaration before it could complete rollback and publication checks.
+The updated 16 MiB diagnostic passes both root and worker header phases,
+including rollback, expected warnings, document-layout checks, and all nine
+console/graphics checks (`build/i386-public-task-default-diagnostics-v1`). Its
+recorded input hashes match; its startup was approximately 250 seconds, so this
+is a functional diagnostic result, not an 8 MiB timing qualification. The
+prior image's 16 MiB diagnostic failure is recorded in
+`build/i386-backing-validator-diagnostics-control-16m-v1`.
+
+The birth/death-wait guest contract also passes, including the omitted default
+and explicit exit behavior (`build/i386-public-task-default-wait-v1`). Both
+original bootstrap generations and the native cross-build/386 audit pass
+(`build/i386-public-task-default-rebuild-v1.log`,
+`build/i386-public-task-default-cross-v1`). The normal 8 MiB drive-fields smoke
+also passes (`build/i386-public-task-default-smoke-8m-v1`). The prior 8 MiB
+diagnostic exhausted
+its bootstrap heap before reaching this header check; this change does not close
+that resource gate or C1–C5.

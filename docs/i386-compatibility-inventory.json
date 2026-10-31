@@ -14798,7 +14798,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-task-wait-default",
+          "command": "python3 tools/test-i386-birth-death-wait.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-task-default-wait-v1/result.json",
+          "scope": "DeathWait omitted false default and explicit exit behavior; standalone public header also passes both 16 MiB diagnostic phases; not whole-file qualification"
+        }
+      ]
     },
     {
       "path": "Kernel/KeyDev.HC",

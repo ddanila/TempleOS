@@ -11,6 +11,16 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Standalone public task header diagnostic (2026-10-31)
+
+`PublicTask.HH` now expresses the false `DeathWait` default without relying on
+the later user-header macros. The 16 MiB diagnostic passes both header
+rollback/publication phases and all nine console/graphics checks; the real
+birth/death-wait contract, both bootstrap generations, native 386 audit, and
+normal 8 MiB drive-fields smoke also pass. The earlier 8 MiB diagnostic exhausted its bootstrap heap before the
+header check, and complete C1–C5 qualification remains open. See
+[public headers](docs/i386-public-headers.md).
+
 ### Original FIFO dependency checkpoint (2026-10-16)
 
 MemoryRuntime 30 exports all fourteen original U8/I64 FIFO functions through

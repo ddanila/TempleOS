@@ -181,3 +181,9 @@ and then reached the same prior-image `PublicTask.HH` failure
 (`build/i386-backing-batches-diagnostics-v1`); the full diagnostic remains
 failed. The 8 MiB drive-fields smoke passed with unchanged inputs
 (`build/i386-backing-batches-smoke-v1`).
+
+A subsequent task-header correction resolved the 16 MiB diagnostic's
+`PublicTask.HH` failure; the full functional diagnostic passes on the updated
+image (`build/i386-public-task-default-diagnostics-v1`). The earlier 8 MiB
+diagnostic heap exhaustion remains a separate, unresolved resource limit. See
+[public headers](i386-public-headers.md).

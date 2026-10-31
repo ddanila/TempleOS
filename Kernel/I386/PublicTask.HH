@@ -11,5 +11,5 @@ public _extern _SUSPEND Bool Suspend(CTask *task=0,Bool state=1);
 public _extern _IS_SUSPENDED Bool IsSuspended(CTask *task=0);
 public _extern _KILL Bool Kill(CTask *task,Bool wait=1,Bool just_break=0);
 public _extern _BIRTH_WAIT I64 BirthWait(CTask **_task,I64 task_num=-1);
-public _extern _DEATH_WAIT U0 DeathWait(CTask **_task,Bool send_exit=FALSE);
+public _extern _DEATH_WAIT U0 DeathWait(CTask **_task,Bool send_exit=0);
 #endif
