@@ -13873,8 +13873,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": "Exercise InFile using a real source file with a default and an explicit extension, execute queued source in the current task, observe its key messages and input-filter retirement, and preserve the current directory. Other job/task workflows are tracked in the individual tests; full-file behavior remains open.",
+      "oracle": "The original/native InFile contract checks mask 15: both input paths produce AB key messages, input filter links and flags return to idle, and the current directory is preserved. This is not complete job, exception, terminal callback or desktop qualification.",
       "tests": [
         {
           "command": "python3 tools/test-i386-popup-execution-reference.py --out OUT",
@@ -13935,6 +13935,34 @@
           "result": "pass",
           "evidence": "build/i386-c2-post-msg-wait-native/result.json",
           "scope": "Console135 complete shared PostMsgWait: mask255 matches original self/worker queue and idle semantics, negative key pair, flags/IF and invalid/null tasks; three commands with unchanged inputs; 64 MiB functional run, not resource or whole-file qualification"
+        },
+        {
+          "target": "original-infile",
+          "command": "python3 tools/test-i386-infile.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-infile-original-v1/result.json",
+          "scope": "Pinned original queued execution, default/explicit extension, input-filter retirement and directory state; inputs unchanged."
+        },
+        {
+          "target": "native-infile-baseline",
+          "command": "python3 tools/test-i386-infile.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-infile-native-red-v1/result.json",
+          "scope": "Prior image rejects fixture at missing InFile before execution, inputs unchanged."
+        },
+        {
+          "target": "native-infile",
+          "command": "python3 tools/test-i386-infile.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-infile-native-v2/result.json",
+          "scope": "Console 177 full-content current-source image, mask 15 and three commands on native; unchanged inputs. Not full callback, input cancellation or job lifetime qualification."
+        },
+        {
+          "target": "native-infile-8m-red",
+          "command": "python3 tools/test-i386-infile.py IMAGE --ram-mib 8 --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-infile-native-8m-v2/result.json",
+          "scope": "Isolated 8 MiB full-content run reaches queued execution then throws OutMem while creating the input-filter task; inputs unchanged. A separate concurrent attempt also failed."
         }
       ]
     },

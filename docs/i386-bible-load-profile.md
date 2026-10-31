@@ -475,8 +475,9 @@ an elapsed-time gain; the fast path was discarded
 (`build/i386-backing-order-bible-medium-v1`,
 `build/i386-pool-fast-bible-medium-v1`,
 `build/i386-backing-order-bible-sample-v1`,
-`build/i386-pool-fast-bible-sample-v1`). The candidate 16 MiB startup diagnostic passed; its full-link test remains
-in progress (`build/i386-backing-order-diagnostics-v1`,
+`build/i386-pool-fast-bible-sample-v1`). The candidate 16 MiB startup diagnostic passed. Its normal full-link test
+timed out during the first lookup at the 20-minute command limit with unchanged
+inputs (`build/i386-backing-order-diagnostics-v1`,
 `build/i386-backing-order-bible-full-v1`).
 
 ## Backing ownership-list collection experiment

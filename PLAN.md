@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original InFile service (2026-10-31)
+
+The original `InFile` body is shared and exported on native. The original and
+native queued-execution fixtures pass their default/explicit extension, filter
+retirement and directory checks at 64 MiB; both rebuild generations, cross-builds
+and the 16 MiB diagnostic pass. The 8 MiB fixture reaches queued execution
+but runs out of memory. Terminal right-click integration and C1–C5 remain open. See
+[InFile evidence](docs/i386-infile.md).
+
 ### Block-I/O reference extension (2026-10-31)
 
 The original RAM-backed block contract now covers drive offsets, final-sector

@@ -91,3 +91,7 @@ TermRightClickLink and original DocTermNew/UserStartUp integration remain open.
 The callback needs full Copy/Move/Delete, file-input and mount services, among
 other dependencies; this menu does not replace those operations. All 686
 inventory entries and C1–C5 remain unqualified.
+
+The original `InFile` operation is now available natively and passes a scoped
+queued-execution comparison; see [InFile evidence](i386-infile.md). The
+right-click callback and its remaining dependencies are still open.

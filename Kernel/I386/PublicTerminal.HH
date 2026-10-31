@@ -8,6 +8,7 @@ public _extern _XTALK U0 XTalk(CTask *task,U8 *fmt,...);
 public _extern _TASK_WAIT U0 TaskWait(CTask *task=0,Bool cmd_line_pmt=0);
 public _extern _TASK_TEXT CJob *TaskText(CTask *srv,CTask *master,U8 *data,I64 flags);
 public _extern _IN_STR U0 InStr(U8 *fmt,...);
+public _extern _IN_FILE U0 InFile(U8 *filename);
 public _extern _XTALK_STR_WAIT U0 XTalkStrWait(CTask *task,U8 *fmt,...);
 public _extern _IN U0 In(U8 *fmt,...);
 public _extern _JOB_RES_SCAN Bool JobResScan(CJob *rqst=NULL,I64 *_res=NULL);
