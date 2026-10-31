@@ -72,6 +72,14 @@ guests active. The normal full-link test timed out; two 16 MiB diagnostic
 prompt checks also failed while the source-matched control passed, so this
 candidate remains unqualified.
 
+Spawned task stacks now have a page-isolated allocation candidate, addressing
+the translated-code checks observed on the window worker's reused stack page.
+Task lifecycle, public task heaps, two bootstrap generations, both cross-build
+audits and the 16 MiB diagnostic pass. An isolated 8 MiB startup took 76.7
+seconds versus 77.0 seconds for the preceding image; both exceed the 60-second
+gate. The change adds up to 8,190 bytes of reserved padding per task and remains
+unqualified; see [public stacks](docs/i386-public-stacks.md).
+
 ### Standalone public task header diagnostic (2026-10-31)
 
 `PublicTask.HH` now expresses the false `DeathWait` default without relying on

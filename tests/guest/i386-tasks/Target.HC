@@ -407,7 +407,7 @@ I64 OwnedTaskTest()
   I64 cycle,i,j;
   U8 *p;
   if(Caller(0) || Caller(-1) || Caller(0x7FFFFFFFFFFFFFFF)) return 62;
-  if (!I386HeapInit(&heap,0x60000,32768) || I386TaskDestroy(0) ||
+  if (!I386HeapInit(&heap,0x60000,49152) || I386TaskDestroy(0) ||
       I386TaskSpawn(0,&heap,8192,&OwnedWorker,0) ||
       I386TaskSpawn(&scheduler,0,8192,&OwnedWorker,0) ||
       I386TaskSpawn(&scheduler,&heap,8192,0,0) ||
@@ -441,7 +441,7 @@ I64 OwnedTaskTest()
           owned_tasks[i]->task.addr!=&owned_tasks[i]->task ||
           !owned_tasks[i]->task.stk || owned_tasks[i]->task.stk->next_stk ||
           owned_tasks[i]->task.stk->stk_ptr ||
-          ((&owned_tasks[i]->task.stk->stk_base)(U64)&7) ||
+          ((&owned_tasks[i]->task.stk->stk_base)(U64)&4095) ||
           owned_tasks[i]->task.stk->stk_size!=8192 ||
           (&owned_tasks[i]->task.stk->stk_base)(U8 *)+8192!=owned_tasks[i]->local_heap.base) return 41;
     }
@@ -477,9 +477,11 @@ I64 OwnedTaskTest()
     SetRFlags((pending_flags&~0x200)|((cycle&1)<<9));
     pending_expected=GetRFlags;
     pending_owned_stage=0;
-    pending=I386TaskCreateFrom(&scheduler,&heap,scheduler.root,8192,
+    pending=I386TaskCreateFrom(&scheduler,&heap,scheduler.root,8192+(cycle&1)*8,
         &PendingOwnedWorker,0,0x18,0x20,4096);
     if(!pending || pending->task.owner!=&scheduler ||
+        ((&pending->task.stk->stk_base)(U64)&4095) ||
+        pending->local_heap.base!=(&pending->task.stk->stk_base)(U8 *)+8192+(cycle&1)*4096 ||
         pending->task.next_task!=&pending->task || pending->task.last_task!=&pending->task ||
         pending->task.next || pending->task.last || heap.allocations!=1 ||
         I386TaskDestroy(pending)) return 151;
@@ -557,7 +559,7 @@ I64 JoinTest()
 {
   CI386Heap heap;
   I64 i;
-  if (!I386HeapInit(&heap,0x60000,32768) ||
+  if (!I386HeapInit(&heap,0x60000,49152) ||
       I386SchedJoin(0,&tasks[0]) || I386SchedJoin(&scheduler,0) ||
       I386SchedJoin(&scheduler,&tasks[0]) || I386SchedJoin(&scheduler,&foreign_task)) return 49;
   for (i=0;i<3;i++) {

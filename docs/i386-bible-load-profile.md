@@ -572,6 +572,23 @@ trace recorded 57 guest code blocks beginning on the original `0x3d4000`
 stack page during startup (`build/i386-cache-diag-stack-code-v1`), before the
 window worker used it. This supports a page-sharing explanation, though the
 source of every translated block and a general fix remain to be established.
+The current task-allocation candidate instead page-aligns each spawned stack
+and reserves complete zeroed pages, retaining the requested usable size and
+placing a private heap after the reservation. Native and retained task
+lifecycle tests, public task heaps, both bootstrap generations, minimal and
+full-content cross-builds, and the 16 MiB diagnostic pass
+(`build/i386-task-page-alignment-native-v5.log`,
+`build/i386-task-page-alignment-retained-v1.log`,
+`build/i386-task-page-alignment-heaps-v3.log`,
+`build/i386-task-page-alignment-rebuild-v1.log`,
+`build/i386-task-page-alignment-cross-v1`,
+`build/i386-task-page-alignment-full-cross-v1`,
+`build/i386-task-page-alignment-diagnostics-v1`). The fixed task test arenas
+were enlarged for the extra reservation. In isolated 8 MiB startup runs the
+candidate took 76.7 seconds and the source-matched prior image took 77.0
+seconds; both completed their interactive checks but failed the 60-second
+startup gate with unchanged inputs (`build/i386-task-page-alignment-smoke-v2`,
+`build/i386-task-page-control-smoke-v1`). Full qualification remains open.
 The normal
 full-link test timed out at its 20-minute command limit with unchanged inputs
 (`build/i386-cache-mergesort-bible-full-v1`).

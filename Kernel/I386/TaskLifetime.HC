@@ -26,7 +26,8 @@ public CI386OwnedTask *I386TaskCreateWithFiles(CI386Scheduler *s,CI386Heap *heap
   CI386OwnedTask *owned;
   CI386Task *creator[1];
   CI386Heap *file_heap;
-  I64 header=(sizeof(CI386OwnedTask)+offset(CTaskStk.stk_base)+7)&~7,total;
+  U8 *stack_base;
+  I64 header=(sizeof(CI386OwnedTask)+offset(CTaskStk.stk_base)+7)&~7,total,stack_reserved;
   U32 flags,invalid[1];
   creator[0]=0;
 #if I386_TASK_IMPLEMENTATION_ASM
@@ -134,7 +135,12 @@ public CI386OwnedTask *I386TaskCreateWithFiles(CI386Scheduler *s,CI386Heap *heap
   if (private_size<0 || private_size&7 || (private_size && private_size<24) ||
       private_size>0xFFFFFFFF-header-stack_size) return 0;
 #endif
-  total=header+stack_size+private_size;
+  //Keep stack pages wholly inside this zeroed allocation. Executable bytes
+  //from neighboring allocations can otherwise make every stack write slow in
+  //emulators which track translated code at page granularity.
+  stack_reserved=(stack_size+4095)&~4095;
+  total=header+4095+stack_reserved+private_size;
+  if(total>0xFFFFFFFF-23) return 0;
   flags=I386IrqSave;
   if(parent!=s->current) {
     creator[0]=s->current;
@@ -179,11 +185,12 @@ public CI386OwnedTask *I386TaskCreateWithFiles(CI386Scheduler *s,CI386Heap *heap
   owned=I386HeapAlloc(heap,total,TRUE);
   if (!owned) { I386IrqRestore(flags); return 0; }
   owned->heap=heap; owned->allocation_size=total; owned->signature=0x54323349;
-  //The public descriptor directly precedes its eight-byte-aligned stack.
-  owned->task.stk=(owned+0)(U8 *)+header-offset(CTaskStk.stk_base);
+  //The public descriptor directly precedes the page-aligned usable stack.
+  stack_base=(((owned+0)(U64)+header+4095)&~4095)(U8 *);
+  owned->task.stk=stack_base-offset(CTaskStk.stk_base);
   owned->task.stk->stk_size=stack_size;
   if (private_size) {
-    if (!I386HeapInit(&owned->local_heap,(owned+0)(U8 *)+header+stack_size,private_size)) {
+    if (!I386HeapInit(&owned->local_heap,stack_base+stack_reserved,private_size)) {
       I386HeapFree(heap,owned); I386IrqRestore(flags); return 0;
     }
     owned->task.memory=&owned->local_heap;

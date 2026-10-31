@@ -47,7 +47,7 @@ I64 WaitCancelTest()
   Bool accepted;
   CI386TaskWait guard;
   U8 *reuse;
-  if(!I386HeapInit(&heap,0x60000,49152) || !I386SleepInit(&cancel_sleep,&scheduler)) return 170;
+  if(!I386HeapInit(&heap,0x60000,65536) || !I386SleepInit(&cancel_sleep,&scheduler)) return 170;
   for(scenario=0;scenario<5;scenario++) {
     wait_mask=1<<scenario;
     if(scenario==3) wait_mask=7;

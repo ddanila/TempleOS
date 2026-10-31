@@ -26,7 +26,7 @@ I64 AtaCancelTest()
   I64 scenario,i,expected,seen,cancel_count;
   U32 saved=GetRFlags;
   Bool accepted;
-  if(!I386HeapInit(&heap,0x60000,32768)) return 150;
+  if(!I386HeapInit(&heap,0x60000,49152)) return 150;
   for(scenario=0;scenario<6;scenario++) {
     cancel_mask=2; expected=13;
     if(scenario==1) { cancel_mask=4; expected=12; }

@@ -82,7 +82,7 @@ I64 PublicTaskHeapTest()
   U8 *root_payload;
   I64 i,j,cycle,before,root_pages,retained,reclaims;
   U32 flags=GetRFlags;
-  if(!I386HeapInit(&heap,0x4C000,32768) ||
+  if(!I386HeapInit(&heap,0x48000,49152) ||
       !I386HeapInit(&task_control_storage,0x54000,32768) ||
       !I386HeapInit(&task_backing_storage,0x5C000,0x30000) ||
       !I386MemBackingInit(&task_pool,&task_backing_storage,8192) ||

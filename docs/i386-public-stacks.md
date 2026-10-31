@@ -6,9 +6,14 @@ The descriptor prefix is 20 bytes on i386. Its address is four-byte aligned so
 that the following stack payload can be eight-byte aligned without changing the
 public record layout.
 
-`I386TaskSpawn` owns one allocation containing its task record, alignment padding,
-the stack descriptor and requested stack payload, followed by the optional
-private heap arena. The allocation remains live through task completion and is
+`I386TaskSpawn` owns one zeroed allocation containing its task record, alignment
+padding, the stack descriptor and requested stack payload, followed by the
+optional private heap arena. The usable stack starts at a 4 KiB boundary and
+its reservation rounds up to complete pages; the public stack size remains the
+requested size. This keeps neighboring executable allocations off stack pages,
+where emulators can otherwise perform expensive translated-code checks on every
+stack write. It adds up to 4,095 bytes before the stack and up to 4,095 bytes
+after it to each task allocation. The allocation remains live through task completion and is
 freed by another task after successful reaping. Reaping clears `task->stk` with
 the task identity. There is no separate stack allocation or duplicated private
 stack-bound pair. The public stack size excludes the descriptor and private heap.
@@ -40,3 +45,13 @@ Validation targets include task reuse, stack guards, frame walking across yields
 exception recovery and cleanup, boot-stack reservation, native source access to
 both task phases, and console stack-pointer bounds. Test outcomes and measured
 memory use are recorded in [port progress](port-progress.md).
+
+The page-isolation candidate passes native and retained task lifecycle tests,
+the public task-heap test, both bootstrap generations, minimal and full-content
+cross-builds and the 16 MiB interactive diagnostic. The tests use larger fixed
+task arenas to account for the reservation. An isolated 8 MiB run completed its
+interactive checks but took 76.7 seconds to reach startup, exceeding the
+60-second gate; a source-matched preceding image took 77.0 seconds under the
+same conditions. Both recorded input sets were unchanged. The timing gate and
+full desktop qualification remain open; see
+[the profiling notes](i386-bible-load-profile.md).
