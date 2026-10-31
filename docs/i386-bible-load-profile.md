@@ -518,6 +518,12 @@ window completed one update; the control completed 116 updates in the same
 sampling duration (`build/i386-cache-diag-locals-candidate-v1`,
 `build/i386-cache-diag-locals-control-v1`). Inputs were unchanged. This
 identifies slow execution in the candidate without establishing its cause.
+An additional paired 12-second sample recorded zero candidate updates and 47
+control updates. Captured compositor frames used distinct writable stack
+addresses, and sampled control registers showed protected mode with paging
+disabled in both guests (`build/i386-cache-diag-registers-candidate-v1`,
+`build/i386-cache-diag-registers-control-v1`). Inputs were unchanged; these
+observations do not rule out a memory-layout or emulation effect.
 The normal
 full-link test timed out at its 20-minute command limit with unchanged inputs
 (`build/i386-cache-mergesort-bible-full-v1`).
