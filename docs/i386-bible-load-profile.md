@@ -244,8 +244,9 @@ seconds total and 12.8 seconds cleanup, versus 50.4 and 26.2 seconds for the
 earlier 64-region-batch image with the same region count
 (`build/i386-bible-load-batches-candidate-v1`). Both measurements overlapped
 other QEMU guests and are approximate, not a hardware benchmark. The complete
-Bible-link test on the full-content image is still running; the bounded result
-does not establish full-file completion.
+Bible-link test on the full-content gap-sort image timed out at its 20-minute
+command limit with unchanged inputs (`build/i386-doc-bible-link-full-gap256-v1`);
+the bounded result does not establish full-file completion.
 
 The larger 6,400-line profile also passes on the gap-sort image with unchanged
 inputs and 194 regions (`build/i386-bible-load-gap256-large-v1`): it observed
@@ -285,6 +286,11 @@ passes with unchanged inputs at 56 and 102 regions
 30.3 seconds total and 10.6 seconds cleanup, compared with 32.4 and 12.8
 seconds for the portable gap sort on the prior image. Both runs overlapped
 other guests and are approximate. Neither establishes full-file completion.
+The larger 6,400-line profile also passes with unchanged inputs and 194
+regions (`build/i386-bible-load-asm-sort-large-v1`): it observed 89.4 seconds
+total and 36.8 seconds cleanup, compared with 106.2 and 47.7 seconds for the
+prior gap-sort image. The guests overlapped other work, so this is likewise an
+approximate QEMU comparison.
 
 The 3,200-line cleanup sampler also passes with unchanged inputs on the 386
 sort image (`build/i386-bible-cleanup-asm-sort-3200-v1`): 32 of 54 samples
