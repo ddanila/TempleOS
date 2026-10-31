@@ -92,7 +92,11 @@ I64 CodeTest()
     block=fill-16;block->reserved=1;
     if(I386CmpCodeOwner(&heap,cc) || (GetRFlags&0x200)!=(enabled*0x200)) return 70;
     block->reserved=0;
-    if(!I386CmpCodeOwner(&heap,cc) || !I386HeapFree(&heap,fill)) return 71;
+    if(!I386CmpCodeOwner(&heap,cc) ||
+        I386HeapKnownAtLeast(&heap,fill+16,1) ||
+        !I386HeapKnownAtLeast(&heap,fill,1) ||
+        I386HeapKnownAtLeast(&heap,fill,sizeof(CI386TaskSymbols)+17) ||
+        !I386HeapFree(&heap,fill)) return 71;
     base_used=heap.used; base_allocations=heap.allocations;
     if(!CodePopulate(cc)) return 61;
     last=cc->coc.coc_head.last; last_misc=cc->coc.coc_last_misc;

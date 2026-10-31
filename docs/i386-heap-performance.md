@@ -451,3 +451,30 @@ for function, data, relative, address and named-pointer records. All 181 cases
 pass again on the restored validator after both bootstrap generations
 (`build/i386-module-offset-u32-restored-rebuild-v1.log`,
 `build/i386-module-offset-u32-restored-check-v1.log`). C1–C5 remain open.
+
+## Parser token ownership lookup (2026-11-01)
+
+After `I386CmpCodeOwner` validates the complete heap under interrupt exclusion,
+`I386ParserToken` now checks its existing string allocation by walking the
+already validated block boundaries before releasing that exclusion. No heap
+mutation or callback occurs between those checks. The helper requires a real
+used block with the requested minimum size, so an interior forged header is
+not accepted; the compiler service version is 75.
+
+The task-symbol fixture checks the new lookup against an interior forged
+header and minimum-size bounds in both interrupt states. It passes with the
+lexer snapshot regression, both bootstrap generations, the full cross-build,
+386 and loader-stack audits, the 16 MiB diagnostic and a 64 MiB asynchronous
+popup regression (`build/i386-parser-token-known-symbols-v1.log`,
+`build/i386-parser-token-known-lex-v1.log`,
+`build/i386-parser-token-known-rebuild-v2.log`,
+`build/i386-parser-token-known-cross-v1`,
+`build/i386-parser-token-known-stack-v1`,
+`build/i386-parser-token-known-diagnostics-v1`,
+`build/i386-parser-token-known-popup-v1`).
+
+Isolated 8 MiB candidate and source-matched control runs both completed their
+nine functional/VGA checks but missed the 60-second gate at 61.394 and 62.295
+seconds respectively (`build/i386-parser-token-known-startup-v1`,
+`build/i386-parser-token-known-control-v1`). This single comparison does not
+establish a statistically significant speedup. C1–C5 remain open.

@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Parser token ownership check (2026-11-01)
+
+Token-string ownership now reuses the immediately preceding complete heap
+validation under interrupt exclusion and still checks real allocation
+boundaries. The 16 MiB diagnostic and ownership regressions pass. Isolated
+8 MiB startup completes its functional checks in 61.394 seconds and still
+misses the 60-second gate. C1–C5 remain open; see
+[heap performance evidence](docs/i386-heap-performance.md).
+
 ### Compact loader index (2026-11-01)
 
 The loader's bounded symbol index now holds 1,024 entries in the previous

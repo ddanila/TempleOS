@@ -8,7 +8,7 @@ I64 I386ParserToken(CI386Heap *heap,CCmpCtrl *cc,U8 *macro_filename,
   I64 token;
   U32 irq=I386IrqSave;
   if(!I386CmpCodeOwner(heap,cc) || !compiled_lines ||
-      cc->cur_str && I386HeapSize(heap,cc->cur_str)<1) {
+      cc->cur_str && !I386HeapKnownAtLeast(heap,cc->cur_str,1)) {
     I386IrqRestore(irq); return -1;
   }
   if(cc->cur_str) {
