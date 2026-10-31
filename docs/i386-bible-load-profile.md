@@ -279,7 +279,8 @@ and 386 audit pass (`build/i386-backing-asm-sort-rebuild-v3.log`,
 `build/i386-backing-asm-sort-task-heaps-v3.log`,
 `build/i386-backing-asm-sort-cross-v3`). The full-content cross-build and 386
 audit also pass (`build/i386-backing-asm-sort-full-cross-v1`); its full
-Bible-link test is running. The 8 MiB drive-fields smoke passes with unchanged
+Bible-link test timed out at the 20-minute command limit with unchanged inputs
+(`build/i386-doc-bible-link-full-asm-sort-v1`). The 8 MiB drive-fields smoke passes with unchanged
 inputs (`build/i386-backing-asm-sort-smoke-v1`). The bounded Bible profile
 passes with unchanged inputs at 56 and 102 regions
 (`build/i386-bible-load-asm-sort-medium-v1`). At 3,200 lines, it observed
@@ -311,3 +312,28 @@ the kernel heap chain validator. The sample covers all scheduled guest tasks,
 not just the lookup task, and other QEMU guests ran concurrently. It identifies
 window presentation as a substantial observed cost but does not by itself
 prove why the full lookup has not completed.
+
+## Planar byte reversal
+
+The next candidate replaces the three bit-swapping operations per VGA plane
+byte with a 256-byte reversal table. It retains the same range checks, plane
+selection, row bounds, and writes. The expanded independent VGA oracle tests
+all byte values on each plane, partial rows, invalid arguments, and the full
+displayed image; it passes before and after the change
+(`build/i386-vga-reverse-table-baseline-v1.log`,
+`build/i386-vga-reverse-table-test-v1.log`). Both compiler rebuild generations,
+minimal and full-content cross-builds, and 386 audits pass. The 8 MiB
+drive-fields smoke and public graphics-text contract pass with unchanged inputs
+(`build/i386-vga-reverse-table-smoke-v1`,
+`build/i386-vga-reverse-table-graphics-text-v1`). A 90-second full-link sample
+passed with unchanged inputs but did not complete the lookup
+(`build/i386-bible-link-sample-vga-reverse-v1`); 145 of 413 samples landed in
+VGA upload, compared with 152 of 413 in the earlier sample. Those samples
+include every guest task and do not establish a timing improvement. Neither
+result establishes full-link completion. Paired 64 MiB graphics sessions passed
+all 12 commands and exact VGA checkpoints with unchanged source images
+(`build/i386-vga-reverse-table-graphics-v2`,
+`build/i386-vga-reverse-table-graphics-control-v2`). Their four frame demos reported
+440 ms each on the candidate versus 480, 460, 470 and 470 ms on the control.
+These are guest-jiffy measurements while other QEMU guests were active; the
+timings are approximate, not a hardware benchmark.

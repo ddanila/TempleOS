@@ -18,8 +18,8 @@ in-place gap sort, retaining complete heap and ownership checks for lists of
 any length. Both rebuild generations, native and portable corruption tests,
 task heaps, cross-build audits, and the 8 MiB drive-fields smoke pass. A
 3,200-line Bible profile passed with lower observed cleanup time than the
-earlier batch-64 image; both runs overlapped other guests. The full-content
-Bible-link test is still running. Full C1–C5 qualification remains open; see
+earlier batch-64 image; both runs overlapped other guests. Its full-content
+Bible-link test timed out. Full C1–C5 qualification remains open; see
 [Bible load profiling](docs/i386-bible-load-profile.md).
 
 The gap sort now has a tested 386 implementation and retains its portable
@@ -27,6 +27,13 @@ guest-source implementation. Mixed-order and corrupted ownership-list tests,
 both rebuild generations, task heaps, both cross-build audits, and the 8 MiB
 smoke pass. A 3,200-line Bible profile also passes; full-file tests remain in
 progress.
+
+VGA plane uploads now reverse each byte through a 256-byte table. Exhaustive
+byte and partial-row checks, both compiler rebuilds, 386 audits, the 8 MiB
+smoke, public graphics-text, and paired graphics sessions with exact VGA
+checkpoints pass. Four candidate frames measured 440 ms each versus 460–480 ms
+on the control, with other QEMU guests active. The full Bible-link test on the
+new image remains in progress; see [Bible load profiling](docs/i386-bible-load-profile.md).
 
 ### Standalone public task header diagnostic (2026-10-31)
 

@@ -74,6 +74,23 @@ I64 SplitPlaneContract(CI386Heap *heap)
   for(k=0;k<8;k++)if(pixels[k]&1)value|=1<<(7-k);
   if(vga[0]!=value)return 111;
   planes[0][0]^=255;
+  //All 256 input bytes, each plane, and untouched rows around a partial upload.
+  for(p=0;p<4;p++) for(i=0;i<320;i++) planes[p][80+i]=i;
+  if(!I386VgaSplitRows(planes,1,4))return 114;
+  for(p=0;p<4;p++) {
+    OutU8(0x3CE,4);OutU8(0x3CF,p);
+    for(i=0;i<320;i++) {
+      value=0;
+      for(k=0;k<8;k++) if((i&255)&1<<k)value|=1<<(7-k);
+      if(vga[80+i]!=value)return 115;
+    }
+    for(i=0;i<80;i++) {
+      value=0;
+      for(k=0;k<8;k++)if(pixels[i*8+k]&(1<<p))value|=1<<(7-k);
+      if(vga[i]!=value)return 116;
+    }
+  }
+  OutU8(0x3CE,4);OutU8(0x3CF,0);
   for(p=0;p<4;p++) if(!I386HeapFree(heap,blocks[p]))return 105;
   if(!I386HeapFree(heap,pixels) || heap->used!=before ||
       heap->allocations!=allocations || !I386HeapValid(heap))return 106;
