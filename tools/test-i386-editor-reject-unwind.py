@@ -25,7 +25,7 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     files={'/Probe/RejectUnwind.HC':contract.read_bytes()}
     inputs=[Path(__file__).resolve(),fixture,contract]
-    report=dict(result='running',mode='native' if args.disk else 'shared-original' if args.shared else 'pinned-original',scope='Actual Rejected links and exception cleanup; native-only unsupported valid Bible link remains unsupported DocEntryRun link activation, queued edit and save, resulting file and task document restoration; not popup or mouse delivery')
+    report=dict(result='running',mode='native' if args.disk else 'shared-original' if args.shared else 'pinned-original',scope='Actual Rejected links and exception cleanup; native-only missing Bible verse, plus heap recovery; not interactive editor, popup, or mouse delivery')
     if args.disk:
         inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC')]
     else:
@@ -41,7 +41,7 @@ def main():
         if args.disk:
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions=files)
-            commands=['#include "C:/Probe/RejectUnwind.HC"', "if(EditorRejectUnwind(0)!=3||EditorRejectUnwind(1)!=3||EditorRejectUnwind(2)!=3||EditorUnsupportedUnwind!=3)throw('Bible',TRUE);", '6*7;']
+            commands=['#include "C:/Probe/RejectUnwind.HC"', "if(EditorRejectUnwind(0)!=3||EditorRejectUnwind(1)!=3||EditorRejectUnwind(2)!=3||EditorMissingVerseUnwind!=3)throw('Bible',TRUE);", '6*7;']
             runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk,out/'guest',commands,64,True)
             delivered=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,set(files))
             if delivered!=files:raise ValueError('Delivered include files changed')

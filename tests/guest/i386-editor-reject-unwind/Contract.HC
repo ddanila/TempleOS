@@ -17,12 +17,12 @@ I64 EditorRejectUnwind(I64 mode)
   if(Fs->data_heap->used_u8s==base)mask|=2;
   return mask;
 }
-I64 EditorUnsupportedUnwind()
+I64 EditorMissingVerseUnwind()
 {
   I64 base=Fs->data_heap->used_u8s,i,hits=0,mask=0;Bool result;
   for(i=0;i<3;i++) {
     try {
-      result=Ed("BF:Genesis,1:1",EDF_BAIL);
+      result=Ed("BF:Genesis,999999:1",EDF_BAIL);
       if(result)throw('BadEd',TRUE);
       throw('Probe',TRUE);
     } catch {

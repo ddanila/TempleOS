@@ -203,3 +203,21 @@ checkpoint.
 Rejected editor links now leave the exception scope normally; the focused
 reject-then-throw checks and remaining Bible-link gap are documented in
 `docs/i386-editor-link-unwind.md`.
+
+Native `Ed` now routes `BF:` through the original plain-text document flags and
+searches from the converted book's starting line. The pinned original passes
+uppercase and lowercase Genesis links, a verse range, a missing book and task
+role restoration (`build/i386-doc-bible-link-original-v2`). The native test
+passes the same bail-mode contract using an image with the first 400 lines of
+the repository's `Misc/Bible.TXT`, including Genesis 1:1
+(`build/i386-doc-bible-sample-native-v1`; runner
+`tools/test-i386-doc-bible-link.py`). That sample was packaged as the uncompressed
+`/Misc/Bible.TXT` in a minimal image built from the native cross-build exports;
+it does not establish full-file performance or non-bail editing. The complete
+Bible test remains running in `build/i386-doc-bible-link-native-v1` and does
+not yet establish a result.
+Both original bootstrap generations, the native cross-build and 386 audit,
+the `MN:` regression, and an 8 MiB drive-fields smoke check pass
+(`build/doc-bible-link-rebuild-v1.log`, `build/i386-doc-bible-link-cross-v2`,
+`build/i386-doc-bible-symbol-regression-v1`,
+`build/i386-doc-bible-link-smoke-8m-v2`).

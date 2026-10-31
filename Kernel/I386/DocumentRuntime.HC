@@ -1586,7 +1586,7 @@ public Bool Ed(U8 *filename,I64 flags=0)
     if(filename[1] && filename[2]==':') {
       link_type=EdLinkCvt(filename,&resolved,&needle,&line,flags);
       if(LK_DOC<=link_type<=LK_DOC_LINE) borrowed=TRUE;
-      else if(link_type==LK_PLAIN || link_type==LK_PLAIN_LINE || link_type==LK_PLAIN_FIND)
+      else if(link_type==LK_PLAIN || link_type==LK_PLAIN_LINE || link_type==LK_PLAIN_FIND || link_type==LK_BIBLE_FIND)
         doc_flags=DOCF_PLAIN_TEXT|DOCF_NO_CURSOR;
       else if(link_type!=LK_FILE && link_type!=LK_FILE_LINE &&
           link_type!=LK_FILE_FIND && link_type!=LK_FILE_ANCHOR) valid=FALSE;
@@ -1611,6 +1611,7 @@ public Bool Ed(U8 *filename,I64 flags=0)
         if(link_type==LK_FILE_LINE || link_type==LK_PLAIN_LINE || link_type==LK_DOC_LINE) result=DocGoToLine(doc,line);
         else if(link_type==LK_FILE_FIND || link_type==LK_PLAIN_FIND || link_type==LK_DOC_FIND) result=DocFind(doc,I64_MIN,needle,line);
         else if(link_type==LK_FILE_ANCHOR || link_type==LK_DOC_ANCHOR) result=DocAnchorFind(doc,needle);
+        else if(link_type==LK_BIBLE_FIND) result=DocFind(doc,line,needle);
         else if(borrowed) DocCenter(doc,RECALCt_NORMAL);
       }
       if(flags&EDF_WAS_WRITE) result=FALSE;

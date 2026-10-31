@@ -1186,6 +1186,13 @@
           "result": "pass",
           "evidence": "build/i386-editor-reject-unwind-native-v2/result.json",
           "scope": "Repeated rejected BF, MN and unknown links followed by caught exceptions and heap recovery; valid BF is still rejected and Bible editing remains unimplemented"
+        },
+        {
+          "target": "native-bible-link-sample",
+          "command": "python3 tools/test-i386-doc-bible-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-bible-sample-native-v1/result.json",
+          "scope": "Bail-mode Genesis verse and range, invalid book and task roles using the first 400 original Bible lines; full document and interactive editing remain unqualified"
         }
       ]
     },
@@ -1824,6 +1831,13 @@
           "result": "pass",
           "evidence": "build/i386-editor-reject-unwind-native-v2/result.json",
           "scope": "Repeated rejected BF, MN and unknown links followed by caught exceptions and heap recovery; valid BF is still rejected and Bible editing remains unimplemented"
+        },
+        {
+          "target": "native-bible-link-sample",
+          "command": "python3 tools/test-i386-doc-bible-link.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-bible-sample-native-v1/result.json",
+          "scope": "Bail-mode Genesis verse and range, invalid book and task roles using the first 400 original Bible lines; full document and interactive editing remain unqualified"
         }
       ]
     },

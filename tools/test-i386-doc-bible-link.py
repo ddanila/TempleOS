@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare Bible verse editor link lookup and editor save session."""
+"""Compare Bible verse editor-link lookup."""
 import argparse
 import hashlib
 import json
@@ -25,7 +25,7 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     files={'/Probe/BibleLink.HC':contract.read_bytes()}
     inputs=[Path(__file__).resolve(),fixture,contract]
-    report=dict(result='running',mode='native' if args.disk else 'shared-original' if args.shared else 'pinned-original',scope='Actual BF: Genesis verse and range lookup plus invalid book and task document roles DocEntryRun link activation, queued edit and save, resulting file and task document restoration; not popup or mouse delivery')
+    report=dict(result='running',mode='native' if args.disk else 'shared-original' if args.shared else 'pinned-original',scope='BF: Genesis verse and range lookup in bail mode, invalid book, and task document roles; no interactive editor or mouse coverage')
     if args.disk:
         inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC')]
     else:
@@ -42,7 +42,7 @@ def main():
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions=files)
             commands=['#include "C:/Probe/BibleLink.HC"', "if(DocBibleLinkContract!=15)throw('Bible',TRUE);", '6*7;']
-            runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk,out/'guest',commands,64,True)
+            runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk,out/'guest',commands,64,True,command_timeout=1200)
             delivered=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,set(files))
             if delivered!=files:raise ValueError('Delivered include files changed')
         else:
