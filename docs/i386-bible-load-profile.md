@@ -247,6 +247,16 @@ other QEMU guests and are approximate, not a hardware benchmark. The complete
 Bible-link test on the full-content image is still running; the bounded result
 does not establish full-file completion.
 
+The larger 6,400-line profile also passes on the gap-sort image with unchanged
+inputs and 194 regions (`build/i386-bible-load-gap256-large-v1`): it observed
+106.2 seconds total, including 47.7 seconds cleanup. The earlier 64-entry batch
+measured 157.5 seconds total and 90.8 seconds cleanup
+(`build/i386-bible-load-batches-large-v1`). An experimental 256-entry
+insertion-sort image instead measured 336.7 and 238.1 seconds
+(`build/i386-bible-load-batch256-large-v1`), showing why a larger batch alone
+is insufficient. These runs overlapped other guests and their timings are
+approximate.
+
 At 3,200 lines, a subsequent QMP-paused cleanup profile on the gap-sort image
 passed with unchanged inputs. It recorded 46 of 65 samples in
 `I386MemBackingValid` and another 10 in `I386MemPoolValid`
