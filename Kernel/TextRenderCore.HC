@@ -17,7 +17,10 @@ U0 TextRenderCore(U8 *pixels,U32 *cells,U8 *font,I64 cols,I64 rows,
   if(pan_y>7) pan_y=7; if(pan_y< -7) pan_y=-7;
   if(pan_x || hide_col) { ncols--; dx=pan_x; if(pan_x<0) { sx=1; dx+=8; } }
   if(pan_y || hide_row) { nrows--; dy=pan_y; if(pan_y<0) { sy=1; dy+=8; } }
-  for(pos=0;pos<width*height;pos++) pixels[pos]=0;
+  //With no pan or hidden edge, the background pass covers every pixel.
+  //Otherwise clear the uncovered margin before drawing the shifted cells.
+  if(pan_x || pan_y || hide_col || hide_row || cols<=0 || rows<=0)
+    for(pos=0;pos<width*height;pos++) pixels[pos]=0;
   //All backgrounds precede all foregrounds, so shifted glyphs can overlap cells.
   for(row=0;row<nrows;row++) for(col=0;col<ncols;col++) {
     cell=cells[(row+sy)*cols+col+sx]; attr=TextRenderAttr(cell,blink)>>4;

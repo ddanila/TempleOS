@@ -26,6 +26,8 @@ I64 OriginalTextRenderCheck()
     gr.pan_text_x=px; gr.pan_text_y=py; gr.hide_col=hc; gr.hide_row=hr;
     MemSet(actual,0xA5,307200);
     GrUpdateTextBG; GrUpdateTextFG;
+    //Detect pixels accidentally inherited from a previous frame.
+    MemSet(expected,0xA5,307200);
     TextRenderCore(expected,cells,sys_font_std,80,60,phase,px,py,hc,hr);
     for(i=0;i<307200;i++) if(actual[i]!=expected[i]) {
       result=-(1+phase*6+test); goto done;

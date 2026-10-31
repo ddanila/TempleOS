@@ -40,6 +40,12 @@ and 8 MiB tests, 386 audits, and paired graphics sessions with exact output.
 Frames measured 410–420 ms versus 440–450 ms on the indexed control, with
 other QEMU guests active. Its full Bible-link test remains in progress.
 
+Text rendering skips the preliminary clear only when unpanned, visible
+background cells cover the full surface. The poisoned-buffer original oracle,
+both rebuilds, 386 audits, 8 MiB smoke, and paired exact-VGA graphics sessions
+pass. Unpanned frames measured 370–380 ms versus 400–410 ms on the control;
+other QEMU guests were active. Full Bible-link qualification remains open.
+
 ### Standalone public task header diagnostic (2026-10-31)
 
 `PublicTask.HH` now expresses the false `DeathWait` default without relying on

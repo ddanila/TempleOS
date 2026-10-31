@@ -361,3 +361,23 @@ Their four frame demos measured 410, 410, 410 and 420 ms on the pointer loop,
 versus 450, 440, 440 and 450 ms on the indexed control. Other QEMU guests
 overlapped these guest-jiffy measurements, so the timings are approximate. The
 full-link completion test remains in progress.
+
+## Fully covered text backgrounds
+
+When text has no pan or hidden edge, its background pass writes every pixel;
+the renderer skips the preceding full-surface zero fill only in that case.
+Panned or hidden-edge frames retain the clear. The original-renderer oracle
+now poisons its destination before every comparison, including the unpanned
+case. The unchanged baseline and candidate both pass all twelve original
+blink/pan/hide comparisons (`build/i386-text-clear-baseline-v1.log`,
+`build/i386-text-clear-cross-v1.log`). Both rebuild generations and the
+minimal and full-content cross-builds with 386 audits pass
+(`build/i386-text-clear-rebuild-v1.log`, `build/i386-text-clear-cross-v1`,
+`build/i386-text-clear-full-cross-v1`). The 8 MiB smoke passes with unchanged
+inputs (`build/i386-text-clear-smoke-v1`). Paired 64 MiB graphics sessions
+passed all 12 commands and exact VGA checkpoints with unchanged source images
+(`build/i386-text-clear-graphics-v1`, `build/i386-text-clear-control-v1`).
+Their four frame demos measured 380, 370, 400 and 410 ms on the candidate,
+versus 400, 410, 410 and 400 ms on the control. Other QEMU guests overlapped
+these guest-jiffy measurements, so they are approximate. The full Bible-link
+test remains in progress.
