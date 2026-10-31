@@ -8,7 +8,7 @@ import runpy
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"tests/guest/i386-doc-read-reference/DocRead.HC"
-COMMANDS = [('#include "C:/DocRead.HC"',[])]+[(f'DRCheck("C:/Reader.DD",{i});',['63']) for i in range(10)]+[(f'DRReject("C:/Reader.DD",{i});',['7']) for i in range(3)]+[('!DocRead("C:/ReaderMissing123.DD");',['1']),('6*7;',['42'])]
+COMMANDS = [('#include "C:/DocRead.HC"',[])]+[(f'DRCheck("C:/Reader.DD",{i});',['63']) for i in range(10)]+[(f'DRReject("C:/Reader.DD",{i});',['7']) for i in range(3)]+[('DRMissing("C:/ReaderMissing123.DD");',['1']),('6*7;',['42'])]
 
 if any(len(c[0])>255 for c in COMMANDS):
     raise ValueError("Reader fixture exceeds native input limit")
@@ -41,12 +41,12 @@ def main():
     working = out/'working.img'
     packaging = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
         source, working, additions={'/DocRead.HC':FIXTURE.read_bytes()})
-    report = dict(result='running', scope='Ten valid-file formats with flags, cursor, metadata, directory/role preservation, unchanged disk bytes and exact heap; three native malformed binary rejects and missing file',
+    report = dict(result='running', scope='Ten valid-file formats with flags, cursor, metadata, directory/role preservation, unchanged disk bytes and exact heap; three native malformed binary rejects and empty missing-file document',
                   packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
-            cpu='486,-fpu', accel='tcg', qmp_stdio=True,
+            cpu='486,-fpu', accel='tcg', qmp_stdio=True, welcome=True,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
                            'rejected_answers':['0'],

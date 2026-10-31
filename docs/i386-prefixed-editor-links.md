@@ -218,8 +218,9 @@ from the current workspace sources and records its inputs; its later output
 (`build/i386-doc-bible-sample-image-v3`) differs from the tested image only in
 two subsequently modified kernel source files; repeated packaging at the same
 source state is byte-identical to `build/i386-doc-bible-sample-image-v2`. The sample does not establish full-file performance or non-bail editing. The complete
-Bible test remains running in `build/i386-doc-bible-link-native-v1` and does
-not yet establish a result.
+Bible test timed out during its first lookup after the 20-minute command
+limit, with inputs unchanged (`build/i386-doc-bible-link-native-v1`). The
+full-file lookup and its performance remain unqualified.
 Both original bootstrap generations, the native cross-build and 386 audit,
 the `MN:` regression, and an 8 MiB drive-fields smoke check pass
 (`build/doc-bible-link-rebuild-v1.log`, `build/i386-doc-bible-link-cross-v2`,

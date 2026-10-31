@@ -10,8 +10,9 @@ A private preflight bounds the binary section after the first zero byte. Every
 record must contain the complete CDocBin start/end header and declared payload
 inside the file size. Zero-length records still advance by a header. The file
 provider supplies an extra terminating byte for text; it is not included in the
-file size. Missing files and truncated binary records retain the native NULL
-result. Cleanup clears consumed buffer/document pointers before leaving the
+file size. Truncated binary records retain the native NULL result. Missing files now
+return an empty document with the requested flags and absolute filename, as
+the original does. Cleanup clears consumed buffer/document pointers before leaving the
 adapter. Public layouts, export count (256), Memory 26 and private services are
 unchanged.
 
@@ -33,8 +34,8 @@ The actual input files must still match exact size and contents.
 
 Three additional native cases require NULL, unchanged caller role and exact heap
 recovery for a partial binary header, an oversized payload and the maximum U32 payload length (mask 7). Missing
-file behavior is also checked. These native rejection semantics are not claimed
-to match original DocRead, which returns an empty document on missing files.
+files now have a separate original/native empty-document contract; malformed
+record rejection remains a native bounds check.
 The prior native menu case returns mask 60 and is rejected by a fail-fast wrapper.
 
 ## Boundaries
@@ -54,7 +55,7 @@ PLAN.md for accepted run evidence; these contracts do not close C1–C5.
 
 `build/i386-c4-doc-read-qualified-reference` passes ten masks of 63 with pinned
 input files and unchanged inputs. `build/i386-c2-doc-read-contract` passes all
-valid-file cases, three masks of 7 for malformed binary records, missing-file
+valid-file cases, three masks of 7 for malformed binary records, the earlier missing-file
 rejection and continuation in sixteen commands, with exact fixture readback and
 unchanged inputs. The old native menu control returns mask 60.
 
@@ -63,3 +64,29 @@ including the limited 386 audit (96 BIOS / 255 protected instructions); all 1487
 source/build pins match. Serializer, loader, clipboard and retained keyboard undo
 regressions pass. Normal 8 MiB startup passes nine checks in 57.60 seconds. These
 results do not qualify the remaining wrapper semantics or C1–C5 completion.
+
+## Missing files
+
+Console 176 resolves the requested path before creating the document. If the
+file provider returns no bytes, `DocRead` returns that empty document with the
+requested flags; malformed binary data still returns NULL. The original and
+native comparison checks a missing boot-drive path, valid empty document,
+flags, absolute filename, unlocked state and caller document roles
+(`build/i386-doc-read-missing-original-v3`,
+`build/i386-doc-read-missing-native-v1`; runner
+`tools/test-i386-doc-read-missing.py`). The previous native image failed the
+contract (`build/i386-doc-read-missing-native-red-v1`). A separate subsequent
+exception check passes on original and native
+(`build/i386-doc-read-unwind-original-v4`,
+`build/i386-doc-read-missing-unwind-v1`); it does not assert equal original
+and native heap usage. Both bootstrap generations, the native 386 audit and an
+8 MiB smoke pass (`build/doc-read-missing-rebuild-v3.log`,
+`build/i386-doc-read-missing-cross-v1`,
+`build/i386-doc-read-missing-smoke-8m-v1`). The first two broad regression attempts reached kernel startup but timed out
+at their screen checks before executing cases because the runner expected the
+older banner-free screen (`build/i386-doc-read-missing-full-regression-v1`,
+`build/i386-doc-read-missing-full-regression-v2`). The corrected runner uses
+the welcome screen; its rerun passes all ten valid formats, three malformed
+record rejections, the missing-file case and continuation, with unchanged inputs
+(`build/i386-doc-read-missing-full-regression-v3`). The default temporary filename,
+all error paths and the complete editor remain unqualified.

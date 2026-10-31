@@ -586,26 +586,32 @@ Bool NativeDocReadRecordsValid(U8 *source,I64 size)
   }
   return TRUE;
 }
+extern U8 *NativeFileNameAbsConstruct(U8 *filename);
 public CDoc *DocRead(U8 *name=NULL,I64 flags=0)
 {
   CDoc *doc=NULL;
-  U8 *buffer=NULL;
+  U8 *buffer=NULL,*absolute=NULL;
   I64 size=0,attr=0;
   if(!name || !console_config || !console_config->files || !console_config->files->read) return NULL;
   try {
-    doc=DocNew(name,Fs);
+    absolute=NativeFileNameAbsConstruct(name);
+    doc=DocNew(absolute,Fs);
     doc->flags|=flags;
-    buffer=(*console_config->files->read)(console_config->heap,name,&size,&attr,NULL);
-    if(!buffer || !NativeDocReadRecordsValid(buffer,size)) {
-      if(buffer) I386HeapFree(console_config->heap,buffer);
-      buffer=NULL;DocDel(doc);doc=NULL;return NULL;
+    buffer=(*console_config->files->read)(console_config->heap,absolute,&size,&attr,NULL);
+    if(buffer) {
+      if(!NativeDocReadRecordsValid(buffer,size)) {
+        I386HeapFree(console_config->heap,buffer);buffer=NULL;
+        DocDel(doc);doc=NULL;
+      } else {
+        DocLoad(doc,buffer,size);
+        doc->file_attr=attr;I386HeapFree(console_config->heap,buffer);buffer=NULL;
+      }
     }
-    DocLoad(doc,buffer,size);
-    doc->file_attr=attr; I386HeapFree(console_config->heap,buffer);buffer=NULL;
   } catch {
     if(buffer) I386HeapFree(console_config->heap,buffer);
     buffer=NULL;DocDel(doc);doc=NULL;
   }
+  Free(absolute);
   return doc;
 }
 U0 NativeDocEditTextAttr(CI386Text *text,I64 foreground,I64 background,

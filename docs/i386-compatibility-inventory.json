@@ -1257,6 +1257,13 @@
           "result": "pass",
           "evidence": "build/i386-c2-doc-type-native/result.json",
           "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
+        },
+        {
+          "target": "native-missing-document",
+          "command": "python3 tools/test-i386-doc-read-missing.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-read-missing-native-v1/result.json",
+          "scope": "Missing boot-drive file returns empty document with flags, absolute filename, lock and caller-role checks; not all DocRead paths"
         }
       ]
     },

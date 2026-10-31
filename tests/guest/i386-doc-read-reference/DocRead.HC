@@ -85,3 +85,14 @@ I64 DRReject(U8 *path,I64 mode)
   if(DocPut==put)m|=2;if(Fs->data_heap->used_u8s==before)m|=4;
   Free(raw);return m;
 }
+I64 DRMissing(U8 *path)
+{
+  CDoc *put=DocPut,*d;
+  I64 result=0;
+  d=DocRead(path);
+  if(d) {
+    if(d->doc_signature==DOC_SIGNATURE_VAL && !Bt(&d->locked_flags,DOClf_LOCKED))result=1;
+    DocDel(d);
+  }
+  return result && DocPut==put;
+}
