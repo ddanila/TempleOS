@@ -454,6 +454,66 @@ free-span insertion during document allocation and 151 in the bootstrap heap
 chain validator; several of the latter stacks belonged to keyboard work. This
 is not a normal-desktop acceptance test or a direct timing measurement.
 
+## Cached free-span consolidation (unqualified candidate)
+
+The allocation path previously inserted each cached span into an
+address-sorted list by walking from its head. The allocator joins the existing
+free list and size buckets in the candidate, sorts the linked spans with a bottom-up merge sort
+using constant auxiliary storage, then coalesces adjacent spans in one pass.
+The heap remains locked throughout; the sorted result and adjacent-span merging
+match the previous implementation for valid lists.
+
+An independent copy of the previous algorithm agrees on ordered, reversed,
+shuffled, fragmented, varied-size, and cross-bucket fixtures with up to 257
+spans in both native and
+portable heap tests (`build/i386-cache-mergesort-baseline-v3.log`,
+`build/i386-cache-mergesort-baseline-source-v3.log`,
+`build/i386-cache-mergesort-test-v1.log`,
+`build/i386-cache-mergesort-source-test-v1.log`,
+`build/i386-cache-mergesort-varied-test-v1.log`,
+`build/i386-cache-mergesort-varied-source-test-v1.log`,
+`build/i386-cache-mergesort-257-test-v1.log`,
+`build/i386-cache-mergesort-257-source-test-v1.log`). Both rebuild generations,
+the public heap and task-heap suites, and minimal and full-content cross-builds
+with 386 audits pass (`build/i386-cache-mergesort-rebuild-v1.log`,
+`build/i386-cache-mergesort-public-test-v1.log`,
+`build/i386-cache-mergesort-public-source-test-v1.log`,
+`build/i386-cache-mergesort-task-heaps-v1.log`,
+`build/i386-cache-mergesort-cross-v1`,
+`build/i386-cache-mergesort-full-cross-v1`). The 8 MiB smoke passes with
+unchanged inputs (`build/i386-cache-mergesort-smoke-v1`). The bounded Bible
+profile passes at 56 and 102 regions with unchanged inputs
+(`build/i386-cache-mergesort-bible-medium-v1`). The diagnostic-only suspended
+window-manager sample also passes with unchanged inputs and zero updates
+(`build/i386-cache-mergesort-bible-isolated-v1`): eight of 412 samples landed
+in the new merge function, versus 130 of 411 in the old insertion function.
+The lookup did not complete during either sample, and their distributions are
+not direct timings. The bounded control also passes with unchanged inputs
+(`build/i386-cache-mergesort-bible-control-v1`): at 3,200 lines, the candidate
+measured 21.7 seconds total versus 24.9 seconds on the preceding image, both
+with 102 regions. Other QEMU guests overlapped the runs, so these elapsed times
+are approximate. A 16 MiB non-diagnostic startup and retained-state resource
+probe passes with unchanged inputs (`build/i386-cache-mergesort-startup16-v1`).
+The 16 MiB diagnostic passed its startup probes but failed the initial
+console-screen check before interactive commands on two runs; input hashes
+were unchanged (`build/i386-cache-mergesort-diagnostics-v1`,
+`build/i386-cache-mergesort-diagnostics-v2`). A source-matched control on the
+preceding image passed the complete 16 MiB diagnostic with unchanged inputs
+(`build/i386-cache-mergesort-diagnostics-control-v2`), so the candidate remains
+unqualified. Extending the initial wait to 180 seconds still failed later at
+the command-typing preflight (`build/i386-cache-mergesort-diagnostics-longwait-v1`).
+Paired 90-second post-startup samples recorded four window updates for the
+candidate and 348 for the control, with most candidate samples in graphics
+compositing (`build/i386-cache-diag-prompt-candidate-v1`,
+`build/i386-cache-diag-prompt-control-v1`). These are samples, not a causal
+explanation. Separate snapshots found distinct frame and persistent buffers,
+and the persistent overlay was fully transparent in both images
+(`build/i386-cache-diag-surfaces-candidate-v1`,
+`build/i386-cache-diag-surfaces-control-v1`). The cause of the diagnostic
+regression remains unresolved. The normal
+full-link test timed out at its 20-minute command limit with unchanged inputs
+(`build/i386-cache-mergesort-bible-full-v1`).
+
 ## Unrolled planar upload experiment
 
 An experimental candidate processed four source bytes per loop iteration while keeping
@@ -472,5 +532,6 @@ inputs without completing the lookup, recording 292 window updates
 (`build/i386-bible-link-update-unroll-v1`); an earlier, separately timed control
 recorded 341 (`build/i386-bible-link-update-blank-v1`). These QEMU runs
 overlapped other guests and do not prove a regression, but provide no evidence
-of a gain. The unrolled code was therefore discarded. Its full-link completion
-test continues on the frozen experimental image.
+of a gain. The unrolled code was therefore discarded. Its full-link test timed
+out at the 20-minute command limit with unchanged inputs
+(`build/i386-doc-bible-link-full-vga-unroll-v1`).

@@ -335,34 +335,46 @@ CMemBlk *I386MemHeapPages(CHeapCtrl *hc,I64 pages,Bool exact_pages=FALSE)
 //its 12-byte prefix ends on an eight-byte-aligned payload, including page blocks.
 #define I386_MEM_BLOCK_OFFSET (((sizeof(CMemBlk)+offset(CMemUsed.start)+7)&~7)-offset(CMemUsed.start))
 //Called with the heap locked. Consolidate cached spans only on exhaustion.
-U0 I386MemFreeSpanInsert(CHeapCtrl *hc,CMemUnused *span)
-{
-  CMemUnused **link=&hc->malloc_free_lst,*previous=0,*next;
-  while((next=*link) && (next+0)(U64)<(span+0)(U64)) {
-    previous=next; link=&next->next;
-  }
-  span->next=next; *link=span;
-  if(next && span(U8 *)+span->size==next(U8 *)) {
-    span->size+=next->size; span->next=next->next;
-  }
-  if(previous && previous(U8 *)+previous->size==span(U8 *)) {
-    previous->size+=span->size; previous->next=span->next;
-  }
-}
 U0 I386MemFreeSpansMerge(CHeapCtrl *hc)
 {
-  CMemUnused *span=hc->malloc_free_lst,*next;
+  CMemUnused *head=hc->malloc_free_lst,*span,*next,*left,*right,*node,**tail;
   I64 bucket;
-  hc->malloc_free_lst=0;
-  while(span) {
-    next=span->next; I386MemFreeSpanInsert(hc,span); span=next;
-  }
+  U32 width=1,left_count,right_count,merges;
+  //Join the buckets without allocating scratch or touching live spans.
   for(bucket=0;bucket<MEM_HEAP_HASH_SIZE/sizeof(U8 *);bucket++) {
     span=hc->heap_hash[bucket]; hc->heap_hash[bucket]=0;
     while(span) {
-      next=span->next; I386MemFreeSpanInsert(hc,span); span=next;
+      next=span->next; span->next=head; head=span; span=next;
     }
   }
+  //Bottom-up linked-list merge sort bounds comparisons without stack storage.
+  while(head) {
+    span=head;head=0;tail=&head;merges=0;
+    while(span) {
+      merges++;left=span;left_count=0;
+      while(left_count<width && span) { left_count++;span=span->next; }
+      right=span;right_count=width;
+      while(left_count || right_count && right) {
+        if(!left_count) { node=right;right=right->next;right_count--; }
+        else if(!right_count || !right || (left+0)(U64)<(right+0)(U64)) {
+          node=left;left=left->next;left_count--;
+        } else { node=right;right=right->next;right_count--; }
+        *tail=node;tail=&node->next;
+      }
+      span=right;
+    }
+    *tail=0;
+    if(merges<=1)break;
+    width*=2;
+  }
+  //One forward pass performs the same address-adjacent coalescing.
+  span=head;
+  while(span && (next=span->next)) {
+    if(span(U8 *)+span->size==next(U8 *)) {
+      span->size+=next->size;span->next=next->next;
+    } else span=next;
+  }
+  hc->malloc_free_lst=head;
 }
 U8 *I386MemAlloc(CHeapCtrl *hc,I64 size,Bool exact_pages=FALSE)
 {

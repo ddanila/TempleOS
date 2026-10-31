@@ -60,6 +60,18 @@ samples recorded 341 window updates versus 310 for the control in about 90
 seconds with QMP pauses; neither lookup completed. The full-link test timed
 out at its command limit. Full C1–C5 remain open.
 
+A candidate sorts cached small-allocation spans with an in-place bottom-up
+merge sort before adjacent spans are coalesced, replacing repeated insertion.
+An independent previous-algorithm oracle agrees on ordered, reversed,
+shuffled, fragmented and cross-bucket cases. Both rebuilds, native and
+portable cache tests, public/task heaps, 386 audits and the 8 MiB smoke pass.
+The isolated full-link sample moved from 130 samples in insertion to eight in
+the new merge function; neither lookup completed. A bounded 3,200-line run
+measured 21.7 seconds versus 24.9 seconds on the prior image, with other QEMU
+guests active. The normal full-link test timed out; two 16 MiB diagnostic
+prompt checks also failed while the source-matched control passed, so this
+candidate remains unqualified.
+
 ### Standalone public task header diagnostic (2026-10-31)
 
 `PublicTask.HH` now expresses the false `DeathWait` default without relying on

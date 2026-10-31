@@ -7,6 +7,72 @@
 CI386PublicPool cache_pool;
 CI386PoolRegion cache_extra_region;
 CHeapCtrl cache_heap;
+U8 merge_arena_a[16448],merge_arena_b[16448];
+CHeapCtrl merge_a,merge_b;
+//Independent copy of the previous insert-and-coalesce behavior.
+U0 CacheReferenceInsert(CHeapCtrl *hc,CMemUnused *span)
+{
+  CMemUnused **link=&hc->malloc_free_lst,*previous=0,*next;
+  while((next=*link) && (next+0)(U64)<(span+0)(U64)) {
+    previous=next;link=&next->next;
+  }
+  span->next=next;*link=span;
+  if(next && span(U8 *)+span->size==next(U8 *)) {
+    span->size+=next->size;span->next=next->next;
+  }
+  if(previous && previous(U8 *)+previous->size==span(U8 *)) {
+    previous->size+=span->size;previous->next=span->next;
+  }
+}
+U0 CacheReferenceMerge(CHeapCtrl *hc)
+{
+  CMemUnused *span=hc->malloc_free_lst,*next;I64 bucket;
+  hc->malloc_free_lst=0;
+  while(span) { next=span->next;CacheReferenceInsert(hc,span);span=next; }
+  for(bucket=0;bucket<MEM_HEAP_HASH_SIZE/sizeof(U8 *);bucket++) {
+    span=hc->heap_hash[bucket];hc->heap_hash[bucket]=0;
+    while(span) { next=span->next;CacheReferenceInsert(hc,span);span=next; }
+  }
+}
+I64 CacheMergeParity()
+{
+  CHeapCtrl *a=&merge_a,*b=&merge_b;
+  CMemUnused *left,*right,*node;I64 round,i,slot,bucket,count,stride,size,spans;
+  for(round=0;round<6;round++) {
+    for(i=0;i<sizeof(CHeapCtrl);i++) { a(U8 *)[i]=0;b(U8 *)[i]=0; }
+    spans=128;if(round==5)spans=257;
+    for(i=0;i<spans;i++) {
+      if(round==0)slot=i;
+      else if(round==1)slot=127-i;
+      else if(round==5)slot=(i*73)%257;
+      else slot=(i*73+round*11)&127;
+      stride=32;size=32;
+      if(round>=4) { stride=64;if(!(slot&1))size=64; }
+      if(!(round==3 && slot%7==3)) for(bucket=0;bucket<2;bucket++) {
+        if(bucket)node=merge_arena_b+slot*stride;else node=merge_arena_a+slot*stride;
+        node->size=size;
+        if(i&1) {
+          if(bucket) { node->next=b->heap_hash[i&15];b->heap_hash[i&15]=node; }
+          else { node->next=a->heap_hash[i&15];a->heap_hash[i&15]=node; }
+        } else {
+          if(bucket) { node->next=b->malloc_free_lst;b->malloc_free_lst=node; }
+          else { node->next=a->malloc_free_lst;a->malloc_free_lst=node; }
+        }
+      }
+    }
+    CacheReferenceMerge(a);I386MemFreeSpansMerge(b);
+    left=a->malloc_free_lst;right=b->malloc_free_lst;count=0;
+    while(left && right && count++<257) {
+      if(left(U8 *)-merge_arena_a!=right(U8 *)-merge_arena_b || left->size!=right->size)
+        return 172;
+      left=left->next;right=right->next;
+    }
+    if(left || right)return 173;
+    for(i=0;i<MEM_HEAP_HASH_SIZE/sizeof(U8 *);i++)
+      if(a->heap_hash[i] || b->heap_hash[i])return 174;
+  }
+  return 0;
+}
 I64 Main(I64 a,I64 b)
 {
   CI386PublicPool *pool=&cache_pool;
@@ -16,6 +82,7 @@ I64 Main(I64 a,I64 b)
   U8 *slots[64],*q;
   I64 total,old,i;
   U32 saved_flags=GetRFlags;
+  if((i=CacheMergeParity))return i;
   if(!I386MemPoolInit(pool,0x40000,0x40000) ||
       !I386MemHeapInit(hc,pool,0x1234)) return 131;
   //Fill one small-allocation batch, leaving only an exact-size cached span.
