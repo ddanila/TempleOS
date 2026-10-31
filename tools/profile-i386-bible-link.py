@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import re
 import runpy
+import struct
 import subprocess
 import time
 
@@ -99,13 +100,32 @@ def main():
             for prefix,module in [('RUNTIME','CompilerRuntime'),('FILES','FileRuntime'),('MEMORY','MemoryRuntime'),('CONSOLE','ConsoleRuntime')]:
                 match=re.search(r'^'+prefix+r' ([0-9A-Fa-f]+) ',text,re.M)
                 if not match: raise ValueError('Missing module address '+prefix)
-                ranges[module]=symbols(modules[f'/Modules/I386/{module}.t32m'],int(match[1],16)+8)
+                base=int(match[1],16)+8
+                ranges[module]=symbols(modules[f'/Modules/I386/{module}.t32m'],base)
+                if module=='ConsoleRuntime':console_base=base
+            #WinMgr's update counter is the first field of the exported object.
+            console=modules['/Modules/I386/ConsoleRuntime.t32m']
+            _,record_count,records=struct.unpack_from('<III',console,16)
+            offsets=[]
+            for i in range(record_count):
+                kind,offset,name,length=struct.unpack_from('<4I',console,records+16*i)
+                if kind==3 and console[name:name+length]==b'winmgr':offsets.append(offset)
+            if len(offsets)!=1:raise ValueError('Missing or ambiguous winmgr export')
+            counter_address=console_base+offsets[0]
+            def updates():
+                command('stop')
+                output=command('human-monitor-command',**{'command-line':f'xp /2wx 0x{counter_address:x}'})
+                words=re.findall(r'0x([0-9A-Fa-f]{8})\b',output)
+                if len(words)!=2:raise ValueError('Cannot read window update counter')
+                value=int(words[0],16)|(int(words[1],16)<<32)
+                command('cont')
+                return value
             def symbol_at(address):
                 for module,spans in ranges.items():
                     for lo,hi,name in spans:
                         if lo<=address<hi:return module+':'+name
                 return 'unmapped'
-            deadline=time.monotonic()+args.duration
+            first_updates=updates();started=time.monotonic();deadline=started+args.duration
             while time.monotonic()<deadline:
                 current=log.read_text()[begin:]
                 if 'COMMAND ERROR\n' in current or 'FAIL native kernel' in current:
@@ -130,12 +150,17 @@ def main():
                 samples.append({'pc':pc,'symbol':symbol_at(pc),'callers':callers})
                 command('cont');time.sleep(args.interval)
             completed='BL first end\n' in log.read_text()[begin:]
+            last_updates=updates();sample_seconds=time.monotonic()-started
+            if last_updates<first_updates:raise ValueError('Window update counter went backwards')
             command('quit');proc.wait(timeout=15)
         if not samples: raise ValueError('No Bible link samples')
         if builder['mutated_file_contents'](working,set(files))!=files: raise ValueError('Guest fixture changed')
         counts=Counter(s['symbol'] for s in samples)
         stacks=Counter(' <- '.join([s['symbol']]+[c['symbol'] for c in s['callers']]) for s in samples)
-        report.update(result='pass',link_completed=completed,samples=len(samples),symbols=dict(counts.most_common()),stacks=dict(stacks.most_common()))
+        report.update(result='pass',link_completed=completed,samples=len(samples),
+                      window_updates=last_updates-first_updates,
+                      sampled_seconds=round(sample_seconds,3),
+                      symbols=dict(counts.most_common()),stacks=dict(stacks.most_common()))
     except Exception as exc:
         report.update(result='fail',error=str(exc));raise
     finally:

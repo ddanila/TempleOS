@@ -53,6 +53,12 @@ smoke, and paired exact-VGA sessions pass. Candidate frames measured 330–370 m
 versus 380–420 ms on the control, with other QEMU guests active. The full
 Bible-link test on this image remains in progress.
 
+Text rendering skips the foreground pixel loop for zero glyph rows, after
+applying underline. The blank/underlined original oracle, both rebuilds, 386
+audits, 8 MiB smoke, and paired exact-VGA sessions pass. Paired full-link
+samples recorded 341 window updates versus 310 for the control in about 90
+seconds with QMP pauses; neither lookup completed. Full C1–C5 remain open.
+
 ### Standalone public task header diagnostic (2026-10-31)
 
 `PublicTask.HH` now expresses the false `DeathWait` default without relying on

@@ -11,6 +11,8 @@ I64 OriginalTextRenderCheck()
   Bool saved_col=gr.hide_col,saved_row=gr.hide_row,hc,hr;
   MemSet(&dc,0,sizeof(dc)); dc.body=actual; dc.width_internal=640; dc.height=480;
   TextRenderPattern(cells);
+  //Include blank glyph rows both with and without a forced underline.
+  cells[0]=' '|0x1E00;cells[1]=' '|0xE100|ATTRF_UNDERLINE;
   SetRFlags(flags&~0x200);
   gr.dc2=&dc; gr.text_base=cells; text.font=sys_font_std;
   for(phase=0;phase<2;phase++) for(test=0;test<6;test++) {

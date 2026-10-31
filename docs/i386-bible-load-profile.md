@@ -408,3 +408,36 @@ inputs but did not complete the lookup (`build/i386-bible-link-sample-text-fill-
 Of 413 samples, 131 landed in VGA upload, 75 in text rendering, and 71 in the
 heap chain validator. This samples every scheduled guest task while other QEMU
 guests run and is not an end-to-end timing or completion result.
+
+## Blank glyph rows
+
+The renderer skips the per-pixel foreground loop when the resolved glyph
+row is zero, after applying underline. It does not assume a particular font or
+character is blank. The original-renderer oracle explicitly includes blank and
+underlined cells and passes on the baseline and candidate with an unaligned,
+poisoned, guarded destination (`build/i386-text-blank-baseline-v1.log`,
+`build/i386-text-blank-cross-v1.log`). Both rebuild generations, minimal and
+full-content cross-builds, and 386 audits pass
+(`build/i386-text-blank-rebuild-v1.log`, `build/i386-text-blank-cross-v1`,
+`build/i386-text-blank-full-cross-v1`). The 8 MiB smoke passes with unchanged
+inputs (`build/i386-text-blank-smoke-v1`). A 90-second full-link sample passes
+with unchanged inputs without completing the lookup
+(`build/i386-bible-link-sample-text-blank-v1`): 33 of 411 samples landed in
+text rendering, compared with 75 of 413 on the prior image. These samples cover
+all guest tasks and are not timing measurements. Paired 64 MiB graphics
+sessions pass all 12 commands and exact VGA checkpoints with unchanged source
+images (`build/i386-text-blank-graphics-v1`,
+`build/i386-text-blank-control-v1`). Their four frame demos measured 320, 320,
+360 and 350 ms, versus 320, 330, 360 and 360 ms for the control. Other QEMU
+guests overlapped these guest-jiffy measurements; they show similar synthetic
+frame times and are not a hardware benchmark. The full-link completion test is
+still running.
+
+The sampler also reads the exported window-manager update counter at the start
+and end of its sampling window. Paired 90-second full-link samples passed with
+unchanged inputs and neither completed the lookup
+(`build/i386-bible-link-update-blank-v1`,
+`build/i386-bible-link-update-control-v1`). The blank-row image completed 341
+window updates in 90.1 seconds and the control completed 310 in 90.0 seconds.
+Both guests ran concurrently and were paused for QMP samples; this is a
+comparative diagnostic, not a full-link completion or hardware benchmark.

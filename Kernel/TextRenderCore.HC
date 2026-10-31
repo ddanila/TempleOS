@@ -46,7 +46,8 @@ U0 TextRenderCore(U8 *pixels,U32 *cells,U8 *font,I64 cols,I64 rows,
     for(y=0;y<8;y++) {
       glyph=font[(cell&255)*8+y];
       if(y==7 && cell&ATTRF_UNDERLINE) glyph=255;
-      for(x=0;x<8;x++) if(glyph&(1<<x)) pixels[base+y*width+x]=attr;
+      if(glyph) for(x=0;x<8;x++)
+        if(glyph&(1<<x)) pixels[base+y*width+x]=attr;
     }
 next_cell:
   }
