@@ -122,6 +122,11 @@ This C2 startup gap remains a failing report gate; see
 [i386-timeclock-native.md](i386-timeclock-native.md). Full application qualification
 remains open.
 
+The three TimeClock inventory entries link the later report/reboot, VGA and
+emulated-keyboard evidence alongside the historical failure; they remain
+unqualified until the complete application workflow is covered. The status
+paragraphs above describe earlier source epochs, not the latest report result.
+
 The native TimeClock evidence has advanced beyond those earlier checkpoints:
 unchanged application source now passes a 64 MiB emulated-keyboard punch-in and
 punch-out with multiline descriptions and byte-identical record recovery after a

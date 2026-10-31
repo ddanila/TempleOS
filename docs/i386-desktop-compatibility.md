@@ -54,6 +54,35 @@ component cases does not establish all original workflows or whole-file parity.
 The exhaustive discovery check and its five regression guards pass; all 686
 items still have qualification gaps.
 
+## TimeClock evidence mapping (2026-10-31)
+
+The three original TimeClock inventory entries now link the later native
+report/reboot and emulated-keyboard evidence as well as the earlier failed
+report run. The welcome-aware report matches the original typed records and
+DolDoc bytes across cold reboot; a separate historical 64 MiB run also checks
+text/color VGA cells with the window manager suspended. The emulated PS/2 run
+covers multiline input, Shift+Escape cancellation and byte-identical record
+recovery after reboot. All three recorded runs preserve their pinned inputs.
+See [native TimeClock evidence](i386-timeclock-native.md). These are scoped
+component workflows on their recorded images, not current-source release,
+physical-hardware or whole-application qualification; all three entries remain
+unqualified. Fresh runs against the full-content pool-validator image pass
+the exact report/reboot and emulated-keyboard/reboot checks with unchanged
+inputs (`build/i386-timeclock-welcome-current-v1`,
+`build/i386-timeclock-keyboard-current-v1`). The keyboard run pinned the
+inventory as it stood before the subsequent Budget evidence mapping.
+
+## Budget storage evidence mapping (2026-10-31)
+
+The original storage/reopen fixture's evidence is now linked to the Budget
+Load and Install scripts, account template, and the account, entry, file and
+string helpers it directly uses. It constructs one 125-unit transaction and
+checks the independently packed data and exact string table after a same-session
+reopen; the fresh reference rerun passes with unchanged inputs
+(`build/i386-c1-budget-storage-current-v1`). This records a component
+reference, not a cold-reboot, interactive or native application pass; these
+entries remain unqualified. See [the application matrix](i386-application-matrix.md).
+
 ## C1 remaining work
 
 Review launch candidates and group helper files/assets under their consuming

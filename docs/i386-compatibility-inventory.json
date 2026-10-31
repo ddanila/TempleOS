@@ -4740,9 +4740,17 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "The installed original account template is read by BgtAcctsRead during the storage fixture. Full interactive, save/reboot, and native application behavior remain unqualified.",
+      "oracle": "tools/test-i386-budget-reference.py independently checks a constructed 125-unit transaction, typed data and exact string-table bytes after same-session reopen. See docs/i386-application-matrix.md; this is not complete file or application coverage.",
+      "tests": [
+        {
+          "target": "original-budget-storage-component",
+          "command": "python3 tools/test-i386-budget-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-budget-storage-current-v1/result.json",
+          "scope": "Original Load/Install and constructed BANK-to-RENT transaction; exact data/string table and same-session reopen, unchanged inputs. Not interactive, cold reboot, native behavior or whole application."
+        }
+      ]
     },
     {
       "path": "Apps/Budget/BgtAccts.HC",
@@ -4757,9 +4765,17 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "BgtAcctsRead loads the installed account template before the constructed transaction and again for same-session reopen. Full interactive, save/reboot, and native application behavior remain unqualified.",
+      "oracle": "tools/test-i386-budget-reference.py independently checks a constructed 125-unit transaction, typed data and exact string-table bytes after same-session reopen. See docs/i386-application-matrix.md; this is not complete file or application coverage.",
+      "tests": [
+        {
+          "target": "original-budget-storage-component",
+          "command": "python3 tools/test-i386-budget-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-budget-storage-current-v1/result.json",
+          "scope": "Original Load/Install and constructed BANK-to-RENT transaction; exact data/string table and same-session reopen, unchanged inputs. Not interactive, cold reboot, native behavior or whole application."
+        }
+      ]
     },
     {
       "path": "Apps/Budget/BgtEntry.HC",
@@ -4774,9 +4790,17 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "BgtIns inserts a constructed BANK-to-RENT transaction into the Budget list. Full interactive, save/reboot, and native application behavior remain unqualified.",
+      "oracle": "tools/test-i386-budget-reference.py independently checks a constructed 125-unit transaction, typed data and exact string-table bytes after same-session reopen. See docs/i386-application-matrix.md; this is not complete file or application coverage.",
+      "tests": [
+        {
+          "target": "original-budget-storage-component",
+          "command": "python3 tools/test-i386-budget-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-budget-storage-current-v1/result.json",
+          "scope": "Original Load/Install and constructed BANK-to-RENT transaction; exact data/string table and same-session reopen, unchanged inputs. Not interactive, cold reboot, native behavior or whole application."
+        }
+      ]
     },
     {
       "path": "Apps/Budget/BgtFile.HC",
@@ -4791,9 +4815,17 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "BgtDataWrite and BgtDataRead serialize and reopen a constructed transaction and its string table. Full interactive, save/reboot, and native application behavior remain unqualified.",
+      "oracle": "tools/test-i386-budget-reference.py independently checks a constructed 125-unit transaction, typed data and exact string-table bytes after same-session reopen. See docs/i386-application-matrix.md; this is not complete file or application coverage.",
+      "tests": [
+        {
+          "target": "original-budget-storage-component",
+          "command": "python3 tools/test-i386-budget-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-budget-storage-current-v1/result.json",
+          "scope": "Original Load/Install and constructed BANK-to-RENT transaction; exact data/string table and same-session reopen, unchanged inputs. Not interactive, cold reboot, native behavior or whole application."
+        }
+      ]
     },
     {
       "path": "Apps/Budget/BgtMain.HC",
@@ -4846,9 +4878,17 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "The storage path writes and reads the exact application string table through the original string-file helpers. Full interactive, save/reboot, and native application behavior remain unqualified.",
+      "oracle": "tools/test-i386-budget-reference.py independently checks a constructed 125-unit transaction, typed data and exact string-table bytes after same-session reopen. See docs/i386-application-matrix.md; this is not complete file or application coverage.",
+      "tests": [
+        {
+          "target": "original-budget-storage-component",
+          "command": "python3 tools/test-i386-budget-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-budget-storage-current-v1/result.json",
+          "scope": "Original Load/Install and constructed BANK-to-RENT transaction; exact data/string table and same-session reopen, unchanged inputs. Not interactive, cold reboot, native behavior or whole application."
+        }
+      ]
     },
     {
       "path": "Apps/Budget/BgtTemplate.HC",
@@ -4897,9 +4937,17 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "The original storage fixture includes Install and creates the application directory and account template. Full interactive, save/reboot, and native application behavior remain unqualified.",
+      "oracle": "tools/test-i386-budget-reference.py independently checks a constructed 125-unit transaction, typed data and exact string-table bytes after same-session reopen. See docs/i386-application-matrix.md; this is not complete file or application coverage.",
+      "tests": [
+        {
+          "target": "original-budget-storage-component",
+          "command": "python3 tools/test-i386-budget-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-budget-storage-current-v1/result.json",
+          "scope": "Original Load/Install and constructed BANK-to-RENT transaction; exact data/string table and same-session reopen, unchanged inputs. Not interactive, cold reboot, native behavior or whole application."
+        }
+      ]
     },
     {
       "path": "Apps/Budget/Load.HC",
@@ -4922,9 +4970,17 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "The original storage fixture includes the unchanged Load script and its modules. Full interactive, save/reboot, and native application behavior remain unqualified.",
+      "oracle": "tools/test-i386-budget-reference.py independently checks a constructed 125-unit transaction, typed data and exact string-table bytes after same-session reopen. See docs/i386-application-matrix.md; this is not complete file or application coverage.",
+      "tests": [
+        {
+          "target": "original-budget-storage-component",
+          "command": "python3 tools/test-i386-budget-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-c1-budget-storage-current-v1/result.json",
+          "scope": "Original Load/Install and constructed BANK-to-RENT transaction; exact data/string table and same-session reopen, unchanged inputs. Not interactive, cold reboot, native behavior or whole application."
+        }
+      ]
     },
     {
       "path": "Apps/Budget/Run.HC",
@@ -5656,7 +5712,8 @@
           "reopened entries",
           "5400-second closed report"
         ],
-        "punch_commands": "docs/i386-timeclock-punch.md: independent typed-record decoder, expected descriptions, stage prefixes, byte-identical duplicates and per-command original Now bounds. Reboot, time progression, physical keyboard, resource cleanup and complete native workflows remain open."
+        "punch_commands": "docs/i386-timeclock-punch.md and docs/i386-timeclock-native.md: independent typed-record decoder, descriptions, original Now bounds and byte-identical cold-reboot recovery; emulated PS/2 cancellation is covered. Physical hardware, general resource cleanup and complete native workflows remain open.",
+        "report_reboot": "docs/i386-timeclock-native.md: compare exact original typed-record and DolDoc report bytes across cold reboot; a separately scoped historical 64 MiB run checks report VGA cells with WinMgr suspended. Full desktop and application qualification remain open."
       },
       "tests": [
         {
@@ -5717,6 +5774,41 @@
           "result": "fail",
           "evidence": "build/i386-c3-timeclock-report-native/comparison.json",
           "scope": "Controlled logical records, report content, dates and 5400-second total match original; exact DolDoc report lacks original welcome-document held $WW+H,1$ entry. C2 full startup remains missing; no normalization of the golden."
+        },
+        {
+          "target": "native-welcome-report-reboot",
+          "command": "python3 tools/test-i386-timeclock-welcome.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-welcome-report-reboot-paced/result.json",
+          "scope": "Exact original typed records and DolDoc report with welcome, including cold-reboot report; unchanged inputs. Keyboard/log driven, no VGA pixel oracle or whole-desktop qualification."
+        },
+        {
+          "target": "native-report-reboot-vga",
+          "command": "python3 tools/test-i386-timeclock-report-native.py IMAGE --welcome --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-suspended-rich-report-vga/result.json",
+          "scope": "64 MiB original-source package, exact record/report bytes and report after cold reboot, with text/color VGA checkpoints and WinMgr suspended; unchanged inputs. Historical run used its then-current runner; not physical input or whole application."
+        },
+        {
+          "target": "native-emulated-keyboard-punch-reboot",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-timeclock-keyboard-shift-escape-native/result.json",
+          "scope": "Unchanged original source, QEMU PS/2 multiline punch-in/out and Shift+Escape cancellation, independently decoded records and byte-identical cold-reboot recovery; unchanged inputs. Not physical hardware, full VGA or application qualification."
+        },
+        {
+          "target": "native-welcome-report-reboot-current",
+          "command": "python3 tools/test-i386-timeclock-welcome.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-timeclock-welcome-current-v1/result.json",
+          "scope": "Full-content pool-validator image: exact original typed records and DolDoc report bytes across cold reboot, unchanged inputs; keyboard/log driven, no VGA or whole application qualification."
+        },
+        {
+          "target": "native-emulated-keyboard-reboot-current",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-timeclock-keyboard-current-v1/result.json",
+          "scope": "Full-content pool-validator image: original-source PS/2 multiline punch-in/out and Shift+Escape cancellation; independently decoded records survive cold reboot byte-for-byte, unchanged inputs. Not physical hardware, full VGA or whole application."
         }
       ]
     },
@@ -5748,7 +5840,8 @@
           "reopened entries",
           "5400-second closed report"
         ],
-        "punch_commands": "docs/i386-timeclock-punch.md: independent typed-record decoder, expected descriptions, stage prefixes, byte-identical duplicates and per-command original Now bounds. Reboot, time progression, physical keyboard, resource cleanup and complete native workflows remain open."
+        "punch_commands": "docs/i386-timeclock-punch.md and docs/i386-timeclock-native.md: independent typed-record decoder, descriptions, original Now bounds and byte-identical cold-reboot recovery; emulated PS/2 cancellation is covered. Physical hardware, general resource cleanup and complete native workflows remain open.",
+        "report_reboot": "docs/i386-timeclock-native.md: compare exact original typed-record and DolDoc report bytes across cold reboot; a separately scoped historical 64 MiB run checks report VGA cells with WinMgr suspended. Full desktop and application qualification remain open."
       },
       "tests": [
         {
@@ -5809,6 +5902,41 @@
           "result": "fail",
           "evidence": "build/i386-c3-timeclock-report-native/comparison.json",
           "scope": "Controlled logical records, report content, dates and 5400-second total match original; exact DolDoc report lacks original welcome-document held $WW+H,1$ entry. C2 full startup remains missing; no normalization of the golden."
+        },
+        {
+          "target": "native-welcome-report-reboot",
+          "command": "python3 tools/test-i386-timeclock-welcome.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-welcome-report-reboot-paced/result.json",
+          "scope": "Exact original typed records and DolDoc report with welcome, including cold-reboot report; unchanged inputs. Keyboard/log driven, no VGA pixel oracle or whole-desktop qualification."
+        },
+        {
+          "target": "native-report-reboot-vga",
+          "command": "python3 tools/test-i386-timeclock-report-native.py IMAGE --welcome --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-suspended-rich-report-vga/result.json",
+          "scope": "64 MiB original-source package, exact record/report bytes and report after cold reboot, with text/color VGA checkpoints and WinMgr suspended; unchanged inputs. Historical run used its then-current runner; not physical input or whole application."
+        },
+        {
+          "target": "native-emulated-keyboard-punch-reboot",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-timeclock-keyboard-shift-escape-native/result.json",
+          "scope": "Unchanged original source, QEMU PS/2 multiline punch-in/out and Shift+Escape cancellation, independently decoded records and byte-identical cold-reboot recovery; unchanged inputs. Not physical hardware, full VGA or application qualification."
+        },
+        {
+          "target": "native-welcome-report-reboot-current",
+          "command": "python3 tools/test-i386-timeclock-welcome.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-timeclock-welcome-current-v1/result.json",
+          "scope": "Full-content pool-validator image: exact original typed records and DolDoc report bytes across cold reboot, unchanged inputs; keyboard/log driven, no VGA or whole application qualification."
+        },
+        {
+          "target": "native-emulated-keyboard-reboot-current",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-timeclock-keyboard-current-v1/result.json",
+          "scope": "Full-content pool-validator image: original-source PS/2 multiline punch-in/out and Shift+Escape cancellation; independently decoded records survive cold reboot byte-for-byte, unchanged inputs. Not physical hardware, full VGA or whole application."
         }
       ]
     },
@@ -5841,7 +5969,8 @@
           "reopened entries",
           "5400-second closed report"
         ],
-        "punch_commands": "docs/i386-timeclock-punch.md: independent typed-record decoder, expected descriptions, stage prefixes, byte-identical duplicates and per-command original Now bounds. Reboot, time progression, physical keyboard, resource cleanup and complete native workflows remain open."
+        "punch_commands": "docs/i386-timeclock-punch.md and docs/i386-timeclock-native.md: independent typed-record decoder, descriptions, original Now bounds and byte-identical cold-reboot recovery; emulated PS/2 cancellation is covered. Physical hardware, general resource cleanup and complete native workflows remain open.",
+        "report_reboot": "docs/i386-timeclock-native.md: compare exact original typed-record and DolDoc report bytes across cold reboot; a separately scoped historical 64 MiB run checks report VGA cells with WinMgr suspended. Full desktop and application qualification remain open."
       },
       "tests": [
         {
@@ -5902,6 +6031,41 @@
           "result": "fail",
           "evidence": "build/i386-c3-timeclock-report-native/comparison.json",
           "scope": "Controlled logical records, report content, dates and 5400-second total match original; exact DolDoc report lacks original welcome-document held $WW+H,1$ entry. C2 full startup remains missing; no normalization of the golden."
+        },
+        {
+          "target": "native-welcome-report-reboot",
+          "command": "python3 tools/test-i386-timeclock-welcome.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-welcome-report-reboot-paced/result.json",
+          "scope": "Exact original typed records and DolDoc report with welcome, including cold-reboot report; unchanged inputs. Keyboard/log driven, no VGA pixel oracle or whole-desktop qualification."
+        },
+        {
+          "target": "native-report-reboot-vga",
+          "command": "python3 tools/test-i386-timeclock-report-native.py IMAGE --welcome --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-suspended-rich-report-vga/result.json",
+          "scope": "64 MiB original-source package, exact record/report bytes and report after cold reboot, with text/color VGA checkpoints and WinMgr suspended; unchanged inputs. Historical run used its then-current runner; not physical input or whole application."
+        },
+        {
+          "target": "native-emulated-keyboard-punch-reboot",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-timeclock-keyboard-shift-escape-native/result.json",
+          "scope": "Unchanged original source, QEMU PS/2 multiline punch-in/out and Shift+Escape cancellation, independently decoded records and byte-identical cold-reboot recovery; unchanged inputs. Not physical hardware, full VGA or application qualification."
+        },
+        {
+          "target": "native-welcome-report-reboot-current",
+          "command": "python3 tools/test-i386-timeclock-welcome.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-timeclock-welcome-current-v1/result.json",
+          "scope": "Full-content pool-validator image: exact original typed records and DolDoc report bytes across cold reboot, unchanged inputs; keyboard/log driven, no VGA or whole application qualification."
+        },
+        {
+          "target": "native-emulated-keyboard-reboot-current",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-timeclock-keyboard-current-v1/result.json",
+          "scope": "Full-content pool-validator image: original-source PS/2 multiline punch-in/out and Shift+Escape cancellation; independently decoded records survive cold reboot byte-for-byte, unchanged inputs. Not physical hardware, full VGA or whole application."
         }
       ]
     },

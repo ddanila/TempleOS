@@ -11,6 +11,17 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### TimeClock inventory evidence mapping (2026-10-31)
+
+The three TimeClock inventory records now point to the later exact
+report/reboot, suspended-window VGA and emulated PS/2 cancellation/reboot
+results, preserving the earlier failure as historical evidence. All remain
+unqualified. Fresh report/reboot and emulated-keyboard/reboot runs pass on the
+pool-validator full image with unchanged inputs. The original Budget storage
+oracle was rerun successfully and linked to the seven files it directly
+exercises. The inventory discovery guard and all five regression tests pass. See
+[desktop compatibility](docs/i386-desktop-compatibility.md).
+
 ### Document cleanup validation performance (2026-10-31)
 
 Backing validation now sorts batches of up to 256 owned regions with an
