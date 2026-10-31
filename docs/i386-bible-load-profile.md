@@ -475,9 +475,9 @@ an elapsed-time gain; the fast path was discarded
 (`build/i386-backing-order-bible-medium-v1`,
 `build/i386-pool-fast-bible-medium-v1`,
 `build/i386-backing-order-bible-sample-v1`,
-`build/i386-pool-fast-bible-sample-v1`). The candidate full-link and 16 MiB
-startup tests remain in progress (`build/i386-backing-order-bible-full-v1`,
-`build/i386-backing-order-diagnostics-v1`).
+`build/i386-pool-fast-bible-sample-v1`). The candidate 16 MiB startup diagnostic passed; its full-link test remains
+in progress (`build/i386-backing-order-diagnostics-v1`,
+`build/i386-backing-order-bible-full-v1`).
 
 ## Backing ownership-list collection experiment
 
@@ -531,7 +531,8 @@ validator, versus 152 of 410 in an earlier control. The runs overlapped other
 guests, neither lookup completed, and this is not a timing comparison
 (`build/i386-pool-fast-bible-sample-v1`,
 `build/i386-keyboard-idle-bible-isolated-v1`). The 8 MiB run completed nine interactive and exact VGA checks but took 68.0
-seconds, above the 60-second gate, while the full-link test remains in progress
+seconds, above the 60-second gate. The normal full-link test timed out on its
+first lookup at the 20-minute command limit with unchanged inputs
 (`build/i386-pool-fast-smoke-v1`, `build/i386-pool-fast-bible-full-v1`).
 
 ## Idle keyboard polling

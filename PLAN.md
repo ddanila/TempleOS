@@ -69,7 +69,7 @@ both heap variants and rebuild generations pass. Both standalone cross-builds
 pass, as do the 16 MiB diagnostic and a 1,600/3,200-line Bible profile with
 unchanged inputs on candidate and control. The 8 MiB run completed its nine
 interactive checks but took 68.0 seconds, above the 60-second startup gate;
-the full-link test remains in progress. See
+the full-link test timed out during its first lookup with unchanged inputs. See
 [load profiling](docs/i386-bible-load-profile.md).
 
 The gap sort now has a tested 386 implementation and retains its portable
