@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Backing placement and split task state (2026-10-31)
+
+The previously failing 8 MiB asynchronous PopUpFile comparison now passes.
+Subsequent native-sized public backing batches use high placement, and a
+low-owned task can place inherited state in the validated arena with the
+larger free block. Ownership, rollback and memory regressions pass. Isolated
+startup takes 66.516 seconds and misses the 60-second gate. C1–C5 remain open; see
+[low-memory evidence](docs/i386-low-arena.md).
+
 ### Firmware-verified root stack (2026-10-31)
 
 The extended loader can move the unchanged root stack into a fully verified

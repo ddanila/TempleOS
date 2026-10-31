@@ -1,4 +1,5 @@
 #include "/Kernel/I386/MemoryBacking.HH"
+#include "/Kernel/I386/MemoryBackingConfig.HH"
 #include "/Kernel/I386/Cpu.HH"
 extern Bool I386MemBackingGrow(CI386PublicPool *pool,I64 pages);
 //Single CPU; callers cannot re-enter validation while IRQs are masked.
@@ -152,10 +153,14 @@ Bool I386MemBackingGrow(CI386PublicPool *base_pool,I64 pages)
   if(size<pool->quantum) size=pool->quantum;
   request=size+sizeof(CI386BackingRegion)+511;
   before=pool->heap->used;
-  region=I386HeapAlloc(pool->heap,request);
+  //Keep the initial reserve and large regions first-fit. Later native-sized
+  //batches use the high end, leaving room for large contiguous consumers.
+  if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)region=I386HeapAllocHigh(pool->heap,request);
+  else region=I386HeapAlloc(pool->heap,request);
   if(!region && size!=minimum) {
     size=minimum; request=size+sizeof(CI386BackingRegion)+511;
-    region=I386HeapAlloc(pool->heap,request);
+    if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)region=I386HeapAllocHigh(pool->heap,request);
+    else region=I386HeapAlloc(pool->heap,request);
   }
   if(!region) return FALSE;
   for(i=0;i<sizeof(CI386BackingRegion);i++) region(U8 *)[i]=0;

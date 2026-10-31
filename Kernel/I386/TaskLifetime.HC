@@ -25,10 +25,10 @@ public CI386OwnedTask *I386TaskCreateWithFilesFallback(CI386Scheduler *s,
 {//NULL-returning bootstrap API, not the full public Spawn/OutMem contract.
   CI386OwnedTask *owned;
   CI386Task *creator[1];
-  CI386Heap *file_heap;
+  CI386Heap *file_heap,*primary=heap;
   U8 *stack_base;
   CI386HeapBlock *block;
-  I64 scan_offset,need;
+  I64 scan_offset,need,primary_largest,fallback_largest;
   U64 base,end,other_base,other_end;
   I64 header=(sizeof(CI386OwnedTask)+offset(CTaskStk.stk_base)+7)&~7,total,stack_reserved,actual;
   U32 flags,invalid[1];
@@ -232,7 +232,29 @@ public CI386OwnedTask *I386TaskCreateWithFilesFallback(CI386Scheduler *s,
   }
   if (!I386ContextInit(&owned->task.context,&owned->task.stk->stk_base,owned->task.stk->stk_size,
       entry,arg,&I386TaskReturn,fs,gs)) goto spawn_fail;
-  file_heap=heap; if(owned->task.memory) file_heap=owned->task.memory;
+  file_heap=heap;
+  if(fallback && heap==fallback && !owned->task.memory) {
+    //The task block and cloned state need not share an arena. Both chains
+    //remain validated and interrupts stay masked through this single choice.
+    //Prefer the arena with the larger contiguous free block for state and
+    //subsequent compiler work; do not retry failed clone callbacks.
+    primary_largest=0;fallback_largest=0;scan_offset=0;
+    while(scan_offset<primary->size) {
+      block=primary->base+scan_offset;
+      if(block->tag==I386_HEAP_FREE && block->span>primary_largest)
+        primary_largest=block->span;
+      scan_offset+=block->span;
+    }
+    scan_offset=0;
+    while(scan_offset<fallback->size) {
+      block=fallback->base+scan_offset;
+      if(block->tag==I386_HEAP_FREE && block->span>fallback_largest)
+        fallback_largest=block->span;
+      scan_offset+=block->span;
+    }
+    if(primary_largest>fallback_largest)file_heap=primary;
+  }
+  if(owned->task.memory) file_heap=owned->task.memory;
   if(I386TaskHeapHooks(parent)) {
     if(I386TaskHeapHooks(parent)!=31 ||
         !(*parent->heap_clone)(parent,&owned->task,file_heap)) goto spawn_fail;

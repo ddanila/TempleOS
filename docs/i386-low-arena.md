@@ -193,3 +193,69 @@ popup contract, and the 16 MiB diagnostic with unchanged inputs
 `build/i386-high-stack-compact-diagnostics-v1`). An isolated 8 MiB startup
 run passes all nine behavior and VGA checks but takes 65.861 seconds, above
 the unchanged 60-second gate (`build/i386-high-stack-compact-startup-v1`).
+
+## Small backing placement and inherited-state selection (2026-10-31)
+
+The 8 MiB popup now passes the same asynchronous mask 31 that previously
+failed (`build/i386-backing-split-popup-8m-v2`), with unchanged inputs and VGA
+checkpoints. The existing 8 MiB InFile contract also passes and still proves
+low-slot reuse (`build/i386-backing-split-infile-8m-v1`). These concurrent
+workloads do not qualify startup timing, synchronous popup continuation, or
+arbitrary concurrent task capacity.
+
+Two placement changes address the observed failures. After its initial
+region, a public backing pool places subsequent native-quantum (8 KiB) regions
+at the high end of a fitting heap block, leaving more room for large
+contiguous allocations. Initial reservations, larger backing requests,
+page rounding, ownership, validation and trimming remain unchanged. Memory
+service version 38 explicitly imports the existing high allocator. When a
+task block must use the conventional fallback and has no private heap, its
+inherited state uses whichever of the two already validated arenas has the
+larger free block after the task allocation. This is one selection under
+interrupt exclusion: clone callbacks are not retried, and private task heaps
+retain their prior ownership. The selection is a placement policy, not a
+capacity guarantee.
+
+The focused task-symbol fixture demonstrates a low-owned task with state in
+the primary arena, retains the exhausted-primary fallback and failed-clone
+cases, and checks that an injected late failure invokes its callback once and
+rolls back both arenas (`build/i386-backing-split-symbols-v3.log`). Its new
+split-ownership assertion fails on the preceding implementation
+(`build/i386-backing-split-symbols-red-v2.log`); an initial test edit failed
+to compile before the required pointer cast was corrected
+(`build/i386-backing-split-symbols-red-v1.log`). The backing-reserve fixture
+checks initial low and later high placement plus cleanup. Task, inherited heap,
+retained lifecycle, portable heap, public backing/cache and window-reserve
+suites pass (`build/i386-backing-split-tasks-v1.log`,
+`build/i386-backing-split-heaps-v1.log`,
+`build/i386-backing-split-retained-v1.log`,
+`build/i386-backing-split-heap-source-v1.log`,
+`build/i386-backing-split-reserve-v3.log`,
+`build/i386-backing-split-public-v2.log`,
+`build/i386-backing-split-cache-v2.log`,
+`build/i386-backing-split-window-v1.log`). Both bootstrap generations, the full
+cross-build/386 audit and the 16 MiB diagnostic pass
+(`build/i386-backing-split-rebuild-v2.log`,
+`build/i386-backing-split-full-cross-v2`,
+`build/i386-backing-split-diagnostics-v1`).
+
+An earlier experiment put every backing allocation high and failed the
+reservation test because alignment slack fragmented its free space
+(`build/i386-backing-high-reserve-v1.log`). A subsequent broad policy failed
+the large-allocation pressure test (`build/i386-backing-high-public-v1.log`)
+and another variant exposed a test arena overlapping its own stack
+(`build/i386-backing-high-public-v2.log`). The retained policy is limited to
+subsequent native-sized batches; it passes those existing tests. With that
+policy alone, the popup passed the graphics allocation but exhausted the low
+arena during compiler work (`build/i386-backing-high-popup-8m-v1`). A stopped
+capture showed 45,288 main-arena bytes free in total and a 20,424-byte largest
+free block after failure handling began (`build/i386-backing-high-popup-heap-v1`).
+The inherited-state selection above resolved the recorded combined workload.
+C1–C5 and the startup timing gate remain open.
+
+The public messaging and task-cancellation regressions pass at 64 MiB with
+unchanged source images (`build/i386-backing-split-messages-v1`, 19 cases;
+`build/i386-backing-split-kill-v1`, 9 cases). Their include/clear fixture adds
+cooperative yields. An isolated 8 MiB startup run passes all nine behavior and
+VGA checks but takes 66.516 seconds, failing the unchanged 60-second gate
+(`build/i386-backing-split-startup-isolated-v1`).

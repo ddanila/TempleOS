@@ -22,6 +22,7 @@ I64 Main(I64 unused_a,I64 unused_b)
   CI386BackingPool *pool=&reserve_pool;
   CI386Heap *heap=&reserve_heap;
   U8 *private_bytes,*a,*b,*c;
+  CMemBlk *first_page,*second_page;
   I64 used,allocations,i;
   U64 before,pool_before;
   U32 flags=GetRFlags;
@@ -74,5 +75,16 @@ I64 Main(I64 unused_a,I64 unused_b)
       !I386MemBackingReserve(pool,64) || !I386MemBackingDestroy(pool) ||
       heap->used || heap->allocations || !I386HeapValid(heap) ||
       (GetRFlags^flags)&0x200)return 480;
+  //The first native quantum remains low; a subsequent one is placed high.
+  if(!I386HeapInit(heap,0x40000,196608) ||
+      !I386MemBackingInit(pool,heap,I386_NATIVE_BACKING_QUANTUM) ||
+      !(first_page=I386MemPageAlloc(pool,16,TRUE)) ||
+      (pool->owned+0)(U64)>=(heap->base+0)(U64)+heap->size/2)return 482;
+  if(!(second_page=I386MemPageAlloc(pool,16,TRUE)) || pool->owned_count!=2 ||
+      (pool->owned+0)(U64)<(heap->base+0)(U64)+heap->size/2 ||
+      !I386MemBackingValid(pool))return 482;
+  if(!I386MemPageFree(pool,first_page) || !I386MemPageFree(pool,second_page) ||
+      I386MemBackingTrim(pool)<=0 || !I386MemBackingDestroy(pool) ||
+      heap->used || heap->allocations || !I386HeapValid(heap))return 483;
   return 0;
 }

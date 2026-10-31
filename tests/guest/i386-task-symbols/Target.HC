@@ -47,12 +47,15 @@ extern I64 ScopeTest();
 extern U0 Worker(I64 id);
 extern U0 Grandchild(I64 unused);
 U0 FallbackFileSymbolsWorker(I64 unused) {}
+U32 fallback_reject_calls;
+Bool FallbackRejectSymbols(CI386Task *source,CI386Task *target,CI386Heap *storage)
+{ fallback_reject_calls++;return FALSE; }
 I64 FallbackFileSymbolsTest()
 {//A failed late clone must roll back the low task, file state and parent pins.
   CI386Heap secondary;
   CI386OwnedTask *child;
-  U8 *fillers[32];
-  I64 i,n=0,before=heap.used,allocations=heap.allocations;
+  U8 *fillers[128];
+  I64 i,n=0,before=heap.used,allocations=heap.allocations,split_used,split_count;
   while(n<32 && (fillers[n]=I386HeapAlloc(&heap,4096)))n++;
   if(n==32 || !I386HeapInit(&secondary,0x110000,12288))return 270;
   if(I386TaskCreateWithFilesFallback(&scheduler,&heap,&secondary,&root,4096,
@@ -69,6 +72,31 @@ I64 FallbackFileSymbolsTest()
       secondary.allocations || root.lifetime_refs || !I386HeapValid(&secondary))return 273;
   for(i=0;i<n;i++) if(!I386HeapFree(&heap,fillers[i]))return 274;
   if(heap.used!=before || heap.allocations!=allocations || !I386HeapValid(&heap))return 275;
+  //Leave a small primary hole: too small for the owned stack, but larger
+  //than the free tail left after that stack is allocated in the fallback.
+  n=0;
+  while(n<128 && (fillers[n]=I386HeapAlloc(&heap,1024)))n++;
+  if(n<6 || n==128)return 276;
+  for(i=0;i<6;i++)if(!I386HeapFree(&heap,fillers[--n]))return 277;
+  if(!I386HeapInit(&secondary,0x110000,12288))return 278;
+  //A late symbol failure must roll back both the low task block and the
+  //file state cloned into the primary arena, without retrying the callback.
+  split_used=heap.used;split_count=heap.allocations;
+  fallback_reject_calls=0;root.symbol_clone=&FallbackRejectSymbols;
+  child=I386TaskCreateWithFilesFallback(&scheduler,&heap,&secondary,&root,4096,
+      &FallbackFileSymbolsWorker,0,0x18,0x20,0,FALSE,0);
+  root.symbol_clone=&I386TaskSymbolsClone;
+  if(child || fallback_reject_calls!=1 || heap.used!=split_used || heap.allocations!=split_count ||
+      secondary.used || secondary.allocations || root.lifetime_refs ||
+      !I386HeapValid(&heap) || !I386HeapValid(&secondary))return 282;
+  child=I386TaskCreateWithFilesFallback(&scheduler,&heap,&secondary,&root,4096,
+      &FallbackFileSymbolsWorker,0,0x18,0x20,0,FALSE,0);
+  if(!child || child->heap!=&secondary || !I386TaskSymbolsValid(&child->task) ||
+      child->task.symbol_state(CI386TaskSymbols *)->heap!=&heap || !I386SchedActivate(&scheduler,&child->task) ||
+      !I386SchedYield(&scheduler) || !child->task.finished || !I386TaskDestroy(child) ||
+      secondary.used || secondary.allocations || root.lifetime_refs)return 279;
+  for(i=0;i<n;i++)if(!I386HeapFree(&heap,fillers[i]))return 280;
+  if(heap.used!=before || heap.allocations!=allocations || !I386HeapValid(&heap))return 281;
   return 0;
 }
 

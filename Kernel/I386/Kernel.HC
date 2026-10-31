@@ -134,7 +134,7 @@ U8 kernel_console_bindings[14]={0,19,10,40,41,18,13,14,33,32,46,42,34,16};
 U8 kernel_compiler_bindings[32]={0,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,35,36,37,38,39,42,40,41,60,63,64,65,66,67,77,78};
 U8 kernel_probe_bindings[29]={0,18,19,12,11,20,13,14,3,15,16,9,21,40,41,42,10,43,44,34,25,35,26,27,23,64,65,66,67};
 U8 kernel_files_bindings[38]={0,10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,33,34,47,48,49,50,51,52,53,54,55,56,40,41,42,58,59,68,69,70,71};
-U8 kernel_memory_bindings[21]={10,11,12,20,13,14,0,18,19,16,42,40,41,8,34,45,72,80,74,75,44};
+U8 kernel_memory_bindings[22]={10,11,12,20,13,14,0,18,19,16,42,40,41,8,34,45,72,80,74,75,44,63};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
 extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
 I64 Main(CI386BootInfo *info,I64 unused)

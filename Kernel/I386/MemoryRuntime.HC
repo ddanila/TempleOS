@@ -20,6 +20,7 @@
 import CCntsGlbls cnts;
 import Bool I386SchedYield(CI386Scheduler *s);
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
+import U8 *I386HeapAllocHigh(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import Bool I386HeapShrink(CI386Heap *heap,U8 *ptr,I64 size);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);

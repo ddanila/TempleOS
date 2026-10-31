@@ -2045,6 +2045,13 @@
           "result": "fail",
           "evidence": "build/i386-high-stack-compact-popup-8m-v1/result.json",
           "scope": "Verified relocated boot stack permits prior task creation, but terminal 153600-byte graphics allocation fails in fragmented main arena; inputs unchanged."
+        },
+        {
+          "target": "native-popup-file-backing-split-8m",
+          "command": "python3 tools/test-i386-popup-file.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-backing-split-popup-8m-v2/result.json",
+          "scope": "8 MiB asynchronous PopUpFile default/explicit source execution, task retirement and caller popup ownership; inputs unchanged; not synchronous, arbitrary capacity or timing qualification."
         }
       ]
     },
