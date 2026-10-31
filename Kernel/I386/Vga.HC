@@ -39,8 +39,9 @@ U8 i386_vga_reverse[256]={
 
 public Bool I386VgaSplitRows(U8 **planes,I64 first,I64 count)
 {//Existing logical layout: low bit is the left pixel; VGA uses the opposite order.
-  U8 *vga=0xA0000,*source;
-  I64 plane,i,begin,end;
+  U8 *vga=0xA0000,*source,*destination;
+  I64 plane,begin,end;
+  U32 remaining;
   if(!planes || (planes+0)(U64)>0x100000000-4*sizeof(U8 *) ||
       first<0 || first>480 || count<0 || count>480-first) return FALSE;
   for(plane=0;plane<4;plane++)
@@ -50,10 +51,9 @@ public Bool I386VgaSplitRows(U8 **planes,I64 first,I64 count)
   for(plane=0;plane<4;plane++) {
     OutU8(0x3C4,2);
     OutU8(0x3C5,1<<plane);
-    source=planes[plane];
-    for(i=begin;i<end;i++) {
-      vga[i]=i386_vga_reverse[source[i]];
-    }
+    source=planes[plane]+begin;destination=vga+begin;
+    remaining=end-begin;
+    while(remaining--) *destination++=i386_vga_reverse[*source++];
   }
   OutU8(0x3C4,2); OutU8(0x3C5,15);
   return TRUE;

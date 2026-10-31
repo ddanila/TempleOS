@@ -32,8 +32,13 @@ VGA plane uploads now reverse each byte through a 256-byte table. Exhaustive
 byte and partial-row checks, both compiler rebuilds, 386 audits, the 8 MiB
 smoke, public graphics-text, and paired graphics sessions with exact VGA
 checkpoints pass. Four candidate frames measured 440 ms each versus 460–480 ms
-on the control, with other QEMU guests active. The full Bible-link test on the
-new image remains in progress; see [Bible load profiling](docs/i386-bible-load-profile.md).
+on the control, with other QEMU guests active. Its full Bible-link test timed
+out; see [Bible load profiling](docs/i386-bible-load-profile.md).
+
+A follow-up pointer-and-count upload loop passes both rebuild generations, VGA
+and 8 MiB tests, 386 audits, and paired graphics sessions with exact output.
+Frames measured 410–420 ms versus 440–450 ms on the indexed control, with
+other QEMU guests active. Its full Bible-link test remains in progress.
 
 ### Standalone public task header diagnostic (2026-10-31)
 

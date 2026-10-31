@@ -337,3 +337,27 @@ all 12 commands and exact VGA checkpoints with unchanged source images
 440 ms each on the candidate versus 480, 460, 470 and 470 ms on the control.
 These are guest-jiffy measurements while other QEMU guests were active; the
 timings are approximate, not a hardware benchmark.
+The full Bible-link test on the table image timed out at its 20-minute command
+limit with unchanged inputs (`build/i386-doc-bible-link-full-vga-reverse-v1`).
+
+## Pointer-based planar upload
+
+A follow-up advances source and VGA pointers with a bounded U32
+count instead of indexing both buffers with a wide loop counter. The existing
+full-range pointer checks still precede all writes; the test also checks the
+untouched row after a partial upload. Both compiler rebuild generations, the
+native VGA oracle, and minimal and full-content cross-builds with 386 audits
+pass (`build/i386-vga-pointer-rebuild-v1.log`,
+`build/i386-vga-pointer-test-v1.log`, `build/i386-vga-pointer-cross-v1`,
+`build/i386-vga-pointer-full-cross-v1`). The 8 MiB smoke passes with unchanged
+inputs (`build/i386-vga-pointer-smoke-v1`). A 90-second full-link sampler passes
+with unchanged inputs without completing the lookup
+(`build/i386-bible-link-sample-vga-pointer-v1`): 109 of 410 samples were in
+VGA upload, versus 145 of 413 on the prior image. Samples cover all scheduled
+tasks and are not timing measurements. Paired graphics sessions passed all 12
+commands and exact VGA checkpoints with unchanged source images
+(`build/i386-vga-pointer-graphics-v1`, `build/i386-vga-pointer-control-v1`).
+Their four frame demos measured 410, 410, 410 and 420 ms on the pointer loop,
+versus 450, 440, 440 and 450 ms on the indexed control. Other QEMU guests
+overlapped these guest-jiffy measurements, so the timings are approximate. The
+full-link completion test remains in progress.

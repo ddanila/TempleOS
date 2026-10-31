@@ -88,6 +88,9 @@ I64 SplitPlaneContract(CI386Heap *heap)
       value=0;
       for(k=0;k<8;k++)if(pixels[i*8+k]&(1<<p))value|=1<<(7-k);
       if(vga[i]!=value)return 116;
+      value=0;
+      for(k=0;k<8;k++)if(pixels[(400+i)*8+k]&(1<<p))value|=1<<(7-k);
+      if(vga[400+i]!=value)return 117;
     }
   }
   OutU8(0x3CE,4);OutU8(0x3CF,0);
