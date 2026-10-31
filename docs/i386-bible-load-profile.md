@@ -246,3 +246,11 @@ earlier 64-region-batch image with the same region count
 other QEMU guests and are approximate, not a hardware benchmark. The complete
 Bible-link test on the full-content image is still running; the bounded result
 does not establish full-file completion.
+
+At 3,200 lines, a subsequent QMP-paused cleanup profile on the gap-sort image
+passed with unchanged inputs. It recorded 46 of 65 samples in
+`I386MemBackingValid` and another 10 in `I386MemPoolValid`
+(`build/i386-bible-cleanup-gap256-3200-v1`). The most frequent sampled
+instructions in the validator precede its hand-written heap walk and lie in
+the generated sorting code. This identifies a remaining optimization target;
+the sample is not a timing measurement.
