@@ -143,6 +143,9 @@ I64 Main(CI386BootInfo *info,I64 unused)
   CI386InterruptServices services;
   I64 pulse_used,reserved_count=1;
   Bool mouse_ready;
+  CI386KernelSymbol *root_jobs_symbol;
+  I64 (*root_jobs)(I64 flags,CTask *task);
+  U32 root_flags;
   KernelLog("START native kernel\n");
   reserved[0].base=0x88000; reserved[0].size=32768;
   if(info && info->stage_end==0x11000) {
@@ -264,7 +267,21 @@ I64 Main(CI386BootInfo *info,I64 unused)
   if(!kernel_keys) KernelStop;
   kernel_keys->task.memory=&kernel_heap;
   KernelLog("CONSOLE TASK SPAWNED\n");
+  root_jobs_symbol=HashFind("_JOBS_HNDLR",kernel_root.hash_table,HTT_EXPORT_SYS_SYM);
+  if(!root_jobs_symbol || root_jobs_symbol->kind!=1 || !root_jobs_symbol->val)KernelStop;
+  root_jobs=root_jobs_symbol->val;
   while(1) {
+    //The root is also adam_task. Publish idle only while its job queue is
+    //empty, and dispatch in the root's own task/compiler context.
+    root_flags=I386IrqSave;
+    if(kernel_root.srv_ctrl.next_waiting!=&kernel_root.srv_ctrl.next_waiting) {
+      I386IrqRestore(root_flags);
+      (*root_jobs)(root_flags,&kernel_root);
+      root_flags=I386IrqSave;
+    }
+    if(kernel_root.srv_ctrl.next_waiting==&kernel_root.srv_ctrl.next_waiting)
+      kernel_root.task_flags|=1<<TASKf_IDLE;
+    I386IrqRestore(root_flags);
     if(kernel_console.window_ensure)kernel_console.window_ensure();
     if(!I386SchedIdle(&kernel_scheduler,&i386_idle)) I386SchedYield(&kernel_scheduler);
   }

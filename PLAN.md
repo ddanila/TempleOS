@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original Adam and AdamFile services (2026-10-31)
+
+The root task now services its job queue and the original `Adam` and
+`AdamFile` bodies are exported on native. Formatted cross-task and nested
+same-task dispatch, default/explicit file extensions and caller directory
+preservation pass the original and native 64 MiB/8 MiB fixture. Full
+servant startup, terminal callback and C1–C5 remain open; see
+[AdamFile evidence](docs/i386-adamfile.md).
+
 ### Original ExeFile service (2026-10-31)
 
 The original `ExeFile` body and `CCF_CMD_LINE` definition are shared with

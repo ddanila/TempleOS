@@ -1989,7 +1989,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-adamfile",
+          "command": "python3 tools/test-i386-adamfile.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-adamfile-reference-v2/result.json",
+          "scope": "Original formatted and nested Adam jobs, default/explicit AdamFile extension and caller directory; not full servant or popup qualification."
+        },
+        {
+          "target": "native-adamfile",
+          "command": "python3 tools/test-i386-adamfile.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-adamfile-native-v2/result.json",
+          "scope": "Native same five checks at 64 MiB on root-serviced job queue; inputs unchanged; not full job or terminal qualification."
+        },
+        {
+          "target": "native-adamfile-8m",
+          "command": "python3 tools/test-i386-adamfile.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-adamfile-native-8m-v1/result.json",
+          "scope": "Same native five-check comparison at 8 MiB; inputs unchanged; concurrent startup is not timing qualification."
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocPutKey.HC",
@@ -14014,6 +14036,27 @@
           "result": "pass",
           "evidence": "build/i386-low-task-infile-8m-v2/result.json",
           "scope": "8 MiB native default/explicit extension contract; both input tasks run in and reuse the conventional arena after retirement, unchanged inputs. Not startup timing, arbitrary tasks, or complete job behavior."
+        },
+        {
+          "target": "original-adamfile",
+          "command": "python3 tools/test-i386-adamfile.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-adamfile-reference-v2/result.json",
+          "scope": "Original formatted and nested Adam jobs, default/explicit AdamFile extension and caller directory; not full servant or popup qualification."
+        },
+        {
+          "target": "native-adamfile",
+          "command": "python3 tools/test-i386-adamfile.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-adamfile-native-v2/result.json",
+          "scope": "Native same five checks at 64 MiB on root-serviced job queue; inputs unchanged; not full job or terminal qualification."
+        },
+        {
+          "target": "native-adamfile-8m",
+          "command": "python3 tools/test-i386-adamfile.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-adamfile-native-8m-v1/result.json",
+          "scope": "Same native five-check comparison at 8 MiB; inputs unchanged; concurrent startup is not timing qualification."
         }
       ]
     },
