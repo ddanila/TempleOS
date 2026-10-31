@@ -19,6 +19,15 @@ U0 PFSDriver(CTask *caller)
       PFSTrace("PFS SEND\n");
       pfs_sent=TRUE;
       PostMsg(popup,MSG_KEY_DOWN,CH_SHIFT_ESC,0);
+      PFSTrace("PFS POST RETURN\n");
+      if(TaskValidate(popup))PFSTrace("PFS VALID IMMEDIATE\n");
+      else PFSTrace("PFS RETIRED IMMEDIATE\n");
+      Yield;
+      PFSTrace("PFS YIELD RETURN\n");
+      end=cnts.jiffies+2000;
+      while(cnts.jiffies<end && TaskValidate(popup))Yield;
+      if(TaskValidate(popup))PFSTrace("PFS POPUP STILL VALID\n");
+      else PFSTrace("PFS POPUP RETIRED\n");
       return;
     }
     Yield;

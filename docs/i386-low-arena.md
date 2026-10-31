@@ -278,3 +278,12 @@ delivery. These are failed exploratory runs, not passing compatibility tests.
 unverified return assertion. Inspect key consumption, task retirement and job
 wake behavior on the original before using it as an oracle or changing native
 terminal exit behavior. C1–C5 remain open.
+
+A follow-up reference probe (`build/i386-popup-file-sync-original-v6`)
+confirmed that `PostMsg` returned, the popup still passed `TaskValidate`
+immediately afterward, and the driver returned from one `Yield`. Neither the
+subsequent bounded retirement observation nor the synchronous caller returned
+before the 120-second host timeout. This does not establish key consumption,
+retirement, or job wake behavior; in particular the absence of the later trace
+cannot be interpreted as proof that the popup remained valid for the full wait.
+The retained fixture now logs these additional boundaries.
