@@ -510,7 +510,15 @@ explanation. Separate snapshots found distinct frame and persistent buffers,
 and the persistent overlay was fully transparent in both images
 (`build/i386-cache-diag-surfaces-candidate-v1`,
 `build/i386-cache-diag-surfaces-control-v1`). The cause of the diagnostic
-regression remains unresolved. The normal
+regression remains unresolved. Paired 30-second samples of the live
+`DCBlotColor8` stack locals observed the expected 307,200-pixel loop bound in
+every captured compositor sample in both images. The candidate's loop
+advanced about 6,000 pixels between successive 0.2-second samples and its
+window completed one update; the control completed 116 updates in the same
+sampling duration (`build/i386-cache-diag-locals-candidate-v1`,
+`build/i386-cache-diag-locals-control-v1`). Inputs were unchanged. This
+identifies slow execution in the candidate without establishing its cause.
+The normal
 full-link test timed out at its 20-minute command limit with unchanged inputs
 (`build/i386-cache-mergesort-bible-full-v1`).
 
