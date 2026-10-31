@@ -86,7 +86,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path, nargs='?')
     parser.add_argument('--original', action='store_true')
+    parser.add_argument('--ram-mib', type=int, choices=(8,64), default=8)
     parser.add_argument('--writable-copy', action='store_true', help='Use a fresh native disk copy without QEMU snapshot files')
+    parser.add_argument('--include-definitions', action='store_true', help='Load the same definitions from a packaged source file')
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
     if args.original == (args.disk is not None):
@@ -132,15 +134,37 @@ Report("DONE original public messages\\n");
         disk_hash = sha(args.disk)
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         disk=args.disk
-        if args.writable_copy:
+        native_commands=commands
+        definitions=None
+        if args.include_definitions:
+            split=next(i for i,(source,_) in enumerate(commands) if source=='MsgCtrl;')
+            definitions=('\n'.join(source for source,_ in commands[:split])+'\n').encode()
+            native_commands=[('#include "C:/Probe/PublicMessages.HC"',[])]+commands[split:]
+            disk=out/'working.img'
+            runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
+                args.disk,disk,additions={'/Probe/PublicMessages.HC':definitions})
+        elif args.writable_copy:
             disk=out/'working.img'
             if disk.exists():
                 raise ValueError('Use a fresh writable-copy output directory')
             shutil.copyfile(args.disk,disk)
+        styles={}
+        if args.include_definitions:
+            paced=[]
+            for index, item in enumerate(native_commands):
+                if index and index%8==0:
+                    styles[len(paced)+2]={'return_rows':['> ']}
+                    paced.append(('DocClear;',[]))
+                paced.append(item)
+            native_commands=paced
         behavior = runner(disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True,
-                          snapshot=not args.writable_copy,
-                          startup_check={'status': 'ok', 'answers': [], 'commands': [('HashFind("MAlloc",Fs->hash_table,HTT_FUN)!=0;', ['1']),
-                                                                       ('HashFind("Msg",Fs->hash_table,HTT_FUN)!=0;', ['1'])] + commands})
+                          snapshot=not args.writable_copy, ram_mib=args.ram_mib, welcome=True,
+                          startup_check={'status': 'ok', 'answers': [], 'command_styles':styles, 'commands': [('HashFind("MAlloc",Fs->hash_table,HTT_FUN)!=0;', ['1']),
+                                                                       ('HashFind("Msg",Fs->hash_table,HTT_FUN)!=0;', ['1'])] + native_commands})
+        if definitions is not None:
+            delivered=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,{'/Probe/PublicMessages.HC'})
+            if delivered['/Probe/PublicMessages.HC']!=definitions:
+                raise ValueError('Delivered message definitions changed')
         if sha(args.disk) != disk_hash:
             raise ValueError('Public message test changed the input disk')
         report = {'result': 'pass', 'behavior': behavior,

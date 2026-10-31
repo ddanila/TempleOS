@@ -24774,3 +24774,12 @@ exports. Evidence: `build/i386-c5-shared-bitfield-native-build/result.json`.
 This run used its frozen earlier source image and covers only these two modules;
 it does not qualify the current source, a complete native self-hosted build,
 installed generations, or the startup budget. C1–C5 remain open.
+
+## Conventional-memory task fallback checkpoint (2026-10-31)
+
+The verified conventional-memory task fallback and its ownership and rollback
+fixtures are documented in `docs/i386-low-arena.md`. Public messaging (19
+cases) and task cancellation (9 cases) pass at 64 MiB with the include-based
+fixture runner. An isolated 8 MiB startup run passes all nine behavior and VGA
+checks but takes 63.500 seconds, failing the 60-second gate
+(`build/i386-low-task-startup-isolated-v1/result.json`). C1–C5 remain open.

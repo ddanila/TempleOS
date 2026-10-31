@@ -81,6 +81,16 @@ both queued input tasks execute in the selected low range and reuse the same
 slot after retirement (`build/i386-low-task-infile-8m-v2`). Its observed startup
 was 66.9 seconds with another guest active, so it does not pass the 60-second
 startup gate. The 16 MiB startup diagnostic passes
-(`build/i386-low-task-diagnostics-v1`). Public task cancellation and message
-regressions remain in progress on the candidate. This does not establish
-arbitrary concurrent task capacity or complete C1–C5 qualification.
+(`build/i386-low-task-diagnostics-v1`). Public messaging and task cancellation regressions also pass at 64 MiB
+(`build/i386-low-task-messages-v4`, 19 cases;
+`build/i386-low-task-kill-v4`, 9 cases), with unchanged source images and
+matching VGA checkpoints. Their include-based fixture mode avoids typing long
+definitions and clears the transcript periodically; it adds cooperative
+yields and does not independently establish low-arena behavior. Earlier runs
+timed out while typing long definitions or matching a scrolled transcript.
+This does not establish arbitrary concurrent task capacity or complete C1–C5
+qualification.
+
+An isolated 8 MiB startup run passed all nine interactive behavior and VGA
+checks, but took 63.500 seconds and therefore failed the 60-second gate
+(`build/i386-low-task-startup-isolated-v1/result.json`).

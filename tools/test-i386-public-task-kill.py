@@ -53,6 +53,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path, nargs='?')
     parser.add_argument('--original', action='store_true')
+    parser.add_argument('--include-definitions', action='store_true', help='Load the same definitions from a packaged source file')
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--ram-mib', type=int, choices=(8, 64), default=8,
                         help='Native guest RAM; 64 MiB is the full desktop test profile')
@@ -99,9 +100,31 @@ Report("DONE original public task cancellation\\n");
     else:
         disk_hash = sha(args.disk)
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
-        behavior = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, ram_mib=args.ram_mib,
-                          startup_check={'status': 'ok', 'answers': [], 'commands': [('HashFind("MAlloc",Fs->hash_table,HTT_FUN)!=0;', ['1']),
-                                                                       ('HashFind("Kill",Fs->hash_table,HTT_FUN)!=0;', ['1'])] + commands})
+        disk=args.disk
+        native_commands=commands
+        definitions=None
+        if args.include_definitions:
+            definitions=('\n'.join(source for source,_ in commands[:16])+'\n').encode()
+            native_commands=[('#include "C:/Probe/PublicKill.HC"',[])]+commands[16:]
+            disk=out/'working.img'
+            runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
+                args.disk,disk,additions={'/Probe/PublicKill.HC':definitions})
+        styles={}
+        if args.include_definitions:
+            paced=[]
+            for index, item in enumerate(native_commands):
+                if index and index%8==0:
+                    styles[len(paced)+2]={'return_rows':['> ']}
+                    paced.append(('DocClear;',[]))
+                paced.append(item)
+            native_commands=paced
+        behavior = runner(disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, ram_mib=args.ram_mib, welcome=True,
+                          startup_check={'status': 'ok', 'answers': [], 'command_styles':styles, 'commands': [('HashFind("MAlloc",Fs->hash_table,HTT_FUN)!=0;', ['1']),
+                                                                       ('HashFind("Kill",Fs->hash_table,HTT_FUN)!=0;', ['1'])] + native_commands})
+        if definitions is not None:
+            delivered=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,{'/Probe/PublicKill.HC'})
+            if delivered['/Probe/PublicKill.HC']!=definitions:
+                raise ValueError('Delivered cancellation definitions changed')
         if sha(args.disk) != disk_hash:
             raise ValueError('Task cancellation test changed the input disk')
         report = {'result': 'pass', 'behavior': behavior, 'ram_mib': args.ram_mib,
