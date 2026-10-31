@@ -302,3 +302,30 @@ ignores Shift-Esc and its task-exit path does not yet reproduce this popup
 parent propagation. The native runner mode is disabled until a suitable
 independent native observer and implementation are available. This result is
 not complete terminal or C1–C5 qualification.
+
+### Native interactive popup exit
+
+The native command prompt now sends Shift-Esc through the public task-exit
+provider. Task retirement also clears an active parent popup link and requests
+parent cancellation, after any task-end callback has had its original chance to
+recover. MemoryRuntime 39 and ConsoleRuntime 182 require rebuilt modules.
+The sibling-observer test in `tests/guest/i386-popup-file/NativeExitContract.HC`
+passes at 64 MiB (`build/i386-popup-exit-native-64m-v1`): the file executes,
+the key is posted at the prompt, both popup and caller retire, and the root
+console remains usable. The pinned original reference is described above. The
+64 MiB asynchronous default/explicit-extension regression also passes
+(`build/i386-popup-exit-async-64m-v1`); both runs retained their input hashes.
+Both bootstrap generations and the full cross-build with 386 audit pass
+(`build/i386-popup-exit-rebuild-v2.log`,
+`build/i386-popup-exit-full-cross-v2`).
+
+The same new observer fixture fails at 8 MiB
+(`build/i386-popup-exit-native-8m-v1`): the guest reports `OutMem` and a
+267,527-byte allocation request while creating the additional tasks, before
+it can establish the exit behavior. Its multiple simultaneous task requirement
+is different from the earlier passing asynchronous test; the failed run does
+not establish an 8 MiB interactive exit result. The 60-second minimal startup
+gate and full C1–C5 qualification remain open.
+The public cancellation regression also passes all nine cases at 64 MiB,
+including end-callback recovery and Shift-Esc message delivery
+(`build/i386-popup-exit-kill-64m-v1`); its source image was unchanged.

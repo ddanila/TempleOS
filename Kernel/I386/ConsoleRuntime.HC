@@ -1150,7 +1150,9 @@ U0 NativeTerminalInput()
       KernelLog("INPUT RESET\n");
     } else if(decoded && event.type==2) {
       ch=event.ch;
-      if(ch==3) {
+      if(ch==CH_SHIFT_ESC) {
+        (*native_action_exit)();
+      } else if(ch==3) {
         length=0; NativeConsoleWrite("^C\n");
         doc=DocPut; prompt=NativeConsolePrompt;
         KernelLog("INPUT CANCEL\n");

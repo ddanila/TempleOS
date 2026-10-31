@@ -229,7 +229,7 @@ U0 Exit()
 {
   CI386Task *task=I386TaskSelf;
   CMemoryTaskRecord *record;
-  CTask *head,*child;
+  CTask *head,*child,*parent;
   U32 irq=I386IrqSave;
   if(!task || task==memory_root || !(record=MemoryTaskFind(task))) {
     I386IrqRestore(irq); throw('Task',TRUE); return;
@@ -245,6 +245,13 @@ U0 Exit()
     (*record->end_callback)();
     Exit;
     return;
+  }
+  //TaskEnd propagates retirement from an active popup to its parent, after
+  //the end callback has had its opportunity to recover the task.
+  parent=task->parent_task;
+  if(parent && MemoryTaskValidate(parent) && parent->popup_task==task) {
+    parent->popup_task=0;
+    MemoryKill(parent,FALSE,FALSE);
   }
   record->exiting=TRUE;
   //Publish committed retirement before any callback/child wait can yield.
