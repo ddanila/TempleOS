@@ -1179,6 +1179,13 @@
           "result": "pass",
           "evidence": "build/i386-doc-address-link-native-v2/result.json",
           "scope": "Upper/lower AD: function-address resolution to file line, edit/save and roles, plus zero-address bail; not arbitrary address ranges"
+        },
+        {
+          "target": "native-editor-reject-unwind",
+          "command": "python3 tools/test-i386-editor-reject-unwind.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-editor-reject-unwind-native-v2/result.json",
+          "scope": "Repeated rejected BF, MN and unknown links followed by caught exceptions and heap recovery; valid BF is still rejected and Bible editing remains unimplemented"
         }
       ]
     },
@@ -1810,6 +1817,13 @@
           "result": "pass",
           "evidence": "build/i386-doc-address-link-native-v2/result.json",
           "scope": "Upper/lower AD: function-address resolution to file line, edit/save and roles, plus zero-address bail; not arbitrary address ranges"
+        },
+        {
+          "target": "native-editor-reject-unwind",
+          "command": "python3 tools/test-i386-editor-reject-unwind.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-editor-reject-unwind-native-v2/result.json",
+          "scope": "Repeated rejected BF, MN and unknown links followed by caught exceptions and heap recovery; valid BF is still rejected and Bible editing remains unimplemented"
         }
       ]
     },

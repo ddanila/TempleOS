@@ -199,3 +199,7 @@ native test failed (`build/i386-doc-address-link-original-v1`,
 with explicit source metadata, not arbitrary address ranges, missing debug
 metadata, popup navigation or error cleanup. No runtime code changed for this
 checkpoint.
+
+Rejected editor links now leave the exception scope normally; the focused
+reject-then-throw checks and remaining Bible-link gap are documented in
+`docs/i386-editor-link-unwind.md`.

@@ -1580,7 +1580,7 @@ public Bool Ed(U8 *filename,I64 flags=0)
   CDocEntry *entry;
   U8 *resolved=NULL,*needle=NULL;
   I64 link_type=LK_FILE,line=1,doc_flags=0;
-  Bool accept,result=FALSE,other_found=FALSE,borrowed=FALSE;
+  Bool accept,result=FALSE,other_found=FALSE,borrowed=FALSE,valid=TRUE;
   if(!filename || !*filename) return FALSE;
   try {
     if(filename[1] && filename[2]==':') {
@@ -1589,51 +1589,51 @@ public Bool Ed(U8 *filename,I64 flags=0)
       else if(link_type==LK_PLAIN || link_type==LK_PLAIN_LINE || link_type==LK_PLAIN_FIND)
         doc_flags=DOCF_PLAIN_TEXT|DOCF_NO_CURSOR;
       else if(link_type!=LK_FILE && link_type!=LK_FILE_LINE &&
-          link_type!=LK_FILE_FIND && link_type!=LK_FILE_ANCHOR) goto ed_done;
-      if(!resolved) goto ed_done;
-      filename=resolved;
+          link_type!=LK_FILE_FIND && link_type!=LK_FILE_ANCHOR) valid=FALSE;
+      if(!resolved) valid=FALSE;
+      if(valid) filename=resolved;
     }
-    if(borrowed) {
+    if(valid && borrowed) {
       doc=Str2I64(filename,10,NULL);
-      if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) { doc=NULL;goto ed_done; }
-      result=TRUE;
-    } else {
+      if(!doc || doc->doc_signature!=DOC_SIGNATURE_VAL) doc=NULL;
+      else result=TRUE;
+    } else if(valid) {
       if(flags&EDF_BAIL) result=FileFind(filename,NULL,FUF_JUST_FILES|FUF_Z_OR_NOT_Z|FUF_SCAN_PARENTS);
       else if(!(result=FileFind(filename,NULL,FUF_JUST_FILES)))
         other_found=FileFind(filename,NULL,FUF_JUST_FILES|FUF_Z_OR_NOT_Z|FUF_SCAN_PARENTS);
       doc=DocRead(filename,doc_flags);
       if(!doc) { doc=DocNew(filename,Fs);if(doc)doc->flags|=doc_flags; }
     }
-    if(!doc) goto ed_done;
-    if(flags&EDF_COLLAPSE) DocCollapse(TRUE,doc);
-    else if(flags&EDF_UNCOLLAPSE) DocCollapse(FALSE,doc);
-    if(result || other_found) {
-      if(link_type==LK_FILE_LINE || link_type==LK_PLAIN_LINE || link_type==LK_DOC_LINE) result=DocGoToLine(doc,line);
-      else if(link_type==LK_FILE_FIND || link_type==LK_PLAIN_FIND || link_type==LK_DOC_FIND) result=DocFind(doc,I64_MIN,needle,line);
-      else if(link_type==LK_FILE_ANCHOR || link_type==LK_DOC_ANCHOR) result=DocAnchorFind(doc,needle);
-      else if(borrowed) DocCenter(doc,RECALCt_NORMAL);
-    }
-    if(flags&EDF_WAS_WRITE) result=FALSE;
-    if(!(flags&EDF_BAIL)) {
-      if(flags) accept=DocEd(doc,flags|DOF_DONT_HOME);
-      else accept=DocEd(doc);
-      if(accept) {
-        DocLock(doc);entry=doc->cur_entry;
-        if(entry!=doc) DocEntryRun(doc,entry,TRUE);
-        DocUnlock(doc);
-        if(!borrowed) {
-          if(!DocWrite(doc)) result=FALSE;
-          else if(flags&EDF_WAS_WRITE) result=TRUE;
+    if(doc) {
+      if(flags&EDF_COLLAPSE) DocCollapse(TRUE,doc);
+      else if(flags&EDF_UNCOLLAPSE) DocCollapse(FALSE,doc);
+      if(result || other_found) {
+        if(link_type==LK_FILE_LINE || link_type==LK_PLAIN_LINE || link_type==LK_DOC_LINE) result=DocGoToLine(doc,line);
+        else if(link_type==LK_FILE_FIND || link_type==LK_PLAIN_FIND || link_type==LK_DOC_FIND) result=DocFind(doc,I64_MIN,needle,line);
+        else if(link_type==LK_FILE_ANCHOR || link_type==LK_DOC_ANCHOR) result=DocAnchorFind(doc,needle);
+        else if(borrowed) DocCenter(doc,RECALCt_NORMAL);
+      }
+      if(flags&EDF_WAS_WRITE) result=FALSE;
+      if(!(flags&EDF_BAIL)) {
+        if(flags) accept=DocEd(doc,flags|DOF_DONT_HOME);
+        else accept=DocEd(doc);
+        if(accept) {
+          DocLock(doc);entry=doc->cur_entry;
+          if(entry!=doc) DocEntryRun(doc,entry,TRUE);
+          DocUnlock(doc);
+          if(!borrowed) {
+            if(!DocWrite(doc)) result=FALSE;
+            else if(flags&EDF_WAS_WRITE) result=TRUE;
+          }
         }
       }
+      if(!borrowed) DocDel(doc);doc=NULL;
     }
-    if(!borrowed) DocDel(doc);doc=NULL;
   } catch {
     if(doc && !borrowed) DocDel(doc);
     Free(resolved);Free(needle);
     throw;
   }
-ed_done:
   Free(resolved);Free(needle);
   return result;
 }
