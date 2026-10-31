@@ -259,3 +259,22 @@ unchanged source images (`build/i386-backing-split-messages-v1`, 19 cases;
 cooperative yields. An isolated 8 MiB startup run passes all nine behavior and
 VGA checks but takes 66.516 seconds, failing the unchanged 60-second gate
 (`build/i386-backing-split-startup-isolated-v1`).
+
+### Synchronous PopUpFile exit investigation
+
+The asynchronous 8 MiB result above does not establish synchronous interactive
+cleanup. The original `DocGetStr2` calls `Exit` for Shift-Esc at a command
+prompt. A first synchronous fixture incorrectly assumed this would return to
+its caller with a zero result and restored popup/document state. On the pinned
+original, `build/i386-popup-file-sync-original-v3` traced the call, driver start,
+and key posting after both the file marker and `TASKf_CMD_LINE_PMT`; it did not
+trace a caller return before the 120-second guest timeout. This shows delivery
+was attempted, not that the key was consumed or the task retired. The earlier
+untraced native baseline `build/i386-popup-file-sync-native-baseline-v1` ran
+`PFCase` but also timed out at the synchronous call; it does not prove key
+delivery. These are failed exploratory runs, not passing compatibility tests.
+`tests/guest/i386-popup-file/SyncContract.HC` and
+`tools/test-i386-popup-file-sync.py` retain the reproducer, including the
+unverified return assertion. Inspect key consumption, task retirement and job
+wake behavior on the original before using it as an oracle or changing native
+terminal exit behavior. C1–C5 remain open.
