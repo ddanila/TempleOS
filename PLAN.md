@@ -24792,3 +24792,11 @@ It covers offset, filesystem and read-only changes while queued, with input
 hashes unchanged (`build/i386-raw-block-race-expanded-v1`). This samples
 cooperative contention and does not provide public block I/O or qualify C1–C5;
 see `docs/i386-block-io.md`.
+
+## Module lookup timing experiment (2026-10-31)
+
+The current low-task-arena boot profile still points to heap validation and
+module export scans. A narrower-counter export-scan experiment passed its
+loader corpus and cross-build but measured 63.206 seconds at 8 MiB, above
+the 60-second gate and close to the preceding image's 63.500 seconds. It was
+discarded; see `docs/i386-heap-performance.md`. C1–C5 remain open.

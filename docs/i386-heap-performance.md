@@ -1,5 +1,28 @@
 # Native bootstrap heap validation cost
 
+## Module lookup counter experiment (2026-10-31)
+
+A fresh normal-boot sample of the low-task-arena image recorded 251
+root-header samples in `I386HeapScanSelect` and 60 foundation samples in
+`I386FindSymbol` (`build/i386-low-task-boot-profile-v1`). Sampling pauses the
+guest and does not measure startup time. An experiment changed the validated
+loader fallback scan's loop counters and image offset to U32 while retaining
+full duplicate detection. Both bootstrap generations, the native and
+portable-index loader corpora, and the native cross-build/386 audit passed
+(`build/i386-symbol-scan-u32-rebuild-v1.log`,
+`build/i386-symbol-scan-u32-native-v2.log`,
+`build/i386-symbol-scan-u32-portable-v2.log`,
+`build/i386-symbol-scan-u32-cross-v1`). The initial native run requested a
+rebuild; the initial portable run collided with a concurrent runner's shared
+build directory, and the sequential rerun passed.
+
+An isolated 8 MiB run completed all nine functional/VGA checks but missed the
+60-second gate at 63.206 seconds (`build/i386-symbol-scan-u32-startup-v1`),
+versus 63.500 seconds for the preceding image
+(`build/i386-low-task-startup-isolated-v1`). This single pair does not establish
+a useful speedup, so the experiment was discarded. The startup gate and
+C1–C5 remain open.
+
 ## Single-scan free experiment (2026-10-31)
 
 An experimental free path captured the preceding free block during the full
