@@ -24,6 +24,8 @@ def main():
     ap.add_argument('--out', type=Path, required=True)
     ap.add_argument('--interval', type=float, default=.2)
     ap.add_argument('--duration', type=float, default=90)
+    ap.add_argument('--pause-window-manager', action='store_true',
+                    help='diagnostic only: suspend window refresh before the lookup')
     args = ap.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     if out.exists() or args.interval <= 0 or args.duration <= 0:
@@ -38,7 +40,8 @@ def main():
     working = out/'working.img'
     package = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))
     report = {'result':'running', 'input_sha256':pins,
-              'scope':'QMP-paused statistical PC and stack samples during the first full Bible link; not a completion or timing qualification', 'duration_seconds':args.duration}
+              'scope':'QMP-paused statistical PC and stack samples during the first full Bible link; not a completion or timing qualification',
+              'duration_seconds':args.duration, 'window_manager_suspended':args.pause_window_manager}
     report['packaging'] = package['package'](source, working, additions=files)
     builder = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
     names = ('Kernel','CompilerRuntime','FileRuntime','MemoryRuntime','ConsoleRuntime')
@@ -94,7 +97,13 @@ def main():
             time.sleep(5)
             begin=len(log.read_text()); submit('#include "C:/Probe/BibleLink.HC"')
             wait('COMMAND OK\n',start=begin); time.sleep(3)
-            begin=len(log.read_text()); submit("if(DocBibleLinkContract!=15)throw('Bible',TRUE);")
+            begin=len(log.read_text())
+            if args.pause_window_manager:
+                #Submit the lookup in the same command: after suspension the
+                #window worker no longer drains keyboard input for a new line.
+                submit("U0 TestPauseWM(){if(sys_winmgr_task!=adam_task)Suspend(sys_winmgr_task,TRUE);}TestPauseWM;if(DocBibleLinkContract!=15)throw('Bible',TRUE);")
+            else:
+                submit("if(DocBibleLinkContract!=15)throw('Bible',TRUE);")
             wait('BL first begin\n',start=begin)
             text=log.read_text()
             for prefix,module in [('RUNTIME','CompilerRuntime'),('FILES','FileRuntime'),('MEMORY','MemoryRuntime'),('CONSOLE','ConsoleRuntime')]:
@@ -152,6 +161,8 @@ def main():
             completed='BL first end\n' in log.read_text()[begin:]
             last_updates=updates();sample_seconds=time.monotonic()-started
             if last_updates<first_updates:raise ValueError('Window update counter went backwards')
+            if args.pause_window_manager and last_updates!=first_updates:
+                raise ValueError('Window manager continued updating')
             command('quit');proc.wait(timeout=15)
         if not samples: raise ValueError('No Bible link samples')
         if builder['mutated_file_contents'](working,set(files))!=files: raise ValueError('Guest fixture changed')

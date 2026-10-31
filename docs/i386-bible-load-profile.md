@@ -431,8 +431,9 @@ images (`build/i386-text-blank-graphics-v1`,
 `build/i386-text-blank-control-v1`). Their four frame demos measured 320, 320,
 360 and 350 ms, versus 320, 330, 360 and 360 ms for the control. Other QEMU
 guests overlapped these guest-jiffy measurements; they show similar synthetic
-frame times and are not a hardware benchmark. The full-link completion test is
-still running.
+frame times and are not a hardware benchmark. The full-link completion test
+timed out at its 20-minute command limit with unchanged inputs
+(`build/i386-doc-bible-link-full-text-blank-v1`).
 
 The sampler also reads the exported window-manager update counter at the start
 and end of its sampling window. Paired 90-second full-link samples passed with
@@ -442,6 +443,16 @@ unchanged inputs and neither completed the lookup
 window updates in 90.1 seconds and the control completed 310 in 90.0 seconds.
 Both guests ran concurrently and were paused for QMP samples; this is a
 comparative diagnostic, not a full-link completion or hardware benchmark.
+
+The sampler's `--pause-window-manager` mode is an explicitly diagnostic-only
+way to inspect the lookup without normal refresh work. It suspends the worker
+and submits the lookup in the same command, then verifies that its update
+counter stays unchanged. A 90-second run passed with unchanged inputs, zero
+window updates, and no completed lookup
+(`build/i386-bible-link-suspended-blank-v3`). Of 411 samples, 130 landed in
+free-span insertion during document allocation and 151 in the bootstrap heap
+chain validator; several of the latter stacks belonged to keyboard work. This
+is not a normal-desktop acceptance test or a direct timing measurement.
 
 ## Unrolled planar upload experiment
 

@@ -57,7 +57,8 @@ Text rendering skips the foreground pixel loop for zero glyph rows, after
 applying underline. The blank/underlined original oracle, both rebuilds, 386
 audits, 8 MiB smoke, and paired exact-VGA sessions pass. Paired full-link
 samples recorded 341 window updates versus 310 for the control in about 90
-seconds with QMP pauses; neither lookup completed. Full C1–C5 remain open.
+seconds with QMP pauses; neither lookup completed. The full-link test timed
+out at its command limit. Full C1–C5 remain open.
 
 ### Standalone public task header diagnostic (2026-10-31)
 
