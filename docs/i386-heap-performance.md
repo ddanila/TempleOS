@@ -1,5 +1,32 @@
 # Native bootstrap heap validation cost
 
+## Compiler-owner lookup candidate (2026-10-31)
+
+A normal 8 MiB boot sample on the page-isolated task-stack image recorded 368
+of 490 root-header samples in `I386HeapScanSelect`
+(`build/i386-task-page-alignment-boot-profile-v1`). These paused samples are
+not a timing measurement. The compiler-owner candidate keeps the complete
+heap validation for the compiler control, then looks up the owner's symbol
+scope by walking validated physical block boundaries under the same interrupt
+exclusion. No heap mutation or callback occurs between the two checks. It
+does not trust a header forged inside an allocation.
+
+The task-symbol test covers an interior forged header, a corrupt later block,
+and both interrupt states. It passes alongside lexer state, heap corruption,
+task lifecycle, both bootstrap generations, minimal and full-content 386
+cross-builds, and the complete 16 MiB diagnostic
+(`build/i386-codeowner-scan-baseline-v2.log`,
+`build/i386-codeowner-scan-tests-v1.log`, `build/i386-codeowner-scan-lex-v1.log`,
+`build/i386-codeowner-scan-heap-v1.log`, `build/i386-codeowner-scan-tasks-v1.log`,
+`build/i386-codeowner-scan-rebuild-v1.log`, `build/i386-codeowner-scan-cross-v1`,
+`build/i386-codeowner-scan-full-cross-v1`, `build/i386-codeowner-scan-diagnostics-v1`).
+The diagnostic's recorded input hashes were unchanged. An 8 MiB run completed
+all nine functional checks with unchanged inputs but failed the 60-second gate
+at 70.6 seconds (`build/i386-codeowner-scan-smoke-v1`); a full Bible-link guest
+ran concurrently. The preceding page-isolated image took 76.7 seconds alone,
+so these observations suggest a gain but are not a controlled timing comparison.
+The 60-second gate and full C1–C5 qualification remain open.
+
 Loading the complete document records at bce29e6 exposed a normal-startup
 regression: 60.612 seconds on the QEMU/486 8 MiB profile, compared with 25.038
 seconds before those records were published. Full diagnostic startup took

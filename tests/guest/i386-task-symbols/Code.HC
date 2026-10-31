@@ -70,6 +70,8 @@ I64 CodeTest()
   CIntermediateCode *last;
   CCodeMisc *last_misc;
   U8 *fill;
+  CI386TaskSymbols *scope;
+  CI386HeapBlock *block;
   I64 used=heap.used,allocations=heap.allocations,base_used,base_allocations,i,enabled;
   U32 flags=GetRFlags;
   for(enabled=0;enabled<2;enabled++) {
@@ -78,6 +80,19 @@ I64 CodeTest()
     cc=I386TaskCmpCtrlNew(&task_compiler,"IR",CCF_DONT_FREE_BUF);
     if(!cc || cc->coc.coc_head.next!=&cc->coc.coc_head.next ||
         cc->coc.coc_next_misc!=&cc->coc.coc_next_misc || cc->coc.coc_head.ic_code) return 60;
+    //A plausible fake block header inside an allocation must not establish ownership.
+    scope=root.symbol_state;
+    fill=I386HeapAlloc(&heap,sizeof(CI386TaskSymbols)+16,TRUE);
+    if(!fill) return 68;
+    block=fill;block->span=sizeof(CI386TaskSymbols)+16;
+    block->requested=sizeof(CI386TaskSymbols);block->tag=I386_HEAP_USED;
+    root.symbol_state=fill+16;
+    if(I386CmpCodeOwner(&heap,cc) || (GetRFlags&0x200)!=(enabled*0x200)) return 69;
+    root.symbol_state=scope;
+    block=fill-16;block->reserved=1;
+    if(I386CmpCodeOwner(&heap,cc) || (GetRFlags&0x200)!=(enabled*0x200)) return 70;
+    block->reserved=0;
+    if(!I386CmpCodeOwner(&heap,cc) || !I386HeapFree(&heap,fill)) return 71;
     base_used=heap.used; base_allocations=heap.allocations;
     if(!CodePopulate(cc)) return 61;
     last=cc->coc.coc_head.last; last_misc=cc->coc.coc_last_misc;

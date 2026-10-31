@@ -80,6 +80,12 @@ seconds versus 77.0 seconds for the preceding image; both exceed the 60-second
 gate. The change adds up to 8,190 bytes of reserved padding per task and remains
 unqualified; see [public stacks](docs/i386-public-stacks.md).
 
+Compiler-owner validation now reuses a complete heap check for a subsequent
+block-boundary lookup under interrupt exclusion. Corruption and owner tests,
+both bootstrap generations, both cross-builds and the 16 MiB diagnostic pass.
+An 8 MiB run with another guest active took 70.6 seconds and still failed the
+60-second gate. See [heap profiling](docs/i386-heap-performance.md).
+
 ### Standalone public task header diagnostic (2026-10-31)
 
 `PublicTask.HH` now expresses the false `DeathWait` default without relying on
