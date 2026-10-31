@@ -582,7 +582,7 @@ class CAOTCtrl
 #include "/Kernel/LexHashContextTypes.HH"
 
 //CmpCtrl flags
-#define CCF_CMD_LINE		0x001
+#include "/Kernel/CompilerCommandFlag.HH"
 #define CCF_PMT			0x002
 #define CCf_PMT			1
 #define CCF_QUESTION_HELP	0x004

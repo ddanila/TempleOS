@@ -11,6 +11,14 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original ExeFile service (2026-10-31)
+
+The original `ExeFile` body and `CCF_CMD_LINE` definition are shared with
+native. Default and explicit extensions, source execution and directory
+preservation pass the pinned-original and native 64 MiB/8 MiB fixture. The
+terminal callback and full C1–C5 qualification remain open; see
+[ExeFile evidence](docs/i386-exefile.md).
+
 ### Auxiliary task arena (2026-10-31)
 
 The compact boot path now offers firmware-verified conventional memory as a

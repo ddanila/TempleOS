@@ -1,7 +1,9 @@
 #ifndef I386_PUBLIC_EXECUTION_INCLUDED
 #define I386_PUBLIC_EXECUTION_INCLUDED
 #include "/Kernel/LexHashContextTypes.HH"
+#include "/Kernel/CompilerCommandFlag.HH"
 public _extern _EXE_PUTS I64 ExePutS(U8 *buf,U8 *filename=NULL,
   I64 ccf_flags=0,CLexHashTableContext *htc=NULL);
+public _extern _EXE_FILE I64 ExeFile(U8 *name,I64 ccf_flags=0);
 public _extern _EXE_PRINT I64 ExePrint(U8 *fmt,...);
 #endif

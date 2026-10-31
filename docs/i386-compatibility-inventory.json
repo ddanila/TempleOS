@@ -6737,7 +6737,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-exefile",
+          "command": "python3 tools/test-i386-exefile.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile-reference-v2/result.json",
+          "scope": "Pinned original ExeFile default and explicit extensions, source effects and directory preservation; unchanged inputs; not whole compiler qualification."
+        },
+        {
+          "target": "native-exefile",
+          "command": "python3 tools/test-i386-exefile.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile-native-v4/result.json",
+          "scope": "Native same three-check contract at 64 MiB, including CCF_CMD_LINE; unchanged inputs; not full compiler or terminal callback qualification."
+        },
+        {
+          "target": "native-exefile-8m",
+          "command": "python3 tools/test-i386-exefile.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile-native-8m-v1/result.json",
+          "scope": "Same native contract at 8 MiB, unchanged inputs; concurrent startup is not timing qualification."
+        }
+      ]
     },
     {
       "path": "Compiler/CMisc.HC",
@@ -6891,7 +6913,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-exefile",
+          "command": "python3 tools/test-i386-exefile.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile-reference-v2/result.json",
+          "scope": "Pinned original ExeFile default and explicit extensions, source effects and directory preservation; unchanged inputs; not whole compiler qualification."
+        },
+        {
+          "target": "native-exefile",
+          "command": "python3 tools/test-i386-exefile.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile-native-v4/result.json",
+          "scope": "Native same three-check contract at 64 MiB, including CCF_CMD_LINE; unchanged inputs; not full compiler or terminal callback qualification."
+        },
+        {
+          "target": "native-exefile-8m",
+          "command": "python3 tools/test-i386-exefile.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-exefile-native-8m-v1/result.json",
+          "scope": "Same native contract at 8 MiB, unchanged inputs; concurrent startup is not timing qualification."
+        }
+      ]
     },
     {
       "path": "Compiler/Lex.HC",

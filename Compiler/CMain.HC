@@ -616,16 +616,7 @@ I64 ExePutS(U8 *buf,U8 *filename=NULL,
 
 #include "/Compiler/ExePrintCore.HC"
 
-I64 ExeFile(U8 *name,I64 ccf_flags=0)
-{//JIT Compile and execute a file.
-  I64 res;
-  U8 *name2=ExtDft(name,"HC.Z"),
-	*st=MStrPrint("#include \"%s\";",name2);
-  res=ExePutS(st,name,ccf_flags);
-  Free(st);
-  Free(name2);
-  return res;
-}
+#include "/Compiler/ExeFileCore.HC"
 
 I64 RunFile(U8 *name,I64 ccf_flags=0,...)
 {//$LK,"ExeFile",A="MN:ExeFile"$() with args using $LK,"LastFun",A="MN:LastFun"$().
