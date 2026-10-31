@@ -365,3 +365,32 @@ The next correction must preserve live task allocations while exercising and
 tearing down the isolated probe heap. It must retain the full probe and exact
 restoration checks, not suppress phase 1 or its failure. The 16 MiB gate and
 full C1-C5 qualification remain open.
+
+## Free lookup during validation experiment (2026-11-01)
+
+A new sampled profile of the popup-exit build
+(`build/i386-popup-exit-boot-profile-v1`) found `I386HeapScanSelect` at 257 of
+412 root-header samples and 30 of 51 startup-source samples. Sampling pauses
+make this a location profile, not a timing measurement. Frequent stacks include
+heap validation during `I386HeapFree`, which then performs a second walk to
+find the block and its predecessor.
+
+An experimental implementation remembered a matching used block's preceding
+free block during the existing full validation pass and eliminated that
+second walk. It retained full-chain/counter validation and did not mutate the
+arena on a rejected pointer. Both native and portable heap-core suites passed,
+including all 24 free-order parity comparisons and later-corruption rejection
+(`build/i386-heap-free-single-core-v1.log`,
+`build/i386-heap-free-single-source-v1.log`); public and high-placement suites,
+both bootstrap generations, the full cross-build and 386 audit also passed
+(`build/i386-heap-free-single-{public,high,rebuild}-v1.log`,
+`build/i386-heap-free-single-cross-v1`).
+
+The isolated 8 MiB startup passed all nine functional and VGA checks but took
+67.921 seconds (`build/i386-heap-free-single-startup-8m-v1`), versus 66.213
+seconds in the preceding isolated control; neither met the 60-second gate.
+This pair does not establish a statistically significant slowdown, but it does
+not justify the additional hot-loop work. The allocator change was reverted;
+the exact experimental patch remains in
+`build/i386-heap-free-single-v1.patch`. The profile, failed timing gate and
+candidate tests do not close the startup or C1–C5 requirements.
