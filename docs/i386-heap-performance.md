@@ -478,3 +478,24 @@ nine functional/VGA checks but missed the 60-second gate at 61.394 and 62.295
 seconds respectively (`build/i386-parser-token-known-startup-v1`,
 `build/i386-parser-token-known-control-v1`). This single comparison does not
 establish a statistically significant speedup. C1–C5 remain open.
+
+## Parser allocation ownership experiment (2026-11-01)
+
+A follow-up candidate reused the immediately preceding compiler-control heap
+validation for `I386ParserSize` and `I386ParserTake`, adding a boundary-walk
+helper that returned an allocation's requested size. Task-symbol and lexer
+snapshot tests, both bootstrap generations, the full cross-build, 386 and
+loader-stack audits passed (`build/i386-parser-ownership-known-symbols-v1.log`,
+`build/i386-parser-ownership-known-lex-v1.log`,
+`build/i386-parser-ownership-known-rebuild-v1.log`,
+`build/i386-parser-ownership-known-cross-v1`,
+`build/i386-parser-ownership-known-stack-v1`). The fixture checked the new
+lookup against an interior forged header and its actual requested size.
+
+An isolated 8 MiB run completed its nine functional/VGA checks in 61.394
+seconds (`build/i386-parser-ownership-known-startup-v1`), indistinguishable at
+three decimal places from the prior 61.394-second candidate. Neither met the
+60-second gate. This single comparison does not establish a useful improvement,
+so the additional helper and parser changes were reverted; the experimental
+patch is in `build/i386-parser-ownership-known-v1.patch`. Full C1–C5
+qualification remains open.
