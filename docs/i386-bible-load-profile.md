@@ -400,8 +400,9 @@ all 12 commands and exact VGA checkpoints with unchanged source images
 (`build/i386-text-fill-graphics-v1`, `build/i386-text-fill-control-v1`). Their
 four frame demos measured 330, 360, 350 and 370 ms, versus 380, 380, 420 and
 410 ms on the control. Other QEMU guests overlapped these guest-jiffy
-measurements, so the timings are approximate. The full Bible-link test remains
-in progress.
+measurements, so the timings are approximate. The full Bible-link test timed
+out at its 20-minute command limit with unchanged inputs
+(`build/i386-doc-bible-link-full-text-fill-v1`).
 
 A 90-second full-link sampler on the wider-store image passed with unchanged
 inputs but did not complete the lookup (`build/i386-bible-link-sample-text-fill-v1`).

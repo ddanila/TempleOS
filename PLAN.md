@@ -51,7 +51,7 @@ The original-renderer oracle passes with an unaligned, poisoned and guarded
 destination across its twelve cases. Both rebuilds, 386 audits, the 8 MiB
 smoke, and paired exact-VGA sessions pass. Candidate frames measured 330–370 ms
 versus 380–420 ms on the control, with other QEMU guests active. The full
-Bible-link test on this image remains in progress.
+Bible-link test on this image timed out.
 
 Text rendering skips the foreground pixel loop for zero glyph rows, after
 applying underline. The blank/underlined original oracle, both rebuilds, 386
