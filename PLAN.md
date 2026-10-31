@@ -51,6 +51,11 @@ from 165/410 to 13/410; neither lookup completed. The concurrent 8 MiB run took
 66.9 seconds and missed the startup gate; the normal full-link test timed out
 during its first lookup at the 20-minute command limit with unchanged inputs. See [keyboard transport](docs/i386-keyboard.md).
 
+An ordered-batch sort fast-path experiment passed heap and cross-build checks,
+but its bounded document timing did not improve; full-link samples remain
+inconclusive. The candidate was discarded. See
+[load profiling](docs/i386-bible-load-profile.md).
+
 A native 386 backing-list collection experiment passed heap, rebuild and
 cross-build checks, but showed no clear improvement in the bounded document
 profile or full-link samples and was discarded. Tests for out-of-arena links

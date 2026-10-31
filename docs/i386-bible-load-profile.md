@@ -454,6 +454,31 @@ free-span insertion during document allocation and 151 in the bootstrap heap
 chain validator; several of the latter stacks belonged to keyboard work. This
 is not a normal-desktop acceptance test or a direct timing measurement.
 
+## Ordered backing-region sort experiment
+
+A PC sample of the prior image concentrated around the region-sort loop. An
+experimental native fast path recognized ascending and descending batches,
+reversed descending batches, and used the existing gap sort for mixed order.
+The heap oracle covered mixed, reversed, cyclic and corrupt lists including
+multi-batch cases; native/portable suites, both rebuilds, and minimal/full
+cross-build instruction audits passed (`build/i386-backing-order-test-v1.log`,
+`build/i386-backing-order-source-v1.log`,
+`build/i386-backing-order-rebuild-v1.log`, `build/i386-backing-order-cross-v1`,
+`build/i386-backing-order-full-cross-v1`).
+
+The 3,200-line profile passed with unchanged inputs and 102 regions, reaching
+cleanup in 11.7 seconds versus 11.4 seconds in the earlier control. A 90-second
+suspended-window sample recorded 182 of 411 samples in backing validation
+versus 223 of 411 in the control; inputs were unchanged and neither lookup
+completed. The runs overlapped other guests, so these results do not establish
+an elapsed-time gain; the fast path was discarded
+(`build/i386-backing-order-bible-medium-v1`,
+`build/i386-pool-fast-bible-medium-v1`,
+`build/i386-backing-order-bible-sample-v1`,
+`build/i386-pool-fast-bible-sample-v1`). The candidate full-link and 16 MiB
+startup tests remain in progress (`build/i386-backing-order-bible-full-v1`,
+`build/i386-backing-order-diagnostics-v1`).
+
 ## Backing ownership-list collection experiment
 
 An experimental native 386 loop collected each ownership batch after heap
