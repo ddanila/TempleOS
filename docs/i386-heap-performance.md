@@ -57,6 +57,12 @@ interactive checks with unchanged inputs and failed the 60-second gate
 run took 68.0 seconds (`build/i386-lex-snapshot-scan-smoke-v1`). C1–C5 and the
 startup gate remain open.
 
+A follow-up normal-boot sample on this image recorded 249 of 405 root-header
+samples in `I386HeapScanSelect`, with another nine in the new known-size walk
+(`build/i386-lex-snapshot-scan-boot-profile-v1`). These are paused statistical
+samples, not call counts or timing measurements. Heap validation remains a
+prominent startup cost.
+
 Loading the complete document records at bce29e6 exposed a normal-startup
 regression: 60.612 seconds on the QEMU/486 8 MiB profile, compared with 25.038
 seconds before those records were published. Full diagnostic startup took
