@@ -23,7 +23,7 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     inputs=[Path(__file__).resolve(),fixture]
     report=dict(result='running',mode='native' if args.disk else 'pinned-original',
-                scope='RAM-backed block reads and writes, zero count, bounds, read-only and outer lock; not ATA, ISO or cache qualification')
+                scope='RAM-backed block reads and writes, zero count, drive offsets, bounds, read-only override and outer lock recovery; not ATA, ISO or cache qualification')
     if args.disk:
         inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','Kernel/FontStd.HC')]
     else:
@@ -36,8 +36,8 @@ def main():
         if args.disk:
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions={'/BlockIO.HC':fixture.read_bytes()})
-            commands=[('#include "C:/BlockIO.HC"',[]),('BOContract;',['31']),('6*7;',['42'])]
-            report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](disk,out/'guest',snapshot=False,ram_mib=args.ram_mib,cpu='486,-fpu',accel='tcg',qmp_stdio=True,startup_check={'status':'ok','answers':[],'commands':commands,'command_timeout':120,'rejection_prefixes':('INPUT REJECT ',)})
+            commands=[('#include "C:/BlockIO.HC"',[]),('BOContract;',['511']),('6*7;',['42'])]
+            report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](disk,out/'guest',snapshot=False,ram_mib=args.ram_mib,cpu='486,-fpu',accel='tcg',qmp_stdio=True,welcome=True,startup_check={'status':'ok','answers':[],'commands':commands,'command_timeout':120,'rejection_prefixes':('INPUT REJECT ',)})
             files=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,{'/BlockIO.HC'})
             if files['/BlockIO.HC']!=fixture.read_bytes():raise ValueError('Delivered fixture changed')
         else:
@@ -48,7 +48,7 @@ def main():
             subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(overlay),'--output',str(iso)],cwd=ROOT,check=True)
             report['iso_sha256']=sha(iso)
             subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),'--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
-            if 'BLOCK IO MASK 31\n' not in (out/'guest/debug.log').read_text():raise ValueError('Original block I/O contract failed')
+            if 'BLOCK IO MASK 511\n' not in (out/'guest/debug.log').read_text():raise ValueError('Original block I/O contract failed')
         report['result']='pass'
     except Exception as exc:
         report.update(result='fail',error=str(exc));raise

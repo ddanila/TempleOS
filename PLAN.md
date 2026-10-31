@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Block-I/O reference extension (2026-10-31)
+
+The original RAM-backed block contract now covers drive offsets, final-sector
+access, read-only override and acquired versus caller-held lock recovery; all
+nine checks pass. The welcome-aware native runner reaches the fixture but
+rejects at `BlkRead` before its cases run. The source inventory records both
+results; public block I/O, streams and C1–C5 remain open. See
+[block-I/O evidence](docs/i386-block-io.md).
+
 ### TimeClock inventory evidence mapping (2026-10-31)
 
 The three TimeClock inventory records now point to the later exact

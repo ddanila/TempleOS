@@ -12943,9 +12943,24 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Use a private RAM-backed drive to exercise original BlkRead/BlkWrite, zero counts, partition offsets, last-sector access, bounds and read-only override, including caller-held and automatically acquired lock recovery.",
+      "oracle": "The original-system nine-bit BOContract checks exact sector contents and untouched boundaries, error paths and task/device lock ownership. ATA, ATAPI, file-backed devices, cache, removable media and full original file-stream behavior remain unqualified.",
+      "tests": [
+        {
+          "target": "original-block-io-extended",
+          "command": "python3 tools/test-i386-block-io.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-block-io-extended-reference-v3/result.json",
+          "scope": "Pinned original, private RAM drive; mask 511 covers bounded read/write, zero counts, absolute offset, read-only override and lock recovery, with unchanged inputs. Not physical disks or whole-file qualification."
+        },
+        {
+          "target": "native-block-io-extended-red",
+          "command": "python3 tools/test-i386-block-io.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-block-io-extended-native-red-v3/result.json",
+          "scope": "Full-content pool-validator image reaches fixture include but rejects at BlkRead on line 12; no contract cases execute, inputs unchanged."
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskBlkDev.HC",

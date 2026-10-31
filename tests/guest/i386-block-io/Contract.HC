@@ -24,5 +24,27 @@ I64 BOContract()
   bd.flags&=~BDF_READ_ONLY;
   if(DrvLock(&dv) && BlkWrite(&dv,src,0,1) &&
       dv.owning_task==Fs && bd.owning_task==Fs && DrvUnlock(&dv))mask|=16;
+  // A nonzero partition offset is an absolute lower bound; its final sector
+  // is still accessible, but the sector just before it is not.
+  dv.drv_offset=1;dv.size=3;caught=FALSE;
+  try BlkRead(&dv,dst,0,1);
+  catch {caught=TRUE;Fs->catch_except=TRUE;}
+  if(caught && !dv.owning_task && !bd.owning_task &&
+      !dv.locked_flags && !bd.locked_flags)mask|=256;
+  if(caught && BlkWrite(&dv,src,3,1) && BlkRead(&dv,dst,3,1) &&
+      !MemCmp(src,dst,512))mask|=32;
+  // A caller with the explicit override can write a read-only device.
+  bd.flags|=BDF_READ_ONLY|BDF_READ_ONLY_OVERRIDE;
+  if(BlkWrite(&dv,src,1,1) && BlkRead(&dv,dst,1,1) &&
+      !MemCmp(src,dst,512))mask|=64;
+  bd.flags&=~(BDF_READ_ONLY|BDF_READ_ONLY_OVERRIDE);
+  // Failure must not release a lock that was already held by the caller.
+  caught=FALSE;
+  if(DrvLock(&dv)) {
+    try BlkRead(&dv,dst,4,1);
+    catch {caught=TRUE;Fs->catch_except=TRUE;}
+    if(caught && dv.owning_task==Fs && bd.owning_task==Fs &&
+        DrvUnlock(&dv))mask|=128;
+  }
   Free(storage);Free(src);Free(dst);return mask;
 }

@@ -25,6 +25,26 @@ python3 tools/test-i386-block-io.py --out ORIGINAL
 python3 tools/test-i386-block-io.py IMAGE --out NATIVE
 ```
 
+## Expanded offset and lock contract (2026-10-31)
+
+The RAM-backed original fixture now also checks a nonzero drive offset, access
+to the last valid sector, the explicit read-only override, and lock ownership
+after errors. It verifies that a failed operation releases locks it acquired but
+retains locks already owned by the caller. The pinned original passes all nine
+checks (mask 511) with unchanged inputs
+(`build/i386-block-io-extended-reference-v3`). This remains a private RAM-drive
+contract; it does not establish ATA, file-backed devices, cache or media behavior.
+
+The runner now uses the current welcome-screen expectation. On the full-content
+pool-validator image the native fixture include is rejected at `BlkRead` before
+any contract case runs, with unchanged inputs
+(`build/i386-block-io-extended-native-red-v3`). The preceding attempt timed out
+at the obsolete startup screen (`build/i386-block-io-extended-native-red-v2`);
+its fixture did not run. An earlier exploratory attempt changed its pinned
+fixture during execution and is not valid evidence
+(`build/i386-block-io-extended-native-red-v1`). The original source inventory
+entry records the new reference and native gap; it remains unqualified.
+
 ## File-backed device record (2026-10-30)
 
 The complete original `CFile` record and file flags are shared byte-for-byte
