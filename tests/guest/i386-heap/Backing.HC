@@ -53,8 +53,8 @@ I64 BackingValidationParity(CI386BackingPool *pool,U8 *private_bytes)
 I64 BackingManyRegionTest()
 {
   CI386BackingPool *pool=&backing_pool;
-  CI386BackingRegion *node,*next,*reverse;
-  CMemBlk *pages[70];I64 i;
+  CI386BackingRegion *node,*next,*reverse,*saved_next;
+  CMemBlk *pages[70];I64 i;U32 saved_request;
   if(!I386HeapInit(&backing_heap,0x40000,0x40000) ||
       !I386MemBackingInit(pool,&backing_heap,512))return 490;
   for(i=0;i<64;i++) if(!(pages[i]=I386MemPageAlloc(pool,1,TRUE)))return 491;
@@ -68,6 +68,13 @@ I64 BackingManyRegionTest()
   pool->owned=reverse;
   for(i=64;i<70;i++) if(!(pages[i]=I386MemPageAlloc(pool,1,TRUE)))return 491;
   if(pool->owned_count<=64 || !BackingValidationOracle(pool) || !I386MemBackingValid(pool))return 492;
+  node=pool->owned;for(i=0;i<65;i++) node=node->next_owned;
+  saved_request=node->request;node->request++;
+  if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 500;
+  node->request=saved_request;
+  saved_next=node->next_owned;node->next_owned=pool->owned;
+  if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 501;
+  node->next_owned=saved_next;
   pool->owned_count--;
   if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 493;
   pool->owned_count++;

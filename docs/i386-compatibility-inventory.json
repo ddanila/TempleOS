@@ -14892,6 +14892,13 @@
           "result": "pass",
           "evidence": "build/i386-bible-load-profile-multilookup-final-v1/result.json",
           "scope": "Bounded 400–1600-line workload; full heap validation plus sorted ownership checks for up to 64 regions and tested fallback; full allocator/application qualification remains open"
+        },
+        {
+          "target": "native-batched-backing-profile",
+          "command": "python3 tools/test-i386-bible-load-profile.py IMAGE --large --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-bible-load-batches-large-v1/result.json",
+          "scope": "1600–6400-line document workload across 56–194 backing regions; native allocator and full application qualification remain open"
         }
       ]
     },
@@ -14941,6 +14948,13 @@
           "result": "pass",
           "evidence": "build/i386-bible-load-profile-multilookup-final-v1/result.json",
           "scope": "Bounded 400–1600-line workload; full heap validation plus sorted ownership checks for up to 64 regions and tested fallback; full allocator/application qualification remains open"
+        },
+        {
+          "target": "native-batched-backing-profile",
+          "command": "python3 tools/test-i386-bible-load-profile.py IMAGE --large --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-bible-load-batches-large-v1/result.json",
+          "scope": "1600–6400-line document workload across 56–194 backing regions; native allocator and full application qualification remain open"
         }
       ]
     },

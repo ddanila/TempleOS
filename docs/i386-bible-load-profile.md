@@ -134,10 +134,50 @@ command limit, with unchanged inputs
 (`build/i386-doc-bible-link-full-optimized-v1`). The final candidate full-content
 image passed its cross-build and 386 audit
 (`build/i386-backing-multilookup-candidate-tree/build/full-cross-v1`), and its
-full Bible-link test is running in
-`build/i386-doc-bible-link-full-multilookup-v1`.
+full Bible-link test also timed out at the 20-minute command limit with
+unchanged inputs (`build/i386-doc-bible-link-full-multilookup-v1`).
 
 The final Memory 35 image passes its initial isolated memory probe in the 16 MiB
 diagnostic boot, then hits the same prior-image `PublicTask.HH` header failure
 (`build/i386-backing-multilookup-final-diagnostics-v1`); this remains a failed
 full diagnostic, not a diagnostic qualification.
+
+## Unbounded batched region validation
+
+Memory 36 removes the 64-region performance cliff. It follows the ownership
+list in batches of at most 64 range-checked addresses, sorts each batch in the
+same private scratch storage, and walks the already validated heap once per
+batch. All regions still receive exact allocated-block and metadata checks under
+interrupt exclusion; the list is not modified and there is no limit on its
+length. Native and portable tests compare the previous validator against valid
+and corrupted ownership lists, including a cycle and a bad record after the
+first batch (`build/i386-backing-batches-test-v1.log`,
+`build/i386-backing-batches-source-test-v1.log`). The task-heap lifecycle suite,
+both bootstrap generations, and the native cross-build/386 audit pass
+(`build/i386-backing-batches-task-heaps-v1.log`,
+`build/i386-backing-batches-rebuild-v1.log`,
+`build/i386-backing-batches-cross-v1`). The 8 MiB drive-fields smoke also
+passes (`build/i386-backing-batches-smoke-v1`).
+
+The extended profile reads actual backing-region counts. It passed with 56,
+102, 148 and 194 regions for 1,600, 3,200, 4,800 and 6,400 lines respectively
+(`build/i386-bible-load-batches-large-v1`). At 3,200 lines, the same fixture on
+both images measured 102 regions: the prior image took 100.6 seconds total,
+including 74.1 seconds cleanup, while the batched image took 50.4 seconds,
+including 26.2 seconds cleanup (`build/i386-bible-load-batches-control-v1`,
+`build/i386-bible-load-batches-candidate-v1`). Another full-file guest was
+active during these QEMU runs, and the timings are approximate, not hardware
+benchmarks. The 6,400-line batched case took 157.5 seconds total. This removes
+the fixed fallback boundary but does not establish full-file completion or
+linear scaling.
+
+The Memory 36 full-content image passed the cross-build and 386 audit
+(`build/i386-backing-batches-full-cross-v1`). The complete Bible-link test is running on the Memory 36 image in
+`build/i386-doc-bible-link-full-batches-v1`; it is independent of these bounded
+tests.
+
+The Memory 36 16 MiB diagnostic also passed its initial isolated memory probe
+and then reached the same prior-image `PublicTask.HH` failure
+(`build/i386-backing-batches-diagnostics-v1`); the full diagnostic remains
+failed. The 8 MiB drive-fields smoke passed with unchanged inputs
+(`build/i386-backing-batches-smoke-v1`).

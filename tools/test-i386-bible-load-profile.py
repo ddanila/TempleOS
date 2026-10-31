@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import re
 import threading
 import time
 
@@ -19,6 +20,9 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('disk', type=Path)
     ap.add_argument('--out', type=Path, required=True)
+    sizes = ap.add_mutually_exclusive_group()
+    sizes.add_argument('--large', action='store_true', help='Use 1600–6400-line excerpts')
+    sizes.add_argument('--medium', action='store_true', help='Use 1600 and 3200 lines')
     args = ap.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     if out.exists():
@@ -30,7 +34,7 @@ def main():
         'tools/test-i386-timeclock-welcome.py', 'tools/i386-kernel-input.py', 'Kernel/FontStd.HC')]
     pins = {str(p): sha(p) for p in inputs}
     lines = bible.read_bytes().splitlines(keepends=True)
-    lengths = (400, 800, 1200, 1600)
+    lengths = (1600, 3200, 4800, 6400) if args.large else (1600, 3200) if args.medium else (400, 800, 1200, 1600)
     files = {'/Probe/BibleProfile.HC': fixture.read_bytes()}
     files.update({f'/Probe/Bible{n}.TXT': b''.join(lines[:n]) for n in lengths})
     if len(lines) < max(lengths):
@@ -53,8 +57,9 @@ def main():
     watcher = threading.Thread(target=observe, daemon=True)
     watcher.start()
     try:
+        call = 'BibleProfileLarge' if args.large else 'BibleProfileMedium' if args.medium else 'BibleProfileAll'
         commands = ['#include "C:/Probe/BibleProfile.HC"',
-                    "if(!BibleProfileAll)throw('BP',TRUE);", '6*7;']
+                    f"if(!{call})throw('BP',TRUE);", '6*7;']
         runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](
             working, out/'guest', commands, 64, True, command_timeout=1200)
         observed = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](working, set(files))
@@ -67,7 +72,11 @@ def main():
             if values != sorted(values):
                 raise ValueError('Profile markers out of order')
             times[str(n)] = {phases[i]: round(values[i]-values[0], 3) for i in range(len(phases))}
-        report.update(result='pass', elapsed_seconds=times)
+        region_rows = re.findall(r'^BIBLE REGIONS (\d+) (\d+)$', log.read_text(), re.M)
+        regions = {int(n): int(count) for n,count in region_rows}
+        if set(regions) != set(lengths):
+            raise ValueError('Missing region-count markers')
+        report.update(result='pass', elapsed_seconds=times, region_counts=regions)
     except Exception as exc:
         report.update(result='fail', error=str(exc))
         raise
