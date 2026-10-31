@@ -19,4 +19,7 @@ class CI386BootMap
 #assert sizeof(CI386BootMap)==784
 public extern Bool I386BootMapArena(CI386BootInfo *info,CI386BootMap *map,
   CI386MemRange *reserved,I64 count,CI386MemRange *result);
+//Choose a firmware-verified conventional-memory gap for an auxiliary arena.
+public extern Bool I386BootMapLowArena(CI386BootInfo *info,CI386BootMap *map,
+  CI386MemRange *reserved,I64 count,CI386MemRange *result);
 #endif

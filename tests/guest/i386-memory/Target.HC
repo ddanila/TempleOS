@@ -201,6 +201,40 @@ I64 BootMapTests()
   map.entries[0].attributes=3;
   out.base=123; out.size=456;
   if(I386BootMapArena(&info,&map,0,0,&out) || out.base!=123 || out.size!=456) return 117;
+  //Auxiliary low RAM must stay inside both the conventional range and a
+  //firmware-usable entry, subtracting every reservation and unusable overlap.
+  Reset(&info);info.stage_end=0x11000;info.ebda_base=0x9FC00;
+  map.magic=I386_BOOT_MAP_MAGIC;map.version=1;map.complete=1;map.count=2;
+  map.entries[0].base=0;map.entries[0].size=0x9FC00;
+  map.entries[0].type=1;map.entries[0].attributes=1;
+  map.entries[1].base=0x88000;map.entries[1].size=0x8000;
+  map.entries[1].type=2;map.entries[1].attributes=1;
+  if(!I386BootMapLowArena(&info,&map,0,0,&out) ||
+      out.base!=0x11000 || out.size!=0x77000) return 118;
+  r[0].base=0x40000;r[0].size=0x1000;
+  if(!I386BootMapLowArena(&info,&map,r,1,&out) ||
+      out.base!=0x41000 || out.size!=0x47000) return 119;
+  //An E820 reserved overlap wins even when another usable range covers it.
+  map.entries[1].base=0x40000;map.entries[1].size=0x1000;
+  if(!I386BootMapLowArena(&info,&map,0,0,&out) ||
+      out.base!=0x41000 || out.size!=0x5EC00) return 120;
+  map.entries[0].attributes=3;out.base=123;out.size=456;
+  if(I386BootMapLowArena(&info,&map,0,0,&out) || out.base!=123 || out.size!=456) return 121;
+  map.entries[0].attributes=1;map.entries[1].size=0;
+  if(I386BootMapLowArena(&info,&map,0,0,&out) || out.base!=123 || out.size!=456) return 122;
+  //Disjoint equal usable ranges choose the lower address even when unsorted.
+  map.entries[0].base=0x50000;map.entries[0].size=0x10000;
+  map.entries[1].base=0x20000;map.entries[1].size=0x10000;
+  map.entries[1].type=1;map.entries[1].attributes=1;
+  if(!I386BootMapLowArena(&info,&map,0,0,&out) ||
+      out.base!=0x20000 || out.size!=0x10000) return 123;
+  r[0].base=0x20000;r[0].size=0;out.base=123;out.size=456;
+  if(I386BootMapLowArena(&info,&map,r,1,&out) || out.base!=123 || out.size!=456) return 124;
+  //The EBDA bound clips firmware RAM even if the map marks it usable.
+  map.count=1;map.entries[0].base=0;map.entries[0].size=0xA0000;
+  info.ebda_base=0x80000;
+  if(!I386BootMapLowArena(&info,&map,0,0,&out) ||
+      out.base!=0x11000 || out.size!=0x6F000) return 125;
   return 0;
 }
 #include "/Kernel/I386/BootMap.HC"

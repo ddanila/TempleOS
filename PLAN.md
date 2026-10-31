@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Conventional-memory selection for 8 MiB investigation (2026-10-31)
+
+A stopped post-failure heap audit finds no wholly unused public backing region;
+the captured firmware map describes a 487,424-byte low-memory candidate after
+excluding the boot stack. A new firmware-checked selector and its boundary
+fixture pass, but no allocator uses this range yet. Low-memory lifetime,
+ownership and fallback integration remain required; the 8 MiB InFile workload
+is still failing. See [low-memory evidence](docs/i386-low-arena.md).
+
 ### Original InFile service (2026-10-31)
 
 The original `InFile` body is shared and exported on native. The original and

@@ -31,7 +31,8 @@ logged callers map to `I386TaskCreateWithFiles` and `Spawn`. At failure the
 bootstrap arena had 242,680 bytes free for a 267,527-byte request, and its
 largest free payload was 193,632 bytes. Total free capacity was therefore
 insufficient for that request; fragmentation further reduced the largest
-available span. The 8 MiB resource gap remains open.
+available span. The 8 MiB resource gap remains open. A post-unwind heap and firmware-map
+audit is recorded in [low-memory evidence](i386-low-arena.md).
 
 These checks do not qualify arbitrary input files, cancellation, exceptional
 cleanup, the complete task/job API, or the terminal right-click workflow.

@@ -1,10 +1,10 @@
 #include "/Kernel/I386/BootMap.HH"
-public Bool I386BootMapArena(CI386BootInfo *info,CI386BootMap *map,
-  CI386MemRange *reserved,I64 count,CI386MemRange *result)
+Bool I386BootMapRange(CI386BootInfo *info,CI386BootMap *map,
+  CI386MemRange *reserved,I64 count,CI386MemRange *result,Bool conventional)
 {//Stable caller-owned map; publish only after validating every range.
   CI386MemRange low;
   CI386BootMapEntry *entry;
-  U64 lo,hi,cursor,end,next,covered,begin,gap_end,best_base=0,best_size=0;
+  U64 lo,hi,cursor,end,next,covered,begin,gap_end,best_base=0,best_size=0,lower,upper;
   I64 i,j,block_count;
   if(!result || !I386BootArena(info,0,0,&low) || !map ||
       map->magic!=I386_BOOT_MAP_MAGIC || map->version!=1 ||
@@ -18,14 +18,18 @@ public Bool I386BootMapArena(CI386BootInfo *info,CI386BootMap *map,
     entry=&map->entries[i];
     if(!entry->size || entry->base+entry->size<entry->base) return FALSE;
   }
+  if(conventional) {
+    lower=info->stage_end;upper=info->conventional_kib*1024;
+    if(info->ebda_base && info->ebda_base<upper)upper=info->ebda_base;
+  } else { lower=0x110000;upper=0x100000000; }
   block_count=count+map->count;
   for(i=0;i<map->count;i++) {
     entry=&map->entries[i];
     //Only plain volatile usable RAM. Unknown attributes/types stay excluded.
     if(entry->type!=1 || entry->attributes!=1) goto next_entry;
     cursor=entry->base; end=cursor+entry->size;
-    if(cursor<0x110000) cursor=0x110000;
-    if(end>0x100000000) end=0x100000000;
+    if(cursor<lower) cursor=lower;
+    if(end>upper) end=upper;
     while(cursor<end) {
       next=end; covered=cursor;
       //Subtract caller reservations, the legacy device hole, and every
@@ -57,4 +61,14 @@ next_entry:;
   }
   if(best_size<24) return FALSE;
   result->base=best_base; result->size=best_size; return TRUE;
+}
+
+public Bool I386BootMapArena(CI386BootInfo *info,CI386BootMap *map,
+  CI386MemRange *reserved,I64 count,CI386MemRange *result)
+{ return I386BootMapRange(info,map,reserved,count,result,FALSE); }
+
+public Bool I386BootMapLowArena(CI386BootInfo *info,CI386BootMap *map,
+  CI386MemRange *reserved,I64 count,CI386MemRange *result)
+{//The firmware map must affirm usable conventional RAM before it is borrowed.
+  return I386BootMapRange(info,map,reserved,count,result,TRUE);
 }
