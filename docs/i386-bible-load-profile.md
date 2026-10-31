@@ -454,6 +454,20 @@ free-span insertion during document allocation and 151 in the bootstrap heap
 chain validator; several of the latter stacks belonged to keyboard work. This
 is not a normal-desktop acceptance test or a direct timing measurement.
 
+## Idle keyboard polling
+
+The keyboard pump now bypasses exception-frame creation when its IRQ-protected
+raw queue is empty and has no unreported or saturated loss. In paired 90-second
+samples of the first full lookup with window refresh suspended, heap-validator
+samples fell from 165 of 410 on the control to 13 of 410 on the candidate;
+document allocation and reclamation dominate the latter sample. Both runs kept
+their inputs unchanged, had zero window updates and did not finish the lookup
+(`build/i386-keyboard-idle-bible-control-v1`,
+`build/i386-keyboard-idle-bible-isolated-v1`). This is not a completion or
+timing measurement. Input, diagnostic and loss-recovery evidence is recorded
+in [keyboard transport](i386-keyboard.md); the normal full-link test remains
+in progress (`build/i386-keyboard-idle-bible-full-v1`).
+
 ## Cached free-span consolidation (unqualified candidate)
 
 The allocation path previously inserted each cached span into an

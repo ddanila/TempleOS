@@ -1,5 +1,6 @@
 //One decoder consumes the hardware stream; focus receives public key messages.
 #include "/Kernel/MessageCodes.HH"
+#include "/Kernel/I386/KeyboardIdle.HC"
 class CNativeKeyboardHooks {
   CTask *(*spawn)(U0 (*entry)(U8 *data),U8 *data,U8 *name,I64 cpu,
     CTask *parent,I64 stack_size,I64 flags);
@@ -40,6 +41,12 @@ Bool NativeKeyboardPump()
   CTask *target;
   I64 decoded=0;
   U32 irq=I386IrqSave;
+  //The configured reader and its input live for the console's lifetime.
+  //An empty stream without an unreported loss cannot produce an event or
+  //throw, so avoid creating an exception frame for the idle polling path.
+  if(console_config && I386KeyboardIdle(console_config->reader)) {
+    I386IrqRestore(irq);return FALSE;
+  }
   try {
     decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
     if(decoded<0) {

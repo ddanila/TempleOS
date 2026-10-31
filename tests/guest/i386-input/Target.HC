@@ -217,18 +217,34 @@ U0 OnKeyboard(CI386IrqFrame *frame)
 #include "/Kernel/I386/ScanState.HC"
 #include "/Kernel/I386/KeyboardEvent.HC"
 #include "/Kernel/I386/KeyboardRead.HC"
+#include "/Kernel/I386/KeyboardIdle.HC"
 
 I64 ReadTest()
 {
   CI386KbcInput stream;
   CI386KeyboardReader reader;
   CI386KeyEvent event;
-  I64 i;
+  I64 i;U32 irq;Bool idle;
   stream.scheduler=0; reader.input=0;
+  if(I386KeyboardIdle(&reader)) return 187;
   if (!I386KbcInputInit(&stream,&scheduler) || !I386KeyboardReadInit(&reader,&stream) ||
       I386KeyboardReadInit(&reader,&stream)) return 180;
+  //Skipping a nonblocking read is valid only for an empty, loss-free stream.
+  event.type=99;event.ch=98;event.scan=97;
+  if(I386KeyboardIdle(0) || !I386KeyboardIdle(&reader) ||
+      I386KeyboardRead(&reader,&event,FALSE) || event.type!=99 || event.ch!=98 || event.scan!=97) return 187;
+  stream.waiter=&tasks[1];
+  if(!I386KeyboardIdle(&reader) || I386KeyboardRead(&reader,&event,FALSE)) return 187;
+  stream.waiter=0;
+  stream.queue.dropped=1;
+  if(I386KeyboardIdle(&reader)) return 188;
+  reader.losses=stream.queue.dropped=0xFFFFFFFF;
+  if(I386KeyboardIdle(&reader)) return 189;
+  reader.losses=stream.queue.dropped=0;
   SetRFlags(GetRFlags|0x200);
-  if (!I386KbcInputPut(&stream,0x2A,1) || I386KeyboardRead(&reader,&event,FALSE)!=1 ||
+  if(!I386KbcInputPut(&stream,0x2A,1)) return 181;
+  irq=I386IrqSave;idle=I386KeyboardIdle(&reader);I386IrqRestore(irq);
+  if (idle || I386KeyboardRead(&reader,&event,FALSE)!=1 ||
       !(event.scan&0x200) || !I386KbcInputPut(&stream,0xE0,1) ||
       I386KeyboardRead(&reader,&event,FALSE) || !reader.state.packet.extended) return 181;
   event.type=99; event.ch=98; event.scan=97;

@@ -43,6 +43,14 @@ diagnostic checks but measured 65.7–66.1 seconds versus 64.9–65.1 for its
 source-matched control in isolated 8 MiB runs. It was discarded; its exhaustive
 four-block free-order fixture remains. See [heap profiling](docs/i386-heap-performance.md).
 
+The keyboard pump now skips exception-frame creation for an IRQ-protected empty
+queue without pending loss. Input edge cases, paired overflow/recovery sessions,
+both rebuilds, both cross-builds and the 16 MiB diagnostic pass. In 90-second
+full-link samples with window refresh suspended, heap-validator samples fell
+from 165/410 to 13/410; neither lookup completed. The concurrent 8 MiB run took
+66.9 seconds and missed the startup gate; the normal full-link test remains in
+progress. See [keyboard transport](docs/i386-keyboard.md).
+
 The gap sort now has a tested 386 implementation and retains its portable
 guest-source implementation. Mixed-order and corrupted ownership-list tests,
 both rebuild generations, task heaps, both cross-build audits, and the 8 MiB

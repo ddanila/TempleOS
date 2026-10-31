@@ -1,5 +1,42 @@
 # Native keyboard-controller transport
 
+## Idle decoder polling (2026-10-31)
+
+The console keyboard pump checks its lifetime-owned reader under interrupt
+exclusion before constructing an exception frame. If the raw queue is empty,
+the loss count has not changed and it is not saturated, a nonblocking read
+cannot produce an event or report a loss, so the pump returns immediately.
+Queued bytes, changed or saturated loss counts, and invalid reader setup retain
+the existing read and recovery path. The producer cannot change the queue
+between the check and interrupt restoration.
+
+The input fixture covers empty and queued streams, missing reader/input,
+another waiter, a pending loss and saturated loss counters; both bootstrap
+generations and minimal and full-content cross-builds pass
+(`build/i386-keyboard-idle-baseline-input-v1.log`,
+`build/i386-keyboard-idle-input-v2.log`, `build/i386-keyboard-idle-rebuild-v1.log`,
+`build/i386-keyboard-idle-cross-v1`, `build/i386-keyboard-idle-full-cross-v1`).
+The full 16 MiB diagnostic passes with unchanged inputs
+(`build/i386-keyboard-idle-diagnostics-v1`). The hardware-queue overflow test
+passes on both candidate and control, observing one reset, one preserved queued
+job and recovered input (`build/i386-keyboard-idle-loss-v4`,
+`build/i386-keyboard-idle-loss-control-v2`). The test was updated for the
+welcome screen, normal window refresh and short setup commands; earlier
+attempts stopped at screen or wrapped-command checks before the loss scenario
+(`build/i386-keyboard-idle-loss-v1`, `build/i386-keyboard-idle-loss-v2`,
+`build/i386-keyboard-idle-loss-v3`, `build/i386-keyboard-idle-loss-control-v1`).
+
+Paired 90-second full Bible-link samples with window refresh suspended recorded
+13 heap-validator samples out of 410 on the candidate, versus 165 of 410 on
+the control (`build/i386-keyboard-idle-bible-isolated-v1`,
+`build/i386-keyboard-idle-bible-control-v1`). Both preserved inputs, recorded
+zero window updates and did not complete the lookup. These are paused samples,
+not elapsed-time or desktop acceptance results. An 8 MiB run completed all
+nine interactive checks with unchanged inputs but took 66.9 seconds with other
+guests active, above the 60-second startup gate
+(`build/i386-keyboard-idle-smoke-v1`). Full Bible-link and C1–C5 qualification
+remain open.
+
 `Kernel/I386/Kbc.HH` and `Kbc.HC` provide raw 8042 access through ports 0x64
 (status/command) and 0x60 (data). These are bootstrap interfaces requiring one
 CPU, IF clear, and exclusive controller ownership. They do not initialize the
