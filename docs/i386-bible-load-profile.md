@@ -402,3 +402,9 @@ four frame demos measured 330, 360, 350 and 370 ms, versus 380, 380, 420 and
 410 ms on the control. Other QEMU guests overlapped these guest-jiffy
 measurements, so the timings are approximate. The full Bible-link test remains
 in progress.
+
+A 90-second full-link sampler on the wider-store image passed with unchanged
+inputs but did not complete the lookup (`build/i386-bible-link-sample-text-fill-v1`).
+Of 413 samples, 131 landed in VGA upload, 75 in text rendering, and 71 in the
+heap chain validator. This samples every scheduled guest task while other QEMU
+guests run and is not an end-to-end timing or completion result.
