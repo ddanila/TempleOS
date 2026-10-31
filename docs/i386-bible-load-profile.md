@@ -524,6 +524,21 @@ addresses, and sampled control registers showed protected mode with paging
 disabled in both guests (`build/i386-cache-diag-registers-candidate-v1`,
 `build/i386-cache-diag-registers-control-v1`). Inputs were unchanged; these
 observations do not rule out a memory-layout or emulation effect.
+In a further paired 20-second run, the live 848-byte compositor function
+matched byte for byte between the images. QEMU reported zero translation-block
+invalidations during both sampling intervals, while the candidate completed
+zero window updates and the control 77 (`build/i386-cache-diag-jit-candidate-v1`,
+`build/i386-cache-diag-jit-control-v1`). Both runs preserved their inputs.
+This does not support translation-block invalidation churn as the slowdown's
+cause; the root cause remains open.
+An isolated multiboot microbenchmark executed the captured compositor bytes
+ten times with the candidate and control code, stack, and graphics-buffer
+addresses. Candidate, control, and two mixed placements each completed in
+0.46–0.48 seconds (`build/cache-layout-bench.asm`,
+`build/cache-layout-link.ld`, `build/cache-layout-*.elf`). This benchmark has
+interrupts disabled and does not reproduce the diagnostic guest's task or
+device state; it shows only that the recorded address shifts alone did not
+reproduce the slowdown.
 The normal
 full-link test timed out at its 20-minute command limit with unchanged inputs
 (`build/i386-cache-mergesort-bible-full-v1`).
