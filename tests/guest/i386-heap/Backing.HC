@@ -84,6 +84,11 @@ I64 BackingManyRegionTest()
   node->request=saved_request;
   saved_next=node->next_owned;node->next_owned=pool->owned;
   if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 501;
+  //The second batch must reject out-of-arena links before dereferencing them.
+  node->next_owned=pool->heap->base-8;
+  if(I386MemBackingValid(pool))return 503;
+  node->next_owned=pool->heap->base+pool->heap->size-8;
+  if(I386MemBackingValid(pool))return 504;
   node->next_owned=saved_next;
   pool->owned_count--;
   if(BackingValidationOracle(pool) || I386MemBackingValid(pool))return 493;

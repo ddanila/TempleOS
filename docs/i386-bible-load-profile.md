@@ -454,6 +454,31 @@ free-span insertion during document allocation and 151 in the bootstrap heap
 chain validator; several of the latter stacks belonged to keyboard work. This
 is not a normal-desktop acceptance test or a direct timing measurement.
 
+## Backing ownership-list collection experiment
+
+An experimental native 386 loop collected each ownership batch after heap
+validation, checking each record was inside the arena before loading its next
+link. Both native and portable heap suites, both bootstrap rebuilds, and
+minimal/full cross-builds with instruction audits passed
+(`build/i386-backing-collect-test-v1.log`,
+`build/i386-backing-collect-source-v1.log`,
+`build/i386-backing-collect-rebuild-v1.log`,
+`build/i386-backing-collect-cross-v1`,
+`build/i386-backing-collect-full-cross-v1`).
+
+The 1,600/3,200-line profile passed with unchanged inputs; both the candidate
+and prior image observed 102 regions at 3,200 lines, taking 10.8 and 11.4
+seconds through cleanup respectively. A 90-second suspended-window full-link
+sample recorded 212 of 412 samples in backing validation versus 223 of 411 in
+the earlier control; neither lookup completed. Inputs were unchanged. The runs
+were not isolated and provide no clear evidence of improvement, so the native
+loop was discarded (`build/i386-backing-collect-bible-medium-v1`,
+`build/i386-pool-fast-bible-medium-v1`,
+`build/i386-backing-collect-bible-sample-v1`,
+`build/i386-pool-fast-bible-sample-v1`). The heap fixture retains new checks
+for out-of-arena links after the first 256-region batch. The candidate 16 MiB startup diagnostic also passed
+(`build/i386-backing-collect-diagnostics-v1`).
+
 ## Pool validation region walk
 
 The native public-pool validator uses a bounded 386 region walk; the portable
@@ -480,8 +505,9 @@ full-link sample with unchanged inputs recorded 43 of 411 samples in the pool
 validator, versus 152 of 410 in an earlier control. The runs overlapped other
 guests, neither lookup completed, and this is not a timing comparison
 (`build/i386-pool-fast-bible-sample-v1`,
-`build/i386-keyboard-idle-bible-isolated-v1`). The full-link test and 8 MiB startup run remain in progress
-(`build/i386-pool-fast-bible-full-v1`, `build/i386-pool-fast-smoke-v1`).
+`build/i386-keyboard-idle-bible-isolated-v1`). The 8 MiB run completed nine interactive and exact VGA checks but took 68.0
+seconds, above the 60-second gate, while the full-link test remains in progress
+(`build/i386-pool-fast-smoke-v1`, `build/i386-pool-fast-bible-full-v1`).
 
 ## Idle keyboard polling
 
