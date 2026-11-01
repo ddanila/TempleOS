@@ -572,17 +572,7 @@ class CFAT32DirEntry
   U32	size;
 };
 
-class CFAT32DirEntryLong
-{
-  U8	ord;
-  U16	name1[5];
-  U8	attr,
-	type,
-	xsum;
-  U16	name2[6],
-	zero,
-	name3[2];
-};
+#include "/Kernel/BlkDev/FATLongEntryTypes.HH"
 
 #define FAT32_ENTRIES_PER_BLK	(BLK_SIZE/sizeof(CFAT32DirEntry))
 #define FAT32_ENTRIES_BITS	Bsf(FAT32_ENTRIES_PER_BLK)

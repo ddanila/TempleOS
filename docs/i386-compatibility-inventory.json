@@ -14256,8 +14256,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": "Convert and checksum FAT short names and decode their padded representation, including dot entries and invalid input.",
-      "oracle": "docs/i386-fat-name.md: original and corrected helper checks cover short names, checksums and bounded overlong writes; the original write beyond the short-name field is an intentional safety difference. FAT traversal, long-name entry handling and whole-file qualification remain open.",
+      "reference_workflow": "Convert and checksum FAT short names, decode their padded representation, and decode long-name entry sequences, including invalid input.",
+      "oracle": "docs/i386-fat-name.md and docs/i386-fat-long-name.md: original and corrected helper checks cover bounded short-name writes and decoding through 37 characters. FAT traversal, long-name creation, full Unicode and whole-file qualification remain open.",
       "tests": [
         {
           "target": "original-fat-name-source",
@@ -14272,6 +14272,20 @@
           "result": "pass",
           "evidence": "build/i386-fat-name-bound-native-v1/result.json",
           "scope": "Corrected short-name conversion and bounded writes, including a 37-character input; not FAT traversal or long-name entry qualification"
+        },
+        {
+          "target": "original-fat-long-name-source",
+          "command": "python3 tools/test-i386-fat-long-name.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-fat-long-name-original-v3/result.json",
+          "scope": "Pinned original decoder behavior, checksum checks and 26-character truncation"
+        },
+        {
+          "target": "native-fat-long-name-64m",
+          "command": "python3 tools/test-i386-fat-long-name.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-fat-long-name-native-v1/result.json",
+          "scope": "Corrected decoder through three slots and 37 characters; not full UTF-16, FAT traversal or long-name creation"
         }
       ]
     },
