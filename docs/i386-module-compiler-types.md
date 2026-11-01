@@ -264,6 +264,10 @@ at 64 MiB on image SHA-256
 (`build/i386-doccursor-dedup-visibility/result.json`); it does not test visual
 rendering or concurrent updates. The original rebuild reports binary
 differences and is not a reproducibility pass.
+The native `DocMax` contract also passes on that image, covering the entry
+maximum, previous return, zero, default and absent documents
+(`build/i386-doccursor-dedup-docmax/result.json`); it does not test automatic
+document truncation. Both focused contract runs preserved their inputs.
 
 A 16 MiB startup diagnostic on the corrected diagnostic image passes its
 startup, retained-value, storage and exact VGA checks
