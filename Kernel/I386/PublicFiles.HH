@@ -42,6 +42,7 @@ public _extern _FAT_NAME_XSUM I64 FATNameXSum(U8 *src);
 public _extern _FAT_FROM_NAME Bool FATFromName(U8 *dst,U8 *src);
 public _extern _DIR_LONG_NAME_FILL Bool DirLongNameFill(CDirEntry *entry,U8 *fat_entry,I64 *checksum);
 public _extern _FAT32_DIR_FILL Bool FAT32DirFill(U8 *fat_entries,CDirEntry *entry,I64 *count,CDate local_time_offset);
+public _extern _FAT32_CDIR_FILL Bool FAT32CDirFill(CDirEntry *entry,U8 *fat_entry,CDate local_time_offset);
 public _extern _FILE_NAME_ABS U8 *FileNameAbs(U8 *filename,I64 fuf_flags=0);
 public _extern _DIR_NAME_ABS U8 *DirNameAbs(U8 *dirname);
 public _extern _FILE_FIND Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);

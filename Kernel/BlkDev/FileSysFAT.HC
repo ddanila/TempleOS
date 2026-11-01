@@ -1,17 +1,6 @@
 #include "/Kernel/BlkDev/FATDateToDosCore.HC"
 
-CDate Dos2CDate(U16 t,U16 d)
-{
-  CDateStruct ds;
-  MemSet(&ds,0,sizeof(CDateStruct));
-  ds.day_of_mon=d&0x1F; d=d>>5;
-  ds.mon=d&0xF;
-  ds.year=d>>4+1980;
-  ds.sec=(t&0x1F)*2; t=t>>5;
-  ds.min=t&0x3F;
-  ds.hour=t>>6;
-  return Struct2Date(&ds);
-}
+#include "/Kernel/BlkDev/FATDateFromDosCore.HC"
 
 U0 FAT32Init(CDrv *dv)
 {
@@ -113,20 +102,7 @@ U0 FAT32Fmt(U8 drv_let,Bool quick=TRUE)
 
 #include "/Kernel/BlkDev/FATLongNameCore.HC"
 
-Bool FAT32CDirFill(CDirEntry *tmpde,
-	CFAT32DirEntry *de,CDate _local_time_offset)
-{
-  Bool res;
-  if (*tmpde->name)
-    res=TRUE;
-  else
-    res=FATFromName(tmpde->name,de->name);
-  tmpde->clus=de->clus_lo+de->clus_hi<<16;
-  tmpde->size=de->size;
-  tmpde->attr=de->attr;
-  tmpde->datetime=Dos2CDate(de->WrtTime,de->WrtDate)-_local_time_offset;
-  return res;
-}
+#include "/Kernel/BlkDev/FATDirReadCore.HC"
 
 #include "/Kernel/BlkDev/FATDirFillCore.HC"
 
