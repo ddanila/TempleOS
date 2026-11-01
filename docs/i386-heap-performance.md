@@ -687,3 +687,50 @@ individual record frees account for another 25 `I386HeapFree` samples. These
 are nonexclusive statistical observations from this particular run, not call
 counts. Any batching or validation reuse must preserve complete corruption
 checking, allocation-boundary ownership and interrupt exclusion.
+
+## Parser token ownership search (2026-11-01)
+
+A profile of the shared-call-descriptor image found 88 of 294 root-header
+samples in `I386HeapScan`, 60 in `I386HeapScanSelect`, 49 in `I386HeapFree`,
+and 26 in `I386ParserToken` (`build/i386-shared-calls-boot-profile`). These
+are statistical samples collected while another build was running, not call
+counts or a timing comparison.
+
+`I386ParserToken` previously searched its parser-allocation queue after every
+lexer call to find a lookahead already registered by a recursive directive.
+The control now keeps a saturating token epoch. A non-reentrant lexer call
+without an external callback can reuse its pending slot without the second
+search. Recursive token calls and all include/directive callbacks advance the
+epoch, causing the original complete search. At saturation the full search is
+always used. The synchronous callback wrapper refreshes handler pointers after
+each callback so a callback can change subsequent handlers. Compiler services
+advance to version 77.
+
+A new compiler probe exercises a non-recursive directive that publishes a
+parser-owned token, then verifies single ownership and exact cleanup. Another
+changes the include handler during a callback and verifies the next include is
+rejected and cleaned up. Both run in both native diagnostic phases. An
+optional temporary ownership audit checked each skipped search against a full
+queue walk; the refined audited image passed the 16 MiB diagnostic
+(`build/i386-token-refresh-audit-diag16`). The production image, with the audit
+switch off, passed both original rebuild generations, the cross-build and 386
+instruction audit, the full 16 MiB diagnostic, and a native nested DolDoc AOT
+include fixture (`build/i386-token-refresh-rebuild.log`,
+`build/i386-token-refresh-cross`, `build/i386-token-refresh-diag16`,
+`build/i386-token-refresh-include-aot`). These checks do not prove every
+possible callback or every epoch-saturation state.
+
+A direct conditional fixture attempt timed out while typing its long setup
+command, before testing a conditional (`build/i386-token-refresh-conditionals`);
+it is not counted as a pass or a compiler failure. The audited earlier variant
+also passed nested include and include-error cleanup fixtures, but those runs
+preceded the final callback-handler refresh change.
+
+With the retained build and its launcher paused, isolated 8 MiB candidate and
+control runs each completed all nine functional checks, exact VGA restoration,
+and unchanged disk checks. The candidate took 69.009 seconds and the control
+70.641 seconds (`build/i386-token-refresh-pair.json`). Both miss the 60-second
+gate. This single pair shows a modest improvement on this host, not a
+performance distribution or completion of the timing requirement. The retained
+build was resumed afterward and continues on its earlier version-76 image; it
+does not test this change. C1–C5 remain open.

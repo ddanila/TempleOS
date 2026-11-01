@@ -25129,3 +25129,14 @@ and recursive call checks. Isolated candidate/control 8 MiB runs pass their
 functional checks but both take about 70.4 seconds and miss the 60-second gate.
 A new nine-module retained build is running; its result is not yet known.
 See [the evidence](docs/i386-shared-call-descriptors.md). C1–C5 remain open.
+
+## Parser token ownership search (2026-11-01)
+
+The compiler skips a redundant ownership-queue search for non-reentrant lexer
+calls without callbacks, while recursive calls, callbacks and epoch saturation
+retain the full search. Callback ownership and handler changes have native
+regressions; the audited and production 16 MiB diagnostics and a nested
+DolDoc AOT include pass. An isolated 8 MiB pair took 69.009 seconds for the
+candidate and 70.641 for the control; both miss the 60-second gate. The full
+retained build continues on its earlier image. See
+[the evidence](docs/i386-heap-performance.md). C1–C5 remain open.

@@ -30,6 +30,7 @@ class CI386CmpCtrl {
   CI386ParserAllocation *parser_next,*parser_last;
   CHashTable *private_defines;
   U8 *frontend; //Borrowed registered parser state, valid while control lives.
+  U32 token_epoch; //Saturates rather than wrapping across a recursive lexer call.
 };
 Bool I386CmpTaskOwnerValid(CI386Task *task,CI386Heap *heap,CHashTable *symbols)
 {
