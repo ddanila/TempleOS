@@ -2128,7 +2128,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB. Eight direct form-Tab navigation and insertion cases also match the original."
+        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB. Eight direct form-Tab navigation and insertion cases also match the original. Real chooser Tab, Shift-Tab, Down and key-release cases match at 8 and 64 MiB; retained non-form physical vertical navigation also passes its scoped test."
       },
       "oracle": {
         "tool": "tools/test-i386-doc-put-key-reference.py",
@@ -2222,6 +2222,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-form-tab-native-8m-v1/result.json",
           "scope": "Same eight direct form-Tab cases at 8 MiB; full form input remains unqualified"
+        },
+        {
+          "target": "native-chooser-keyboard-64m",
+          "command": "python3 tools/test-i386-menu-chooser.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doced-keydown-menu-64m-v3/result.json",
+          "scope": "Actual chooser keyboard cases including form navigation and key-release suppression; not full popup input or rendering"
+        },
+        {
+          "target": "native-chooser-keyboard-8m",
+          "command": "python3 tools/test-i386-menu-chooser.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doced-keydown-menu-8m-v3/result.json",
+          "scope": "Same scoped chooser keyboard cases at 8 MiB"
+        },
+        {
+          "target": "native-physical-editor-vertical-navigation",
+          "command": "python3 tools/test-i386-doced-key-events.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doced-keydown-physical-v6/result.json",
+          "scope": "Physical key-down/up navigation and serialized cursor in retained non-form editor; not full editor qualification"
         }
       ]
     },

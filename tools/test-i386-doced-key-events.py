@@ -25,6 +25,7 @@ def main():
     commands=[('CDoc *vert_doc=DocNew("C:/NativeVertical.DD",Fs);',[]),
       ('DocEd(vert_doc);',['1'],{
         'begin':'DOC EDIT begin\n','end':'DOC EDIT end\n',
+        'preserve_history':True,
         'initial_rows':['TempleOS i386','DolDoc editor','C:/NativeVertical.DD','',cursor],
         'events':[{'text':'abcde'},{'key':'ret'},{'text':'xy'},
                   {'key':'ret'},{'text':'12345'},{'key':'home'},
@@ -32,7 +33,9 @@ def main():
                   {'key':'down'},{'key':'up'},{'key':'up'},{'key':'down'}],
         'final_rows':['TempleOS i386','DolDoc editor','C:/NativeVertical.DD','',
                       'abcde','xy'+cursor,'12345']}),
-      ("I64 vert_size;U8 *vert_text=DocSave(vert_doc,&vert_size);vert_size==15&&vert_text[5]==10&&vert_text[8]==5&&vert_text[9]==10;",['1']),
+      ("I64 vert_size;U8 *vert_text=DocSave(vert_doc,&vert_size);",[]),
+      ("vert_size==15&&vert_text[5]==10;",['1']),
+      ("vert_text[8]==5&&vert_text[9]==10;",['1']),
       ('Free(vert_text);DocDel(vert_doc);',[]),('6*7;',['42'])]
     report=dict(result='running',scope='Physical QEMU key down/up editor navigation and serialized cursor; not full editor qualification',input_sha256=pins)
     try:

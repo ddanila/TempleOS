@@ -188,10 +188,16 @@ The final candidate passes the complete queued chooser fixture at 64 and 8 MiB
 (`build/i386-doced-keydown-menu-64m-v3`,
 `build/i386-doced-keydown-menu-8m-v3`). Both bootstrap generations and the
 full cross-build/386 audit pass (`build/i386-doced-keydown-rebuild-v3.log`,
-`build/i386-doced-keydown-cross-v3`). The separate physical editor check still
-times out waiting for the expected screen state, even with the retained line
-mover (`build/i386-doced-keydown-physical-v2`); ordinary physical editing is
-therefore not requalified and requires investigation. The final candidate has
-not been requalified by the 16 MiB diagnostic or isolated 8 MiB startup timing
-gate. The prior image completed its nine startup checks in 61.157 seconds,
-above the 60-second gate.
+`build/i386-doced-keydown-cross-v3`). The first physical editor run timed out
+after the editor interaction because the test expected cleared console history; the expected editor screen had
+already matched (`build/i386-doced-keydown-physical-v2`). A corrected run also
+matched the editor and return screens but timed out while typing its long
+serialization-check command (`build/i386-doced-keydown-physical-v5`). With
+retained history and short serialization commands, the physical vertical
+navigation, saved cursor and cleanup check passes
+(`build/i386-doced-keydown-physical-v6`). The 16 MiB diagnostic and
+terminal-menu regression pass
+(`build/i386-doced-keydown-diagnostics-v2`,
+`build/i386-doced-keydown-term-menu-v1`). The isolated 8 MiB run passes all
+nine functional/VGA checks but takes 61.398 seconds and misses the 60-second gate
+(`build/i386-doced-keydown-startup-v1`).
