@@ -302,5 +302,19 @@ A fresh nine-module 128 MiB retained run with those diagnostics is in progress
 `d5843a084afd9a5b83fabbd7f3503554749063e4a504d161cacccfc371dee656`.
 No result is claimed until it finishes; the preceding stage-6 failure remains
 unresolved.
-A separate Startup-only retained build is also running on that image
-(`build/i386-stage6-diagnostic-startup128`); it has not yet qualified a module.
+A separate Startup-only retained build passed on that image at 128 MiB with
+`486,-fpu` (`build/i386-stage6-diagnostic-startup128/result.json`): it built a
+407-byte module with six records and one export. This does not resolve the
+larger ConsoleRuntime failure or qualify the full retained build.
+
+Read-only comparison of the failed run's final disk against its pinned input
+found one new sector-aligned T32M header with the reported `0x27F946` size at
+sector 98732. Within its 5117-sector extent, 989 sectors differ from the input,
+ending at relative sector 988 (`build/i386-doccursor-stage-remnant.json`; tool
+`tools/inspect-i386-module-stage-remnants.py`). The recovered image's
+`ModuleWriteCore.HC` matches the current source. That writer validates the
+module before emitting its header, so this is evidence that validation passed
+and streaming began. Changed sectors are not an exact count of writes: writing
+identical bytes would not appear in the comparison. The failure offset and
+whether the sink, staging state or another streaming condition caused it remain
+unknown.
