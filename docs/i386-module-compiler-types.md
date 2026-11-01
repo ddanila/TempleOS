@@ -368,17 +368,19 @@ A native multi-page probe generates 160 functions and builds them in the
 guest (`tools/test-i386-module-writer-pages-native.py`). The preceding writer
 image passes (`build/i386-module-writer-pages-native-control-v1`): the persisted
 module is 24,069 bytes with 161 exports and 320 relocation slots across three
-payload pages. The validation-cache image's corresponding run is still live
-at `build/i386-module-validator-pages-native-v1`; it has compiled the functions
-and reached packing but has not produced a result. A temporary trace image and
+payload pages. The validation-cache image's corresponding command timed out
+after reaching packing (`build/i386-module-validator-pages-native-v1`). Its
+report flags changed inputs: `tools/build-i386-kernel.py` was updated for the
+rollback while the guest was running. The pinned image and test driver did not
+change, but this is not a clean unchanged-input result. A temporary trace image and
 smaller probe are running at `build/i386-patch-map-trace-cross` and
-`build/i386-patch-map-trace-native-v1`. This observation is not yet a terminal
-failure or a timing comparison. The production source does not include the
+`build/i386-patch-map-trace-native-v1`; it is still running. These runs are not
+an isolated timing comparison. The production source does not include the
 temporary trace statements.
 
 The validation cache is now disabled pending investigation. The preceding
-writer image completed the multi-page probe, while the cache-image probe has
-remained live in packing far longer without a result. A temporary direct native
+writer image completed the multi-page probe, while the cache-image probe timed
+out in packing with the input-change limitation above. A temporary direct native
 probe with 481 records timed out on repeated cache calls
 (`build/i386-module-cache-direct-many-v1`); a loop-only control passed
 (`build/i386-module-cache-loop-control-v1`), and a one-call probe displayed zero
@@ -389,8 +391,8 @@ passed (`build/i386-module-cache-direct-v1`). These
 direct probes use a fixed address in the pinned image and are diagnostic, not
 a general public-API test. Their difference warrants the conservative rollback,
 but it does not establish the exact fault. The earlier 4 KiB output-window
-optimization remains; the live cache-image, trace and nine-module runs are
-not stopped by this source change. The rollback writer oracle passes
+optimization remains; the live trace and nine-module runs are not stopped by
+this source change. The rollback writer oracle passes
 (`build/i386-module-validator-rollback-writer-v1`), as do both original rebuild
 generations with binary differences (`build/i386-module-validator-rollback-rebuild.log`),
 the native cross-build and 386 audit (`build/i386-module-validator-rollback-cross`),
