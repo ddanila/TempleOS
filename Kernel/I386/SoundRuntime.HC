@@ -1,3 +1,4 @@
+#include "/Kernel/I386/OnaFrequencies.HC"
 U32 native_snd_base_periods[12]={86777,81906,77309,72970,68875,65009,
                                  61361,57917,54666,51598,48702,45968};
 I8 native_snd_ona;

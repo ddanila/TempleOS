@@ -254,3 +254,7 @@ unchanged). Gameplay remains open.
 With public `Beep`, unchanged KeepAway advances past the game-over beep and
 stops at `Noise` on line 487 (`build/i386-app-keepaway-beep-v1`, inputs
 unchanged). Gameplay remains open.
+
+With the original asynchronous sound-effect routines, unchanged KeepAway
+advances past `Noise` and stops at mouse state `ms` on line 504
+(`build/i386-app-keepaway-effects-v1`, inputs unchanged). Gameplay remains open.

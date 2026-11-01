@@ -18,6 +18,6 @@ cross-build and 386 audit pass (`build/i386-frameptr-rebuild-v2.log`,
 source avoids those directives. Allocation failures, concurrent mutation and
 all task-retirement paths remain outside this fixture.
 
-This service is a dependency of the original asynchronous `Noise` sound-effect
-task and its end callback. `Noise`, KeepAway gameplay and C1–C5 remain open;
-the previous unchanged KeepAway load still stops at `Noise` on line 487.
+This service supports the original asynchronous `Noise` sound-effect task and
+its end callback. Its later integration and remaining limits are documented in
+`docs/i386-sound-effects.md`. KeepAway gameplay and C1–C5 remain open.
