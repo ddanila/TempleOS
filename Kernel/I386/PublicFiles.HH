@@ -43,6 +43,7 @@ public _extern _DIR_ENTRY_DEL U0 DirEntryDel(CDirEntry *entry);
 public _extern _DIR_ENTRY_DEL2 U0 DirEntryDel2(CDirEntry *entry);
 public _extern _DIR_TREE_DEL U0 DirTreeDel(CDirEntry *entry);
 public _extern _DIR_TREE_DEL2 U0 DirTreeDel2(CDirEntry *entry);
+public _extern _DIR_FILES_FLATTEN CDirEntry *DirFilesFlatten(CDirEntry *entry,CDirEntry **result,I64 flags);
 public _extern _FILE_WRITE I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0);
 public _extern _DIR_MK Bool DirMk(U8 *filename,I64 entry_cnt=0);
 public _extern _DIR I64 Dir(U8 *filename=NULL);

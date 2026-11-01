@@ -13736,8 +13736,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": "Release individual directory entries and nested sibling trees, preserving or freeing user data according to the selected deletion routine.",
-      "oracle": "docs/i386-directory-tree-delete.md: null, single and nested cleanup, user-data ownership and exact caller-heap recovery; directory enumeration, sorting and whole-file behavior remain unqualified.",
+      "reference_workflow": "Release individual directory entries and nested sibling trees, preserving or freeing user data according to the selected deletion routine; flatten nested trees with and without removing directories.",
+      "oracle": "docs/i386-directory-tree-delete.md and docs/i386-directory-flatten.md: scoped cleanup ownership, depth-first ordering, returned tail and exact caller-heap recovery; directory enumeration, sorting and whole-file behavior remain unqualified.",
       "tests": [
         {
           "target": "original-directory-tree-delete",
@@ -13752,6 +13752,20 @@
           "result": "pass",
           "evidence": "build/i386-dir-tree-delete-native-v1/result.json",
           "scope": "Same ownership and heap checks on native; not FilesFind or whole-file qualification"
+        },
+        {
+          "target": "original-directory-flatten-source",
+          "command": "python3 tools/test-i386-dir-flatten.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-flatten-original-v5/result.json",
+          "scope": "Five checks of original helper body executed on pinned original"
+        },
+        {
+          "target": "native-directory-flatten-64m",
+          "command": "python3 tools/test-i386-dir-flatten.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-flatten-native-v1/result.json",
+          "scope": "Same flattening and heap checks on native; not sorting or enumeration"
         }
       ]
     },
