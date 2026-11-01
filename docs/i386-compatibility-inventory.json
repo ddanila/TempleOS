@@ -13736,8 +13736,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": "Release individual directory entries and nested sibling trees, preserving or freeing user data according to the selected deletion routine; flatten nested trees with and without removing directories.",
-      "oracle": "docs/i386-directory-tree-delete.md and docs/i386-directory-flatten.md: scoped cleanup ownership, depth-first ordering, returned tail and exact caller-heap recovery; directory enumeration, sorting and whole-file behavior remain unqualified.",
+      "reference_workflow": "Release individual directory entries and nested sibling trees, preserving or freeing user data according to the selected deletion routine; flatten nested trees with and without removing directories; sort nested entries by name and cluster.",
+      "oracle": "docs/i386-directory-tree-delete.md, docs/i386-directory-flatten.md and docs/i386-directory-sort.md: scoped cleanup, flattening and name/cluster sorting with exact caller-heap recovery; directory enumeration and whole-file behavior remain unqualified.",
       "tests": [
         {
           "target": "original-directory-tree-delete",
@@ -13766,6 +13766,20 @@
           "result": "pass",
           "evidence": "build/i386-dir-flatten-native-v1/result.json",
           "scope": "Same flattening and heap checks on native; not sorting or enumeration"
+        },
+        {
+          "target": "original-directory-sort-source",
+          "command": "python3 tools/test-i386-dir-sort.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-sort-original-v2/result.json",
+          "scope": "Nine checks of shared sorter body on pinned original"
+        },
+        {
+          "target": "native-directory-sort-64m",
+          "command": "python3 tools/test-i386-dir-sort.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-sort-native-v1/result.json",
+          "scope": "Same name/cluster ordering, recursion and heap checks; not enumeration or all filename cases"
         }
       ]
     },
