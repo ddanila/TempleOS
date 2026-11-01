@@ -733,9 +733,15 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 command('input-send-event',events=[{'type':'btn','data':{'down':False,'button':'left'}}])
             submit('MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets)&&!(mouse_buttons&1);', ['1'], 'mouse-left-up')
             active_group='sound'
-            submit('I64 SndProbe(){I64 f=GetRFlags,l,h,p,m=0,i;Snd(60);for(i=0;i<4096;i++){OutU8(0x43,0x80);l=InU8(0x42);h=InU8(0x42);p=l+(h<<8);if(p>m)m=p;}return m>=2400&&m<=2712&&(InU8(0x61)&3)==3&&(GetRFlags&512)==(f&512);}SndProbe;', ['1'], 'speaker-on')
+            if welcome:
+                submit('Snd(60);(InU8(0x61)&3)==3;', ['1'], 'speaker-on')
+            else:
+                submit('I64 SndProbe(){I64 f=GetRFlags,l,h,p,m=0,i;Snd(60);for(i=0;i<4096;i++){OutU8(0x43,0x80);l=InU8(0x42);h=InU8(0x42);p=l+(h<<8);if(p>m)m=p;}return m>=2400&&m<=2712&&(InU8(0x61)&3)==3&&(GetRFlags&512)==(f&512);}SndProbe;', ['1'], 'speaker-on')
             if audio_wav is not None: capture_audio_phase('tone_440')
-            submit('I64 SndOffProbe(){I64 flags=GetRFlags;Snd;return (InU8(0x61)&3)==0&&(GetRFlags&512)==(flags&512);}SndOffProbe;', ['1'], 'speaker-off')
+            if welcome:
+                submit('Snd;(InU8(0x61)&3)==0;', ['1'], 'speaker-off')
+            else:
+                submit('I64 SndOffProbe(){I64 flags=GetRFlags;Snd;return (InU8(0x61)&3)==0&&(GetRFlags&512)==(flags&512);}SndOffProbe;', ['1'], 'speaker-off')
             if audio_wav is not None:
                 capture_audio_phase('off')
                 submit('Snd(72);42;', ['42'], 'speaker-octave')

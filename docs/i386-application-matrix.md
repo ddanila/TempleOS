@@ -250,3 +250,7 @@ With the original mathematical constants, unchanged KeepAway advances past
 With public `Blink`, unchanged KeepAway advances past the blinking text branch
 and stops at `Beep` on line 428 (`build/i386-app-keepaway-blink-v1`, inputs
 unchanged). Gameplay remains open.
+
+With public `Beep`, unchanged KeepAway advances past the game-over beep and
+stops at `Noise` on line 487 (`build/i386-app-keepaway-beep-v1`, inputs
+unchanged). Gameplay remains open.

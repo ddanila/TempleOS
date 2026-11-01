@@ -76,6 +76,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--welcome', action='store_true', help='Expect the welcome screen on startup')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -84,9 +85,9 @@ def main():
     runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
     wav_path = out / 'speaker.wav'
     console = runner(args.disk, out / 'console', groups=('sound',), cpu='486,-fpu',
-                     qmp_stdio=True, audio_wav=wav_path)
+                     qmp_stdio=True, audio_wav=wav_path, welcome=args.welcome)
     report = assess_wav(wav_path, console.get('audio_emission', {}))
-    report.update(cpu='486,-fpu', ram_mib=8, accel='tcg', disk_sha256=digest,
+    report.update(cpu='486,-fpu', ram_mib=8, accel='tcg', welcome=args.welcome, disk_sha256=digest,
                   wav_sha256=hashlib.sha256(wav_path.read_bytes()).hexdigest(),
                   checker_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                   input_runner_sha256=hashlib.sha256((ROOT / 'tools/i386-kernel-input.py').read_bytes()).hexdigest(),
