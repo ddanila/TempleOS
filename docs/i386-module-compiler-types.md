@@ -91,3 +91,24 @@ independent 8 MiB snapshot of the preceding image also returned `-38`
 flag change. The cause and exact failure stage within the diagnostic remain to
 be established. The baseline was concurrent with the retained build, and its
 startup timing is not an isolated measurement.
+
+### Allocation-failure investigation (2026-11-01)
+
+The existing `DocAllocationCheck = -38` install gate was investigated with
+uncommitted diagnostic instrumentation on the 8 MiB guest. The diagnostic
+reported 12 allocations for the successful clipboard paste and selected the
+second allocation for failure; its task heap usage rose from `0x6080` to
+`0x60A8` (40 bytes) across that failing paste. The instrumented allocation
+trace recorded two consecutive 25-byte requests, with the second failing.
+The paste's saved-buffer assignment had not completed: the exception occurred
+inside `DocSave` before it returned to `NativeDocClipPaste`. This narrows the
+leak to work performed by `DocSave` or its callees, but does not identify the
+allocation's owner or establish a fix. Temporary tracing was removed.
+
+The instrumented artifacts are `build/i386-c5-paste-trace-8m`,
+`build/i386-c5-paste-body-trace-8m`, and
+`build/i386-c5-paste-alloc-trace-8m`; they are local build evidence, not
+committed fixtures. The strict install gate remains failing and C1–C5 remain
+open. The nine-module retained build on the include-dollar fix was still
+running in ConsoleRuntime when this note was recorded; it had reached
+`RandI16`, with no complete module result yet.

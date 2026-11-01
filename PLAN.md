@@ -25079,3 +25079,9 @@ screen. A cross-built Startup replacement reached its 8 MiB boot but failed the
 strict `DocAllocationCheck` with `-38`; the preceding image shows the same
 result. The diagnostic failure, full guest-built install and two generations
 remain open; see [the evidence](docs/i386-module-compiler-types.md).
+
+The 8 MiB `DocAllocationCheck` investigation narrowed `-38` to a 40-byte
+heap increase when the second injected allocation fails inside `DocSave` before
+clipboard paste receives its saved buffer. The allocation's owner and a fix
+remain unconfirmed; temporary instrumentation was removed. See
+[the investigation](docs/i386-module-compiler-types.md).
