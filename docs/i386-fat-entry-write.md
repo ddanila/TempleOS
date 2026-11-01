@@ -188,6 +188,20 @@ guest and host readback of one complete version, cold reopen and `fsck.fat -n`
 (`build/i386-fat-write-lock-control-v1`). This is one concurrent workload, not
 proof of all task interleavings, streamed-write atomicity or crash recovery.
 
+Deleting a host-created long name whose entries span directory clusters
+previously overwrote the prior cluster with the current cluster's buffer,
+making an unrelated file unreadable (`build/i386-fat-cross-delete-red-v1`).
+Both deletion and relocation cleanup now write the previous cluster's buffer.
+The rebuilt-original disk tests create the crossing entry with `mcopy`, verify
+its original slot layout, and test deletion and relocation separately
+(`build/i386-fat-cross-delete-v2`, `build/i386-fat-cross-update-v2`). They
+verify the old slots are deleted, the relocation uses the freed first slots,
+unrelated files survive, host and guest readback agree, cold reopen leaves the
+disk hash unchanged, and `fsck.fat -n` exits zero. The original compiler and
+kernel rebuild through two generations with binary differences
+(`build/i386-fat-cross-delete-rebuild.log`). These cases use one-sector
+clusters and do not qualify all FAT directory layouts or crash recovery.
+
 `FAT32DirNew` currently returns false even on successful writes, so the earlier
 invalid-name API test's return value alone does not establish rejection. Its
 unchanged cold-reopen disk hash and the entry-writer canary test provide the

@@ -163,6 +163,25 @@ if(fd_mask&1) {
    if(fd_fill_ok && !FileFind("C:/LOCK.TXT"))fd_mask|=4096;
   }
   if(FD_RACE && FDRace(FD_REOPEN))fd_mask|=8192;
+  if(FD_CROSS_DELETE) {
+   if(!FD_REOPEN)Del("C:/boundaryABCDEFGHIJKLMNOPQRSTUVWXYZ123",,,FALSE);
+   if(!FileFind("C:/boundaryABCDEFGHIJKLMNOPQRSTUVWXYZ123"))fd_mask|=16384;
+  }
+  if(FD_CROSS_UPDATE) {
+   fd_fill_ok=TRUE;
+   if(!FD_REOPEN) {
+    fd_fill_ok=FileFind("C:/boundaryABCDEFGHIJKLMNOPQRSTUVWXYZ123",&fd_entry);
+    if(fd_fill_ok) {
+     for(fd_i=0;fd_i<4;fd_i++) {
+      fd_filler=MStrPrint("C:/P%02d.TXT",fd_i);Del(fd_filler,,,FALSE);Free(fd_filler);
+     }
+     DirNew(Let2Drv('C'),"/",&fd_entry,FALSE);
+     Free(fd_entry.full_name);
+    }
+   }
+   if(fd_fill_ok && FDRead("boundaryABCDEFGHIJKLMNOPQRSTUVWXYZ123","boundary-test") &&
+      !FileFind("C:/P00.TXT"))fd_mask|=32768;
+  }
  }
 }
 fd_line=MStrPrint("FAT DISK MASK %d\n",fd_mask);FDReport(fd_line);Free(fd_line);FDReport("DONE fat disk\n");

@@ -15,6 +15,39 @@ ROOT=Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/'tests/guest/i386-fat-on-disk/Once.HC'
 NAMES=[('SHORT.TXT',b'short'),('alphaabcdefghijklmnopqrs',b'twenty-four'),('bravobcdefghijklmnopqrstuvwxyz',b'thirty'),('charlieABCDEFGHIJKLMNOPQRSTUVWXYZ1234',b'thirty-seven')]
 COLLISIONS=[('twinabcdefghijklmnop1',b'first'),('twinabcdefghijklmnop2',b'second'),('twinabcdefghijklmnop3',b'third')]
+CROSS_NAME='boundaryABCDEFGHIJKLMNOPQRSTUVWXYZ123'
+
+def prepare_cross_delete(disk,start,out):
+    source=out/'cross-source.bin';source.write_bytes(b'boundary-test')
+    names=[f'P{i:02}.TXT' for i in range(14)]+[CROSS_NAME]
+    for name in names:
+        subprocess.run(['mcopy','-i',str(disk)+'@@'+str(start*512),str(source),'::/'+name],check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    with disk.open('rb') as f:
+        base=start*512;f.seek(base);boot=f.read(512)
+        reserved=struct.unpack_from('<H',boot,14)[0];size=struct.unpack_from('<I',boot,36)[0];root=struct.unpack_from('<I',boot,44)[0]
+        if struct.unpack_from('<H',boot,11)[0]!=512 or boot[13]!=1:raise ValueError('Unexpected cross-boundary FAT layout')
+        data=reserved+boot[16]*size
+        f.seek(base+(data+root-2)*512);first=f.read(512)
+        f.seek(base+reserved*512+root*4);nxt=struct.unpack('<I',f.read(4))[0]&0x0fffffff
+        if not 2<=nxt<0x0ffffff8:raise ValueError('Cross-boundary root did not grow')
+        f.seek(base+(data+nxt-2)*512);second=f.read(512)
+        if [first[i*32] for i in (14,15)]!=[0x43,2] or second[0]!=1 or second[11]!=0x0f or second[43]==0x0f:
+            raise ValueError('Long-name entries did not straddle the root cluster')
+    return {'root_cluster':root,'next_cluster':nxt,'ordinals':[0x43,2,1]}
+
+def verify_cross_after(disk,start,before,update):
+    with disk.open('rb') as f:
+        base=start*512;f.seek(base);boot=f.read(512)
+        reserved=struct.unpack_from('<H',boot,14)[0];size=struct.unpack_from('<I',boot,36)[0]
+        data=reserved+boot[16]*size
+        f.seek(base+(data+before['root_cluster']-2)*512);first=f.read(512)
+        f.seek(base+(data+before['next_cluster']-2)*512);second=f.read(512)
+    if [first[i*32] for i in (14,15)]!=[0xe5,0xe5] or [second[i*32] for i in (0,1)]!=[0xe5,0xe5]:
+        raise ValueError('Old cross-cluster entries were not deleted')
+    if update and ([first[i*32] for i in (0,1,2)]!=[0x43,2,1] or
+                   any(first[i*32+11]!=0x0f for i in (0,1,2)) or first[3*32] in (0,0xe5) or first[3*32+11]==0x0f):
+        raise ValueError('Updated long entry was not relocated into the freed slots')
+    return {'old_slots_deleted':True,'relocated_to_first_slots':bool(update)}
 
 def verify_merge(disk, start, debug):
     matches=re.findall(r'^FAT MERGE (\d+) (\d+) (\d+)$',debug,re.MULTILINE)
@@ -75,6 +108,8 @@ def main():
     parser.add_argument('--alias-merge',action='store_true',help='Replace a chain with a new prefix and a shared tail')
     parser.add_argument('--lock-retention',action='store_true',help='Check nested FAT deletion preserves the caller drive lock')
     parser.add_argument('--race',action='store_true',help='Race long-name and short-alias whole-file writes')
+    parser.add_argument('--cross-delete',action='store_true',help='Delete a host-created long name spanning directory clusters')
+    parser.add_argument('--cross-update',action='store_true',help='Relocate a host-created long entry spanning directory clusters')
     parser.add_argument('--out',type=Path,required=True)
     args=parser.parse_args();out=args.out.resolve()
     if args.collisions and not args.shared:parser.error('--collisions requires --shared')
@@ -87,6 +122,8 @@ def main():
     if args.alias_merge and (not args.alias_dirnew or args.alias_replace or args.alias_overlap):parser.error('--alias-merge requires --alias-dirnew without --alias-replace or --alias-overlap')
     if args.lock_retention and not args.shared:parser.error('--lock-retention requires --shared')
     if args.race and (not args.collisions or args.alias_shadow or args.alias_stream or args.alias_dirnew):parser.error('--race requires --collisions without other alias-update modes')
+    if args.cross_delete and not args.shared:parser.error('--cross-delete requires --shared')
+    if args.cross_update and (not args.shared or args.cross_delete):parser.error('--cross-update requires --shared without --cross-delete')
     if out.exists():parser.error('Use a fresh output directory')
     out.mkdir(parents=True);overlay=out/'overlay';overlay.mkdir()
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
@@ -116,8 +153,9 @@ def main():
         mbr=bytearray(512);mbr[446:462]=struct.pack('<B3sB3sII',0,b'\0\2\0',0x0c,b'\xfe\xff\xff',start,count);mbr[510:512]=b'\x55\xaa'
         with disk.open('r+b') as f:f.write(mbr)
         subprocess.run(['mkfs.fat','-F','32','-s','1','--offset',str(start),str(disk),str(count//2)],cwd=ROOT,check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        if args.cross_delete or args.cross_update:report['cross_before']=prepare_cross_delete(disk,start,out)
         report['disk_before_sha256']=sha(disk)
-        defines='#define FD_EXTENDED '+('TRUE' if args.shared else 'FALSE')+'\n#define FD_COLLISIONS '+('TRUE' if args.collisions else 'FALSE')+'\n#define FD_ALIAS_SHADOW '+('TRUE' if args.alias_shadow else 'FALSE')+'\n#define FD_ALIAS_DELETE '+('TRUE' if args.alias_delete else 'FALSE')+'\n#define FD_ALIAS_STREAM '+('TRUE' if args.alias_stream else 'FALSE')+'\n#define FD_ALIAS_DIRNEW '+('TRUE' if args.alias_dirnew else 'FALSE')+'\n#define FD_ALIAS_REPLACE '+('TRUE' if args.alias_replace else 'FALSE')+'\n#define FD_ALIAS_OVERLAP '+('TRUE' if args.alias_overlap else 'FALSE')+'\n#define FD_ALIAS_MERGE '+('TRUE' if args.alias_merge else 'FALSE')+'\n#define FD_LOCK_RETENTION '+('TRUE' if args.lock_retention else 'FALSE')+'\n#define FD_RACE '+('TRUE' if args.race else 'FALSE')+'\n'
+        defines='#define FD_EXTENDED '+('TRUE' if args.shared else 'FALSE')+'\n#define FD_COLLISIONS '+('TRUE' if args.collisions else 'FALSE')+'\n#define FD_ALIAS_SHADOW '+('TRUE' if args.alias_shadow else 'FALSE')+'\n#define FD_ALIAS_DELETE '+('TRUE' if args.alias_delete else 'FALSE')+'\n#define FD_ALIAS_STREAM '+('TRUE' if args.alias_stream else 'FALSE')+'\n#define FD_ALIAS_DIRNEW '+('TRUE' if args.alias_dirnew else 'FALSE')+'\n#define FD_ALIAS_REPLACE '+('TRUE' if args.alias_replace else 'FALSE')+'\n#define FD_ALIAS_OVERLAP '+('TRUE' if args.alias_overlap else 'FALSE')+'\n#define FD_ALIAS_MERGE '+('TRUE' if args.alias_merge else 'FALSE')+'\n#define FD_LOCK_RETENTION '+('TRUE' if args.lock_retention else 'FALSE')+'\n#define FD_RACE '+('TRUE' if args.race else 'FALSE')+'\n#define FD_CROSS_DELETE '+('TRUE' if args.cross_delete else 'FALSE')+'\n#define FD_CROSS_UPDATE '+('TRUE' if args.cross_update else 'FALSE')+'\n'
         (overlay/'Once.HC').write_text(defines+'#define FD_REOPEN FALSE\n'+FIXTURE.read_text())
         iso=out/'original.iso'
         subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(overlay),'--output',str(iso)],cwd=ROOT,check=True)
@@ -129,11 +167,17 @@ def main():
         if args.alias_dirnew:expected+=2048
         if args.lock_retention:expected+=4096
         if args.race:expected+=8192
+        if args.cross_delete:expected+=16384
+        if args.cross_update:expected+=32768
         debug=(out/'guest/debug.log').read_text()
         if f'FAT DISK MASK {expected}\n' not in debug:raise ValueError('Guest FAT contract failed')
         if args.alias_merge:report['merge']=verify_merge(disk,start,debug)
-        if args.shared and not (args.alias_shadow or args.alias_delete or args.alias_stream or args.alias_dirnew or args.lock_retention or args.race):report['boundary']=verify_boundary(disk,start)
+        if args.cross_delete or args.cross_update:report['cross_after']=verify_cross_after(disk,start,report['cross_before'],args.cross_update)
+        if args.shared and not (args.alias_shadow or args.alias_delete or args.alias_stream or args.alias_dirnew or args.lock_retention or args.race or args.cross_delete or args.cross_update):report['boundary']=verify_boundary(disk,start)
         names=(NAMES+(COLLISIONS if args.collisions else [])+[(f'F{i:02}.TXT',b'fill') for i in range(6)]) if args.shared else NAMES[:2]
+        if args.cross_delete or args.cross_update:
+            names += [(f'P{i:02}.TXT',b'boundary-test') for i in range(4 if args.cross_update else 0,14)]
+            if args.cross_update:names.append((CROSS_NAME,b'boundary-test'))
         if args.alias_shadow:
             names=[(name,b'fourth' if name=='twinabcdefghijklmnop2' else data) for name,data in names]
             names.append(('TWINAB~1.EFG',b'fourth'))
@@ -155,6 +199,11 @@ def main():
             path=out/f'host-read-{i}.bin'
             subprocess.run(['mcopy','-i',str(disk)+'@@'+str(start*512),'::/'+name,str(path)],cwd=ROOT,check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             if path.read_bytes()!=data:raise ValueError('Host FAT readback differs: '+name)
+        absent=[CROSS_NAME] if args.cross_delete else [f'P{i:02}.TXT' for i in range(4)] if args.cross_update else []
+        for i,name in enumerate(absent):
+            target=out/f'host-absent-{i}.bin'
+            check=subprocess.run(['mcopy','-i',str(disk)+'@@'+str(start*512),'::/'+name,str(target)],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+            if check.returncode==0 or target.exists():raise ValueError('Unexpected host FAT entry: '+name)
         report['disk_after_write_sha256']=sha(disk)
         (overlay/'Once.HC').write_text(defines+'#define FD_REOPEN TRUE\n'+FIXTURE.read_text())
         reopen_iso=out/'reopen.iso'

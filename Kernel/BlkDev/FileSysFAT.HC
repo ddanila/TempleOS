@@ -571,7 +571,7 @@ Bool FAT32DirNew(CDrv *dv,U8 *cur_dir,CDirEntry *tmpde,Bool free_old_chain)
 		      &RS_ATTR_LONG_NAME_MASK==RS_ATTR_LONG_NAME)
 		  *last_buf[entries_per_clus-i++].name=0xE5;
 		if (--i>0)
-		  BlkWrite(dv,&buf[(entries_per_clus-i)&-FAT32_ENTRIES_PER_BLK],
+		  BlkWrite(dv,&last_buf[(entries_per_clus-i)&-FAT32_ENTRIES_PER_BLK],
 			dv->data_area+last_dir_clus*dv->spc
 			+(entries_per_clus-i)>>FAT32_ENTRIES_BITS,
 			(i+FAT32_ENTRIES_PER_BLK-1)>>FAT32_ENTRIES_BITS);
@@ -701,7 +701,7 @@ I64 FAT32FilesDel(CDrv *dv,U8 *cur_dir,U8 *files_find_mask,I64 fuf_flags,
 		      &RS_ATTR_LONG_NAME_MASK==RS_ATTR_LONG_NAME)
 		  *last_buf[entries_per_clus-i++].name=0xE5;
 		if (--i>0)
-		  BlkWrite(dv,&buf[(entries_per_clus-i)&-FAT32_ENTRIES_PER_BLK],
+		  BlkWrite(dv,&last_buf[(entries_per_clus-i)&-FAT32_ENTRIES_PER_BLK],
 			dv->data_area+last_dir_clus*dv->spc
 			+(entries_per_clus-i)>>FAT32_ENTRIES_BITS,
 			(i+FAT32_ENTRIES_PER_BLK-1)>>FAT32_ENTRIES_BITS);
