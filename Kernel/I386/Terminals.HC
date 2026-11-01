@@ -307,6 +307,8 @@ U0 NativeUserConsoleStart(Bool focus)
 {
   CNativeTerminal *terminal;
   SetRFlags(GetRFlags|512);
+  Fs->win_inhibit=WIG_USER_TASK_DFT;
+  LBts(&Fs->display_flags,DISPLAYf_NOT_RAW);
   terminal=NativeTerminalFind(I386TaskSelf);
   if(!terminal) {
     terminal=NativeTerminalCreate;
@@ -321,6 +323,7 @@ U0 NativeUserConsoleStart(Bool focus)
     DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
   if(focus) NativeWinFocus(I386TaskSelf);
   KernelLog("USER input begin\n");
+  Fs->win_inhibit&=~WIF_SELF_KEY_DESC;
   NativeUserTaskCont;
 }
 U0 NativeUserCmdLine(I64 dummy=0) { NativeUserConsoleStart(FALSE); }

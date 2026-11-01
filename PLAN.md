@@ -24980,3 +24980,12 @@ fixture records spawned task window defaults. These identify prerequisites for
 the two-terminal desktop without qualifying it; see `docs/i386-terminal-startup.md`.
 The native task-default comparison, original terminal initialization, desktop
 behavior and C1–C5 remain open.
+
+## Spawned task window defaults (2026-11-01)
+
+The native task provider now uses shared original window defaults after the
+console installs the live dimension and drive-color provider. The paired
+spawned-task fixture passes at 8 and 64 MiB, and the 64 MiB live-task tiling
+fixture remains green. Pre-console task defaults, complete user-terminal
+startup, the two-terminal desktop and C1–C5 remain open. See
+`docs/i386-terminal-startup.md` for scope and evidence.

@@ -157,6 +157,7 @@ argpop I64 CallStkGrow(I64 stk_size_threshold,I64 stk_size,
 ;
 #exe {Option(OPTf_NO_REG_VAR,OFF);};
 
+#include "/Kernel/TaskWindowDefaultsCore.HC"
 I64 TaskInit(CTask *task,I64 stk_size)
 {//Returns Fs of task
   CTaskStk *tmps;
@@ -175,7 +176,6 @@ I64 TaskInit(CTask *task,I64 stk_size)
   task->task_num=sys_num_spawned_tasks++;
 
   task->rflags=RFLAGG_NORMAL;
-  task->win_inhibit=WIG_TASK_DFT;
 
   task->next_child_task=task->last_child_task=
 	(&task->next_child_task)(U8 *)-offset(CTask.next_sibling_task);
@@ -197,14 +197,7 @@ I64 TaskInit(CTask *task,I64 stk_size)
   task->stk=tmps=TaskStkNew(stk_size,task);
   task->rsp=(&tmps->stk_base)(U8 *)+tmps->stk_size;
 
-  task->text_attr	=WHITE<<4+BLUE;
-  task->border_src	=BDS_CONST;
-  task->border_attr	=DrvTextAttrGet(':');
-  task->title_src	=TTS_CONST;
-  task->win_left	=1;
-  task->win_right	=text.cols-2;
-  task->win_top		=13;
-  task->win_bottom	=text.rows-2;
+  TaskWindowDefaultsCore(task,text.cols,text.rows,DrvTextAttrGet(':'));
 
   if (blkdev.home_dir) {//Beware Adam $LK,"TaskInit",A="FF:::/Kernel/KStart64.HC,TaskInit"$. I guess ok until $LK,"DskChg",A="FF:::/Kernel/KMain.HC,DskChg"$().
     task->cur_dv=blkdev.let_to_drv[*blkdev.home_dir-'A'];

@@ -137,3 +137,36 @@ Its checks also cover the drive-derived border attribute and successful `Kill`.
 These are initial task defaults, not the later tiled user-window geometry. The
 native comparison and implementation remain open, as do the full desktop and
 C1–C5.
+
+## Spawned task window defaults (2026-11-01)
+
+`TaskInit` and the native console now share the original task-window default
+initializer. The native task provider invokes it through a console-installed
+hook so geometry uses the live text dimensions and the border uses the live
+`DrvTextAttrGet(':')` result. `Spawn` also uses the task name as title source
+and leaves the initial display flags clear, as in the original. Native user
+entry restores its user-task inhibit and non-raw state before starting its
+terminal. Tasks spawned before console initialization do not yet receive the
+window-default hook; that bootstrap interval is not qualified by these tests.
+
+The same spawned-task fixture now passes at 8 and 64 MiB
+(`build/i386-task-window-default-native-8m-v1` and
+`build/i386-task-window-default-native-v1`), and passes against the rebuilt
+original (`build/i386-task-window-default-rebuilt-v1`). It checks initial
+coordinates, inhibit and display flags, title, text and border attributes,
+and a successful `Kill`; it does not establish complete task reclamation.
+The border comparison is relative to each system's own drive mapping: the
+pinned original reported `0x90` and the native image `0xF1` for its current
+drive. The 64 MiB seven-case live-task tiling comparison also passes
+(`build/i386-win-tile-task-default-v1`). Inputs remained unchanged in these
+runs. Both original rebuild generations and the full native cross-build/386
+audit pass (`build/i386-task-default-cross-v2`).
+
+The child-terminal startup comparison still returns 161 of 255
+(`build/i386-user-startup-native-task-default-v1`), so this does not establish
+original `DocTermNew`, welcome, desktop or focus behavior. The two-terminal
+desktop and C1–C5 remain open.
+
+An isolated 8 MiB startup run on the same image passed all nine functional
+and exact-VGA checks, but its 61.399-second startup exceeded the 60-second
+gate (`build/i386-task-default-startup-8m-v1`). The timing gate remains open.

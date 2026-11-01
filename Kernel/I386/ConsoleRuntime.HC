@@ -3,6 +3,7 @@
 #include "/Kernel/NumericLimits.HH"
 #include "/Kernel/MathConstants.HH"
 #include "/Kernel/DirEntryTypes.HH"
+#include "/Kernel/WindowInhibitFlags.HH"
 #include "/Kernel/BlkDev/DriveTypes.HH"
 #include "/Kernel/BlkDev/CFileTypes.HH"
 #define TRUE 1
@@ -333,6 +334,9 @@ import U32 char_bmp_filename[16];
 #define BLOCK_DEV_SLOT_RECORD &console_config->block_records[i]
 #include "/Kernel/BlkDev/BlockDevSlotCore.HC"
 #include "/Kernel/BlkDev/DriveTextAttrCore.HC"
+#include "/Kernel/TaskWindowDefaultsCore.HC"
+U0 NativeTaskWindowDefaults(CTask *task)
+{ TaskWindowDefaultsCore(task,text.cols,text.rows,DrvTextAttrGet(':')); }
 #include "/Kernel/FileMaskTypes.HH"
 #include "/Kernel/WildMatchCore.HC"
 #include "/Kernel/BlkDev/FilesFindMatchCore.HC"
@@ -490,6 +494,7 @@ extern U0 NativeDebugStep(U8 *ip=U32_MAX,CTask *task=NULL);
 extern U0 NativeDebugGo(U8 *ip=U32_MAX,CTask *task=NULL);
 U32 console_version=I386_CONSOLE_VERSION;
 U8 **native_owner_retire_slot;
+U8 **native_task_window_init_slot;
 extern Bool NativeWindowPresent(Bool blink=FALSE);
 extern U0 DrawCtrls(CTask *task);
 extern U0 GrUpdateTaskWin(CTask *task);
@@ -564,6 +569,10 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   native_owner_retire_slot=provider->val;
   if(*native_owner_retire_slot && *native_owner_retire_slot!=&NativeStorageOwnerRetire)
     return FALSE;
+  provider=HashFind("I386TaskWindowInitHook",task->hash_table,HTT_EXPORT_SYS_SYM);
+  if(!provider || provider->kind!=3 || !provider->val)return FALSE;
+  native_task_window_init_slot=provider->val;
+  if(*native_task_window_init_slot && *native_task_window_init_slot!=&NativeTaskWindowDefaults) return FALSE;
   provider=HashFind("_SUSPEND",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;
   native_user_providers.suspend=provider->val;
@@ -1011,6 +1020,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   winmgr.last_refresh_tS=winmgr.ideal_refresh_tS;
   NativeBreakpointInstall;
   *native_owner_retire_slot=(&NativeStorageOwnerRetire+0)(U64);
+  *native_task_window_init_slot=(&NativeTaskWindowDefaults+0)(U64);
   if(config->defer_root_headers) return TRUE;
   return ConsoleRootHeaders;
 }

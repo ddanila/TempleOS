@@ -203,7 +203,7 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
   task->memory=memory_pool.heap;
   task->parent_task=parent; task->gs=parent->gs;
   task->task_num=++memory_task_number;
-  task->display_flags|=1<<DISPLAYf_NOT_RAW;
+  if(memory_task_window_init) (*memory_task_window_init)(task);
   task->next_child_task=task->last_child_task=MemoryChildHead(task);
   task->next_sibling_task=task->last_sibling_task=task;
   JobCtrlInit(&task->srv_ctrl);
@@ -214,6 +214,7 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
   if(!name) name="Unnamed Task";
   for(i=0;i<TASK_NAME_LEN-1 && name[i];i++) task->task_name[i]=name[i];
   task->task_name[i]=0; MemoryStrCopy(task->task_title,task->task_name);
+  task->title_src=2; //TTS_TASK_NAME, as in Spawn.
   record->owned=owned; record->entry=entry;
   record->next=memory_tasks; memory_tasks=record;
   if(flags&256) {

@@ -1,6 +1,5 @@
 //Original servant dispatch bound to the retained job/message scheduler services.
 #define TTS_TASK_NAME 2
-#define WIG_USER_TASK_DFT 0x1000
 I64 NativeSrvJobs(I64 flags) { return (*native_input_jobs)(flags,Fs); }
 U0 NativeSrvFlush() { (*native_servant_flush)(Fs); }
 U0 NativeSrvYield() { (*native_input_yield)(); }
