@@ -68,6 +68,15 @@ public _extern _POP_UP_ED I64 PopUpEd(U8 *filename,CTask *parent=NULL,CTask **_p
 public _extern _DOC_ALLOCATION_CHECK I64 DocAllocationCheck();
 public _extern _DOC_EXE Bool DocExe(CDoc *doc,I64 flags=0);
 public _extern _EXE_DOC I64 ExeDoc(CDoc *doc,I64 ccf_flags=0);
+public _extern _DOC_TREE_FIND Bool DocTreeFind(CDoc *doc,U8 *path,CDocEntry **tree=NULL,CDocEntry **start=NULL,CDocEntry **end=NULL);
+public _extern _DOC_TREE_F_FIND Bool DocTreeFFind(U8 *name,U8 *path);
+public _extern _DOC_TREE_MAKE Bool DocTreeMake(CDoc *doc,U8 *path);
+public _extern _DOC_TREE_WRITE Bool DocTreeWrite(CDoc *doc,U8 *path,Bool write=TRUE,U8 *fmt,...);
+public _extern _DOC_TREE_APPEND Bool DocTreeAppend(CDoc *doc,U8 *path,Bool write=TRUE,U8 *fmt,...);
+public _extern _DOC_TREE_F_WRITE Bool DocTreeFWrite(U8 *name,U8 *path,U8 *fmt,...);
+public _extern _DOC_TREE_F_APPEND Bool DocTreeFAppend(U8 *name,U8 *path,U8 *fmt,...);
+public _extern _DOC_TREE_EXE I64 DocTreeExe(CDoc *doc,U8 *path);
+public _extern _DOC_TREE_F_EXE I64 DocTreeFExe(U8 *name,U8 *path);
 public _extern _HELP Bool Help(U8 *name=0);
 public _extern _DOC_DOLLAR CDocEntry *PrsDollarCmd(CDoc *doc,U8 *source);
 public _extern _DOC_DATA_FMT U0 DocDataFmt(CDoc *doc,CDocEntry *entry,I64 value=DOCM_CANCEL);

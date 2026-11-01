@@ -2841,9 +2841,38 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Create and find nested/sibling tree branches; write, append and execute branch code; save and reopen file-backed trees.",
+      "oracle": "docs/i386-doc-tree.md: paired functional fixture requires mask 255; three separate serialized documents match the original. Malformed, concurrent, failure and reboot workflows remain open.",
+      "tests": [
+        {
+          "target": "original-doc-tree",
+          "command": "python3 tools/test-i386-doc-tree-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-tree-reference-final/result.json",
+          "scope": "Nested tree, writes, execution and file-backed workflow"
+        },
+        {
+          "target": "native-doc-tree-8m",
+          "command": "python3 tools/test-i386-doc-tree.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-tree-native-8m-committed-source/result.json",
+          "scope": "Same workflow and quiet execution on native 8 MiB"
+        },
+        {
+          "target": "native-doc-tree-64m",
+          "command": "python3 tools/test-i386-doc-tree.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-tree-native-64m-committed-source/result.json",
+          "scope": "Same workflow and quiet execution on native 64 MiB"
+        },
+        {
+          "target": "native-doc-tree-bytes",
+          "command": "python3 tools/test-i386-doc-tree-bytes.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-tree-bytes-native-committed-source/result.json",
+          "scope": "Three serialized tree documents match pinned original bytes"
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocWidgetWiz.HC",

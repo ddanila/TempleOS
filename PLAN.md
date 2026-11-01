@@ -25022,3 +25022,12 @@ and states match the original at 8 and 64 MiB. Vocabulary now advances from
 load checks also record current Logic, KeepAway and Strut dependencies; none
 qualifies a full application workflow. See `docs/i386-random-family.md` and
 `docs/i386-application-matrix.md`. C1–C5 remain open.
+
+## DolDoc tree operations (2026-11-01)
+
+The complete original tree operations now compile on native. Nested creation,
+lookup, rewrite, append, execution and file-backed use pass paired 8/64 MiB
+workflows; three serialized documents match original bytes. Expression answers
+also respect `Silent` in the tested execution path. Registry initialization,
+KeepAway, complete desktop behavior and C1–C5 remain open; see
+`docs/i386-doc-tree.md`.
