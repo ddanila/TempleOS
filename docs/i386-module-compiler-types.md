@@ -112,3 +112,21 @@ committed fixtures. The strict install gate remains failing and C1–C5 remain
 open. The nine-module retained build on the include-dollar fix was still
 running in ConsoleRuntime when this note was recorded; it had reached
 `RandI16`, with no complete module result yet.
+
+A further instrumented 8 MiB run (`build/i386-c5-save-location-8m`, image
+SHA-256 `8dbb5946f0aff3b87cc4b229d8fb151e9a0f36a3971171bd2b1271c7f6dfc127`)
+reproduced `-38`. Both failing-allocation attempts occurred after entering
+`DocSave` and before its bin-validation/recalculation stage completed, ahead of
+the final output-buffer allocation. The markers do not distinguish
+`DocBinsValidate` from `DocRecalc` or their callees.
+
+A separate trace (`build/i386-c5-recalc-location-8m`, image SHA-256
+`7bcd380f0c85148aed338a89099d3d11cf85ee0239f777c2cc131803ae539a3e`)
+logged allocation indices and the text-merge allocation in `DocWordWrapDel`.
+In the successful paste, the two initial 25-byte requests preceded the merge
+allocation, which was allocation 5 and requested 3 bytes. The failed second
+25-byte request occurred before any merge marker. This rules out that merge
+allocation as the retained 40-byte charge in this fixture; it does not identify
+the owner of the first request. Both observations used temporary instrumentation
+and an expected-failure `-38` oracle, not a successful install gate. Instrumented
+sources were removed after building the images.

@@ -25085,3 +25085,6 @@ heap increase when the second injected allocation fails inside `DocSave` before
 clipboard paste receives its saved buffer. The allocation's owner and a fix
 remain unconfirmed; temporary instrumentation was removed. See
 [the investigation](docs/i386-module-compiler-types.md).
+A subsequent trace places the failing requests before `DocSave` completes bin
+validation and recalculation, and excludes its later text-merge allocation in
+the tested paste. The precise owner remains unconfirmed; see the same evidence.
