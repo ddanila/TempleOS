@@ -24989,3 +24989,12 @@ spawned-task fixture passes at 8 and 64 MiB, and the 64 MiB live-task tiling
 fixture remains green. Pre-console task defaults, complete user-terminal
 startup, the two-terminal desktop and C1–C5 remain open. See
 `docs/i386-terminal-startup.md` for scope and evidence.
+
+## Conversion-copy prerequisite (2026-11-01)
+
+The complete original `CopySingleZ` body is shared with native file services.
+Plain-to-compressed and compressed-to-plain content, compression attributes,
+timestamp propagation and missing-source preservation pass the paired original
+and 8/64 MiB native fixture. Full streaming copy, wildcard copy/move, deletion,
+mounting, terminal callback and C1–C5 remain open; see
+`docs/i386-copy-single-z.md`.

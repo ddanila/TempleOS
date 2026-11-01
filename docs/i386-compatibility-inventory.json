@@ -13629,9 +13629,31 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Convert a plain file to compressed form and back using the original CopySingleZ path, preserving its timestamp and an existing destination when the source is missing.",
+      "oracle": "docs/i386-copy-single-z.md: paired fixture requires mask 255 for bytes, compression attributes, timestamp, missing source and cleanup; full CopySingle, Del and file-management workflows remain open.",
+      "tests": [
+        {
+          "target": "original-copy-single-z",
+          "command": "python3 tools/test-i386-copy-single-z-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-copy-single-z-reference-final/result.json",
+          "scope": "Bounded plain/compressed round trip, timestamp, missing source and cleanup; not complete file copy semantics"
+        },
+        {
+          "target": "native-copy-single-z-8m",
+          "command": "python3 tools/test-i386-copy-single-z.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-copy-single-z-native-8m-v2/result.json",
+          "scope": "Same bounded conversion contract on the native 8 MiB image"
+        },
+        {
+          "target": "native-copy-single-z-64m",
+          "command": "python3 tools/test-i386-copy-single-z.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-copy-single-z-native-64m-v2/result.json",
+          "scope": "Same bounded conversion contract on the native 64 MiB image"
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskDirA.HC",

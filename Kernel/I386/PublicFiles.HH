@@ -38,6 +38,7 @@ public _extern _DRV_TEXT_ATTR_GET U8 DrvTextAttrGet(U8 drv_let=0);
 public _extern _FILE_NAME_CHK Bool FileNameChk(U8 *filename);
 public _extern _FILE_NAME_ABS U8 *FileNameAbs(U8 *filename,I64 fuf_flags=0);
 public _extern _FILE_FIND Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
+public _extern _COPY_SINGLE_Z Bool CopySingleZ(U8 *f1,U8 *f2);
 public _extern _FILE_WRITE I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0);
 public _extern _DIR_MK Bool DirMk(U8 *filename,I64 entry_cnt=0);
 public _extern _DIR I64 Dir(U8 *filename=NULL);
