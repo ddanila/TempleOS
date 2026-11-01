@@ -14256,9 +14256,24 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Convert and checksum FAT short names and decode their padded representation, including dot entries and invalid input.",
+      "oracle": "docs/i386-fat-name.md: nine original and native helper checks, including an overlong extension write observed in a safely sized buffer. FAT traversal, long-name entry handling and whole-file qualification remain open.",
+      "tests": [
+        {
+          "target": "original-fat-name-source",
+          "command": "python3 tools/test-i386-fat-name.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-fat-name-original-v3/result.json",
+          "scope": "Nine original-body conversion, checksum and buffer-boundary observations on pinned original"
+        },
+        {
+          "target": "native-fat-name-64m",
+          "command": "python3 tools/test-i386-fat-name.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-fat-name-native-v1/result.json",
+          "scope": "Same bounded helper contract; not FAT traversal or long-name entry qualification"
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/FileSysISO.HC",

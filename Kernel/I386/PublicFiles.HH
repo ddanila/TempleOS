@@ -37,6 +37,9 @@ public _extern _DRV_TEXT_ATTR_GET U8 DrvTextAttrGet(U8 drv_let=0);
 #include "/Kernel/FileFindFlags.HH"
 public _extern _FILE_NAME_CHK Bool FileNameChk(U8 *filename);
 public _extern _CFILE_NAME_TO Bool CFileNameTo(U8 *dst,U8 *src);
+public _extern _FAT_NAME_TO Bool FATNameTo(U8 *dst,U8 *src);
+public _extern _FAT_NAME_XSUM I64 FATNameXSum(U8 *src);
+public _extern _FAT_FROM_NAME Bool FATFromName(U8 *dst,U8 *src);
 public _extern _FILE_NAME_ABS U8 *FileNameAbs(U8 *filename,I64 fuf_flags=0);
 public _extern _DIR_NAME_ABS U8 *DirNameAbs(U8 *dirname);
 public _extern _FILE_FIND Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
