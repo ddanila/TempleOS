@@ -154,6 +154,14 @@ generations pass with binary differences (`build/i386-fat-alias-overlap-rebuild.
 The case where a separately rooted new chain joins the old chain later, crash
 recovery, and concurrent or corrupt-chain updates are not yet qualified.
 
+An additional synthetic graph contract runs the shared intersection body on
+the original compiler (`build/i386-fat-overlap-graph-v1`). It checks both
+directions of separately rooted chains that merge into a common tail, suffix
+and identical chains, disjoint and empty chains, cycles in either input, and a
+zero sectors-per-cluster guard. This verifies the intersection result and
+bounded rejection in isolation; it does not exercise those merged chains on
+disk or establish recovery from corrupt media.
+
 `FAT32DirNew` currently returns false even on successful writes, so the earlier
 invalid-name API test's return value alone does not establish rejection. Its
 unchanged cold-reopen disk hash and the entry-writer canary test provide the
