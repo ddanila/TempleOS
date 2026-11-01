@@ -106,6 +106,7 @@ U0 NativeWindowWorker(U8 *data)
   DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
   DocStdDefinesInit;
   while(TRUE) {
+    NativeMouseSync;
     Fs->task_end_cb=&NativeWindowCancel;
     native_window_fault_task=0;pump=FALSE;
     try {
@@ -137,6 +138,7 @@ U0 NativeWindowWorker(U8 *data)
 U0 NativeWinMgrEnsure()
 {//Called by the kernel idle root as well as the initial startup transaction.
   CI386Task *worker;
+  NativeMouseSync;
   if(!native_window_started || TaskValidate(native_window_worker) ||
       NativeJiffies<native_window_retry_jiffy)return;
   try {

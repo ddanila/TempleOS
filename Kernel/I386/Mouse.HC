@@ -17,7 +17,7 @@ public Bool I386MouseSetup(CI386MouseState *mouse,I64 polls=100000)
   if(!I386KbcWrite(TRUE,0x60,polls) || !I386KbcWrite(FALSE,config,polls) ||
       !I386MouseCommand(0xF6,polls) || !I386MouseCommand(0xF4,polls)) return FALSE;
   mouse->x=320; mouse->y=240; mouse->buttons=0; mouse->packets=0;
-  mouse->dropped=0; mouse->count=0; mouse->installed=TRUE;
+  mouse->dropped=0; mouse->serial=0; mouse->count=0; mouse->installed=TRUE;
   return TRUE;
 }
 public Bool I386MouseFeed(CI386MouseState *mouse,U8 data,U8 status)
@@ -36,5 +36,6 @@ public Bool I386MouseFeed(CI386MouseState *mouse,U8 data,U8 status)
   if(mouse->y<0) mouse->y=0; else if(mouse->y>479) mouse->y=479;
   mouse->buttons=mouse->bytes[0]&7;
   if(mouse->packets!=U32_MAX) mouse->packets++;
+  mouse->serial++;
   return TRUE;
 }

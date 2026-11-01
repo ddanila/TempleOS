@@ -258,3 +258,7 @@ unchanged). Gameplay remains open.
 With the original asynchronous sound-effect routines, unchanged KeepAway
 advances past `Noise` and stops at mouse state `ms` on line 504
 (`build/i386-app-keepaway-effects-v1`, inputs unchanged). Gameplay remains open.
+
+With native logical mouse state, unchanged KeepAway advances past `ms` and
+stops at the missing `Exp` dependency on line 598
+(`build/i386-app-keepaway-mouse-v1`, inputs unchanged). Gameplay remains open.

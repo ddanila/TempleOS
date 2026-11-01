@@ -2,7 +2,7 @@
 #define I386_MOUSE_INCLUDED
 class CI386MouseState {
   I64 x,y;
-  U32 buttons,packets,dropped;
+  U32 buttons,packets,dropped,serial;
   U8 bytes[3],count,installed;
 };
 public extern Bool I386MouseSetup(CI386MouseState *mouse,I64 polls=100000);

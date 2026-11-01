@@ -91,24 +91,38 @@ lifetime and the automatic A/B refresh gate remain open. This does not qualify
 the original complete desktop, all cursor behavior, storage-owner termination
 or C1–C5 completion.
 
-## Original logical mouse state groundwork
+## Original logical mouse state
 
 The original `CMsStateGlbls` and `CGridGlbls` declarations now live in
 `Kernel/MouseStateTypes.HH`, which both the original kernel and the native
 public mouse header include. The original `GridInit` and `MsUpdate` bodies
 live unchanged in `Kernel/MouseUpdateCore.HC`, included by the original mouse
-driver. These extractions make the original state layout and its scaling,
-grid snapping, clipping, text coordinates and button update available for
-subsequent native integration without duplicating the logic.
+driver. The native console now exports `ms` and `ms_grid` and uses the same update
+body in scheduled context after completed PS/2 packets. The original scaling,
+grid snapping, clipping, text coordinates and left/right button fields thus
+operate on native input. Keyboard messages also include the current physical
+left and right button flags.
 
-This is groundwork only: the native system does not yet export a live `ms`
-record or run the original logical update on PS/2 events. Native `MouseGet`
-still exposes its existing physical mouse state, and KeepAway still requires
-`ms`. The original hardware state, event timing, keyboard button flags and
-window-manager synchronization also require integration and verification.
+The integration remains incomplete. The physical driver still clamps before
+the logical update and coalesces packets; original hardware scaling, grid speed,
+wheel and extended buttons, `ms_hard`, `MsSet`, double-click processing and
+original cursor composition are not integrated. Timestamp and speed use the
+PIT at synchronization time; the original event timestamps and idle speed decay
+are not yet reproduced. Native `MouseGet` still exposes physical coordinates,
+and `ms.show` does not control its presentation. These limitations matter for
+applications using those features and for full C1–C5 qualification.
 
 The extraction preserves the original type declarations and update bodies
 byte-for-byte. Both original rebuild generations, the native cross-build and
 the 386 instruction audit passed. The 8 MiB startup fixture completed its
 interaction checks but missed its 60-second startup budget at 76.63 seconds
 (`build/i386-mouse-state-types-startup-v1`); the timing gate remains open.
+
+The original two-generation rebuild, native cross-build and 386 instruction
+audit passed for the live-state implementation. On 64 MiB the hardware-driven
+fixture passed motion, both button transitions, both keyboard scan flags,
+timestamp and positive speed, text coordinates, scaling and grid snapping
+(`build/i386-mouse-live-test-v3`, inputs unchanged). At 8 MiB the guest booted,
+but compiling that full fixture exhausted the compiler heap before input could
+be exercised (`build/i386-mouse-live-test-8m-v1`, inputs unchanged). The 8 MiB
+resource and startup-time gates remain open.

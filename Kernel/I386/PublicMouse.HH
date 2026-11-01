@@ -2,5 +2,7 @@
 #define I386_PUBLIC_MOUSE_INCLUDED
 #include "/Kernel/MouseStateTypes.HH"
 #help_index "Mouse"
+public _extern _MS_GLOBALS CMsStateGlbls ms;
+public _extern _MS_GRID_GLOBALS CGridGlbls ms_grid;
 public _extern _MOUSE_GET Bool MouseGet(I64 *x,I64 *y,I64 *buttons=0,I64 *packets=0);
 #endif
