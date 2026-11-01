@@ -225,3 +225,7 @@ inputs unchanged). This is a load check; the game has not been qualified.
 With public `Min`, `Max` and `Clamp`, unchanged KeepAway advances past `Max`
 and stops at the `GrEllipse` call on line 263
 (`build/i386-app-keepaway-minmax-v1`, inputs unchanged). Gameplay remains open.
+
+With the original 2D curves and flood-fill bindings, unchanged KeepAway advances
+past `GrEllipse` and `GrFloodFill` and fails at `SpriteInterpolate` on line 269
+(`build/i386-app-keepaway-curves2-v1`, inputs unchanged). Gameplay remains open.
