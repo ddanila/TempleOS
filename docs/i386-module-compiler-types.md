@@ -318,3 +318,30 @@ and streaming began. Changed sectors are not an exact count of writes: writing
 identical bytes would not appear in the comparison. The failure offset and
 whether the sink, staging state or another streaming condition caused it remain
 unknown.
+
+The streaming writer now builds a 512-byte relocation bitmap per 4 KiB payload
+window instead of scanning every record for every output chunk. It retains the
+existing sink chunk sizes, validates before writing, and still invokes the
+payload reader for each byte. For the earlier failed ConsoleRuntime header
+(2,332,112 payload bytes, 2,619,718 total bytes and 9,985 records), this reduces
+the calculated record-loop iterations from 51,093,245 at 512-byte chunks to
+5,691,450; that is an iteration count, not a measured runtime improvement or
+evidence that the stage-6 failure is fixed. The bitmap adds 512 bytes to the
+writer's stack frame.
+
+The original-system writer contract passes against the contiguous packer for
+the existing cases and five scratch sizes with relocation slots crossing 4 KiB
+window boundaries (`build/i386-module-writer-window-v3`). Both original rebuild
+generations pass with binary differences (`build/i386-module-writer-window-rebuild.log`),
+and the native cross-build and 386 instruction audit pass
+(`build/i386-module-writer-window-cross`). The concurrent 8 MiB boot reached
+native startup but failed the input harness's expected VGA upload sequence:
+the log recorded the initial 60-row upload without the expected prompt upload
+at that checkpoint (`build/i386-module-writer-window-welcome8`). This run is
+not a timing qualification. A separate exact initial welcome-pixel check passes
+at 8 MiB with unchanged inputs (`build/i386-module-writer-window-welcome8-v2`);
+it does not check that upload sequence. A Startup-only native build passes at
+128 MiB (`build/i386-module-writer-window-startup128`), producing a 407-byte
+module with six records and one export. This checks native serialization only
+for a small module; the older nine-module diagnostic remains active on its
+earlier image.
