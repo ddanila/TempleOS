@@ -663,3 +663,19 @@ the 60-second timing assertion (`build/i386-heap-query-scan-startup`). That
 run overlapped other checks and is not part of the isolated comparison. The
 16 MiB diagnostic and the 8 MiB task-accounting batch pass
 (`build/i386-heap-query-scan-diag`, `build/i386-heap-query-scan-task`).
+
+A direct differential regression compares the query traversal with the
+selection traversal for a null pointer and every byte from one byte before a
+256-byte arena through its end. It repeats those comparisons over 160 header
+and heap-control mutations and verifies that the arena is unchanged; both the
+native assembly and portable builds pass
+(`build/i386-heap-query-differential-native.log`,
+`build/i386-heap-query-differential-source.log`). This covers a bounded set of
+heap layouts and mutations, not all possible heaps.
+
+A fresh paused startup profile of the query-specialized image recorded 1,036
+samples; in root-header loading it attributed 169 to `I386HeapScan`, 113 to
+`I386HeapScanSelect`, and 101 to `I386HeapFree`
+(`build/i386-heap-query-current-profile`). Samples locate remaining work but
+are not call counts or an elapsed-time benchmark. Full heap validation remains
+a leading startup cost; the 60-second gate and C1–C5 remain open.

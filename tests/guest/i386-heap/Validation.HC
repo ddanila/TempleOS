@@ -34,6 +34,16 @@ Bool HeapRejectsCorruption(CI386Heap *hc,U8 *arena,U8 *ptr)
     Hash(hc,sizeof(CI386Heap))==control_hash;
 }
 
+Bool HeapQueryParity(CI386Heap *hc,U8 *arena)
+{//The query-only and selection traversals must agree for every candidate byte,
+ //including headers, interior payloads, boundaries and a null validity query.
+  I64 i;
+  if(I386HeapScan(hc,0)!=I386HeapScanSelect(hc,0,0,0))return FALSE;
+  for(i=-1;i<=256;i++)
+    if(I386HeapScan(hc,arena+i)!=I386HeapScanSelect(hc,arena+i,0,0))return FALSE;
+  return TRUE;
+}
+
 I64 HeapValidationTest(CI386Heap *hc,U8 *arena)
 {
   U8 *p,*q,*r;
@@ -54,7 +64,8 @@ I64 HeapValidationTest(CI386Heap *hc,U8 *arena)
     word=blocks[i]; word+=j; old=*word;
     for(k=0;k<8;k++) {
       *word=values[k]; before=Hash(arena,256);
-      if(I386HeapValid(hc)!=HeapValidReference(hc) || Hash(arena,256)!=before) return 303;
+      if(I386HeapValid(hc)!=HeapValidReference(hc) || !HeapQueryParity(hc,arena) ||
+          Hash(arena,256)!=before) return 303;
       if(!HeapValidReference(hc) && !HeapRejectsCorruption(hc,arena,p)) return 308;
       checks++;
     }
@@ -70,7 +81,8 @@ I64 HeapValidationTest(CI386Heap *hc,U8 *arena)
     old=*word;
     for(k=0;k<8;k++) {
       *word=values[k]; before=Hash(arena,256);
-      if(I386HeapValid(hc)!=HeapValidReference(hc) || Hash(arena,256)!=before) return 304;
+      if(I386HeapValid(hc)!=HeapValidReference(hc) || !HeapQueryParity(hc,arena) ||
+          Hash(arena,256)!=before) return 304;
       if(!HeapValidReference(hc) && !HeapRejectsCorruption(hc,arena,p)) return 308;
       checks++;
     }
