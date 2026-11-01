@@ -41,6 +41,14 @@ remains separate outstanding work. Preserve the minimal 8 MiB boot contract
 while implementing the full desktop profile. No inventory entry or milestone
 is qualified by this reference test.
 
+The complete original terminal right-click callback is now shared through
+`Adam/DolDoc/TermRightClickLinkCore.HC`, included at its original position in
+`DocTerm.HC`. Expanding the include reproduces the preceding source byte for
+byte. This prepares the original callback for native integration; it does not
+bind it or implement its remaining file-operation and mount dependencies.
+Both original rebuild generations pass (`build/i386-term-right-extract-rebuild.log`);
+this rebuild is not a native callback or reproducibility test.
+
 The native root terminal now calls the original `DocType` on `Doc/Start.DD`
 after its existing native heading. The welcome is visible and its held
 word-wrap entry survives clearing, as confirmed by the exact TimeClock report
