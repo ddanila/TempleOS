@@ -71,6 +71,8 @@ def main():
                         help='Cross-built export contracts for this source/image')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--cpu', default='486', help='QEMU CPU model for the build boot')
+    parser.add_argument('--ram-mib', type=int, choices=(8, 16, 64, 128), default=16,
+                        help='Guest RAM in MiB (default: 16)')
     parser.add_argument('--welcome', action='store_true',
                         help='Expect the original welcome document at the initial prompt')
     parser.add_argument('--qmp-stdio', action='store_true',
@@ -110,12 +112,12 @@ def main():
                      f'"C:/Probe/Retained{name}.t32m",TRUE)>0;', ['1'])
                     for name in selected]
         run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
-        pending = {'result': 'running', 'cpu': args.cpu, 'ram_mib': 16, 'welcome': args.welcome,
+        pending = {'result': 'running', 'cpu': args.cpu, 'ram_mib': args.ram_mib, 'welcome': args.welcome,
                    'module_order': list(selected), 'input_disk_sha256': sha256(source),
                    'scope': 'Selected retained module native builds and persisted export audit'}
         (out / 'result.json').write_text(json.dumps(pending, indent=2) + '\n')
         try:
-            run_input(source, out / 'qemu', snapshot=False, ram_mib=16, accel=args.accel,
+            run_input(source, out / 'qemu', snapshot=False, ram_mib=args.ram_mib, accel=args.accel,
                       cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome,
                       startup_timeout=180, startup_check={
                           'status': 'ok', 'answers': [],
@@ -136,6 +138,8 @@ def main():
     result = {'result': 'running', 'welcome': args.welcome, 'source_disk_sha256': sha256(source),
               'module_order': list(selected),
               'modules': {}}
+    if not args.audit_only:
+        result.update(cpu=args.cpu, ram_mib=args.ram_mib)
     try:
         if not args.audit_only and (args.reference_exports/'BuildRuntime.t32m').is_file():
             log = (out/'qemu/debug.log').read_text()

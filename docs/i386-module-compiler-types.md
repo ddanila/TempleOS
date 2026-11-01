@@ -243,3 +243,10 @@ block headers; it is not a count of available payload bytes. The failure
 therefore shows insufficient contiguous space, not the identity of the
 allocations causing fragmentation. No retained module was qualified by this
 run. Full guest-built installation and two native generations remain open.
+
+The retained-build harness now accepts `--ram-mib` for the supported 8, 16,
+64 and 128 MiB profiles, defaulting to its previous 16 MiB. A nine-module run
+at the plan's initial 128 MiB rebuild budget is in progress on the version-77
+image (`build/i386-token-refresh-retained128`); QEMU was launched with 128 MiB
+and the guest reported its larger arena. This is not yet a build result and
+does not replace the minimal 16 MiB regression requirement.
