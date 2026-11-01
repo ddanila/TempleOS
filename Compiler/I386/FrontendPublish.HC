@@ -343,7 +343,10 @@ I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functi
     if(output || capacity || !scratch || scratch_bytes<1 || scratch_bytes>4096) return 0;
     owned_records=I386HeapAlloc(frontend->heap,record_count*16,TRUE);
     owned_strings=I386HeapAlloc(frontend->heap,string_bytes);
-    if(!owned_records || !owned_strings)goto pack_done;
+    if(!owned_records || !owned_strings) {
+      I386FrontendPackReject(frontend,"stream-metadata-allocation",pack_name);
+      goto pack_done;
+    }
     records=owned_records;strings=owned_strings;
   } else {
     if(capacity<total) return I386FrontendPackReject(frontend,"output-capacity",pack_name);
@@ -352,7 +355,10 @@ I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functi
     scratch=buffer;scratch_bytes=sizeof(buffer);
   }
   spans=I386HeapAlloc(frontend->heap,(count+global_count)*sizeof(CI386ModuleWriteSpan));
-  if(!spans)goto pack_done;
+  if(!spans) {
+    I386FrontendPackReject(frontend,"stream-span-allocation",pack_name);
+    goto pack_done;
+  }
   string_bytes=0;
   for(i=0;i<count;i++) {
     fun=functions[i];
@@ -415,10 +421,14 @@ I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functi
         record->name_offset+=strings_offset;
     }
     view.spans=spans;view.count=span_index;view.bytes=payload;
-    if(!I386ModuleWriteSpansValid(&view))goto pack_done;
+    if(!I386ModuleWriteSpansValid(&view)) {
+      I386FrontendPackReject(frontend,"stream-spans",pack_name);
+      goto pack_done;
+    }
     try {
       result=I386ModuleWriteParts(&header,records,strings,&I386ModuleWriteSpanByte,
         &view,sink,sink_context,scratch,scratch_bytes);
+      if(!result)I386FrontendPackReject(frontend,"stream-validation-or-sink",pack_name);
     } catch {
       exception=I386TaskSelf->except_ch;I386TaskSelf->catch_except=TRUE;
     }

@@ -283,3 +283,24 @@ streaming, validation or staging failed. No module was retained, and the pack
 fix is not qualified by a completed native module. The run's input was the
 image identified above; it predates subsequent FAT work. Full installation,
 two native generations, the timing gate, and C1–C5 qualification remain open.
+
+Failure-only diagnostics now distinguish metadata allocation, span allocation,
+invalid spans, and the remaining validation-or-sink failure; stage 6 also logs
+the writer result and staged byte count, expected size and phase when it throws.
+They do not change the serializer's acceptance rules. Both original rebuild
+generations, the native cross-build and 386 instruction audit pass
+(`build/i386-stage6-diagnostic-rebuild.log` and
+`build/i386-stage6-diagnostic-cross`), as do the existing module-writer and
+stage contracts (`build/i386-stage6-diagnostic-writer` and
+`build/i386-stage6-diagnostic-stage`). Those contracts do not demonstrate the
+new diagnostic on the large failing unit. The 8 MiB initial welcome-screen check
+also passes (`build/i386-stage6-diagnostic-welcome-8m`), but its concurrent run
+does not qualify the full minimal profile or timing gate.
+
+A fresh nine-module 128 MiB retained run with those diagnostics is in progress
+(`build/i386-stage6-diagnostic-retained128`). Its input SHA-256 is
+`d5843a084afd9a5b83fabbd7f3503554749063e4a504d161cacccfc371dee656`.
+No result is claimed until it finishes; the preceding stage-6 failure remains
+unresolved.
+A separate Startup-only retained build is also running on that image
+(`build/i386-stage6-diagnostic-startup128`); it has not yet qualified a module.

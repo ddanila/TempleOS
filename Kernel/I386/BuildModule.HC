@@ -36,7 +36,7 @@ I64 I386BuildModuleCore(CI386BuildContext *build_config,U8 *source_path,U8 *targ
   U8 *source=0,*module=0,*code,*target_absolute=0;
   I64 source_bytes,module_bytes=0,raw_type,commands=0,exception=0,stage=0;
   Bool entered=FALSE,compiled=FALSE,clean=TRUE,staged=FALSE;
-  I64 written;
+  I64 written=-1;
   if(!build_config || !task || !source_path || !target_path ||
       !(scope=task->symbol_state) || scope->task!=task ||
       !(heap=scope->heap)) return -1;
@@ -134,6 +134,12 @@ I64 I386BuildModuleCore(CI386BuildContext *build_config,U8 *source_path,U8 *targ
   } catch {
     exception=task->except_ch;
     task->catch_except=TRUE;
+    if(stage==6 && output_stage) {
+      KernelLog("BUILD MODULE WRITE "); KernelHex(written); KernelLog(" ");
+      KernelHex(output_stage->written); KernelLog(" ");
+      KernelHex(output_stage->bytes); KernelLog(" ");
+      KernelHex(output_stage->phase); KernelLog("\n");
+    }
     if(cc && cc->lex_include_stk) {
       KernelLog("BUILD MODULE SOURCE ");
       if(cc->lex_include_stk->full_name)
