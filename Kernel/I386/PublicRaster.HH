@@ -28,4 +28,6 @@ public _extern _SPRITE_3XB U0 Sprite3XB(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elem
 public _extern _SPRITE_3YB U0 Sprite3YB(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elems,F64 angle=0);
 public _extern _SPRITE_3ZB U0 Sprite3ZB(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elems,F64 angle=0);
 public _extern _SPRITE_SIZE I64 SpriteSize(U8 *elems);
+public _extern _GR_RECT_B I64 GrRectB(CDC *dc=gr.dc,I64 x1,I64 y1,I64 x2,I64 y2);
+public _extern _GR_BORDER U0 GrBorder(CDC *dc=gr.dc,I64 x1,I64 y1,I64 x2,I64 y2,I64 step=1,I64 start=0);
 #endif

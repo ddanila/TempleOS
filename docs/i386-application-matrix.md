@@ -238,3 +238,7 @@ open.
 With the public D3I32 norm and distance functions, unchanged KeepAway advances
 past `D3I32Norm` and stops at `GrBorder` on line 299
 (`build/i386-app-keepaway-d3norm-v1`, inputs unchanged). Gameplay remains open.
+
+With the original border and two-point rectangle bindings, unchanged KeepAway
+advances past `GrBorder` and stops at `sqrt2` on line 346
+(`build/i386-app-keepaway-border2-v1`, inputs unchanged). Gameplay remains open.
