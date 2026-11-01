@@ -1,7 +1,16 @@
 I64 NativePublicationGuardTest()
 {
   CCmpCtrl cc;CI386IdentSink sink;CI386HeapBlock *fake,*later;
-  U8 *old,*tail;I64 used,peak,count;U32 flags=I386IrqSave;
+  U8 *old,*tail,*zero;I64 used,peak,count;U32 flags=I386IrqSave;
+  zero=I386HeapAlloc(&ident_heap,0,FALSE);
+  if(!zero)return 176;
+  IdentZero(&cc,sizeof(cc));sink.heap=&ident_heap;sink.out_of_memory=FALSE;
+  cc.cur_str=zero;cc.cur_str_len=0;cc.token=77;
+  used=ident_heap.used;peak=ident_heap.peak;count=ident_heap.allocations;
+  if(I386IdentPublish(&sink,&cc,"Good",5,0) || sink.out_of_memory ||
+      cc.cur_str!=zero || cc.token!=77 || ident_heap.used!=used ||
+      ident_heap.peak!=peak || ident_heap.allocations!=count) return 174;
+  if(!I386HeapFree(&ident_heap,zero))return 175;
   old=I386HeapAlloc(&ident_heap,64,TRUE);tail=I386HeapAlloc(&ident_heap,8,TRUE);
   if(!old || !tail)return 170;
   IdentZero(&cc,sizeof(cc));sink.heap=&ident_heap;sink.out_of_memory=FALSE;

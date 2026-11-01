@@ -24998,3 +24998,10 @@ timestamp propagation and missing-source preservation pass the paired original
 and 8/64 MiB native fixture. Full streaming copy, wildcard copy/move, deletion,
 mounting, terminal callback and C1–C5 remain open; see
 `docs/i386-copy-single-z.md`.
+
+## Identifier publication timing experiment (2026-11-01)
+
+A combined heap-validation and allocation scan passed focused tests but took
+61.095 seconds in the isolated 8 MiB startup run, missing the 60-second gate.
+The change was discarded; a zero-sized token guard regression is retained.
+See `docs/i386-heap-performance.md`. C1–C5 remain open.

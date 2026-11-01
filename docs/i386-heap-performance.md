@@ -499,3 +499,33 @@ three decimal places from the prior 61.394-second candidate. Neither met the
 so the additional helper and parser changes were reverted; the experimental
 patch is in `build/i386-parser-ownership-known-v1.patch`. Full C1–C5
 qualification remains open.
+
+## Identifier publication combined-scan experiment (2026-11-01)
+
+A fresh profile of the current image sampled `I386HeapScanSelect` in 259 of
+401 root-header frames (`build/i386-copy-single-z-boot-profile-v1`). Forty of
+those stacks included identifier publication, with separate scans for validating
+the prior token, allocating its replacement, and freeing the prior token. These
+paused samples locate work; they do not measure elapsed time.
+
+A candidate combined the prior-token validity check and first-fit allocation
+selection into one complete heap traversal. It retained the existing allocation
+and out-of-memory behavior, including rejecting an interior forged header, a
+zero-sized guard, and a later corrupted block before changing the heap. The
+identifier and lexer-snapshot tests, portable heap core, both original rebuild
+generations, native cross-build and 386 audit passed
+(`build/i386-ident-guarded-cross-v2`). The 8 MiB startup candidate passed all
+nine functional and exact-VGA checks in 61.095 seconds
+(`build/i386-ident-guarded-startup-8m-v1`), compared with 62.402 seconds for
+the preceding image (`build/i386-copy-single-z-startup-8m`). This single pair
+is not sufficient evidence of a reliable improvement, and both miss the
+60-second gate. The candidate was discarded; its patch is retained in
+`build/i386-ident-guarded-v1.patch`.
+
+The portable public-heap fixture did not execute: its compiled runner exceeded
+its fixed 192 KiB transfer area by 614 bytes after the extra helper was added
+(`build/i386-ident-guarded-heap-public-v1.log`). This is a test-transport
+limit, not a passing or failing public-heap behavior result. The new zero-sized
+identifier guard check is retained in the existing regression fixture; the
+restored-source run is `build/i386-ident-guarded-restored-lex-v1.log`.
+C1–C5 and the startup timing gate remain open.
