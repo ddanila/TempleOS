@@ -42,18 +42,39 @@ class CI386ModuleWriteView {
   CI386ModuleRecord *records;
   U8 (*code)(U8 *context,U32 offset);
   U8 *context;
+  U32 patch_base;
+  Bool patch_valid;
+  U8 patch_bits[512];
 };
+Bool I386ModuleWritePatched(CI386ModuleWriteView *view,U32 offset)
+{//The validator may request pages in any order, including split fixups.
+  CI386ModuleRecord *record;
+  U32 i,bit,base=offset & 0xFFFFF000;
+  I64 lo,hi,start,end,limit;
+  if(!view->patch_valid || view->patch_base!=base) {
+    view->patch_base=base;view->patch_valid=TRUE;limit=base(I64)+4096;
+    for(i=0;i<512;i++)view->patch_bits[i]=0;
+    for(i=0;i<view->header->record_count;i++) {
+      record=view->records+i;
+      if(record->kind==I386_MODULE_REL32 || record->kind==I386_MODULE_ADDRESS ||
+          record->kind==I386_MODULE_POINTER || record->kind==I386_MODULE_NAMED_POINTER) {
+        start=record->offset;end=start+4;
+        lo=base;if(start>lo)lo=start;
+        hi=limit;if(end<hi)hi=end;
+        while(lo<hi) {
+          bit=lo++-base;
+          view->patch_bits[bit>>3]|=1<<(bit&7);
+        }
+      }
+    }
+  }
+  bit=offset-base;
+  return (view->patch_bits[bit>>3] & 1<<(bit&7))!=0;
+}
 U8 I386ModuleWriteByte(U8 *context,U32 offset)
 {//Validation observes the same normalized fixups the writer will emit.
   CI386ModuleWriteView *view=context;
-  CI386ModuleRecord *record;
-  U32 i;
-  for(i=0;i<view->header->record_count;i++) {
-    record=view->records+i;
-    if(record->kind==I386_MODULE_REL32 || record->kind==I386_MODULE_ADDRESS ||
-        record->kind==I386_MODULE_POINTER || record->kind==I386_MODULE_NAMED_POINTER)
-      if(offset>=record->offset && offset-record->offset<4) return 0;
-  }
+  if(I386ModuleWritePatched(view,offset))return 0;
   return (*view->code)(view->context,offset);
 }
 I64 I386ModuleWriteParts(CI386ModuleHeader *header,CI386ModuleRecord *records,
@@ -62,12 +83,11 @@ I64 I386ModuleWriteParts(CI386ModuleHeader *header,CI386ModuleRecord *records,
   U8 *scratch,I64 scratch_bytes)
 {//Validate before any writes; exact short/error writes abort without retry.
   CI386ModuleWriteView view;
-  CI386ModuleRecord *record;
-  U8 patch_bits[512];
-  I64 offset=0,count,i,j,position,lo,hi,start,end,patch_base=0,patch_end=0,bit;
+  I64 offset=0,count,i,position;
+  U32 payload_offset,bit;
   if(!header || !records || !strings || !code || !sink || !scratch ||
       scratch_bytes<1 || scratch_bytes>4096) return 0;
-  view.header=header;view.records=records;view.code=code;view.context=code_context;
+  view.header=header;view.records=records;view.code=code;view.context=code_context;view.patch_valid=FALSE;
   if(!I386ModuleValidParts(header,records,strings,header->total_size,
       &I386ModuleWriteByte,&view)) return 0;
   while(offset<header->total_size) {
@@ -77,27 +97,12 @@ I64 I386ModuleWriteParts(CI386ModuleHeader *header,CI386ModuleRecord *records,
       position=offset+i;
       if(position<32) scratch[i]=header(U8 *)[position];
       else if(position<header->records_offset) {
-        if(position>=patch_end) {
-          patch_base=position & -4096;
-          patch_end=patch_base+4096;
-          for(j=0;j<sizeof(patch_bits);j++)patch_bits[j]=0;
-          for(j=0;j<header->record_count;j++) {
-            record=records+j;
-            if(record->kind==I386_MODULE_REL32 || record->kind==I386_MODULE_ADDRESS ||
-                record->kind==I386_MODULE_POINTER || record->kind==I386_MODULE_NAMED_POINTER) {
-              start=32+record->offset;end=start+4;
-              lo=patch_base;if(start>lo)lo=start;
-              hi=patch_end;if(end<hi)hi=end;
-              while(lo<hi) {
-                bit=lo++-patch_base;
-                patch_bits[bit>>3]|=1<<(bit&7);
-              }
-            }
-          }
-        }
-        scratch[i]=(*code)(code_context,position-32);
-        bit=position-patch_base;
-        if(patch_bits[bit>>3] & 1<<(bit&7))scratch[i]=0;
+        payload_offset=position-32;
+        scratch[i]=(*code)(code_context,payload_offset);
+        if(!view.patch_valid || view.patch_base!=(payload_offset & 0xFFFFF000))
+          I386ModuleWritePatched(&view,payload_offset);
+        bit=payload_offset-view.patch_base;
+        if(view.patch_bits[bit>>3] & 1<<(bit&7))scratch[i]=0;
       }
       else if(position<header->strings_offset)
         scratch[i]=records(U8 *)[position-header->records_offset];

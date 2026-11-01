@@ -345,3 +345,21 @@ it does not check that upload sequence. A Startup-only native build passes at
 module with six records and one export. This checks native serialization only
 for a small module; the older nine-module diagnostic remains active on its
 earlier image.
+
+Validation now shares the same 512-byte page bitmap with the serializer,
+instead of scanning every relocation record for each requested code byte. The
+cache handles backwards page requests and patch slots split across pages; the
+serializer retains the payload-reader and sink behavior. The updated
+original-system oracle covers ordered and reverse-ordered records across page
+boundaries at five scratch sizes, as well as an invalid maximum record offset
+and a direct maximum-offset cache check (`build/i386-module-validator-window-v6`).
+The original compiler and kernel rebuild through two generations with binary
+differences (`build/i386-module-validator-window-rebuild.log`), the native
+cross-build and 386 instruction audit pass
+(`build/i386-module-validator-window-cross`), and the separate 8 MiB exact
+welcome-pixel check passes with unchanged inputs
+(`build/i386-module-validator-window-welcome8`). A Startup-only native module
+build passes at 128 MiB (`build/i386-module-validator-window-startup128`),
+producing the same 407-byte module hash as the preceding windowed writer.
+This reduces repeated scans when validation accesses nearby offsets, but no
+elapsed-time gain or resolution of the large stage-6 failure is claimed.
