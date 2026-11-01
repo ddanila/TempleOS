@@ -96,8 +96,8 @@ hash and `fsck.fat -n` (`build/i386-fat-alias-lookup-v2`); the collision control
 also passes (`build/i386-fat-alias-lookup-control-v2`). The boundary-padding
 assertion is skipped in the alias test because replacement can reuse those
 deleted slots. This covers `FileRead`, `FileFind` and `FileWrite` for the
-tested alias; direct `DirNew`, pre-existing ambiguities and concurrent
-operations still need separate coverage.
+tested alias; pre-existing ambiguities and concurrent operations still need
+separate coverage.
 
 FAT deletion now also accepts an exact short alias case-insensitively. For
 streamed `"w"` opens, the existing FAT entry is resolved to its long name
@@ -112,6 +112,17 @@ making the exact-alias deletion honor file-type filters
 rebuild through two generations with binary differences
 (`build/i386-fat-alias-delete-filter-rebuild.log`). These checks do not cover all
 stream modes, wildcard deletion, cross-cluster long-name deletion or races.
+
+Direct FAT `DirNew` updates now resolve a short alias to the existing long name
+under the drive lock before constructing and selecting entries. The
+rebuilt-original `--alias-dirnew` disk case updates an existing entry through
+its alias with `free_old_chain=FALSE`, checks both names and contents in the
+guest and host, then passes cold reopen and `fsck.fat -n`
+(`build/i386-fat-alias-dirnew-v1`). The combined stream/deletion control also
+passes (`build/i386-fat-alias-dirnew-control-v1`). The original compiler and
+kernel rebuild through two generations with binary differences
+(`build/i386-fat-alias-dirnew-rebuild.log`). Other update flags, malformed or
+already ambiguous directories, and concurrent operations remain unqualified.
 
 `FAT32DirNew` currently returns false even on successful writes, so the earlier
 invalid-name API test's return value alone does not establish rejection. Its

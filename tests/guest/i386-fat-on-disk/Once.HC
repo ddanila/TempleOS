@@ -26,6 +26,7 @@ Bool FDFile(U8 *name,U8 *data)
 }
 CBlkDev *fd_bd=BlkDevNextFreeSlot('C',BDT_ATA);
 I64 fd_mask=0,fd_i;U8 *fd_line,*fd_filler,*fd_second="second";Bool fd_fill_ok;CDirEntry fd_invalid;
+CDirEntry fd_entry;
 if(FD_ALIAS_SHADOW && FD_REOPEN)fd_second="fourth";
 fd_bd->base0=0x1F0;fd_bd->base1=0x3F6;fd_bd->unit=0;
 if(BlkDevAdd(fd_bd,0,FALSE,TRUE)==1 && Let2Drv('C')->fs_type==FSt_FAT32)fd_mask|=1;
@@ -51,6 +52,18 @@ if(fd_mask&1) {
    if(!FileFind("C:/twinabcdefghijklmnop3") && !FileFind("C:/TWINAB~2.EFG"))fd_mask|=512;
   }
   if(FD_ALIAS_STREAM && FDStream(FD_REOPEN))fd_mask|=1024;
+  if(FD_ALIAS_DIRNEW) {
+   fd_fill_ok=FileFind("C:/twinabcdefghijklmnop2",&fd_entry);
+   if(fd_fill_ok) {
+    if(!FD_REOPEN) {
+     StrCpy(fd_entry.name,"TWINAB~1.EFG");
+     DirNew(Let2Drv('C'),"/",&fd_entry,FALSE);
+    }
+    Free(fd_entry.full_name);
+   }
+   if(fd_fill_ok && FDRead("TWINAB~1.EFG","second") &&
+      FDRead("twinabcdefghijklmnop2","second"))fd_mask|=2048;
+  }
  }
 }
 fd_line=MStrPrint("FAT DISK MASK %d\n",fd_mask);FDReport(fd_line);Free(fd_line);FDReport("DONE fat disk\n");

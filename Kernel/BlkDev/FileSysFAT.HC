@@ -479,7 +479,7 @@ Bool FAT32DirNew(CDrv *dv,U8 *cur_dir,CDirEntry *tmpde,Bool free_old_chain)
 	cur_dir_clus,xsum=0,last_dir_clus=INVALID_CLUS;
   U8 ch;
   Bool written=FALSE,unlock,unlock_break;
-  CDirEntry long_name;
+  CDirEntry long_name,existing,effective;
   if (!FAT32DirFill(&de,tmpde,&de_cnt,dv->fat32_local_time_offset))
     return FALSE;
   MemSet(&long_name,0,sizeof(CDirEntry));
@@ -487,6 +487,13 @@ Bool FAT32DirNew(CDrv *dv,U8 *cur_dir,CDirEntry *tmpde,Bool free_old_chain)
     unlock_break=BreakLock;
     unlock=DrvLock(dv);
     cur_dir_clus=Name2DirClus(dv,cur_dir);
+    if (FAT32FileFind(dv,cur_dir_clus,tmpde->name,&existing) &&
+	  StrCmp(existing.name,tmpde->name)) {
+      MemCpy(&effective,tmpde,sizeof(CDirEntry));
+      StrCpy(effective.name,existing.name);
+      tmpde=&effective;
+      FAT32DirFill(&de,tmpde,&de_cnt,dv->fat32_local_time_offset);
+    }
     buf     =MAlloc(BLK_SIZE*dv->spc);
     last_buf=CAlloc(BLK_SIZE*dv->spc);
     if (!FAT32AliasChoose(dv,cur_dir_clus,buf,&de,&de_cnt,tmpde->name)) {
