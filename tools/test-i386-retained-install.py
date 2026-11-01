@@ -21,6 +21,8 @@ def main():
                         default=ROOT / 'build/i386-kernel/retained-install')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--cpu', default='486', help='QEMU CPU model for install and boot')
+    parser.add_argument('--welcome', action='store_true',
+                        help='Expect the original welcome document at each prompt')
     parser.add_argument('--qmp-stdio', action='store_true', help='Use QMP stdio where Unix sockets are blocked')
     parser.add_argument('--module', choices=MODULES, action='append',
                         help='Install selected guest-built providers; default: all retained')
@@ -62,7 +64,7 @@ def main():
                  f'"C:/Modules/I386/{name}.t32m");', ['1'])
                 for name in modules]
     run_input(candidate, out / 'replace', snapshot=False, ram_mib=16,
-              accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, startup_timeout=180, startup_check={
+              accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, startup_timeout=180, startup_check={
                   'status': 'ok', 'answers': [], 'command_timeout': 240,
                   'commands': commands})
     installed_paths = {f'/Modules/I386/{name}.t32m' for name in modules}
@@ -76,7 +78,7 @@ def main():
     candidate_hash = sha(candidate)
     shutil.copyfile(candidate, boot_disk)
     run_input(boot_disk, out / 'boot', snapshot=False, ram_mib=8,
-              accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, startup_timeout=180, startup_check={
+              accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, startup_timeout=180, startup_check={
                   'status': 'ok', 'answers': [],
                   'commands': [('6*7;', ['42']),
                                ('DocAllocationCheck;', ['13'])]})
@@ -93,7 +95,7 @@ def main():
     result = {'result': 'pass', 'installed': list(modules),
               'source_disk_sha256': source_hash, 'disk_sha256': candidate_hash,
               'module_source_paths': module_paths,
-              'cpu': args.cpu, 'accel': args.accel,
+              'cpu': args.cpu, 'accel': args.accel, 'welcome': args.welcome,
               'diagnostic_growth_recovery': growth_recovery,
               'module_sha256': {name: hashlib.sha256(built[module_paths[name]]).hexdigest() for name in modules},
               'module_bytes': {name: len(built[module_paths[name]])

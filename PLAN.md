@@ -25073,3 +25073,9 @@ functional/VGA checks but still misses the 60-second gate. A new nine-module
 native retained build on the fixed image is running and has passed the earlier
 `CLexFile` rejection; no full module or build pass is claimed yet. See
 [the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.
+
+The downstream native-generation harnesses now support the current welcome
+screen. A cross-built Startup replacement reached its 8 MiB boot but failed the
+strict `DocAllocationCheck` with `-38`; the preceding image shows the same
+result. The diagnostic failure, full guest-built install and two generations
+remain open; see [the evidence](docs/i386-module-compiler-types.md).

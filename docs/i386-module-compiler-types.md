@@ -71,3 +71,23 @@ retained build is running from the fixed image and matching export contracts
 `CLexFile` rejection and reached later headers, but has not completed or audited
 any module. Its input image SHA-256 is
 `45d9c7d6cd8f1b09981943b59a2668da2085f484853eaaf8706f8cf02483e4bc`.
+
+## Welcome-aware generation harnesses
+
+The retained-install, flat self-host install, and two-generation orchestration
+harnesses now accept an explicit `--welcome` and pass it to their guest boots.
+The default remains the prior plain-screen expectation. The option is recorded
+in their result metadata; the full two-generation path remains untested until
+all nine retained modules have built and passed their export audits.
+
+An installation probe packaged a byte-identical **cross-built** Startup module
+into the fixed image, replaced the installed copy, verified matching bytes,
+and reached a fresh 8 MiB boot with the welcome screen
+(`build/i386-c5-welcome-install-probe`). This does not qualify a guest-built
+module or the full installation: the boot's `DocAllocationCheck` returned
+`-38` instead of its required `13`, and the harness correctly failed. An
+independent 8 MiB snapshot of the preceding image also returned `-38`
+(`build/i386-c5-docalloc-baseline`), so the observation predates the include
+flag change. The cause and exact failure stage within the diagnostic remain to
+be established. The baseline was concurrent with the retained build, and its
+startup timing is not an isolated measurement.

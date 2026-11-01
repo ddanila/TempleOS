@@ -52,6 +52,8 @@ def main():
                         help='Required guest retained-build result for full self-hosting')
     parser.add_argument('--retained-install-result', type=Path,
                         help='Retained installation result; defaults to result.json beside --disk')
+    parser.add_argument('--welcome', action='store_true',
+                        help='Expect the original welcome document at each prompt')
     parser.add_argument('--qmp-stdio', action='store_true',
                         help='Use QMP stdio and a writable boot copy where sockets and snapshots are blocked')
     parser.add_argument('--command-timeout', type=int, default=2400,
@@ -112,7 +114,7 @@ def main():
     run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
     run_input(source, out / 'build', target_disk=target, snapshot=False,
               ram_mib=16, accel=args.accel, cpu=args.cpu,
-              qmp_stdio=args.qmp_stdio, startup_timeout=180,
+              qmp_stdio=args.qmp_stdio, welcome=args.welcome, startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
                              'command_timeout': args.command_timeout,
                              'commands': commands,
@@ -140,7 +142,7 @@ def main():
         shutil.copyfile(target, boot_disk)
     run_input(boot_disk, out / 'boot', snapshot=not args.qmp_stdio, ram_mib=8,
               accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio,
-              startup_timeout=180,
+              welcome=args.welcome, startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
                              'commands': [('6*7;', ['42']),
                                           ('DocAllocationCheck;', ['13'])]})
@@ -155,7 +157,7 @@ def main():
               'target_disk_sha256': hashlib.sha256(target.read_bytes()).hexdigest(),
               'cross_build_manifest_sha256': cross_manifest_hash,
               'retained_evidence': retained_evidence,
-              'cpu': args.cpu, 'build_ram_mib': 16, 'boot_ram_mib': 8,
+              'cpu': args.cpu, 'welcome': args.welcome, 'build_ram_mib': 16, 'boot_ram_mib': 8,
               'scope': 'Development flat-kernel build only; not full M7 self-hosting qualification' if args.cross_retained else 'Guest flat-kernel build with supplied guest-built retained modules'}
     (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(result)

@@ -30,6 +30,8 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--cpu', default='486', help='CPU model for all native build/install boots')
+    parser.add_argument('--welcome', action='store_true',
+                        help='Expect the original welcome document at each prompt')
     parser.add_argument('--qmp-stdio', action='store_true')
     parser.add_argument('--build-command-timeout', type=int, default=3600,
                         help='Per-module native rebuild limit in seconds')
@@ -39,6 +41,8 @@ def main():
     runtime = ['--accel', args.accel, '--cpu', args.cpu]
     if args.qmp_stdio:
         runtime.append('--qmp-stdio')
+    if args.welcome:
+        runtime.append('--welcome')
     repo, retained, listing, out = [p.resolve() for p in
         (args.repository, args.retained_build, args.stage_listing, args.out)]
     if out.exists():
@@ -55,7 +59,7 @@ def main():
     sources = source_identity(repo)
     out.mkdir(parents=True)
     report = {'result': 'running', 'stage': 'preflight', 'repository': str(repo),
-              'accel': args.accel, 'cpu': args.cpu, 'qmp_stdio': args.qmp_stdio,
+              'accel': args.accel, 'cpu': args.cpu, 'qmp_stdio': args.qmp_stdio, 'welcome': args.welcome,
               'build_command_timeout': args.build_command_timeout,
               'input_sha256': inputs,
               'source_sha256': sources, 'stages': {}}
