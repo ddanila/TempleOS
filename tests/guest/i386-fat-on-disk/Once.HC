@@ -1,4 +1,10 @@
 U0 FDReport(U8 *s){while(*s)OutU8(0xE9,*s++);}
+Bool FDRead(U8 *name,U8 *data)
+{
+ U8 *path=MStrPrint("C:/%s",name),*read;I64 size;Bool ok;
+ read=FileRead(path,&size);ok=read && size==StrLen(data) && !MemCmp(read,data,size);
+ Free(read);Free(path);return ok;
+}
 Bool FDFile(U8 *name,U8 *data)
 {
  U8 *path=MStrPrint("C:/%s",name),*read;I64 size;CDirEntry e;Bool ok;
@@ -7,7 +13,8 @@ Bool FDFile(U8 *name,U8 *data)
  Free(read);MemSet(&e,0,sizeof(e));ok=FileFind(path,&e) && ok && e.size==StrLen(data);Free(e.full_name);Free(path);return ok;
 }
 CBlkDev *fd_bd=BlkDevNextFreeSlot('C',BDT_ATA);
-I64 fd_mask=0,fd_i;U8 *fd_line,*fd_filler;Bool fd_fill_ok;CDirEntry fd_invalid;
+I64 fd_mask=0,fd_i;U8 *fd_line,*fd_filler,*fd_second="second";Bool fd_fill_ok;CDirEntry fd_invalid;
+if(FD_ALIAS_SHADOW && FD_REOPEN)fd_second="fourth";
 fd_bd->base0=0x1F0;fd_bd->base1=0x3F6;fd_bd->unit=0;
 if(BlkDevAdd(fd_bd,0,FALSE,TRUE)==1 && Let2Drv('C')->fs_type==FSt_FAT32)fd_mask|=1;
 if(fd_mask&1) {
@@ -21,11 +28,12 @@ if(fd_mask&1) {
   if(fd_fill_ok)fd_mask|=32;
   if(FDFile("charlieABCDEFGHIJKLMNOPQRSTUVWXYZ1234","thirty-seven"))fd_mask|=16;
   if(FD_COLLISIONS && FDFile("twinabcdefghijklmnop1","first") &&
-     FDFile("twinabcdefghijklmnop2","second") &&
+     FDFile("twinabcdefghijklmnop2",fd_second) &&
      FDFile("twinabcdefghijklmnop1","first") &&
-     FDFile("twinabcdefghijklmnop2","second") &&
+     FDFile("twinabcdefghijklmnop2",fd_second) &&
      FDFile("twinabcdefghijklmnop3","third"))fd_mask|=128;
-  if(FD_ALIAS_SHADOW && FDFile("TWINAB~1.EFG","fourth"))fd_mask|=256;
+  if(FD_ALIAS_SHADOW && FDRead("twinab~1.efg",fd_second) &&
+     FDFile("TWINAB~1.EFG","fourth") && FDRead("twinabcdefghijklmnop2","fourth"))fd_mask|=256;
  }
 }
 fd_line=MStrPrint("FAT DISK MASK %d\n",fd_mask);FDReport(fd_line);Free(fd_line);FDReport("DONE fat disk\n");

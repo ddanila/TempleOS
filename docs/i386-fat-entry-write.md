@@ -79,20 +79,25 @@ long names, replacement of the first two, guest and host readback, cold reopen,
 an unchanged reopen disk hash, and a zero exit from `fsck.fat -n`
 (`build/i386-fat-alias-collision-v2`). The ordinary disk regression also passes
 (`build/i386-fat-alias-normal-v1`). This does not cover all FAT namespace
-ambiguities, including a requested long name matching another entry's short
-alias, pre-existing duplicate aliases, malformed directories, or native FAT
+ambiguities in all creation paths, pre-existing duplicate aliases, malformed
+directories, or native FAT
 mounting. Directory scanning adds work proportional to directory size and may
 scan repeatedly for numbered candidates.
 
-The `--shared --collisions --alias-shadow` case exposes the remaining alias
-namespace ambiguity (`build/i386-fat-alias-shadow-red-v2`). After a long file
-has the short alias `TWINAB~1.EFG`, the guest creates another file with that
-name and reads its new contents. Host lookup of the same path instead returns
-the first file's contents. The test stops at that host mismatch, before cold
-reopen or `fsck`; its boundary-padding assertion is skipped because the added
-entry can reuse those deleted slots. Resolving this requires consistent alias
-lookup and write semantics as well as unique short aliases; the test does not
-establish which overwrite policy should apply.
+The earlier `--shared --collisions --alias-shadow` test exposed another
+ambiguity (`build/i386-fat-alias-shadow-red-v2`): writing a name equal to an
+existing short alias created a second entry, and host lookup returned different
+contents from guest lookup. FAT file lookup now recognizes short aliases
+case-insensitively, and `FAT32FileWrite` resolves an existing alias to its
+long name before replacement. The updated test reads through the lowercase
+alias, writes through the uppercase alias, and checks the original long name
+and alias in the guest and on the host. It passes cold reopen, unchanged reopen
+hash and `fsck.fat -n` (`build/i386-fat-alias-lookup-v2`); the collision control
+also passes (`build/i386-fat-alias-lookup-control-v2`). The boundary-padding
+assertion is skipped in the alias test because replacement can reuse those
+deleted slots. This covers `FileRead`, `FileFind` and `FileWrite` for the
+tested alias; direct `DirNew`, streamed writes, deletion by alias, pre-existing
+ambiguities and concurrent operations still need separate coverage.
 
 `FAT32DirNew` currently returns false even on successful writes, so the earlier
 invalid-name API test's return value alone does not establish rejection. Its

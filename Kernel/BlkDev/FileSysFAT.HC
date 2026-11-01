@@ -112,7 +112,7 @@ Bool FAT32FileFind(CDrv *dv,I64 cur_dir_clus,
   Bool res=FALSE,unlock;
   CFAT32DirEntry *buf;
   I64 xsum=0,attr,cur_dir_entry,entries_per_clus;
-  U8 dname[CDIR_FILENAME_LEN],ch;
+  U8 dname[CDIR_FILENAME_LEN],short_name[16],ch;
   CDirEntry long_name;
   if (fuf_flags&~FUG_FILE_FIND)
     throw('FUF');
@@ -141,11 +141,12 @@ Bool FAT32FileFind(CDrv *dv,I64 cur_dir_clus,
 		MemCpy(_res,&long_name,sizeof(CDirEntry));
 	      else
 		MemSet(_res,0,sizeof(CDirEntry));
+	      FATFromName(short_name,buf[cur_dir_entry].name);
 	      if (!(fuf_flags&FUF_JUST_DIRS && !(attr & RS_ATTR_DIR)) &&
 		    !(fuf_flags&FUF_JUST_FILES && attr & RS_ATTR_DIR) &&
 		    FAT32CDirFill(_res,&buf[cur_dir_entry],
 		    dv->fat32_local_time_offset) &&
-		    !StrCmp(dname,_res->name)) {
+		    (!StrCmp(dname,_res->name) || !StrICmp(dname,short_name))) {
 		res=TRUE;
 		goto fff_done;
 	      }
@@ -717,7 +718,7 @@ I64 FAT32FilesDel(CDrv *dv,U8 *cur_dir,U8 *files_find_mask,I64 fuf_flags,
 I64 FAT32FileWrite(CDrv *dv,U8 *cur_dir,U8 *name,U8 *buf,I64 size,
 	CDate cdt,I64 attr)
 {
-  CDirEntry de;
+  CDirEntry de,existing;
   I64 c=0,blk_cnt;
   Bool contiguous;
   MemSet(&de,0,sizeof(CDirEntry));
@@ -727,6 +728,9 @@ I64 FAT32FileWrite(CDrv *dv,U8 *cur_dir,U8 *name,U8 *buf,I64 size,
   else if (!CFileNameTo(de.name,name))
     PrintErr("Invalid FileName: \"%s\".\n",name);
   else {
+    if (FAT32FileFind(dv,Name2DirClus(dv,cur_dir),de.name,&existing,
+	  FUF_JUST_FILES))
+      StrCpy(de.name,existing.name);
     FAT32FilesDel(dv,cur_dir,de.name,0,FALSE,FALSE);
     if (attr & RS_ATTR_CONTIGUOUS)
       contiguous=TRUE;

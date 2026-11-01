@@ -85,7 +85,9 @@ def main():
         if f'FAT DISK MASK {expected}\n' not in (out/'guest/debug.log').read_text():raise ValueError('Guest FAT contract failed')
         if args.shared and not args.alias_shadow:report['boundary']=verify_boundary(disk,start)
         names=(NAMES+(COLLISIONS if args.collisions else [])+[(f'F{i:02}.TXT',b'fill') for i in range(6)]) if args.shared else NAMES[:2]
-        if args.alias_shadow:names.append(('TWINAB~1.EFG',b'fourth'))
+        if args.alias_shadow:
+            names=[(name,b'fourth' if name=='twinabcdefghijklmnop2' else data) for name,data in names]
+            names.append(('TWINAB~1.EFG',b'fourth'))
         for i,(name,data) in enumerate(names):
             path=out/f'host-read-{i}.bin'
             subprocess.run(['mcopy','-i',str(disk)+'@@'+str(start*512),'::/'+name,str(path)],cwd=ROOT,check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
