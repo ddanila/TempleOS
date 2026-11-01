@@ -12,6 +12,11 @@ public _extern _HASH_DEL U0 HashDel(CHashSrcSym *symbol);
 public _extern _HASH_LIST_ADD I64 HashLstAdd(U8 *list,I64 type,CHashTable *table);
 public _extern _DEFINE_LIST_LOAD CHashDefineStr *DefineLstLoad(U8 *name,U8 *list);
 public _extern _HASH_DEFINE_LIST_ADD I64 HashDefineLstAdd(U8 *name,I64 type,CHashTable *table);
+public _extern _HASH_GENERIC_ADD CHashGeneric *HashGenericAdd(U8 *name,I64 type,I64 u0=0,I64 u1=0,I64 u2=0,CTask *task=NULL);
+public _extern _FRAME_PTR I64 FramePtr(U8 *name,CTask *task=NULL);
+public _extern _FRAME_PTR_ADD CHashGeneric *FramePtrAdd(U8 *name,I64 val=0,CTask *task=NULL);
+public _extern _FRAME_PTR_SET I64 FramePtrSet(U8 *name,I64 val,CTask *task=NULL);
+public _extern _FRAME_PTR_DEL I64 FramePtrDel(U8 *name,CTask *task=NULL);
 #include "/Kernel/ListFlags.HH"
 public _extern _LIST_SUB U8 *LstSub(I64 sub,U8 *list);
 public _extern _LIST_MATCH I64 LstMatch(U8 *needle,U8 *list,I64 flags=0);
