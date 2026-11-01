@@ -17,6 +17,7 @@ public extern Bool I386HeapInit(CI386Heap *hc,U8 *base,I64 size);
 public extern Bool I386HeapValid(CI386Heap *hc);
 public extern U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE);
 //Separate short-lived bookkeeping from durable allocations without moving bytes.
+public extern U8 *I386HeapAllocGuarded(CI386Heap *hc,I64 size,U8 *guard,Bool *guard_valid);
 public extern U8 *I386HeapAllocHigh(CI386Heap *hc,I64 size,Bool zero=FALSE);
 public extern Bool I386HeapFree(CI386Heap *hc,U8 *ptr);
 public extern Bool I386HeapShrink(CI386Heap *hc,U8 *ptr,I64 size);

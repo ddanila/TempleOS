@@ -39,9 +39,9 @@ Bool I386IdentInclude(U8 *context,CCmpCtrl *cc,CHashDefineStr *entry)
 Bool I386IdentPublish(U8 *context,CCmpCtrl *cc,U8 *name,I64 length,CHash *entry)
 {
   CI386IdentSink *sink=context; U8 *text;
-  I64 i; U32 flags=I386IrqSave;
-  if(cc->cur_str && I386HeapSize(sink->heap,cc->cur_str)<1) { I386IrqRestore(flags); return FALSE; }
-  text=I386HeapAlloc(sink->heap,length,FALSE);
+  I64 i; Bool valid; U32 flags=I386IrqSave;
+  text=I386HeapAllocGuarded(sink->heap,length,cc->cur_str,&valid);
+  if(!valid) { I386IrqRestore(flags); return FALSE; }
   I386IrqRestore(flags);
   if(!text) { sink->out_of_memory=TRUE; return FALSE; }
   for(i=0;i<length;i++) text[i]=name[i];

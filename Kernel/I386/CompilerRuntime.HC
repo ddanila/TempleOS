@@ -12,6 +12,7 @@
 #include "/Compiler/I386/Lex.HH"
 #include "/Kernel/I386/Cpu.HH"
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
+import U8 *I386HeapAllocGuarded(CI386Heap *heap,I64 size,U8 *guard,Bool *guard_valid);
 import U8 *I386HeapAllocHigh(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import U0 KernelLog(U8 *text);
 #define I386_PARSER_FAILURE_TRACE 1

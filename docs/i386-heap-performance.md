@@ -588,3 +588,45 @@ shows a modest reduction on this host, not a general performance guarantee. The
 candidate's separate full 8 MiB startup check completed its functional and VGA
 checks in 72.98 seconds (`build/i386-free-special-startup-8m-v1`), still above
 the 60-second gate. Full C1–C5 qualification remains open.
+
+## Identifier validation and allocation revisited
+
+The profile of the free-specific baseline still found `I386HeapScanSelect` in
+309 root-header samples and `I386HeapFree` in 101 samples
+(`build/i386-free-special-profile-v1`). These are statistical samples, not call
+counts. The earlier identifier-publication candidate is now retained: when
+replacing a token, one complete traversal validates the old payload and selects
+the first fitting free block. No allocation occurs until the entire heap and
+its counters have passed validation. Invalid ownership and allocation failure
+remain distinct, and the existing interrupt exclusion covers the operation.
+
+The identifier regression covers zero-sized and forged interior guards, later
+heap corruption, successful replacement and allocation failure
+(`build/i386-ident-guarded-new-lex.log`). Lexer snapshot, native and portable
+heap-core, and native and portable public-heap regressions pass, as do both
+original rebuild generations, the full cross-build and the 386 instruction
+audit (`build/i386-ident-guarded-new-snapshot.log`,
+`build/i386-ident-guarded-new-core.log`,
+`build/i386-ident-guarded-new-core-source.log`,
+`build/i386-ident-guarded-new-public.log`,
+`build/i386-ident-guarded-new-public-source-v2.log`,
+`build/i386-ident-guarded-new-rebuild.log` and
+`build/i386-ident-guarded-new-cross`). The public fixture's loader allowance
+was raised from 416 to 448 sectors, its already enforced maximum below the
+first arena, to accommodate the portable helper.
+
+An isolated alternating 8 MiB boot-to-prompt comparison measured the baseline
+at 73.186 and 73.185 seconds and the candidate at 72.285 and 72.436 seconds
+(`build/i386-ident-guarded-new-pair`). The image manifests differ in the five
+identifier and heap source files changed for this experiment and in the build
+and test scripts; the test script's fixture-size change does not enter the
+kernel image. This four-run sample shows a modest host-specific reduction, not
+a general performance guarantee. The result remains above the 60-second gate;
+full C1–C5 qualification remains open.
+
+The full 8 MiB startup run completed all nine functional checks and exact VGA,
+but failed its 60-second timing assertion (`build/i386-ident-guarded-new-startup-8m`).
+Its elapsed time was collected concurrently with other checks and is not used
+for the comparison above. The 16 MiB diagnostic startup and the 8 MiB public
+task-accounting batch both pass (`build/i386-ident-guarded-new-diagnostics`,
+`build/i386-ident-guarded-new-task-batch`).

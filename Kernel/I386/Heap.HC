@@ -198,6 +198,46 @@ public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
   return result;
 }
 
+//Caller holds heap exclusion across this operation. Validate a prior payload and
+//select the first fit in the same complete traversal; invalid guards do not mutate.
+public U8 *I386HeapAllocGuarded(CI386Heap *hc,I64 size,U8 *guard,Bool *guard_valid)
+{
+  CI386HeapBlock *block=0,*rest;
+  U8 *result;
+  U32 offset,need;
+  I64 found;
+  *guard_valid=FALSE;
+  if(size<0 || size>0xFFFFFFFF-23) {
+    if(!guard || I386HeapScan(hc,guard)>=1) *guard_valid=TRUE;
+    return 0;
+  }
+  need=(size+7)&~7;
+  if(!need)need=8;
+  need+=16;
+  found=I386HeapScanSelect(hc,guard,need,&block,TRUE);
+  if(guard && found<1)return 0;
+  *guard_valid=TRUE;
+  if(found<0)return 0;
+  if(!block) {
+#ifdef I386_HEAP_FAILURE_TRACE
+    I386HeapExhausted(hc,size);
+#endif
+    return 0;
+  }
+  offset=block(U8 *)-hc->base;
+  if(block->span-need>=24) {
+    rest=hc->base+offset+need;
+    rest->span=block->span-need;rest->requested=0;
+    rest->tag=I386_HEAP_FREE;rest->reserved=0;
+    block->span=need;
+  }
+  block->requested=size;block->tag=I386_HEAP_USED;
+  hc->used+=block->span;hc->allocations++;
+  if(hc->used>hc->peak)hc->peak=hc->used;
+  result=hc->base+offset+16;
+  return result;
+}
+
 public U8 *I386HeapAllocHigh(CI386Heap *hc,I64 size,Bool zero=FALSE)
 {//Validate the complete arena; use the high end of the last fitting free block.
   CI386HeapBlock *block=0;
