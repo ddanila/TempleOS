@@ -313,3 +313,30 @@ The terminal-menu regression and 16 MiB startup diagnostic pass
 The isolated 8 MiB startup run passes all nine functional/VGA checks but takes
 61.191 seconds, above the 60-second gate
 (`build/i386-doc-key-page-startup-v1`).
+
+## Large-form paging and default window geometry (2026-11-01)
+
+A 72-entry real chooser now tests one and two Page Downs, Page Down then Up,
+End then Page Up, and Ctrl-Page suppression. With the task window explicitly
+set to rows 2–58, the pinned and rebuilt original and native at 8 and 64 MiB
+all return `[57,72,1,16,1,57]` and restore task/document state
+(`build/i386-menu-large-page-fixed-reference-v1`,
+`build/i386-menu-large-page-fixed-rebuilt-v1`,
+`build/i386-menu-large-page-fixed-native-8m-v2`,
+`build/i386-menu-large-page-fixed-native-64m-v2`). This expands the earlier
+two-entry coverage; arbitrary layouts, hex editing and mouse input remain open.
+
+The unmodified default window is different. The pinned original reports top 2,
+bottom 58 and height 57, and lands at entry 57 on Page Down
+(`build/i386-menu-large-default-reference-v1`). Native reports top 0, bottom
+59 and height 60, and lands at entry 60
+(`build/i386-menu-large-default-native-v1`). The instrumented six-case native
+observation was `[60,72,1,13,1,60]`
+(`build/i386-menu-large-page-native-inspect-v1`). The strict default-window
+comparison is intentionally left failing until the desktop window initialization
+and its dependent rendering/interaction behavior match the original. The
+matched-window pass does not qualify that default workflow. The initial
+reference observation used provisional zero expectations and therefore reports
+a fixture failure after recording the actual values
+(`build/i386-menu-large-page-reference-probe-v1`). The existing 8 MiB startup
+60-second gate and C1–C5 remain open.

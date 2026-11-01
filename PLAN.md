@@ -24951,3 +24951,12 @@ The original page traversal is shared with form input. Real chooser Page
 Up/Down and Ctrl-page cases match the original at 8 and 64 MiB. Larger layouts,
 hex editing, non-form original layout and C1–C5 remain unqualified; see
 `docs/i386-doc-put-key.md`.
+
+## Large-form paging and default geometry (2026-11-01)
+
+A 72-entry chooser matches original page movement at both 8 and 64 MiB when
+the task window is explicitly set to the original rows 2–58. Default native
+window geometry remains rows 0–59, changing page landings (60 versus 57); the
+unmodified default comparison remains failing. Align desktop window geometry and
+its rendering and interaction dependencies before qualifying this workflow.
+See `docs/i386-doc-put-key.md`; C1–C5 remain open.

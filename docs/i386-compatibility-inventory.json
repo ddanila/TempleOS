@@ -2128,7 +2128,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB. Eight direct form-Tab navigation and insertion cases also match the original. Real chooser Tab, Shift-Tab, Down and key-release cases match at 8 and 64 MiB; retained non-form physical vertical navigation also passes its scoped test. Real chooser Home/End and Ctrl-Up/Down also match the original at 8 and 64 MiB. Eight direct form horizontal cursor, selection and modifier cases also match at 8 and 64 MiB. Real chooser Page Up/Down and Ctrl-page cases match at 8 and 64 MiB."
+        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB. Eight direct form-Tab navigation and insertion cases also match the original. Real chooser Tab, Shift-Tab, Down and key-release cases match at 8 and 64 MiB; retained non-form physical vertical navigation also passes its scoped test. Real chooser Home/End and Ctrl-Up/Down also match the original at 8 and 64 MiB. Eight direct form horizontal cursor, selection and modifier cases also match at 8 and 64 MiB. Real chooser Page Up/Down and Ctrl-page cases match at 8 and 64 MiB. A 72-entry chooser matches page movement with the original explicit window geometry; default native geometry differs and remains unqualified."
       },
       "oracle": {
         "tool": "tools/test-i386-doc-put-key-reference.py",
@@ -2292,6 +2292,27 @@
           "result": "pass",
           "evidence": "build/i386-menu-page-native-64m-v1/result.json",
           "scope": "Real two-entry chooser Page Up/Down and Ctrl-page behavior plus prior cases; larger layouts and hex pages unqualified"
+        },
+        {
+          "target": "native-large-page-matched-window-8m",
+          "command": "python3 tools/test-i386-menu-large-page.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-menu-large-page-fixed-native-8m-v2/result.json",
+          "scope": "72-entry chooser page movement with explicit rows 2-58 and state restoration; default native geometry and arbitrary layouts unqualified"
+        },
+        {
+          "target": "native-large-page-matched-window-64m",
+          "command": "python3 tools/test-i386-menu-large-page.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-menu-large-page-fixed-native-64m-v2/result.json",
+          "scope": "72-entry chooser page movement with explicit rows 2-58 and state restoration; default native geometry and arbitrary layouts unqualified"
+        },
+        {
+          "target": "native-large-page-default-window-64m",
+          "command": "python3 tools/test-i386-menu-large-page.py IMAGE --ram-mib 64 --default-window --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-menu-large-default-native-v1/result.json",
+          "scope": "Default native task window is rows 0-59 and Page Down selects entry 60; original rows 2-58 select 57; desktop geometry remains open"
         }
       ]
     },
