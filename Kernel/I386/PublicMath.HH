@@ -1,6 +1,9 @@
 #ifndef I386_PUBLIC_MATH_INCLUDED
 #define I386_PUBLIC_MATH_INCLUDED
 //Retained software F64 and original integer-multiple providers.
+public _extern _MAX F64 Max(F64 n1,F64 n2);
+public _extern _MIN F64 Min(F64 n1,F64 n2);
+public _extern _CLAMP F64 Clamp(F64 d,F64 lo,F64 hi);
 public _extern _ROUND F64 Round(F64 value);
 public _extern _TRUNC F64 Trunc(F64 value);
 public _extern _FLOOR F64 Floor(F64 value);

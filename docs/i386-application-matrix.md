@@ -221,3 +221,7 @@ interaction, persistence and visual/audio workflows remain required.
 With the shared registry integration, unchanged KeepAway advances past registry
 initialization and fails at `Max` on line 257 (`build/i386-app-keepaway-registry-v1`,
 inputs unchanged). This is a load check; the game has not been qualified.
+
+With public `Min`, `Max` and `Clamp`, unchanged KeepAway advances past `Max`
+and stops at the `GrEllipse` call on line 263
+(`build/i386-app-keepaway-minmax-v1`, inputs unchanged). Gameplay remains open.
