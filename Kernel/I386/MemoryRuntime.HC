@@ -100,6 +100,10 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols,CI386Heap *t
       !symbols || !symbols->body || symbols->locked_flags ||
       !root || !root->gs || !root->owner || root->owner->root!=root ||
       root->owner->current!=root || !I386MemBackingInit(&memory_pool,heap,I386_NATIVE_BACKING_QUANTUM)) goto done;
+  if(task_fallback && !I386MemBackingSetFallback(&memory_pool,task_fallback)) {
+    if(!I386MemBackingDestroy(&memory_pool))KernelStop;
+    goto done;
+  }
   if(!I386MemBackingReserve(&memory_pool,I386_NATIVE_STARTUP_RESERVE_PAGES)) {
     if(!I386MemBackingDestroy(&memory_pool))KernelStop;
     goto done;

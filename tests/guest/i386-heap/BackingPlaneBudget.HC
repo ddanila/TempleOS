@@ -6,7 +6,7 @@ I64 BackingPlaneBudgetTest()
   U8 *planes[4];
   I64 p,i,capacity;
   U32 flags=GetRFlags;
-  if(!I386HeapInit(&backing_heap,0x40000,196608) ||
+  if(!I386HeapInit(&backing_heap,0x48000,196608) ||
       !I386MemBackingInit(pool,&backing_heap,I386_NATIVE_BACKING_QUANTUM) ||
       !I386MemHeapInit(hc,pool))return 450;
   for(p=0;p<4;p++) {
@@ -26,7 +26,7 @@ I64 BackingPlaneBudgetTest()
       backing_heap.allocations || !I386HeapValid(&backing_heap))return 456;
   if((GetRFlags^flags)&0x200)return 457;
   //Exact fixed-size payloads fit without changing the ordinary MAlloc buckets.
-  if(!I386HeapInit(&backing_heap,0x40000,327680) ||
+  if(!I386HeapInit(&backing_heap,0x48000,311296) ||
       !I386MemBackingInit(pool,&backing_heap,I386_NATIVE_BACKING_QUANTUM) ||
       !I386MemHeapInit(hc,pool))return 458;
   for(p=0;p<2;p++) {

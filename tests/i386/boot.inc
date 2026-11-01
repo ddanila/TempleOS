@@ -44,6 +44,12 @@
 %if BOOT_SECTORS > 448
 %error Input test stage must fit below physical 0x48000
 %endif
+%elifdef HEAP_PUBLIC_TEST
+%define BOOT_STACK_TOP 0x9C000
+;Code ends at or below 0x48000; scratch arenas end at 0x94000.
+%if BOOT_SECTORS < 1 || BOOT_SECTORS > 448
+%error Public heap test stage must fit below physical 0x48000
+%endif
 %elifdef LARGE_CORE_TEST
 ;Task/control fixtures retain their arena at 0x40000.
 %if BOOT_SECTORS < 1 || BOOT_SECTORS > 384

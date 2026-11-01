@@ -49,3 +49,7 @@ The loaded console span is 584 bytes smaller than the preceding image, but the
 full 8 MiB fixture still exhausts the same compiler heap on the same allocation
 (`build/i386-ona-compact-effects-8m-v1`). The 8 MiB resource gate remains open;
 decoding overhead has not been profiled.
+
+With shared low-memory backing, the full asynchronous sound-effects fixture now
+passes at 8 MiB with unchanged inputs (`build/i386-backing-fallback-effects-8m-v1`).
+Its concurrent startup was 74.80 seconds and does not qualify the timing gate.

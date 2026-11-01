@@ -5,30 +5,68 @@ extern Bool I386MemBackingGrow(CI386PublicPool *pool,I64 pages);
 //Single CPU; callers cannot re-enter validation while IRQs are masked.
 #define I386_BACKING_BATCH 256
 U32 i386_backing_region_scratch[I386_BACKING_BATCH];
+Bool I386MemBackingDisjoint(CI386Heap *first,CI386Heap *second)
+{
+  U64 a=(first->base+0)(U64),b=(second->base+0)(U64);
+  return first!=second && !(a<b+second->size && b<a+first->size) &&
+    !(a<(second+0)(U64)+sizeof(CI386Heap) && (second+0)(U64)<a+first->size) &&
+    !(b<(first+0)(U64)+sizeof(CI386Heap) && (first+0)(U64)<b+second->size);
+}
+CI386Heap *I386MemBackingRegionHeap(CI386BackingPool *pool,U64 address)
+{//Validate the complete record range before following a link in either arena.
+  CI386Heap *heap=pool->heap;
+  U64 base=(heap->base+0)(U64);
+  if(heap->size>=sizeof(CI386BackingRegion) &&
+      address>=base+sizeof(CI386HeapBlock) &&
+      address-base<=heap->size-sizeof(CI386BackingRegion))return heap;
+  if(heap=pool->fallback) {
+    base=(heap->base+0)(U64);
+    if(heap->size>=sizeof(CI386BackingRegion) &&
+        address>=base+sizeof(CI386HeapBlock) &&
+        address-base<=heap->size-sizeof(CI386BackingRegion))return heap;
+  }
+  return 0;
+}
+Bool I386MemBackingFits(CI386Heap *heap,I64 request)
+{//The caller validated the arena and holds IRQs masked across allocation.
+  CI386HeapBlock *block;
+  U32 offset=0,need;
+  if(!heap || request<0 || request>0xFFFFFFFF-23)return FALSE;
+  need=((request+7)&~7)+sizeof(CI386HeapBlock);
+  while(offset<heap->size) {
+    block=heap->base+offset;
+    if(block->tag==I386_HEAP_FREE && block->span>=need)return TRUE;
+    offset+=block->span;
+  }
+  return FALSE;
+}
 Bool I386MemBackingValid(CI386BackingPool *pool)
 {
   CI386BackingRegion *region,*cursor;
   CI386HeapBlock *block;
-  CI386Heap *heap;
+  CI386Heap *heap,*previous;
   U32 flags=I386IrqSave,count=0,chunk,gap,i,j,offset,target;
   U32 *scratch=i386_backing_region_scratch,limit;
   I64 retained=0;
-  U64 address,base,heap_base;
+  U64 address,base;
   Bool result=FALSE;
   if(!pool || pool->backing_signature!=I386_BACKING_SIGNATURE ||
       pool->grow!=&I386MemBackingGrow || !I386MemPoolValid(pool) ||
-      !(heap=pool->heap) || !I386HeapValid(heap)) goto done;
+      !(heap=pool->heap) || !I386HeapValid(heap) ||
+      pool->fallback && (!I386HeapValid(pool->fallback) ||
+        !I386MemBackingDisjoint(heap,pool->fallback) ||
+        (pool->fallback->base+0)(U64)<(pool+0)(U64)+sizeof(CI386BackingPool) &&
+        (pool+0)(U64)<(pool->fallback->base+0)(U64)+pool->fallback->size)) goto done;
   //Each bounded batch is sorted without changing the ownership list. Validate
   //links are within the mapped heap before reading the next link, then check
   //exact block membership while walking the already-validated chain.
-  heap_base=(heap->base+0)(U64);cursor=pool->owned;
+  cursor=pool->owned;
   while(cursor) {
     chunk=0;
     while(cursor && chunk<I386_BACKING_BATCH) {
-      if(count>=pool->owned_count || heap->size<sizeof(CI386BackingRegion)) goto done;
+      if(count>=pool->owned_count) goto done;
       address=(cursor+0)(U64);
-      if(address<heap_base+sizeof(CI386HeapBlock) ||
-          address-heap_base>heap->size-sizeof(CI386BackingRegion)) goto done;
+      if(!I386MemBackingRegionHeap(pool,address)) goto done;
       i386_backing_region_scratch[chunk]=address;chunk++;count++;
       cursor=cursor->next_owned;
     }
@@ -87,8 +125,11 @@ Bool I386MemBackingValid(CI386BackingPool *pool)
 @@90:
     }
 #endif
-    offset=0;
+    offset=0;previous=0;
     for(i=0;i<chunk;i++) {
+      heap=I386MemBackingRegionHeap(pool,i386_backing_region_scratch[i]);
+      if(!heap)goto done;
+      if(heap!=previous) {offset=0;previous=heap;}
       target=i386_backing_region_scratch[i]-(heap->base+0)(U32)-sizeof(CI386HeapBlock);
 #ifdef I386_HEAP_SOURCE_BUILD
       while(offset<target) { block=heap->base+offset;offset+=block->span; }
@@ -134,16 +175,32 @@ Bool I386MemBackingInit(CI386BackingPool *pool,CI386Heap *heap,I64 quantum=65536
       quantum<512 || quantum&511 || quantum>0xFFFFFFFF-sizeof(CI386BackingRegion)-511 ||
       pool->signature==I386_POOL_SIGNATURE && (pool->regions || pool->region_count) ||
       !I386MemPoolEmpty(pool)) goto done;
-  pool->heap=heap; pool->owned=0; pool->owned_count=0; pool->retained=0;
+  pool->heap=heap; pool->fallback=0; pool->owned=0; pool->owned_count=0; pool->retained=0;
   pool->quantum=quantum; pool->backing_signature=I386_BACKING_SIGNATURE;
   pool->grow=&I386MemBackingGrow; result=TRUE;
 done:
   I386IrqRestore(flags); return result;
 }
+Bool I386MemBackingSetFallback(CI386BackingPool *pool,CI386Heap *fallback)
+{//Only configure an empty provider; existing ownership must never change source.
+  U32 flags=I386IrqSave;
+  Bool result=FALSE;
+  U64 base;
+  if(!I386MemBackingValid(pool) || pool->owned || pool->regions ||
+      pool->locked_flags || pool->growing || pool->fallback || !fallback ||
+      !I386HeapValid(fallback) || !I386MemBackingDisjoint(pool->heap,fallback))goto done;
+  base=(fallback->base+0)(U64);
+  if(base<(pool+0)(U64)+sizeof(CI386BackingPool) &&
+      (pool+0)(U64)<base+fallback->size)goto done;
+  pool->fallback=fallback;result=TRUE;
+done:
+  I386IrqRestore(flags);return result;
+}
 Bool I386MemBackingGrow(CI386PublicPool *base_pool,I64 pages)
 {//Called once per exhausted page request, IRQs masked, pool unlocked.
   CI386BackingPool *pool=base_pool;
   CI386BackingRegion *region;
+  CI386Heap *source;
   I64 minimum,size,request,i,before;
   U64 arena;
   if(!I386MemBackingValid(pool) || !pool->growing || pool->locked_flags ||
@@ -152,29 +209,34 @@ Bool I386MemBackingGrow(CI386PublicPool *base_pool,I64 pages)
   minimum=pages*512; size=minimum;
   if(size<pool->quantum) size=pool->quantum;
   request=size+sizeof(CI386BackingRegion)+511;
-  before=pool->heap->used;
+  //Use validated low memory first, preserving the main arena for the
+  //bootstrap compiler and other consumers that cannot use the fallback.
+  source=pool->fallback;
+  if(!I386MemBackingFits(source,request))source=pool->heap;
+  if(!I386MemBackingFits(source,request) && size!=minimum) {
+    size=minimum;request=size+sizeof(CI386BackingRegion)+511;
+    source=pool->fallback;
+    if(!I386MemBackingFits(source,request))source=pool->heap;
+  }
+  if(!I386MemBackingFits(source,request))return FALSE;
+  before=source->used;
   //Keep the initial reserve and large regions first-fit. Later native-sized
   //batches use the high end, leaving room for large contiguous consumers.
-  if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)region=I386HeapAllocHigh(pool->heap,request);
-  else region=I386HeapAlloc(pool->heap,request);
-  if(!region && size!=minimum) {
-    size=minimum; request=size+sizeof(CI386BackingRegion)+511;
-    if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)region=I386HeapAllocHigh(pool->heap,request);
-    else region=I386HeapAlloc(pool->heap,request);
-  }
+  if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)region=I386HeapAllocHigh(source,request);
+  else region=I386HeapAlloc(source,request);
   if(!region) return FALSE;
   for(i=0;i<sizeof(CI386BackingRegion);i++) region(U8 *)[i]=0;
   arena=((region+0)(U64)+sizeof(CI386BackingRegion)+511)&~511;
   //The page extent is aligned now; return unused worst-case tail padding.
   //Shrink before publishing the region, keeping rollback wholly arena-owned.
   request=arena+size-(region+0)(U64);
-  if(!I386HeapShrink(pool->heap,region,request)) {
-    I386HeapFree(pool->heap,region); return FALSE;
+  if(!I386HeapShrink(source,region,request)) {
+    I386HeapFree(source,region); return FALSE;
   }
   if(!I386MemPoolAdd(pool,region,arena,size)) {
-    I386HeapFree(pool->heap,region); return FALSE;
+    I386HeapFree(source,region); return FALSE;
   }
-  region->request=request; region->span=pool->heap->used-before;
+  region->request=request; region->span=source->used-before;
   region->next_owned=pool->owned; pool->owned=region;
   pool->owned_count++; pool->retained+=region->span;
   return TRUE;
@@ -207,6 +269,7 @@ I64 I386MemBackingTrim(CI386BackingPool *pool)
 {//Never call from PageFree: its caller may still need the returned block header.
   U32 flags=I386IrqSave;
   CI386BackingRegion *region,*next,**link;
+  CI386Heap *source;
   I64 released=0,span;
   if(!I386MemBackingValid(pool) || pool->locked_flags || pool->growing) {
     I386IrqRestore(flags); return -1;
@@ -216,7 +279,8 @@ I64 I386MemBackingTrim(CI386BackingPool *pool)
     if(region->used || region->reserve_hold) link=&region->next_owned;
     else {
       next=region->next_owned; span=region->span;
-      if(region->pool && !I386MemPoolRemove(pool,region) || !I386HeapFree(pool->heap,region)) {
+      source=I386MemBackingRegionHeap(pool,(region+0)(U64));
+      if(!source || region->pool && !I386MemPoolRemove(pool,region) || !I386HeapFree(source,region)) {
         I386IrqRestore(flags); return -1;
       }
       *link=next; pool->owned_count--; pool->retained-=span; released+=span;
@@ -233,7 +297,7 @@ Bool I386MemBackingDestroy(CI386BackingPool *pool)
       !I386MemBackingReleaseReserve(pool) || I386MemBackingTrim(pool)<0 || pool->owned || pool->regions) goto done;
   pool->grow=0;
   if(!I386MemPoolEmpty(pool)) goto done;
-  pool->signature=0; pool->backing_signature=0; pool->heap=0; pool->quantum=0;
+  pool->signature=0; pool->backing_signature=0; pool->heap=0; pool->fallback=0; pool->quantum=0;
   result=TRUE;
 done:
   I386IrqRestore(flags); return result;

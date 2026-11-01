@@ -12,23 +12,23 @@ I64 PublicHeapTest()
   CHeapCtrl *hc=&public_heaps[0],*other=&public_heaps[1];
   CMemBlk *a,*b,*block;
   CMemUsed *used;
-  U8 *p,*q,*slots[64],*guard=0x3FFF8;
+  U8 *p,*q,*slots[64],*guard=0x47FF8;
   I64 i,j,round,index,sizes[64],total,old,old_pool;
   U32 flags=GetRFlags,seed=0x12345678;
   if(!MemoryLayoutCheck) return 131;
   if(i=PoolValidationTest) return i;
-  if(I386MemPoolInit(pool,0x40001,0x40000) ||
-      I386MemPoolInit(pool,0x40000,511) ||
-      I386MemPoolInit(pool,0x40000,0x40001) ||
+  if(I386MemPoolInit(pool,0x48001,0x40000) ||
+      I386MemPoolInit(pool,0x48000,511) ||
+      I386MemPoolInit(pool,0x48000,0x40001) ||
       I386MemPoolInit(pool,0xFFFFFE00,1024) ||
-      I386MemPoolInit(0x40000,0x40000,0x40000)) return 101;
+      I386MemPoolInit(0x48000,0x48000,0x40000)) return 101;
   for(i=0;i<8;i++) { guard[i]=0xA5; guard[0x40008+i]=0xA5; }
-  if(!I386MemPoolInit(pool,0x40000,0x40000) || pool->used_u8s ||
+  if(!I386MemPoolInit(pool,0x48000,0x40000) || pool->used_u8s ||
       pool->alloced_u8s!=0x40000 || I386MemPageAlloc(pool,0) ||
       I386MemPageAlloc(pool,-1) || I386MemPageAlloc(pool,513)) return 102;
   a=I386MemPageAlloc(pool,256);
   if(!a || a->pags!=258 || a->mb_signature!=MBS_USED_SIGNATURE_VAL ||
-      pool->used_u8s!=258*512 || I386MemPoolInit(pool,0x40000,0x40000)) return 103;
+      pool->used_u8s!=258*512 || I386MemPoolInit(pool,0x48000,0x40000)) return 103;
   b=I386MemPageAlloc(pool,254);
   if(!b || b->pags!=254 || pool->used_u8s!=0x40000 || I386MemPageAlloc(pool,1)) return 104;
   if(!I386MemPageFree(pool,a) || I386MemPageFree(pool,a) || pool->used_u8s!=254*512) return 105;
@@ -37,7 +37,7 @@ I64 PublicHeapTest()
       !I386MemPageFree(pool,block) || !I386MemPageFree(pool,b) || pool->used_u8s) return 106;
   //The small exact-size bin must return the same block.
   if(I386MemPageAlloc(pool,254)!=b || !I386MemPageFree(pool,b)) return 107;
-  if(!I386MemPoolInit(pool,0x40000,0x40000) ||
+  if(!I386MemPoolInit(pool,0x48000,0x40000) ||
       !I386MemHeapInit(hc,pool,0x1234) || !I386MemHeapInit(other,pool,0x5678) ||
       hc->mem_task!=0x1234 || other->mem_task!=0x5678 ||
       hc->next_mem_blk!=&hc->next_mem_blk || hc->last_mem_blk!=hc->next_mem_blk) return 108;
@@ -68,7 +68,7 @@ I64 PublicHeapTest()
   if(!I386MemFree(q) || other->used_u8s || hc->used_u8s!=old ||
       !I386MemFree(p)) return 117;
   if(!I386MemHeapDestroy(hc) || !I386MemHeapDestroy(other) || pool->used_u8s ||
-      !I386MemPoolInit(pool,0x40000,0x40000) || !I386MemHeapInit(hc,pool) ||
+      !I386MemPoolInit(pool,0x48000,0x40000) || !I386MemHeapInit(hc,pool) ||
       !I386MemHeapInit(other,pool)) return 130;
   for(i=0;i<64;i++) slots[i]=0;
   for(round=0;round<1024;round++) {
@@ -93,7 +93,7 @@ I64 PublicHeapTest()
       pool->used_u8s || hc->alloced_u8s || other->alloced_u8s) return 123;
   //Repeated lifetime cycles reclaim live allocations as well as free bins.
   for(round=0;round<3;round++) {
-    if(!I386MemPoolInit(pool,0x40000,0x40000) || !I386MemHeapInit(hc,pool)) return 124;
+    if(!I386MemPoolInit(pool,0x48000,0x40000) || !I386MemHeapInit(hc,pool)) return 124;
     for(i=0;i<64;i++) if(!I386MemAlloc(hc,round*8+i)) return 125;
     for(i=0;i<64;i++) { p=I386MemAlloc(hc,4096); if(!p) break; }
     if(i==64 || !i || I386MemAlloc(hc,131000)) return 126;

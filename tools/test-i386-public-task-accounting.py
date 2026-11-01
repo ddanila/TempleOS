@@ -55,21 +55,24 @@ def behavior_commands(disk, ram_mib=8):
                            if source.startswith(('class ', 'CEndProbe *', 'CTask *', 'Bool ', 'U0 '))]
     commands = layout_commands + definitions + descendant_definitions + exception_definitions + callback_definitions + [
         ('CBootHeap *BootHeap(){CBootBacking *p=Fs->data_heap->bp;return p->heap;}', []),
-        ("Bool BootHeader(){CBootBacking *p=Fs->data_heap->bp;return p->backing_signature=='B32S'&&p->heap->signature==0x48323349&&I386HeapValid(p->heap);}", []),
+        ('CBootHeap *BootFallback(){CBootBacking *p=Fs->data_heap->bp;return p->fallback;}', []),
+        ("Bool BootHeader(){CBootBacking *p=Fs->data_heap->bp;return p->backing_signature=='B32S'&&p->heap->signature==0x48323349&&I386HeapValid(p->heap)&&(!p->fallback||I386HeapValid(p->fallback));}", []),
         ('BootHeader;', ['1']),
-        ('Bool BootSame(CBootHeap *h,I64 used,I64 count){return h->used==used&&h->allocations==count&&I386HeapValid(h);}', []),
-        ('Bool BootLive(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!LifeStart(i&1)||!LifeFinish||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
+        ('CBootHeap *boot_h;CBootHeap *boot_f;I64 boot_u,boot_n,boot_fu,boot_fn;', []),
+        ('U0 BootMark(){boot_h=BootHeap;boot_f=BootFallback;boot_u=boot_h->used;boot_n=boot_h->allocations;boot_fu=boot_fn=0;if(boot_f){boot_fu=boot_f->used;boot_fn=boot_f->allocations;}}', []),
+        ('Bool BootSame(){return boot_h->used==boot_u&&boot_h->allocations==boot_n&&I386HeapValid(boot_h)&&(!boot_f||boot_f->used==boot_fu&&boot_f->allocations==boot_fn&&I386HeapValid(boot_f));}', []),
+        ('Bool BootLive(){I64 i;BootMark;for(i=0;i<20;i++)if(!LifeStart(i&1)||!LifeFinish||!BootSame)return FALSE;return TRUE;}', []),
         ('BootLive;', ['1']),
-        ('Bool BootPending(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!LifePendingRun||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
+        ('Bool BootPending(){I64 i;BootMark;for(i=0;i<20;i++)if(!LifePendingRun||!BootSame)return FALSE;return TRUE;}', []),
         ('BootPending;', ['1']),
         ('Bool BootTreeCase(I64 j){return DescStart(j>0,j==2||j==4,j==4,j>=3)&&DescDone&&DescStill;}', []),
-        ('Bool BootTree(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!BootTreeCase(i%5)||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
+        ('Bool BootTree(){I64 i;BootMark;for(i=0;i<20;i++)if(!BootTreeCase(i%5)||!BootSame)return FALSE;return TRUE;}', []),
         ('BootTree;', ['1']),
-        ('Bool BootTry(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!TryStart(i%4)||!TryDone||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
+        ('Bool BootTry(){I64 i;BootMark;for(i=0;i<20;i++)if(!TryStart(i%4)||!TryDone||!BootSame)return FALSE;return TRUE;}', []),
         ('BootTry;', ['1']),
-        ('Bool BootEnd(){CBootHeap *h=BootHeap;I64 i,u=h->used,n=h->allocations;for(i=0;i<20;i++)if(!EndStart(i%5)||!EndDone||!BootSame(h,u,n))return FALSE;return TRUE;}', []),
+        ('Bool BootEnd(){I64 i;BootMark;for(i=0;i<20;i++)if(!EndStart(i%5)||!EndDone||!BootSame)return FALSE;return TRUE;}', []),
         ('BootEnd;', ['1']),
-        ('Bool BootBad(I64 cpu,I64 size,I64 ch,Bool empty=FALSE){CBootHeap *h=BootHeap;I64 u=h->used,n=h->allocations;return LifeRejected(cpu,size,ch,empty)&&BootSame(h,u,n);}', []),
+        ('Bool BootBad(I64 cpu,I64 size,I64 ch,Bool empty=FALSE){BootMark;return LifeRejected(cpu,size,ch,empty)&&BootSame;}', []),
         ("BootBad(1,8192,'Task');", ['1']),
         ("BootBad(-2,8192,'Task');", ['1']),
         ("BootBad(-1,8192,'Task',TRUE);", ['1']),
@@ -104,7 +107,7 @@ def main():
     callback_hash = sha(END_CALLBACKS)
     commands, header_hashes = behavior_commands(args.disk, args.ram_mib)
     runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
-    behavior = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, ram_mib=args.ram_mib,
+    behavior = runner(args.disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, ram_mib=args.ram_mib, welcome=True,
                       startup_check={'status': 'ok', 'answers': [], 'commands': commands})
     if sha(args.disk) != disk_hash or sha(Path(__file__)) != checker_hash or sha(CONTRACT) != contract_hash or sha(DESCENDANTS) != descendant_hash or sha(EXCEPTIONS) != exception_hash or sha(END_CALLBACKS) != callback_hash:
         raise ValueError('Accounting disk or checker changed during execution')
@@ -120,7 +123,7 @@ def main():
               'exception_cycles': 20, 'exception_variants': 4,
               'end_callback_cycles': 20, 'end_callback_variants': 5,
               'creation_rejections': 6, 'oversized_stack_bytes': args.ram_mib*1024*1024,
-              'scope': 'Bootstrap recovery through public calls, including queued descendants; not late clone-hook failures or dormant disposal'}
+              'scope': 'Recovery of both bootstrap arenas through public calls, including queued descendants; not late clone-hook failures or dormant disposal'}
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report, indent=2))
 

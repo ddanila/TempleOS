@@ -1,6 +1,6 @@
 #include "/Kernel/I386/MemoryBacking.HC"
 CI386BackingPool backing_pool;
-CI386Heap backing_heap;
+CI386Heap backing_heap,backing_fallback_heap;
 CHeapCtrl backing_heaps[2];
 extern I64 BackingPlaneBudgetTest();
 //The previous complete-scan implementation remains an independent oracle.
@@ -56,7 +56,7 @@ I64 BackingManyRegionTest()
   CI386BackingRegion *node,*next,*reverse,*saved_next;
   CI386BackingRegion *order[I386_BACKING_BATCH];
   CMemBlk *pages[270];I64 i;U32 saved_request;
-  if(!I386HeapInit(&backing_heap,0x40000,0x50000) ||
+  if(!I386HeapInit(&backing_heap,0x48000,0x4C000) ||
       !I386MemBackingInit(pool,&backing_heap,512))return 490;
   for(i=0;i<I386_BACKING_BATCH;i++) if(!(pages[i]=I386MemPageAlloc(pool,1,TRUE)))return 491;
   if(pool->owned_count!=I386_BACKING_BATCH || !BackingValidationOracle(pool) || !I386MemBackingValid(pool))return 496;
@@ -98,6 +98,63 @@ I64 BackingManyRegionTest()
       !I386MemBackingDestroy(pool) || !I386HeapValid(&backing_heap))return 495;
   return 0;
 }
+I64 BackingFallbackTest()
+{//Two real arenas, mixed ownership, corruption rejection and complete reclaim.
+  CI386BackingPool *pool=&backing_pool;
+  CI386Heap duplicate;
+  CI386BackingRegion *saved,*region,*fake;
+  CMemBlk *first,*second;
+  U8 *private_bytes;
+  I64 first_span,second_span,i;
+  U32 flags=GetRFlags;
+  if(!I386HeapInit(&backing_heap,0x48000,0x20000) ||
+      !I386HeapInit(&backing_fallback_heap,0x68000,0x4000) ||
+      !I386MemBackingInit(pool,&backing_heap,8192))return 510;
+  duplicate.base=backing_heap.base;duplicate.size=backing_heap.size;
+  duplicate.used=backing_heap.used;duplicate.peak=backing_heap.peak;
+  duplicate.allocations=backing_heap.allocations;duplicate.signature=backing_heap.signature;
+  if(I386MemBackingSetFallback(pool,&duplicate) || pool->fallback ||
+      I386MemBackingSetFallback(pool,0) ||
+      !I386MemBackingSetFallback(pool,&backing_fallback_heap) ||
+      I386MemBackingSetFallback(pool,&backing_fallback_heap))return 511;
+  private_bytes=I386HeapAlloc(&backing_fallback_heap,5000);
+  if(!private_bytes)return 512;
+  private_bytes[0]=0xA7;private_bytes[4999]=0x5A;
+  first=I386MemPageAlloc(pool,12,TRUE);
+  if(!first || !backing_fallback_heap.used || backing_heap.used ||
+      I386MemBackingRegionHeap(pool,(pool->owned+0)(U64))!=&backing_fallback_heap ||
+      I386MemBackingSetFallback(pool,&backing_fallback_heap))return 513;
+  first_span=pool->retained;
+  second=I386MemPageAlloc(pool,12,TRUE);
+  if(!second || !backing_heap.used || pool->owned_count!=2 ||
+      I386MemBackingRegionHeap(pool,(pool->owned+0)(U64))!=&backing_heap ||
+      !I386MemBackingValid(pool))return 514;
+  second_span=pool->retained-first_span;
+  first(U8 *)[12*512-1]=0x39;second(U8 *)[12*512-1]=0x93;
+  region=pool->owned;saved=region->next_owned;
+  region->next_owned=backing_fallback_heap.base+backing_fallback_heap.size-8;
+  if(I386MemBackingValid(pool))return 515;
+  region->next_owned=saved;
+  pool->fallback=&duplicate;
+  if(I386MemBackingValid(pool))return 518;
+  pool->fallback=&backing_fallback_heap;
+  fake=private_bytes+128;
+  for(i=0;i<sizeof(CI386BackingRegion);i++)fake(U8 *)[i]=0;
+  saved=pool->owned;pool->owned=fake;
+  if(I386MemBackingValid(pool))return 519;
+  pool->owned=saved;
+  if(!I386MemBackingValid(pool) || first(U8 *)[12*512-1]!=0x39 ||
+      second(U8 *)[12*512-1]!=0x93 || private_bytes[0]!=0xA7 || private_bytes[4999]!=0x5A)
+    return 516;
+  if(!I386MemPageFree(pool,first) || I386MemBackingTrim(pool)!=first_span ||
+      !I386MemPageFree(pool,second) || I386MemBackingTrim(pool)!=second_span ||
+      !I386MemBackingDestroy(pool) || pool->fallback || backing_heap.used ||
+      private_bytes[0]!=0xA7 || private_bytes[4999]!=0x5A ||
+      !I386HeapFree(&backing_fallback_heap,private_bytes) || backing_fallback_heap.used ||
+      !I386HeapValid(&backing_heap) || !I386HeapValid(&backing_fallback_heap) ||
+      (GetRFlags^flags)&0x200)return 517;
+  return 0;
+}
 I64 PublicBackingTest()
 {
   CI386BackingPool *pool=&backing_pool;
@@ -106,7 +163,7 @@ I64 PublicBackingTest()
   I64 cycle,i,before,retained,root_span,other_span,small_span;
   U32 flags=GetRFlags;
   for(cycle=0;cycle<3;cycle++) {
-    if(!I386HeapInit(&backing_heap,0x40000,0x40000) ||
+    if(!I386HeapInit(&backing_heap,0x48000,0x40000) ||
         I386MemBackingInit(pool,&backing_heap,513) ||
         !I386MemBackingInit(pool,&backing_heap) ||
         I386MemBackingInit(pool,&backing_heap) ||
@@ -174,7 +231,8 @@ I64 PublicBackingTest()
   }
   if((GetRFlags^flags)&0x200) return 413;
   if(i=BackingManyRegionTest)return i;
-  return BackingPlaneBudgetTest;
+  if(i=BackingPlaneBudgetTest)return i;
+  return BackingFallbackTest;
 }
 
 #include "BackingPlaneBudget.HC"

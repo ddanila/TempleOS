@@ -8,7 +8,7 @@ class CI386BackingRegion:CI386PoolRegion {
   U32 request,span,reserve_hold;
 };
 class CI386BackingPool:CI386PublicPool {
-  CI386Heap *heap;
+  CI386Heap *heap,*fallback;
   CI386BackingRegion *owned;
   U32 backing_signature,quantum,owned_count;
   I64 retained;
@@ -17,6 +17,8 @@ class CI386BackingPool:CI386PublicPool {
 //lazily; trim runs after heap/free operations finish using returned block headers.
 extern Bool I386MemBackingValid(CI386BackingPool *pool);
 extern Bool I386MemBackingInit(CI386BackingPool *pool,CI386Heap *heap,I64 quantum=65536);
+//Install a disjoint optional fallback before any region is allocated.
+extern Bool I386MemBackingSetFallback(CI386BackingPool *pool,CI386Heap *fallback);
 //Retain an unassigned region across automatic trims until explicit release.
 extern Bool I386MemBackingReserve(CI386BackingPool *pool,I64 pages);
 extern Bool I386MemBackingReleaseReserve(CI386BackingPool *pool);

@@ -126,3 +126,9 @@ timestamp and positive speed, text coordinates, scaling and grid snapping
 but compiling that full fixture exhausted the compiler heap before input could
 be exercised (`build/i386-mouse-live-test-8m-v1`, inputs unchanged). The 8 MiB
 resource and startup-time gates remain open.
+
+With shared low-memory backing, the full hardware-driven logical mouse fixture
+also passes at 8 MiB with unchanged inputs
+(`build/i386-backing-fallback-mouse-8m-v1`). Its concurrent 74.61-second
+startup does not qualify the timing gate, and the remaining mouse integration
+limitations above still apply.

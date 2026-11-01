@@ -415,3 +415,49 @@ diagnostic boot and its console command pass with the source disk unchanged
 the native cross-build/386 audit pass (`build/i386-memset-flags-cross`). The
 229.701550-second diagnostic startup was concurrent and does not qualify the
 isolated interactive timing gate.
+
+## Shared low-memory backing arena
+
+The public page provider can now use a second, validated, disjoint bootstrap
+heap. At boot it prefers the existing low-memory task fallback arena for public
+backing regions, retaining the main arena for compiler and other allocations
+that require it. Both arenas use the same heap allocator and may also contain
+other live allocations. Each region is validated against its owning heap;
+trimming returns it to that heap, and retained accounting covers both. The
+fallback can be attached only to an empty provider, with overlapping arenas,
+heap controls and pool storage rejected. Diagnostic accounting now checks both
+heaps and subtracts only verified public backing allocations.
+
+The public heap corpus passes with both the production assembly-backed and
+source-level scans, including new mixed-arena allocation, private-neighbor,
+invalid-link, overlap and complete-reclamation checks
+(`build/i386-backing-fallback-heap-v3.log`,
+`build/i386-backing-fallback-source-v3.log`). Its test-only load window is now
+416 sectors, with scratch arenas below the explicitly separated 32 KiB stack;
+production boot reservations are unchanged. Both original rebuild generations,
+the native cross-build and 386 instruction audit pass
+(`build/i386-backing-fallback-rebuild-v3.log`,
+`build/i386-backing-fallback-build-v1`). The 16 MiB diagnostic boot passes
+both compiler and memory phases with unchanged inputs
+(`build/i386-backing-fallback-diagnostics-v1`).
+
+The previously failing full sound-effects and mouse-state fixtures now pass at
+8 MiB with unchanged inputs (`build/i386-backing-fallback-effects-8m-v1`,
+`build/i386-backing-fallback-mouse-8m-v1`). Their concurrent startup times of
+74.80 and 74.61 seconds do not meet or qualify the isolated 60-second gate.
+This does not establish all workload, arena exhaustion, desktop or C1–C5
+behavior.
+
+The public task-accounting contract also passes at 8 MiB with both arenas'
+used-byte and allocation counts checked after repeated spawn/exit, deferred
+activation, descendant, exception and end-callback cases, plus six rejected
+spawns (`build/i386-backing-fallback-task-batch-8m-v3`, inputs unchanged). The
+batched runner packages the same definitions in small source files and checks
+each expected true result in the guest. Earlier batch attempts stopped at test
+syntax the native parser does not accept; those failures are retained in
+`build/i386-backing-fallback-task-batch-8m-v1` and `-v2`.
+
+A subsequent isolated 8 MiB startup run completed all functional and VGA
+checks without loading the Build provider, but took 74.08 seconds and failed
+the 60-second budget (`build/i386-backing-fallback-startup-8m-v1`). The timing
+gate remains open.
