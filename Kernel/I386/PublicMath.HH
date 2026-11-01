@@ -1,5 +1,6 @@
 #ifndef I386_PUBLIC_MATH_INCLUDED
 #define I386_PUBLIC_MATH_INCLUDED
+#include "/Kernel/MathConstants.HH"
 //Retained software F64 and original integer-multiple providers.
 public _extern _MAX F64 Max(F64 n1,F64 n2);
 public _extern _MIN F64 Min(F64 n1,F64 n2);

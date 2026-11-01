@@ -242,3 +242,7 @@ past `D3I32Norm` and stops at `GrBorder` on line 299
 With the original border and two-point rectangle bindings, unchanged KeepAway
 advances past `GrBorder` and stops at `sqrt2` on line 346
 (`build/i386-app-keepaway-border2-v1`, inputs unchanged). Gameplay remains open.
+
+With the original mathematical constants, unchanged KeepAway advances past
+`sqrt2` and stops at `Blink` on line 381
+(`build/i386-app-keepaway-constants-v1`, inputs unchanged). Gameplay remains open.
