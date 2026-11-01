@@ -363,3 +363,15 @@ build passes at 128 MiB (`build/i386-module-validator-window-startup128`),
 producing the same 407-byte module hash as the preceding windowed writer.
 This reduces repeated scans when validation accesses nearby offsets, but no
 elapsed-time gain or resolution of the large stage-6 failure is claimed.
+
+A native multi-page probe generates 160 functions and builds them in the
+guest (`tools/test-i386-module-writer-pages-native.py`). The preceding writer
+image passes (`build/i386-module-writer-pages-native-control-v1`): the persisted
+module is 24,069 bytes with 161 exports and 320 relocation slots across three
+payload pages. The validation-cache image's corresponding run is still live
+at `build/i386-module-validator-pages-native-v1`; it has compiled the functions
+and reached packing but has not produced a result. A temporary trace image and
+smaller probe are running at `build/i386-patch-map-trace-cross` and
+`build/i386-patch-map-trace-native-v1`. This observation is not yet a terminal
+failure or a timing comparison. The production source does not include the
+temporary trace statements.
