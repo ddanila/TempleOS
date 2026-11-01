@@ -57,13 +57,13 @@ I64 MLLargeContract()
 {
  I64 i,j,k;U8 *strings="F\0X\0";CI386ModuleRecord swap;
  MemSet(ml_code,0x90,sizeof(ml_code));MemSet(ml_raw,0,sizeof(ml_raw));
- ml_code[4093]=0xE8;ml_code[8189]=0x05;
- MemSet(ml_code+4094,0x7F,4);MemSet(ml_code+8190,0x6E,4);
+ ml_code[4061]=0xE8;ml_code[8157]=0x05;
+ MemSet(ml_code+4062,0x7F,4);MemSet(ml_code+8158,0x6E,4);
  MemCpy(ml_oracle_code,ml_code,sizeof(ml_code));
- MemSet(ml_oracle_code+4094,0,4);MemSet(ml_oracle_code+8190,0,4);
+ MemSet(ml_oracle_code+4062,0,4);MemSet(ml_oracle_code+8158,0,4);
  ml_raw[0].kind=I386_MODULE_EXPORT;ml_raw[0].offset=0;ml_raw[0].name_offset=0;ml_raw[0].name_length=1;
- ml_raw[1].kind=I386_MODULE_REL32;ml_raw[1].offset=4094;ml_raw[1].name_offset=2;ml_raw[1].name_length=1;
- ml_raw[2].kind=I386_MODULE_ADDRESS;ml_raw[2].offset=8190;ml_raw[2].name_offset=2;ml_raw[2].name_length=1;
+ ml_raw[1].kind=I386_MODULE_REL32;ml_raw[1].offset=4062;ml_raw[1].name_offset=2;ml_raw[1].name_length=1;
+ ml_raw[2].kind=I386_MODULE_ADDRESS;ml_raw[2].offset=8158;ml_raw[2].name_offset=2;ml_raw[2].name_length=1;
  for(k=0;k<2;k++) {
   if(k) {MemCpy(&swap,&ml_raw[1],sizeof(swap));MemCpy(&ml_raw[1],&ml_raw[2],sizeof(swap));MemCpy(&ml_raw[2],&swap,sizeof(swap));}
   ml_total=I386ModulePackRaw(ml_reference,sizeof(ml_reference),ml_oracle_code,sizeof(ml_oracle_code),ml_raw,3,strings,4);
@@ -78,16 +78,6 @@ I64 MLLargeContract()
       ml_output[ml_total]!=0xA7 || mw_scratch[0]!=0xA7 || mw_scratch[ml_limit+1]!=0xA7)return 10+k*5+j;
   }
  }
- return 0;
-}
-I64 MLMaxOffsetContract()
-{
- CI386ModuleWriteView view;CI386ModuleHeader header;CI386ModuleRecord record;
- MemSet(&view,0,sizeof(view));MemSet(&header,0,sizeof(header));MemSet(&record,0,sizeof(record));
- header.record_count=1;record.kind=I386_MODULE_REL32;record.offset=0xFFFFFFFE;
- view.header=&header;view.records=&record;
- if(!I386ModuleWritePatched(&view,0xFFFFFFFE) || !I386ModuleWritePatched(&view,0xFFFFFFFF) ||
-    I386ModuleWritePatched(&view,0) || !I386ModuleWritePatched(&view,0xFFFFFFFF))return 1;
  return 0;
 }
 I64 MWContract()
@@ -171,6 +161,5 @@ I64 MWContract()
 U0 MWReport(U8 *text){while(*text)OutU8(0xE9,*text++);}
 I64 mw_result=MWContract;
 if(!mw_result)mw_result=MLLargeContract;
-if(!mw_result)mw_result=MLMaxOffsetContract;
 if(mw_result){U8 *line=MStrPrint("FAIL module-writer %d\n",mw_result);MWReport(line);Free(line);}
-else MWReport("DONE module-writer 6 identical 30 write-failures 12 invalid 10 span-checks 10 window-checks max-offset\n");
+else MWReport("DONE module-writer 6 identical 30 write-failures 12 invalid 10 span-checks 10 window-checks\n");

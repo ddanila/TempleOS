@@ -375,3 +375,27 @@ smaller probe are running at `build/i386-patch-map-trace-cross` and
 `build/i386-patch-map-trace-native-v1`. This observation is not yet a terminal
 failure or a timing comparison. The production source does not include the
 temporary trace statements.
+
+The validation cache is now disabled pending investigation. The preceding
+writer image completed the multi-page probe, while the cache-image probe has
+remained live in packing far longer without a result. A temporary direct native
+probe with 481 records timed out on repeated cache calls
+(`build/i386-module-cache-direct-many-v1`); a loop-only control passed
+(`build/i386-module-cache-loop-control-v1`), and a one-call probe displayed zero
+where its fixture expected one (`build/i386-module-cache-direct-one-v1`). A
+separate native control checked all 320 populated record kinds and offsets
+(`build/i386-module-cache-record-control-v1`), while a two-record direct probe
+passed (`build/i386-module-cache-direct-v1`). These
+direct probes use a fixed address in the pinned image and are diagnostic, not
+a general public-API test. Their difference warrants the conservative rollback,
+but it does not establish the exact fault. The earlier 4 KiB output-window
+optimization remains; the live cache-image, trace and nine-module runs are
+not stopped by this source change. The rollback writer oracle passes
+(`build/i386-module-validator-rollback-writer-v1`), as do both original rebuild
+generations with binary differences (`build/i386-module-validator-rollback-rebuild.log`),
+the native cross-build and 386 audit (`build/i386-module-validator-rollback-cross`),
+and the 8 MiB exact welcome-pixel check with unchanged inputs
+(`build/i386-module-validator-rollback-welcome8`). Its native multi-page probe
+passes (`build/i386-module-validator-rollback-pages-v1`), producing the same
+24,069-byte module hash as the preceding writer image, with 320 relocation
+slots across three payload pages.
