@@ -128,7 +128,76 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected,
 #endif
 I64 I386HeapScan(CI386Heap *hc,U8 *ptr)
 {
+#ifdef I386_HEAP_SOURCE_BUILD
   return I386HeapScanSelect(hc,ptr,0,0);
+#else
+  //A size/validity query never selects a free block. Keep its hot traversal
+  //separate from first/last-fit selection while retaining the complete audit.
+  Bool valid=FALSE;
+  U32 requested=0xFFFFFFFF;
+  U8 *target=ptr-16;
+  if (!hc || hc->signature!=I386_HEAP_MAGIC ||
+      !I386HeapRegionValid(hc,hc->base,hc->size) ||
+      hc->peak>hc->size || hc->used>hc->peak) return -1;
+  asm {
+    MOV EBX,U32 &hc[EBP]
+    MOV ESI,U32 CI386Heap.base[EBX]
+    MOV ECX,U32 CI386Heap.size[EBX]
+    XOR EDI,EDI
+    XOR EDX,EDX
+    XOR EBX,EBX
+@@10:
+    CMP ECX,24
+    JB I32 @@90
+    MOV EAX,U32 CI386HeapBlock.span[ESI]
+    CMP EAX,24
+    JB I32 @@90
+    TEST EAX,7
+    JNZ I32 @@90
+    CMP EAX,ECX
+    JA I32 @@90
+    CMP U32 CI386HeapBlock.reserved[ESI],0
+    JNZ I32 @@90
+    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_USED
+    JNE @@30
+    LEA EBX,U32 -16[EAX]
+    CMP U32 CI386HeapBlock.requested[ESI],EBX
+    JA I32 @@90
+    ADD EDI,EAX
+    ADD EDX,1
+    XOR EBX,EBX
+    CMP ESI,U32 &target[EBP]
+    JNE @@40
+    PUSH EAX
+    MOV EAX,U32 CI386HeapBlock.requested[ESI]
+    MOV U32 &requested[EBP],EAX
+    POP EAX
+    JMP @@40
+@@30:
+    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_FREE
+    JNE I32 @@90
+    TEST EBX,EBX
+    JNZ I32 @@90
+    CMP U32 CI386HeapBlock.requested[ESI],0
+    JNZ I32 @@90
+    MOV EBX,1
+@@40:
+    ADD ESI,EAX
+    SUB ECX,EAX
+    JNZ I32 @@10
+    MOV EBX,U32 &hc[EBP]
+    CMP EDI,U32 CI386Heap.used[EBX]
+    JNE I32 @@90
+    CMP EDX,U32 CI386Heap.allocations[EBX]
+    JNE I32 @@90
+    MOV U8 &valid[EBP],1
+@@90:
+  }
+  if(!valid) return -1;
+  if(!ptr) return 0;
+  if(requested==0xFFFFFFFF) return -1;
+  return requested;
+#endif
 }
 public Bool I386HeapValid(CI386Heap *hc)
 {

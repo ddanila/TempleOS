@@ -630,3 +630,36 @@ Its elapsed time was collected concurrently with other checks and is not used
 for the comparison above. The 16 MiB diagnostic startup and the 8 MiB public
 task-accounting batch both pass (`build/i386-ident-guarded-new-diagnostics`,
 `build/i386-ident-guarded-new-task-batch`).
+
+## Size-query validation pass
+
+The native heap's size and validity queries now use a dedicated complete
+validation traversal that does not consider free-block allocation candidates.
+It retains the region and header checks, full-chain corruption detection,
+used-byte and allocation-count checks, and exact payload matching. Allocation
+selection remains on its existing path; portable source builds retain the
+shared validator. This adds a second native traversal to maintain, so any future
+validator changes must keep both paths in agreement.
+
+Native and portable heap-core and public-pool tests pass, including malformed
+metadata after the queried block; lexer and task-symbol regressions pass as well
+(`build/i386-heap-query-scan-core.log`, `build/i386-heap-query-scan-source.log`,
+`build/i386-heap-query-scan-public.log`,
+`build/i386-heap-query-scan-public-source.log`,
+`build/i386-heap-query-scan-lex.log` and
+`build/i386-heap-query-scan-symbols.log`). Both original rebuild generations,
+the full cross-build and 386 audit pass (`build/i386-heap-query-scan-rebuild.log`
+and `build/i386-heap-query-scan-cross`).
+
+An isolated alternating 8 MiB boot-to-prompt comparison measured the control at
+72.380 and 72.226 seconds and the candidate at 71.624 and 71.953 seconds
+(`build/i386-heap-query-scan-pair`). The image manifests differ only in
+`Kernel/I386/Heap.HC`; recorded build inputs are identical. This small sample
+shows a modest host-specific improvement, not a general performance guarantee.
+The 60-second gate and C1–C5 remain open.
+
+The full 8 MiB startup completed all nine functional and VGA checks but failed
+the 60-second timing assertion (`build/i386-heap-query-scan-startup`). That
+run overlapped other checks and is not part of the isolated comparison. The
+16 MiB diagnostic and the 8 MiB task-accounting batch pass
+(`build/i386-heap-query-scan-diag`, `build/i386-heap-query-scan-task`).
