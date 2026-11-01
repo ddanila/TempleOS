@@ -13736,9 +13736,24 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Release individual directory entries and nested sibling trees, preserving or freeing user data according to the selected deletion routine.",
+      "oracle": "docs/i386-directory-tree-delete.md: null, single and nested cleanup, user-data ownership and exact caller-heap recovery; directory enumeration, sorting and whole-file behavior remain unqualified.",
+      "tests": [
+        {
+          "target": "original-directory-tree-delete",
+          "command": "python3 tools/test-i386-dir-tree-delete.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-tree-delete-original-v2/result.json",
+          "scope": "Seven bounded ownership checks on the pinned original"
+        },
+        {
+          "target": "native-directory-tree-delete-64m",
+          "command": "python3 tools/test-i386-dir-tree-delete.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-tree-delete-native-v1/result.json",
+          "scope": "Same ownership and heap checks on native; not FilesFind or whole-file qualification"
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskDirB.HC",
