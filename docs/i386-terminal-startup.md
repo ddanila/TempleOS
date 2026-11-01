@@ -48,6 +48,11 @@ byte. This prepares the original callback for native integration; it does not
 bind it or implement its remaining file-operation and mount dependencies.
 Both original rebuild generations pass (`build/i386-term-right-extract-rebuild.log`);
 this rebuild is not a native callback or reproducibility test.
+The rebuilt-original real-popup menu contract also passes all thirteen cases
+with unchanged inputs (`build/i386-term-right-extract-menu-original/result.json`),
+and its three saved menu documents match the pinned-original control
+`build/i386-c2-term-right-menu-reference-covered` byte for byte. This checks
+menu selection and task restoration, not execution of the callback's actions.
 
 The native root terminal now calls the original `DocType` on `Doc/Start.DD`
 after its existing native heading. The welcome is visible and its held
