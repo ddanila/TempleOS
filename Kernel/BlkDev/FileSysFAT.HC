@@ -392,7 +392,8 @@ Bool FAT32DirNew(CDrv *dv,U8 *cur_dir,CDirEntry *tmpde,Bool free_old_chain)
   U8 ch;
   Bool written=FALSE,unlock,unlock_break;
   CDirEntry long_name;
-  FAT32DirFill(&de,tmpde,&de_cnt,dv->fat32_local_time_offset);
+  if (!FAT32DirFill(&de,tmpde,&de_cnt,dv->fat32_local_time_offset))
+    return FALSE;
   MemSet(&long_name,0,sizeof(CDirEntry));
   try {
     unlock_break=BreakLock;

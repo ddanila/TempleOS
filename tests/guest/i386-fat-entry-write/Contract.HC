@@ -23,11 +23,18 @@ Bool FWCase(U8 *name,I64 expected_count)
 }
 I64 FWContract(Bool extended)
 {
- I64 mask=0;
+ I64 mask=0,cnt,i;U8 raw[132];CDirEntry invalid;Bool untouched;
  if(FWCase("FILE.TXT",1))mask|=1;
  if(FWCase("abcdefghijklm",2))mask|=2;
  if(FWCase("abcdefghijklmnopqrstuvwxy",3))mask|=4;
  if(extended && FWCase("abcdefghijklmnopqrstuvwxyz",3))mask|=8;
  if(extended && FWCase("abcdefghijklmnopqrstuvwxyz0123456789a",4))mask|=16;
+ if(extended) {
+  MemSet(&invalid,0,sizeof(invalid));StrCpy(invalid.name,"bad/name");
+  MemSet(raw,0xA5,sizeof(raw));cnt=7;
+  untouched=!FAT32DirFill(raw+1,&invalid,&cnt,0) && !cnt;
+  for(i=0;i<sizeof(raw);i++) if(raw[i]!=0xA5)untouched=FALSE;
+  if(untouched)mask|=32;
+ }
  return mask;
 }

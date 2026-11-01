@@ -6,6 +6,8 @@ Bool FAT32DirFill(CFAT32DirEntry *de,
   CFAT32DirEntryLong *ld=de;
   Bool res;
 
+  if (_de_cnt) *_de_cnt=0;
+  if (!FileNameChk(tmpde->name)) return FALSE;
   MemSet(de,0,sizeof(CFAT32DirEntry));
   res=FATNameTo(de->name,tmpde->name);
   FATFromName(dname,de->name);

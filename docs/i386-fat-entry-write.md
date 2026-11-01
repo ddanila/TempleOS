@@ -41,3 +41,21 @@ two padding slots at the end of the first cluster and the 37-character name's
 three long-name slots and short entry in the next cluster. `fsck.fat -n` exits
 zero; it reports the free-cluster summary as uninitialized. This qualifies the
 tested rebuilt-original FAT path, not native FAT mounting or all on-disk cases.
+
+The entry writer now rejects an invalid filename before modifying its output,
+sets the returned entry count to zero, and `FAT32DirNew` stops before locking
+or writing the disk when construction fails. The shared-original contract
+checks an invalid slash-containing name and all output-buffer canaries
+(`build/i386-fat-entry-invalid-shared-v2`); the pinned original still passes
+the valid-name reference cases (`build/i386-fat-entry-invalid-reference-v1`).
+The original compiler and kernel rebuild through two generations
+(`build/i386-fat-invalid-rebuild.log`), with binary differences. This does not
+establish handling of all malformed names or short-name collisions.
+The corresponding native cross-build and 386 instruction audit pass
+(`build/i386-fat-invalid-cross`), as does the native contract at 64 MiB with
+unchanged inputs (`build/i386-fat-invalid-native-v1`). An attempted direct call
+to the internal `FAT32DirNew` from the original disk fixture stopped in the
+guest compiler (`build/i386-fat-invalid-disk-v1`); it did not test disk mutation.
+The rebuilt-original valid-name disk creation and cold-reopen regression passes
+(`build/i386-fat-invalid-disk-v2`). The invalid-name rejection in
+`FAT32DirNew` itself has not yet been exercised through an on-disk guest call.

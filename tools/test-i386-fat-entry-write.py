@@ -36,14 +36,14 @@ def main():
         if args.disk:
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions={'/FatEntryWrite.HC':FIXTURE.read_bytes()})
-            commands=[('#include "C:/FatEntryWrite.HC"',[]),('FWContract(TRUE);',['31']),('6*7;',['42'])]
+            commands=[('#include "C:/FatEntryWrite.HC"',[]),('FWContract(TRUE);',['63']),('6*7;',['42'])]
             report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](disk,out/'guest',snapshot=False,ram_mib=64,cpu='486,-fpu',accel='tcg',qmp_stdio=True,welcome=True,startup_check={'status':'ok','answers':[],'commands':commands,'pause_window_manager':False,'command_timeout':120,'rejection_prefixes':('INPUT REJECT ','WINMGR window exception ')})
             files=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,{'/FatEntryWrite.HC'})
             if files['/FatEntryWrite.HC']!=FIXTURE.read_bytes():raise ValueError('Delivered fixture changed')
         else:
             if args.shared:
                 original=''.join((ROOT/'Kernel/BlkDev'/n).read_text() for n in ('FATDateToDosCore.HC','FATNameCore.HC','FATLongNameCore.HC','FATDirFillCore.HC'))
-                expected_mask=31
+                expected_mask=63
             else:
                 pinned=subprocess.check_output(['git','show',ref['REFERENCE']+':Kernel/BlkDev/FileSysFAT.HC'],cwd=ROOT).decode()
                 date=pinned[:pinned.index('CDate Dos2CDate(')]
