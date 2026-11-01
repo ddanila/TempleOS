@@ -246,10 +246,10 @@ run. Full guest-built installation and two native generations remain open.
 
 The retained-build harness now accepts `--ram-mib` for the supported 8, 16,
 64 and 128 MiB profiles, defaulting to its previous 16 MiB. A nine-module run
-at the plan's initial 128 MiB rebuild budget is in progress on the version-77
-image (`build/i386-token-refresh-retained128`); QEMU was launched with 128 MiB
-and the guest reported its larger arena. This is not yet a build result and
-does not replace the minimal 16 MiB regression requirement.
+at the plan's initial 128 MiB rebuild budget ran on the version-77 image
+(`build/i386-token-refresh-retained128`); QEMU was launched with 128 MiB and
+the guest reported its larger arena. This does not replace the minimal 16 MiB
+regression requirement.
 
 The version-77 128 MiB run subsequently failed while packing ConsoleRuntime
 with `duplicate-function DocCursor` (`build/i386-token-refresh-retained128`).
@@ -275,7 +275,9 @@ startup, retained-value, storage and exact VGA checks
 `ce3bf7197c6f8f37adc5312e58021ca34b0c80e2b5f27a612920343b2fd6bff1`).
 It ran alongside other guests and does not establish the timing gate.
 A fresh nine-module 128 MiB retained build is running
-(`build/i386-doccursor-dedup-retained128`). Its result is pending, so
-the duplicate-function pack failure has not yet been verified resolved in a
-native retained build. Full installation, two native generations, the timing
-gate, and C1–C5 qualification remain open.
+(`build/i386-doccursor-dedup-retained128`), using the corrected image identified
+above. Its guest log has progressed through `DocumentRuntime.HC` and into
+`C:/Adam/Gr/Gr.HH` while compiling ConsoleRuntime. Its result is pending; it
+has not yet reached the pack step that exposed the duplicate function, so the
+fix has not yet been verified in a native retained build. Full installation,
+two native generations, the timing gate, and C1–C5 qualification remain open.
