@@ -25013,3 +25013,12 @@ bitmap slot in one queue traversal. Publication diagnostics and the full
 native cross-build pass. Isolated candidate and control startup runs remain
 over the 60-second gate at 60.594 and 61.796 seconds; see
 `docs/i386-heap-performance.md`. C1–C5 remain open.
+
+## Random-number family and application load gates (2026-11-01)
+
+The original task-seeded random family is shared and its seeded return values
+and states match the original at 8 and 64 MiB. Vocabulary now advances from
+`RandU32` to the missing dictionary definition service. Fresh unchanged-source
+load checks also record current Logic, KeepAway and Strut dependencies; none
+qualifies a full application workflow. See `docs/i386-random-family.md` and
+`docs/i386-application-matrix.md`. C1–C5 remain open.

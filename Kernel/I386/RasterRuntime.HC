@@ -11,7 +11,7 @@ I64 NativeRandClock()
 #define LIN_CONGRUE_A 6364136223846793005
 #define LIN_CONGRUE_C 1442695040888963407
 #define GetTSC NativeRandClock
-#include "/Kernel/RandU16Core.HC"
+#include "/Kernel/RandFamilyCore.HC"
 #include "/Adam/DistSqrCore.HC"
 I64 graphics_raster_bits[256],graphics_raster_colors[256];
 #include "/Adam/Gr/GrRasterTablesCore.HC"

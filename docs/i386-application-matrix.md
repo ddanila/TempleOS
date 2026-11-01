@@ -197,3 +197,23 @@ loader is blocked at its embedded DolDoc binary initializer before synthesis.
 See [Logic compatibility](i386-logic-compatibility.md) for the evidence and
 the document-backed include work; the interactive and graphics workflows remain
 unqualified.
+
+## Current full-image loader checks (2026-11-01)
+
+The native load runner now accepts application files already present in a full
+image only after verifying each byte against the repaired pinned reference; it
+adds only absent files and verifies the delivered set. On the current
+pre-random-family image, unchanged Load scripts still reject at the following
+points, with source-image and runner inputs unchanged:
+
+| Application | First observed rejection | Evidence |
+| --- | --- | --- |
+| Logic | Line 569, `SettingsPush` | `build/i386-app-logic-current-v1` |
+| KeepAway | Line 221, registry initialization | `build/i386-app-keepaway-current-v1` |
+| Strut | Line 16, missing `CMass` class | `build/i386-app-strut-current-v1` |
+| Vocabulary | Line 7, missing `RandU32` | `build/i386-app-vocabulary-current-v1` |
+
+These are compiler/load checks, not gameplay or application qualification.
+With the shared random family, Vocabulary advances to the missing `ACDDefGet`
+at line 35 (`build/i386-app-vocabulary-rand-v1`). Original application launch,
+interaction, persistence and visual/audio workflows remain required.

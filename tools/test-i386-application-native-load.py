@@ -17,7 +17,7 @@ def main():
     out.mkdir(parents=True);image=out/'working.img'
     helper=ROOT/'tools/test-i386-timeclock-welcome.py';packager=ROOT/'tools/package-i386-native-image.py';inventory=ROOT/'docs/i386-compatibility-inventory.json'
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
-    paths=[source,Path(__file__).resolve(),helper,packager,inventory,ROOT/'Kernel/FontStd.HC']
+    paths=[source,Path(__file__).resolve(),helper,packager,inventory,ROOT/'Kernel/FontStd.HC',ROOT/'tools/build-i386-kernel.py']
     pins={str(p):sha(p) for p in paths}
     report=dict(result='running',input_sha256=pins,scope='Original application Load on native 64 MiB; not startup or application workflow qualification',app=args.app)
     try:
@@ -27,7 +27,17 @@ def main():
             data=subprocess.check_output(['git','show',REPAIRS+':'+e['path']],cwd=ROOT)
             if hashlib.sha256(data).hexdigest()!=e['reference_sha256']:raise ValueError('Reference mismatch: '+e['path'])
             additions['/'+e['path']]=data
-        report['packaging']=runpy.run_path(str(packager))['package'](source,image,additions=additions)
+        # Full-content images may already contain the original files. Verify
+        # every existing byte before retaining it; only add absent paths.
+        existing=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](source,set(additions))
+        for name,data in existing.items():
+            if data!=additions[name]:raise ValueError('Existing application file differs from reference: '+name)
+        report['verified_existing']={name:hashlib.sha256(data).hexdigest() for name,data in existing.items()}
+        missing={name:data for name,data in additions.items() if name not in existing}
+        report['packaging']=runpy.run_path(str(packager))['package'](source,image,additions=missing)
+        delivered=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](image,set(additions))
+        if delivered!=additions:raise ValueError('Packaged application differs from reference')
+        report['delivered_sha256']={name:hashlib.sha256(data).hexdigest() for name,data in delivered.items()}
         runpy.run_path(str(helper))['guest'](image,out/'guest',['#include "C:/Apps/'+args.app+'/Load.HC"','6*7;'],64,True)
         report['result']='pass'
     except Exception as exc:

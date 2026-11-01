@@ -5503,9 +5503,17 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Load the unchanged KeepAway application sources using its original Load.HC entry point; full interactive application workflow remains to be captured.",
+      "oracle": "docs/i386-application-matrix.md: native loader currently rejects registry initialization at KeepAway.HC line 221; this is not a reference launch or gameplay oracle.",
+      "tests": [
+        {
+          "target": "native-keepaway-load",
+          "command": "python3 tools/test-i386-application-native-load.py IMAGE --app KeepAway --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-app-keepaway-current-v1/result.json",
+          "scope": "Verified original source bytes and unchanged input; compile rejection precedes application execution"
+        }
+      ]
     },
     {
       "path": "Apps/KeepAway/Run.HC",
@@ -5541,9 +5549,17 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Load the unchanged Logic application sources using its original Load.HC entry point; full interactive application workflow remains to be captured.",
+      "oracle": "docs/i386-application-matrix.md: native loader currently rejects SettingsPush at Logic.HC line 569; this is not a reference launch or gameplay oracle.",
+      "tests": [
+        {
+          "target": "native-logic-load",
+          "command": "python3 tools/test-i386-application-native-load.py IMAGE --app Logic --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-app-logic-current-v1/result.json",
+          "scope": "Verified original source bytes and unchanged input; compile rejection precedes application execution"
+        }
+      ]
     },
     {
       "path": "Apps/Logic/Logic.HC",
@@ -6021,9 +6037,17 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Load the unchanged Strut application sources using its original Load.HC entry point; full interactive application workflow remains to be captured.",
+      "oracle": "docs/i386-application-matrix.md: native loader currently rejects missing CMass at Strut.HC line 16; this is not a reference launch or gameplay oracle.",
+      "tests": [
+        {
+          "target": "native-strut-load",
+          "command": "python3 tools/test-i386-application-native-load.py IMAGE --app Strut --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-app-strut-current-v1/result.json",
+          "scope": "Verified original source bytes and unchanged input; compile rejection precedes application execution"
+        }
+      ]
     },
     {
       "path": "Apps/Strut/Run.HC",
@@ -6745,9 +6769,24 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Load the unchanged Vocabulary application sources using its original Load.HC entry point; full interactive application workflow remains to be captured.",
+      "oracle": "docs/i386-application-matrix.md: native loader currently rejects missing RandU32 at VocabQuiz.HC line 7; this is not a reference launch or gameplay oracle.",
+      "tests": [
+        {
+          "target": "native-vocabulary-load",
+          "command": "python3 tools/test-i386-application-native-load.py IMAGE --app Vocabulary --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-app-vocabulary-current-v1/result.json",
+          "scope": "Verified original source bytes and unchanged input; compile rejection precedes application execution"
+        },
+        {
+          "target": "native-vocabulary-load-random-family",
+          "command": "python3 tools/test-i386-application-native-load.py IMAGE --app Vocabulary --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-app-vocabulary-rand-v1/result.json",
+          "scope": "RandU32 now resolves; compilation stops at missing ACDDefGet before application execution"
+        }
+      ]
     },
     {
       "path": "Apps/Vocabulary/Run.HC",
@@ -14761,7 +14800,22 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-random-family",
+          "command": "python3 tools/test-i386-rand-family-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-rand-family-reference-final/result.json",
+          "scope": "Four seeded sequences, full post-call states and nonzero Seed; not timer entropy"
+        },
+        {
+          "target": "native-random-family",
+          "command": "python3 tools/test-i386-rand-family.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-rand-family-native-64m-v1/result.json",
+          "scope": "Seeded random-family bytes match original; not complete KMathB or timer-mode parity"
+        }
+      ]
     },
     {
       "path": "Kernel/KMisc.HC",
