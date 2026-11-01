@@ -229,3 +229,8 @@ and stops at the `GrEllipse` call on line 263
 With the original 2D curves and flood-fill bindings, unchanged KeepAway advances
 past `GrEllipse` and `GrFloodFill` and fails at `SpriteInterpolate` on line 269
 (`build/i386-app-keepaway-curves2-v1`, inputs unchanged). Gameplay remains open.
+
+With sprite interpolation and transformed drawing, unchanged KeepAway advances
+past `SpriteInterpolate` and `Sprite3YB` and fails at `D3I32Norm` on line 292
+(`build/i386-app-keepaway-interpolation-v1`, inputs unchanged). Gameplay remains
+open.

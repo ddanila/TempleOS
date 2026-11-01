@@ -21,4 +21,11 @@ public _extern _GR_REG_POLY Bool GrRegPoly(CDC *dc=gr.dc,I64 cx,I64 cy,I64 x_rad
 public _extern _GR_FLOOD_FILL I64 GrFloodFill(CDC *dc=gr.dc,I64 x,I64 y,Bool not_color=FALSE,I64 z=0,I32 *db=NULL);
 public _extern _GR_PLOT0 Bool GrPlot0(CDC *dc=gr.dc,I64 x,I64 y);
 public _extern _GR_PEEK0 I64 GrPeek0(CDC *dc=gr.dc,I64 x,I64 y);
+public _extern _SPRITE_INTERPOLATE U8 *SpriteInterpolate(F64 t,U8 *elems0,U8 *elems1);
+public _extern _SPRITE_3B U0 Sprite3B(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elems);
+public _extern _SPRITE_3_MAT4X4B U0 Sprite3Mat4x4B(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elems,I64 *m);
+public _extern _SPRITE_3XB U0 Sprite3XB(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elems,F64 angle=0);
+public _extern _SPRITE_3YB U0 Sprite3YB(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elems,F64 angle=0);
+public _extern _SPRITE_3ZB U0 Sprite3ZB(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elems,F64 angle=0);
+public _extern _SPRITE_SIZE I64 SpriteSize(U8 *elems);
 #endif
