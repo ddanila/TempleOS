@@ -24944,3 +24944,10 @@ Forms now use the original left/right cursor functions. Direct original/native
 comparisons cover skipped entries, Shift selection and Ctrl movement, and the
 real chooser covers horizontal navigation. Full original editing, layout and
 C1–C5 remain open; see `docs/i386-doc-put-key.md`.
+
+## Form page navigation (2026-11-01)
+
+The original page traversal is shared with form input. Real chooser Page
+Up/Down and Ctrl-page cases match the original at 8 and 64 MiB. Larger layouts,
+hex editing, non-form original layout and C1–C5 remain unqualified; see
+`docs/i386-doc-put-key.md`.

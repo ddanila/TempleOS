@@ -167,6 +167,7 @@ U32 native_doc_printable[16]=CHAR_BMP_PRINTABLE_DATA;
 extern Bool NativeDocBEqu(U8 *bits,I64 index,I64 value);
 #define BEqu NativeDocBEqu
 #include "/Adam/DolDoc/DocKeyBoundaryCore.HC"
+#include "/Adam/DolDoc/DocKeyPageCore.HC"
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   Bool unlock,printable;
@@ -186,6 +187,9 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
         (!(sc&SCF_CTRL) && (sc.u8[0]==SC_HOME || sc.u8[0]==SC_END) ||
          sc&SCF_CTRL && (sc.u8[0]==SC_CURSOR_UP || sc.u8[0]==SC_CURSOR_DOWN)))
       DocKeyBoundaryCore(doc,sc,sc.u8[0]==SC_END || sc.u8[0]==SC_CURSOR_DOWN);
+    else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
+        (sc.u8[0]==SC_PAGE_UP || sc.u8[0]==SC_PAGE_DOWN))
+      DocKeyPageCore(doc,sc,sc.u8[0]==SC_PAGE_DOWN);
     else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_ALT|SCF_KEY_DESC)) &&
         sc.u8[0]==SC_CURSOR_LEFT) EdCursorLeft(doc,sc);
     else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_ALT|SCF_KEY_DESC)) &&

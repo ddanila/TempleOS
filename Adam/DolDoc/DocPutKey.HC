@@ -1,6 +1,7 @@
 #help_index "DolDoc/Output;StdOut/DolDoc"
 
 #include "/Adam/DolDoc/DocKeyBoundaryCore.HC"
+#include "/Adam/DolDoc/DocKeyPageCore.HC"
 
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {//$LK,"PutKey",A="MN:PutKey"$(ch,sc) at doc insert pt, cur_entry.
@@ -98,21 +99,8 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 		    KeyDescSet("Edit/Page Down, Sel");
 		  else
 		    KeyDescSet("Edit/Page Down");
-		} else {
-		  i=doc_ce->y+doc->win_task->win_height-1;
-		  if (doc_ce->type_u8==DOCT_HEX_ED)
-		    i+=doc->cur_col/3/doc_ce->hex_ed_width;
-		  while (doc_ce!=doc &&
-			(doc_ce->type_u8!=DOCT_HEX_ED && doc_ce->y<i ||
-			doc_ce->type_u8==DOCT_HEX_ED &&
-			doc_ce->y+doc->cur_col/3/doc_ce->hex_ed_width<i)) {
-		    EdLineDown(doc,sc);
-//paranoid check for stuck on same node
-		    if (doc->cur_entry==doc_ce && doc_ce->type_u8!=DOCT_HEX_ED)
-		      break;
-		    doc_ce=doc->cur_entry;
-		  }
-		}
+		} else
+		  DocKeyPageCore(doc,sc,TRUE);
 	      }
 	      break;
 	    case SC_PAGE_UP:
@@ -122,22 +110,8 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 		    KeyDescSet("Edit/Page Up, Sel");
 		  else
 		    KeyDescSet("Edit/Page Up");
-		}else {
-		  i=doc_ce->y-(doc->win_task->win_height-1);
-		  if (doc_ce->type_u8==DOCT_HEX_ED)
-		    i+=doc->cur_col/3/doc_ce->hex_ed_width;
-		  while (doc_ce->last!=doc &&
-			(doc_ce->type_u8!=DOCT_HEX_ED && doc_ce->y>i ||
-			doc_ce->type_u8==DOCT_HEX_ED &&
-			doc_ce->y+doc->cur_col/3/doc_ce->hex_ed_width>i) &&
-			doc_ce->y!=doc->head.next->y) {
-		    EdLineUp(doc,sc);
-//paranoid check for stuck on same node
-		    if (doc->cur_entry==doc_ce && doc_ce->type_u8!=DOCT_HEX_ED)
-		      break;
-		    doc_ce=doc->cur_entry;
-		  }
-		}
+		} else
+		  DocKeyPageCore(doc,sc,FALSE);
 	      }
 	      break;
 	    case SC_CURSOR_LEFT:

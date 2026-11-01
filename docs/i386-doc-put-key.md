@@ -285,3 +285,31 @@ any parser case (`build/i386-doc-form-horizontal-dollar-v1`,
 The isolated 8 MiB startup run passes all nine functional/VGA checks but takes
 61.748 seconds, above the 60-second gate
 (`build/i386-doc-form-horizontal-startup-v1`).
+
+## Form page navigation (2026-11-01)
+
+The original Page Up/Down traversal is shared through `DocKeyPageCore.HC` with
+the native form path. It uses the original window-height, entry-layout,
+hex-editor and stuck-node logic. Ctrl-page remains suppressed as in the
+original. The retained non-form editor still uses its separate mover until its
+layout is integrated.
+
+The real chooser adds Page Down, Page Down then Page Up, Ctrl-Page Down and
+Page Down then Ctrl-Page Up. The pinned and rebuilt original return
+`[11,12,22,-1,17,22,22,11,22,11,22,11,22,11,22,11,11,22,1]`
+(`build/i386-menu-page-reference-v1`, `build/i386-menu-page-rebuilt-v1`). The
+previous native image times out on Page Down with unchanged inputs
+(`build/i386-menu-page-native-red-v1`). The full chooser passes on the
+candidate at 8 and 64 MiB (`build/i386-menu-page-native-8m-v1`,
+`build/i386-menu-page-native-64m-v1`), and the retained physical editor test
+passes (`build/i386-doc-key-page-physical-v1`). Both bootstrap generations,
+the full cross-build and 386 audit pass (`build/i386-doc-key-page-rebuild-v1.log`,
+`build/i386-doc-key-page-cross-v1`). This small two-entry form does not
+qualify page traversal in larger layouts, hex-editor behavior, mouse input or
+full original editing; C1–C5 remain open.
+
+The terminal-menu regression and 16 MiB startup diagnostic pass
+(`build/i386-doc-key-page-term-v1`, `build/i386-doc-key-page-diag-v1`).
+The isolated 8 MiB startup run passes all nine functional/VGA checks but takes
+61.191 seconds, above the 60-second gate
+(`build/i386-doc-key-page-startup-v1`).

@@ -11,7 +11,7 @@ FIXTURE=ROOT/"tests/guest/i386-menu-chooser-reference/MenuChooser.HC"
 COMMANDS = [('I64 MCPrerequisite(CDoc*d){return DocMenu(d);}',[]),
             ('#include "/Kernel/ScanCodes.HH"',[]),
             ('#include "C:/MenuChooser.HC"',[])]+[(f'MCChoose({i})=={value};',['1'])
-            for i,value in enumerate((11,12,22,-1,17,22,22,11,22,11,22,11,22,11))]+[('mc_unlocked;',['1']),('6*7;',['42'])]
+            for i,value in enumerate((11,12,22,-1,17,22,22,11,22,11,22,11,22,11,22,11,11,22))]+[('mc_unlocked;',['1']),('6*7;',['42'])]
 
 if any(len(c[0])>255 for c in COMMANDS):
     raise ValueError("Put/display fixture exceeds native input limit")
@@ -46,7 +46,7 @@ def main():
     working = out/'working.img'
     packaging = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
         source, working, additions={'/MenuChooser.HC':FIXTURE.read_bytes()})
-    report = dict(result='running', scope='Actual original chooser: first left/right and second selection, cancellation, unlocked callback, Tab/Shift-Tab, Home/End, Ctrl-Up/Down, Left/Right, key-release suppression, MSG_CMD and task/document restoration; not full input or popup qualification',
+    report = dict(result='running', scope='Actual original chooser: first left/right and second selection, cancellation, unlocked callback, Tab/Shift-Tab, Home/End, Ctrl-Up/Down, Left/Right, Page Up/Down and Ctrl-page suppression, key-release suppression, MSG_CMD and task/document restoration; not full input or popup qualification',
                   packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
