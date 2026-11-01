@@ -11,7 +11,7 @@ FIXTURE=ROOT/"tests/guest/i386-menu-chooser-reference/MenuChooser.HC"
 COMMANDS = [('I64 MCPrerequisite(CDoc*d){return DocMenu(d);}',[]),
             ('#include "/Kernel/ScanCodes.HH"',[]),
             ('#include "C:/MenuChooser.HC"',[])]+[(f'MCChoose({i})=={value};',['1'])
-            for i,value in enumerate((11,12,22,-1,17))]+[('mc_unlocked;',['1']),('6*7;',['42'])]
+            for i,value in enumerate((11,12,22,-1,17,22,22,11))]+[('mc_unlocked;',['1']),('6*7;',['42'])]
 
 if any(len(c[0])>255 for c in COMMANDS):
     raise ValueError("Put/display fixture exceeds native input limit")
@@ -31,10 +31,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--tab-only',action='store_true',help='Run Tab and Shift-Tab cases only')
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     commands = list(COMMANDS)
+    if args.tab_only:commands=commands[:3]+[(f'MCChoose({i})==22;',['1']) for i in (5,6)]+[('6*7;',['42'])]
     if out.exists():
         parser.error('Use a fresh output directory')
     sha = lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
@@ -44,12 +46,12 @@ def main():
     working = out/'working.img'
     packaging = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
         source, working, additions={'/MenuChooser.HC':FIXTURE.read_bytes()})
-    report = dict(result='running', scope='Actual original chooser: first left/right and second selection, cancellation, unlocked callback, MSG_CMD and task/document restoration; not full input or popup qualification',
+    report = dict(result='running', scope='Actual original chooser: first left/right and second selection, cancellation, unlocked callback, Tab/Shift-Tab, MSG_CMD and task/document restoration; not full input or popup qualification',
                   packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
-            cpu='486,-fpu', accel='tcg', qmp_stdio=True,
+            cpu='486,-fpu', accel='tcg', qmp_stdio=True, welcome=True,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
                            'rejected_answers':['0'],

@@ -159,3 +159,39 @@ pass (`build/i386-doc-form-tab-rebuild-v1.log`,
 The isolated 8 MiB run completes all nine functional/VGA checks in 61.157
 seconds and misses the 60-second gate (`build/i386-doc-form-tab-startup-v1`).
 Full original document input and C1–C5 remain open.
+
+## Chooser keyboard navigation and retained editor (2026-11-01)
+
+The real chooser fixture now queues Tab, Shift-Tab and a Down key release as
+well as the existing left/right action, Down, cancellation and unlocked callback
+cases. The pinned and rebuilt original both return
+`[11,12,22,-1,17,22,22,11,1]` with unchanged inputs
+(`build/i386-menu-keyup-reference-v1`,
+`build/i386-doced-keydown-rebuilt-reference-v1`). The preceding native image
+passes the two Tab cases in isolation but times out on Down in the complete
+fixture (`build/i386-menu-tab-only-native-v1`,
+`build/i386-menu-tab-native-64m-v1`).
+
+Form Up/Down now call the original line movers. The retained non-form editor
+continues using its own line mover because its renderer does not populate the
+layout coordinates those original functions need. The retained editor now
+handles navigation on key down and forwards the scan code for printable input.
+An earlier candidate applying the original line mover to all documents passed
+the chooser at 8 and 64 MiB but failed the separate physical editor check;
+that candidate was superseded (`build/i386-doced-keydown-menu-8m-v2`,
+`build/i386-doced-keydown-menu-64m-v2`,
+`build/i386-doced-keydown-physical-v1`). This is an integration boundary,
+not completion of original document input, rendering or C1–C5. Mouse interaction,
+full popup rendering and file-selection workflows remain unqualified.
+
+The final candidate passes the complete queued chooser fixture at 64 and 8 MiB
+(`build/i386-doced-keydown-menu-64m-v3`,
+`build/i386-doced-keydown-menu-8m-v3`). Both bootstrap generations and the
+full cross-build/386 audit pass (`build/i386-doced-keydown-rebuild-v3.log`,
+`build/i386-doced-keydown-cross-v3`). The separate physical editor check still
+times out waiting for the expected screen state, even with the retained line
+mover (`build/i386-doced-keydown-physical-v2`); ordinary physical editing is
+therefore not requalified and requires investigation. The final candidate has
+not been requalified by the 16 MiB diagnostic or isolated 8 MiB startup timing
+gate. The prior image completed its nine startup checks in 61.157 seconds,
+above the 60-second gate.

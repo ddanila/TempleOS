@@ -24922,3 +24922,11 @@ module export scans. A narrower-counter export-scan experiment passed its
 loader corpus and cross-build but measured 63.206 seconds at 8 MiB, above
 the 60-second gate and close to the preceding image's 63.500 seconds. It was
 discarded; see `docs/i386-heap-performance.md`. C1–C5 remain open.
+
+## Chooser keyboard navigation (2026-11-01)
+
+The original real-chooser oracle now covers Tab, Shift-Tab and a Down key
+release in addition to its existing actions. Form Up/Down use the original line
+movers; the retained non-form renderer still needs its own mover until original
+layout integration. See `docs/i386-doc-put-key.md` for evidence and limitations.
+Full original document input and C1–C5 remain open.

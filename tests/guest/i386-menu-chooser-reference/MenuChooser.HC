@@ -14,6 +14,9 @@ I64 MCChoose(I64 mode)
   FlushMsgs;
   if(mode==4){first->de_flags=DOCEF_ESC|DOCEF_LEFT_CB|DOCEF_TAG;first->left_cb=&MCLeft;}
   if(mode==2)Msg(MSG_KEY_DOWN,0,SC_CURSOR_DOWN);
+  if(mode==5)Msg(MSG_KEY_DOWN,'\t',SC_TAB);
+  if(mode==6)Msg(MSG_KEY_DOWN,'\t',SC_TAB|SCF_SHIFT);
+  if(mode==7)Msg(MSG_KEY_UP,0,SC_CURSOR_DOWN);
   if(mode==1)Msg(MSG_KEY_DOWN,10,0);
   else if(mode==3)Msg(MSG_KEY_DOWN,CH_SHIFT_ESC,0);
   else Msg(MSG_KEY_DOWN,32,0);

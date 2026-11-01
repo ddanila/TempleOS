@@ -179,6 +179,12 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
       DocUndoRestore(doc);
     else if(!ch && sc.u8[0]==SC_INS && !(sc&(SCF_SHIFT|SCF_CTRL|SCF_ALT|SCF_KEY_DESC)))
       doc->flags^=DOCF_OVERSTRIKE;
+    //Original form navigation requires the document layout produced by View.
+    //The retained text editor has a separate renderer and uses its line mover.
+    else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
+        sc.u8[0]==SC_CURSOR_UP) EdLineUp(doc,sc);
+    else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
+        sc.u8[0]==SC_CURSOR_DOWN) EdLineDown(doc,sc);
     else if(printable && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
         DocDollarInputCore(doc,ch,printable)) {}
     else if(printable && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
@@ -1498,8 +1504,8 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
           else undo_kind=1;
           NativeDocEditUndoBegin(doc,undo_bodies,undo_sizes,&undo_count,
             undo_kind,&undo_group_kind,&undo_group_jiffy,event.arrival_jiffy);
-          DocPutKey(doc,event.ch,0); changed=TRUE;
-        } else if(event.type==3 && (event.scan.u8[0]==SC_CURSOR_LEFT ||
+          DocPutKey(doc,event.ch,event.scan); changed=TRUE;
+        } else if(event.type==2 && (event.scan.u8[0]==SC_CURSOR_LEFT ||
             event.scan.u8[0]==SC_CURSOR_RIGHT || event.scan.u8[0]==SC_CURSOR_UP ||
             event.scan.u8[0]==SC_CURSOR_DOWN || event.scan.u8[0]==SC_HOME ||
             event.scan.u8[0]==SC_END || event.scan.u8[0]==SC_PAGE_UP ||

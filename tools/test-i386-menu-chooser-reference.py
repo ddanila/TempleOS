@@ -10,7 +10,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))
-EXPECTED = [11,12,22,-1,17,1]
+EXPECTED = [11,12,22,-1,17,22,22,11,1]
 
 
 def main():
@@ -66,7 +66,7 @@ def main():
         subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),
                         '--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
         data = (out/'guest/menu-chooser.bin').read_bytes()
-        report['observed']=list(struct.unpack('<6q',data))
+        report['observed']=list(struct.unpack('<9q',data))
         report['expected']=EXPECTED
         if report['observed']!=EXPECTED:
             raise ValueError('Original popup execution differs from explicit result/lifecycle oracle')
