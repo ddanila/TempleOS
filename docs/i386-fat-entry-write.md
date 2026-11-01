@@ -172,6 +172,22 @@ suffix control passes (`build/i386-fat-alias-merge-control-v1`). The fixture's
 manual FAT linkage constructs the scenario and does not test a public API for
 creating such a link.
 
+FAT deletion previously released a drive lock held by its caller; a nested
+lock test reproduced that behavior (`build/i386-fat-nested-lock-red-v1`). FAT
+read and delete now release the drive only when they acquired it. Whole-file
+FAT writes hold the drive lock and break lock across lookup, deletion,
+allocation, data write and directory update. The original compiler and kernel
+rebuild through two generations with binary differences
+(`build/i386-fat-read-write-lock-rebuild.log`).
+
+The rebuilt-original test holds a drive lock across nested deletion, write and
+read, then races two guest tasks writing eight 512-byte versions apiece through
+the same file's long name and short alias. It passes lock-ownership checks,
+guest and host readback of one complete version, cold reopen and `fsck.fat -n`
+(`build/i386-fat-write-race-v1`); the merged-chain control also passes
+(`build/i386-fat-write-lock-control-v1`). This is one concurrent workload, not
+proof of all task interleavings, streamed-write atomicity or crash recovery.
+
 `FAT32DirNew` currently returns false even on successful writes, so the earlier
 invalid-name API test's return value alone does not establish rejection. Its
 unchanged cold-reopen disk hash and the entry-writer canary test provide the
