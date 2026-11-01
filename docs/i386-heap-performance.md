@@ -679,3 +679,11 @@ samples; in root-header loading it attributed 169 to `I386HeapScan`, 113 to
 (`build/i386-heap-query-current-profile`). Samples locate remaining work but
 are not call counts or an elapsed-time benchmark. Full heap validation remains
 a leading startup cost; the 60-second gate and C1–C5 remain open.
+
+Call-stack samples in the same root-header profile put 66 of the
+`I386HeapScan` samples under compiler-control validation from token, parser
+allocation, intermediate-code allocation and parser-free paths. Publication's
+individual record frees account for another 25 `I386HeapFree` samples. These
+are nonexclusive statistical observations from this particular run, not call
+counts. Any batching or validation reuse must preserve complete corruption
+checking, allocation-boundary ownership and interrupt exclusion.

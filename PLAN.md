@@ -25031,3 +25031,23 @@ workflows; three serialized documents match original bytes. Expression answers
 also respect `Silent` in the tested execution path. Registry initialization,
 KeepAway, complete desktop behavior and C1–C5 remain open; see
 `docs/i386-doc-tree.md`.
+
+## Current full retained-module native build (2026-11-01)
+
+A full nine-module retained build is running on the current 16 MiB
+`486,-fpu` image, using its matching cross-built export contracts
+(`build/i386-c5-full-current-native`). The source image is pinned to SHA-256
+`3d1e77a08d4130ce8fd67e35cb9b3cae0d4a84d58eac381af0f1198e111474d1`;
+its source and build manifest is in `build/i386-heap-query-scan-cross`. This is
+a live attempt, not a pass: inspect the process and final `result.json` before
+claiming any module or export audit. The earlier two-module result used an
+older image. A complete installed rebuild, a second native generation,
+startup timing, and C1–C5 qualification remain open.
+
+```sh
+python3 tools/test-i386-retained-build.py \
+  --disk build/i386-heap-query-scan-cross/kernel.img \
+  --out build/i386-c5-full-current-native \
+  --reference-exports build/i386-heap-query-scan-cross/exports \
+  --accel tcg --cpu 486,-fpu --qmp-stdio --command-timeout 14400
+```
