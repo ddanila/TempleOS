@@ -25,6 +25,14 @@ Bool FDOverlapRead()
  ok=a && b && as==1024 && bs==1024 && !MemCmp(a,expected,1024) && !MemCmp(b,expected,1024);
  Free(a);Free(b);return ok;
 }
+Bool FDMergeRead()
+{
+ U8 *a,*b,expected[1536];I64 as,bs;Bool ok;
+ MemSet(expected,'N',512);MemSet(expected+512,'B',512);MemSet(expected+1024,'C',512);
+ a=FileRead("C:/TWINAB~1.EFG",&as);b=FileRead("C:/twinabcdefghijklmnop2",&bs);
+ ok=a && b && as==1536 && bs==1536 && !MemCmp(a,expected,1536) && !MemCmp(b,expected,1536);
+ Free(a);Free(b);return ok;
+}
 Bool FDFile(U8 *name,U8 *data)
 {
  U8 *path=MStrPrint("C:/%s",name),*read;I64 size;CDirEntry e;Bool ok;
@@ -34,7 +42,7 @@ Bool FDFile(U8 *name,U8 *data)
 }
 CBlkDev *fd_bd=BlkDevNextFreeSlot('C',BDT_ATA);
 I64 fd_mask=0,fd_i;U8 *fd_line,*fd_filler,*fd_second="second";Bool fd_fill_ok;CDirEntry fd_invalid;
-CDirEntry fd_entry;U8 fd_new_block[512],fd_overlap[1536];
+CDirEntry fd_entry;U8 fd_new_block[512],fd_overlap[1536];I64 fd_tail,fd_prefix;CDrv *fd_dv;Bool fd_lock;
 if(FD_ALIAS_SHADOW && FD_REOPEN)fd_second="fourth";
 if(FD_ALIAS_REPLACE && FD_REOPEN)fd_second="newer!";
 fd_bd->base0=0x1F0;fd_bd->base1=0x3F6;fd_bd->unit=0;
@@ -50,9 +58,9 @@ if(fd_mask&1) {
   if(fd_fill_ok)fd_mask|=32;
   if(FDFile("charlieABCDEFGHIJKLMNOPQRSTUVWXYZ1234","thirty-seven"))fd_mask|=16;
   if(FD_COLLISIONS && FDFile("twinabcdefghijklmnop1","first") &&
-     ((FD_ALIAS_STREAM || FD_ALIAS_OVERLAP) && FD_REOPEN || FDFile("twinabcdefghijklmnop2",fd_second)) &&
+     ((FD_ALIAS_STREAM || FD_ALIAS_OVERLAP || FD_ALIAS_MERGE) && FD_REOPEN || FDFile("twinabcdefghijklmnop2",fd_second)) &&
      FDFile("twinabcdefghijklmnop1","first") &&
-     ((FD_ALIAS_STREAM || FD_ALIAS_OVERLAP) && FD_REOPEN || FDFile("twinabcdefghijklmnop2",fd_second)) &&
+     ((FD_ALIAS_STREAM || FD_ALIAS_OVERLAP || FD_ALIAS_MERGE) && FD_REOPEN || FDFile("twinabcdefghijklmnop2",fd_second)) &&
      (FD_ALIAS_DELETE && FD_REOPEN || FDFile("twinabcdefghijklmnop3","third")))fd_mask|=128;
   if(FD_ALIAS_SHADOW && FDRead("twinab~1.efg",fd_second) &&
      FDFile("TWINAB~1.EFG","fourth") && FDRead("twinabcdefghijklmnop2","fourth"))fd_mask|=256;
@@ -62,7 +70,7 @@ if(fd_mask&1) {
   }
   if(FD_ALIAS_STREAM && FDStream(FD_REOPEN))fd_mask|=1024;
   if(FD_ALIAS_DIRNEW) {
-   if(FD_ALIAS_OVERLAP && !FD_REOPEN) {
+   if((FD_ALIAS_OVERLAP || FD_ALIAS_MERGE) && !FD_REOPEN) {
     MemSet(fd_overlap,'A',512);MemSet(fd_overlap+512,'B',512);MemSet(fd_overlap+1024,'C',512);
     FileWrite("C:/twinabcdefghijklmnop2",fd_overlap,sizeof(fd_overlap));
    }
@@ -77,6 +85,21 @@ if(fd_mask&1) {
       fd_entry.size=1024;
       DirNew(Let2Drv('C'),"/",&fd_entry,TRUE);
      }
+     if(FD_ALIAS_MERGE) {
+      fd_dv=Let2Drv('C');fd_tail=ClusNumNext(fd_dv,fd_entry.clus);
+      fd_prefix=ClusAlloc(fd_dv,0,1,FALSE);
+      fd_line=MStrPrint("FAT MERGE %d %d %d\n",fd_entry.clus,fd_tail,fd_prefix);
+      FDReport(fd_line);Free(fd_line);
+      MemSet(fd_new_block,'N',512);ClusWrite(fd_dv,fd_new_block,fd_prefix,1);
+      fd_lock=DrvLock(fd_dv);
+      ClusNumNext(fd_dv,fd_prefix);
+      fd_dv->cur_fat_blk[fd_prefix & 127]=fd_tail;
+      BlkWrite(fd_dv,fd_dv->cur_fat_blk,fd_dv->fat1+fd_dv->cur_fat_blk_num,1);
+      BlkWrite(fd_dv,fd_dv->cur_fat_blk,fd_dv->fat2+fd_dv->cur_fat_blk_num,1);
+      if(fd_lock)DrvUnlock(fd_dv);
+      fd_entry.clus=fd_prefix;fd_entry.size=1536;
+      DirNew(fd_dv,"/",&fd_entry,TRUE);
+     }
      if(FD_ALIAS_REPLACE) {
       MemSet(fd_new_block,0,sizeof(fd_new_block));MemCpy(fd_new_block,"newer!",6);
       fd_entry.clus=ClusAlloc(Let2Drv('C'),0,1,FALSE);
@@ -87,8 +110,8 @@ if(fd_mask&1) {
     Free(fd_entry.full_name);
    }
    if(FD_ALIAS_REPLACE)fd_second="newer!";
-   if(fd_fill_ok && (FD_ALIAS_OVERLAP && FDOverlapRead() ||
-      !FD_ALIAS_OVERLAP && FDRead("TWINAB~1.EFG",fd_second) &&
+   if(fd_fill_ok && (FD_ALIAS_OVERLAP && FDOverlapRead() || FD_ALIAS_MERGE && FDMergeRead() ||
+      !FD_ALIAS_OVERLAP && !FD_ALIAS_MERGE && FDRead("TWINAB~1.EFG",fd_second) &&
       FDRead("twinabcdefghijklmnop2",fd_second)))fd_mask|=2048;
   }
  }

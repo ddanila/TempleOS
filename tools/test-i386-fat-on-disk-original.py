@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 import runpy
 import shutil
@@ -14,6 +15,31 @@ ROOT=Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/'tests/guest/i386-fat-on-disk/Once.HC'
 NAMES=[('SHORT.TXT',b'short'),('alphaabcdefghijklmnopqrs',b'twenty-four'),('bravobcdefghijklmnopqrstuvwxyz',b'thirty'),('charlieABCDEFGHIJKLMNOPQRSTUVWXYZ1234',b'thirty-seven')]
 COLLISIONS=[('twinabcdefghijklmnop1',b'first'),('twinabcdefghijklmnop2',b'second'),('twinabcdefghijklmnop3',b'third')]
+
+def verify_merge(disk, start, debug):
+    matches=re.findall(r'^FAT MERGE (\d+) (\d+) (\d+)$',debug,re.MULTILINE)
+    if len(matches)!=1:raise ValueError('Missing or ambiguous FAT merge cluster marker')
+    old,tail,prefix=map(int,matches[0])
+    if min(old,tail,prefix)<2 or len({old,tail,prefix})!=3:raise ValueError('Invalid merge cluster identities')
+    with disk.open('rb') as f:
+        f.seek(start*512);boot=f.read(512)
+        reserved=struct.unpack_from('<H',boot,14)[0];fat_size=struct.unpack_from('<I',boot,36)[0]
+        if struct.unpack_from('<H',boot,11)[0]!=512 or boot[16]!=2:raise ValueError('Unexpected FAT layout')
+        if max(old,tail,prefix)>=fat_size*128:raise ValueError('Merge cluster outside FAT')
+        copies=[]
+        for i in range(2):
+            base=(start+reserved+i*fat_size)*512
+            def entry(c):
+                f.seek(base+c*4)
+                return struct.unpack('<I',f.read(4))[0]&0x0fffffff
+            end=entry(tail)
+            if not 2<=end<fat_size*128 or end in (old,tail,prefix):raise ValueError('Invalid retained FAT tail')
+            values=[entry(old),entry(prefix),entry(tail),entry(end)]
+            if values[0]!=0 or values[1]!=tail or values[2]!=end or values[3]<0x0ffffff8:
+                raise ValueError('Unexpected merged FAT chain')
+            copies.append(values)
+        if copies[0]!=copies[1]:raise ValueError('FAT copies differ')
+    return {'old_prefix':old,'new_prefix':prefix,'shared_tail':[tail,end],'fat_values':copies[0]}
 
 def verify_boundary(disk,start):
     with disk.open('rb') as f:
@@ -46,6 +72,7 @@ def main():
     parser.add_argument('--alias-dirnew',action='store_true',help='Update an existing entry through its short alias')
     parser.add_argument('--alias-replace',action='store_true',help='Replace the alias entry with a different cluster')
     parser.add_argument('--alias-overlap',action='store_true',help='Replace a chain with its existing suffix')
+    parser.add_argument('--alias-merge',action='store_true',help='Replace a chain with a new prefix and a shared tail')
     parser.add_argument('--out',type=Path,required=True)
     args=parser.parse_args();out=args.out.resolve()
     if args.collisions and not args.shared:parser.error('--collisions requires --shared')
@@ -55,6 +82,7 @@ def main():
     if args.alias_dirnew and (not args.collisions or args.alias_shadow or args.alias_stream):parser.error('--alias-dirnew requires --collisions without --alias-shadow or --alias-stream')
     if args.alias_replace and not args.alias_dirnew:parser.error('--alias-replace requires --alias-dirnew')
     if args.alias_overlap and (not args.alias_dirnew or args.alias_replace):parser.error('--alias-overlap requires --alias-dirnew without --alias-replace')
+    if args.alias_merge and (not args.alias_dirnew or args.alias_replace or args.alias_overlap):parser.error('--alias-merge requires --alias-dirnew without --alias-replace or --alias-overlap')
     if out.exists():parser.error('Use a fresh output directory')
     out.mkdir(parents=True);overlay=out/'overlay';overlay.mkdir()
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
@@ -85,7 +113,7 @@ def main():
         with disk.open('r+b') as f:f.write(mbr)
         subprocess.run(['mkfs.fat','-F','32','-s','1','--offset',str(start),str(disk),str(count//2)],cwd=ROOT,check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         report['disk_before_sha256']=sha(disk)
-        defines='#define FD_EXTENDED '+('TRUE' if args.shared else 'FALSE')+'\n#define FD_COLLISIONS '+('TRUE' if args.collisions else 'FALSE')+'\n#define FD_ALIAS_SHADOW '+('TRUE' if args.alias_shadow else 'FALSE')+'\n#define FD_ALIAS_DELETE '+('TRUE' if args.alias_delete else 'FALSE')+'\n#define FD_ALIAS_STREAM '+('TRUE' if args.alias_stream else 'FALSE')+'\n#define FD_ALIAS_DIRNEW '+('TRUE' if args.alias_dirnew else 'FALSE')+'\n#define FD_ALIAS_REPLACE '+('TRUE' if args.alias_replace else 'FALSE')+'\n#define FD_ALIAS_OVERLAP '+('TRUE' if args.alias_overlap else 'FALSE')+'\n'
+        defines='#define FD_EXTENDED '+('TRUE' if args.shared else 'FALSE')+'\n#define FD_COLLISIONS '+('TRUE' if args.collisions else 'FALSE')+'\n#define FD_ALIAS_SHADOW '+('TRUE' if args.alias_shadow else 'FALSE')+'\n#define FD_ALIAS_DELETE '+('TRUE' if args.alias_delete else 'FALSE')+'\n#define FD_ALIAS_STREAM '+('TRUE' if args.alias_stream else 'FALSE')+'\n#define FD_ALIAS_DIRNEW '+('TRUE' if args.alias_dirnew else 'FALSE')+'\n#define FD_ALIAS_REPLACE '+('TRUE' if args.alias_replace else 'FALSE')+'\n#define FD_ALIAS_OVERLAP '+('TRUE' if args.alias_overlap else 'FALSE')+'\n#define FD_ALIAS_MERGE '+('TRUE' if args.alias_merge else 'FALSE')+'\n'
         (overlay/'Once.HC').write_text(defines+'#define FD_REOPEN FALSE\n'+FIXTURE.read_text())
         iso=out/'original.iso'
         subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(overlay),'--output',str(iso)],cwd=ROOT,check=True)
@@ -95,7 +123,9 @@ def main():
         if args.alias_delete:expected+=512
         if args.alias_stream:expected+=1024
         if args.alias_dirnew:expected+=2048
-        if f'FAT DISK MASK {expected}\n' not in (out/'guest/debug.log').read_text():raise ValueError('Guest FAT contract failed')
+        debug=(out/'guest/debug.log').read_text()
+        if f'FAT DISK MASK {expected}\n' not in debug:raise ValueError('Guest FAT contract failed')
+        if args.alias_merge:report['merge']=verify_merge(disk,start,debug)
         if args.shared and not (args.alias_shadow or args.alias_delete or args.alias_stream or args.alias_dirnew):report['boundary']=verify_boundary(disk,start)
         names=(NAMES+(COLLISIONS if args.collisions else [])+[(f'F{i:02}.TXT',b'fill') for i in range(6)]) if args.shared else NAMES[:2]
         if args.alias_shadow:
@@ -107,7 +137,8 @@ def main():
             names.append(('TWINAB~1.EFG',b'stream'+bytes(506)))
         if args.alias_replace:names=[(name,b'newer!' if name=='twinabcdefghijklmnop2' else data) for name,data in names]
         if args.alias_overlap:names=[(name,b'B'*512+b'C'*512 if name=='twinabcdefghijklmnop2' else data) for name,data in names]
-        if args.alias_dirnew:names.append(('TWINAB~1.EFG',b'B'*512+b'C'*512 if args.alias_overlap else b'newer!' if args.alias_replace else b'second'))
+        if args.alias_merge:names=[(name,b'N'*512+b'B'*512+b'C'*512 if name=='twinabcdefghijklmnop2' else data) for name,data in names]
+        if args.alias_dirnew:names.append(('TWINAB~1.EFG',b'N'*512+b'B'*512+b'C'*512 if args.alias_merge else b'B'*512+b'C'*512 if args.alias_overlap else b'newer!' if args.alias_replace else b'second'))
         for i,(name,data) in enumerate(names):
             path=out/f'host-read-{i}.bin'
             subprocess.run(['mcopy','-i',str(disk)+'@@'+str(start*512),'::/'+name,str(path)],cwd=ROOT,check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)

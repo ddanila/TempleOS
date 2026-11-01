@@ -151,8 +151,7 @@ cluster 20 linked to 21, and cluster 21 as end-of-chain in that image. The
 disjoint replacement control also passes
 (`build/i386-fat-alias-overlap-control-v1`), and both original rebuild
 generations pass with binary differences (`build/i386-fat-alias-overlap-rebuild.log`).
-The case where a separately rooted new chain joins the old chain later, crash
-recovery, and concurrent or corrupt-chain updates are not yet qualified.
+Crash recovery and concurrent or corrupt-chain updates are not yet qualified.
 
 An additional synthetic graph contract runs the shared intersection body on
 the original compiler (`build/i386-fat-overlap-graph-v1`). It checks both
@@ -161,6 +160,17 @@ and identical chains, disjoint and empty chains, cycles in either input, and a
 zero sectors-per-cluster guard. This verifies the intersection result and
 bounded rejection in isolation; it does not exercise those merged chains on
 disk or establish recovery from corrupt media.
+
+The separately rooted merge is also exercised on a disposable FAT disk
+(`build/i386-fat-alias-merge-v3`). The fixture allocates a new prefix and
+explicitly links it to the old chain's suffix in both FAT copies, then updates
+the directory entry with `free_old_chain=TRUE`. Guest and host readback, cold
+reopen and `fsck.fat -n` pass. In that image both FAT copies mark the old
+prefix cluster 19 free and retain the new chain 22 → 20 → 21; the harness
+records the guest's cluster identities and checks both FAT copies. A separate
+suffix control passes (`build/i386-fat-alias-merge-control-v1`). The fixture's
+manual FAT linkage constructs the scenario and does not test a public API for
+creating such a link.
 
 `FAT32DirNew` currently returns false even on successful writes, so the earlier
 invalid-name API test's return value alone does not establish rejection. Its
