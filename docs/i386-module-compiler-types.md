@@ -250,3 +250,24 @@ at the plan's initial 128 MiB rebuild budget is in progress on the version-77
 image (`build/i386-token-refresh-retained128`); QEMU was launched with 128 MiB
 and the guest reported its larger arena. This is not yet a build result and
 does not replace the minimal 16 MiB regression requirement.
+
+The version-77 128 MiB run subsequently failed while packing ConsoleRuntime
+with `duplicate-function DocCursor` (`build/i386-token-refresh-retained128`).
+The guest log recorded two starts for `DocCursor`. ConsoleRuntime included
+`DocVisibilityCore.HC` and `DocMaxCore.HC` directly and again through
+`DocRecalcLib.HC`; the two direct includes have been removed. The original
+two-generation rebuild and native cross-build with its 386 boot audit pass
+(`build/i386-doccursor-dedup-rebuild.log` and
+`build/i386-doccursor-dedup-cross.log`). The native visibility contract passes
+at 64 MiB on image SHA-256
+`70c6388ed30ff100b8b67cbb1bede56af80662fdcfb8362a66b930895d0b72e9`
+(`build/i386-doccursor-dedup-visibility/result.json`); it does not test visual
+rendering or concurrent updates. The original rebuild reports binary
+differences and is not a reproducibility pass.
+
+A 16 MiB startup diagnostic and a fresh nine-module 128 MiB retained build on
+the corrected image are running (`build/i386-doccursor-dedup-diag16-contract`
+and `build/i386-doccursor-dedup-retained128`). Their results are pending, so
+the duplicate-function pack failure has not yet been verified resolved in a
+native retained build. Full installation, two native generations, the timing
+gate, and C1–C5 qualification remain open.

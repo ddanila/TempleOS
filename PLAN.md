@@ -25157,3 +25157,13 @@ first module with `OutMem` in `StrIMatchCore.HC`. The heap trace shows a
 122-byte request and a 72-byte largest free payload. See
 [the failure evidence](docs/i386-module-compiler-types.md). Full native
 installation, both generations, the timing gate, and C1–C5 remain open.
+
+## ConsoleRuntime duplicate includes (2026-11-01)
+
+The 128 MiB retained build progressed beyond the earlier memory failure but
+rejected ConsoleRuntime packing for a duplicate `DocCursor`. Two direct
+includes duplicated files already included by `DocRecalcLib.HC`; they have
+been removed. The original rebuild, native cross-build and visibility contract
+pass. A 16 MiB diagnostic and a fresh 128 MiB retained build are running; the
+native packing result is pending. See [the evidence](docs/i386-module-compiler-types.md).
+Full native installation, two generations, the timing gate and C1–C5 remain open.

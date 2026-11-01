@@ -301,8 +301,6 @@ Bool NativeRawBitEqu(U8 *bit_field,I64 bit,Bool val)
 { return (*native_raw_bit_equ)(bit_field,bit,val); }
 #define LBEqu NativeRawBitEqu
 #include "/Kernel/I386/MouseStateRuntime.HC"
-#include "/Adam/DolDoc/DocVisibilityCore.HC"
-#include "/Adam/DolDoc/DocMaxCore.HC"
 #include "/Kernel/VGAFlushCore.HC"
 #include "/Kernel/RawCore.HC"
 extern U0 Yield();
