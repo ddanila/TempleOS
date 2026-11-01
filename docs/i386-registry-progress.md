@@ -21,7 +21,8 @@ registry and the KeepAway workflow therefore remain incomplete.
 The inactive patch `docs/patches/i386-registry-prototype.patch.gz` preserves the
 prototype for continued work. It extracts the original registry routines,
 exports their interface, and attempts to initialize the cache in Adam after
-document services start. Use `gzip -dc docs/patches/i386-registry-prototype.patch.gz | git apply` to apply it to this checkpoint. It but has not passed the
-native build or runtime tests; it must be repaired and verified before use.
+document services start. Apply it to this checkpoint with
+`gzip -dc docs/patches/i386-registry-prototype.patch.gz | git apply`. It has not
+passed the native build or runtime tests; it must be repaired and verified before use.
 After fixing the compiler error, rerun the native registry fixture and test
 cold-reboot persistence and the unchanged KeepAway application.
