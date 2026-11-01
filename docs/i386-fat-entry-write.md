@@ -57,5 +57,10 @@ unchanged inputs (`build/i386-fat-invalid-native-v1`). An attempted direct call
 to the internal `FAT32DirNew` from the original disk fixture stopped in the
 guest compiler (`build/i386-fat-invalid-disk-v1`); it did not test disk mutation.
 The rebuilt-original valid-name disk creation and cold-reopen regression passes
-(`build/i386-fat-invalid-disk-v2`). The invalid-name rejection in
-`FAT32DirNew` itself has not yet been exercised through an on-disk guest call.
+(`build/i386-fat-invalid-disk-v2`). A follow-up uses the public `DirNew` API,
+which dispatches to `FAT32DirNew` for the mounted FAT disk: it rejects the
+slash-containing name both before and after cold reboot, while the reopen disk
+hash remains unchanged (`build/i386-fat-invalid-disk-v3`). The updated fixture
+also passes the pinned-original valid-name cases
+(`build/i386-fat-invalid-disk-reference-v1`). This covers one invalid name,
+not every malformed input or concurrent disk operation.

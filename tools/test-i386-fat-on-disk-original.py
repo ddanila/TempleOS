@@ -75,7 +75,7 @@ def main():
         subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(overlay),'--output',str(iso)],cwd=ROOT,check=True)
         report['iso_sha256']=sha(iso)
         subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),'--target-disk',str(disk),'--qmp-stdio','--timeout','180'],cwd=ROOT,check=True)
-        expected=63 if args.shared else 7
+        expected=127 if args.shared else 7
         if f'FAT DISK MASK {expected}\n' not in (out/'guest/debug.log').read_text():raise ValueError('Guest FAT contract failed')
         if args.shared:report['boundary']=verify_boundary(disk,start)
         names=(NAMES+[(f'F{i:02}.TXT',b'fill') for i in range(6)]) if args.shared else NAMES[:2]
