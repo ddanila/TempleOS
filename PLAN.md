@@ -25088,3 +25088,13 @@ remain unconfirmed; temporary instrumentation was removed. See
 A subsequent trace places the failing requests before `DocSave` completes bin
 validation and recalculation, and excludes its later text-merge allocation in
 the tested paste. The precise owner remains unconfirmed; see the same evidence.
+
+## File-mask allocation cleanup (2026-11-01)
+
+`FilesFindMatch` now releases its temporary mask and path buffers if an
+allocation or nested match throws. Paired original/native mask fixtures and
+the 16 MiB native diagnostic pass. The 8 MiB `DocAllocationCheck` advances
+from `-38` to `-42`, exposing a later sixth-allocation paste failure; the
+strict install gate remains open. See
+[the allocation evidence](docs/i386-module-compiler-types.md). C1–C5 remain
+incomplete.

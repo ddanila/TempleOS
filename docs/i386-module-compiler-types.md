@@ -130,3 +130,33 @@ allocation as the retained 40-byte charge in this fixture; it does not identify
 the owner of the first request. Both observations used temporary instrumentation
 and an expected-failure `-38` oracle, not a successful install gate. Instrumented
 sources were removed after building the images.
+
+### File-mask allocation cleanup (2026-11-01)
+
+A temporary fault-injection stack trace (`build/i386-c5-alloc-stack-8m`)
+identified both 25-byte requests as `FilesFindMatch`, called by `DocRecalc`
+during `DocSave`. The first mask buffer was left allocated if the second
+allocation threw. `FilesFindMatchCore.HC` now initializes all four temporary
+buffer pointers and frees any acquired buffers on an exception before it
+propagates. This also covers failures while constructing the path buffers or
+in a nested file-mask match.
+
+The original two-generation compiler/kernel rebuild and the full native
+cross-build passed. Original and native file-mask fixtures passed all seven
+behavior/heap groups with unchanged inputs (`build/i386-c5-files-find-oom-original`
+and `build/i386-c5-files-find-oom-native`). The 16 MiB native startup
+diagnostics, retained-code checks and exact VGA restoration passed
+(`build/i386-c5-files-find-oom-diag16`). These runs overlapped other guest work
+and do not establish startup timing.
+
+On the fixed 8 MiB image (SHA-256
+`a072ff00b6d4473764fd42c31fe7bf69a93c3ac97c4e2e9b4d2d8f69ce24d3f3`),
+`DocAllocationCheck` advances from `-38` to `-42`: the first five paste
+allocation failures preserve target bytes and heap usage, while the sixth
+still fails the heap check. The strict `13` oracle timed out after the guest
+displayed `-42` (`build/i386-c5-files-find-oom-8m`); an independent run
+confirmed the exact `-42` result with unchanged disk input
+(`build/i386-c5-files-find-oom-observed-8m`). This is an expected-failure
+observation, not a passing install gate. The sixth failure's ownership remains
+to be traced. Complete native installation, two native generations, timing and
+C1–C5 qualification remain open.

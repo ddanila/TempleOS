@@ -1,9 +1,11 @@
 Bool FilesFindMatch(U8 *_test_name,U8 *files_find_mask,I64 fuf_flags=0)
 {//Does filename meet $LK,"Files Find",A="FI:::/Doc/FileUtils.DD"$ mask?
   I64 tn_len=StrLen(_test_name),mask_len=StrLen(files_find_mask);
-  U8 *mask1=MAlloc(mask_len+1),*mask2=MAlloc(mask_len+1),
-	*ptr,*test_name1,*test_name2;
+  U8 *mask1=NULL,*mask2=NULL,*ptr,*test_name1=NULL,*test_name2=NULL;
   Bool res=FALSE;
+  try {
+  mask1=MAlloc(mask_len+1);
+  mask2=MAlloc(mask_len+1);
   StrCpy(mask1,files_find_mask);
   if (StrOcc(_test_name,'/')) {
     test_name1=MAlloc(tn_len+1);
@@ -58,6 +60,12 @@ Bool FilesFindMatch(U8 *_test_name,U8 *files_find_mask,I64 fuf_flags=0)
       }
     } else
       break;
+  }
+  } catch {
+    Free(test_name1);
+    Free(test_name2);
+    Free(mask1);
+    Free(mask2);
   }
   Free(test_name1);
   Free(test_name2);
