@@ -1,10 +1,4 @@
-U0 CDate2Dos(U16 *t,U16 *d,CDate cdt)
-{
-  CDateStruct ds;
-  Date2Struct(&ds,cdt);
-  *d=ds.day_of_mon+(ds.mon+(ds.year-1980)<<4)<<5;
-  *t=ds.sec>>1+(ds.min+ds.hour<<6)<<5;
-}
+#include "/Kernel/BlkDev/FATDateToDosCore.HC"
 
 CDate Dos2CDate(U16 t,U16 d)
 {
@@ -134,62 +128,7 @@ Bool FAT32CDirFill(CDirEntry *tmpde,
   return res;
 }
 
-Bool FAT32DirFill(CFAT32DirEntry *de,
-	CDirEntry *tmpde,I64 *_de_cnt,CDate _local_time_offset)
-{//Fill up to 3 entries and store cnt of entries.
-  I64 de_cnt=0,i,l,xsum,ord;
-  U8 *ptr,dname[16];
-  CFAT32DirEntryLong *ld=de;
-  Bool res;
-
-  MemSet(de,0,sizeof(CFAT32DirEntry));
-  res=FATNameTo(de->name,tmpde->name);
-  FATFromName(dname,de->name);
-  if (StrCmp(dname,tmpde->name)) {
-    ord=0x41;
-    xsum=FATNameXSum(de->name);
-    if ((l=StrLen(tmpde->name))>13) {
-      ptr=&ld[de_cnt];
-      MemSet(ptr,0,sizeof(CFAT32DirEntryLong));
-      ld[de_cnt].attr=RS_ATTR_LONG_NAME;
-      ld[de_cnt].xsum=xsum;
-      ld[de_cnt].ord=0x42;
-      for (i=13;i<l;i++)
-	ptr[fat_long_name_map[i-13]]=tmpde->name[i];
-      i++;
-      for (;i<26;i++)
-	ptr[fat_long_name_map[i-13]](U16)=0xFFFF;
-      ord=1;
-      l=13;
-      de_cnt++;
-    }
-    ptr=&de[de_cnt];
-    MemSet(ptr,0,sizeof(CFAT32DirEntryLong));
-    ld[de_cnt].attr=RS_ATTR_LONG_NAME;
-    ld[de_cnt].xsum=xsum;
-    ld[de_cnt].ord=ord;
-    for (i=0;i<l;i++)
-      ptr[fat_long_name_map[i]]=tmpde->name[i];
-    i++;
-    for (;i<13;i++)
-      ptr[fat_long_name_map[i]](U16)=0xFFFF;
-    de_cnt++;
-    MemSet(&de[de_cnt],0,sizeof(CFAT32DirEntry));
-    res=FATNameTo(de[de_cnt].name,tmpde->name);
-  }
-  de[de_cnt].clus_lo=tmpde->clus.u16[0];
-  de[de_cnt].clus_hi=tmpde->clus.u16[1];
-  if (!(tmpde->attr&RS_ATTR_DIR))
-    de[de_cnt].size=tmpde->size;
-  de[de_cnt].attr=tmpde->attr;
-  if (!tmpde->datetime)
-    tmpde->datetime=Now;
-  CDate2Dos(&de[de_cnt].WrtTime,&de[de_cnt].WrtDate,
-	tmpde->datetime+_local_time_offset);
-  if (_de_cnt)
-    *_de_cnt=de_cnt+1;
-  return res;
-}
+#include "/Kernel/BlkDev/FATDirFillCore.HC"
 
 Bool FAT32FileFind(CDrv *dv,I64 cur_dir_clus,
 	U8 *name,CDirEntry *_res,I64 fuf_flags=0)
@@ -470,7 +409,7 @@ I64 FAT32AllocContiguousClus(CDrv *dv,I64 cnt)
 Bool FAT32DirNew(CDrv *dv,U8 *cur_dir,CDirEntry *tmpde,Bool free_old_chain)
 {
 //See $LK,"::/Doc/CutCorners.DD"$.
-  CFAT32DirEntry *buf,*last_buf,*tmp_buf,de[3];
+  CFAT32DirEntry *buf,*last_buf,*tmp_buf,de[4];
   I64 i,attr,avail_cnt,de_cnt,c,
 	cur_dir_entry,entries_per_clus,
 	cur_dir_clus,xsum=0,last_dir_clus=INVALID_CLUS;

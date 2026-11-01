@@ -19,9 +19,10 @@ All three reference runs preserve their inputs.
 
 This is only the decoder. FAT directory traversal, UTF-16 semantics beyond the
 original low-byte behavior, ordering and checksum coverage beyond the fixture,
-malformed slot sequences, and construction of names longer than 25 characters
-remain unqualified. In particular, the original writer and its three-entry
-buffer are not yet extended for a third long-name slot.
+and malformed slot sequences remain unqualified. The writer and its temporary
+buffer have since been extended for a third slot; see
+[FAT entry construction](i386-fat-entry-write.md) for the in-memory tests and
+remaining on-disk qualification.
 
 Both original rebuild generations pass (`build/i386-fat-long-name-rebuild.log`),
 as do the native cross-build and 386 instruction audit

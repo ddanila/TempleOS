@@ -556,21 +556,7 @@ class CFAT32FileInfoSect
   U32	signature3;
 };
 
-class CFAT32DirEntry
-{
-  U8	name[11],
-	attr,
-	NTres,
-	CrtTimeTenth;
-  U16	CrtTime,
-	CrtDate,
-	LstAccDate,
-	clus_hi,
-	WrtTime,
-	WrtDate,
-	clus_lo;
-  U32	size;
-};
+#include "/Kernel/BlkDev/FATEntryTypes.HH"
 
 #include "/Kernel/BlkDev/FATLongEntryTypes.HH"
 

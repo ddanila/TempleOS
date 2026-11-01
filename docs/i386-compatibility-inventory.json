@@ -14256,8 +14256,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": "Convert and checksum FAT short names, decode their padded representation, and decode long-name entry sequences, including invalid input.",
-      "oracle": "docs/i386-fat-name.md and docs/i386-fat-long-name.md: original and corrected helper checks cover bounded short-name writes and decoding through 37 characters. FAT traversal, long-name creation, full Unicode and whole-file qualification remain open.",
+      "reference_workflow": "Convert and checksum FAT short names, decode long-name sequences, and construct directory entries through 37-character names.",
+      "oracle": "docs/i386-fat-name.md, docs/i386-fat-long-name.md and docs/i386-fat-entry-write.md: original and corrected in-memory helper checks cover bounded writes and names through 37 characters. On-disk FAT mutation, traversal, full Unicode and whole-file qualification remain open.",
       "tests": [
         {
           "target": "original-fat-name-source",
@@ -14285,7 +14285,21 @@
           "command": "python3 tools/test-i386-fat-long-name.py IMAGE --out OUT",
           "result": "pass",
           "evidence": "build/i386-fat-long-name-native-v1/result.json",
-          "scope": "Corrected decoder through three slots and 37 characters; not full UTF-16, FAT traversal or long-name creation"
+          "scope": "Corrected decoder through three slots and 37 characters; not full UTF-16, FAT traversal or on-disk creation"
+        },
+        {
+          "target": "original-fat-entry-write-source",
+          "command": "python3 tools/test-i386-fat-entry-write.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-fat-entry-write-original-v4/result.json",
+          "scope": "Pinned original in-memory writer/decoder, up to 25-character names, independent slot and canary checks"
+        },
+        {
+          "target": "native-fat-entry-write-64m",
+          "command": "python3 tools/test-i386-fat-entry-write.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-fat-entry-write-native-v1/result.json",
+          "scope": "Five in-memory cases through 37 characters; not on-disk mutation or full FAT qualification"
         }
       ]
     },

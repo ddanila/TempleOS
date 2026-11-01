@@ -18,7 +18,8 @@ field, preserving the first 11 bytes and avoiding the overwrite. The corrected
 shared body passes the same fixture on the original runtime with mask 3839
 (`build/i386-fat-name-bound-shared-original-v2`). The fixture also covers
 ordinary 8.3 conversion, uppercasing, dot entries, invalid names, padding and
-checksums. It does not establish long-name FAT entry construction or traversal.
+checksums. Separate in-memory long-name construction checks are described in
+[FAT entry construction](i386-fat-entry-write.md); FAT traversal remains open.
 Both original rebuild generations pass (`build/i386-fat-name-bound-rebuild.log`);
 their binary differences do not establish reproducibility.
 The native cross-build and 386 audit pass (`build/i386-fat-name-bound-cross`).
