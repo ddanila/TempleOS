@@ -75,11 +75,11 @@ def main():
                 if got!=ref:raise ValueError(f'Infinity mismatch {i}: {got:x} != {ref:x}')
             else:
                 difference=abs(got-ref);deviations.append(difference)
-                if difference>1024:raise ValueError(f'Original difference exceeds 1024 ulps at {i}: {difference}')
+                if difference>2:raise ValueError(f'Original difference exceeds 2 ulps at {i}: {difference}')
                 if -744.0<x<709.782712893384:
                     expected=struct.unpack('<Q',struct.pack('<d',math.exp(x)))[0]
                     distance=abs(got-expected);numerical.append(distance)
-                    if distance>2:raise ValueError(f'Host difference exceeds 2 ulps at {i}: {distance}')
+                    if distance>1024:raise ValueError(f'Host difference exceeds 1024 ulps at {i}: {distance}')
         report['max_original_ulp_difference']=max(deviations)
         report['max_host_ulp_difference']=max(numerical)
         report['native_exp_sha256']=hashlib.sha256(observed).hexdigest()

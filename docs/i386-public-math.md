@@ -88,17 +88,25 @@ It requires no x87 instructions. The original x87 routine's infinity result
 (indefinite NaN) and positive finite overflow saturation are handled explicitly;
 underflow is driven toward zero at the smallest-subnormal boundary.
 
-The original uses x87 truncation and a different range reduction, so finite
-results are not bit-identical. On 256 pinned original inputs including zeros,
-tiny values, normal inputs, overflow and underflow boundaries, infinities and
-NaN, the native results differed by at most 613 ULP from the original. For
-sampled inputs in the host comparison range they differed by at most one ULP
-from host `exp` (`build/i386-exp-native-v1`; inputs unchanged). These are
-measured corpus bounds, not universal accuracy or exact compatibility claims;
-near the underflow threshold, the cutoff can differ by one subnormal unit.
-Original capture: `build/i386-exp-reference-v3`. The original rebuild,
-native cross-build and 386 instruction audit passed.
+The native implementation now models the original's toward-zero x87 `log2(e)`
+constant and binary64 range-reduction store using an exact two-word integer
+product. The remaining fractional exponential is evaluated in software. On
+256 pinned original inputs, including zeros, tiny values, normal inputs,
+overflow and underflow boundaries, infinities and NaN, native results differed
+by at most one ULP from the original. Their maximum difference from host `exp`
+on the sampled host-comparison range was 613 ULPs. These are measured corpus
+bounds, not universal accuracy or exact x87-equivalence claims.
 
-The same comparison also passed at 8 MiB with unchanged inputs
-(`build/i386-exp-native-8m-v1`). Its measured startup was 78.53 seconds; this
-run does not satisfy the separate 60-second startup budget.
+The earlier mathematically oriented implementation differed by up to 613 ULPs
+from the original and by one ULP from host `exp` on this corpus
+(`build/i386-exp-native-v1`). The first x87-reduction candidate exposed an
+incorrect cross-product and exhausted the 8 MiB compiler heap while loading the
+fixture (`build/i386-exp-x87-native-64m-v1`,
+`build/i386-exp-x87-native-8m-v1`). The corrected two-word product and bounded
+fractional approximation pass the complete corpus at 64 and 8 MiB with unchanged
+inputs (`build/i386-exp-x87-native-64m-v2`,
+`build/i386-exp-x87-native-8m-v2`). Both original rebuild generations, the
+native cross-build and 386 instruction audit pass
+(`build/i386-exp-x87-rebuild-v2.log`, `build/i386-exp-x87-build-v2`).
+Original capture: `build/i386-exp-reference-v3`. The 8 MiB run observed 78.63
+seconds to startup; it does not satisfy the separate 60-second startup budget.
