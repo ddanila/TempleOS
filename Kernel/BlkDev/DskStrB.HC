@@ -1,11 +1,4 @@
-Bool CFileNameTo(U8 *dst,U8 *src)
-{
-  MemSet(dst,0,CDIR_FILENAME_LEN);
-  if (!FileNameChk(src))
-    return FALSE;
-  StrCpy(dst,src);
-  return TRUE;
-}
+#include "/Kernel/BlkDev/CFileNameToCore.HC"
 
 I64 Name2DirClus(CDrv *dv,U8 *dirname)
 {
