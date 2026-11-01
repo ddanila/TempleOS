@@ -90,3 +90,25 @@ transitions during a held frame, independent refresh-worker document/code
 lifetime and the automatic A/B refresh gate remain open. This does not qualify
 the original complete desktop, all cursor behavior, storage-owner termination
 or C1–C5 completion.
+
+## Original logical mouse state groundwork
+
+The original `CMsStateGlbls` and `CGridGlbls` declarations now live in
+`Kernel/MouseStateTypes.HH`, which both the original kernel and the native
+public mouse header include. The original `GridInit` and `MsUpdate` bodies
+live unchanged in `Kernel/MouseUpdateCore.HC`, included by the original mouse
+driver. These extractions make the original state layout and its scaling,
+grid snapping, clipping, text coordinates and button update available for
+subsequent native integration without duplicating the logic.
+
+This is groundwork only: the native system does not yet export a live `ms`
+record or run the original logical update on PS/2 events. Native `MouseGet`
+still exposes its existing physical mouse state, and KeepAway still requires
+`ms`. The original hardware state, event timing, keyboard button flags and
+window-manager synchronization also require integration and verification.
+
+The extraction preserves the original type declarations and update bodies
+byte-for-byte. Both original rebuild generations, the native cross-build and
+the 386 instruction audit passed. The 8 MiB startup fixture completed its
+interaction checks but missed its 60-second startup budget at 76.63 seconds
+(`build/i386-mouse-state-types-startup-v1`); the timing gate remains open.
