@@ -25119,3 +25119,13 @@ checks. The separate full native retained build failed ConsoleRuntime with an
 out-of-memory rejection at `StrIMatchCore.HC`; it produced no completed module.
 Full guest-built installation, two generations, the timing gate and C1–C5
 remain open. See [the evidence](docs/i386-module-compiler-types.md).
+
+## Shared compiler call descriptors (2026-11-01)
+
+The native compiler now shares a descriptor among call sites to the same target
+and tracks nested calls separately, reducing repeated per-call staging. The
+original rebuild and 16 MiB diagnostic pass, including repeated nested forward
+and recursive call checks. Isolated candidate/control 8 MiB runs pass their
+functional checks but both take about 70.4 seconds and miss the 60-second gate.
+A new nine-module retained build is running; its result is not yet known.
+See [the evidence](docs/i386-shared-call-descriptors.md). C1–C5 remain open.

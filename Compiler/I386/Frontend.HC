@@ -85,7 +85,7 @@ class CI386Frontend {
 };
 #assert offset(CI386Frontend.saved_vars)>0
 class CI386FrontendCall {
-  CI386FrontendCall *next,*stack;
+  CI386FrontendCall *next;
   CHashFun fun;
   U8 *target;
   CHashFun *original;
@@ -515,37 +515,55 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
   CHashGlblVar *global;
   CHashSrcSym *symbol;
   CI386FrontendStatic *static_ref;
-  CI386FrontendCall *call,*stack=0;
+  CI386FrontendCall *call,**stack=0;
   CI386FrontendAddress *address;
   U8 *destination,*source;
-  I64 i;
+  I64 i,depth=0,max_depth=0;
   I386FrontendStaticsPrepare(state,cc->htc.fun);
+  //One descriptor per target is sufficient: its relocation list already
+  //contains every call site. Keep nesting separately while pairing the IR.
+  for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next) {
+    if(node->ic_code==IC_CALL_START) {
+      depth++;
+      if(depth>max_depth) max_depth=depth;
+    } else if(node->ic_code==IC_CALL_END) {
+      if(!depth) I386FrontendCallsReject(state,4,node);
+      depth--;
+    }
+  }
+  if(depth) I386FrontendCallsReject(state,10,0);
+  if(max_depth) stack=I386FrontendAlloc(state,max_depth*sizeof(CI386FrontendCall *),FALSE,FALSE);
+  depth=0;
   for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next) {
     if(node->ic_code==IC_CALL_START) {
       fun=node->ic_data;
       if(fun && Bt(&fun->flags,Ff_INTERNAL) && !I386IntrinsicValid(fun)) I386FrontendCallsReject(state,1,node);
-      call=I386FrontendAlloc(state,sizeof(CI386FrontendCall),TRUE,FALSE);
-      destination=&call->fun; source=fun;
-      for(i=0;i<sizeof(CHashFun);i++) destination[i]=source[i];
-      call->fun.ie_lst=0; call->fun.ext_lst=0;
-      call->target=fun->exe_addr; call->recursive=fun==cc->htc.fun;
-      call->original=fun;
-      call->unresolved=!call->recursive && Bt(&fun->flags,Cf_EXTERN) && !(fun->type&HTF_IMPORT);
-      call->next=bound->calls; bound->calls=call;
-      call->stack=stack; stack=call;
+      for(call=bound->calls;call && call->original!=fun;call=call->next);
+      if(!call) {
+        call=I386FrontendAlloc(state,sizeof(CI386FrontendCall),TRUE,FALSE);
+        destination=&call->fun; source=fun;
+        for(i=0;i<sizeof(CHashFun);i++) destination[i]=source[i];
+        call->fun.ie_lst=0; call->fun.ext_lst=0;
+        call->target=fun->exe_addr; call->recursive=fun==cc->htc.fun;
+        call->original=fun;
+        call->unresolved=!call->recursive && Bt(&fun->flags,Cf_EXTERN) && !(fun->type&HTF_IMPORT);
+        call->next=bound->calls; bound->calls=call;
+      }
+      stack[depth++]=call;
       node->ic_data=&call->fun;
     } else if(node->ic_code==IC_CALL || node->ic_code==IC_CALL_EXTERN ||
         node->ic_code==IC_CALL_IMPORT || node->ic_code==IC_CALL_INDIRECT2) {
-      if(!stack || !stack->recursive && (!stack->target ||
-          stack->fun.type&HTF_IMPORT && !(cc->flags&CCF_MODULE_SOURCE)))
+      if(!depth) I386FrontendCallsReject(state,2,node);
+      call=stack[depth-1];
+      if(!call->recursive && (!call->target ||
+          call->fun.type&HTF_IMPORT && !(cc->flags&CCF_MODULE_SOURCE)))
         I386FrontendCallsReject(state,2,node);
-      if(stack->unresolved && !I386ParserRecord(state->cc,stack->original))
+      if(call->unresolved && !I386ParserRecord(state->cc,call->original))
         I386FrontendCallsReject(state,3,node);
       node->ic_code=IC_CALL_IMPORT;
     } else if(node->ic_code==IC_CALL_END) {
-      if(!stack) I386FrontendCallsReject(state,4,node);
-      node->ic_data=&stack->fun;
-      stack=stack->stack;
+      if(!depth) I386FrontendCallsReject(state,4,node);
+      node->ic_data=&stack[--depth]->fun;
     } else if(node->ic_code==IC_ABS_ADDR || node->ic_code==IC_ADDR_IMPORT) {
       if(node->ic_code==IC_ABS_ADDR) {
         symbol=0;
@@ -584,7 +602,8 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
     } else if(node->ic_code==IC_HEAP_GLBL)
       I386FrontendCallsReject(state,9,node);
   }
-  if(stack) I386FrontendCallsReject(state,10,0);
+  if(depth) I386FrontendCallsReject(state,10,0);
+  if(stack) I386FrontendFree(state,stack);
 }
 U0 I386FrontendRelocAdd(CI386Frontend *state,CI386FrontendCode *output,
   I64 offset,I64 kind,U8 *name)

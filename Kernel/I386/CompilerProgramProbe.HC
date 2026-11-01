@@ -157,6 +157,19 @@ U0 ProbeProgramRelocation(CI386CompilerProbe *probe,CI386Heap *heap,
   KernelLog("NATIVE RELOC "); KernelHex(probe->phase); KernelLog(" "); KernelHex(module_bytes);
   KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
+U0 ProbeProgramRepeatedCalls(CI386CompilerProbe *probe,CPrsSymbolServices *symbols,
+  CHashTable *table)
+{
+  CHashFun *function=ProbeSymbolFind(0,"DurableRepeat",table,HTT_FUN);
+  CI386FrontendRelocView reloc[3];
+  I64 i;
+  if(!function || !function->exe_addr ||
+      probe->compiler->code_relocs(symbols,function->exe_addr,reloc,3)!=3)
+    KernelStop;
+  for(i=0;i<3;i++)
+    if(StrCmp(reloc[i].name,"DurableLater") || reloc[i].offset<1 ||
+        function->exe_addr[reloc[i].offset-1]!=0xE8) KernelStop;
+}
 I64 ProbeProgramMultiRun(CI386Heap *heap,U8 *module,I64 module_bytes)
 {
   U8 *image,*literal;
@@ -2212,9 +2225,11 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       "I64i DurableByteRead(){return DurableBytesPtr[1];}"
       "extern I64i DurableLater(I64i x);"
       "I64i DurableAdd(I64i x=22){return DurableLater(x);}"
+      "I64i DurableRepeat(I64i x){return DurableLater(DurableLater(x))+DurableLater(x);}"
       "I64i DurableLater(I64i x){return DurableData+x;}"
       "I64i DurableNext(){static I64i n=40;return ++n;}"
       "I64i DurableFact(I64i n){if(n<2)return 1;return n*DurableFact(n-1);}"
+      "I64i DurableTwin(I64i n){if(n<2)return n;return DurableTwin(n-1)+DurableTwin(n-2);}"
       "I64i DurableDefault(U8i *s=\"xy\"){return s[1];}"
       "U8i *DurableText(){return \"hello\";}"
       "U8i *DurableLiteral=0;DurableLiteral=(\"hello\");"
@@ -2285,6 +2300,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     if(kind==10) {
       ProbeProgramModule(probe,heap,symbols,source_table);
       ProbeProgramRelocation(probe,heap,symbols,source_table);
+      ProbeProgramRepeatedCalls(probe,symbols,source_table);
       ProbeProgramMulti(probe,heap,symbols,source_table);
       ProbeProgramBound(probe,heap,symbols,source_table);
       ProbeProgramSplit(probe,heap,symbols,source_table);
@@ -2342,6 +2358,8 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       if(ProbeProgramUse(probe,heap,outer,"DurableAdd;")!=42 ||
           ProbeProgramUse(probe,heap,outer,"DurableNext;")!=41 ||
           ProbeProgramUse(probe,heap,outer,"DurableFact(5);")!=120 ||
+          ProbeProgramUse(probe,heap,outer,"DurableRepeat(2);")!=64 ||
+          ProbeProgramUse(probe,heap,outer,"DurableTwin(5);")!=5 ||
           ProbeProgramUse(probe,heap,outer,"DurablePairData.a+DurablePairData.b;")!=42 ||
           ProbeProgramUse(probe,heap,outer,"DurableByteRead;")!=98 ||
           ProbeProgramUse(probe,heap,outer,"DurableDefault;")!=121 ||
