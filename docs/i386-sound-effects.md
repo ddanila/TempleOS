@@ -36,3 +36,16 @@ speaker behavior.
 Unchanged KeepAway advances past `Noise` and stops at mouse state `ms` on line
 504 (`build/i386-app-keepaway-effects-v1`, inputs unchanged). This is a load
 check; gameplay and C1–C5 remain open.
+
+The native note provider now stores 12 octave bases and 128 packed correction
+bytes (224 bytes of table data instead of 2,048). The generator derives these
+from the same pinned oracle, and the decoded results still match all 256
+original values byte-for-byte (`build/i386-ona-compact-native-v1`). The 64 MiB
+sound-effects lifecycle fixture also passes on the compact image
+(`build/i386-ona-compact-effects-64m-v1`). Both original rebuild generations,
+the native cross-build and the 386 audit pass
+(`build/i386-ona-compact-rebuild-v1.log`, `build/i386-ona-compact-cross-v1`).
+The loaded console span is 584 bytes smaller than the preceding image, but the
+full 8 MiB fixture still exhausts the same compiler heap on the same allocation
+(`build/i386-ona-compact-effects-8m-v1`). The 8 MiB resource gate remains open;
+decoding overhead has not been profiled.
