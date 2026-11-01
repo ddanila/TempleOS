@@ -476,7 +476,7 @@ Bool FAT32DirNew(CDrv *dv,U8 *cur_dir,CDirEntry *tmpde,Bool free_old_chain)
   CFAT32DirEntry *buf,*last_buf,*tmp_buf,de[4];
   I64 i,attr,avail_cnt,de_cnt,c,
 	cur_dir_entry,entries_per_clus,
-	cur_dir_clus,xsum=0,last_dir_clus=INVALID_CLUS;
+	cur_dir_clus,old_clus,xsum=0,last_dir_clus=INVALID_CLUS;
   U8 ch;
   Bool written=FALSE,unlock,unlock_break;
   CDirEntry long_name,existing,effective;
@@ -533,9 +533,10 @@ Bool FAT32DirNew(CDrv *dv,U8 *cur_dir,CDirEntry *tmpde,Bool free_old_chain)
 	    FATFromName(long_name.name,buf[cur_dir_entry].name);
 //Del old entry with same name
 	  if (!StrCmp(long_name.name,tmpde->name)) {
-	    if (free_old_chain)
-	      FAT32FreeClus(dv,buf[cur_dir_entry].clus_lo+
-		    buf[cur_dir_entry].clus_hi<<16);
+	    old_clus=buf[cur_dir_entry].clus_lo+
+		  buf[cur_dir_entry].clus_hi<<16;
+	    if (free_old_chain && old_clus!=tmpde->clus)
+	      FAT32FreeClus(dv,old_clus);
 	    if (!written) {
 	      MemCpy(&buf[cur_dir_entry],&de[de_cnt-1],sizeof(CFAT32DirEntry));
 	      BlkWrite(dv,&buf[cur_dir_entry & -FAT32_ENTRIES_PER_BLK],

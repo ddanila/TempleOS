@@ -26,8 +26,9 @@ Bool FDFile(U8 *name,U8 *data)
 }
 CBlkDev *fd_bd=BlkDevNextFreeSlot('C',BDT_ATA);
 I64 fd_mask=0,fd_i;U8 *fd_line,*fd_filler,*fd_second="second";Bool fd_fill_ok;CDirEntry fd_invalid;
-CDirEntry fd_entry;
+CDirEntry fd_entry;U8 fd_new_block[512];
 if(FD_ALIAS_SHADOW && FD_REOPEN)fd_second="fourth";
+if(FD_ALIAS_REPLACE && FD_REOPEN)fd_second="newer!";
 fd_bd->base0=0x1F0;fd_bd->base1=0x3F6;fd_bd->unit=0;
 if(BlkDevAdd(fd_bd,0,FALSE,TRUE)==1 && Let2Drv('C')->fs_type==FSt_FAT32)fd_mask|=1;
 if(fd_mask&1) {
@@ -58,11 +59,19 @@ if(fd_mask&1) {
     if(!FD_REOPEN) {
      StrCpy(fd_entry.name,"TWINAB~1.EFG");
      DirNew(Let2Drv('C'),"/",&fd_entry,FALSE);
+     DirNew(Let2Drv('C'),"/",&fd_entry,TRUE);
+     if(FD_ALIAS_REPLACE) {
+      MemSet(fd_new_block,0,sizeof(fd_new_block));MemCpy(fd_new_block,"newer!",6);
+      fd_entry.clus=ClusAlloc(Let2Drv('C'),0,1,FALSE);
+      ClusWrite(Let2Drv('C'),fd_new_block,fd_entry.clus,1);
+      DirNew(Let2Drv('C'),"/",&fd_entry,TRUE);
+     }
     }
     Free(fd_entry.full_name);
    }
-   if(fd_fill_ok && FDRead("TWINAB~1.EFG","second") &&
-      FDRead("twinabcdefghijklmnop2","second"))fd_mask|=2048;
+   if(FD_ALIAS_REPLACE)fd_second="newer!";
+   if(fd_fill_ok && FDRead("TWINAB~1.EFG",fd_second) &&
+      FDRead("twinabcdefghijklmnop2",fd_second))fd_mask|=2048;
   }
  }
 }

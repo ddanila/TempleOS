@@ -121,8 +121,21 @@ guest and host, then passes cold reopen and `fsck.fat -n`
 (`build/i386-fat-alias-dirnew-v1`). The combined stream/deletion control also
 passes (`build/i386-fat-alias-dirnew-control-v1`). The original compiler and
 kernel rebuild through two generations with binary differences
-(`build/i386-fat-alias-dirnew-rebuild.log`). Other update flags, malformed or
-already ambiguous directories, and concurrent operations remain unqualified.
+(`build/i386-fat-alias-dirnew-rebuild.log`). Malformed or already ambiguous
+directories and concurrent operations remain unqualified.
+
+With `free_old_chain=TRUE`, a direct update previously freed the file's own
+cluster when the new entry retained that cluster: guest reads appeared to work,
+but host `mcopy` failed (`build/i386-fat-alias-same-cluster-red-v1`). The FAT
+writer now frees the old chain only when its starting cluster differs from the
+replacement. The retained-cluster case passes host and guest readback, cold
+reopen and `fsck.fat -n` (`build/i386-fat-alias-same-cluster-v1`). A separate
+test replaces the chain with a newly allocated cluster and passes the same
+checks (`build/i386-fat-alias-replaced-cluster-v1`); in those images the file
+moves from cluster 17 to 19, and the replacement image's FAT marks 17 free and
+19 allocated. The two original rebuild generations pass with binary differences
+(`build/i386-fat-alias-same-cluster-rebuild.log`). This covers a single-cluster
+file, not all multi-cluster or overlapping-chain updates.
 
 `FAT32DirNew` currently returns false even on successful writes, so the earlier
 invalid-name API test's return value alone does not establish rejection. Its
