@@ -14124,9 +14124,23 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": "Normalize directory paths relative to the current task, preserve drive selection and return caller-owned storage; exercise filename masks and extension helpers.",
+      "oracle": "docs/i386-dir-name-abs.md records eight task-relative directory path checks against original and native; the other tests cover scoped filename helpers. All path edge cases and whole-file qualification remain open.",
       "tests": [
+        {
+          "target": "original-dir-name-abs",
+          "command": "python3 tools/test-i386-dir-name-abs.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-name-abs-original-v2/result.json",
+          "scope": "Eight bounded public directory path, restoration and caller-heap checks on pinned original"
+        },
+        {
+          "target": "native-dir-name-abs-64m",
+          "command": "python3 tools/test-i386-dir-name-abs.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-name-abs-native-v1/result.json",
+          "scope": "Same bounded task-relative directory path contract; not cross-task or all failures"
+        },
         {
           "command": "python3 tools/test-i386-gr-read.py --out OUT",
           "result": "pass",

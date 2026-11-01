@@ -135,5 +135,23 @@ U8 *I386TaskFileNameAbs(CI386Heap *heap,U8 *name,U8 *extension)
   I386IrqRestore(flags); return absolute;
 }
 
+U8 *I386TaskDirNameAbs(CI386Heap *heap,U8 *name)
+{
+  U32 flags=I386IrqSave;
+  CI386TaskFiles *state;
+  CFilePathContext paths;
+  CI386FileVolumes *volumes;
+  U8 *absolute=0;
+  state=I386TaskFilesBorrow(I386TaskSelf,&paths,&volumes);
+  if(state) {
+    absolute=I386DirNameAbs(heap,&paths,name);
+    if(!I386TaskFilesRelease(state)) {
+      if(absolute) I386HeapFree(heap,absolute);
+      absolute=0;
+    }
+  }
+  I386IrqRestore(flags);return absolute;
+}
+
 U8 *I386TaskFileReadStored(CI386Heap *heap,U8 *filename,I64 *size=0,I64 *attr=0,U8 **name=0)
 { return I386TaskFileReadMode(heap,filename,size,attr,name,FALSE,TRUE); }

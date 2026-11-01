@@ -2290,6 +2290,19 @@ U8 *NativeFileNameAbsConstruct(U8 *filename)
   }
   return result;
 }
+public U8 *DirNameAbs(U8 *dirname)
+{
+  U8 *temporary,*result;
+  if(!dirname)dirname="";
+  temporary=console_config->files->dir_name_abs(console_config->heap,dirname);
+  if(!temporary)throw('OutMem',TRUE);
+  try {result=StrNew(temporary);}
+  catch {I386HeapFree(console_config->heap,temporary);throw;}
+  if(!I386HeapFree(console_config->heap,temporary)) {
+    Free(result);throw('FileName',TRUE);
+  }
+  return result;
+}
 #include "/Kernel/FileFindFlags.HH"
 #include "/Kernel/BlkDev/FileNameAbsCore.HC"
 public U8 *FileNameAbs(U8 *filename,I64 flags=0)

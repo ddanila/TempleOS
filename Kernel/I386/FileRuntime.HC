@@ -156,7 +156,7 @@ Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
   else {binding->name="I386FileVolumeSame";binding->address=(&I386FileVolumeSame+0)(U64);}
   return TRUE;
 }
-#assert sizeof(CI386FileServices)==128
+#assert sizeof(CI386FileServices)==132
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
@@ -167,6 +167,7 @@ I64 Main(CI386FileServices *services,I64 bytes)
   services->install_boot=&I386TaskInstallBoot;
   services->install_image=&I386TaskInstallBootImage;
   services->name_abs=&I386TaskFileNameAbs;
+  services->dir_name_abs=&I386TaskDirNameAbs;
   services->bind=&I386FileRuntimeBind; services->init=&I386FileRuntimeInit;
   services->compiler_init=&I386FileRuntimeCompiler; services->control_new=&I386FileRuntimeControl;
   services->tmp_filename=&I386FileRuntimeTmpFilename;
