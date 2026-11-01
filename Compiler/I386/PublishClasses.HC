@@ -26,20 +26,24 @@ U0 I386ClassTransferVisit(U8 *context,U8 *allocation)
   if(!allocation || !state->ok) return;
   if(allocation==state->source || allocation==state->source->body ||
       allocation==cc->cur_str || allocation==cc->cur_help_idx ||
-      allocation==cc->dollar_buf || allocation==cc->ps ||
-      !(record=I386ParserRecord(state->owned,allocation)) || state->count>=state->capacity) {
+      allocation==cc->dollar_buf || allocation==cc->ps || state->count>=state->capacity) {
     state->ok=FALSE; return;
   }
-  for(file=cc->lex_include_stk;file;file=file->next)
-    if(allocation==file || allocation==file->buf || allocation==file->full_name) { state->ok=FALSE; return; }
   if(state->selected) {
-    //The parser queue stays unchanged until the entire graph is validated.
+    //Find ownership and its bitmap position in the same immutable queue walk.
     i=0;
     for(record=state->owned->parser_next;record!=&state->owned->parser_next;record=record->next) {
       if(record->allocation==allocation) break;
       i++;
     }
-    if(i>=state->slots || state->selected[i>>3]&(1<<(i&7))) { state->ok=FALSE; return; }
+    if(record==&state->owned->parser_next || i>=state->slots) { state->ok=FALSE; return; }
+  } else if(!(record=I386ParserRecord(state->owned,allocation))) {
+    state->ok=FALSE; return;
+  }
+  for(file=cc->lex_include_stk;file;file=file->next)
+    if(allocation==file || allocation==file->buf || allocation==file->full_name) { state->ok=FALSE; return; }
+  if(state->selected) {
+    if(state->selected[i>>3]&(1<<(i&7))) { state->ok=FALSE; return; }
     state->selected[i>>3]|=1<<(i&7);
     state->last_slot=i; state->count++; return;
   }

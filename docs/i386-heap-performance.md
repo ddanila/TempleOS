@@ -529,3 +529,28 @@ limit, not a passing or failing public-heap behavior result. The new zero-sized
 identifier guard check is retained in the existing regression fixture; the
 restored-source run is `build/i386-ident-guarded-restored-lex-v1.log`.
 C1–C5 and the startup timing gate remain open.
+
+## Publication ownership walk (2026-11-01)
+
+During the bitmap-backed publication pass, `I386ClassTransferVisit` previously
+walked the parser-allocation queue once to establish ownership and immediately
+walked it again to obtain the bitmap position. It now obtains both from one
+walk while the queue is held unchanged. Missing records, out-of-range slots,
+lexer/control aliases and repeated selections remain rejection cases; no
+scratch allocation or persistent index was added. The array-backed class
+publication path still uses its existing ownership lookup.
+
+Both original rebuild generations, the native task-symbol regression, full
+cross-build and 386 audit pass (`build/i386-publish-one-walk-rebuild-v1.log`,
+`build/i386-publish-one-walk-symbols-v1.log`,
+`build/i386-publish-one-walk-cross-v1`). The 16 MiB diagnostic passes its
+compiler publication and ownership probes, all nine interactive checks and
+exact VGA (`build/i386-publish-one-walk-diagnostics-v1`). This does not prove
+all possible malformed graphs or concurrent publication scenarios.
+
+The candidate and a source-matched preceding-image control both completed all
+nine functional and exact-VGA checks in isolated 8 MiB runs, taking 60.594 and
+61.796 seconds respectively (`build/i386-publish-one-walk-startup-v1` and
+`build/i386-publish-one-walk-control-v2`). This single pair does not establish
+a stable timing improvement, and both miss the 60-second gate. The candidate's
+source hash matches the final restored source. C1–C5 remain open.

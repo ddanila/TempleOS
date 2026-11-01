@@ -25005,3 +25005,11 @@ A combined heap-validation and allocation scan passed focused tests but took
 61.095 seconds in the isolated 8 MiB startup run, missing the 60-second gate.
 The change was discarded; a zero-sized token guard regression is retained.
 See `docs/i386-heap-performance.md`. C1–C5 remain open.
+
+## Publication ownership traversal (2026-11-01)
+
+The bitmap-backed publication pass now finds a parser allocation and its
+bitmap slot in one queue traversal. Publication diagnostics and the full
+native cross-build pass. Isolated candidate and control startup runs remain
+over the 60-second gate at 60.594 and 61.796 seconds; see
+`docs/i386-heap-performance.md`. C1–C5 remain open.
