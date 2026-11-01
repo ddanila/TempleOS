@@ -237,52 +237,102 @@ public I64 I386HeapSize(CI386Heap *hc,U8 *ptr)
 }
 
 public Bool I386HeapFree(CI386Heap *hc,U8 *ptr)
-{//NULL is a no-op; the entire arena must validate before any mutation.
+{//NULL is a no-op; validate every block and counter before mutating anything.
   CI386HeapBlock *block=0,*previous=0,*next;
   U8 *target=ptr-16;
-  U32 offset=0;
-  if(!ptr) return TRUE;
-  if(!I386HeapValid(hc)) return FALSE;
 #ifdef I386_HEAP_SOURCE_BUILD
-  while(offset<hc->size) {
-    block=hc->base+offset;
-    if(hc->base+offset+16==ptr) break;
-    previous=block; offset+=block->span;
-  }
-  if(offset>=hc->size) return FALSE;
+  CI386HeapBlock *cursor,*last_free=0;
+  U32 remaining,span,used=0,count=0;
 #else
+  Bool valid=FALSE;
+#endif
+  if(!ptr)return TRUE;
+  if(!hc || hc->signature!=I386_HEAP_MAGIC ||
+      !I386HeapRegionValid(hc,hc->base,hc->size) ||
+      hc->peak>hc->size || hc->used>hc->peak)return FALSE;
+#ifdef I386_HEAP_SOURCE_BUILD
+  cursor=hc->base;remaining=hc->size;
+  while(remaining) {
+    if(remaining<24)return FALSE;
+    span=cursor->span;
+    if(span<24 || span&7 || span>remaining || cursor->reserved)return FALSE;
+    if(cursor->tag==I386_HEAP_USED) {
+      if(cursor->requested>span-16)return FALSE;
+      if(cursor==target) {block=cursor;previous=last_free;}
+      used+=span;count++;last_free=0;
+    } else if(cursor->tag==I386_HEAP_FREE) {
+      if(last_free || cursor->requested)return FALSE;
+      last_free=cursor;
+    } else return FALSE;
+    cursor=cursor(U8 *)+span;remaining-=span;
+  }
+  if(used!=hc->used || count!=hc->allocations || !block)return FALSE;
+#else
+  //The prior-free pointer is also the free-run flag. Remember a target only
+  //while validating, but do not write the arena until the final counters pass.
   asm {
     MOV EBX,U32 &hc[EBP]
     MOV ESI,U32 CI386Heap.base[EBX]
     MOV ECX,U32 CI386Heap.size[EBX]
     XOR EDI,EDI
     XOR EDX,EDX
+    XOR EBX,EBX
 @@10:
+    CMP ECX,24
+    JB I32 @@90
+    MOV EAX,U32 CI386HeapBlock.span[ESI]
+    CMP EAX,24
+    JB I32 @@90
+    TEST EAX,7
+    JNZ I32 @@90
+    CMP EAX,ECX
+    JA I32 @@90
+    CMP U32 CI386HeapBlock.reserved[ESI],0
+    JNZ I32 @@90
+    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_USED
+    JNE @@30
+    SUB EAX,16
+    CMP U32 CI386HeapBlock.requested[ESI],EAX
+    JA I32 @@90
+    ADD EAX,16
     CMP ESI,U32 &target[EBP]
     JNE @@20
     MOV U32 &block[EBP],ESI
-    MOV U32 &previous[EBP],EDI
-    MOV U32 &offset[EBP],EDX
-    JMP @@90
+    MOV U32 &previous[EBP],EBX
 @@20:
-    MOV EDI,ESI
-    MOV EAX,U32 CI386HeapBlock.span[ESI]
+    ADD EDI,EAX
+    INC EDX
+    XOR EBX,EBX
+    JMP @@40
+@@30:
+    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_FREE
+    JNE I32 @@90
+    TEST EBX,EBX
+    JNZ I32 @@90
+    CMP U32 CI386HeapBlock.requested[ESI],0
+    JNZ I32 @@90
+    MOV EBX,ESI
+@@40:
     ADD ESI,EAX
-    ADD EDX,EAX
     SUB ECX,EAX
-    JNZ @@10
+    JNZ I32 @@10
+    MOV EBX,U32 &hc[EBP]
+    CMP EDI,U32 CI386Heap.used[EBX]
+    JNE I32 @@90
+    CMP EDX,U32 CI386Heap.allocations[EBX]
+    JNE I32 @@90
+    MOV U8 &valid[EBP],1
 @@90:
   }
-  if(!block) return FALSE;
+  if(!valid || !block)return FALSE;
 #endif
-  if(block->tag!=I386_HEAP_USED) return FALSE;
-  hc->used-=block->span; hc->allocations--;
-  block->tag=I386_HEAP_FREE; block->requested=0;
-  if(offset+block->span<hc->size) {
-    next=hc->base+offset+block->span;
-    if(next->tag==I386_HEAP_FREE) block->span+=next->span;
+  hc->used-=block->span;hc->allocations--;
+  block->tag=I386_HEAP_FREE;block->requested=0;
+  if(block(U8 *)+block->span<hc->base+hc->size) {
+    next=block(U8 *)+block->span;
+    if(next->tag==I386_HEAP_FREE)block->span+=next->span;
   }
-  if(previous && previous->tag==I386_HEAP_FREE) previous->span+=block->span;
+  if(previous)previous->span+=block->span;
   return TRUE;
 }
 

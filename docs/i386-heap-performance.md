@@ -554,3 +554,37 @@ nine functional and exact-VGA checks in isolated 8 MiB runs, taking 60.594 and
 `build/i386-publish-one-walk-control-v2`). This single pair does not establish
 a stable timing improvement, and both miss the 60-second gate. The candidate's
 source hash matches the final restored source. C1–C5 remain open.
+
+## Free-specific validation pass
+
+The current two-arena image's paused startup profile sampled
+`I386HeapScanSelect` in 414 root-header samples, including 102 stacks through
+`I386HeapFree` (`build/i386-fallback-boot-profile-v1`). The free path previously
+validated the whole heap and then walked the chain again to locate the block.
+It now has a dedicated validation pass that remembers the target and any
+preceding free block while checking the complete chain and counters. It makes no
+arena changes until the entire pass succeeds. Allocation and size-query scans
+are unchanged.
+
+The native and portable heap-core tests pass their free-order parity and
+corruption cases (`build/i386-free-special-core-v2.log`,
+`build/i386-free-special-source-v2.log`). The public-pool, multi-arena and
+high-placement tests also pass (`build/i386-free-special-public-v2.log`,
+`build/i386-free-special-public-source-v2.log`,
+`build/i386-free-special-high-v2.log`). Both original rebuild generations,
+native cross-build and 386 audit pass (`build/i386-free-special-rebuild-v2.log`,
+`build/i386-free-special-cross-v2`). The 16 MiB diagnostic, full 8 MiB
+sound-effects fixture and 8 MiB dual-arena task-accounting batch pass with
+unchanged inputs (`build/i386-free-special-diagnostics-v1`,
+`build/i386-free-special-effects-8m-v1`,
+`build/i386-free-special-task-batch-8m-v1`).
+
+An alternating isolated boot-to-prompt comparison measured control boots at
+74.14 and 74.09 seconds and candidate boots at 72.98 and 73.38 seconds
+(`build/i386-free-special-pair-v1`). The image manifests differ only in
+`Kernel/I386/Heap.HC`, with identical recorded build inputs
+(`build/i386-free-special-image-comparison.json`). This small four-run sample
+shows a modest reduction on this host, not a general performance guarantee. The
+candidate's separate full 8 MiB startup check completed its functional and VGA
+checks in 72.98 seconds (`build/i386-free-special-startup-8m-v1`), still above
+the 60-second gate. Full C1–C5 qualification remains open.
