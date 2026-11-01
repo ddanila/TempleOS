@@ -41,10 +41,14 @@ def main():
     parser.add_argument('--shared',action='store_true',help='Use verified current original rebuild and test all lengths')
     parser.add_argument('--collisions',action='store_true',help='Include colliding long-name aliases and replacement')
     parser.add_argument('--alias-shadow',action='store_true',help='Include a filename matching an existing short alias')
+    parser.add_argument('--alias-delete',action='store_true',help='Delete a long-named file via its short alias')
+    parser.add_argument('--alias-stream',action='store_true',help='Replace a long-named file through a streamed short-alias open')
     parser.add_argument('--out',type=Path,required=True)
     args=parser.parse_args();out=args.out.resolve()
     if args.collisions and not args.shared:parser.error('--collisions requires --shared')
     if args.alias_shadow and not args.collisions:parser.error('--alias-shadow requires --collisions')
+    if args.alias_delete and not args.collisions:parser.error('--alias-delete requires --collisions')
+    if args.alias_stream and (not args.collisions or args.alias_shadow):parser.error('--alias-stream requires --collisions without --alias-shadow')
     if out.exists():parser.error('Use a fresh output directory')
     out.mkdir(parents=True);overlay=out/'overlay';overlay.mkdir()
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
@@ -75,19 +79,25 @@ def main():
         with disk.open('r+b') as f:f.write(mbr)
         subprocess.run(['mkfs.fat','-F','32','-s','1','--offset',str(start),str(disk),str(count//2)],cwd=ROOT,check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         report['disk_before_sha256']=sha(disk)
-        defines='#define FD_EXTENDED '+('TRUE' if args.shared else 'FALSE')+'\n#define FD_COLLISIONS '+('TRUE' if args.collisions else 'FALSE')+'\n#define FD_ALIAS_SHADOW '+('TRUE' if args.alias_shadow else 'FALSE')+'\n'
+        defines='#define FD_EXTENDED '+('TRUE' if args.shared else 'FALSE')+'\n#define FD_COLLISIONS '+('TRUE' if args.collisions else 'FALSE')+'\n#define FD_ALIAS_SHADOW '+('TRUE' if args.alias_shadow else 'FALSE')+'\n#define FD_ALIAS_DELETE '+('TRUE' if args.alias_delete else 'FALSE')+'\n#define FD_ALIAS_STREAM '+('TRUE' if args.alias_stream else 'FALSE')+'\n'
         (overlay/'Once.HC').write_text(defines+'#define FD_REOPEN FALSE\n'+FIXTURE.read_text())
         iso=out/'original.iso'
         subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(overlay),'--output',str(iso)],cwd=ROOT,check=True)
         report['iso_sha256']=sha(iso)
         subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),'--target-disk',str(disk),'--qmp-stdio','--timeout','180'],cwd=ROOT,check=True)
         expected=511 if args.alias_shadow else 255 if args.collisions else 127 if args.shared else 7
+        if args.alias_delete:expected+=512
+        if args.alias_stream:expected+=1024
         if f'FAT DISK MASK {expected}\n' not in (out/'guest/debug.log').read_text():raise ValueError('Guest FAT contract failed')
-        if args.shared and not args.alias_shadow:report['boundary']=verify_boundary(disk,start)
+        if args.shared and not (args.alias_shadow or args.alias_delete or args.alias_stream):report['boundary']=verify_boundary(disk,start)
         names=(NAMES+(COLLISIONS if args.collisions else [])+[(f'F{i:02}.TXT',b'fill') for i in range(6)]) if args.shared else NAMES[:2]
         if args.alias_shadow:
             names=[(name,b'fourth' if name=='twinabcdefghijklmnop2' else data) for name,data in names]
             names.append(('TWINAB~1.EFG',b'fourth'))
+        if args.alias_delete:names=[(name,data) for name,data in names if name!='twinabcdefghijklmnop3']
+        if args.alias_stream:
+            names=[(name,b'stream'+bytes(506) if name=='twinabcdefghijklmnop2' else data) for name,data in names]
+            names.append(('TWINAB~1.EFG',b'stream'+bytes(506)))
         for i,(name,data) in enumerate(names):
             path=out/f'host-read-{i}.bin'
             subprocess.run(['mcopy','-i',str(disk)+'@@'+str(start*512),'::/'+name,str(path)],cwd=ROOT,check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)

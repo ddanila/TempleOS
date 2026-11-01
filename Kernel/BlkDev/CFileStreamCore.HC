@@ -2,6 +2,7 @@ CFile *FOpen(U8 *filename,U8 *flags,I64 cnt=0)
 {//Allows flags "r","w","w+". "c" for contiguous.
 //(It uses $LK,"StrOcc",A="MN:StrOcc"$() for 'w', 'r', '+', 'c')
   CFile *f=CAlloc(sizeof(CFile));
+  CDirEntry existing;
   CDirContext *dirc;
   U8 *full_name;
   Bool contiguous=StrOcc(flags,'c');
@@ -33,8 +34,14 @@ CFile *FOpen(U8 *filename,U8 *flags,I64 cnt=0)
 	  f->max_blk=(FSize(f)+BLK_SIZE-1)>>BLK_SIZE_BITS-1;
 	return f;
       }
-    } else
+    } else {
+      if (f->dv->fs_type==FSt_FAT32 &&
+	    FileFind(full_name,&existing,FUF_JUST_FILES)) {
+        Free(full_name);
+        full_name=existing.full_name;
+      }
       Del(full_name,,,FALSE);
+    }
     f->de.full_name=full_name;
     f->flags|=FF_NEW_FILE;
     if (dirc=DirContextNew(full_name)) {

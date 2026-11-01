@@ -634,7 +634,7 @@ I64 FAT32FilesDel(CDrv *dv,U8 *cur_dir,U8 *files_find_mask,I64 fuf_flags,
   CFAT32DirEntry *buf,*last_buf,*tmp_buf;
   I64 i,res=0,attr,xsum=0,last_dir_clus=INVALID_CLUS,
 	cur_dir_entry,entries_per_clus,cur_dir_clus;
-  U8 ch;
+  U8 ch,short_name[16];
   Bool unlock_break;
   CDirEntry long_name;
   MemSet(&long_name,0,sizeof(CDirEntry));
@@ -659,7 +659,10 @@ I64 FAT32FilesDel(CDrv *dv,U8 *cur_dir,U8 *files_find_mask,I64 fuf_flags,
 	      MemSet(&long_name,0,sizeof(CDirEntry));
 	    if (!*long_name.name)
 	      FATFromName(long_name.name,buf[cur_dir_entry].name);
-	    if (FilesFindMatch(long_name.name,files_find_mask,fuf_flags)) {
+	    FATFromName(short_name,buf[cur_dir_entry].name);
+	    if (FilesFindMatch(long_name.name,files_find_mask,fuf_flags) ||
+		!StrICmp(short_name,files_find_mask) &&
+		FilesFindMatch(long_name.name,"*",fuf_flags)) {
 	      if (!(attr & RS_ATTR_DIR)) res++;
 	      if (print_msg)
 		"Del %s\n",long_name.name;
