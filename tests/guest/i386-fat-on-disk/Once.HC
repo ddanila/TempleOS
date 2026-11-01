@@ -25,6 +25,7 @@ if(fd_mask&1) {
      FDFile("twinabcdefghijklmnop1","first") &&
      FDFile("twinabcdefghijklmnop2","second") &&
      FDFile("twinabcdefghijklmnop3","third"))fd_mask|=128;
+  if(FD_ALIAS_SHADOW && FDFile("TWINAB~1.EFG","fourth"))fd_mask|=256;
  }
 }
 fd_line=MStrPrint("FAT DISK MASK %d\n",fd_mask);FDReport(fd_line);Free(fd_line);FDReport("DONE fat disk\n");

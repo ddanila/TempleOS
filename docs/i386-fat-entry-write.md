@@ -84,6 +84,16 @@ alias, pre-existing duplicate aliases, malformed directories, or native FAT
 mounting. Directory scanning adds work proportional to directory size and may
 scan repeatedly for numbered candidates.
 
+The `--shared --collisions --alias-shadow` case exposes the remaining alias
+namespace ambiguity (`build/i386-fat-alias-shadow-red-v2`). After a long file
+has the short alias `TWINAB~1.EFG`, the guest creates another file with that
+name and reads its new contents. Host lookup of the same path instead returns
+the first file's contents. The test stops at that host mismatch, before cold
+reopen or `fsck`; its boundary-padding assertion is skipped because the added
+entry can reuse those deleted slots. Resolving this requires consistent alias
+lookup and write semantics as well as unique short aliases; the test does not
+establish which overwrite policy should apply.
+
 `FAT32DirNew` currently returns false even on successful writes, so the earlier
 invalid-name API test's return value alone does not establish rejection. Its
 unchanged cold-reopen disk hash and the entry-writer canary test provide the
