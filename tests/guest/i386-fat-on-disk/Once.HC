@@ -21,7 +21,10 @@ if(fd_mask&1) {
   if(fd_fill_ok)fd_mask|=32;
   if(FDFile("charlieABCDEFGHIJKLMNOPQRSTUVWXYZ1234","thirty-seven"))fd_mask|=16;
   if(FD_COLLISIONS && FDFile("twinabcdefghijklmnop1","first") &&
-     FDFile("twinabcdefghijklmnop2","second"))fd_mask|=128;
+     FDFile("twinabcdefghijklmnop2","second") &&
+     FDFile("twinabcdefghijklmnop1","first") &&
+     FDFile("twinabcdefghijklmnop2","second") &&
+     FDFile("twinabcdefghijklmnop3","third"))fd_mask|=128;
  }
 }
 fd_line=MStrPrint("FAT DISK MASK %d\n",fd_mask);FDReport(fd_line);Free(fd_line);FDReport("DONE fat disk\n");

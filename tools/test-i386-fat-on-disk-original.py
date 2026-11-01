@@ -13,7 +13,7 @@ import sys
 ROOT=Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/'tests/guest/i386-fat-on-disk/Once.HC'
 NAMES=[('SHORT.TXT',b'short'),('alphaabcdefghijklmnopqrs',b'twenty-four'),('bravobcdefghijklmnopqrstuvwxyz',b'thirty'),('charlieABCDEFGHIJKLMNOPQRSTUVWXYZ1234',b'thirty-seven')]
-COLLISIONS=[('twinabcdefghijklmnop1',b'first'),('twinabcdefghijklmnop2',b'second')]
+COLLISIONS=[('twinabcdefghijklmnop1',b'first'),('twinabcdefghijklmnop2',b'second'),('twinabcdefghijklmnop3',b'third')]
 
 def verify_boundary(disk,start):
     with disk.open('rb') as f:
@@ -39,7 +39,7 @@ def verify_boundary(disk,start):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--shared',action='store_true',help='Use verified current original rebuild and test all lengths')
-    parser.add_argument('--collisions',action='store_true',help='Include colliding long-name aliases (known failure)')
+    parser.add_argument('--collisions',action='store_true',help='Include colliding long-name aliases and replacement')
     parser.add_argument('--out',type=Path,required=True)
     args=parser.parse_args();out=args.out.resolve()
     if args.collisions and not args.shared:parser.error('--collisions requires --shared')

@@ -382,6 +382,93 @@ I64 FAT32AllocContiguousClus(CDrv *dv,I64 cnt)
   return first;
 }
 
+Bool FAT32AliasScan(CDrv *dv,I64 first,CFAT32DirEntry *buf,U8 *alias,
+	U8 *name,U8 *same_alias,Bool *same_found)
+{// Read the directory without allocating clusters or changing it.
+  I64 clus=first,next,i,count=dv->spc<<FAT32_ENTRIES_BITS,xsum=0,attr;
+  CDirEntry long_name;
+  Bool used=FALSE;
+  U8 ch;
+  *same_found=FALSE;
+  MemSet(&long_name,0,sizeof(long_name));
+  while (0<clus<0x0FFFFFF8) {
+    ClusRead(dv,buf,clus,1);
+    for (i=0;i<count;i++) {
+      ch=*buf[i].name;
+      if (!ch) return used;
+      attr=buf[i].attr;
+      if (ch!=0xE5 && attr&RS_ATTR_LONG_NAME_MASK==RS_ATTR_LONG_NAME)
+        DirLongNameFill(&long_name,&buf[i],&xsum);
+      else {
+        if (ch!=0xE5 && !(attr&RS_ATTR_VOL_ID)) {
+          if (xsum!=FATNameXSum(buf[i].name))
+            MemSet(&long_name,0,sizeof(long_name));
+          if (!*long_name.name) FATFromName(long_name.name,buf[i].name);
+          if (!StrCmp(long_name.name,name)) {
+            MemCpy(same_alias,buf[i].name,11);
+            *same_found=TRUE;
+          } else if (!MemCmp(buf[i].name,alias,11))
+            used=TRUE;
+        }
+        MemSet(&long_name,0,sizeof(long_name));
+        xsum=0;
+      }
+    }
+    next=ClusNumNext(dv,clus);
+    if (!(0<next<0x0FFFFFF8)) break;
+    clus=next;
+  }
+  return used;
+}
+
+Bool FAT32AliasChoose(CDrv *dv,I64 first,CFAT32DirEntry *buf,
+	CFAT32DirEntry *de,I64 *de_cnt,U8 *name)
+{// Preserve an existing alias; otherwise find an unused short alias.
+  U8 original[11],candidate[11],same[11],*suffix,*ptr;
+  CFAT32DirEntryLong *ld=de;
+  I64 n,l,p,i,xsum;
+  Bool used,same_found;
+  MemCpy(original,de[*de_cnt-1].name,11);
+  MemCpy(candidate,original,11);
+  used=FAT32AliasScan(dv,first,buf,candidate,name,same,&same_found);
+  if (same_found) MemCpy(candidate,same,11);
+  else if (used) {
+    for (n=1;n<=999999;n++) {
+      suffix=MStrPrint("~%d",n);
+      l=StrLen(suffix);
+      MemCpy(candidate,original,11);
+      MemSet(candidate,CH_SPACE,8);
+      p=0;
+      while (p<8-l && original[p]!=CH_SPACE) {
+        candidate[p]=original[p];
+        p++;
+      }
+      MemCpy(candidate+p,suffix,l);
+      Free(suffix);
+      if (!FAT32AliasScan(dv,first,buf,candidate,name,same,&same_found)) break;
+    }
+    if (n>999999) return FALSE;
+  }
+  if (!MemCmp(candidate,original,11)) return TRUE;
+  if (*de_cnt==1) {
+    MemCpy(&de[1],&de[0],sizeof(CFAT32DirEntry));
+    MemSet(&de[0],0,sizeof(CFAT32DirEntry));
+    ptr=&de[0];
+    ptr[0]=0x41;
+    ptr[11]=RS_ATTR_LONG_NAME;
+    l=StrLen(name);
+    for (i=0;i<13;i++)
+      if (i<l) ptr[fat_long_name_map[i]]=name[i];
+      else if (i>l) ptr[fat_long_name_map[i]](U16)=0xFFFF;
+    *de_cnt=2;
+  }
+  MemCpy(de[*de_cnt-1].name,candidate,11);
+  xsum=FATNameXSum(candidate);
+  for (i=0;i<*de_cnt-1;i++)
+    ld[i].xsum=xsum;
+  return TRUE;
+}
+
 Bool FAT32DirNew(CDrv *dv,U8 *cur_dir,CDirEntry *tmpde,Bool free_old_chain)
 {
 //See $LK,"::/Doc/CutCorners.DD"$.
@@ -401,6 +488,13 @@ Bool FAT32DirNew(CDrv *dv,U8 *cur_dir,CDirEntry *tmpde,Bool free_old_chain)
     cur_dir_clus=Name2DirClus(dv,cur_dir);
     buf     =MAlloc(BLK_SIZE*dv->spc);
     last_buf=CAlloc(BLK_SIZE*dv->spc);
+    if (!FAT32AliasChoose(dv,cur_dir_clus,buf,&de,&de_cnt,tmpde->name)) {
+      Free(last_buf);
+      Free(buf);
+      if (unlock) DrvUnlock(dv);
+      if (unlock_break) BreakUnlock;
+      return FALSE;
+    }
     entries_per_clus=dv->spc<<FAT32_ENTRIES_BITS;
     ClusRead(dv,buf,cur_dir_clus,1);
     cur_dir_entry=0;

@@ -65,12 +65,26 @@ also passes the pinned-original valid-name cases
 (`build/i386-fat-invalid-disk-reference-v1`). This covers one invalid name,
 not every malformed input or concurrent disk operation.
 
-Short-name collisions remain a confirmed interoperability defect. The opt-in
-`--shared --collisions` disk test creates `twinabcdefghijklmnop1` and
-`twinabcdefghijklmnop2`, whose generated short aliases coincide. Guest and
-host readback and guest cold reopen match the two contents, but `fsck.fat -n`
-reports a duplicate directory entry and exits 1
-(`build/i386-fat-alias-collision-red-v2`). The non-collision test still passes
-(`build/i386-fat-alias-baseline-v1`). Collision-safe alias allocation and
-replacement behavior remain to be implemented; the opt-in test is expected to
-fail until then.
+Previously, two long names with the same generated short alias produced a
+duplicate directory entry reported by `fsck.fat -n`
+(`build/i386-fat-alias-collision-red-v2`). Directory creation now scans the
+locked directory, preserves an existing entry's alias on replacement, and
+chooses an unused numbered alias when needed. It updates long-name checksums
+and creates a long-name slot when a short name needs a different alias. The
+original compiler and kernel rebuild through two generations
+(`build/i386-fat-alias-rebuild.log`), with binary differences.
+
+The opt-in `--shared --collisions` disk test now passes with three colliding
+long names, replacement of the first two, guest and host readback, cold reopen,
+an unchanged reopen disk hash, and a zero exit from `fsck.fat -n`
+(`build/i386-fat-alias-collision-v2`). The ordinary disk regression also passes
+(`build/i386-fat-alias-normal-v1`). This does not cover all FAT namespace
+ambiguities, including a requested long name matching another entry's short
+alias, pre-existing duplicate aliases, malformed directories, or native FAT
+mounting. Directory scanning adds work proportional to directory size and may
+scan repeatedly for numbered candidates.
+
+`FAT32DirNew` currently returns false even on successful writes, so the earlier
+invalid-name API test's return value alone does not establish rejection. Its
+unchanged cold-reopen disk hash and the entry-writer canary test provide the
+relevant evidence for that case.
