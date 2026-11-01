@@ -132,3 +132,30 @@ unsupported ternary syntax and stopped in the debugger before its verdict
 (`build/i386-doc-key-action-reference-v1`). The comparison does not exercise
 mouse selection, macros, links, arbitrary editor shortcuts or complete original
 `DocPutKey`; those and C1–C5 remain open.
+
+## Form Tab transition (2026-11-01)
+
+The native wrapper now follows the original `EdCharIns` form-Tab conditions:
+Tab on an eligible form entry advances through `DocFormFwd`; overstrike Tab in
+a form also advances, while overstrike Tab outside a form does not insert.
+The actual advance is shared with the original editor through
+`DocCharFormAdvanceCore.HC`. The remaining original character and key dispatch
+is not replaced by this component.
+
+Eight direct cases pass on the pinned original, rebuilt original and native at
+64 and 8 MiB (`build/i386-doc-form-tab-reference-v1`,
+`build/i386-doc-form-tab-rebuilt-v1`,
+`build/i386-doc-form-tab-native-64m-v1`,
+`build/i386-doc-form-tab-native-8m-v1`). They cover eligible links, skipped
+entries, end-of-form recovery, ordinary Tab insertion, overstrike and Shift,
+with document locks, roles and heap balance. The preceding native image fails
+the first navigation case (`build/i386-doc-form-tab-native-red-v1`). The full
+13-case terminal-menu regression also passes (`build/i386-doc-form-tab-menu-v1`).
+These are direct input and menu tests, not a complete keyboard-driven chooser.
+
+Both bootstrap generations, full cross-build/386 audit and 16 MiB diagnostic
+pass (`build/i386-doc-form-tab-rebuild-v1.log`,
+`build/i386-doc-form-tab-cross-v1`, `build/i386-doc-form-tab-diagnostics-v1`).
+The isolated 8 MiB run completes all nine functional/VGA checks in 61.157
+seconds and misses the 60-second gate (`build/i386-doc-form-tab-startup-v1`).
+Full original document input and C1–C5 remain open.

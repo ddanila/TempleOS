@@ -163,6 +163,7 @@ extern CDocEntry *DocPrint(CDoc *doc=NULL,U8 *fmt,...);
 U32 native_doc_printable[16]=CHAR_BMP_PRINTABLE_DATA;
 #include "/Adam/DolDoc/DocDollarInputCore.HC"
 #include "/Adam/DolDoc/DocCharActionCore.HC"
+#include "/Adam/DolDoc/DocCharFormAdvanceCore.HC"
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   Bool unlock,printable;
@@ -182,7 +183,13 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
         DocDollarInputCore(doc,ch,printable)) {}
     else if(printable && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
         DocCharActionCore(doc,ch,sc)) {}
-    else DocBasicEditCore(doc,ch,sc);
+    else if(printable && ch=='\t' && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
+        (doc->flags&DOCF_OVERSTRIKE || doc->flags&DOCF_FORM &&
+         (Bt(doldoc.type_flags_form,doc->cur_entry->type_u8) ||
+          doc->cur_entry->de_flags&DOCEF_LINK) &&
+         !(doc->cur_entry->de_flags&DOCEF_SKIP_IN_FORM))) {
+      if(doc->flags&DOCF_FORM) DocCharFormAdvanceCore(doc);
+    } else DocBasicEditCore(doc,ch,sc);
   } catch { if(unlock) DocUnlock(doc); }
   if(unlock) DocUnlock(doc);
 }

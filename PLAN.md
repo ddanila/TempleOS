@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Form Tab input (2026-11-01)
+
+The original form-advance transition is shared with native `DocPutKey`. Eight
+Tab/navigation and insertion cases pass on the pinned original, rebuilt original
+and native at 8 and 64 MiB; the terminal-menu and 16 MiB diagnostic regressions
+also pass. Isolated 8 MiB startup takes 61.157 seconds and misses the 60-second
+gate. Full form interaction and C1–C5 remain open; see
+[document-key evidence](docs/i386-doc-put-key.md).
+
 ### Document entry key-action comparison (2026-11-01)
 
 Seven direct Space/Enter action cases now match the pinned and rebuilt original

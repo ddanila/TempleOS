@@ -426,6 +426,7 @@ U0 EdCharDel(CDoc *doc)
 #include "/Adam/DolDoc/DocDollarInputCore.HC"
 
 #include "/Adam/DolDoc/DocCharActionCore.HC"
+#include "/Adam/DolDoc/DocCharFormAdvanceCore.HC"
 U0 EdCharIns(I64 ch,I64 sc,CDoc *doc)
 {
   Bool unlock=DocLock(doc);
@@ -525,9 +526,7 @@ ic_not_overstrike:
 	  doc->cur_entry->de_flags&DOCEF_LINK) &&
 	  !(doc->cur_entry->de_flags&DOCEF_SKIP_IN_FORM)) {
 ic_form_tab:
-      doc->cur_entry=doc->cur_entry->next;
-      doc->cur_col=doc->cur_entry->min_col;
-      DocFormFwd(doc);
+      DocCharFormAdvanceCore(doc);
       goto ic_done;
     } else {
       doc_ne=DocEntryNewBase(doc,DOCT_TAB|doc->settings_head.dft_text_attr<<8);

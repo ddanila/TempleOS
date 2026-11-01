@@ -801,7 +801,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Typed dollar partial state, parsed foreground/color, macro command/attribute distinction, plain text and buffer growth. Remaining editor behavior and whole-file compatibility are unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB."
+        "description": "Typed dollar partial state, parsed foreground/color, macro command/attribute distinction, plain text and buffer growth. Remaining editor behavior and whole-file compatibility are unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB. Eight direct form-Tab navigation and insertion cases also match the original."
       },
       "oracle": {
         "tool": "tools/test-i386-getstr-reference.py",
@@ -881,6 +881,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-key-action-native-8m-v1/result.json",
           "scope": "Same seven entry-action cases at 8 MiB; full DocPutKey remains unqualified"
+        },
+        {
+          "target": "original-reference-document-form-tab",
+          "command": "python3 tools/test-i386-doc-form-tab-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-form-tab-reference-v1/result.json",
+          "scope": "Eight direct Tab cases with form links, skip, overstrike, Shift, locks and heap balance"
+        },
+        {
+          "target": "native-document-form-tab-64m",
+          "command": "python3 tools/test-i386-doc-form-tab.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-form-tab-native-64m-v1/result.json",
+          "scope": "Same eight direct form-Tab cases; full form input remains unqualified"
+        },
+        {
+          "target": "native-document-form-tab-8m",
+          "command": "python3 tools/test-i386-doc-form-tab.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-form-tab-native-8m-v1/result.json",
+          "scope": "Same eight direct form-Tab cases at 8 MiB; full form input remains unqualified"
         }
       ]
     },
@@ -2107,7 +2128,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB."
+        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB. Eight direct form-Tab navigation and insertion cases also match the original."
       },
       "oracle": {
         "tool": "tools/test-i386-doc-put-key-reference.py",
@@ -2180,6 +2201,27 @@
           "result": "pass",
           "evidence": "build/i386-doc-key-action-native-8m-v1/result.json",
           "scope": "Same seven entry-action cases at 8 MiB; full DocPutKey remains unqualified"
+        },
+        {
+          "target": "original-reference-document-form-tab",
+          "command": "python3 tools/test-i386-doc-form-tab-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-form-tab-reference-v1/result.json",
+          "scope": "Eight direct Tab cases with form links, skip, overstrike, Shift, locks and heap balance"
+        },
+        {
+          "target": "native-document-form-tab-64m",
+          "command": "python3 tools/test-i386-doc-form-tab.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-form-tab-native-64m-v1/result.json",
+          "scope": "Same eight direct form-Tab cases; full form input remains unqualified"
+        },
+        {
+          "target": "native-document-form-tab-8m",
+          "command": "python3 tools/test-i386-doc-form-tab.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-form-tab-native-8m-v1/result.json",
+          "scope": "Same eight direct form-Tab cases at 8 MiB; full form input remains unqualified"
         }
       ]
     },
