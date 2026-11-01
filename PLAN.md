@@ -25057,3 +25057,8 @@ python3 tools/test-i386-retained-build.py \
   --reference-exports build/i386-heap-query-scan-cross/exports \
   --accel tcg --cpu 486,-fpu --qmp-stdio --welcome --command-timeout 14400
 ```
+
+The `CLexFile` failure is reproduced by a smaller native module and is now a
+pinned regression. Diagnostic comparisons tie the missing intervening classes
+to the first in-class assertion in the full header, but do not establish the
+underlying parser defect. See [compiler-type evidence](docs/i386-module-compiler-types.md).
