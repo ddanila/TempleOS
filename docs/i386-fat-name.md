@@ -1,31 +1,27 @@
 # FAT short-name helpers
 
-The original `FATNameTo`, `FATNameXSum` and `FATFromName` bodies are shared in
-`Kernel/BlkDev/FATNameCore.HC` and exposed by ConsoleRuntime 197. Expanding the
-include reproduces the preceding original FAT source byte for byte. These
-helpers are dependencies of FAT directory entry lookup and construction; they
-do not implement a FAT filesystem or its cluster traversal.
+`FATNameTo`, `FATNameXSum` and `FATFromName` are shared in
+`Kernel/BlkDev/FATNameCore.HC`. They are dependencies of FAT directory entry
+lookup and construction; they do not implement FAT traversal.
 
-The pinned original executes the pre-extraction and shared bodies under private
-fixture names. Both pass mask 255 for 8.3 conversion, uppercasing, dot entries,
-invalid names, padding, checksums and a destination canary, with unchanged
-inputs (`build/i386-fat-name-original-v1` and `build/i386-fat-name-original-v2`).
-An expanded original fixture also confirms that `a.long` writes a twelfth
-byte when given a larger buffer (mask 511, `build/i386-fat-name-original-v3`).
-The preceding native image rejects the missing first binding before any case
-runs (`build/i386-fat-name-native-red`). Long names, all character classes,
-FAT directory entries and storage errors are not covered by this contract.
+The pinned original `FATNameTo` can write beyond its 11-byte output for names
+outside 8.3. The reference executes that exact pinned body with a larger buffer:
+`a.long` writes a twelfth byte, and a 37-character name writes beyond the short
+name field (`build/i386-fat-name-bound-original-v3`, mask 1535). The preceding
+native image shows the same result on its saved screen, failing the bounded
+expectation (`build/i386-fat-name-bound-native-red-v2`); the runner times out
+and its inputs remain unchanged.
 
-The original `FATNameTo` does not cap the bytes written after the eight-byte
-base; inputs outside 8.3 can write past an 11-byte destination. This shared
-body preserves that behavior. Callers need sufficient storage, and the original
-FAT entry construction path needs separate long-name and buffer-boundary
-qualification before it can be considered safe.
-
-Both original rebuild generations pass (`build/i386-fat-name-rebuild.log`),
-as do the native cross-build and 386 instruction audit
-(`build/i386-fat-name-cross`). The 64 MiB native fixture passes the expanded
-nine-check contract, including the safely observed twelfth-byte write, with
-unchanged inputs and byte-identical delivered fixture
-(`build/i386-fat-name-native-v1`). These runs do not establish reproducibility,
-FAT traversal or the startup timing gate.
+The shared implementation now caps output at 11 bytes while still consuming
+all input. This intentionally differs from the original's writes outside that
+field, preserving the first 11 bytes and avoiding the overwrite. The corrected
+shared body passes the same fixture on the original runtime with mask 3839
+(`build/i386-fat-name-bound-shared-original-v2`). The fixture also covers
+ordinary 8.3 conversion, uppercasing, dot entries, invalid names, padding and
+checksums. It does not establish long-name FAT entry construction or traversal.
+Both original rebuild generations pass (`build/i386-fat-name-bound-rebuild.log`);
+their binary differences do not establish reproducibility.
+The native cross-build and 386 audit pass (`build/i386-fat-name-bound-cross`).
+The native 64 MiB run passes mask 3839 with unchanged inputs and a
+byte-identical delivered fixture (`build/i386-fat-name-bound-native-v1`); its
+concurrent startup does not qualify the timing gate.

@@ -14257,21 +14257,21 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Convert and checksum FAT short names and decode their padded representation, including dot entries and invalid input.",
-      "oracle": "docs/i386-fat-name.md: nine original and native helper checks, including an overlong extension write observed in a safely sized buffer. FAT traversal, long-name entry handling and whole-file qualification remain open.",
+      "oracle": "docs/i386-fat-name.md: original and corrected helper checks cover short names, checksums and bounded overlong writes; the original write beyond the short-name field is an intentional safety difference. FAT traversal, long-name entry handling and whole-file qualification remain open.",
       "tests": [
         {
           "target": "original-fat-name-source",
           "command": "python3 tools/test-i386-fat-name.py --out OUT",
           "result": "pass",
-          "evidence": "build/i386-fat-name-original-v3/result.json",
-          "scope": "Nine original-body conversion, checksum and buffer-boundary observations on pinned original"
+          "evidence": "build/i386-fat-name-bound-original-v3/result.json",
+          "scope": "Pinned original-body conversion, checksum and out-of-field write observations in a safely sized buffer"
         },
         {
           "target": "native-fat-name-64m",
           "command": "python3 tools/test-i386-fat-name.py IMAGE --out OUT",
           "result": "pass",
-          "evidence": "build/i386-fat-name-native-v1/result.json",
-          "scope": "Same bounded helper contract; not FAT traversal or long-name entry qualification"
+          "evidence": "build/i386-fat-name-bound-native-v1/result.json",
+          "scope": "Corrected short-name conversion and bounded writes, including a 37-character input; not FAT traversal or long-name entry qualification"
         }
       ]
     },

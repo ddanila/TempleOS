@@ -17,11 +17,11 @@ Bool FATNameTo(U8 *dst,U8 *src)
     dst[i++]=ToUpper(*src++);
   i=8;
   if (*src=='.') src++;
-  while (*src)
-    if (*src!='.')
-      dst[i++]=ToUpper(*src++);
-    else
-      src++;
+  while (*src) {
+    if (*src!='.' && i<11)
+      dst[i++]=ToUpper(*src);
+    src++;
+  }
   return TRUE;
 }
 
