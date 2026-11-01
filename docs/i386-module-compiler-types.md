@@ -265,9 +265,13 @@ at 64 MiB on image SHA-256
 rendering or concurrent updates. The original rebuild reports binary
 differences and is not a reproducibility pass.
 
-A 16 MiB startup diagnostic and a fresh nine-module 128 MiB retained build on
-the corrected image are running (`build/i386-doccursor-dedup-diag16-contract`
-and `build/i386-doccursor-dedup-retained128`). Their results are pending, so
+A 16 MiB startup diagnostic on the corrected diagnostic image passes its
+startup, retained-value, storage and exact VGA checks
+(`build/i386-doccursor-dedup-diag16-contract/result.json`, input SHA-256
+`ce3bf7197c6f8f37adc5312e58021ca34b0c80e2b5f27a612920343b2fd6bff1`).
+It ran alongside other guests and does not establish the timing gate.
+A fresh nine-module 128 MiB retained build is running
+(`build/i386-doccursor-dedup-retained128`). Its result is pending, so
 the duplicate-function pack failure has not yet been verified resolved in a
 native retained build. Full installation, two native generations, the timing
 gate, and C1–C5 qualification remain open.
