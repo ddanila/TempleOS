@@ -25098,3 +25098,13 @@ from `-38` to `-42`, exposing a later sixth-allocation paste failure; the
 strict install gate remains open. See
 [the allocation evidence](docs/i386-module-compiler-types.md). C1–C5 remain
 incomplete.
+
+## Save failure cleanup (2026-11-01)
+
+`DocSave` now cleans up its output buffer and temporary recalculation cursors
+and unlocks the document on an exception. Original rebuild and native
+serialization checks pass. The 8 MiB allocation diagnostic advances from
+`-42` to `-12` but the strict install gate still fails; the twelfth case needs
+further investigation. See
+[the save failure evidence](docs/i386-module-compiler-types.md). C1–C5 remain
+incomplete.

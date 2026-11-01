@@ -160,3 +160,32 @@ confirmed the exact `-42` result with unchanged disk input
 observation, not a passing install gate. The sixth failure's ownership remains
 to be traced. Complete native installation, two native generations, timing and
 C1–C5 qualification remain open.
+
+### Save failure cleanup (2026-11-01)
+
+The sixth injected paste failure was traced with temporary instrumentation.
+In `build/i386-c5-sixth-stack-8m`, failure 6 increased task heap usage from
+`0x6080` to `0x60E0` (96 bytes). A separate call-stack probe
+(`build/i386-c5-sixth-malloc-8m`, image SHA-256
+`7973e2a09df94a26cf745026c8ad5f99517d8db02ce663c2b24645d13eda58f8`)
+identified the failed four-byte request as `DocSave`'s output allocation after
+recalculation. The 96-byte increase is consistent with a cursor entry created during
+recalculation. The probes were removed.
+
+The shared `DocSave` now releases an allocated output buffer, removes any
+remaining temporary cursor entries after completed recalculation, and unlocks
+the document when saving throws. The original two-generation rebuild and the
+native cross-build pass. At 64 MiB the native serialization fixture passes its
+plain-text, exact saved bytes, cursor, binary-record, lock and heap checks
+(`build/i386-c5-save-cleanup-save64-welcome`). Its harness now accepts
+`--welcome`; the earlier attempt without this option timed out at the welcome
+screen before issuing the fixture.
+
+On the fixed 8 MiB image (SHA-256
+`b289f024c6f3384a2ec8e87408c926735c18c379f4816db3e088dbf034dbfe7a`),
+the strict `DocAllocationCheck` advanced from `-42` to `-12`
+(`build/i386-c5-save-cleanup-8m`, guest screen). The first eleven injected
+paste cases returned failure with matching target bytes and heap usage; case 12
+returned success. The `13` oracle timed out, so the install gate remains
+failing. Whether the twelfth fault was reached and its underlying cause remain
+unconfirmed. The 8 MiB run overlapped other guests and is not timing evidence.

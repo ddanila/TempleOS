@@ -30,6 +30,8 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
+    parser.add_argument('--welcome', action='store_true',
+                        help='Expect the current welcome screen at startup')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     commands = list(COMMANDS)
@@ -43,11 +45,12 @@ def main():
     packaging = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
         source, working, additions={'/DocSave.HC':FIXTURE.read_bytes()})
     report = dict(result='running', scope='Original entry spelling and exact document bytes: quoted tags, flags, plain dollars, cursor, independent binary records, locks and heaps',
-                  packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
+                  packaging=packaging, input_sha256=pins, commands=serializable(commands),
+                  ram_mib=args.ram_mib, welcome=args.welcome)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
-            cpu='486,-fpu', accel='tcg', qmp_stdio=True,
+            cpu='486,-fpu', accel='tcg', qmp_stdio=True, welcome=args.welcome,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
                            'rejected_answers':['0'],

@@ -2,10 +2,11 @@ public U8 *DocSave(CDoc *doc,I64 *_size=NULL)
 {//Store doc to raw mem buf.
   CDocEntry *doc_e,*doc_e1;
   CDocBin *b;
-  Bool unlock=DocLock(doc);
+  Bool unlock=DocLock(doc),recalc_done=FALSE;
   I64 ch,cnt=1;//terminator
-  U8 *st,*res,*dst,*src;
+  U8 *st,*res=NULL,*dst,*src;
 
+  try {
   if (!(doc->flags & (DOCF_PLAIN_TEXT|DOCF_PLAIN_TEXT_TABS)))
     DocBinsValidate(doc);
   if (doc->flags&DOCF_NO_CURSOR)
@@ -15,6 +16,7 @@ public U8 *DocSave(CDoc *doc,I64 *_size=NULL)
     if (doc->head.next->type_u8==DOCT_CURSOR)
       DocEntryDel(doc,doc->head.next); //If no cursor, $LK,"DocLoad",A="MN:DocLoad"$() puts at top.
   }
+  recalc_done=TRUE;
   for (doc_e=doc->head.next;doc_e!=doc;doc_e=doc_e->next) {
     if (!Bt(doldoc.type_flags_data,doc_e->type_u8)) {
       switch (doc_e->type_u8) {
@@ -110,6 +112,21 @@ public U8 *DocSave(CDoc *doc,I64 *_size=NULL)
   } else
     cnt--; //No terminator
   if (_size) *_size=cnt;
+  } catch {
+    //A completed recalculation can have inserted a temporary save cursor.
+    if (recalc_done) {
+      doc_e=doc->head.next;
+      while (doc_e!=doc) {
+	doc_e1=doc_e->next;
+	if (doc_e->type_u8==DOCT_CURSOR)
+	  DocEntryDel(doc,doc_e);
+	doc_e=doc_e1;
+      }
+    }
+    Free(res);
+    if (unlock)
+      DocUnlock(doc);
+  }
   if (unlock)
     DocUnlock(doc);
   return res;
