@@ -17,12 +17,12 @@ def main():
     parser.add_argument('--i386-disk', action='store_true', help='Run a protected-mode test disk with VGA and 8 MiB RAM')
     parser.add_argument('--ram-mib', type=int, choices=(8,16), default=8,
                         help='RAM for an i386 disk run; full diagnostics require 16 MiB')
-    parser.add_argument('--target-disk', type=Path, help='Attach a separate secondary IDE target to an i386 disk run')
+    parser.add_argument('--target-disk', type=Path, help='Attach a separate IDE target disk')
     parser.add_argument('--qmp-stdio', action='store_true',
                         help='Control QEMU over stdio when Unix sockets are unavailable')
     args = parser.parse_args()
-    if args.target_disk and (not args.i386_disk or args.target_disk.resolve()==args.iso.resolve()):
-        parser.error('--target-disk requires --i386-disk and a distinct disk image')
+    if args.target_disk and args.target_disk.resolve()==args.iso.resolve():
+        parser.error('--target-disk must be distinct from the boot image')
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     log = out / 'debug.log'
@@ -44,6 +44,8 @@ def main():
                '-qmp', qmp_arg]
         if args.target_disk:
             cmd += ['-drive',f'file={args.target_disk.resolve()},format=raw,if=ide,index=2']
+    elif args.target_disk:
+        cmd += ['-drive',f'file={args.target_disk.resolve()},format=raw,if=ide,index=0']
     (out / 'command.json').write_text(json.dumps(cmd, indent=2)+'\n')
     sock = None if args.qmp_stdio else socket.socket(socket.AF_UNIX)
     with (out / 'qemu.log').open('w') as stderr:

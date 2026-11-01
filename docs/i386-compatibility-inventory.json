@@ -14257,7 +14257,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Convert and checksum FAT short names, decode long-name sequences and entry metadata, and construct directory entries through 37-character names.",
-      "oracle": "docs/i386-fat-name.md, docs/i386-fat-long-name.md, docs/i386-fat-entry-read.md and docs/i386-fat-entry-write.md: scoped in-memory checks cover names, metadata and bounded writes. On-disk FAT mutation, traversal, full Unicode and whole-file qualification remain open.",
+      "oracle": "docs/i386-fat-name.md, docs/i386-fat-long-name.md, docs/i386-fat-entry-read.md and docs/i386-fat-entry-write.md: scoped in-memory checks cover names, metadata and bounded writes; rebuilt-original FAT32 disk checks include reboot and a directory-cluster boundary. Native FAT mutation and traversal, full Unicode and whole-file qualification remain open.",
       "tests": [
         {
           "target": "original-fat-name-source",
@@ -14314,6 +14314,20 @@
           "result": "pass",
           "evidence": "build/i386-fat-entry-read-native-v1/result.json",
           "scope": "Same six entry decoding checks; not on-disk traversal or full FAT qualification"
+        },
+        {
+          "target": "original-fat-disk-reference",
+          "command": "python3 tools/test-i386-fat-on-disk-original.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-fat-disk-original-v5/result.json",
+          "scope": "Pinned original creates and cold-reopens short and 24-character names on disposable FAT32; independent host readback and read-only filesystem check"
+        },
+        {
+          "target": "rebuilt-original-fat-disk-boundary",
+          "command": "python3 tools/test-i386-fat-on-disk-original.py --shared --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-fat-disk-shared-v5/result.json",
+          "scope": "Rebuilt original creates and cold-reopens names through 37 characters across a root directory cluster boundary; host readback and read-only filesystem check; not native FAT"
         }
       ]
     },

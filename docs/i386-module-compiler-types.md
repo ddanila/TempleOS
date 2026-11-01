@@ -274,10 +274,12 @@ startup, retained-value, storage and exact VGA checks
 (`build/i386-doccursor-dedup-diag16-contract/result.json`, input SHA-256
 `ce3bf7197c6f8f37adc5312e58021ca34b0c80e2b5f27a612920343b2fd6bff1`).
 It ran alongside other guests and does not establish the timing gate.
-A fresh nine-module 128 MiB retained build is running
-(`build/i386-doccursor-dedup-retained128`), using the corrected image identified
-above. Its guest log has progressed through `DocumentRuntime.HC` and into
-`C:/Adam/Gr/Gr.HH` while compiling ConsoleRuntime. Its result is pending; it
-has not yet reached the pack step that exposed the duplicate function, so the
-fix has not yet been verified in a native retained build. Full installation,
+A fresh nine-module 128 MiB retained build on the corrected image failed its
+first module (`build/i386-doccursor-dedup-retained128/result.json`). It passed
+the earlier duplicate-function pack rejection and reached stage 6, staged
+module writing, with a queried size of `0x27F946` bytes. The guest reported a
+generic `Compiler` exception; this does not identify whether allocation,
+streaming, validation or staging failed. No module was retained, and the pack
+fix is not qualified by a completed native module. The run's input was the
+image identified above; it predates subsequent FAT work. Full installation,
 two native generations, the timing gate, and C1–C5 qualification remain open.

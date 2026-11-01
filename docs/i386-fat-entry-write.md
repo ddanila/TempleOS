@@ -28,3 +28,16 @@ The native cross-build and 386 instruction audit pass
 five cases with unchanged inputs and a byte-identical delivered fixture
 (`build/i386-fat-entry-write-native-v1`). This concurrent run does not qualify
 startup timing.
+
+The pinned original and the rebuilt original were also tested with separate,
+disposable 128 MiB ATA disks containing FAT32 partitions
+(`build/i386-fat-disk-original-v5` and `build/i386-fat-disk-shared-v5`). The
+pinned system created and reopened short and 24-character files; the rebuilt
+system additionally created and reopened 30- and 37-character files. Guest
+readback and independent host `mcopy` readback matched their contents. Both
+systems reopened the files after a cold reboot without changing the disk hash.
+The rebuilt test also fills the root directory: a host-side FAT walk confirms
+two padding slots at the end of the first cluster and the 37-character name's
+three long-name slots and short entry in the next cluster. `fsck.fat -n` exits
+zero; it reports the free-cluster summary as uninitialized. This qualifies the
+tested rebuilt-original FAT path, not native FAT mounting or all on-disk cases.
