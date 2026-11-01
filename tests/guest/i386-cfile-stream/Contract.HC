@@ -17,6 +17,17 @@ I64 CFileStreamContract()
   if(f && !FBlkRead(f,in,FFB_NEXT_BLK,1) && f->fblk_num==3 &&
       FBlkRead(f,in,0,1) && !MemCmp(in,data,512))mask|=16;
   if(f && !FBlkWrite(f,data,0,1) && FBlkRead(f,in,0,0) && f->fblk_num==1)mask|=256;
+  //Original RedSea cluster transfer returns the next sector on reads, but
+  //returns zero on writes; non-positive lengths leave the cluster unchanged.
+  if(f && ClusBlkRead(f->dv,in,f->de.clus,3)==f->de.clus+3 &&
+      !MemCmp(in,data,1536))mask|=1024;
+  if(f && ClusBlkRead(f->dv,in,f->de.clus,0)==f->de.clus &&
+      ClusBlkWrite(f->dv,in,f->de.clus,0)==f->de.clus)mask|=2048;
+  if(f && ClusRead(f->dv,in,f->de.clus,1)==f->de.clus+f->dv->spc &&
+      !MemCmp(in,data,512))mask|=4096;
+  if(f && ClusBlkWrite(f->dv,data,f->de.clus,1)==0 &&
+      ClusBlkRead(f->dv,in,f->de.clus,1)==f->de.clus+1 &&
+      !MemCmp(in,data,512))mask|=8192;
   FClose(f);
   f=FOpen(name,"rc");
   if(f && f->flags&FF_CONTIGUOUS && FBlkRead(f,in,2,1) && !MemCmp(in,data+1024,512))mask|=512;

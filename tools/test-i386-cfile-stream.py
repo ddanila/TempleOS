@@ -25,7 +25,7 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     inputs=[Path(__file__).resolve(),fixture]
     report=dict(result='running',mode='native' if args.disk else 'shared' if args.shared else 'pinned-original',
-                scope='Contiguous RedSea CFile write, reopen, explicit and sequential block reads, end-of-file and bounds, read-only rejection, zero-length and contiguous reads, w+ update and close persistence; not FAT, fragmentation, growth, concurrency or failure cleanup')
+                scope='Contiguous RedSea CFile write, reopen, explicit and sequential block reads, end-of-file and bounds, read-only rejection, zero-length and contiguous reads, w+ update, close persistence and direct RedSea cluster transfers; not FAT, fragmentation, growth, concurrency or failure cleanup')
     if args.disk:
         inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC')]
     else:
@@ -53,7 +53,7 @@ def main():
         if args.disk:
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions={'/CFileStream.HC':fixture.read_bytes()})
-            commands=['#include "C:/CFileStream.HC"','cfs_drive=67;',"if(CFileStreamContract!=1023)throw('CFile',TRUE);",'6*7;']
+            commands=['#include "C:/CFileStream.HC"','cfs_drive=67;',"if(CFileStreamContract!=16383)throw('CFile',TRUE);",'6*7;']
             runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk,out/'guest',commands,args.ram_mib,True)
             files=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,{'/CFileStream.HC'})
             if files['/CFileStream.HC']!=fixture.read_bytes():raise ValueError('Delivered fixture changed')
@@ -65,7 +65,7 @@ def main():
             subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(overlay),'--output',str(iso)],cwd=ROOT,check=True)
             report['iso_sha256']=sha(iso)
             subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),'--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
-            if 'CFILE MASK 1023\n' not in (out/'guest/debug.log').read_text():raise ValueError('Original CFile contract failed')
+            if 'CFILE MASK 16383\n' not in (out/'guest/debug.log').read_text():raise ValueError('Original CFile contract failed')
         report['result']='pass'
     except Exception as exc:
         report.update(result='fail',error=str(exc));raise
