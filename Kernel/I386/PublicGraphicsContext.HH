@@ -3,6 +3,10 @@
 #include "/Kernel/NumericLimits.HH"
 #include "/Kernel/GraphicsTypes.HH"
 #include "/Adam/Gr/GrGlobalsTypes.HH"
+public _extern _D3I32_DIST F64 D3I32Dist(CD3I32 *p1,CD3I32 *p2);
+public _extern _D3I32_DIST_SQR I64 D3I32DistSqr(CD3I32 *p1,CD3I32 *p2);
+public _extern _D3I32_NORM F64 D3I32Norm(CD3I32 *p);
+public _extern _D3I32_NORM_SQR I64 D3I32NormSqr(CD3I32 *p);
 public _extern _MAT4X4MULXYZ U0 Mat4x4MulXYZ(I64 *r,I64 *x,I64 *y,I64 *z);
 public _extern _DCTRANSFORM U0 DCTransform(CDC *dc,I64 *x,I64 *y,I64 *z);
 public _extern _MAT4X4IDENTEQU I64 * Mat4x4IdentEqu(I64 *r);

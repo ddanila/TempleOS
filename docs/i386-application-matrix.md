@@ -234,3 +234,7 @@ With sprite interpolation and transformed drawing, unchanged KeepAway advances
 past `SpriteInterpolate` and `Sprite3YB` and fails at `D3I32Norm` on line 292
 (`build/i386-app-keepaway-interpolation-v1`, inputs unchanged). Gameplay remains
 open.
+
+With the public D3I32 norm and distance functions, unchanged KeepAway advances
+past `D3I32Norm` and stops at `GrBorder` on line 299
+(`build/i386-app-keepaway-d3norm-v1`, inputs unchanged). Gameplay remains open.
