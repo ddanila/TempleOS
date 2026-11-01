@@ -64,3 +64,13 @@ hash remains unchanged (`build/i386-fat-invalid-disk-v3`). The updated fixture
 also passes the pinned-original valid-name cases
 (`build/i386-fat-invalid-disk-reference-v1`). This covers one invalid name,
 not every malformed input or concurrent disk operation.
+
+Short-name collisions remain a confirmed interoperability defect. The opt-in
+`--shared --collisions` disk test creates `twinabcdefghijklmnop1` and
+`twinabcdefghijklmnop2`, whose generated short aliases coincide. Guest and
+host readback and guest cold reopen match the two contents, but `fsck.fat -n`
+reports a duplicate directory entry and exits 1
+(`build/i386-fat-alias-collision-red-v2`). The non-collision test still passes
+(`build/i386-fat-alias-baseline-v1`). Collision-safe alias allocation and
+replacement behavior remain to be implemented; the opt-in test is expected to
+fail until then.
