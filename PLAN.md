@@ -25062,3 +25062,14 @@ The `CLexFile` failure is reproduced by a smaller native module and is now a
 pinned regression. Diagnostic comparisons tie the missing intervening classes
 to the first in-class assertion in the full header, but do not establish the
 underlying parser defect. See [compiler-type evidence](docs/i386-module-compiler-types.md).
+
+## Compiler include dollar preservation (2026-11-01)
+
+Native include documents now use the original `LexDocRead` dollar-preservation
+flag before loading. The formerly failing full compiler-type header module
+now builds and its persisted export validates; nested document input, AOT and
+cleanup tests and the 16 MiB diagnostic pass. The full 8 MiB startup passes its
+functional/VGA checks but still misses the 60-second gate. A new nine-module
+native retained build on the fixed image is running and has passed the earlier
+`CLexFile` rejection; no full module or build pass is claimed yet. See
+[the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.

@@ -39,3 +39,35 @@ python3 tools/test-i386-module-compiler-types.py IMAGE --out OUTPUT
 
 The compiler defect, full native retained build, installed generations and
 C1–C5 remain open. The original header and its assertions are unchanged.
+
+## Include-document dollar preservation
+
+The assertion token trace shows that the lexer loses the dollar expression at
+the first assertion and reads its next number at the later assertion
+(`build/i386-c5-assert-token-trace-probe`). A byte-level trace shows that the
+include document has already reduced the doubled dollar to one byte before the
+lexer receives it (`build/i386-c5-assert-byte-trace-probe`). The original
+`LexDocRead` sets `DOCF_DBL_DOLLARS` before `DocLoad`; the native include
+document constructor did not. It now sets that flag before loading, preserving
+the original document-based include behavior and the original assertions.
+The temporary traces are not retained in production source.
+
+Both original rebuild generations, the full cross-build and 386 audit pass
+(`build/i386-c5-include-dollars-rebuild.log`,
+`build/i386-c5-include-dollars-cross`). The previously failing full-header
+regression now passes, including persisted module layout and export validation,
+with inputs unchanged (`build/i386-c5-include-dollars-types`). Nested document
+includes, document-based AOT module output and repeated include/error cleanup
+also pass with unchanged inputs (`build/i386-c5-include-dollars-document`,
+`build/i386-c5-include-dollars-aot`, `build/i386-c5-include-dollars-cleanup`).
+The 8 MiB full startup completed all nine functional and VGA checks but failed
+the 60-second timing assertion (`build/i386-c5-include-dollars-startup`); that
+run overlapped other guests and is not a performance comparison.
+
+The 16 MiB startup diagnostic also passes
+(`build/i386-c5-include-dollars-diagnostics`). A new full nine-module native
+retained build is running from the fixed image and matching export contracts
+(`build/i386-c5-include-dollars-native-build`); it has passed the previous
+`CLexFile` rejection and reached later headers, but has not completed or audited
+any module. Its input image SHA-256 is
+`45d9c7d6cd8f1b09981943b59a2668da2085f484853eaaf8706f8cf02483e4bc`.

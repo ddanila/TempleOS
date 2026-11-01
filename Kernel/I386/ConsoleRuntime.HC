@@ -1096,7 +1096,11 @@ CDoc *NativeIncludeDocumentCreate(U8 *name,U8 *source,I64 size)
   if(!NativeDocReadRecordsValid(source,size))return 0;
   try {
     doc=DocNew(name,Fs);
-    if(doc)DocLoad(doc,source,size);
+    if(doc) {
+      //LexDocRead preserves escaped dollars for the compiler's lexer.
+      doc->flags|=DOCF_DBL_DOLLARS;
+      DocLoad(doc,source,size);
+    }
   } catch {
     if(doc)DocDel(doc);
     Fs->catch_except=FALSE;
