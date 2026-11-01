@@ -230,3 +230,16 @@ free block of `0x48` bytes. This build used the earlier pinned image and does
 not include the subsequent save/read changes. Resolving native build memory,
 full guest-built installation, two generations and C1–C5 qualification remain
 open.
+
+The subsequent nine-module retained build on the shared-call-descriptor image
+also failed its first module, ConsoleRuntime, with `OutMem` in the same source
+file (`build/i386-c5-shared-calls-native-build/result.json`). Its pinned input
+SHA-256 is `4f3d19cca69bf7246ec592d444e29550c279255e3d0fe08d1ec4ed2c7587abf2`;
+it predates the version-77 token change. On 16 MiB `486,-fpu`, the guest
+reported a `0x7A`-byte request, arena usage `0xD77AC0` of `0xD79C00`,
+`0x14CFD` allocations, and a largest free payload of `0x48` bytes. The
+difference between arena size and used spans is `0x2140` bytes, including free
+block headers; it is not a count of available payload bytes. The failure
+therefore shows insufficient contiguous space, not the identity of the
+allocations causing fragmentation. No retained module was qualified by this
+run. Full guest-built installation and two native generations remain open.

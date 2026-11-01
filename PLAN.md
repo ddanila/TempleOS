@@ -25149,3 +25149,11 @@ compiler, the AOT fixture also verifies the distinct JIT and guest-built module
 results; the loader audit now accepts the valid 386 `inc` instruction. See
 [the evidence](docs/i386-heap-performance.md). The retained build and the
 timing gate remain unfinished; C1–C5 remain open.
+
+## Retained build memory failure (2026-11-01)
+
+The nine-module retained build on the shared-call-descriptor image failed its
+first module with `OutMem` in `StrIMatchCore.HC`. The heap trace shows a
+122-byte request and a 72-byte largest free payload. See
+[the failure evidence](docs/i386-module-compiler-types.md). Full native
+installation, both generations, the timing gate, and C1–C5 remain open.
