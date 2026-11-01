@@ -111,3 +111,29 @@ not valid for that state (`build/i386-suspended-rich-double-report`). These
 checks do not establish general callback/reentrancy behavior or responsiveness;
 the two full frames per update are a performance cost. Isolated startup timing
 and complete desktop qualification remain open.
+
+## User child startup and task defaults (2026-11-01)
+
+A new `User` child startup fixture passes all eight checks on both the pinned
+original and the current original rebuild (`build/i386-user-startup-reference-final`
+and `build/i386-user-startup-rebuilt-final`). It checks the shared input/display
+document, 4096-entry limit, border and menu, visible non-raw state, right-click
+callback, original welcome bytes, queued child execution and a successful `Kill`.
+The latter does not establish complete task or heap reclamation.
+
+The same fixture fails on the current 64 MiB native image with mask 161 of 255
+(`build/i386-user-startup-native-red-v1`): the shared document, queued execution
+and `Kill` checks pass, while the entry limit, border and menu, visible state,
+right-click callback and welcome checks fail. At the prompt the original child
+reported display flags 3 and inhibit flags 0; native reported 2 and 0. The
+original `HomeSys.HC` starts two `User` tasks and tiles them; recreating this
+requires the actual terminal initialization and its dependencies, including
+`TermRightClickLink`, before desktop behavior can be qualified.
+
+A separate original `Spawn` fixture records initial task-window defaults
+(`build/i386-task-window-default-reference-final`): coordinates 1–78 and
+13–58, inhibit flags `0x52F3FF`, text attribute `0xF1`, and a task-name title.
+Its checks also cover the drive-derived border attribute and successful `Kill`.
+These are initial task defaults, not the later tiled user-window geometry. The
+native comparison and implementation remain open, as do the full desktop and
+C1–C5.

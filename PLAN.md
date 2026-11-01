@@ -24971,3 +24971,12 @@ bordered terminals, while native still starts one full-screen console. A
 rectangle-only experiment was discarded. Starting and managing the second
 terminal, full visual/focus behavior, minimal-profile qualification and C1–C5
 remain open. See `docs/i386-window-tiling.md`.
+
+## User child startup baseline (2026-11-01)
+
+The original and rebuilt systems pass a new child-terminal startup contract;
+the current native image passes three of its eight checks. A separate original
+fixture records spawned task window defaults. These identify prerequisites for
+the two-terminal desktop without qualifying it; see `docs/i386-terminal-startup.md`.
+The native task-default comparison, original terminal initialization, desktop
+behavior and C1–C5 remain open.
