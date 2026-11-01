@@ -25140,3 +25140,12 @@ DolDoc AOT include pass. An isolated 8 MiB pair took 69.009 seconds for the
 candidate and 70.641 for the control; both miss the 60-second gate. The full
 retained build continues on its earlier image. See
 [the evidence](docs/i386-heap-performance.md). C1–C5 remain open.
+
+## Conditional fixture verification (2026-11-01)
+
+Packaged-source conditional fixtures pass at 8 MiB on the current compiler and
+the earlier control, including invalid-directive recovery. On the current
+compiler, the AOT fixture also verifies the distinct JIT and guest-built module
+results; the loader audit now accepts the valid 386 `inc` instruction. See
+[the evidence](docs/i386-heap-performance.md). The retained build and the
+timing gate remain unfinished; C1–C5 remain open.

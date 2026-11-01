@@ -82,10 +82,25 @@ def commands():
     return result
 
 
+def packaged_commands():
+    return [
+        ('#include "C:/IfGood.HC"', []),
+        ('IfTrue+IfFalse+IfPointer+IfNested+IfFloat+IfTail;', ['81']),
+        ('6*7;', ['42']),
+        ('#include "C:/IfBad.HC"', ['Error: Invalid lval at ']),
+        ('6*7;', ['42']),
+        ('IfTrue+IfTail;', ['27']),
+        ('HashFind("IfBad",Fs->hash_table,HTT_FUN)==0;', ['1']),
+    ]
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--welcome',action='store_true',help='Expect the welcome screen')
+    parser.add_argument('--packaged',action='store_true',
+                        help='Stage the exact sources in a disposable image before boot')
     args=parser.parse_args()
     args.out.mkdir(parents=True,exist_ok=True)
     path=args.out/'result.json';path.unlink(missing_ok=True)
@@ -94,12 +109,26 @@ def main():
     checker=sha(Path(__file__))
     report=dict(result='fail',disk_sha256=before,checker_sha256=checker,
                 fixture_sha256=hashlib.sha256(SOURCE.encode()).hexdigest(),
-                cpu='486,-fpu',ram_mib=8,accel='tcg',
+                cpu='486,-fpu',ram_mib=8,accel='tcg',welcome=args.welcome,packaged=args.packaged,
                 scope='Native JIT expression conditionals and recovery; not AOT parity or allocation-failure cleanup')
     runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
     try:
-        report['console']=runner(args.disk,args.out/'console',cpu='486,-fpu',qmp_stdio=True,
-                                 startup_check={'status':'ok','answers':[],'commands':commands()})
+        disk=args.disk
+        if args.packaged:
+            files={'/IfGood.HC':SOURCE.encode(),'/IfBad.HC':BAD_SOURCE.encode()}
+            disk=args.out/'working.img'
+            report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
+                args.disk.resolve(),disk.resolve(),additions=files)
+            checks=packaged_commands()
+        else:
+            checks=commands()
+        report['console']=runner(disk,args.out/'console',cpu='486,-fpu',qmp_stdio=True,
+                                 snapshot=not args.packaged,welcome=args.welcome,startup_timeout=360,
+                                 startup_check={'status':'ok','answers':[],'commands':checks,
+                                                'command_timeout':120})
+        if args.packaged:
+            delivered=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,set(files))
+            if delivered!=files:raise ValueError('Packaged conditional sources changed')
         report['result']='pass'
     except Exception as exc:
         report['error']=str(exc)

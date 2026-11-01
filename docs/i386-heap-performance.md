@@ -734,3 +734,23 @@ gate. This single pair shows a modest improvement on this host, not a
 performance distribution or completion of the timing requirement. The retained
 build was resumed afterward and continues on its earlier version-76 image; it
 does not test this change. C1–C5 remain open.
+
+## Packaged conditional fixtures (2026-11-01)
+
+The conditional test tools can now stage their exact source files in a
+disposable image and handle the welcome screen. This avoids the long typed
+setup that timed out above; the original interactive staging remains available.
+The packaged 8 MiB JIT fixture passed on both the version-77 candidate and
+the earlier control, including nested conditionals, a deliberate invalid
+directive, recovery, and the check that the bad definition was not published
+(`build/i386-token-conditional-packaged` and
+`build/i386-token-conditional-control`). Both runs checked the staged source
+and original image bytes.
+
+The packaged AOT fixture also passed on the candidate: its JIT branch returned
+98, and its guest-built module returned 99 when loaded by the separate loader
+test (`build/i386-token-conditional-aot-packaged-v2`). The loader audit now
+accepts `inc`, a valid 386 instruction emitted in that test; the corrected
+loader run passed 41 cases. These focused checks do not qualify the full native
+build or the startup timing gate. The retained build continues on its pinned
+version-76 image, and C1–C5 remain open.

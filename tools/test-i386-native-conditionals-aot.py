@@ -28,6 +28,9 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--welcome',action='store_true',help='Expect the welcome screen')
+    parser.add_argument('--packaged',action='store_true',
+                        help='Stage the exact source in a disposable image before boot')
     args=parser.parse_args()
     out=args.out.resolve();out.mkdir(parents=True,exist_ok=True)
     result=out/'result.json';result.unlink(missing_ok=True)
@@ -39,12 +42,18 @@ def main():
     before=sha(args.disk);checkers={str(file.relative_to(ROOT)):sha(file) for file in inputs}
     runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))
     if working.exists():runner['require_unlocked_image'](working)
-    shutil.copyfile(args.disk,working)
+    if args.packaged:
+        packaging=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
+            args.disk.resolve(),working,additions={'/IfAot.HC':SOURCE.encode()})
+    else:
+        shutil.copyfile(args.disk,working)
     report=dict(result='fail',disk_sha256=before,checker_sha256=checkers,
                 fixture_sha256=hashlib.sha256(SOURCE.encode()).hexdigest(),
+                welcome=args.welcome,packaged=args.packaged,
                 scope='Native JIT/AOT mode distinction and loaded guest-built module execution; not allocation-failure cleanup')
+    if args.packaged:report['packaging']=packaging
     try:
-        commands=CONTRACT['stage'](SOURCE,'Aot')+[
+        commands=([] if args.packaged else CONTRACT['stage'](SOURCE,'Aot'))+[
             ('#include "C:/IfAot.HC"', []),
             ('Main(0,0);', ['98']),
             ('I386BuildModule("C:/IfAot.HC","C:/Probe/ConditionalAot.t32m",TRUE)>0;', ['1']),
@@ -52,9 +61,13 @@ def main():
         ]
         assert all(len(source)<=255 for source,_ in commands)
         report['compile']=runner['run_input'](working,out/'compile',cpu='486,-fpu',
-            qmp_stdio=True,snapshot=False,startup_check={'status':'ok','answers':[], 'commands':commands})
+            qmp_stdio=True,snapshot=False,welcome=args.welcome,startup_timeout=360,
+            startup_check={'status':'ok','answers':[], 'commands':commands,'command_timeout':600})
         files=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents']
-        module=files(working,{'/Probe/ConditionalAot.t32m'})['/Probe/ConditionalAot.t32m']
+        delivered=files(working,{'/Probe/ConditionalAot.t32m','/IfAot.HC'})
+        if args.packaged and delivered.get('/IfAot.HC')!=SOURCE.encode():
+            raise ValueError('Packaged conditional source changed')
+        module=delivered['/Probe/ConditionalAot.t32m']
         path=out/'ConditionalAot.t32m';path.write_bytes(module)
         with (out/'loader.log').open('w') as log:
             subprocess.run([sys.executable,str(ROOT/'tools/test-i386-loader.py'),
