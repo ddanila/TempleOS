@@ -246,3 +246,7 @@ advances past `GrBorder` and stops at `sqrt2` on line 346
 With the original mathematical constants, unchanged KeepAway advances past
 `sqrt2` and stops at `Blink` on line 381
 (`build/i386-app-keepaway-constants-v1`, inputs unchanged). Gameplay remains open.
+
+With public `Blink`, unchanged KeepAway advances past the blinking text branch
+and stops at `Beep` on line 428 (`build/i386-app-keepaway-blink-v1`, inputs
+unchanged). Gameplay remains open.
