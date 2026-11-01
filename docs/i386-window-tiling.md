@@ -12,28 +12,29 @@ Seven live-task cases cover one to three eligible windows, both directions,
 bordered and mixed borderless geometry, derived dimensions, inhibited other
 tasks, and enabled/disabled incoming interrupts. The pinned original and the
 rebuilt original return seven masks of 31
-(`build/i386-win-tile-reference-v5`, `build/i386-win-tile-rebuilt-v3`). The
+(`build/i386-win-tile-reference-v5`, `build/i386-win-tile-rebuilt-final-v1`). The
 previous native image rejects the missing public tiling prerequisite
 (`build/i386-win-tile-native-red-v1`). The 64 MiB native comparison passes
-(`build/i386-win-tile-native-64m-v3`). The full fixture cannot compile at
+(`build/i386-win-tile-native-64m-final-v1`). The full fixture cannot compile at
 8 MiB because its backend workspace allocation exhausts the guest heap
 (`build/i386-win-tile-native-8m-v1`, `build/i386-win-tile-native-8m-v2`). A
 separate smaller one-window vertical case passes the original and 8 MiB native
 (`build/i386-win-tile-small-reference-v2`,
-`build/i386-win-tile-small-native-8m-v2`); it does not substitute for the
+`build/i386-win-tile-small-native-8m-final-v1`); it does not substitute for the
 multi-window cases at 8 MiB. Two additional five-window cases cover the
 original group-of-four transition in both directions; pinned original, rebuilt original and 64 MiB native pass
 (`build/i386-win-tile-many-reference-v1`,
-`build/i386-win-tile-many-rebuilt-v1`,
-`build/i386-win-tile-many-native-64m-v1`). Other window counts, concurrent ring
+`build/i386-win-tile-many-rebuilt-final-v1`,
+`build/i386-win-tile-many-native-64m-final-v1`). Other window counts, concurrent ring
 mutation, callback exceptions and full task-retirement/heap recovery remain
 unqualified.
 
-The source-matched original bootstrap generations, native cross-build/386
-audit and physical editor regression pass (`build/i386-win-tile-rebuild-v1.log`,
-`build/i386-win-tile-cross-v1`, `build/i386-win-tile-physical-v1`). The
-terminal-menu regression and 16 MiB startup diagnostic also pass
-(`build/i386-win-tile-term-v1`, `build/i386-win-tile-diag-v1`).
+The committed-source original bootstrap generations and native cross-build/386
+audit pass (`build/i386-win-tile-rebuild-final-v1.log`,
+`build/i386-win-tile-cross-final-v1`). On the preceding image, the physical
+editor, terminal-menu and 16 MiB diagnostic regressions pass
+(`build/i386-win-tile-physical-v1`, `build/i386-win-tile-term-v1`,
+`build/i386-win-tile-diag-v1`).
 
 The original startup baseline contains two focusable bordered windows, at
 columns 1–39 and 41–78, both rows 2–58; the input task is not the Adam task.
@@ -53,6 +54,12 @@ removed. Reproducing the original desktop requires the actual terminal tasks,
 tiling, focus, rendering and the existing minimal-profile regressions, not
 just changing one task's coordinates. C1–C5 remain open.
 
-The isolated 8 MiB startup run passes all nine functional/VGA checks but takes
-64.359 seconds and misses the 60-second target
-(`build/i386-win-tile-startup-v1`).
+The preceding isolated 8 MiB startup run passed all nine functional/VGA checks
+in 64.359 seconds (`build/i386-win-tile-startup-v1`). The committed-source
+image also passes those checks but takes 61.542 seconds, missing the 60-second
+target (`build/i386-win-tile-startup-final-v1`).
+
+The final cross-build follows removal of a trailing blank line from the shared
+source. Its `Kernel32.BIN`, `Kernel.t32m`, `ConsoleRuntime.t32m` and
+`EditorRuntime.t32m` match the preceding tested build byte-for-byte; the full
+disk image differs. The final tiling tests above use the committed-source image.

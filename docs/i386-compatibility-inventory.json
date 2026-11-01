@@ -4892,7 +4892,7 @@
           "target": "native-window-tiling-64m",
           "command": "python3 tools/test-i386-win-tile.py IMAGE --ram-mib 64 --out OUT",
           "result": "pass",
-          "evidence": "build/i386-win-tile-native-64m-v3/result.json",
+          "evidence": "build/i386-win-tile-native-64m-final-v1/result.json",
           "scope": "Seven matching live-task tiling cases; full desktop and task-retirement qualification remain open"
         },
         {
@@ -4906,14 +4906,14 @@
           "target": "native-window-tiling-small-8m",
           "command": "python3 tools/test-i386-win-tile-small.py IMAGE --ram-mib 8 --out OUT",
           "result": "pass",
-          "evidence": "build/i386-win-tile-small-native-8m-v2/result.json",
+          "evidence": "build/i386-win-tile-small-native-8m-final-v1/result.json",
           "scope": "One bordered live task and vertical tiling; multi-window 8 MiB coverage remains open"
         },
         {
           "target": "native-window-tiling-five-64m",
           "command": "python3 tools/test-i386-win-tile-many.py IMAGE --ram-mib 64 --out OUT",
           "result": "pass",
-          "evidence": "build/i386-win-tile-many-native-64m-v1/result.json",
+          "evidence": "build/i386-win-tile-many-native-64m-final-v1/result.json",
           "scope": "Five live tasks in horizontal and vertical tiling, including group-of-four transition; other counts, concurrency and callback failures unqualified"
         }
       ]
