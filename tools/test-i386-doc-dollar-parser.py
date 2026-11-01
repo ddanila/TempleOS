@@ -5,7 +5,6 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
 import subprocess
 import sys
 
@@ -34,7 +33,7 @@ def main():
     if args.original:
         files += [ROOT / p for p in ('Adam/DolDoc/DocPutS.HC', 'Adam/DolDoc/DocPutSCore.HC', 'Adam/DolDoc/DocPlain.HC', 'Adam/DolDoc/DocDollarServices.HH', 'Adam/DolDoc/DocFormDataCore.HC', 'Adam/DolDoc/DocDollarFlagsCore.HC', 'Adam/DolDoc/DocDollarParseCore.HC', 'Compiler/LexLib.HC', 'Compiler/PrsExp.HC', 'tools/build-iso.py', 'tools/guest-run.py')]
     else:
-        files += [args.disk.resolve(), ROOT / 'tools/i386-kernel-input.py', ROOT / 'tools/build-i386-kernel.py']
+        files += [args.disk.resolve(), ROOT / 'tools/i386-kernel-input.py', ROOT / 'tools/build-i386-kernel.py', ROOT / 'tools/package-i386-native-image.py']
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     pins = {str(p): sha(p) for p in files}
     report = dict(result='running', input_sha256=pins, scope='Nested DolDoc parsing: precedence, STR_LEN, integer conversion from F64, adjacent strings, task globals, raw F64 bits and function calls; no malformed-input, allocation-fault or chooser coverage')
@@ -59,24 +58,15 @@ def main():
                 raise ValueError('Original parser contract did not pass all six checks')
         else:
             disk = out / 'working.img'
-            shutil.copyfile(args.disk, disk)
-            commands = [('HashFind("PrsDollarCmd",Fs->hash_table,~0)!=NULL;', ['1'])]
-            source = fixture.read_text()
-            commands += [(f'U8 *dp_source=CAlloc({len(source)+1});', []),
-                         ('U0 DPTransfer(I64 offset,U8 *text,I64 size){MemCpy(dp_source+offset,text,size);}', [])]
-            for offset in range(0, len(source), 60):
-                chunk = source[offset:offset+60]
-                command = f'DPTransfer({offset},{json.dumps(chunk.replace(chr(36), chr(36)*2))},{len(chunk)});'
-                if len(command)>255:
-                    raise ValueError('Parser fixture transfer exceeds console capacity')
-                commands.append((command, []))
-            commands += [(f'FileWrite("C:/DollarContract.HC",dp_source,{len(source)})>0;', ['1']),
-                         ('Free(dp_source);', []), ('#include "C:/DollarContract.HC"', []),
-                         ('DollarParserContract;', ['63'])]
+            report['packaging'] = runpy.run_path(str(ROOT / 'tools/package-i386-native-image.py'))['package'](
+                args.disk.resolve(), disk, additions={'/DollarContract.HC':fixture.read_bytes()})
+            commands = [('HashFind("PrsDollarCmd",Fs->hash_table,~0)!=NULL;', ['1']),
+                        ('#include "C:/DollarContract.HC"', []),
+                        ('DollarParserContract;', ['63'])]
             if args.printed_fields:
                 commands += [('DollarParserContract;', ['63']) for _ in range(9)]
             commands += [('6*7;', ['42'])]
-            report['behavior'] = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input'](disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, snapshot=False, startup_check={'status':'ok', 'answers':[], 'commands':commands})
+            report['behavior'] = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input'](disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, snapshot=False, welcome=True, startup_check={'status':'ok', 'answers':[], 'commands':commands})
         if not args.original:
             saved = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk, {'/DollarContract.HC'}).get('/DollarContract.HC')
             report['guest_fixture_sha256'] = hashlib.sha256(saved).hexdigest() if saved is not None else None

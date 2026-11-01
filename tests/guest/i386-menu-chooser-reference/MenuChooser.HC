@@ -21,6 +21,8 @@ I64 MCChoose(I64 mode)
   if(mode==9)Msg(MSG_KEY_DOWN,0,SC_HOME);
   if(mode==10)Msg(MSG_KEY_DOWN,0,SC_CURSOR_DOWN|SCF_CTRL);
   if(mode==11)Msg(MSG_KEY_DOWN,0,SC_CURSOR_UP|SCF_CTRL);
+  if(mode==12)Msg(MSG_KEY_DOWN,0,SC_CURSOR_RIGHT);
+  if(mode==13){Msg(MSG_KEY_DOWN,0,SC_CURSOR_DOWN);Msg(MSG_KEY_DOWN,0,SC_CURSOR_LEFT);}
   if(mode==1)Msg(MSG_KEY_DOWN,10,0);
   else if(mode==3)Msg(MSG_KEY_DOWN,CH_SHIFT_ESC,0);
   else Msg(MSG_KEY_DOWN,32,0);

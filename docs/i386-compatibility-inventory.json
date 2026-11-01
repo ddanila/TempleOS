@@ -2128,7 +2128,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB. Eight direct form-Tab navigation and insertion cases also match the original. Real chooser Tab, Shift-Tab, Down and key-release cases match at 8 and 64 MiB; retained non-form physical vertical navigation also passes its scoped test. Real chooser Home/End and Ctrl-Up/Down also match the original at 8 and 64 MiB."
+        "description": "Six bounded document-key cases cover pre-lock callback consume/fallthrough, default DocPut, plain-text insertion and overstrike, and seeded undo. The full key dispatcher and shortcuts remain unqualified. Real popup menu Space activation also passes; full character/key dispatch remains unqualified. Seven direct Space/Enter action, modifier, callback and collapse cases also pass at 8 and 64 MiB. Eight direct form-Tab navigation and insertion cases also match the original. Real chooser Tab, Shift-Tab, Down and key-release cases match at 8 and 64 MiB; retained non-form physical vertical navigation also passes its scoped test. Real chooser Home/End and Ctrl-Up/Down also match the original at 8 and 64 MiB. Eight direct form horizontal cursor, selection and modifier cases also match at 8 and 64 MiB."
       },
       "oracle": {
         "tool": "tools/test-i386-doc-put-key-reference.py",
@@ -2257,6 +2257,27 @@
           "result": "pass",
           "evidence": "build/i386-menu-boundary-native-64m-v1/result.json",
           "scope": "Actual chooser Home/End and Ctrl-arrow navigation plus existing cases; selection flags, mouse and full input remain unqualified"
+        },
+        {
+          "target": "native-form-horizontal-8m",
+          "command": "python3 tools/test-i386-doc-form-horizontal.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-form-horizontal-native-8m-v2/result.json",
+          "scope": "Eight direct form horizontal navigation, skipped-entry, Shift selection and Ctrl cases; not full selection or editing qualification"
+        },
+        {
+          "target": "native-form-horizontal-64m",
+          "command": "python3 tools/test-i386-doc-form-horizontal.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-form-horizontal-native-64m-v2/result.json",
+          "scope": "Eight direct form horizontal navigation, skipped-entry, Shift selection and Ctrl cases; not full selection or editing qualification"
+        },
+        {
+          "target": "native-chooser-horizontal-64m",
+          "command": "python3 tools/test-i386-menu-chooser.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-menu-horizontal-native-64m-v2/result.json",
+          "scope": "Real chooser Right and Down-then-Left plus prior keyboard cases; mouse and full popup behavior remain unqualified"
         }
       ]
     },

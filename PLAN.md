@@ -24937,3 +24937,10 @@ Real chooser End/Home and Ctrl-Down/Up cases now match the original at 8 and
 64 MiB through the shared original boundary traversal. The retained non-form
 editor still has a separate navigation path; full original document input,
 selection and C1–C5 remain open. See `docs/i386-doc-put-key.md` for evidence.
+
+## Form horizontal navigation (2026-11-01)
+
+Forms now use the original left/right cursor functions. Direct original/native
+comparisons cover skipped entries, Shift selection and Ctrl movement, and the
+real chooser covers horizontal navigation. Full original editing, layout and
+C1–C5 remain open; see `docs/i386-doc-put-key.md`.

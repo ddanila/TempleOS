@@ -237,3 +237,51 @@ The 16 MiB startup diagnostic and terminal-menu regression pass
 `build/i386-doc-key-boundary-term-v1`). The isolated 8 MiB run completes all
 nine functional/VGA checks in 61.196 seconds, missing the 60-second gate
 (`build/i386-doc-key-boundary-startup-v1`).
+
+## Form horizontal navigation and selection (2026-11-01)
+
+Form Left/Right now dispatch to the original `EdCursorLeft` and `EdCursorRight`
+functions, including their Ctrl and Shift behavior. The native bit-setting
+adapter now accepts the full integer truth value: the original functions pass
+the Shift mask (0x200), which was truncated by the adapter's `Bool` argument.
+This also corrects the adapter used by the shared boundary traversal. The
+retained non-form editor continues to use its existing mover pending layout
+integration.
+
+Eight direct form cases check left/right movement, skipped entries, Shift
+selection, selection clearing, Ctrl movement, cursor position, locks, roles
+and heap balance. The pinned original, rebuilt original, and native at 8 and
+64 MiB return eight masks of 31 (`build/i386-doc-form-horizontal-reference-v2`,
+`build/i386-doc-form-horizontal-rebuilt-v1`,
+`build/i386-doc-form-horizontal-native-8m-v2`,
+`build/i386-doc-form-horizontal-native-64m-v2`). The first original fixture
+assumed Ctrl-Left stayed on its current entry; the actual unlaid-out entry
+coordinates lead to the first entry (`build/i386-doc-form-horizontal-reference-v1`).
+The previous native image fails the first Right case
+(`build/i386-doc-form-horizontal-native-red-v1`), and the first candidate fails
+Shift selection on both memory profiles
+(`build/i386-doc-form-horizontal-native-8m-v1`,
+`build/i386-doc-form-horizontal-native-64m-v1`).
+
+The actual chooser adds Right and Down-then-Left. The pinned and rebuilt
+original and revised native image pass (`build/i386-menu-horizontal-reference-v1`,
+`build/i386-menu-horizontal-rebuilt-v1`,
+`build/i386-menu-horizontal-native-64m-v2`); the previous native image times
+out on Down-then-Left (`build/i386-menu-horizontal-native-v1`). Both bootstrap
+generations, full cross-build and 386 audit pass
+(`build/i386-doc-form-horizontal-rebuild-v2.log`,
+`build/i386-doc-form-horizontal-cross-v2`). These checks do not qualify full
+selection, non-form original layout, mouse input or C1–C5.
+
+The revised image also passes the physical non-form editor check, the 16 MiB
+startup diagnostic and the existing six-case dollar-parser contract
+(`build/i386-doc-form-horizontal-physical-v2`,
+`build/i386-doc-form-horizontal-diag-v1`,
+`build/i386-doc-form-horizontal-dollar-v3`). The parser runner now packages
+the identical fixture and checks the guest copy: its first retry expected the
+old startup screen, and its second timed out typing the transfer helper before
+any parser case (`build/i386-doc-form-horizontal-dollar-v1`,
+`build/i386-doc-form-horizontal-dollar-v2`).
+The isolated 8 MiB startup run passes all nine functional/VGA checks but takes
+61.748 seconds, above the 60-second gate
+(`build/i386-doc-form-horizontal-startup-v1`).

@@ -1,6 +1,6 @@
 //Original dollar grammar and data fields, using task-owned native compilation.
 import I64 MSize(U8 *allocation);
-Bool NativeDocBEqu(U8 *bits,I64 index,Bool value)
+Bool NativeDocBEqu(U8 *bits,I64 index,I64 value)
 {
   if(value) return Bts(bits,index);
   return Btr(bits,index);
