@@ -4850,8 +4850,18 @@
       ],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Original live-task horizontal and vertical tiling: seven cases cover one to three windows, border variants and interrupt state; original startup has two tiled bordered terminals. Full desktop/focus behavior remains unqualified. Two further five-window cases cover the original tiling group transition."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-win-tile-reference.py",
+        "checks": [
+          "One to three live windows in both tiling directions",
+          "Border geometry and derived dimensions",
+          "Incoming interrupt state and pre-existing task inhibition"
+        ]
+      },
       "tests": [
         {
           "command": "python3 tools/test-i386-focus-present-wait.py IMAGE --out OUT",
@@ -4870,6 +4880,41 @@
           "result": "pass",
           "evidence": "build/i386-c2-win-border-native/result.json",
           "scope": "Console134 shared original WinBorder: mask31 and three commands match original border/geometry/IF/invalid-task contract with unchanged inputs; 64 MiB functional test, not resource or full DocPutKey qualification"
+        },
+        {
+          "target": "original-window-tiling",
+          "command": "python3 tools/test-i386-win-tile-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-win-tile-reference-v5/result.json",
+          "scope": "Seven bounded original tiling cases; no concurrent mutation or callback failures"
+        },
+        {
+          "target": "native-window-tiling-64m",
+          "command": "python3 tools/test-i386-win-tile.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-win-tile-native-64m-v3/result.json",
+          "scope": "Seven matching live-task tiling cases; full desktop and task-retirement qualification remain open"
+        },
+        {
+          "target": "native-window-tiling-full-fixture-8m",
+          "command": "python3 tools/test-i386-win-tile.py IMAGE --ram-mib 8 --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-win-tile-native-8m-v2/result.json",
+          "scope": "Guest compiler backend workspace allocation exhausts 8 MiB heap before tiling cases"
+        },
+        {
+          "target": "native-window-tiling-small-8m",
+          "command": "python3 tools/test-i386-win-tile-small.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-win-tile-small-native-8m-v2/result.json",
+          "scope": "One bordered live task and vertical tiling; multi-window 8 MiB coverage remains open"
+        },
+        {
+          "target": "native-window-tiling-five-64m",
+          "command": "python3 tools/test-i386-win-tile-many.py IMAGE --ram-mib 64 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-win-tile-many-native-64m-v1/result.json",
+          "scope": "Five live tasks in horizontal and vertical tiling, including group-of-four transition; other counts, concurrency and callback failures unqualified"
         }
       ]
     },
@@ -5046,6 +5091,13 @@
           "result": "pass",
           "evidence": "build/i386-c2-term-right-menu-refresh-native/result.json",
           "scope": "Explicitly covered real popup ShiftEsc and refresh progress; full button activation remains failing; whole-file unqualified"
+        },
+        {
+          "target": "original-desktop-layout",
+          "command": "python3 tools/test-i386-original-desktop-layout.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-desktop-layout-reference-v1/result.json",
+          "scope": "Original startup has two focusable bordered task rectangles and sampled frame pixels; not full pixel parity or native desktop qualification"
         }
       ]
     },

@@ -37,6 +37,7 @@ def main():
     source, out = args.disk.resolve(), args.out.resolve()
     fixture = ROOT/'tests/guest/i386-menu-large-page-default/MenuChooser.HC' if args.default_window else FIXTURE
     commands = list(COMMANDS)
+    if args.default_window: commands.insert(3,('MCWindow;',['1']))
     if out.exists():
         parser.error('Use a fresh output directory')
     sha = lambda p:hashlib.sha256(p.read_bytes()).hexdigest()

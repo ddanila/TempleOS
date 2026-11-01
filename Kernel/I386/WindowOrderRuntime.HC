@@ -37,3 +37,19 @@ U0 NativeWindowTaskInsert(CTask *task,CTask *pred)
 #include "/Kernel/WinMaxCore.HC"
 
 #include "/Kernel/WinBorderCore.HC"
+
+#include "/Adam/WinTileCore.HC"
+public U0 WinTileHorz()
+{
+  I64 flags=GetRFlags;
+  SetRFlags(flags&~512);
+  try { WinTileHorzCore; } catch { SetRFlags(flags); }
+  SetRFlags(flags);
+}
+public U0 WinTileVert()
+{
+  I64 flags=GetRFlags;
+  SetRFlags(flags&~512);
+  try { WinTileVertCore; } catch { SetRFlags(flags); }
+  SetRFlags(flags);
+}

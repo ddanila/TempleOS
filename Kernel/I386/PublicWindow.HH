@@ -13,6 +13,8 @@ public _extern _TASK_DERIVED_VALS_UPDATE U0 TaskDerivedValsUpdate(CTask *task=NU
 public _extern _WIN_HORZ Bool WinHorz(I64 left,I64 right,CTask *task=NULL);
 public _extern _WIN_BORDER Bool WinBorder(Bool val=OFF,CTask *task=NULL);
 public _extern _WIN_MAX U0 WinMax(CTask *task=NULL);
+public _extern _WIN_TILE_HORZ U0 WinTileHorz();
+public _extern _WIN_TILE_VERT U0 WinTileVert();
 public _extern _WIN_VERT Bool WinVert(I64 top,I64 bottom,CTask *task=NULL);
 public _extern _CTRL_FIND_UNIQUE CCtrl *CtrlFindUnique(CTask *task,I64 type);
 public _extern _CTRLS_UPDATE U0 CtrlsUpdate(CTask *task);

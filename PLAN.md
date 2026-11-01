@@ -24960,3 +24960,14 @@ window geometry remains rows 0–59, changing page landings (60 versus 57); the
 unmodified default comparison remains failing. Align desktop window geometry and
 its rendering and interaction dependencies before qualifying this workflow.
 See `docs/i386-doc-put-key.md`; C1–C5 remain open.
+
+## Window tiling prerequisite (2026-11-01)
+
+The original horizontal and vertical tiling bodies now compile through the
+native public API and pass seven one-to-three-window and two five-window
+live-task comparisons at 64 MiB. A separate one-window case passes at 8 MiB;
+the full fixture exhausts the guest compiler workspace at that size. The original startup baseline has two tiled,
+bordered terminals, while native still starts one full-screen console. A
+rectangle-only experiment was discarded. Starting and managing the second
+terminal, full visual/focus behavior, minimal-profile qualification and C1–C5
+remain open. See `docs/i386-window-tiling.md`.
