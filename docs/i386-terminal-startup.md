@@ -26,6 +26,20 @@ bytes. Its observations are retained, and the corrected fresh run passes.
 python3 tools/test-i386-terminal-startup-reference.py --out OUTPUT
 ```
 
+The runner can also use the verified current original rebuild and compare all
+three saved documents with a pinned-original run:
+
+```sh
+python3 tools/test-i386-terminal-startup-reference.py --shared --reference PINNED_OUTPUT --out OUTPUT
+```
+
+It checks the rebuilt source and binary hashes and the reference provenance
+before booting. Both modes pass against the pinned control in
+`build/i386-term-right-startup-pinned-v2` and
+`build/i386-term-right-startup-shared-v2`; the rebuilt-original documents
+match byte for byte. These checks do not execute right-click actions or qualify
+native terminal startup.
+
 This independently confirms the startup cause of the strict native TimeClock
 report mismatch described in [the native application evidence](i386-timeclock-native.md).
 It is an original reference contract, not native startup qualification.

@@ -15,6 +15,10 @@ spec.loader.exec_module(reference)
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--shared', action='store_true',
+                        help='Use the verified current original rebuild and sources')
+    parser.add_argument('--reference', type=Path,
+                        help='Compare saved documents with a pinned-original run')
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
     out = args.out.resolve()
@@ -25,9 +29,52 @@ def main():
     fixture = ROOT/'tests/guest/i386-terminal-startup-reference'
     inputs = [Path(__file__).resolve(), Path(reference.__file__), fixture/'Once.HC',
               ROOT/'tools/build-iso.py', ROOT/'tools/guest-run.py']
+    reference_sha256 = reference.restore_reference(overlay)
+    if args.shared:
+        manifest = ROOT/'build/rebuild-test/result.json'
+        snapshot = json.loads(manifest.read_text())
+        if snapshot.get('result') != 'pass':
+            raise ValueError('Need a passing current original rebuild')
+        inputs.append(manifest)
+        for name, digest in snapshot['source_sha256'].items():
+            source = ROOT/name
+            if reference.sha(source) != digest:
+                raise ValueError('Changed rebuilt source: '+name)
+            inputs.append(source)
+            target = overlay/name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(source.read_bytes())
+        for name, relative in [('Compiler.BIN', 'Compiler/Compiler.BIN'),
+                               ('Kernel.BIN', '0000Boot/0000Kernel.BIN.C')]:
+            source = ROOT/'build/rebuild-test/overlay'/relative
+            if reference.sha(source) != snapshot['generations'][-1][name]:
+                raise ValueError('Changed rebuilt binary: '+name)
+            inputs.append(source)
+            (overlay/relative).write_bytes(source.read_bytes())
+    names = ('terminal-empty.DD', 'terminal-welcome.DD', 'terminal-cleared.DD')
+    expected = None
+    if args.reference:
+        baseline_path = args.reference.resolve()/'result.json'
+        baseline = json.loads(baseline_path.read_text())
+        if baseline.get('result') != 'pass' or baseline.get('mode', 'pinned-original') != 'pinned-original':
+            raise ValueError('Need a passing pinned-original reference')
+        if (baseline.get('reference_revision') != reference.REFERENCE or
+                baseline.get('repair_revision') != reference.REPAIRS or
+                baseline.get('reference_sha256') != reference_sha256):
+            raise ValueError('Reference provenance does not match')
+        inputs.append(baseline_path)
+        expected = {}
+        for name in names:
+            path = args.reference.resolve()/'guest'/name
+            data = path.read_bytes()
+            if data.hex() != baseline['observed_hex'][name]:
+                raise ValueError('Changed reference document: '+name)
+            inputs.append(path)
+            expected[name] = data
     report = dict(result='running', reference_revision=reference.REFERENCE,
                   repair_revision=reference.REPAIRS,
-                  reference_sha256=reference.restore_reference(overlay),
+                  mode='shared' if args.shared else 'pinned-original',
+                  reference_sha256=reference_sha256,
                   input_sha256={str(p):reference.sha(p) for p in inputs},
                   scope='Original DocTermNew, full welcome Type and DocClear; native startup and desktop task orchestration remain unqualified')
     try:
@@ -37,9 +84,10 @@ def main():
         report['iso_sha256'] = reference.sha(iso)
         subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),
                         '--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
-        observed = {name:(out/'guest'/name).read_bytes() for name in
-                    ('terminal-empty.DD','terminal-welcome.DD','terminal-cleared.DD')}
+        observed = {name:(out/'guest'/name).read_bytes() for name in names}
         report['observed_hex'] = {name:data.hex() for name,data in observed.items()}
+        if expected is not None and observed != expected:
+            raise ValueError('Terminal documents differ from pinned original')
         if observed['terminal-empty.DD'] != b'':
             raise ValueError('Fresh original terminal serialization differs')
         if observed['terminal-cleared.DD'] != b'$WW+H,1$\x05':
