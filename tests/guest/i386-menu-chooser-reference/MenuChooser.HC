@@ -17,6 +17,10 @@ I64 MCChoose(I64 mode)
   if(mode==5)Msg(MSG_KEY_DOWN,'\t',SC_TAB);
   if(mode==6)Msg(MSG_KEY_DOWN,'\t',SC_TAB|SCF_SHIFT);
   if(mode==7)Msg(MSG_KEY_UP,0,SC_CURSOR_DOWN);
+  if(mode==8||mode==9||mode==11)Msg(MSG_KEY_DOWN,0,SC_END);
+  if(mode==9)Msg(MSG_KEY_DOWN,0,SC_HOME);
+  if(mode==10)Msg(MSG_KEY_DOWN,0,SC_CURSOR_DOWN|SCF_CTRL);
+  if(mode==11)Msg(MSG_KEY_DOWN,0,SC_CURSOR_UP|SCF_CTRL);
   if(mode==1)Msg(MSG_KEY_DOWN,10,0);
   else if(mode==3)Msg(MSG_KEY_DOWN,CH_SHIFT_ESC,0);
   else Msg(MSG_KEY_DOWN,32,0);

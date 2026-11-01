@@ -201,3 +201,39 @@ terminal-menu regression pass
 `build/i386-doced-keydown-term-menu-v1`). The isolated 8 MiB run passes all
 nine functional/VGA checks but takes 61.398 seconds and misses the 60-second gate
 (`build/i386-doced-keydown-startup-v1`).
+
+## Form document-boundary navigation (2026-11-01)
+
+The original Home/End selection traversal now lives in
+`DocKeyBoundaryCore.HC` and is shared by original `DocPutKey` and the native
+form path, including the original form-forward/backward adjustment. Form
+Ctrl-Up/Down follow the original fallthrough to those same boundaries. The
+retained non-form editor still uses its separate navigation until its layout is
+integrated. Selection flag traversal is shared original code but is not
+independently qualified by the chooser cases below.
+
+The actual chooser fixture now exercises End, End followed by Home, Ctrl-Down,
+and End followed by Ctrl-Up. The pinned original and rebuilt original return
+`[11,12,22,-1,17,22,22,11,22,11,22,11,1]`
+(`build/i386-menu-boundary-reference-v1`,
+`build/i386-menu-boundary-rebuilt-v1`). The previous native image times out on
+the first End case with inputs unchanged
+(`build/i386-menu-boundary-native-red-v1`). The candidate passes the entire
+fixture at 8 and 64 MiB (`build/i386-menu-boundary-native-8m-v1`,
+`build/i386-menu-boundary-native-64m-v1`), and its physical non-form vertical
+editor test passes (`build/i386-doc-key-boundary-physical-v1`). Both bootstrap
+generations, full cross-build and 386 audit pass
+(`build/i386-doc-key-boundary-rebuild-v4.log`,
+`build/i386-doc-key-boundary-cross-v4`). Earlier cross-build attempts exposed a
+stale version manifest, an unavailable `BEqu`, and unsupported local `#undef`
+(`build/i386-doc-key-boundary-cross-v1.log`,
+`build/i386-doc-key-boundary-cross-v2`,
+`build/i386-doc-key-boundary-cross-v3`); these were corrected in the candidate.
+Full original input, selection, mouse and popup rendering remain unqualified,
+and C1–C5 remain open.
+
+The 16 MiB startup diagnostic and terminal-menu regression pass
+(`build/i386-doc-key-boundary-diag-v1`,
+`build/i386-doc-key-boundary-term-v1`). The isolated 8 MiB run completes all
+nine functional/VGA checks in 61.196 seconds, missing the 60-second gate
+(`build/i386-doc-key-boundary-startup-v1`).

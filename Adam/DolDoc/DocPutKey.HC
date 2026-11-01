@@ -1,5 +1,7 @@
 #help_index "DolDoc/Output;StdOut/DolDoc"
 
+#include "/Adam/DolDoc/DocKeyBoundaryCore.HC"
+
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {//$LK,"PutKey",A="MN:PutKey"$(ch,sc) at doc insert pt, cur_entry.
   I64 i,x,y;
@@ -61,14 +63,8 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 		    KeyDescSet("Edit/GoTo Doc End, Sel");
 		  else
 		    KeyDescSet("Edit/GoTo Doc End");
-		} else {
-		  while (doc_ce!=doc) {
-		    BEqu(&doc_ce->type,DOCEt_SEL,sc&SCF_SHIFT);
-		    doc_ce=doc->cur_entry=doc_ce->next;
-		  }
-		  doc->cur_col=doc_ce->min_col;
-		  DocFormBwd(doc);
-		}
+		} else
+		  DocKeyBoundaryCore(doc,sc,TRUE);
 	      }
 	      break;
 	    case SC_CURSOR_UP:
@@ -91,16 +87,8 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 		    KeyDescSet("Edit/GoTo Top of Doc, Sel");
 		  else
 		    KeyDescSet("Edit/GoTo Top of Doc");
-		} else {
-		  if (doc_ce==doc) doc_ce=doc_ce->last;
-		  while (doc_ce!=doc) {
-		    BEqu(&doc_ce->type,DOCEt_SEL,sc&SCF_SHIFT);
-		    doc_ce=doc->cur_entry=doc_ce->last;
-		  }
-		  doc_ce=doc->cur_entry=doc->head.next;
-		  doc->cur_col=doc_ce->min_col;
-		  DocFormFwd(doc);
-		}
+		} else
+		  DocKeyBoundaryCore(doc,sc,FALSE);
 	      }
 	      break;
 	    case SC_PAGE_DOWN:

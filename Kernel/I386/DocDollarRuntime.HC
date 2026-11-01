@@ -20,7 +20,6 @@ U8 *NativeDocStrMatch(U8 *needle,U8 *haystack)
 }
 #include "/Adam/DolDoc/DocFormDataCore.HC"
 #include "/Adam/DolDoc/DocBinPtrCore.HC"
-#define BEqu NativeDocBEqu
 #define StrMatch NativeDocStrMatch
 #include "/Adam/DolDoc/DocDollarFlagsCore.HC"
 #include "/Adam/DolDoc/DocDollarParseCore.HC"

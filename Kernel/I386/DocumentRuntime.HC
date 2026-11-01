@@ -164,6 +164,9 @@ U32 native_doc_printable[16]=CHAR_BMP_PRINTABLE_DATA;
 #include "/Adam/DolDoc/DocDollarInputCore.HC"
 #include "/Adam/DolDoc/DocCharActionCore.HC"
 #include "/Adam/DolDoc/DocCharFormAdvanceCore.HC"
+extern Bool NativeDocBEqu(U8 *bits,I64 index,Bool value);
+#define BEqu NativeDocBEqu
+#include "/Adam/DolDoc/DocKeyBoundaryCore.HC"
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   Bool unlock,printable;
@@ -179,6 +182,10 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
       DocUndoRestore(doc);
     else if(!ch && sc.u8[0]==SC_INS && !(sc&(SCF_SHIFT|SCF_CTRL|SCF_ALT|SCF_KEY_DESC)))
       doc->flags^=DOCF_OVERSTRIKE;
+    else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_ALT|SCF_KEY_DESC)) &&
+        (!(sc&SCF_CTRL) && (sc.u8[0]==SC_HOME || sc.u8[0]==SC_END) ||
+         sc&SCF_CTRL && (sc.u8[0]==SC_CURSOR_UP || sc.u8[0]==SC_CURSOR_DOWN)))
+      DocKeyBoundaryCore(doc,sc,sc.u8[0]==SC_END || sc.u8[0]==SC_CURSOR_DOWN);
     //Original form navigation requires the document layout produced by View.
     //The retained text editor has a separate renderer and uses its line mover.
     else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&

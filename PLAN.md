@@ -24930,3 +24930,10 @@ release in addition to its existing actions. Form Up/Down use the original line
 movers; the retained non-form renderer still needs its own mover until original
 layout integration. See `docs/i386-doc-put-key.md` for evidence and limitations.
 Full original document input and C1–C5 remain open.
+
+## Form boundary navigation (2026-11-01)
+
+Real chooser End/Home and Ctrl-Down/Up cases now match the original at 8 and
+64 MiB through the shared original boundary traversal. The retained non-form
+editor still has a separate navigation path; full original document input,
+selection and C1–C5 remain open. See `docs/i386-doc-put-key.md` for evidence.

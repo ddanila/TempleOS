@@ -10,7 +10,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 REFERENCE = runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))
-EXPECTED = [11,12,22,-1,17,22,22,11,1]
+EXPECTED = [11,12,22,-1,17,22,22,11,22,11,22,11,1]
 
 
 def main():
@@ -57,7 +57,7 @@ def main():
                   baseline_repair_revision=REFERENCE['REPAIRS'],
                   system_source_sha256=source_hashes,
                   input_sha256={str(p):sha(p) for p in inputs},
-                  scope='Real original DocMenu/DocEd: left/right/second menu values, ShiftEsc cancel, unlocked callback, MSG_CMD and restored document/task state; not mouse, data editing, no-action restart or popup lifetime')
+                  scope='Real original DocMenu/DocEd: left/right/second menu values, Tab, Shift-Tab, Home/End, Ctrl-Up/Down, key-release suppression, ShiftEsc cancel, unlocked callback, MSG_CMD and restored document/task state; not mouse, data editing, no-action restart or popup lifetime')
     try:
         iso = out/'original.iso'
         subprocess.run([sys.executable,'tools/build-iso.py','--overlay',str(extra[0]),
@@ -66,7 +66,7 @@ def main():
         subprocess.run([sys.executable,'tools/guest-run.py',str(iso),'--out',str(out/'guest'),
                         '--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
         data = (out/'guest/menu-chooser.bin').read_bytes()
-        report['observed']=list(struct.unpack('<9q',data))
+        report['observed']=list(struct.unpack('<13q',data))
         report['expected']=EXPECTED
         if report['observed']!=EXPECTED:
             raise ValueError('Original popup execution differs from explicit result/lifecycle oracle')
