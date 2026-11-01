@@ -653,6 +653,7 @@ public CDoc *DocRead(U8 *name=NULL,I64 flags=0)
   } catch {
     if(buffer) I386HeapFree(console_config->heap,buffer);
     buffer=NULL;DocDel(doc);doc=NULL;
+    Free(absolute);absolute=NULL;
   }
   Free(absolute);
   return doc;

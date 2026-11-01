@@ -298,6 +298,8 @@ I64 NativeDocClipPasteAtomicCheck()
   if(!NativeDocClipPaste(target)) { NativeDocAllocArm(0); goto paste_check_done; }
   allocations=native_doc_alloc_count; NativeDocAllocArm(0); DocDel(target); target=NULL;
   for(fail=1;fail<=allocations;fail++) {
+    //DocSave can change clipboard layout; repeat the baseline input each time.
+    if(!NativeDocClipCopy(source,FALSE)) goto paste_check_done;
     target=DocNew("C:/PasteFail.DD",Fs);
     DocPutKey(target,'x'); DocPutKey(target,'y'); DocPutKey(target,'z');
     target->cur_entry=target->head.next; target->cur_col=1;
@@ -306,12 +308,17 @@ I64 NativeDocClipPasteAtomicCheck()
     if(NativeDocClipPaste(target)) {
       NativeDocAllocArm(0); result=-fail; goto paste_check_done;
     }
+    if(native_doc_alloc_count!=fail) {
+      NativeDocAllocArm(0); result=-allocations*4-fail; goto paste_check_done;
+    }
     NativeDocAllocArm(0); after=DocSave(target,&after_size);
     if(!after || after_size!=size) { result=-allocations-fail; goto paste_check_done; }
     for(index=0;index<size;index++) if(before[index]!=after[index]) {
       result=-allocations*2-fail; goto paste_check_done;
     }
     Free(after); after=NULL;
+    //Discard any document-owned recalculation changes before checking leaks.
+    if(!NativeDocClipCopy(source,FALSE)) goto paste_check_done;
     if(Fs->data_heap->used_u8s!=used) {
       result=-allocations*3-fail; goto paste_check_done;
     }

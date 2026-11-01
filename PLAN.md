@@ -25108,3 +25108,14 @@ serialization checks pass. The 8 MiB allocation diagnostic advances from
 further investigation. See
 [the save failure evidence](docs/i386-module-compiler-types.md). C1–C5 remain
 incomplete.
+
+## Isolated allocation diagnostics and retained build (2026-11-01)
+
+The clipboard fault diagnostic now resets its input and checks that each
+requested allocation fault is reached. `DocRead` frees its absolute filename
+on exceptions. The strict allocation diagnostic passes at 8 and 64 MiB, and a
+cross-built Startup replacement passes its independent 8 MiB reboot and
+checks. The separate full native retained build failed ConsoleRuntime with an
+out-of-memory rejection at `StrIMatchCore.HC`; it produced no completed module.
+Full guest-built installation, two generations, the timing gate and C1–C5
+remain open. See [the evidence](docs/i386-module-compiler-types.md).

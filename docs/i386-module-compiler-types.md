@@ -189,3 +189,44 @@ paste cases returned failure with matching target bytes and heap usage; case 12
 returned success. The `13` oracle timed out, so the install gate remains
 failing. Whether the twelfth fault was reached and its underlying cause remain
 unconfirmed. The 8 MiB run overlapped other guests and is not timing evidence.
+
+### Isolated paste faults and read cleanup (2026-11-01)
+
+The apparent twelfth paste fault was not injected: a temporary count probe
+(`build/i386-c5-paste-twelfth-8m`) recorded a 12-allocation baseline, fault
+index 12, and only 11 allocations in that successful later paste. Reusing the
+clipboard allowed `DocSave` recalculation to change its internal layout
+between cases. The probe was removed. The diagnostic now creates an identical
+clipboard for each case, checks that the requested fault index was reached,
+and reconstructs the clipboard before comparing heap usage. This last step
+removes document-owned layout changes from the leak measurement; the fixture
+checks target bytes and task heap recovery, not exact clipboard entry layout.
+With fresh inputs but before that restoration, the strict check reported
+`-42` (`build/i386-c5-paste-isolated-8m`). With restoration it advanced to
+`-104` in the following `DocRead` fault check
+(`build/i386-c5-paste-reset-8m`).
+
+`DocRead`'s exception path freed the document and file buffer but not its
+absolute filename. It now frees that allocation before propagating the
+exception. The original two-generation rebuild and native cross-build pass.
+The strict `DocAllocationCheck` returns `13` with exact VGA checks on both 8
+and 64 MiB (`build/i386-c5-docread-cleanup-8m` and
+`build/i386-c5-docread-cleanup-64m`) using the unchanged source image SHA-256
+`8d1182d6a26b4c850f9140de70da9a22ced9f15552a9d22fb7ee54d45ff3a600`.
+These runs overlapped other emulation and do not qualify the startup time gate.
+
+The cross-built Startup replacement probe now completes the file replacement,
+verifies installed bytes, reboots at 8 MiB, and passes arithmetic and the strict
+allocation diagnostic (`build/i386-c5-docread-install-probe`). Its Startup
+module was cross-built and byte-identical to the installed provider; this does
+not qualify a guest-built module, full installation, or native generations.
+
+The separate nine-module retained build on the include-dollar image has since
+finished with a ConsoleRuntime out-of-memory rejection in
+`C:/Kernel/StrIMatchCore.HC` (`build/i386-c5-include-dollars-native-build`).
+It had passed the previous `CLexFile` rejection but did not complete its first
+module. The guest reported an allocation request of `0x7E` bytes and largest
+free block of `0x48` bytes. This build used the earlier pinned image and does
+not include the subsequent save/read changes. Resolving native build memory,
+full guest-built installation, two generations and C1–C5 qualification remain
+open.
