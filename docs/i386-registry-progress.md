@@ -1,28 +1,38 @@
 # i386 registry progress
 
-The original-system registry fixture exercises default creation, repeated
-initialization, execution, rewrite, append, file-backed tree lookup, and the
-registry document's Adam task ownership. On the pinned original it returns the
-expected mask 255 with unchanged inputs (`build/i386-registry-reference-v4`).
-The fixture temporarily points the cached document at a disposable writable
-`B:/RegistryTest.HC.Z` and restores its original filename afterwards. An
-initial attempt against the reference system's read-only source medium could
-not establish persistence (`build/i386-registry-reference-v3`). These checks
-do not establish cold-reboot persistence, concurrent access, or failure paths.
+The original registry cache, default, execution, count, rewrite, append and
+initialization bodies are shared with the native console runtime. Native startup
+initializes the document command and color definitions in Adam's task, then
+runs registry initialization there. The cached registry document is owned by
+Adam, as on the original system. Native `DocWrite` uses the public file writer,
+so `.Z` documents are compressed and file attributes and resident-file handling
+follow the public path.
 
-The corresponding native test rejects the missing registry interface on the
-last verified DolDoc tree image (`build/i386-registry-native-red-v1`). The
-original compiler and kernel rebuild successfully with the proposed extraction
-(`build/i386-registry-rebuild-v1.log`), but the native cross-build fails while
-referencing `sys_registry_doc` in the export table: the compiler reports
-`Feature not implemented` (`build/i386-registry-cross-v1`). The native
-registry and the KeepAway workflow therefore remain incomplete.
+The shared fixture covers default creation and repetition, execution, rewrite,
+append, file-backed lookup and Adam ownership. It returns mask 255 on the pinned
+original, the rebuilt original, and native at 8 and 64 MiB with unchanged inputs
+(`build/i386-registry-reference-v4`, `build/i386-registry-rebuilt-v2`,
+`build/i386-registry-native-v5`, `build/i386-registry-native-8m-v1`). It temporarily directs the cached document to
+a disposable writable file and restores the original filename. A separate
+native test creates a branch in the real registry, boots the same disposable
+image again and executes the saved branch successfully
+(`build/i386-registry-reboot-v2`). It does not qualify concurrent registry
+access, failure paths, or every original registry API.
 
-The inactive patch `docs/patches/i386-registry-prototype.patch.gz` preserves the
-prototype for continued work. It extracts the original registry routines,
-exports their interface, and attempts to initialize the cache in Adam after
-document services start. Apply it to this checkpoint with
-`gzip -dc docs/patches/i386-registry-prototype.patch.gz | git apply`. It has not
-passed the native build or runtime tests; it must be repaired and verified before use.
-After fixing the compiler error, rerun the native registry fixture and test
-cold-reboot persistence and the unchanged KeepAway application.
+The first prototype failed native compilation because it addressed unresolved
+forward-declared globals (`build/i386-registry-cross-v1`). Defining the shared
+globals before the export table fixed compilation. Native boot then reported
+missing `ST_DOC_CMDS` in Adam (`build/i386-registry-native-v3`); initializing
+the document definitions in that task fixed startup. The next run returned mask
+191 because the raw document writer stored an uncompressed `.Z` file
+(`build/i386-registry-native-v4`). The public writer fixed that lookup. The
+first cold-reboot test timed out in the driver while typing a wrapped command;
+the shortened test completed both boots (`build/i386-registry-reboot-v1`,
+`build/i386-registry-reboot-v2`). The original two-generation rebuild, native
+cross-build and 386 audit pass (`build/i386-registry-rebuild-v5.log`,
+`build/i386-registry-cross-v6`).
+
+The unchanged KeepAway load advances from registry initialization at line 221
+to an `Invalid lval` error at `Max` on line 257
+(`build/i386-app-keepaway-registry-v1`). Gameplay, the full desktop, and C1–C5
+remain incomplete.

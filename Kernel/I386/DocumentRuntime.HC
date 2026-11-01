@@ -227,16 +227,17 @@ extern U8 *DocSave(CDoc *doc,I64 *_size=NULL);
 
 
 #include "/Adam/DolDoc/DocBasicLoadCore.HC"
+extern I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0);
 public Bool DocWrite(CDoc *doc,Bool prompt=FALSE)
 {
   U8 *buffer;
   I64 size;
   Bool result;
   if(!doc || prompt || !console_config || !console_config->files ||
-      !console_config->files->write) return FALSE;
+      !console_config->files->write_public) return FALSE;
   buffer=DocSave(doc,&size);
   if(!buffer) return FALSE;
-  result=(*console_config->files->write)(doc->filename.name,buffer,size,doc->file_attr);
+  result=FileWrite(doc->filename.name,buffer,size,0,doc->file_attr)!=0;
   Free(buffer); return result;
 }
 public Bool DirMk(U8 *filename,I64 entry_cnt=0)
@@ -2149,6 +2150,7 @@ public Bool Help(U8 *name=NULL)
 }
 CTask *console_document_owner;
 extern U0 NativeClipboardInit();
+extern U0 NativeRegistryBoot();
 U0 ConsoleDocumentStart()
 {//Data belongs to the live console task; code and global record are retained.
   CTask *task=Fs;
@@ -2163,6 +2165,7 @@ U0 ConsoleDocumentStart()
     DefineLstLoad("ST_RAW_TYPES",RAW_TYPE_NAMES_LIST);
   DocInit;
   NativeClipboardInit;
+  NativeRegistryBoot;
   NativeTerminalTranscriptStart;
   NativeKeyDevStart;
   console_document_owner=task;

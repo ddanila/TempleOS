@@ -217,3 +217,7 @@ These are compiler/load checks, not gameplay or application qualification.
 With the shared random family, Vocabulary advances to the missing `ACDDefGet`
 at line 35 (`build/i386-app-vocabulary-rand-v1`). Original application launch,
 interaction, persistence and visual/audio workflows remain required.
+
+With the shared registry integration, unchanged KeepAway advances past registry
+initialization and fails at `Max` on line 257 (`build/i386-app-keepaway-registry-v1`,
+inputs unchanged). This is a load check; the game has not been qualified.

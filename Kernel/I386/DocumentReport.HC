@@ -24,6 +24,7 @@ U0 DocReportLiteral(I64 mS,U8 *message)
 
 U0 UndefinedDefine(U8 *name)
 {//Keep the original diagnostic text and exception without interpreting the name.
+  KernelLog("UNDEFINED DEFINE "); KernelLog(name); KernelLog("\n");
   DocReportLiteral(0,"ERROR: Undefined Define: '");
   DocReportLiteral(0,name);
   DocReportLiteral(0,"'.\n");

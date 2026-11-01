@@ -7,6 +7,7 @@
 #include "/Kernel/I386/PublicKernel.HH"
 #include "/Kernel/I386/Intrinsic.HH"
 #include "/Kernel/I386/PublicDocument.HH"
+#include "/Kernel/I386/PublicRegistry.HH"
 #include "/Kernel/I386/PublicFiles.HH"
 #include "/Kernel/I386/PublicHash.HH"
 #include "/Kernel/I386/PublicAutoComplete.HH"

@@ -5,7 +5,8 @@ compile for native tasks through `DocTreeCore.HC`; the original tree execution
 and file execution bodies are shared through `DocTreeExecCore.HC`. Their
 existing DolDoc, file and compiler services remain responsible for document
 locking, storage, formatting and execution. This supplies the tree operations
-used by the original registry; it does not implement the registry itself.
+used by the original registry; its subsequent native integration is documented in
+`docs/i386-registry-progress.md`.
 
 The paired original/native workflow creates nested and sibling branches,
 checks found and missing paths and their returned entries, rewrites and appends
@@ -39,9 +40,7 @@ pass (`build/i386-doc-tree-rebuild-final.log`, `build/i386-doc-tree-cross-final`
 The first cross-build failed because an early forward declaration used `NULL`
 before its native definition; the final declaration uses zero.
 
-The registry, KeepAway application workflow, full desktop and C1–C5 remain
-open. Original registry initialization, lifetime and task ownership must be
-integrated rather than replaced by an in-memory shortcut.
+The KeepAway application workflow, full desktop and C1–C5 remain open.
 
 Isolated 8 MiB startup runs passed all nine functional and exact-VGA checks,
 but took 62.598 seconds on the preceding image and 62.253 seconds on the
