@@ -220,12 +220,12 @@ Bool FAT32Cd(U8 *name,I64 cur_dir_clus)
   return FALSE;
 }
 
-U0 FAT32FreeClus(CDrv *dv,I64 c)
+U0 FAT32FreeClusUntil(CDrv *dv,I64 c,I64 stop)
 {
   I64 next,saved_c=c;
   Bool unlock,unlock_break;
   DrvChk(dv);
-  if (!(0<c<0x0FFFFFF8)) return;
+  if (!(0<c<0x0FFFFFF8) || c==stop) return;
   if (dv->fs_type!=FSt_FAT32)
     PrintErr("Not FAT32 Drv\n");
   else
@@ -239,7 +239,7 @@ U0 FAT32FreeClus(CDrv *dv,I64 c)
 	dv->cur_fat_blk[c&(BLK_SIZE/4-1)]=0;
 	LBts(&dv->fat_blk_dirty,0);
 	c=next;
-      } while (0<c<0x0FFFFFF8);
+      } while (0<c<0x0FFFFFF8 && c!=stop);
       DrvFATBlkClean(dv,0);
 
       c=saved_c;
@@ -249,7 +249,7 @@ U0 FAT32FreeClus(CDrv *dv,I64 c)
 	dv->cur_fat_blk[c&(BLK_SIZE/4-1)]=0;
 	LBts(&dv->fat_blk_dirty,0);
 	c=next;
-      } while (0<c<0x0FFFFFF8);
+      } while (0<c<0x0FFFFFF8 && c!=stop);
       DrvFATBlkClean(dv,1);
       if (unlock)
 	DrvUnlock(dv);
@@ -262,6 +262,13 @@ U0 FAT32FreeClus(CDrv *dv,I64 c)
 	BreakUnlock;
     }
 }
+
+U0 FAT32FreeClus(CDrv *dv,I64 c)
+{
+  FAT32FreeClusUntil(dv,c,INVALID_CLUS);
+}
+
+#include "/Kernel/BlkDev/FATChainOverlapCore.HC"
 
 I64 FAT32AllocClus(CDrv *dv,I64 c,I64 cnt)
 {
@@ -536,7 +543,8 @@ Bool FAT32DirNew(CDrv *dv,U8 *cur_dir,CDirEntry *tmpde,Bool free_old_chain)
 	    old_clus=buf[cur_dir_entry].clus_lo+
 		  buf[cur_dir_entry].clus_hi<<16;
 	    if (free_old_chain && old_clus!=tmpde->clus)
-	      FAT32FreeClus(dv,old_clus);
+	      FAT32FreeClusUntil(dv,old_clus,
+		    FAT32ChainOverlap(dv,old_clus,tmpde->clus));
 	    if (!written) {
 	      MemCpy(&buf[cur_dir_entry],&de[de_cnt-1],sizeof(CFAT32DirEntry));
 	      BlkWrite(dv,&buf[cur_dir_entry & -FAT32_ENTRIES_PER_BLK],

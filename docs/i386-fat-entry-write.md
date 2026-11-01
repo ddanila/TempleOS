@@ -137,6 +137,23 @@ moves from cluster 17 to 19, and the replacement image's FAT marks 17 free and
 (`build/i386-fat-alias-same-cluster-rebuild.log`). This covers a single-cluster
 file, not all multi-cluster or overlapping-chain updates.
 
+An overlapping-chain update exposed a further defect: changing a three-cluster
+file to start at its second cluster freed the retained suffix and led to a
+guest drive exception during readback (`build/i386-fat-alias-overlap-red-v1`).
+Before freeing the old chain, directory updates now find the shared tail of the
+old and new chains and release only the old prefix. Traversal is bounded by the
+drive size; malformed chains remain outside the qualified cases.
+
+The same three-cluster-to-two-cluster suffix case now passes guest and host
+readback, cold reopen and `fsck.fat -n`
+(`build/i386-fat-alias-overlap-v1`). Both FAT copies mark cluster 19 free,
+cluster 20 linked to 21, and cluster 21 as end-of-chain in that image. The
+disjoint replacement control also passes
+(`build/i386-fat-alias-overlap-control-v1`), and both original rebuild
+generations pass with binary differences (`build/i386-fat-alias-overlap-rebuild.log`).
+The case where a separately rooted new chain joins the old chain later, crash
+recovery, and concurrent or corrupt-chain updates are not yet qualified.
+
 `FAT32DirNew` currently returns false even on successful writes, so the earlier
 invalid-name API test's return value alone does not establish rejection. Its
 unchanged cold-reopen disk hash and the entry-writer canary test provide the
