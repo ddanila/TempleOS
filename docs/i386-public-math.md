@@ -1,8 +1,9 @@
 # Retained public numerical providers
 
-CompilerRuntime 48 publishes 13 numerical functions for normal native HolyC:
-`Round`, `Trunc`, `Floor`, `Ceil`, `Pow10I64`, `Ln`, `Log10`, `Log2`, and the
-original `FloorU64`, `CeilU64`, `RoundI64`, `FloorI64`, `CeilI64` operations.
+The native compiler runtime publishes numerical functions for normal HolyC:
+`Round`, `Trunc`, `Floor`, `Ceil`, `Pow10I64`, `Ln`, `Log10`, `Log2`, `Exp`,
+`Sin`, `Cos`, `Arg`, and the original `FloorU64`, `CeilU64`, `RoundI64`,
+`FloorI64`, `CeilI64` operations.
 `PublicMath.HH` supplies their public declarations during normal startup.
 
 The software F64 helpers were previously exercised in standalone runners.
@@ -78,3 +79,26 @@ The kernel is 365760 bytes, leaving 23360 bytes of reserved-load headroom.
 These are QEMU/486 results with x87 trapped; strict 386 and physical-PC
 acceptance remain outstanding. Full editor peak memory and latency must still
 be measured as part of the editing goal.
+
+## Exponential function
+
+The native math provider now exports `Exp`, using a software binary64
+implementation adapted from Sun's [fdlibm e_exp.c](https://netlib.org/fdlibm/e_exp.c).
+It requires no x87 instructions. The original x87 routine's infinity result
+(indefinite NaN) and positive finite overflow saturation are handled explicitly;
+underflow is driven toward zero at the smallest-subnormal boundary.
+
+The original uses x87 truncation and a different range reduction, so finite
+results are not bit-identical. On 256 pinned original inputs including zeros,
+tiny values, normal inputs, overflow and underflow boundaries, infinities and
+NaN, the native results differed by at most 613 ULP from the original. For
+sampled inputs in the host comparison range they differed by at most one ULP
+from host `exp` (`build/i386-exp-native-v1`; inputs unchanged). These are
+measured corpus bounds, not universal accuracy or exact compatibility claims;
+near the underflow threshold, the cutoff can differ by one subnormal unit.
+Original capture: `build/i386-exp-reference-v3`. The original rebuild,
+native cross-build and 386 instruction audit passed.
+
+The same comparison also passed at 8 MiB with unchanged inputs
+(`build/i386-exp-native-8m-v1`). Its measured startup was 78.53 seconds; this
+run does not satisfy the separate 60-second startup budget.

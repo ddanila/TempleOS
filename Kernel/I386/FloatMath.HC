@@ -23,6 +23,7 @@ F64 Ceil(F64 value)
 
 #include "/Kernel/I386/Pow10.HC"
 #include "/Kernel/I386/FloatLog.HC"
+#include "/Kernel/I386/FloatExp.HC"
 
 #include "/Kernel/I386/FloatTrig.HC"
 F64 Sin(F64 value) { return I386TrigSin(value); }
