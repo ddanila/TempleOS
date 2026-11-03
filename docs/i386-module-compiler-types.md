@@ -608,10 +608,19 @@ document; its earlier plain-prompt run timed out at the screenshot comparison
 despite completing startup. The passing baseline loads no build-only provider
 and leaves input bytes unchanged. Complete desktop workflows remain open.
 
-The 32 MiB KVM retained run has persisted its first ConsoleRuntime module.
-Its 2,648,848 bytes and SHA-256
+The 32 MiB and full-content 64 MiB KVM retained runs have both persisted
+ConsoleRuntime. Their 2,648,848 bytes and SHA-256
 `09aca98378da290cf1b0861f8bbf811839cf06ae52e760b86c9b1ebb52792199`
-are identical to the earlier 16 MiB guest output. The exact-image audit finds
+are identical to each other and to the earlier 16 MiB guest output. The
+exact-image audit finds
 all 1,060 exports and passes the document allocation-wrapper check. This
-establishes one repeatable native module output across disk capacities; the
-run is compiling CompilerRuntime and has not qualified the remaining modules.
+establishes one repeatable native module output across disk capacities and
+content profiles.
+
+The 32 MiB run also persisted CompilerRuntime and moved to CompilerProbe. Its
+native module is 1,666,381 bytes with 4,185 records and 462 exports, SHA-256
+`3539f82f87de356482da305b186b5729ff0c0373ef78f107d662ec3873b5dc70`.
+Against the exact-image cross build it has no extra exports; the only missing
+names are `_I386_DIV_BEGIN` and `_I386_DIV_END`, the two deliberate delimiter
+exceptions already recognized by the retained-build audit. The full-content
+run is compiling CompilerRuntime. Neither run has qualified all nine modules.

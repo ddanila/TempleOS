@@ -25257,3 +25257,10 @@ with its welcome document; full desktop workflows remain open. See
 The unchanged KeepAway loader on this full-content image confirms the current
 `SettingsPush` blocker at line 645 after verifying all three original app
 files. Its inventory entry records the failing run; gameplay remains open.
+
+ConsoleRuntime guest output is byte-identical across the 16 MiB, 32 MiB and
+64 MiB full-content images, with all 1,060 exports and the allocation-wrapper
+audit passing. The 32 MiB run also persisted CompilerRuntime with 462
+runtime exports after the two expected delimiter exceptions and advanced to
+CompilerProbe. Both full retained
+builds continue; installation and two native generations remain open.
