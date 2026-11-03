@@ -111,3 +111,13 @@ name and its stated scope, it uses Escape to accept empty input. A corrected
 run enters text and uses Shift+Escape to cancel it; this passes with an empty
 description and byte-identical cold-reboot recovery, with unchanged inputs
 (`build/i386-timeclock-keyboard-shift-escape-native`).
+
+On the patched 64 MiB full-content image, the unchanged report workflow again
+passes exact typed records, the original DolDoc report and 5,400-second total,
+welcome/report VGA checkpoints, and cold-reboot rerender
+(`build/i386-cmp-byte-full-timeclock-report-kvm/result.json`). Its logical
+record SHA-256 is `f5ecc13cd3d99a3efe3fc9208e158d5fa0b94a6ec47884de48d176e23ca4e04b`;
+the report SHA-256 is
+`faa5155d46e6a394493031341f60052c38e7cabab285b0ce2f73e84d4bf731c9`.
+All pinned inputs are unchanged. Physical input and whole-application behavior
+remain open.

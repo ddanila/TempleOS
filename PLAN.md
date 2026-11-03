@@ -25345,3 +25345,8 @@ guest-built flat modules, guest-linked boot image, installation and independent
 8 MiB functional boot. The flat boot bytes match the patched 32 MiB result.
 Generation two is building retained modules; complete C5 qualification remains
 open.
+
+The patched full-content cross image also repeats the unchanged TimeClock
+typed-record, report and cold-reboot workflow with exact original bytes and
+VGA checkpoints. Its three inventory files retain unqualified status pending
+complete application behavior; see [the application matrix](docs/i386-application-matrix.md).

@@ -281,3 +281,10 @@ the unchanged `Load.HC` reaches `KeepAway.HC.Z` line 645 and rejects its
 unbound `SettingsPush`; no game interaction executes. The complete shared
 settings bodies exist, but their native dependencies and lifecycle are still
 unfinished (see [task settings](i386-task-settings.md)).
+
+The patched full-content image repeats the unchanged TimeClock report and
+cold-reboot workflow (`build/i386-cmp-byte-full-timeclock-report-kvm/result.json`).
+It passes exact typed-record and DolDoc report checks for 5,400 seconds,
+welcome/report VGA checkpoints, and the reopened report, with unchanged
+inputs. This regression covers the report workflow; physical input and the
+complete application remain unqualified.

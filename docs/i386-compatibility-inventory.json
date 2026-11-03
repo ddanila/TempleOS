@@ -6250,6 +6250,13 @@
           "result": "pass",
           "evidence": "build/i386-native-indexed-cross64-full-timeclock-report-welcome/result.json",
           "scope": "Current full-content image: unchanged original TimeClock source, exact original typed records and DolDoc report for 5400 seconds, strict welcome/report VGA, cold-reboot rerender; unchanged inputs. Not physical input or whole application."
+        },
+        {
+          "target": "native-patched-full-content-report-reboot",
+          "command": "python3 tools/test-i386-timeclock-report-native.py build/i386-cmp-byte-cross64-full/kernel.img --out build/i386-cmp-byte-full-timeclock-report-kvm --welcome",
+          "result": "pass",
+          "evidence": "build/i386-cmp-byte-full-timeclock-report-kvm/result.json",
+          "scope": "Patched full-content image: unchanged original TimeClock source, exact typed records and DolDoc report for 5400 seconds, welcome/report VGA checkpoints, cold-reboot rerender, unchanged inputs. Does not qualify physical input or the whole application."
         }
       ]
     },
@@ -6385,6 +6392,13 @@
           "result": "pass",
           "evidence": "build/i386-native-indexed-cross64-full-timeclock-report-welcome/result.json",
           "scope": "Current full-content image: unchanged original TimeClock source, exact original typed records and DolDoc report for 5400 seconds, strict welcome/report VGA, cold-reboot rerender; unchanged inputs. Not physical input or whole application."
+        },
+        {
+          "target": "native-patched-full-content-report-reboot",
+          "command": "python3 tools/test-i386-timeclock-report-native.py build/i386-cmp-byte-cross64-full/kernel.img --out build/i386-cmp-byte-full-timeclock-report-kvm --welcome",
+          "result": "pass",
+          "evidence": "build/i386-cmp-byte-full-timeclock-report-kvm/result.json",
+          "scope": "Patched full-content image: unchanged original TimeClock source, exact typed records and DolDoc report for 5400 seconds, welcome/report VGA checkpoints, cold-reboot rerender, unchanged inputs. Does not qualify physical input or the whole application."
         }
       ]
     },
@@ -6521,6 +6535,13 @@
           "result": "pass",
           "evidence": "build/i386-native-indexed-cross64-full-timeclock-report-welcome/result.json",
           "scope": "Current full-content image: unchanged original TimeClock source, exact original typed records and DolDoc report for 5400 seconds, strict welcome/report VGA, cold-reboot rerender; unchanged inputs. Not physical input or whole application."
+        },
+        {
+          "target": "native-patched-full-content-report-reboot",
+          "command": "python3 tools/test-i386-timeclock-report-native.py build/i386-cmp-byte-cross64-full/kernel.img --out build/i386-cmp-byte-full-timeclock-report-kvm --welcome",
+          "result": "pass",
+          "evidence": "build/i386-cmp-byte-full-timeclock-report-kvm/result.json",
+          "scope": "Patched full-content image: unchanged original TimeClock source, exact typed records and DolDoc report for 5400 seconds, welcome/report VGA checkpoints, cold-reboot rerender, unchanged inputs. Does not qualify physical input or the whole application."
         }
       ]
     },
