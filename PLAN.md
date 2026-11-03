@@ -25179,3 +25179,14 @@ cross-build/instruction audit pass. Native multi-page serialization matches the
 rollback control byte-for-byte, and the 8 MiB exact welcome check passes. The older retained build has terminated at
 an unsupported `JAE` in `Memory.HC`, which is the next native-build dependency.
 See [the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.
+
+
+## Native memory assembly parse progress (2026-11-03)
+
+The native frontend now supports `JAE`, `JNC`, `JC` and register `INC`, which
+were blocking the retained MemoryRuntime build. The first branch-only image
+advanced from the `JAE` rejection to `INC`; the second image has advanced past
+`INC` and its retained build continues. Both original rebuild generations and
+the 386-audited native cross-build pass. See
+[the evidence](docs/i386-module-compiler-types.md). Complete retained module
+qualification, both native generations and C1–C5 remain open.

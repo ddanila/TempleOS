@@ -441,3 +441,23 @@ The older nine-module diagnostic build is now terminal: it rejected
 complete generation. Inline assembly also needs its carry-branch aliases
 checked before retrying this source. Full native installation, two complete
 generations, startup timing and C1–C5 remain open.
+
+
+## Native memory-module assembly branches (2026-11-03)
+
+The retained `MemoryRuntime` build on the previous image rejected the first
+`JAE` in `Memory.HC:43`. The native frontend now emits 386 near branches for
+`JAE`/`JNC` (0F 83) and `JC` (0F 82), and the register `INC` form (40+r).
+The first repaired 128 MiB build passed `JAE` but stopped at `INC` on line 44
+(`build/i386-native-carry-memory128`). This confirms that the branch parse
+advanced, without qualifying the module.
+
+The original compiler rebuilt itself twice and both generations booted with
+binary differences (`build/i386-native-carry-inc-rebuild.log`). The updated
+native cross-build and 386 instruction audit pass
+(`build/i386-native-carry-inc-cross`). A new 128 MiB retained MemoryRuntime
+build is running at `build/i386-native-carry-inc-memory128` and has advanced
+beyond the former `INC` rejection; its final module result is pending.
+Console execution fixtures attempted on the intermediate and updated images
+timed out after startup/setup, so they do not establish executed branch
+semantics. Full native generation and C1–C5 remain open.

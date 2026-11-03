@@ -331,12 +331,14 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
       else if(!StrCmp(cc->cur_str,"MOVZX")) opcode=13;
       else if(!StrCmp(cc->cur_str,"PUSH")) opcode=14;
       else if(!StrCmp(cc->cur_str,"POP")) opcode=15;
+      else if(!StrCmp(cc->cur_str,"INC")) opcode=17;
       else if(!StrCmp(cc->cur_str,"LGDT")) opcode=7;
       else if(!StrCmp(cc->cur_str,"SGDT")) opcode=8;
       else if(!StrCmp(cc->cur_str,"LIDT")) opcode=9;
       else if(!StrCmp(cc->cur_str,"SIDT")) opcode=10;
       else if(!StrCmp(cc->cur_str,"JMP")) opcode=0xE9;
-      else if(!StrCmp(cc->cur_str,"JB")) opcode=0x82;
+      else if(!StrCmp(cc->cur_str,"JB") || !StrCmp(cc->cur_str,"JC")) opcode=0x82;
+      else if(!StrCmp(cc->cur_str,"JAE") || !StrCmp(cc->cur_str,"JNC")) opcode=0x83;
       else if(!StrCmp(cc->cur_str,"JNZ") || !StrCmp(cc->cur_str,"JNE")) opcode=0x85;
       else if(!StrCmp(cc->cur_str,"JE") || !StrCmp(cc->cur_str,"JZ")) opcode=0x84;
       else if(!StrCmp(cc->cur_str,"JA")) opcode=0x87;
@@ -345,7 +347,7 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
       else I386FrontendUnavailable(state);
       if(opcode==0xFF) { }
       else if(opcode==0xE9 || opcode==0x82 || opcode==0x85 ||
-          opcode==0x84 || opcode==0x87 || opcode==0x8C || opcode==0x8F) {
+          opcode==0x83 || opcode==0x84 || opcode==0x87 || opcode==0x8C || opcode==0x8F) {
         I386FrontendLex(state,cc);
         if(cc->token==TK_IDENT && !StrCmp(cc->cur_str,"I32"))
           I386FrontendLex(state,cc);
@@ -368,13 +370,14 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
         else if(op==8) I386FrontendAsmModRM(state,bytes,&count,0,&dst);
         else if(op==9) I386FrontendAsmModRM(state,bytes,&count,3,&dst);
         else I386FrontendAsmModRM(state,bytes,&count,1,&dst);
-      } else if(opcode==14 || opcode==15) {
+      } else if(opcode==14 || opcode==15 || opcode==17) {
         op=opcode;
         I386FrontendLex(state,cc);
         I386FrontendAsmOperand(state,cc,&dst);
         if(dst.kind!=1 || dst.size!=4) I386FrontendUnavailable(state);
         if(op==14) I386FrontendAsmByte(state,bytes,&count,0x50+dst.register_code);
-        else I386FrontendAsmByte(state,bytes,&count,0x58+dst.register_code);
+        else if(op==15) I386FrontendAsmByte(state,bytes,&count,0x58+dst.register_code);
+        else I386FrontendAsmByte(state,bytes,&count,0x40+dst.register_code);
       } else if(opcode<=6 || opcode>=11 && opcode<=13 || opcode==16) {
         I386FrontendLex(state,cc);
         op=opcode;
