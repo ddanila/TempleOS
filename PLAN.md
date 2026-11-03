@@ -25396,8 +25396,9 @@ open; see [desktop evidence](docs/i386-desktop-compatibility.md).
 The original-document compatibility group passes eight more commands, and
 welcome help, document sprites and text pass fifteen commands, all with exact
 VGA at 64 MiB. The help fixture accounts for retained console history and its
-cursor. The native circular-queue index still omits three original class
-links (`CCPU`, `CTask`, `CWinScroll`), so C1 help-index parity remains open.
+cursor. The prior circular-queue oracle included `CCPU`, `CTask` and
+`CWinScroll`, although the original headers place them under `MultiCore`,
+`Task` and `Mouse`. C1 help-index parity remains unqualified.
 See [desktop evidence](docs/i386-desktop-compatibility.md).
 
 The focused welcome document-editing group now passes all 169 native commands

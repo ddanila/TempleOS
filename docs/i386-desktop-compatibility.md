@@ -339,8 +339,10 @@ commands with exact VGA
 The help fixture now checks retained console history and cursor after leaving
 the `CmdLineOverview` page. Its circular-queue index expects the five links
 currently present in the native index: `CQue`, `QueInit`, `QueIns`, `QueInsRev`
-and `QueRem`. The original index fixture also listed `CCPU`, `CTask` and
-`CWinScroll`; their missing native source links remain a C1 help-index gap.
+and `QueRem`. The earlier fixture also listed `CCPU`, `CTask` and
+`CWinScroll`, but the original headers place those classes under `MultiCore`,
+`Task` and `Mouse`, respectively. Full original help-index parity remains
+unqualified.
 The separate original-document compatibility group passes eight commands,
 including byte and hash checks, with exact VGA
 (`build/i386-c1c5-welcome-merged-compat64-kvm-v1/result.json`).
