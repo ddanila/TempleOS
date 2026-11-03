@@ -844,3 +844,19 @@ welcome-console changes require a fresh native-generation run. Its 128 MiB
 generation-two build is a measured rebuild profile, while the preserved
 16 MiB failure remains a resource limit. Complete application and desktop
 coverage, minimal-profile release gates and C1–C5 qualification remain open.
+
+## Fresh welcome-console generations (2026-11-04)
+
+The current 64 MiB full-content image (`build/i386-c1c5-welcome-merged-full-cross-v9/kernel.img`)
+produced all nine retained providers in a 128 MiB guest. The resulting
+two-generation KVM/486 run passes all eleven stages
+(`build/i386-c1c5-welcome-merged-generations128-kvm-v1/result.json`): both
+provider installations, both flat self-host builds and independent cold boots,
+both image and delivered-source audits, and generation identity. Each installed
+volume has 1,662 files with a matching RedSea allocation map. All 15 installed
+modules and the 555,336-byte boot image match between generations; the linked
+image SHA-256 is
+`a15771e789f237f85c5cc8490f50657ad397af381d9581c8ac9b26723b1c45a7`.
+This run pins source commit `0f823f43`, including the welcome console and
+navigation fixes. It updates the older generation evidence but does not close
+the remaining application, desktop, minimal-profile and C1–C5 gates.

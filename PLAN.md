@@ -25405,3 +25405,11 @@ with exact VGA at 64 MiB, including failed save on unmounted `Q:`, new-file
 creation, existing-file cancellation, selection, styling and binary document
 persistence. Full integrated desktop and application qualification remain open;
 see [desktop evidence](docs/i386-desktop-compatibility.md).
+
+The latest welcome-console epoch at source commit `0f823f43` now passes the
+fresh 128 MiB two-generation native chain: nine retained providers, six flat
+self-host modules and independent 8 MiB boots per generation, source/image
+audits and identical 15-module/boot/RedSea identities. The linked boot image
+is 555,336 bytes. Full workstation integration has reached mouse reverse
+selection but found a harness wrap mismatch; complete C1–C5 qualification
+remains open. See [native build evidence](docs/i386-module-compiler-types.md).
