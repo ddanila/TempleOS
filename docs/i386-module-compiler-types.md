@@ -578,3 +578,6 @@ The supported `--disk-mib 32` cross build passed the 386 boot audit at
 the 16 MiB cross build. A fresh nine-module KVM retained run is in progress at
 `build/i386-native-indexed-cross32-retained128-kvm`. No complete retained
 build, installation, second generation or C1–C5 result is claimed yet.
+The retained-build harness now rejects a full nine-module build on a disk
+smaller than 32 MiB before starting QEMU. Focused `--module` builds and
+read-only audits remain available on smaller images.

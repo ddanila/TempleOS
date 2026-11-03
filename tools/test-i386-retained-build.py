@@ -86,6 +86,10 @@ def main():
     parser.add_argument('--compare-installed', type=Path,
                         help='Require guest output to match installed T32Ms on this disk')
     args = parser.parse_args()
+    if (not args.audit_only and not args.modules and args.disk.is_file() and
+            args.disk.stat().st_size < 32 * 1024 * 1024):
+        parser.error('A full nine-module retained build needs a 32 MiB or larger disk; '
+                     'build one with build-i386-kernel.py --disk-mib 32')
     if args.reference_exports is None:
         args.reference_exports = args.disk.resolve().parent / 'exports'
     if args.resume and args.audit_only:
