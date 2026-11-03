@@ -453,12 +453,14 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
           I386FrontendAsmModRM(state,bytes,&count,0,&dst);
           I386FrontendAsmDword(state,bytes,&count,src.value);
         } else if(op==2 && src.kind==3 &&
-            (dst.kind==1 && dst.size==4 || dst.kind==2 && dst.size==4)) {
-          if(src.value>=-128 && src.value<=127)
+            (dst.kind==1 && dst.size==4 || dst.kind==2 &&
+            (dst.size==4 || dst.size==1))) {
+          if(dst.size==1) I386FrontendAsmByte(state,bytes,&count,0x80);
+          else if(src.value>=-128 && src.value<=127)
             I386FrontendAsmByte(state,bytes,&count,0x83);
           else I386FrontendAsmByte(state,bytes,&count,0x81);
           I386FrontendAsmModRM(state,bytes,&count,7,&dst);
-          if(src.value>=-128 && src.value<=127)
+          if(dst.size==1 || src.value>=-128 && src.value<=127)
             I386FrontendAsmByte(state,bytes,&count,src.value);
           else I386FrontendAsmDword(state,bytes,&count,src.value);
         } else if(op==2 && dst.kind==1 && dst.size==4 &&
