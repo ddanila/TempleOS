@@ -30,6 +30,9 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
+    parser.add_argument('--welcome',action='store_true',
+                        help='Expect the original welcome document at the prompt')
+    parser.add_argument('--accel',choices=('tcg','kvm'),default='tcg')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     commands = list(COMMANDS)
@@ -43,11 +46,12 @@ def main():
     packaging = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
         source, working, additions={'/Search.HC':FIXTURE.read_bytes()})
     report = dict(result='running', scope='String boundaries, directional/selected/filtered editor search, nested pairing, function navigation/selection, locks, roles and heap',
-                  packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
+                  packaging=packaging, input_sha256=pins, commands=serializable(commands),
+                  ram_mib=args.ram_mib, welcome=args.welcome, accel=args.accel)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
-            cpu='486,-fpu', accel='tcg', qmp_stdio=True,
+            cpu='486,-fpu', accel=args.accel, qmp_stdio=True, welcome=args.welcome,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
                            'rejected_answers':['0'],

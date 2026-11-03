@@ -47,6 +47,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--welcome',action='store_true',
+                        help='Expect the original welcome document at the prompt')
+    parser.add_argument('--accel',choices=('tcg','kvm'),default='tcg')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     if out.exists(): parser.error('Use a fresh output directory')
@@ -54,7 +57,8 @@ def main():
              ROOT/'tools/test-i386-editor-search.py', ROOT/'tools/i386-kernel-input.py']
     pins = {str(p): sha(p) for p in paths}
     out.mkdir(parents=True)
-    report = dict(result='running', scope='Packaged full editor services, exact source delivery, no boot load, first-use/reuse through the paired search suite; not failure/lifetime/generation qualification', input_sha256=pins)
+    report = dict(result='running', scope='Packaged full editor services, exact source delivery, no boot load, first-use/reuse through the paired search suite; not failure/lifetime/generation qualification', input_sha256=pins,
+                  welcome=args.welcome, accel=args.accel)
     try:
         reader = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents']
         files = reader(source, {PROVIDER, *('/'+name for name in SOURCES)})
@@ -68,8 +72,10 @@ def main():
             if files.get('/'+name) != path.read_bytes():
                 raise ValueError('Editor source delivery differs: '+name)
         report['delivered_sources'] = {name: sha(ROOT/name) for name in SOURCES}
-        subprocess.run([sys.executable, 'tools/test-i386-editor-search.py', str(source),
-                        '--out', str(out/'behavior')], cwd=ROOT, check=True)
+        command=[sys.executable, 'tools/test-i386-editor-search.py', str(source),
+                 '--out', str(out/'behavior'), '--accel', args.accel]
+        if args.welcome: command.append('--welcome')
+        subprocess.run(command, cwd=ROOT, check=True)
         behavior = json.loads((out/'behavior/result.json').read_text())
         if behavior['result'] != 'pass' or not behavior['inputs_unchanged']:
             raise ValueError('Editor search behavior is not qualified')
