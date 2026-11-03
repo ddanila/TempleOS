@@ -607,3 +607,11 @@ The desktop runner now accepts `--welcome` so it compares that actual initial
 document; its earlier plain-prompt run timed out at the screenshot comparison
 despite completing startup. The passing baseline loads no build-only provider
 and leaves input bytes unchanged. Complete desktop workflows remain open.
+
+The 32 MiB KVM retained run has persisted its first ConsoleRuntime module.
+Its 2,648,848 bytes and SHA-256
+`09aca98378da290cf1b0861f8bbf811839cf06ae52e760b86c9b1ebb52792199`
+are identical to the earlier 16 MiB guest output. The exact-image audit finds
+all 1,060 exports and passes the document allocation-wrapper check. This
+establishes one repeatable native module output across disk capacities; the
+run is compiling CompilerRuntime and has not qualified the remaining modules.

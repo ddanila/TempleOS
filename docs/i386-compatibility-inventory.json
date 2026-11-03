@@ -5533,7 +5533,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Load the unchanged KeepAway application sources using its original Load.HC entry point; full interactive application workflow remains to be captured.",
-      "oracle": "docs/i386-application-matrix.md: native loader currently rejects registry initialization at KeepAway.HC line 221; this is not a reference launch or gameplay oracle.",
+      "oracle": "docs/i386-application-matrix.md: on the current full-content image the unchanged native loader rejects unbound SettingsPush at KeepAway.HC.Z line 645; this is not a reference launch or gameplay oracle.",
       "tests": [
         {
           "target": "native-keepaway-load",
@@ -5541,6 +5541,13 @@
           "result": "fail",
           "evidence": "build/i386-app-keepaway-current-v1/result.json",
           "scope": "Verified original source bytes and unchanged input; compile rejection precedes application execution"
+        },
+        {
+          "target": "native-keepaway-full-content-load",
+          "command": "python3 tools/test-i386-application-native-load.py build/i386-native-indexed-cross64-full/kernel.img --app KeepAway --out build/i386-native-indexed-cross64-full-keepaway-load",
+          "result": "fail",
+          "evidence": "build/i386-native-indexed-cross64-full-keepaway-load/result.json",
+          "scope": "Current full-content image verifies all three pinned application files; undefined SettingsPush rejects before gameplay"
         }
       ]
     },

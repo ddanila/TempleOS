@@ -25253,3 +25253,7 @@ does not qualify its behavior or either full native generation. The same image
 passes the nine-command desktop/VGA retained-state baseline at 64 MiB TCG
 with its welcome document; full desktop workflows remain open. See
 [the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.
+
+The unchanged KeepAway loader on this full-content image confirms the current
+`SettingsPush` blocker at line 645 after verifying all three original app
+files. Its inventory entry records the failing run; gameplay remains open.

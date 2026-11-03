@@ -266,3 +266,11 @@ stops at the missing `Exp` dependency on line 598
 With the native exponential provider, unchanged KeepAway advances past `Exp`
 and stops at `SettingsPush` on line 645 (`build/i386-app-keepaway-exp-v1`,
 inputs unchanged). Gameplay remains open.
+
+The 64 MiB full-content native image independently confirms that current
+boundary (`build/i386-native-indexed-cross64-full-keepaway-load/result.json`).
+All three packaged KeepAway files match the pinned reference bytes. Loading
+the unchanged `Load.HC` reaches `KeepAway.HC.Z` line 645 and rejects its
+unbound `SettingsPush`; no game interaction executes. The complete shared
+settings bodies exist, but their native dependencies and lifecycle are still
+unfinished (see [task settings](i386-task-settings.md)).
