@@ -6257,6 +6257,13 @@
           "result": "pass",
           "evidence": "build/i386-cmp-byte-full-timeclock-report-kvm/result.json",
           "scope": "Patched full-content image: unchanged original TimeClock source, exact typed records and DolDoc report for 5400 seconds, welcome/report VGA checkpoints, cold-reboot rerender, unchanged inputs. Does not qualify physical input or the whole application."
+        },
+        {
+          "target": "native-patched-full-content-keyboard-reboot",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py build/i386-cmp-byte-cross64-full/kernel.img --out build/i386-cmp-byte-full-timeclock-keyboard-kvm",
+          "result": "pass",
+          "evidence": "build/i386-cmp-byte-full-timeclock-keyboard-kvm/result.json",
+          "scope": "Patched full-content image: unchanged original PunchIn/PunchOut with QEMU PS/2 multiline and Shift+Escape cancelled descriptions; independently decoded typed records remain byte-identical after cold reboot, unchanged inputs. Not physical input, full VGA or whole-application qualification."
         }
       ]
     },
@@ -6399,6 +6406,13 @@
           "result": "pass",
           "evidence": "build/i386-cmp-byte-full-timeclock-report-kvm/result.json",
           "scope": "Patched full-content image: unchanged original TimeClock source, exact typed records and DolDoc report for 5400 seconds, welcome/report VGA checkpoints, cold-reboot rerender, unchanged inputs. Does not qualify physical input or the whole application."
+        },
+        {
+          "target": "native-patched-full-content-keyboard-reboot",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py build/i386-cmp-byte-cross64-full/kernel.img --out build/i386-cmp-byte-full-timeclock-keyboard-kvm",
+          "result": "pass",
+          "evidence": "build/i386-cmp-byte-full-timeclock-keyboard-kvm/result.json",
+          "scope": "Patched full-content image: unchanged original PunchIn/PunchOut with QEMU PS/2 multiline and Shift+Escape cancelled descriptions; independently decoded typed records remain byte-identical after cold reboot, unchanged inputs. Not physical input, full VGA or whole-application qualification."
         }
       ]
     },
@@ -6542,6 +6556,13 @@
           "result": "pass",
           "evidence": "build/i386-cmp-byte-full-timeclock-report-kvm/result.json",
           "scope": "Patched full-content image: unchanged original TimeClock source, exact typed records and DolDoc report for 5400 seconds, welcome/report VGA checkpoints, cold-reboot rerender, unchanged inputs. Does not qualify physical input or the whole application."
+        },
+        {
+          "target": "native-patched-full-content-keyboard-reboot",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py build/i386-cmp-byte-cross64-full/kernel.img --out build/i386-cmp-byte-full-timeclock-keyboard-kvm",
+          "result": "pass",
+          "evidence": "build/i386-cmp-byte-full-timeclock-keyboard-kvm/result.json",
+          "scope": "Patched full-content image: unchanged original PunchIn/PunchOut with QEMU PS/2 multiline and Shift+Escape cancelled descriptions; independently decoded typed records remain byte-identical after cold reboot, unchanged inputs. Not physical input, full VGA or whole-application qualification."
         }
       ]
     },

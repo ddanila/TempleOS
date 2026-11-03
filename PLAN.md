@@ -25357,3 +25357,9 @@ exhausted the 16 MiB guest heap while compiling
 `--retained-build-ram-mib` setting for this build stage. A 128 MiB rerun is
 required before generation two can be qualified; the failed 16 MiB profile
 remains recorded as a resource limit, not as a compiler regression.
+
+The patched full-content TimeClock QEMU keyboard workflow also passes:
+multiline punch descriptions and Shift+Escape cancellation produce exact typed
+records that survive cold reboot byte-for-byte. This advances C3 evidence but
+does not qualify physical input or the complete application; see
+[the TimeClock evidence](docs/i386-timeclock-native.md).

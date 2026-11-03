@@ -121,3 +121,13 @@ the report SHA-256 is
 `faa5155d46e6a394493031341f60052c38e7cabab285b0ce2f73e84d4bf731c9`.
 All pinned inputs are unchanged. Physical input and whole-application behavior
 remain open.
+
+The patched full-content image also passes the unchanged QEMU keyboard
+`PunchIn`/`PunchOut` workflow
+(`build/i386-cmp-byte-full-timeclock-keyboard-kvm/result.json`). It records
+multiline descriptions, an accepted description and Shift+Escape cancellations.
+The independently decoded typed records remain byte-identical after cold reboot
+(logical SHA-256
+`6a5ec9a51635f81452f3e8c052b43bd494deb3f11e9d4b8aefb6e73e56036161`).
+All inputs are unchanged. This covers emulated keyboard entry, not physical
+input, full VGA or the entire application.

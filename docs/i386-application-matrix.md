@@ -288,3 +288,9 @@ It passes exact typed-record and DolDoc report checks for 5,400 seconds,
 welcome/report VGA checkpoints, and the reopened report, with unchanged
 inputs. This regression covers the report workflow; physical input and the
 complete application remain unqualified.
+
+The same patched image passes the unchanged TimeClock QEMU keyboard punch
+workflow with multiline text and Shift+Escape cancellation; independently
+decoded records survive cold reboot byte-for-byte
+(`build/i386-cmp-byte-full-timeclock-keyboard-kvm/result.json`). Physical
+input, full visual behavior and the complete application remain unqualified.
