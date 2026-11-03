@@ -659,3 +659,19 @@ all reachable extents; all 686 inventory files still match workspace bytes,
 and a delivered-source audit matched 1,197 source/document files. Full-content
 retained installation and boot are now running. Application workflows and both
 complete native generations remain open.
+
+
+## First complete guest-built retained installation (2026-11-03)
+
+The 32 MiB minimal-profile retained installer replaced all nine shipped
+providers with their guest-built copies and booted an independent writable
+copy at 8 MiB (`build/i386-native-indexed-cross32-retained-install-kvm/result.json`).
+The boot passed `6*7` and `DocAllocationCheck`, with one diagnostic load,
+dollar-growth recovery and unload. The installer checked every installed
+module byte against its guest-built source and preserved the source disk. Its
+candidate SHA-256 is
+`3ab9cec2eb56204ff1b65d04f83bd5007fc8cbf3980302abe7c469a1c9894551`;
+an independent RedSea walk finds 1,318 files with a matching allocation
+bitmap. A minimal-profile native self-host build is now running from this
+installed image. The full-content installation and two-generation runner are
+still live, so C5 and C1–C4 remain open.

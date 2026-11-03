@@ -25292,3 +25292,13 @@ inventory files remain byte-matched to the workspace, and a 1,197-file
 delivered-source audit passes. Full-content installation and boot are running;
 two complete native generations, full application behavior and C1–C5 remain
 open. See [the evidence](docs/i386-module-compiler-types.md).
+
+
+## First guest-built retained installation (2026-11-03)
+
+The 32 MiB minimal-profile candidate now contains all nine guest-built
+providers and passed an independent 8 MiB boot, arithmetic check and document
+allocation/recovery check. Its post-install allocation bitmap is valid. A
+minimal-profile native self-host build is running, while full-content
+installation and the two-generation runner continue. This does not yet
+qualify C5 or C1–C4; see [the evidence](docs/i386-module-compiler-types.md).
