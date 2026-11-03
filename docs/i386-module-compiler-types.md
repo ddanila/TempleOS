@@ -816,3 +816,8 @@ all pass their export audits and produce the same 73,968-byte module,
 SHA-256 `121a4f2bad001998ca395b4d1eb0ab0db51ccadf0e693f7a3a693e76827a0d21`.
 This closes the observed memory-layout difference in the editor module; a new
 full two-generation run and the remaining C5 gates are still required.
+The 16 MiB guest-built copy also installs byte-for-byte as the sole replaced
+provider, then cold-boots at 8 MiB and passes `6*7` and
+`DocAllocationCheck` (`build/i386-editor-form-strings-native-install-kvm/result.json`,
+installed disk SHA-256
+`4003dfb77620fc943d2a7e87c876cd1acc93898b20ec16ff8ce0d2dc157f7976`).
