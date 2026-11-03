@@ -25302,3 +25302,18 @@ allocation/recovery check. Its post-install allocation bitmap is valid. A
 minimal-profile native self-host build is running, while full-content
 installation and the two-generation runner continue. This does not yet
 qualify C5 or C1–C4; see [the evidence](docs/i386-module-compiler-types.md).
+
+
+## Full-content retained installation and first self-host gap (2026-11-03)
+
+The 64 MiB full-content candidate now contains all nine guest-built retained
+providers and passes an independent 8 MiB boot, arithmetic and document
+allocation/recovery checks. The candidate SHA-256 is
+`b5a82868055253b5919b1a52aee700116751c4ef89993789a0913884298a2eec`.
+The first full-content native-generation run reached the flat kernel self-build
+and rejected `Kernel/I386/Heap.HC` line 103. The 32 MiB minimal-profile
+self-build reached the same rejection. The native assembler lacks the byte
+immediate encoding for the preceding `CMP U8 &first[EBP],0`; the error reports
+the next token, `JE`. A compiler fix and fresh-source rebuild are in progress.
+Neither run qualifies a complete native generation or C1–C5. See
+[the evidence](docs/i386-module-compiler-types.md).

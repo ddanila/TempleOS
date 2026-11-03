@@ -675,3 +675,29 @@ an independent RedSea walk finds 1,318 files with a matching allocation
 bitmap. A minimal-profile native self-host build is now running from this
 installed image. The full-content installation and two-generation runner are
 still live, so C5 and C1–C4 remain open.
+
+
+## Full-content guest-built installation and first flat self-build gap (2026-11-03)
+
+The 64 MiB full-content retained installer independently replaced all nine
+shipped providers with the guest-built modules and booted a writable copy at
+8 MiB (`build/i386-native-indexed-cross64-full-retained-install-kvm/result.json`).
+Its boot passed `6*7` and `DocAllocationCheck`, including diagnostic load,
+dollar-growth recovery and unload. The source disk SHA-256 is
+`efc6728921ad15f0d771c147ce5a6a84478e111c403a3b373e8aeeba3eef44bb`;
+the installed candidate SHA-256 is
+`b5a82868055253b5919b1a52aee700116751c4ef89993789a0913884298a2eec`.
+
+Both the 32 MiB minimal-profile self-host attempt
+(`build/i386-native-indexed-cross32-selfhost-kvm/build/debug.log`) and the
+full-content generation-one self-host attempt
+(`build/i386-native-indexed-cross64-full-generations-kvm/gen1-selfhost/build/debug.log`)
+reject the first flat `Kernel` build at `Kernel/I386/Heap.HC` line 103. The
+source has `CMP U8 &first[EBP],0` on line 102, followed by `JE @@35`. The
+native inline assembler advances past the immediate before choosing an
+encoding; its compare-immediate branch accepts only 32-bit operands, so the
+reported `JE` token is the next token rather than the unsupported instruction.
+The full-content runner records `stage: gen1-selfhost`, `result: fail` in
+`build/i386-native-indexed-cross64-full-generations-kvm/result.json`.
+An isolated compiler fix is being rebuilt and retested. The complete native
+generation and C1–C5 gates remain open.
