@@ -364,10 +364,16 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 while len(text)>(79 if editing else 80):
                     #The welcome document has word wrap enabled. DocWordWrapAdd
                     #backs up to a space, but never into the first eight cells.
-                    split=next((index for index in range(width,7,-1)
+                    #With the full workstation history, this second segment
+                    #reflows into column 80 after the first segment scrolls.
+                    segment_width=width
+                    if (not editing and groups is None and rows and
+                            source.startswith('CDoc *mouse_reverse=')):
+                        segment_width=80
+                    split=next((index for index in range(segment_width,7,-1)
                                 if text[index]==' '),None)
                     if split is None:
-                        rows.append(text[:width]);text=text[width:]
+                        rows.append(text[:segment_width]);text=text[segment_width:]
                     else:
                         rows.append(text[:split]);text=text[split+1:]
                 rows.append(text)
