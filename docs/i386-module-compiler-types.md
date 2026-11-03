@@ -731,5 +731,24 @@ with SHA-256
 the source disk SHA-256 is
 `66d6cbc5793522f5a62a5678ab5978cf1056cd877224f10357c15fc063cc58eb`.
 An independent RedSea walk finds 1,327 files and a bitmap matching all
-reachable extents. Retained installation and the full-content nine-module
-build are in progress; this result does not yet qualify a native generation.
+reachable extents. This build alone does not qualify a native generation.
+
+The patched 32 MiB installer replaced all nine providers with their guest-built
+copies and passed an independent 8 MiB boot with `6*7` and
+`DocAllocationCheck`, including diagnostic growth recovery
+(`build/i386-cmp-byte-retained32-install-kvm/result.json` in the isolated
+worktree). The installed candidate SHA-256 is
+`f3ea74dc8ee17a048f31e60b7be6c183c20232a03abd8f02827b82af49505952`;
+an independent RedSea walk finds 1,318 files and a matching bitmap. A flat
+self-host build from this installed image is in progress.
+
+The patched 64 MiB full-content guest also completed all nine retained modules
+(`build/i386-cmp-byte-retained64-full-kvm/result.json` in the isolated
+worktree). Every module digest is byte-identical to the patched 32 MiB
+minimal-profile build. Its source disk SHA-256 is
+`9f8a7d98a9ef86c93631460c1230df3d1c7806be8ecc88fe7d04f713406e6485`.
+The build provider loaded once. An independent RedSea walk finds 1,670 files
+and a matching bitmap; all 686 inventory files match workspace bytes, and
+`audit-i386-delivered-source.py` matched all 1,197 delivered source/document
+files. The full-content two-generation native pipeline has started from this
+image; neither generation is yet qualified.

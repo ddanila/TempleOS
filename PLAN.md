@@ -25326,6 +25326,10 @@ independent 8 MiB boot with arithmetic and document allocation checks. Its
 scripted audit stopped because ordinary startup created `Registry.HC.Z` on the
 cross-built source disk. The patched 32 MiB guest has now built and audited all
 nine retained modules, including the changed CompilerRuntime, with one build
-provider load and a valid RedSea allocation bitmap. Installation and the
-64 MiB full-content guest build are running; complete native-generation
-qualification remains open.
+provider load and a valid RedSea allocation bitmap. Its nine guest-built
+providers are installed and pass an independent 8 MiB boot. The patched 64 MiB
+full-content guest also built all nine modules byte-identically to the 32 MiB
+outputs, with a valid bitmap, all 686 inventory bytes preserved, and a
+1,197-file delivered-source audit. The 32 MiB self-host build and full-content
+two-generation pipeline are running; complete native-generation qualification
+remains open.
