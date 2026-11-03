@@ -25167,3 +25167,15 @@ been removed. The original rebuild, native cross-build and visibility contract
 pass, as does the 16 MiB diagnostic. A fresh 128 MiB retained build is running;
 the native packing result is pending. See [the evidence](docs/i386-module-compiler-types.md).
 Full native installation, two generations, the timing gate and C1–C5 remain open.
+
+
+## Module relocation-cache repair (2026-11-03)
+
+The validation/serialization cache now widens its U32 page base by assignment,
+avoiding an eight-byte lvalue read and out-of-bounds bitmap writes. The actual
+386 helper passes 334 host checks; the old helper fails the same regression.
+The rebuilt-original writer oracle, original two-generation rebuild and native
+cross-build/instruction audit pass. Native multi-page serialization matches the
+rollback control byte-for-byte, and the 8 MiB exact welcome check passes. The older retained build has terminated at
+an unsupported `JAE` in `Memory.HC`, which is the next native-build dependency.
+See [the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.

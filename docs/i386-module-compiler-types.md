@@ -373,8 +373,9 @@ after reaching packing (`build/i386-module-validator-pages-native-v1`). Its
 report flags changed inputs: `tools/build-i386-kernel.py` was updated for the
 rollback while the guest was running. The pinned image and test driver did not
 change, but this is not a clean unchanged-input result. A temporary trace image and
-smaller probe are running at `build/i386-patch-map-trace-cross` and
-`build/i386-patch-map-trace-native-v1`; it is still running. These runs are not
+smaller probe used `build/i386-patch-map-trace-cross` and
+`build/i386-patch-map-trace-native-v1`; it has terminated with changed-input
+failure and provides no passing result. These runs are not
 an isolated timing comparison. The production source does not include the
 temporary trace statements.
 
@@ -401,3 +402,42 @@ and the 8 MiB exact welcome-pixel check with unchanged inputs
 passes (`build/i386-module-validator-rollback-pages-v1`), producing the same
 24,069-byte module hash as the preceding writer image, with 320 relocation
 slots across three payload pages.
+
+
+## Relocation-cache widening repair (2026-11-03)
+
+The cache's `base(I64)` was a HolyC lvalue reinterpretation, reading eight
+bytes from a four-byte local, rather than widening its value. This could make
+the page limit exceed the bitmap and let subsequent records overwrite the
+stack. Assigning `base` to the I64 limit before adding 4096 preserves the
+unsigned value and bounds each bitmap fill. Compiler services version 82
+restores the shared validation/serialization cache with that correction.
+
+`tools/test-i386-module-patch-helper-host.py` extracts the relocation-free
+386 helper and executes it with synthetic records under Linux IA32. The old
+helper changes the canary (`build/i386-module-cache-host-ia32-red-v2`); the
+expanded regression faults on it (`build/i386-module-cache-host-ia32-red-v3`).
+The repaired helper passes 334 checks, including split fixups, backwards page
+requests and maximum U32 offsets, with an intact canary
+(`build/i386-module-cache-host-ia32-fixed-v2`). This checks generated machine
+code, not guest integration or 486 performance.
+
+The original-system writer oracle passes all scratch, sink, invalid-input,
+span, page-boundary and maximum-offset checks on the rebuilt compiler
+(`build/i386-module-validator-widen-writer-v2`). Both original rebuild
+generations pass (`build/i386-module-validator-widen-rebuild.log`), and the
+native cross-build and instruction audit pass
+(`build/i386-module-validator-widen-cross`). Its source and build-input hashes
+were rechecked against the current checkout. Native multi-page serialization passes with unchanged inputs
+(`build/i386-module-validator-widen-pages-v1`): the persisted 24,069-byte module
+has 161 exports and 320 relocation slots across three payload pages, and its
+SHA-256 matches the rollback control. The 8 MiB exact welcome-pixel check also
+passes with unchanged inputs (`build/i386-module-validator-widen-welcome8`).
+Neither check establishes startup timing or a complete native generation.
+
+The older nine-module diagnostic build is now terminal: it rejected
+`Memory.HC:43` at the unsupported inline-assembly mnemonic `JAE`
+(`build/i386-stage6-diagnostic-retained128`). It therefore does not qualify a
+complete generation. Inline assembly also needs its carry-branch aliases
+checked before retrying this source. Full native installation, two complete
+generations, startup timing and C1–C5 remain open.
