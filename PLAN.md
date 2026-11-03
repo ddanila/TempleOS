@@ -25239,3 +25239,15 @@ CompilerRuntime, and the same-sized independent TCG run was stopped. A
 32 MiB cross build passed its boot audit and a fresh KVM nine-module run is
 in progress. Installation, second-generation results and C1–C5 remain open. See
 [the evidence](docs/i386-module-compiler-types.md).
+
+
+## Full-content C5 input image (2026-11-03)
+
+A 64 MiB full-profile native image passed its 386 boot audit and contains all
+686 inventory paths among 1,660 files. An independent audit matched 1,197
+delivered source/document files to the workspace. Its separate nine-module
+KVM retained build is running. The full-content small-file guest check passes
+with all 686 inventory bytes matching the workspace (580 still matching the
+pinned original, 106 modified). This packages the complete application set but
+does not qualify its behavior or either full native generation. See
+[the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.

@@ -581,3 +581,22 @@ build, installation, second generation or C1–C5 result is claimed yet.
 The retained-build harness now rejects a full nine-module build on a disk
 smaller than 32 MiB before starting QEMU. Focused `--module` builds and
 read-only audits remain available on smaller images.
+
+
+## Full-content native build candidate (2026-11-03)
+
+The 32 MiB retained run exercises the minimal content profile. For the C5
+desktop/application requirement, a separate 64 MiB cross build at
+`build/i386-native-indexed-cross64-full` passed the 386 boot audit with
+`--content-profile full`. Its volume verification covers 1,660 files,
+including all 686 inventory paths; a separate delivered-source audit matched
+1,197 source/document files to this workspace. The image has 15.74 MiB of
+free RedSea sectors before native output. A nine-module KVM retained build is
+running at `build/i386-native-indexed-cross64-full-retained128-kvm`. The
+full-content file set is delivered, but application workflows, retained
+installation, and complete native generations remain unqualified.
+The independent `test-i386-full-content-small.py` check passed on this image:
+all 686 packaged inventory files match current workspace bytes, 580 remain
+byte-identical to the pinned reference and 106 are modified, and the guest
+loaded a small test fixture through its public file/compile path. This
+checks availability and bounded access, not application behavior.
