@@ -25281,3 +25281,14 @@ and exact original DolDoc report workflow, including its 5,400-second duration,
 welcome/report VGA and cold-reboot rerender. Its three inventory entries retain
 unqualified status pending complete application behavior; see
 [the application evidence](docs/i386-application-matrix.md).
+
+
+## Full-content retained-module output (2026-11-03)
+
+The 64 MiB full-profile KVM guest also built all nine retained modules, with
+the build provider loaded once. Every guest-built module is byte-identical to
+the 32 MiB minimal-profile output. Its allocation bitmap is valid, all 686
+inventory files remain byte-matched to the workspace, and a 1,197-file
+delivered-source audit passes. Full-content installation and boot are running;
+two complete native generations, full application behavior and C1–C5 remain
+open. See [the evidence](docs/i386-module-compiler-types.md).

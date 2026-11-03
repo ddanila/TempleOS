@@ -642,3 +642,20 @@ all reachable extents. Installation and boot of the guest-built providers are
 running separately. The full-content 64 MiB retained build remains in
 progress; neither two native generations nor C1–C5 are qualified by the
 minimal-profile build.
+
+
+## Full-content nine-module native retained build (2026-11-03)
+
+The 64 MiB full-content KVM guest also completed all nine retained module
+commands under `486,-fpu` with 128 MiB RAM
+(`build/i386-native-indexed-cross64-full-retained128-kvm/result.json`). The
+exact-image export audit and ConsoleRuntime allocation-wrapper check pass,
+and the build provider loaded once. Each of the nine guest-built module SHA-256
+digests matches its 32 MiB minimal-profile counterpart byte-for-byte, across
+different disk capacities and content sets. The full-content source disk SHA-256
+is `efc6728921ad15f0d771c147ce5a6a84478e111c403a3b373e8aeeba3eef44bb`.
+An independent post-build RedSea walk found 1,670 files with a bitmap matching
+all reachable extents; all 686 inventory files still match workspace bytes,
+and a delivered-source audit matched 1,197 source/document files. Full-content
+retained installation and boot are now running. Application workflows and both
+complete native generations remain open.
