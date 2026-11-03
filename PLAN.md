@@ -25369,3 +25369,12 @@ desktop retained-state and exact-VGA baseline with the original welcome
 document and no build-only provider load. This advances the C2 regression
 baseline, while full desktop workflows remain open; see
 [desktop evidence](docs/i386-desktop-compatibility.md).
+
+The pinned 128 MiB full-content run now passes two successive native
+generations: all nine retained providers install, all six flat modules build,
+each guest-linked boot image cold-boots at 8 MiB, both source/image audits
+pass, and the generation identity audit matches all 15 modules, the boot area
+and the RedSea allocation maps. This evidence is for source commit `2c487767`;
+later welcome-console fixes need a fresh generation run. Complete desktop and
+application suites, minimal-profile release gates and C1–C5 qualification
+remain open. See [native build evidence](docs/i386-module-compiler-types.md).

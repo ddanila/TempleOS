@@ -355,8 +355,12 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     return [text[index:index+width] for index in range(0,len(text)+1,width)]
                 rows=[]
                 #The live input cursor reserves the last cell while typing.
-                #After Enter, a line of exactly 80 cells remains on one row;
-                #longer lines still break before that cell.
+                #After the document scrolls, an 81-cell submitted line fills
+                #column 80 before its final character moves to the next row.
+                #Before scrolling, and while typing, the cursor reserves it.
+                if (not editing and len(text)==81 and ' ' not in text[8:]
+                        and not any(line=='Help & Index, Quick Start: Cmd line' for line in rows)):
+                    return [text[:80],text[80:]]
                 while len(text)>(79 if editing else 80):
                     #The welcome document has word wrap enabled. DocWordWrapAdd
                     #backs up to a space, but never into the first eight cells.

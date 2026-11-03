@@ -826,3 +826,21 @@ fixture (`build/i386-editor-native-provider-full-kvm/result.json`): delivered
 editor sources match, the provider loads once on first use, and all search
 cases and the final `6*7` command pass with unchanged inputs. This checks the
 installed provider's search path, not every form interaction or app workflow.
+
+The pinned nine-provider, 128 MiB full-content run now passes both native
+generations (`build/i386-c1c5-combined-generations128-kvm-v2/result.json`).
+Each generation installed the guest-built retained modules, built all six flat
+modules, linked and installed a 555,336-byte boot image, and passed an
+independent 8 MiB boot. Both image and delivered-source audits pass. The
+generation identity audit finds all 15 installed modules, the boot area, the
+guest-linked image (SHA-256
+`a15771e789f237f85c5cc8490f50657ad397af381d9581c8ac9b26723b1c45a7`),
+and both RedSea allocation maps identical; each volume contains 1,662 files.
+The first and second installed disk SHA-256 values are
+`183ae5f32ed29fcc3f9b5c4bc8c317c9fb3a717d12e43051580ef252261bd1aa`
+and `0e80dbcd1ee94c08668fbb142a8513e365acd3a11ffcb3387eb1884b1b34085f`.
+This run pins the earlier source epoch at commit `2c487767`; subsequent
+welcome-console changes require a fresh native-generation run. Its 128 MiB
+generation-two build is a measured rebuild profile, while the preserved
+16 MiB failure remains a resource limit. Complete application and desktop
+coverage, minimal-profile release gates and C1–C5 qualification remain open.
