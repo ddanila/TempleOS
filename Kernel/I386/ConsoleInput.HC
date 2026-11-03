@@ -1,6 +1,7 @@
 class CConsoleExecutionResult {
   I64 diagnostics,last_value;
 };
+extern U0 NativeReportFlush();
 U0 NativeExecutionAnswer(U8 *context,I64 value,CHashClass *type)
 {
   CConsoleExecutionResult *result=context;
@@ -20,6 +21,7 @@ U0 ConsoleAnswer(U8 *context,I64 value,CHashClass *type)
 {
   CConsoleExecutionResult *result=context;
   result->last_value=value;
+  NativeReportFlush;
   //Silent and document-less tasks still receive the value without screen output.
   if(!DocPut || Bt(&Fs->display_flags,DISPLAYf_SILENT))return;
   if(type->ptr_stars_cnt) {
@@ -106,7 +108,10 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
     if(!execute_api || !throw_errors &&
         (task->except_ch=='Compiler' || task->except_ch=='Break')) {
       task->catch_except=TRUE; accepted=FALSE;
-      if(!execute_api)I386TextWrite(&console_text,"Exception\n");
+      if(!execute_api) {
+        NativeTerminalDiagnosticRecord("Exception\n");
+        I386TextWrite(&console_text,"Exception\n");
+      }
       execution.diagnostics++;
     }
   }
@@ -116,8 +121,13 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
     KernelLog(" warnings ");KernelHex(input.warnings);KernelLog("\n");
   }
   if(!accepted && !execution.diagnostics && !execute_api) {
-    if(input.exception=='OutMem') I386TextWrite(&console_text,"Out of memory\n");
-    else I386TextWrite(&console_text,"Compilation failed\n");
+    if(input.exception=='OutMem') {
+      NativeTerminalDiagnosticRecord("Out of memory\n");
+      I386TextWrite(&console_text,"Out of memory\n");
+    } else {
+      NativeTerminalDiagnosticRecord("Compilation failed\n");
+      I386TextWrite(&console_text,"Compilation failed\n");
+    }
   }
   if(last_value) *last_value=execution.last_value;
   return accepted;
@@ -171,6 +181,7 @@ U0 ConsoleSubmit(U8 *line)
 {
   if(ConsoleSource(line,"Console.HC")) KernelLog("COMMAND OK\n");
   else KernelLog("COMMAND ERROR\n");
+  NativeReportFlush;
 }
 
 I64 NativeJobSource(U8 *text)
