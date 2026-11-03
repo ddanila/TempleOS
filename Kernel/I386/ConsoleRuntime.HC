@@ -1226,6 +1226,7 @@ U0 ConsoleKeys(I64 unused)
   NativeUserTaskCont;
 }
 
+Bool native_console_mouse_visible;
 U0 NativeTerminalInput()
 {
   CI386KeyEvent event;
@@ -1237,6 +1238,7 @@ U0 NativeTerminalInput()
       next_mouse_x,next_mouse_y,next_mouse_buttons,next_mouse_packets;
   Bool mouse_visible=FALSE;
   NativeTerminalTranscriptStart;
+  native_console_mouse_visible=FALSE;
   if(!doc) throw('DocOwner',TRUE);
   prompt=NativeConsolePrompt; ConsolePresent;
   MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
@@ -1246,6 +1248,7 @@ U0 NativeTerminalInput()
     if(decoded && mouse_visible) {
       NativeMousePlaneHide(console_planes,mouse_x,mouse_y);
       mouse_visible=FALSE;
+      native_console_mouse_visible=FALSE;
     }
     if(decoded<0) {
       length=0;
@@ -1287,7 +1290,8 @@ U0 NativeTerminalInput()
         NativeMousePlaneMove(console_planes,mouse_x,mouse_y,next_mouse_x,next_mouse_y);
       else {
         NativeDocMouseShow(console_planes,next_mouse_x,next_mouse_y);
-        mouse_visible=TRUE; KernelLog("CONSOLE mouse pointer\n");
+        mouse_visible=TRUE; native_console_mouse_visible=TRUE;
+        KernelLog("CONSOLE mouse pointer\n");
       }
       mouse_x=next_mouse_x; mouse_y=next_mouse_y;
       mouse_buttons=next_mouse_buttons; mouse_packets=next_mouse_packets;
