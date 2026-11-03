@@ -701,3 +701,23 @@ The full-content runner records `stage: gen1-selfhost`, `result: fail` in
 `build/i386-native-indexed-cross64-full-generations-kvm/result.json`.
 An isolated compiler fix is being rebuilt and retested. The complete native
 generation and C1–C5 gates remain open.
+
+
+## Byte immediate compare fix and development flat build (2026-11-03)
+
+`Compiler/I386/FrontendStatements.HC` now encodes `CMP r/m8, imm8` as
+`0x80 /7 ib` while retaining the existing 32-bit compare encodings. The
+two-generation original rebuild passes in the isolated source worktree
+(`build/rebuild-test/result.json` there), and fresh minimal 32 MiB and
+full-content 64 MiB cross images build from that source. The patched
+development self-host run compiled all six flat modules, linked a 555,336-byte
+boot image and completed the guest install command
+(`build/i386-cmp-byte-cross-selfhost-kvm/build/debug.log` in the isolated
+worktree). Its scripted post-run source-immutability check failed because
+normal startup added only `/Registry.HC.Z` to the previously unbooted cross
+source disk. An independent boot-area audit matched the guest-linked image;
+a writable copy cold-booted at 8 MiB and passed `6*7` and
+`DocAllocationCheck` (`build/i386-cmp-byte-cross-selfhost-kvm/manual-boot/debug.log`).
+This is development evidence with cross-built retained providers, not a
+complete guest-built native generation. Patched nine-module guest builds are
+running on both image profiles.

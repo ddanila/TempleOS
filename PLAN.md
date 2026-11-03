@@ -25317,3 +25317,12 @@ immediate encoding for the preceding `CMP U8 &first[EBP],0`; the error reports
 the next token, `JE`. A compiler fix and fresh-source rebuild are in progress.
 Neither run qualifies a complete native generation or C1–C5. See
 [the evidence](docs/i386-module-compiler-types.md).
+
+The native inline assembler now emits `0x80 /7 ib` for a byte-memory immediate
+comparison. Both original rebuild generations and fresh 32/64 MiB cross
+images pass. A development self-build from the patched cross image compiled
+all six flat modules, linked and installed the boot image, and passed an
+independent 8 MiB boot with arithmetic and document allocation checks. Its
+scripted audit stopped because ordinary startup created `Registry.HC.Z` on the
+cross-built source disk. New nine-module guest builds are running from both
+patched images; complete native-generation qualification remains open.
