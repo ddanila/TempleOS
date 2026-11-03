@@ -531,3 +531,17 @@ without specifying `--reference-exports`
 (`build/i386-native-indexed-memory128-default-audit.log`). Explicit reference
 overrides still apply. The separate full nine-module build is live at
 `build/i386-native-indexed-retained128`; no full result is claimed.
+
+
+## Retained backing-sort instruction audit (2026-11-03)
+
+The persisted guest-built MemoryRuntime module from
+`build/i386-native-indexed-memory128/source.img` was extracted at its
+`I386MemBackingValid` export (offset 52,672 through 59,032) and disassembled
+with `ndisasm -b 32`. It contains `C1 EB 01` (`shr ebx,1`), `8D 04 0F`
+(`lea eax,[edi+ecx]`), `89 04 1E` (`mov [esi+ebx],eax`), and `0F 86`
+(the unsigned `JBE` condition, shown as `jna` by the disassembler).
+This confirms the new native frontend encodings reached the guest-built
+module. It does not execute that backing-sort path or replace full native
+installation and generation tests. The nine-module retained build remains
+live at `build/i386-native-indexed-retained128`.
