@@ -25336,3 +25336,9 @@ six flat modules, link and install the boot image, and cold-boot it at 8 MiB
 with arithmetic and document allocation checks. The installed target's RedSea
 bitmap is valid. The full-content two-generation pipeline is still running,
 so complete C5 qualification remains open.
+
+The patched full-content generation-one installer also passes: all nine
+guest-built providers are installed, the 8 MiB cold boot passes arithmetic
+and document allocation/recovery checks, and the candidate's RedSea bitmap
+matches reachable files. Its flat self-host build is running; generation two
+and complete C5 qualification remain open.

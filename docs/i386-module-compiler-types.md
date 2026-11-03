@@ -764,3 +764,13 @@ and `DocAllocationCheck`; an independent walk of the installed target finds
 `ce316054432be4f9d2a661ccdb234e2f65aab9e648f891851f3486e4c5753d51`.
 This qualifies the patched minimal-profile self-host path; the 64 MiB
 full-content two-generation run and broader C1–C5 gates remain open.
+
+The patched full-content generation-one installer also passes
+(`build/i386-cmp-byte-generations64-full-kvm/gen1-install/result.json` in the
+isolated worktree). It installed all nine guest-built providers, independently
+cold-booted at 8 MiB, and passed `6*7` and `DocAllocationCheck`, including
+diagnostic growth recovery. The candidate SHA-256 is
+`619725843bd155a78ac5730b78eddda42aadb0fc5e71ca5ed0f0073d3edb3ee4`.
+An independent RedSea walk finds 1,661 files and a bitmap matching reachable
+extents. The two-generation pipeline has advanced to generation-one flat
+self-hosting; generation two and C5 remain open.
