@@ -25219,3 +25219,12 @@ export audit passes after specifying its cross-build reference directory.
 The full nine-module retained build is running; no installation or native
 second generation is yet qualified. See
 [the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.
+
+
+## Image-matched retained audit (2026-11-03)
+
+The retained-build harness now chooses the cross-built exports beside its
+selected image by default. The already persisted native MemoryRuntime module
+passes its 165-export audit through that default, eliminating the older-image
+comparison error. The nine-module retained build remains live; C1–C5 remain
+open. See [the evidence](docs/i386-module-compiler-types.md).

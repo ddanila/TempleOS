@@ -67,7 +67,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--disk', type=Path, default=ROOT / 'build/i386-kernel/kernel.img')
     parser.add_argument('--out', type=Path, default=ROOT / 'build/i386-kernel/retained-build')
-    parser.add_argument('--reference-exports', type=Path, default=ROOT / 'build/i386-kernel/exports',
+    parser.add_argument('--reference-exports', type=Path,
                         help='Cross-built export contracts for this source/image')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--cpu', default='486', help='QEMU CPU model for the build boot')
@@ -86,6 +86,8 @@ def main():
     parser.add_argument('--compare-installed', type=Path,
                         help='Require guest output to match installed T32Ms on this disk')
     args = parser.parse_args()
+    if args.reference_exports is None:
+        args.reference_exports = args.disk.resolve().parent / 'exports'
     if args.resume and args.audit_only:
         parser.error('--resume and --audit-only cannot be combined')
     selected = tuple(args.modules or MODULES)

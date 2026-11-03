@@ -518,3 +518,16 @@ export contract is identical. This is one built module, not installed and
 executed as a replacement. A full nine-module retained build has started at
 `build/i386-native-indexed-retained128`; its result is pending. Two complete
 native generations, timing and C1–C5 remain open.
+
+
+## Retained export reference selection (2026-11-03)
+
+`test-i386-retained-build.py` now defaults its cross-built export reference to
+the selected `--disk` image's sibling `exports` directory. The prior default
+always used `build/i386-kernel/exports`, which made an otherwise complete
+MemoryRuntime guest build fail its audit against an older image. A read-only
+repeat audit of the persisted 297,196-byte module passes with 165 exports
+without specifying `--reference-exports`
+(`build/i386-native-indexed-memory128-default-audit.log`). Explicit reference
+overrides still apply. The separate full nine-module build is live at
+`build/i386-native-indexed-retained128`; no full result is claimed.
