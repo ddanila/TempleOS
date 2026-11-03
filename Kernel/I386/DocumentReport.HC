@@ -1,10 +1,31 @@
 #include "/Kernel/DisplayFlags.HH"
 #include "/Kernel/I386/Timer.HH"
 #include "/Kernel/I386/ConsolePitRead.HC"
+U8 native_report_pending[2048];
+I64 native_report_pending_length;
+CTask *native_report_pending_task;
+U0 NativeReportFlush()
+{
+  if(native_report_pending_task==Fs && native_report_pending_length &&
+      GetRFlags&0x200)
+    NativeTerminalDiagnosticRecord(native_report_pending);
+  native_report_pending_length=0;native_report_pending_task=NULL;
+}
 U0 DocReportLiteral(I64 mS,U8 *message)
-{//Direct native display, with no formatter/document dependency or allocation.
+{//Keep the direct, allocation-free display path for IRQ-off reports.
   CTask *task=Fs;
-  U32 irq=I386IrqSave;
+  U32 irq;
+  I64 index=0;
+  //Retain reports without allocating inside the guest call, including with
+  //IRQs disabled. The answer callback appends after the caller's heap check.
+  if(message) {
+    if(native_report_pending_task!=task)native_report_pending_length=0;
+    native_report_pending_task=task;
+    while(message[index] && native_report_pending_length<sizeof(native_report_pending)-1)
+      native_report_pending[native_report_pending_length++]=message[index++];
+    native_report_pending[native_report_pending_length]=0;
+  }
+  irq=I386IrqSave;
   Bool filtered=LBtr(&task->task_flags,TASKf_INPUT_FILTER_TASK);
   Bool windowed=LBtr(&task->display_flags,DISPLAYf_NOT_RAW);
   I64 previous,current,delta,remaining=0;
