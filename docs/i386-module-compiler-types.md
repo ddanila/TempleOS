@@ -793,3 +793,26 @@ native-generation runner now accepts `--retained-build-ram-mib` and forwards
 it only to the generation-two retained build. The 16 MiB failure is preserved
 as a resource-profile observation; generation-two qualification awaits a
 128 MiB rerun.
+
+The preserved 128 MiB full-content generation-two run passed generation-one
+installation, flat self-hosting and source audit, then built retained modules
+through `BuildRuntime` without the 16 MiB exhaustion
+(`build/i386-cmp-byte-generations64-full-128-kvm/result.json`). Its
+`EditorRuntime` comparison failed: the 73,912-byte rebuilt module differed
+from the installed generation-one copy at only file offsets 27,741 and
+41,945. Both bytes belonged to pushed class-name addresses in `EdFindReplace`
+and `EdGoToLine`; each address shifted by 0x4600 with the guest memory layout.
+The generation-two pipeline remains unqualified.
+
+Those two calls now pass `"CEdFindText"` and `"CEdLineGoTo"` explicitly to
+`DocForm`, preserving the class names selected by `lastclass` while storing
+the names in the module. A fresh full-content cross image
+(`build/i386-editor-form-strings-full-cross/result.json`, disk SHA-256
+`b540b3c660e58b646080c874d67651d04a00eee75ef9a0c74e75a4eb2a0d7ae0`)
+passes the 386 instruction audit, and all 1,197 delivered source/document
+files match the worktree. Independent native `EditorRuntime` builds at 16,
+64 and 128 MiB (`build/i386-editor-form-strings-retained{16,64,128}-kvm`)
+all pass their export audits and produce the same 73,968-byte module,
+SHA-256 `121a4f2bad001998ca395b4d1eb0ab0db51ccadf0e693f7a3a693e76827a0d21`.
+This closes the observed memory-layout difference in the editor module; a new
+full two-generation run and the remaining C5 gates are still required.

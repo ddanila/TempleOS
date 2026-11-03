@@ -25,7 +25,7 @@ I64 EdFindReplace(CDoc *doc)
     cmd=RSAC_REPLACE;
   else
     cmd=RSAC_ALL;
-  if (!doc->find_replace->pmt || DocForm(doc->find_replace)) {
+  if (!doc->find_replace->pmt || DocForm(doc->find_replace,"CEdFindText")) {
     res=0;
     unlock=DocLock(doc);
     if (doc->find_replace->match_case || doc->find_replace->local_var)
@@ -211,6 +211,6 @@ U0 EdGoToLine(CDoc *doc)
 {//Prompt with form and go to line num.
   CEdLineGoTo gtl;
   gtl.line=1;
-  if (DocForm(&gtl))
+  if (DocForm(&gtl,"CEdLineGoTo"))
     DocGoToLine(doc,gtl.line);
 }
