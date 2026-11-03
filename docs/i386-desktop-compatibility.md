@@ -310,3 +310,11 @@ workflows pass. The existing background workflow regresses at 8 MiB against a
 passing previous-image baseline; this remains open, and its runner keeps the
 8 MiB default. GetStr, structured output and full C1–C5 qualification remain
 incomplete.
+
+The patched 64 MiB full-content image repeats the nine-command retained-state
+and VGA baseline with the original welcome document
+(`build/i386-cmp-byte-full-desktop-baseline-kvm/result.json`). All VGA pixels
+match at each checkpoint, normal startup does not load the build-only provider,
+and pinned inputs remain unchanged. Startup took 70.44 seconds in this TCG
+run. This is a regression baseline for C2; the complete original desktop,
+multiple-terminal and persistent editing workflows remain open.

@@ -25363,3 +25363,9 @@ multiline punch descriptions and Shift+Escape cancellation produce exact typed
 records that survive cold reboot byte-for-byte. This advances C3 evidence but
 does not qualify physical input or the complete application; see
 [the TimeClock evidence](docs/i386-timeclock-native.md).
+
+The patched 64 MiB full-content image also passes the existing nine-command
+desktop retained-state and exact-VGA baseline with the original welcome
+document and no build-only provider load. This advances the C2 regression
+baseline, while full desktop workflows remain open; see
+[desktop evidence](docs/i386-desktop-compatibility.md).
