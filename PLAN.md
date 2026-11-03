@@ -25330,6 +25330,9 @@ provider load and a valid RedSea allocation bitmap. Its nine guest-built
 providers are installed and pass an independent 8 MiB boot. The patched 64 MiB
 full-content guest also built all nine modules byte-identically to the 32 MiB
 outputs, with a valid bitmap, all 686 inventory bytes preserved, and a
-1,197-file delivered-source audit. The 32 MiB self-host build and full-content
-two-generation pipeline are running; complete native-generation qualification
-remains open.
+1,197-file delivered-source audit. The patched 32 MiB image now also passes
+full native flat self-hosting: its installed guest-built providers compile all
+six flat modules, link and install the boot image, and cold-boot it at 8 MiB
+with arithmetic and document allocation checks. The installed target's RedSea
+bitmap is valid. The full-content two-generation pipeline is still running,
+so complete C5 qualification remains open.

@@ -752,3 +752,15 @@ and a matching bitmap; all 686 inventory files match workspace bytes, and
 `audit-i386-delivered-source.py` matched all 1,197 delivered source/document
 files. The full-content two-generation native pipeline has started from this
 image; neither generation is yet qualified.
+
+The 32 MiB minimal-profile flat self-host run now passes with these installed
+guest-built providers (`build/i386-cmp-byte-selfhost32-kvm/result.json` in the
+isolated worktree). The guest built all six flat modules, linked a 555,336-byte
+boot image with SHA-256
+`a15771e789f237f85c5cc8490f50657ad397af381d9581c8ac9b26723b1c45a7`,
+installed it, and independently cold-booted at 8 MiB. That boot passed `6*7`
+and `DocAllocationCheck`; an independent walk of the installed target finds
+1,319 files and a bitmap matching reachable extents. The target SHA-256 is
+`ce316054432be4f9d2a661ccdb234e2f65aab9e648f891851f3486e4c5753d51`.
+This qualifies the patched minimal-profile self-host path; the 64 MiB
+full-content two-generation run and broader C1–C5 gates remain open.
