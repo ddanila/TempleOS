@@ -1318,23 +1318,23 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             submit('CDoc *save_key_read=DocRead("C:/CtrlSave.DD");save_key_read!=0;', ['1'], 'doc-ctrl-save-read')
             submit('I64 save_key_size;U8 *save_key_text=DocSave(save_key_read,&save_key_size);save_key_size==6&&save_key_text[0]==115&&save_key_text[4]==100&&save_key_text[5]==5;', ['1'], 'doc-ctrl-save-check')
             submit('Free(save_key_text);DocDel(save_key_read);DocDel(save_key_check);', [], 'doc-ctrl-save-delete')
-            submit('CDoc *save_fail_check=DocNew("C:/NoSuchParent/CtrlSave.DD",Fs);', [], 'doc-ctrl-save-fail-new')
+            submit('CDoc *save_fail_check=DocNew("Q:/CtrlSave.DD",Fs);', [], 'doc-ctrl-save-fail-new')
             submit('DocEd(save_fail_check);', ['1'],'doc-ctrl-save-fail-editor',interaction={
               'begin':'DOC EDIT begin\n','end':'DOC EDIT end\n',
               'initial_rows':['TempleOS i386','DolDoc editor',
-                              'C:/NoSuchParent/CtrlSave.DD','',
+                              'Q:/CtrlSave.DD','',
                               bytes([0xDB]).decode('cp437')],
               'events':[{'text':'kept'},{'ctrl_key':'s'},
                         {'expect_rows':['TempleOS i386','DolDoc editor - Save failed',
-                                        'C:/NoSuchParent/CtrlSave.DD','',
+                                        'Q:/CtrlSave.DD','',
                                         'kept'+bytes([0xDB]).decode('cp437')],
                          'label':'save-failed-status'},
                         {'text':'!'}],
               'final_rows':['TempleOS i386','DolDoc editor',
-                            'C:/NoSuchParent/CtrlSave.DD','',
+                            'Q:/CtrlSave.DD','',
                             'kept!'+bytes([0xDB]).decode('cp437')],
             })
-            submit('CDoc *save_fail_read=DocRead("C:/NoSuchParent/CtrlSave.DD");save_fail_read==0;', ['1'], 'doc-ctrl-save-fail-read')
+            submit('!FileFind("Q:/CtrlSave.DD");', ['1'], 'doc-ctrl-save-fail-read')
             submit('I64 save_fail_size;U8 *save_fail_text=DocSave(save_fail_check,&save_fail_size);save_fail_size==6&&save_fail_text[0]==107&&save_fail_text[4]==33&&save_fail_text[5]==5;', ['1'], 'doc-ctrl-save-fail-check')
             submit('Free(save_fail_text);DocDel(save_fail_check);', [], 'doc-ctrl-save-fail-delete')
             submit('Ed("C:/FileEditor.DD");', ['1'], 'file-editor-create',interaction={
