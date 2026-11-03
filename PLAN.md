@@ -25264,3 +25264,15 @@ audit passing. The 32 MiB run also persisted CompilerRuntime with 462
 runtime exports after the two expected delimiter exceptions and advanced to
 CompilerProbe. Both full retained
 builds continue; installation and two native generations remain open.
+
+
+## First full native retained-module output (2026-11-03)
+
+The 32 MiB minimal-profile KVM guest built all nine retained modules on
+`486,-fpu` and passed the exact-image export and ConsoleRuntime allocation
+audits. The build provider loaded once; an independent RedSea walk found a
+valid allocation bitmap after all nine outputs. Installation and boot of
+those guest-built modules are now running. The 64 MiB full-content retained
+build is still live, and complete desktop/application behavior, both native
+generations and C1–C5 remain open. See
+[the evidence](docs/i386-module-compiler-types.md).

@@ -624,3 +624,21 @@ Against the exact-image cross build it has no extra exports; the only missing
 names are `_I386_DIV_BEGIN` and `_I386_DIV_END`, the two deliberate delimiter
 exceptions already recognized by the retained-build audit. The full-content
 run is compiling CompilerRuntime. Neither run has qualified all nine modules.
+
+
+## First complete nine-module native retained build (2026-11-03)
+
+The 32 MiB minimal-profile KVM guest completed all nine retained module
+commands under `486,-fpu` with 128 MiB RAM
+(`build/i386-native-indexed-cross32-retained128-kvm/result.json`). The exact
+cross-image export audit passed for ConsoleRuntime, CompilerRuntime,
+CompilerProbe, FileRuntime, MemoryRuntime, BuildRuntime, EditorRuntime,
+DocDiagnosticRuntime and Startup, including the two documented compiler
+delimiter exceptions and the ConsoleRuntime allocation-wrapper check. The
+build provider loaded once and was reused. The source disk SHA-256 is
+`19a69cd103077a4c07e01d0a8b50bbc5bfed035356ee302970ca7d77ca19502e`;
+an independent post-build RedSea walk found 1,327 files and a bitmap matching
+all reachable extents. Installation and boot of the guest-built providers are
+running separately. The full-content 64 MiB retained build remains in
+progress; neither two native generations nor C1–C5 are qualified by the
+minimal-profile build.
