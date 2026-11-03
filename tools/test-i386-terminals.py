@@ -57,6 +57,7 @@ def commands():
     specs = [(source, ['1'] if i == 0 else []) for i, source in enumerate(definitions)]
     specs += [('TermRun;', ['1'], {
         'begin': 'TERMINAL TEST enter\n', 'initial_rows': one,
+        'welcome_style': False,
         'events': events,
         'final_rows': two4[:-1] + ['> TermFinish;'],
         'exit_key': 'ret', 'end': 'TERMINAL TEST return\n',
@@ -71,17 +72,26 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--welcome', action='store_true',
+                        help='Expect the original welcome document at the initial prompt')
+    parser.add_argument('--ram-mib', type=int, choices=(8,16,64,128), default=8,
+                        help='Guest RAM in MiB (default: 8)')
+    parser.add_argument('--accel', choices=('tcg','kvm'), default='tcg',
+                        help='QEMU accelerator (default: tcg)')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     checker, disk = sha(Path(__file__)), sha(args.disk)
-    report = dict(checker_sha256=checker, disk_sha256=disk,
+    report = dict(checker_sha256=checker, disk_sha256=disk, welcome=args.welcome,
+                  ram_mib=args.ram_mib, accel=args.accel,
                   scope='Two spawned UserCmdLine terminals: separate definitions/history, WinFocus, exit refocus, child reclamation and exact parent public heap recovery; not documents, background compilation or all private resources')
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(args.disk, out / 'behavior', cpu='486,-fpu',
-            qmp_stdio=True, startup_check={'status': 'ok', 'answers': [],
+            qmp_stdio=True, welcome=args.welcome, ram_mib=args.ram_mib,
+            accel=args.accel,
+            startup_check={'status': 'ok', 'answers': [],
                                          'commands': commands()})
         if sha(Path(__file__)) != checker:
             raise ValueError('Debugger checker changed during execution')

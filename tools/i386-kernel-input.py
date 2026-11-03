@@ -261,8 +261,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                                      'after_bytes':audio_wav.stat().st_size,
                                      'observation_seconds':time.monotonic()-started}
 
-            def screen(rows,name,timeout=30,rejected_rows=None,colors=None,backgrounds=None,underlines=None,pixels=None,pointer=None,rejection_message=None,canvas_color=15):
-                if welcome:
+            def screen(rows,name,timeout=30,rejected_rows=None,colors=None,backgrounds=None,underlines=None,pixels=None,pointer=None,rejection_message=None,canvas_color=15,welcome_style=None):
+                if welcome_style is None: welcome_style=welcome
+                if welcome_style:
                     default_colors={};underlines=set(underlines or ());input_started=False
                     for row,line in enumerate(rows):
                         if line==' '*33+'TempleOS V5.03':
@@ -281,7 +282,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     default_colors.update(colors or {});colors=default_colors
                 expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer,canvas_color)
                 expected_cursor=None
-                if welcome and rows and len(rows[-1])<80:
+                if welcome_style and rows and len(rows[-1])<80:
                     x=len(rows[-1])*8;y=(len(rows)-1)*8
                     cursor=dict(pixels or {});cursor.update({(x+dx,y+dy):0 for dy in range(8) for dx in range(8)})
                     expected_cursor=console_pixels(rows,colors,backgrounds,underlines,cursor,pointer,canvas_color)
@@ -339,7 +340,20 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 #The VGA terminal wraps immediately at column 80, including a
                 #blank cursor row when the final character exactly fills a row.
                 width=79 if welcome else 80
-                return [text[index:index+width] for index in range(0,len(text)+1,width)]
+                if not welcome:
+                    return [text[index:index+width] for index in range(0,len(text)+1,width)]
+                rows=[]
+                while len(text)>width:
+                    #The welcome document has word wrap enabled. DocWordWrapAdd
+                    #backs up to a space, but never into the first eight cells.
+                    split=next((index for index in range(width,7,-1)
+                                if text[index]==' '),None)
+                    if split is None:
+                        rows.append(text[:width]);text=text[width:]
+                    else:
+                        rows.append(text[:split]);text=text[split+1:]
+                rows.append(text)
+                return rows
 
             def submit(source, answers, name, hotkey=False, frame=None, timeout=30,
                        interaction=None, typing_colors=None, return_colors=None, return_rows=None):
@@ -366,7 +380,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                            backgrounds=interaction.get('initial_backgrounds'),
                            underlines=interaction.get('initial_underlines'),
                            pixels=interaction.get('initial_pixels'),
-                           canvas_color=interaction.get('initial_canvas_color',15))
+                           canvas_color=interaction.get('initial_canvas_color',15),
+                           welcome_style=interaction.get('welcome_style'))
                     interaction_marks={}
                     latency_started=None
                     latency_name=None
@@ -390,7 +405,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                                    colors=action.get('colors'),backgrounds=action.get('backgrounds'),
                                    underlines=action.get('underlines'),pixels=action.get('pixels'),
                                    pointer=action.get('pointer'),
-                                   canvas_color=action.get('canvas_color',15))
+                                   canvas_color=action.get('canvas_color',15),
+                                   welcome_style=interaction.get('welcome_style'))
                             if latency_started is not None:
                                 interaction_latencies[latency_name]=time.monotonic()-latency_started
                                 if interaction_latencies[latency_name]>interaction.get('latency_budget_seconds',1.0):
@@ -461,7 +477,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                            underlines=interaction.get('final_underlines'),
                            pixels=interaction.get('final_pixels'),
                            pointer=interaction.get('final_pointer'),
-                           canvas_color=interaction.get('final_canvas_color',15))
+                           canvas_color=interaction.get('final_canvas_color',15),
+                           welcome_style=interaction.get('welcome_style'))
                     if latency_started is not None:
                         interaction_latencies[latency_name]=time.monotonic()-latency_started
                         if interaction_latencies[latency_name]>interaction.get('latency_budget_seconds',1.0):

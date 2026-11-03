@@ -225,6 +225,9 @@ CTask *NativeWinFocus(CTask *task=NULL)
   terminal=NativeTerminalFind(task);
   I386IrqRestore(irq);
   if(terminal) {
+    //A rich root document uses the window compositor. Keep its public window
+    //order in step with keyboard focus before presenting the new terminal.
+    NativeWinToTop(task);
     terminal->surface.dirty_first=0; terminal->surface.dirty_last=60;
     ConsolePresentText(&terminal->surface);
   }
@@ -308,6 +311,7 @@ U0 NativeUserConsoleStart(Bool focus)
   CNativeTerminal *terminal;
   SetRFlags(GetRFlags|512);
   Fs->win_inhibit=WIG_USER_TASK_DFT;
+  LBts(&Fs->display_flags,DISPLAYf_SHOW);
   LBts(&Fs->display_flags,DISPLAYf_NOT_RAW);
   terminal=NativeTerminalFind(I386TaskSelf);
   if(!terminal) {
