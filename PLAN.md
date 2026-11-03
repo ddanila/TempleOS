@@ -25240,7 +25240,6 @@ CompilerRuntime, and the same-sized independent TCG run was stopped. A
 in progress. Installation, second-generation results and C1–C5 remain open. See
 [the evidence](docs/i386-module-compiler-types.md).
 
-
 ## Full-content C5 input image (2026-11-03)
 
 A 64 MiB full-profile native image passed its 386 boot audit and contains all
@@ -25276,3 +25275,9 @@ those guest-built modules are now running. The 64 MiB full-content retained
 build is still live, and complete desktop/application behavior, both native
 generations and C1–C5 remain open. See
 [the evidence](docs/i386-module-compiler-types.md).
+
+The 64 MiB full-content image also passes the unchanged TimeClock typed-record
+and exact original DolDoc report workflow, including its 5,400-second duration,
+welcome/report VGA and cold-reboot rerender. Its three inventory entries retain
+unqualified status pending complete application behavior; see
+[the application evidence](docs/i386-application-matrix.md).

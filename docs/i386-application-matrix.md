@@ -137,6 +137,13 @@ scoped workflows; the latter suspends WinMgr and the keyboard run does not
 check the full VGA image. They do not establish full application or desktop
 compatibility. See [the current native evidence](i386-timeclock-native.md).
 
+The 64 MiB full-content image repeats the exact original typed-record and
+DolDoc report check with a 5,400-second duration, strict welcome/report VGA
+screens, and a cold-reboot rerender. It passes with unchanged source and input
+bytes (`build/i386-native-indexed-cross64-full-timeclock-report-welcome`). The
+three TimeClock inventory entries record this current-image result; physical
+input and complete application qualification remain open.
+
 A first Budget component reference now runs the original Load and Install
 scripts, constructs a single BANK-to-RENT transaction for 125 whole units,
 writes the application data and string files, and reopens them in the same

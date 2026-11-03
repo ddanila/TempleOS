@@ -6243,6 +6243,13 @@
           "result": "pass",
           "evidence": "build/i386-timeclock-keyboard-current-v1/result.json",
           "scope": "Full-content pool-validator image: original-source PS/2 multiline punch-in/out and Shift+Escape cancellation; independently decoded records survive cold reboot byte-for-byte, unchanged inputs. Not physical hardware, full VGA or whole application."
+        },
+        {
+          "target": "native-full-content-report-reboot",
+          "command": "python3 tools/test-i386-timeclock-report-native.py build/i386-native-indexed-cross64-full/kernel.img --out build/i386-native-indexed-cross64-full-timeclock-report-welcome --welcome",
+          "result": "pass",
+          "evidence": "build/i386-native-indexed-cross64-full-timeclock-report-welcome/result.json",
+          "scope": "Current full-content image: unchanged original TimeClock source, exact original typed records and DolDoc report for 5400 seconds, strict welcome/report VGA, cold-reboot rerender; unchanged inputs. Not physical input or whole application."
         }
       ]
     },
@@ -6371,6 +6378,13 @@
           "result": "pass",
           "evidence": "build/i386-timeclock-keyboard-current-v1/result.json",
           "scope": "Full-content pool-validator image: original-source PS/2 multiline punch-in/out and Shift+Escape cancellation; independently decoded records survive cold reboot byte-for-byte, unchanged inputs. Not physical hardware, full VGA or whole application."
+        },
+        {
+          "target": "native-full-content-report-reboot",
+          "command": "python3 tools/test-i386-timeclock-report-native.py build/i386-native-indexed-cross64-full/kernel.img --out build/i386-native-indexed-cross64-full-timeclock-report-welcome --welcome",
+          "result": "pass",
+          "evidence": "build/i386-native-indexed-cross64-full-timeclock-report-welcome/result.json",
+          "scope": "Current full-content image: unchanged original TimeClock source, exact original typed records and DolDoc report for 5400 seconds, strict welcome/report VGA, cold-reboot rerender; unchanged inputs. Not physical input or whole application."
         }
       ]
     },
@@ -6500,6 +6514,13 @@
           "result": "pass",
           "evidence": "build/i386-timeclock-keyboard-current-v1/result.json",
           "scope": "Full-content pool-validator image: original-source PS/2 multiline punch-in/out and Shift+Escape cancellation; independently decoded records survive cold reboot byte-for-byte, unchanged inputs. Not physical hardware, full VGA or whole application."
+        },
+        {
+          "target": "native-full-content-report-reboot",
+          "command": "python3 tools/test-i386-timeclock-report-native.py build/i386-native-indexed-cross64-full/kernel.img --out build/i386-native-indexed-cross64-full-timeclock-report-welcome --welcome",
+          "result": "pass",
+          "evidence": "build/i386-native-indexed-cross64-full-timeclock-report-welcome/result.json",
+          "scope": "Current full-content image: unchanged original TimeClock source, exact original typed records and DolDoc report for 5400 seconds, strict welcome/report VGA, cold-reboot rerender; unchanged inputs. Not physical input or whole application."
         }
       ]
     },
