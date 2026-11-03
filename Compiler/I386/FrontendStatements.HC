@@ -115,7 +115,7 @@ CCodeCtrl *I386FrontendPopSaved(U8 *context,CCmpCtrl *cc)
 }
 extern U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags);
 class CI386AsmOperand {
-  I64 kind,size,register_code,base,disp,value;
+  I64 kind,size,register_code,base,index,disp,value;
 };
 class CI386AsmLabel {
   I64 offset;
@@ -203,6 +203,7 @@ U0 I386FrontendAsmOperand(CI386Frontend *state,CCmpCtrl *cc,CI386AsmOperand *arg
   I64 register_code,offset;
   U8 *name;
   arg->kind=arg->size=arg->register_code=arg->base=arg->disp=arg->value=0;
+  arg->index=-1;
   if(cc->token==TK_I64 || cc->token==TK_CHAR_CONST || cc->token=='(' ||
       cc->token=='+' || cc->token=='-' || cc->token=='~') {
     arg->kind=3; arg->value=I386FrontendAsmConstant(state,cc); return;
@@ -245,8 +246,16 @@ U0 I386FrontendAsmOperand(CI386Frontend *state,CCmpCtrl *cc,CI386AsmOperand *arg
   }
   if(cc->token=='+' || cc->token=='-') offset+=I386FrontendAsmConstant(state,cc);
   if(cc->token!='[' || I386FrontendLex(state,cc)!=TK_IDENT ||
-      !cc->cur_str || (register_code=I386FrontendAsmReg(cc->cur_str))<0 ||
-      I386FrontendLex(state,cc)!=']') I386FrontendUnavailable(state);
+      !cc->cur_str || (register_code=I386FrontendAsmReg(cc->cur_str))<0)
+    I386FrontendUnavailable(state);
+  I386FrontendLex(state,cc);
+  if(cc->token=='+') {
+    if(I386FrontendLex(state,cc)!=TK_IDENT || !cc->cur_str ||
+        (arg->index=I386FrontendAsmReg(cc->cur_str))<0 || arg->index==4)
+      I386FrontendUnavailable(state);
+    I386FrontendLex(state,cc);
+  }
+  if(cc->token!=']') I386FrontendUnavailable(state);
   I386FrontendLex(state,cc);
   arg->kind=2; arg->base=register_code; arg->disp=offset;
 }
@@ -261,8 +270,12 @@ U0 I386FrontendAsmModRM(CI386Frontend *state,U8 *bytes,I64 *count,
     if(!disp && arg->base!=5) mode=0;
     else if(disp>=-128 && disp<=127) mode=1;
     else mode=2;
-    I386FrontendAsmByte(state,bytes,count,mode<<6|register_code<<3|arg->base);
-    if(arg->base==4) I386FrontendAsmByte(state,bytes,count,0x24);
+    if(arg->index>=0 || arg->base==4) {
+      I386FrontendAsmByte(state,bytes,count,mode<<6|register_code<<3|4);
+      if(arg->index>=0)
+        I386FrontendAsmByte(state,bytes,count,arg->index<<3|arg->base);
+      else I386FrontendAsmByte(state,bytes,count,0x24);
+    } else I386FrontendAsmByte(state,bytes,count,mode<<6|register_code<<3|arg->base);
     if(mode==1) I386FrontendAsmByte(state,bytes,count,disp);
     if(mode==2) for(i=0;i<4;i++) I386FrontendAsmByte(state,bytes,count,disp>>(i*8));
   } else I386FrontendUnavailable(state);

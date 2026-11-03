@@ -483,3 +483,22 @@ native cross-build and 386 instruction audit pass
 MemoryRuntime build is running at `build/i386-native-shr-jbe-memory128`.
 Complete module output and executed `SHR`/`JBE` behavior remain unverified;
 full native generations and C1–C5 remain open.
+
+
+## Native indexed assembly addressing (2026-11-03)
+
+The retained MemoryRuntime build on the `SHR`/`JBE` image compiled past both
+new forms but rejected the first `U32 [EDI+ECX]` operand in
+`MemoryBacking.HC:100` (`build/i386-native-shr-jbe-memory128`). The native
+inline-assembly parser and ModRM writer now accept an optional second register
+inside brackets, emitting a scale-one SIB byte for the original
+`[EDI+ECX]` and `[ESI+EBX]` forms. ESP is rejected as an index, and the
+existing EBP/ESP base displacement behavior remains in the shared encoder.
+
+The original compiler/kernel rebuild passes two booted generations with binary
+differences (`build/i386-native-indexed-rebuild.log`). The native cross-build
+and 386 instruction audit pass (`build/i386-native-indexed-cross`). A new
+128 MiB retained MemoryRuntime build is running at
+`build/i386-native-indexed-memory128`; complete module output and runtime
+execution of the indexed operations remain unverified. C1–C5 and both complete
+native generations remain open.

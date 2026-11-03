@@ -25200,3 +25200,12 @@ encodes register-immediate `SHR` and `JBE`, the other missing branch in that
 block. Two original rebuild generations, the native cross-build and 386 audit
 pass; a replacement retained MemoryRuntime build is running. See
 [the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.
+
+
+## Indexed native assembly operands (2026-11-03)
+
+MemoryRuntime advanced through `SHR`/`JBE`, then rejected the backing sort's
+`[EDI+ECX]`. The native frontend now emits a scale-one SIB byte for its
+original two-register memory operands. Two original rebuild generations and
+the 386-audited cross-build pass; a retained MemoryRuntime retry is running.
+See [the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.
