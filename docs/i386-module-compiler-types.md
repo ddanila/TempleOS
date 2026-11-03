@@ -772,5 +772,14 @@ cold-booted at 8 MiB, and passed `6*7` and `DocAllocationCheck`, including
 diagnostic growth recovery. The candidate SHA-256 is
 `619725843bd155a78ac5730b78eddda42aadb0fc5e71ca5ed0f0073d3edb3ee4`.
 An independent RedSea walk finds 1,661 files and a bitmap matching reachable
-extents. The two-generation pipeline has advanced to generation-one flat
-self-hosting; generation two and C5 remain open.
+extents. The full-content generation-one flat self-host run now also passes
+(`build/i386-cmp-byte-generations64-full-kvm/gen1-selfhost/result.json` in the
+isolated worktree): all six flat modules built with the installed guest-built
+providers, the guest-linked boot image installed, and the independent 8 MiB
+boot passed `6*7` and `DocAllocationCheck`. Its 555,336-byte flat boot SHA-256
+is `a15771e789f237f85c5cc8490f50657ad397af381d9581c8ac9b26723b1c45a7`,
+byte-identical to the patched 32 MiB result. The installed target SHA-256 is
+`edffc8810a4c609ca624a0d76d25c974cc0d19184293523d100e01d1b05d496f`;
+an independent RedSea walk finds 1,662 files and a matching bitmap. The
+pipeline has advanced to generation-two retained-module build; generation two
+and C5 remain open.

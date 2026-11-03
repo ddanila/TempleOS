@@ -25340,5 +25340,8 @@ so complete C5 qualification remains open.
 The patched full-content generation-one installer also passes: all nine
 guest-built providers are installed, the 8 MiB cold boot passes arithmetic
 and document allocation/recovery checks, and the candidate's RedSea bitmap
-matches reachable files. Its flat self-host build is running; generation two
-and complete C5 qualification remain open.
+matches reachable files. Its flat self-host build now also passes: six
+guest-built flat modules, guest-linked boot image, installation and independent
+8 MiB functional boot. The flat boot bytes match the patched 32 MiB result.
+Generation two is building retained modules; complete C5 qualification remains
+open.
