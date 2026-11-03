@@ -25399,3 +25399,9 @@ VGA at 64 MiB. The help fixture accounts for retained console history and its
 cursor. The native circular-queue index still omits three original class
 links (`CCPU`, `CTask`, `CWinScroll`), so C1 help-index parity remains open.
 See [desktop evidence](docs/i386-desktop-compatibility.md).
+
+The focused welcome document-editing group now passes all 169 native commands
+with exact VGA at 64 MiB, including failed save on unmounted `Q:`, new-file
+creation, existing-file cancellation, selection, styling and binary document
+persistence. Full integrated desktop and application qualification remain open;
+see [desktop evidence](docs/i386-desktop-compatibility.md).

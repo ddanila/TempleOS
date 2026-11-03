@@ -344,3 +344,13 @@ and `QueRem`. The original index fixture also listed `CCPU`, `CTask` and
 The separate original-document compatibility group passes eight commands,
 including byte and hash checks, with exact VGA
 (`build/i386-c1c5-welcome-merged-compat64-kvm-v1/result.json`).
+
+The focused 64 MiB welcome document-editing run passes all 169 native
+commands with pixel-exact VGA
+(`build/i386-c1c5-welcome-merged-document-editing64-kvm-v2/result.json`).
+It covers navigation and boundary keys, selection and clipboard, text colors
+and styles, ordinary and failed Ctrl+S, new-file creation, existing-file
+cancellation, wide layout and binary persistence. The failed save uses an
+unmounted `Q:` drive, since public file writes create missing parent
+directories on a mounted drive. Complete desktop and application acceptance
+remain open.
