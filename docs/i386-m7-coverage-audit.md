@@ -303,6 +303,16 @@ two-generation reproducibility and release qualification remain open; the older
 | 5: No FPU, 386 executable regions, pinned environment | No-FPU QEMU execution plus boot/installed/JIT/inline-assembly audits cover their classified ranges; command manifests record CPU, RAM, accelerator and devices. | New flat development image passes installed 386/RedSea audit. Complete current-source live JIT coverage and a consolidated environment record (host, QEMU, BIOS hash, pinned machine/storage/peripherals) remain open. Emulator evidence does not certify a physical 386. |
 | 6: Reviewable published result and x64 regression | `test-rebuild.py` boots rebuilt x64 compiler/kernel and rebuilds again. Packaging checks source/image evidence; the standalone verifier checks files, decompressed image and audio independently. | Fresh x64 regression passes. A single fresh/resumable qualification command, matching full evidence, published versioned artifacts and downloaded-artifact smoke test remain open. The local bundle is an earlier-source candidate, not a published release. |
 
+The current combined full-content image (SHA-256
+`63dbf164981b6a0f8dbf33613b72d4c6d295b422b599ad500737c7e6c993483d`)
+passes the 64 MiB two-terminal test with the original welcome document:
+eleven root commands and exact VGA checks cover distinct definitions and
+history, focus in both directions, child exits and exact parent public-heap
+recovery (`build/i386-c1c5-combined-terminals64-kvm/result.json`). Its
+nine-command desktop baseline also passes with no build-provider load
+(`build/i386-c1c5-combined-desktop64/result.json`). These are current-source
+C2 components; other desktop workflows and the full C1–C5 suite remain open.
+
 Next implementation order: finish the live workstation/provider/flat builds,
 check native boot-area fit and startup timing, then close the remaining
 terminal and debugger behavior with failing visible tests. Keep these failures in the qualification report; a publication

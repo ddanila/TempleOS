@@ -821,3 +821,8 @@ provider, then cold-boots at 8 MiB and passes `6*7` and
 `DocAllocationCheck` (`build/i386-editor-form-strings-native-install-kvm/result.json`,
 installed disk SHA-256
 `4003dfb77620fc943d2a7e87c876cd1acc93898b20ec16ff8ce0d2dc157f7976`).
+The installed native editor then passes the full-content search/provider
+fixture (`build/i386-editor-native-provider-full-kvm/result.json`): delivered
+editor sources match, the provider loads once on first use, and all search
+cases and the final `6*7` command pass with unchanged inputs. This checks the
+installed provider's search path, not every form interaction or app workflow.
