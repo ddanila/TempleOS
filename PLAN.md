@@ -25350,3 +25350,10 @@ The patched full-content cross image also repeats the unchanged TimeClock
 typed-record, report and cold-reboot workflow with exact original bytes and
 VGA checkpoints. Its three inventory files retain unqualified status pending
 complete application behavior; see [the application matrix](docs/i386-application-matrix.md).
+
+The first patched generation-two retained build reached `ConsoleRuntime` but
+exhausted the 16 MiB guest heap while compiling
+`Adam/DolDoc/DocRecalcCore.HC`. The runner now exposes an explicit
+`--retained-build-ram-mib` setting for this build stage. A 128 MiB rerun is
+required before generation two can be qualified; the failed 16 MiB profile
+remains recorded as a resource limit, not as a compiler regression.

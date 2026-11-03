@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Qualify two native generations using an already qualified seven-provider build."""
+"""Qualify two native generations using an already qualified nine-provider build."""
 import argparse
 import hashlib
 import json
@@ -35,6 +35,8 @@ def main():
     parser.add_argument('--qmp-stdio', action='store_true')
     parser.add_argument('--build-command-timeout', type=int, default=3600,
                         help='Per-module native rebuild limit in seconds')
+    parser.add_argument('--retained-build-ram-mib', type=int, choices=(16, 64, 128), default=16,
+                        help='Guest RAM for the generation-two retained build (default: 16 MiB)')
     args = parser.parse_args()
     if args.build_command_timeout <= 0:
         parser.error('Build command timeout must be positive')
@@ -61,6 +63,7 @@ def main():
     report = {'result': 'running', 'stage': 'preflight', 'repository': str(repo),
               'accel': args.accel, 'cpu': args.cpu, 'qmp_stdio': args.qmp_stdio, 'welcome': args.welcome,
               'build_command_timeout': args.build_command_timeout,
+              'retained_build_ram_mib': args.retained_build_ram_mib,
               'input_sha256': inputs,
               'source_sha256': sources, 'stages': {}}
 
@@ -122,7 +125,8 @@ def main():
         built = out / 'gen2-retained-build'
         run(built.name, 'test-i386-retained-build.py', '--disk', first / 'target.img',
             '--reference-exports', audited / 'exports', '--compare-installed', first / 'target.img',
-            '--out', built, '--command-timeout', args.build_command_timeout, *runtime)
+            '--out', built, '--command-timeout', args.build_command_timeout,
+            '--ram-mib', args.retained_build_ram_mib, *runtime)
         second, _ = generation(2, built)
         run('generation-identity', 'audit-i386-generations.py', '--first', first / 'target.img',
             '--second', second / 'target.img', '--out', out / 'generation-identity')

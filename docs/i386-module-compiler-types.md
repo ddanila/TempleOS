@@ -783,3 +783,13 @@ byte-identical to the patched 32 MiB result. The installed target SHA-256 is
 an independent RedSea walk finds 1,662 files and a matching bitmap. The
 pipeline has advanced to generation-two retained-module build; generation two
 and C5 remain open.
+
+The first generation-two retained build failed at 16 MiB guest RAM
+(`build/i386-cmp-byte-generations64-full-kvm/result.json` in the isolated
+worktree). Its `ConsoleRuntime` compile reached
+`Adam/DolDoc/DocRecalcCore.HC`, logged `HEAP EXHAUSTED`, and rejected with
+`OutMem`. The nine-module first-generation build had passed at 128 MiB. The
+native-generation runner now accepts `--retained-build-ram-mib` and forwards
+it only to the generation-two retained build. The 16 MiB failure is preserved
+as a resource-profile observation; generation-two qualification awaits a
+128 MiB rerun.
