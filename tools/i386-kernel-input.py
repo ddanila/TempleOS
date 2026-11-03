@@ -497,7 +497,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                            pixels=interaction.get('final_pixels'),
                            pointer=interaction.get('final_pointer'),
                            canvas_color=interaction.get('final_canvas_color',15),
-                           welcome_style=interaction.get('welcome_style',False))
+                           welcome_style=interaction.get('final_welcome_style',interaction.get('welcome_style',False)))
                     if latency_started is not None:
                         interaction_latencies[latency_name]=time.monotonic()-latency_started
                         if interaction_latencies[latency_name]>interaction.get('latency_budget_seconds',1.0):
@@ -1998,7 +1998,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         {'expect_rows':cmd_rows,'colors':cmd_selected_colors,
                          'backgrounds':cmd_selected_backgrounds,'label':'mn-returned'},
                         {'key':'esc'}],
-              'final_rows':['TempleOS i386','HolyC console','','0','> ']})
+              'final_rows':(rows[:-1]+typed_rows('HelpHeap("C:/Doc/CmdLineOverview.DD");')+['0','> '])[-60:],
+              'final_welcome_style':True})
             doldoc_rows=['TempleOS i386','Help: C:/Doc/DolDoc.DD','',
                          'A DolDoc in memory is a Circular Queue of cmds and graphics.  See CDocEntry for ',
                          'the entry structure.  See TipOfDay() for a nice example.','',
@@ -2007,7 +2008,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             index_selected_backgrounds={(3,index):1 for index in range(24,38)}
             category_rows=['TempleOS i386','Help: HI:Data Types/Circular Queue','',
                            'Data Types/Circular Queue','','C:/Doc/Que.DD.Z','',
-                           'CCPU','CQue','CTask','CWinScroll','QueInit','QueIns',
+                           'CQue','QueInit','QueIns',
                            'QueInsRev','QueRem','']
             category_selected_colors={(5,index):15 for index in range(len('C:/Doc/Que.DD.Z'))}
             category_selected_backgrounds={(5,index):1 for index in range(len('C:/Doc/Que.DD.Z'))}

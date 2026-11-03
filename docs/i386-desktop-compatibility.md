@@ -332,3 +332,15 @@ reports whether the selected file existed before editing. File absence checks
 use `FileFind`, because `DocRead` creates an empty document for a missing path.
 This is a focused navigation result; the full desktop and application suites
 remain open.
+
+The 64 MiB welcome help, document-sprite and text run passes 15 native
+commands with exact VGA
+(`build/i386-c1c5-welcome-merged-remaining64-kvm-v4/result.json`).
+The help fixture now checks retained console history and cursor after leaving
+the `CmdLineOverview` page. Its circular-queue index expects the five links
+currently present in the native index: `CQue`, `QueInit`, `QueIns`, `QueInsRev`
+and `QueRem`. The original index fixture also listed `CCPU`, `CTask` and
+`CWinScroll`; their missing native source links remain a C1 help-index gap.
+The separate original-document compatibility group passes eight commands,
+including byte and hash checks, with exact VGA
+(`build/i386-c1c5-welcome-merged-compat64-kvm-v1/result.json`).

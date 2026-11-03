@@ -25392,3 +25392,10 @@ and cross-directory moves. `Dir` now writes through the rich console so its
 listing survives redraw. The picker oracles use the original `Ed` return
 meaning and `FileFind` for missing paths. Full desktop/application gates remain
 open; see [desktop evidence](docs/i386-desktop-compatibility.md).
+
+The original-document compatibility group passes eight more commands, and
+welcome help, document sprites and text pass fifteen commands, all with exact
+VGA at 64 MiB. The help fixture accounts for retained console history and its
+cursor. The native circular-queue index still omits three original class
+links (`CCPU`, `CTask`, `CWinScroll`), so C1 help-index parity remains open.
+See [desktop evidence](docs/i386-desktop-compatibility.md).
