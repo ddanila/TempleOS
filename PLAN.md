@@ -25209,3 +25209,13 @@ MemoryRuntime advanced through `SHR`/`JBE`, then rejected the backing sort's
 original two-register memory operands. Two original rebuild generations and
 the 386-audited cross-build pass; a retained MemoryRuntime retry is running.
 See [the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.
+
+
+## Native MemoryRuntime output (2026-11-03)
+
+The original MemoryRuntime source now builds in the 128 MiB native guest and
+persists a 297,196-byte module with all 165 expected exports. The exact-image
+export audit passes after specifying its cross-build reference directory.
+The full nine-module retained build is running; no installation or native
+second generation is yet qualified. See
+[the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.

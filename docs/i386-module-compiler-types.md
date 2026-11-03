@@ -502,3 +502,19 @@ and 386 instruction audit pass (`build/i386-native-indexed-cross`). A new
 `build/i386-native-indexed-memory128`; complete module output and runtime
 execution of the indexed operations remain unverified. C1–C5 and both complete
 native generations remain open.
+
+
+## First complete retained MemoryRuntime module (2026-11-03)
+
+The indexed-address image completed a native 128 MiB build of the original
+MemoryRuntime source. The guest persisted a 297,196-byte T32M with 1,124
+records and 165 exports (`build/i386-native-indexed-memory128/source.img`).
+The initial harness audit used its default reference directory from an older
+image and rejected the export set. A read-only audit using the exact image's
+`build/i386-native-indexed-cross/exports` passes with all 165 expected exports
+(`build/i386-native-indexed-memory128/result.json`). The guest and reference
+module hashes differ, as expected for the native and cross-built outputs; the
+export contract is identical. This is one built module, not installed and
+executed as a replacement. A full nine-module retained build has started at
+`build/i386-native-indexed-retained128`; its result is pending. Two complete
+native generations, timing and C1–C5 remain open.
