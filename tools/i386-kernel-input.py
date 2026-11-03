@@ -612,6 +612,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 if not welcome and uploads()[-1]!=60:
                     raise ValueError('Scrolling must invalidate the full screen')
                 rows=['> ']*60
+            oom_request=0x800000 if ram_mib==8 else 2*ram_mib*1024*1024
             commands=[
                 ('GetRFlags&0x200;', ['512']),
                 ('CQue queue;sizeof(CQue)==8&&(queue.next=&queue)==&queue&&(queue.last=&queue)==queue.next;', ['1']),
@@ -668,7 +669,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 ('heap_p(U64)%64;', ['3']),
                 ('MSize(heap_p)==MSize(heap_p+heap_p(I64 *)[-1]);', ['1']),
                 ('Free(heap_p);Free(0);', []),
-                ('I64 MemFail(){I64 ok=0;try{MAlloc(0x800000);}catch{ok=Fs->except_ch==\'OutMem\'&&(GetRFlags&512)!=0;Fs->catch_except=TRUE;}return ok;}', []),
+                ('I64 MemFail(){I64 ok=0;try{MAlloc(0x%X);}catch{ok=Fs->except_ch==\'OutMem\'&&(GetRFlags&512)!=0;Fs->catch_except=TRUE;}return ok;}' % oom_request, []),
                 ('MemFail;', ['1']),
                 ('MHeapCtrl(&MemFail)==Fs->code_heap&&MSize(&MemFail)>0;', ['1']),
                 ('MAlloc(0x100000000);', ['Out of memory']),
