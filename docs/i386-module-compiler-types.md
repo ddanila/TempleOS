@@ -461,3 +461,25 @@ beyond the former `INC` rejection; its final module result is pending.
 Console execution fixtures attempted on the intermediate and updated images
 timed out after startup/setup, so they do not establish executed branch
 semantics. Full native generation and C1–C5 remain open.
+
+
+## Native backing-sort assembly (2026-11-03)
+
+The 128 MiB retained MemoryRuntime build on the carry/INC image progressed
+through the prior `JAE` and `INC` rejections, compiled the memory allocation
+core, then rejected `SHR` in `MemoryBacking.HC:91`
+(`build/i386-native-carry-inc-memory128`). The same backing-sort assembly block
+uses `JBE`, so the native frontend now encodes register-immediate `SHR`
+(`C1 /5 ib`) and near `JBE` (`0F 86 rel32`) as well. The first candidate's
+original compiler rebuilt twice, but its native cross-build found that the
+original HolyC compiler rejects the new ternary ModRM selector at `?`
+(`build/i386-native-shr-jbe-cross/exports/compiler-log.DD`). Replacing that
+selector with an ordinary branch fixed the source syntax.
+
+The corrected original compiler/kernel rebuild passes both generations with
+binary differences (`build/i386-native-shr-jbe-fixed-rebuild.log`), and the
+native cross-build and 386 instruction audit pass
+(`build/i386-native-shr-jbe-fixed-cross`). A fresh 128 MiB retained
+MemoryRuntime build is running at `build/i386-native-shr-jbe-memory128`.
+Complete module output and executed `SHR`/`JBE` behavior remain unverified;
+full native generations and C1–C5 remain open.

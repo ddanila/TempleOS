@@ -25190,3 +25190,13 @@ advanced from the `JAE` rejection to `INC`; the second image has advanced past
 the 386-audited native cross-build pass. See
 [the evidence](docs/i386-module-compiler-types.md). Complete retained module
 qualification, both native generations and C1–C5 remain open.
+
+
+## Backing-sort native compiler support (2026-11-03)
+
+The retained MemoryRuntime build passed the earlier carry/INC parser stops,
+then rejected `SHR` in the original backing sort. The native frontend now
+encodes register-immediate `SHR` and `JBE`, the other missing branch in that
+block. Two original rebuild generations, the native cross-build and 386 audit
+pass; a replacement retained MemoryRuntime build is running. See
+[the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.
