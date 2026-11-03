@@ -25324,5 +25324,8 @@ images pass. A development self-build from the patched cross image compiled
 all six flat modules, linked and installed the boot image, and passed an
 independent 8 MiB boot with arithmetic and document allocation checks. Its
 scripted audit stopped because ordinary startup created `Registry.HC.Z` on the
-cross-built source disk. New nine-module guest builds are running from both
-patched images; complete native-generation qualification remains open.
+cross-built source disk. The patched 32 MiB guest has now built and audited all
+nine retained modules, including the changed CompilerRuntime, with one build
+provider load and a valid RedSea allocation bitmap. Installation and the
+64 MiB full-content guest build are running; complete native-generation
+qualification remains open.

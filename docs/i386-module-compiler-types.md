@@ -721,3 +721,15 @@ a writable copy cold-booted at 8 MiB and passed `6*7` and
 This is development evidence with cross-built retained providers, not a
 complete guest-built native generation. Patched nine-module guest builds are
 running on both image profiles.
+
+The patched 32 MiB minimal-profile guest build has now passed its nine-module
+persisted-output and exact-image export audits
+(`build/i386-cmp-byte-retained32-kvm/result.json` in the isolated worktree).
+The build provider loaded once. Its CompilerRuntime module is 1,666,921 bytes
+with SHA-256
+`b93014c3e3e198168702ae3e7d9dd090b43316017c261d7a727339afef13771a`;
+the source disk SHA-256 is
+`66d6cbc5793522f5a62a5678ab5978cf1056cd877224f10357c15fc063cc58eb`.
+An independent RedSea walk finds 1,327 files and a bitmap matching all
+reachable extents. Retained installation and the full-content nine-module
+build are in progress; this result does not yet qualify a native generation.
