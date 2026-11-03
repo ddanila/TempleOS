@@ -545,3 +545,18 @@ This confirms the new native frontend encodings reached the guest-built
 module. It does not execute that backing-sort path or replace full native
 installation and generation tests. The nine-module retained build remains
 live at `build/i386-native-indexed-retained128`.
+
+
+## First full retained ConsoleRuntime output (2026-11-03)
+
+A separate KVM `486,-fpu` nine-module build on the indexed-address image
+reached and completed its first guest command. The guest persisted
+`/Probe/RetainedConsoleRuntime.t32m` in
+`build/i386-native-indexed-retained128-kvm/source.img`. A read-only extraction
+while that guest continued found a valid 2,648,848-byte module with 10,108
+records and 1,060 exports. Its export names match the exact-image cross-built
+ConsoleRuntime reference, with no missing or extra names. The overall harness
+result remains running; it has not audited the remaining eight modules or
+installed the first one. The independent TCG build on the same image remains
+live at `build/i386-native-indexed-retained128`. This is a native module-output
+checkpoint, not a complete generation or C1–C5 qualification.
