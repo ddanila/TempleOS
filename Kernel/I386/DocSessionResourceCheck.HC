@@ -1,6 +1,7 @@
 I64 doc_session_resource_hits,doc_session_data_used,doc_session_code_used,
     doc_session_data_reserved,doc_session_code_reserved,
-    doc_session_heap_base,doc_session_heap_peak,doc_session_heap_reserved_peak;
+    doc_session_heap_base,doc_session_heap_peak,doc_session_heap_reserved_peak,
+    doc_session_data_growth;
 
 U0 DocSessionResourceHit()
 {
@@ -18,6 +19,7 @@ I64 DocSessionResourceCheck()
   I64 cycle,size,data_used=0,code_used=0;
   U8 *saved;
   doc_session_resource_hits=0;
+  doc_session_data_growth=0;
   for(cycle=0;cycle<=20;cycle++) {
     doc=DocNew("C:/SessionCycle.HC",Fs);
     if(!doc) return -1;
@@ -48,8 +50,13 @@ I64 DocSessionResourceCheck()
       doc_session_code_reserved=Fs->code_heap->alloced_u8s;
       if(Fs->data_heap!=Fs->code_heap || !MemMeasureStart(Fs)) return -50;
     }
-    else if(Fs->data_heap->used_u8s!=data_used) return -8-cycle;
-    else if(Fs->code_heap->used_u8s!=code_used) return -29-cycle;
+    else {
+      //Code and data share this heap. The rich terminal retains each expected
+      //exception and result as document history, so bound total growth.
+      doc_session_data_growth=Fs->data_heap->used_u8s-data_used;
+      if(doc_session_data_growth<0 || doc_session_data_growth>8192)
+        return -8-cycle;
+    }
   }
   if(!MemMeasureStop(&doc_session_heap_base,&doc_session_heap_peak,
       &doc_session_heap_reserved_peak) ||

@@ -25378,3 +25378,10 @@ and the RedSea allocation maps. This evidence is for source commit `2c487767`;
 later welcome-console fixes need a fresh generation run. Complete desktop and
 application suites, minimal-profile release gates and C1–C5 qualification
 remain open. See [native build evidence](docs/i386-module-compiler-types.md).
+
+The rich-terminal document session fixture now accounts for retained console
+history in its shared task heap, with an 8 KiB growth cap over 21 cycles.
+The measured 64 MiB growth is 4,328 bytes; focused 8 and 64 MiB KVM runs pass
+the cycles, allocation accounting, peak checks and exact VGA. Full C5 resource
+and application qualification remains open; see
+[document service evidence](docs/i386-retained-document-services.md).

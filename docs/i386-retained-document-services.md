@@ -51,3 +51,16 @@ and retains 117160 bytes. The kernel is 364664 bytes, leaving 24456 bytes after
 the 4096-byte early stage in its 393216-byte reservation. Service/config record
 sizes remain 32/28 bytes. The preview is the validated normal disk. These are
 QEMU/486 measurements; strict 386 and physical-PC acceptance remain outstanding.
+
+## Rich-terminal session resource check (2026-11-03)
+
+`DocSessionResourceCheck` repeats 21 document write, read, edit, execute and
+expected-exception cycles. The rich terminal retains those exceptions and
+results in its document, which shares the task's code/data heap. The fixture
+now measures that intentional history growth and caps it at 8 KiB while still
+checking session completion, allocation accounting and peak memory. The
+measured 64 MiB growth was 4,328 bytes. Focused KVM runs at 64 MiB
+(`build/i386-c1c5-welcome-merged-resources64-kvm-v6/result.json`) and 8 MiB
+(`build/i386-c1c5-welcome-merged-resources8-kvm-v6/result.json`) both pass all
+21 cycles with exact VGA. This verifies the bounded document session workload;
+it does not close the larger desktop, application or C5 resource gates.
