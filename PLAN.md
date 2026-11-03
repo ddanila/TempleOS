@@ -25385,3 +25385,10 @@ The measured 64 MiB growth is 4,328 bytes; focused 8 and 64 MiB KVM runs pass
 the cycles, allocation accounting, peak checks and exact VGA. Full C5 resource
 and application qualification remains open; see
 [document service evidence](docs/i386-retained-document-services.md).
+
+The welcome file-navigation run passes 36 commands with exact VGA at 64 MiB,
+including `Dir` listings, file picker edits, rename/delete, directory changes
+and cross-directory moves. `Dir` now writes through the rich console so its
+listing survives redraw. The picker oracles use the original `Ed` return
+meaning and `FileFind` for missing paths. Full desktop/application gates remain
+open; see [desktop evidence](docs/i386-desktop-compatibility.md).

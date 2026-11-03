@@ -258,7 +258,7 @@ public I64 Dir(U8 *filename=NULL)
   if((*console_config->files->dir_list)(filename,listing,needed,&count)!=needed) {
     Free(listing); return -1;
   }
-  I386TextWrite(&console_text,listing); Free(listing); return count;
+  NativeConsoleWrite(listing); Free(listing); return count;
 }
 public Bool FileDel(U8 *filename)
 {

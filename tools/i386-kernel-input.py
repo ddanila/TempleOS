@@ -1337,7 +1337,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             submit('!FileFind("Q:/CtrlSave.DD");', ['1'], 'doc-ctrl-save-fail-read')
             submit('I64 save_fail_size;U8 *save_fail_text=DocSave(save_fail_check,&save_fail_size);save_fail_size==6&&save_fail_text[0]==107&&save_fail_text[4]==33&&save_fail_text[5]==5;', ['1'], 'doc-ctrl-save-fail-check')
             submit('Free(save_fail_text);DocDel(save_fail_check);', [], 'doc-ctrl-save-fail-delete')
-            submit('Ed("C:/FileEditor.DD");', ['1'], 'file-editor-create',interaction={
+            submit('Ed("C:/FileEditor.DD");', ['0'], 'file-editor-create',interaction={
               'begin':'DOC EDIT begin\n','end':'DOC EDIT end\n',
               'initial_rows':['TempleOS i386','DolDoc editor','C:/FileEditor.DD','',
                               bytes([0xDB]).decode('cp437')],
@@ -1348,7 +1348,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             submit('CDoc *file_editor_read=DocRead("C:/FileEditor.DD");file_editor_read!=0;', ['1'], 'file-editor-create-read')
             submit('I64 file_editor_size;U8 *file_editor_text=DocSave(file_editor_read,&file_editor_size);file_editor_size==9&&file_editor_text[0]==111&&file_editor_text[7]==108&&file_editor_text[8]==5;', ['1'], 'file-editor-create-check')
             submit('Free(file_editor_text);DocDel(file_editor_read);', [], 'file-editor-create-delete')
-            submit('Ed("C:/FileEditor.DD");', ['0'], 'file-editor-cancel',interaction={
+            submit('Ed("C:/FileEditor.DD");', ['1'], 'file-editor-cancel',interaction={
               'begin':'DOC EDIT begin\n','end':'DOC EDIT end\n','exit_shift':True,
               'initial_rows':['TempleOS i386','DolDoc editor','C:/FileEditor.DD','',
                               'original'+bytes([0xDB]).decode('cp437')],
@@ -1692,7 +1692,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                              'Name: New.HC'+bytes([0xDB]).decode('cp437')]
             picker_created=['TempleOS i386','File picker','C:/Browse','',
                             '  Sub/','  Main.HC','  Other.HC','> New.HC']
-            submit('EdDir("C:/Browse");', ['1'], 'directory-picker', interaction={
+            submit('EdDir("C:/Browse");', ['0'], 'directory-picker', interaction={
               'begin':'FILE PICK begin\n','end':'FILE PICK end\n',
               'initial_rows':picker_rows,
               'events':[{'key':'down'},
@@ -1752,7 +1752,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         {'expect_rows':picker_renamed,'label':'rename-done'}],
               'final_rows':picker_renamed})
             submit('CDoc *browse_renamed=DocRead("C:/Browse/Renamed.HC");I64 browse_renamed_size;U8 *browse_renamed_text=DocSave(browse_renamed,&browse_renamed_size);', [], 'directory-picker-rename-read')
-            submit('!DocRead("C:/Browse/New.HC")&&browse_renamed_size==5&&browse_renamed_text[0]==\'6\'&&browse_renamed_text[3]==\';\'&&browse_renamed_text[4]==5;', ['1'], 'directory-picker-rename-check')
+            submit('!FileFind("C:/Browse/New.HC")&&browse_renamed_size==5&&browse_renamed_text[0]==\'6\'&&browse_renamed_text[3]==\';\'&&browse_renamed_text[4]==5;', ['1'], 'directory-picker-rename-check')
             submit('!FileRename("C:/Browse/Missing.HC","C:/Browse/Other2.HC")&&!FileRename("C:/Browse/Other.HC","C:/Browse/Main.HC")&&!FileRename("C:/Browse/Sub","C:/Browse/Main.HC");', ['1'], 'directory-picker-rename-reject')
             submit('!FileRename("C:/Browse/Other.HC","C:/Browse/Sub/Moved.HC");', ['1'], 'directory-picker-rename-cross-directory')
             submit('Free(browse_renamed_text);DocDel(browse_renamed);', [], 'directory-picker-rename-release')
@@ -1767,7 +1767,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         {'key':'y'},
                         {'expect_rows':picker_after_delete,'label':'delete-done'}],
               'final_rows':picker_after_delete})
-            submit('DocRead("C:/Browse/New.HC")==0&&DocRead("C:/Browse/Renamed.HC")==0&&!FileDel("C:/Browse/Renamed.HC");', ['1'], 'directory-picker-delete-check')
+            submit('!FileFind("C:/Browse/New.HC")&&!FileFind("C:/Browse/Renamed.HC")&&!FileDel("C:/Browse/Renamed.HC");', ['1'], 'directory-picker-delete-check')
             picker_dir_rename=['TempleOS i386','File picker - Rename','C:/Browse','',
                                'New name: '+bytes([0xDB]).decode('cp437')]
             picker_dir_name=['TempleOS i386','File picker - Rename','C:/Browse','',
@@ -1815,7 +1815,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             submit('!DirDel("C:/Browse/Empty");', ['1'], 'directory-picker-empty-directory-repeat')
             submit('DirMk("C:/Browse/Archive")&&FileMove("C:/Browse/Other.HC","C:/Browse/Archive/Moved.HC");', ['1'], 'directory-file-move')
             submit('CDoc *moved_doc=DocRead("C:/Browse/Archive/Moved.HC");I64 moved_size;U8 *moved_text=DocSave(moved_doc,&moved_size);', [], 'directory-file-move-read')
-            submit('!DocRead("C:/Browse/Other.HC")&&moved_size==2&&moved_text[0]==\'7\'&&moved_text[1]==5;', ['1'], 'directory-file-move-check')
+            submit('!FileFind("C:/Browse/Other.HC")&&moved_size==2&&moved_text[0]==\'7\'&&moved_text[1]==5;', ['1'], 'directory-file-move-check')
             submit('!FileMove("C:/Browse/Missing.HC","C:/Browse/Archive/Missing.HC")&&!FileMove("C:/Browse/Main.HC","C:/Browse/Archive/Moved.HC");', ['1'], 'directory-file-move-reject')
             submit('!FileMove("C:/Browse/Code","C:/Browse/Archive/Code");', ['1'], 'directory-file-move-directory-reject')
             submit('Free(moved_text);DocDel(moved_doc);FileMove("C:/Browse/Archive/Moved.HC","C:/Browse/Other.HC");', ['1'], 'directory-file-move-return')

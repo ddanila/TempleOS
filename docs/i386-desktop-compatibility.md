@@ -318,3 +318,17 @@ match at each checkpoint, normal startup does not load the build-only provider,
 and pinned inputs remain unchanged. Startup took 70.44 seconds in this TCG
 run. This is a regression baseline for C2; the complete original desktop,
 multiple-terminal and persistent editing workflows remain open.
+
+## Welcome file navigation checkpoint (2026-11-03)
+
+The welcome terminal now routes `Dir` listings through `NativeConsoleWrite`,
+so directory results survive the rich terminal redraw. The 64 MiB KVM/486
+`file-navigation` run passes all 36 native commands with pixel-exact VGA
+checkpoints (`build/i386-c1c5-welcome-merged-file-navigation64-kvm-v9/result.json`).
+It covers absolute and relative listings, file picker creation and editing,
+renames, deletion, directory creation and rename, and cross-directory file
+moves. The picker fixture follows the original `Ed` return contract: it
+reports whether the selected file existed before editing. File absence checks
+use `FileFind`, because `DocRead` creates an empty document for a missing path.
+This is a focused navigation result; the full desktop and application suites
+remain open.
