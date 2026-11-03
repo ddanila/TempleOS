@@ -555,8 +555,26 @@ reached and completed its first guest command. The guest persisted
 `build/i386-native-indexed-retained128-kvm/source.img`. A read-only extraction
 while that guest continued found a valid 2,648,848-byte module with 10,108
 records and 1,060 exports. Its export names match the exact-image cross-built
-ConsoleRuntime reference, with no missing or extra names. The overall harness
-result remains running; it has not audited the remaining eight modules or
-installed the first one. The independent TCG build on the same image remains
-live at `build/i386-native-indexed-retained128`. This is a native module-output
-checkpoint, not a complete generation or C1–C5 qualification.
+ConsoleRuntime reference, with no missing or extra names. The full harness
+subsequently stopped at CompilerRuntime, before installing any module. This
+remains a native module-output checkpoint, not a complete generation or C1–C5
+qualification.
+
+
+## Retained-build disk capacity (2026-11-03)
+
+The 16 MiB KVM retained build completed the CompilerRuntime function pass but
+rejected stage 5, where `I386TaskModuleStageReserve` requests its output
+extent (`build/i386-native-indexed-retained128-kvm/result.json`). The planned
+module measured 1,666,381 bytes, requiring 3,255 contiguous sectors. A
+read-only bitmap inspection of the failed disk found only 2,660 contiguous
+free sectors (1.30 MiB) after ConsoleRuntime, compared with 7,836 (3.83 MiB)
+before the run. This is capacity exhaustion on the 16 MiB image, not a
+CompilerRuntime frontend failure. The independent TCG run was stopped while
+still compiling ConsoleRuntime because it used the same undersized image.
+
+The supported `--disk-mib 32` cross build passed the 386 boot audit at
+`build/i386-native-indexed-cross32`; its module exports are byte-identical to
+the 16 MiB cross build. A fresh nine-module KVM retained run is in progress at
+`build/i386-native-indexed-cross32-retained128-kvm`. No complete retained
+build, installation, second generation or C1–C5 result is claimed yet.

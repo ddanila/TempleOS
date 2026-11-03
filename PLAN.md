@@ -25232,8 +25232,10 @@ open. See [the evidence](docs/i386-module-compiler-types.md).
 
 ## First full native ConsoleRuntime output (2026-11-03)
 
-The KVM `486,-fpu` guest has persisted a 2,648,848-byte ConsoleRuntime module
-with 1,060 exports matching the exact-image cross-built export set. Its
-nine-module run and the independent TCG run are still live; installation,
-second-generation results and C1–C5 remain open. See
+The KVM `486,-fpu` guest persisted a 2,648,848-byte ConsoleRuntime module
+with 1,060 exports matching the exact-image cross-built export set. The
+nine-module run subsequently exhausted the 16 MiB disk while reserving
+CompilerRuntime, and the same-sized independent TCG run was stopped. A
+32 MiB cross build passed its boot audit and a fresh KVM nine-module run is
+in progress. Installation, second-generation results and C1–C5 remain open. See
 [the evidence](docs/i386-module-compiler-types.md).
