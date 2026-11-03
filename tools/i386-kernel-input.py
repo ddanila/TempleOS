@@ -149,6 +149,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
         raise ValueError('Audio capture must not overwrite a disk image')
     active_group=None
     submitted=0
+    initial_prompt_line=None
     command_log_start=0
     rejection_prefixes=tuple(startup_check.get('rejection_prefixes', ())) if startup_check else ()
     interaction_latencies={}
@@ -264,7 +265,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             def screen(rows,name,timeout=30,rejected_rows=None,colors=None,backgrounds=None,underlines=None,pixels=None,pointer=None,rejection_message=None,canvas_color=15,welcome_style=None):
                 if welcome_style is None: welcome_style=welcome
                 if welcome_style:
-                    default_colors={};underlines=set(underlines or ());input_started=False
+                    default_colors={};underlines=set(underlines or ())
+                    #After enough lines scroll the welcome heading away, all
+                    #remaining prompt rows retain the document's input color.
+                    input_started=not any(line=='Help & Index, Quick Start: Cmd line' for line in rows)
                     for row,line in enumerate(rows):
                         if line==' '*33+'TempleOS V5.03':
                             default_colors.update({(row,col):5 for col in range(33,47)})
@@ -279,6 +283,13 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         if startup_check is not None:
                             for start,end,color in startup_check.get('row_styles',{}).get(line,()):
                                 default_colors.update({(row,col):color for col in range(start,end)})
+                    #The first prompt's two cells are black even after the
+                    #welcome heading has scrolled away. Later prompts are green.
+                    if initial_prompt_line is not None:
+                        for row,line in enumerate(rows):
+                            if line==initial_prompt_line:
+                                default_colors[(row,0)]=default_colors[(row,1)]=0
+                                break
                     default_colors.update(colors or {});colors=default_colors
                 expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer,canvas_color)
                 expected_cursor=None
@@ -335,7 +346,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                    '*':'8','+':'equal','&':'7','_':'minus','[':'bracket_left',']':'bracket_right','"':'apostrophe'}
             shifted=set('(){}*+&_"<>#!%$|~:?^')
             plain[':']='semicolon'
-            def typed_rows(source):
+            def typed_rows(source,editing=False):
                 text='> '+source
                 #The VGA terminal wraps immediately at column 80, including a
                 #blank cursor row when the final character exactly fills a row.
@@ -343,7 +354,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 if not welcome:
                     return [text[index:index+width] for index in range(0,len(text)+1,width)]
                 rows=[]
-                while len(text)>width:
+                #The live input cursor reserves the last cell while typing.
+                #After Enter, a line of exactly 80 cells remains on one row;
+                #longer lines still break before that cell.
+                while len(text)>(79 if editing else 80):
                     #The welcome document has word wrap enabled. DocWordWrapAdd
                     #backs up to a space, but never into the first eight cells.
                     split=next((index for index in range(width,7,-1)
@@ -357,9 +371,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
 
             def submit(source, answers, name, hotkey=False, frame=None, timeout=30,
                        interaction=None, typing_colors=None, return_colors=None, return_rows=None):
-                nonlocal rows,submitted,mouse_host_x,mouse_host_y,command_log_start
+                nonlocal rows,submitted,initial_prompt_line,mouse_host_x,mouse_host_y,command_log_start
                 if groups is not None and active_group is not None and active_group not in groups:
                     return
+                if initial_prompt_line is None: initial_prompt_line=typed_rows(source)[0]
                 submitted+=1
                 command_log_start=len(log.read_text())
                 (out/'checkpoint.json').write_text(json.dumps({'group':active_group,'name':name,'source':source})+'\n')
@@ -370,7 +385,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     press(plain.get(ch,ch.lower()))
                     if shift: key('shift',False)
                     if index%4==3:
-                        screen((rows[:-1]+typed_rows(source[:index+1]))[-60:],'command-typing',colors=typing_colors)
+                        screen((rows[:-1]+typed_rows(source[:index+1],True))[-60:],'command-typing',colors=typing_colors)
                 marks=log.read_text().count('@')
                 press('ret')
                 if interaction is not None:
@@ -381,7 +396,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                            underlines=interaction.get('initial_underlines'),
                            pixels=interaction.get('initial_pixels'),
                            canvas_color=interaction.get('initial_canvas_color',15),
-                           welcome_style=interaction.get('welcome_style'))
+                           welcome_style=interaction.get('welcome_style',False))
                     interaction_marks={}
                     latency_started=None
                     latency_name=None
@@ -406,7 +421,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                                    underlines=action.get('underlines'),pixels=action.get('pixels'),
                                    pointer=action.get('pointer'),
                                    canvas_color=action.get('canvas_color',15),
-                                   welcome_style=interaction.get('welcome_style'))
+                                   welcome_style=interaction.get('welcome_style',False))
                             if latency_started is not None:
                                 interaction_latencies[latency_name]=time.monotonic()-latency_started
                                 if interaction_latencies[latency_name]>interaction.get('latency_budget_seconds',1.0):
@@ -478,7 +493,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                            pixels=interaction.get('final_pixels'),
                            pointer=interaction.get('final_pointer'),
                            canvas_color=interaction.get('final_canvas_color',15),
-                           welcome_style=interaction.get('welcome_style'))
+                           welcome_style=interaction.get('welcome_style',False))
                     if latency_started is not None:
                         interaction_latencies[latency_name]=time.monotonic()-latency_started
                         if interaction_latencies[latency_name]>interaction.get('latency_budget_seconds',1.0):
@@ -525,7 +540,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     rejected_rows=(rows[:-1]+typed_rows(source)+mutation['answers']+['> '])[-60:]
                 if return_rows is not None:
                     rows=list(return_rows)[-60:]
-                elif interaction is not None and not interaction.get('preserve_history',False):
+                elif interaction is not None and not interaction.get('preserve_history',welcome):
                     rows=list(interaction.get('return_rows',heading+answers+['> ']))[-60:]
                 else:
                     rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
@@ -559,12 +574,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 submit(mutation['source'],['1'],'mutation-installed')
             active_group='keyboard'
             if groups is None or 'keyboard' in groups:
-                if uploads()!=[60,1]: raise ValueError('Startup must present the heading then the prompt')
+                if uploads()!=([60] if welcome else [60,1]):
+                    raise ValueError('Startup must present the heading then the prompt')
                 for name in ('a','b','c','backspace'): press(name)
                 key('shift',True); press('d'); key('shift',False); press('ret')
                 wait_for(lambda:'INPUT LINE abD\n' in log.read_text())
+                initial_prompt_line='> abD'
                 screen(heading+['> abD','Error: Undefined identifier at ','> '],'edited')
-                if uploads()!=[60,1,1,1,1,1,1,2]:
+                if not welcome and uploads()!=[60,1,1,1,1,1,1,2]:
                     raise ValueError(f'Unexpected ordinary-edit upload spans: {uploads()}')
                 press('y'); press('z'); key('ctrl',True); press('c'); key('ctrl',False)
                 wait_for(lambda:'INPUT CANCEL\n' in log.read_text())
@@ -575,11 +592,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     press('a')
                     if count%6==0 or count==78:
                         expected=rows[:-1]+['> '+'a'*count]
-                        if count==78: expected+=['']
+                        if count==78:
+                            if welcome: expected=rows[:-1]+['> '+'a'*77,'a']
+                            else: expected+=['']
                         screen(expected,'typing')
                 for name in ('z','z','z','backspace','backspace','backspace','backspace','ret'): press(name)
                 wait_for(lambda:'INPUT LINE '+'a'*77+'\n' in log.read_text())
-                rows=rows[:-1]+['> '+'a'*77,'Error: Undefined identifier at ','> ']
+                rows=rows[:-1]+['> '+'a'*77]+([''] if welcome else [])+[
+                    'Error: Undefined identifier at ','> ']
                 screen(rows,'wrapped')
                 press('tab'); press('b'); press('ret')
                 wait_for(lambda:'INPUT LINE '+' '*8+'b\n' in log.read_text())
@@ -589,7 +609,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     press('ret')
                     wait_for(lambda:log.read_text().count('INPUT LINE \n')==count)
                 screen(['> ']*60,'scrolled')
-                if uploads()[-1]!=60: raise ValueError('Scrolling must invalidate the full screen')
+                if not welcome and uploads()[-1]!=60:
+                    raise ValueError('Scrolling must invalidate the full screen')
                 rows=['> ']*60
             commands=[
                 ('GetRFlags&0x200;', ['512']),
@@ -765,7 +786,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 capture_audio_phase('tone_880')
             submit('Snd(72);SndRst;(InU8(0x61)&3)==0;', ['1'], 'speaker-reset')
             if audio_wav is not None: capture_audio_phase('reset')
-            component_manager_pause=not keep_window_manager and (groups is None or bool(set(groups)&{'windows','graphics','text-frames','documents','file-navigation','document-editing','document-resources','document-latency','document-sprites','document-compatibility','help','text'}))
+            component_manager_pause=not welcome and not keep_window_manager and (groups is None or bool(set(groups)&{'windows','graphics','text-frames','documents','file-navigation','document-editing','document-resources','document-latency','document-sprites','document-compatibility','help','text'}))
             if component_manager_pause:
                 active_group=None
                 submit('U0 TestPauseWM(){if(sys_winmgr_task!=adam_task)Suspend(sys_winmgr_task,TRUE);}TestPauseWM;',[],'window-manager-pause')

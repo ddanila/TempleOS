@@ -192,7 +192,9 @@ Bool DocBasicEditCore(CDoc *doc,I64 ch=0,I64 sc=0)
   unlock=DocLock(doc);
   try {
   entry=doc->cur_entry;
-  if(!shift && (ch || sc.u8[0])) {
+  //Shift extends navigation selections, but an uppercase printable key must
+  //replace the selected text just like an unshifted printable key.
+  if((!shift || 0x20<=ch<0x100) && (ch || sc.u8[0])) {
     if(ch==CH_BACKSPACE || 0x20<=ch<0x100 ||
         ch==0 && sc.u8[0]==SC_DELETE)
       selected_deleted=DocBasicSelectionDelete(doc);
