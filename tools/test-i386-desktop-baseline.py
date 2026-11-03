@@ -19,6 +19,8 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--ram-mib', type=int, choices=(64, 128), default=64)
+    parser.add_argument('--welcome', action='store_true',
+                        help='Expect the original welcome document at the initial prompt')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     if out.exists():
@@ -30,12 +32,13 @@ def main():
     disk = out/'working.img'
     shutil.copyfile(source, disk)
     report = dict(result='running', input_sha256=pins, ram_mib=args.ram_mib,
+                  welcome=args.welcome,
                   scope='Existing nine-command retained-state and VGA baseline at larger RAM; not full original desktop or application compatibility',
                   commands=commands)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             disk, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
-            cpu='486,-fpu', accel='tcg', qmp_stdio=True,
+            cpu='486,-fpu', accel='tcg', qmp_stdio=True, welcome=args.welcome,
             startup_check={'status':'ok', 'answers':[], 'commands':commands})
         log = (out/'qemu/debug.log').read_text()
         if 'BUILD PROVIDER loaded\n' in log:

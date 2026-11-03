@@ -25249,5 +25249,7 @@ delivered source/document files to the workspace. Its separate nine-module
 KVM retained build is running. The full-content small-file guest check passes
 with all 686 inventory bytes matching the workspace (580 still matching the
 pinned original, 106 modified). This packages the complete application set but
-does not qualify its behavior or either full native generation. See
+does not qualify its behavior or either full native generation. The same image
+passes the nine-command desktop/VGA retained-state baseline at 64 MiB TCG
+with its welcome document; full desktop workflows remain open. See
 [the evidence](docs/i386-module-compiler-types.md). C1–C5 remain open.

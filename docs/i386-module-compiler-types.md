@@ -600,3 +600,10 @@ all 686 packaged inventory files match current workspace bytes, 580 remain
 byte-identical to the pinned reference and 106 are modified, and the guest
 loaded a small test fixture through its public file/compile path. This
 checks availability and bounded access, not application behavior.
+The full-content image also passes the existing nine-command desktop/VGA
+retained-state baseline at 64 MiB under TCG with its welcome document
+(`build/i386-native-indexed-cross64-full-desktop-baseline-welcome/result.json`).
+The desktop runner now accepts `--welcome` so it compares that actual initial
+document; its earlier plain-prompt run timed out at the screenshot comparison
+despite completing startup. The passing baseline loads no build-only provider
+and leaves input bytes unchanged. Complete desktop workflows remain open.
