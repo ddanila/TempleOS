@@ -25455,3 +25455,10 @@ cross-built welcome image with unchanged inputs
 semicolon observed on generation two is reproducible on the cross-built
 image too. These TCG runs use the helper's normal key delay; the differing
 full-suite KVM layout still needs an explanation and a verified correction.
+
+Installed native generation one also passes all three exact-width tail-pixel
+checks with unchanged inputs
+(`build/i386-terminal-exact-width-gen1-v1/result.json`). This focused TCG
+layout baseline now agrees across the cross-built image and both native
+generations; the full KVM integration and original-system comparison remain
+unqualified.
