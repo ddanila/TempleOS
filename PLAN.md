@@ -25482,3 +25482,11 @@ The updated full generation-two run
 exact-width screen failure in the complete session. Later desktop and
 application checks are still in progress; this is checkpoint evidence rather
 than a complete workstation pass.
+
+That run later stopped at `command-117` after `LockPending` compiled: the old
+81-character special case expected an 80-column first segment, while the
+observed final typing retained 79 columns. Removing that exception passes
+the unchanged declaration in a 32-command KVM scrolling test with exact VGA
+and WinMgr active (`build/i386-terminal-final-typing-81-gen2-kvm-v1`). The
+full generation-two v3 rerun is now in progress; the completed v2 run remains
+a screen failure, not a workstation pass.
