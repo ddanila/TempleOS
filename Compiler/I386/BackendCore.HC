@@ -693,18 +693,18 @@ U0 I386BackendCore(CI386Backend *backend)
               if (arg->dim.next) c=backend->types[RT_U8]+1;
               if (I386Size(c)<8) {
                 arg_offset=arg_index*8;
-                I386Bytes(out,"\x8B\x84\x24",3); I386Dword(out,arg_offset);
-                I386Bytes(out,"\x8B\x94\x24",3); I386Dword(out,arg_offset+4);
+                I386EspMemory(out,0x8B,0,arg_offset);
+                //Every supported narrow/pointer normalization defines EDX from EAX.
+                //The incoming high word is dead; both normalized words are stored.
                 I386Normalize(out,c);
-                I386Bytes(out,"\x89\x84\x24",3); I386Dword(out,arg_offset);
-                I386Bytes(out,"\x89\x94\x24",3); I386Dword(out,arg_offset+4);
+                I386EspMemory(out,0x89,0,arg_offset);
+                I386EspMemory(out,0x89,2,arg_offset+4);
               }
               arg=arg->next;
             }
             if (backend->calls->indirect) {
               if (ic->ic_data!=backend->calls->slots*8) throw('Compiler');
-              I386Bytes(out,"\xFF\x94\x24",3);
-              I386Dword(out,ic->ic_data);
+              I386EspMemory(out,0xFF,2,ic->ic_data);
             } else {
               I386Byte(out,0xE8);
               if (ic->ic_code==IC_CALL) {

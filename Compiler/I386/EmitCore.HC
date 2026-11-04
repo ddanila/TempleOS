@@ -39,6 +39,18 @@ U0 I386PushDword(CI386Out *out,U32 val)
     I386Byte(out,0x68); I386Dword(out,val);
   }
 }
+U0 I386EspMemory(CI386Out *out,U8 opcode,U8 register_index,U32 displacement)
+{//Same ESP-relative operand; choose the shortest exact 32-bit address encoding.
+  U8 mode=0x80;
+  if(register_index>7) throw('Compiler');
+  if(!displacement) mode=0;
+  else if(displacement<=0x7F || displacement>=0xFFFFFF80) mode=0x40;
+  I386Byte(out,opcode);
+  I386Byte(out,mode|(register_index<<3)|4);
+  I386Byte(out,0x24); //No index, ESP base.
+  if(mode==0x40) I386Byte(out,displacement);
+  else if(mode==0x80) I386Dword(out,displacement);
+}
 U0 I386Bytes(CI386Out *out,U8 *bytes,I64 count)
 {//Input must not alias the growable output buffer.
   I64 i;

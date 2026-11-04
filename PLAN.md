@@ -26070,3 +26070,24 @@ passes observation, not header loading or the servant contract. Raw terminal
 pixel retention prevents treating display buffers as interchangeable scratch
 without an ownership redesign. See docs/i386-startup-memory-profile.md. No
 production policy or resource gate is changed; C1-C5 remain open.
+
+Native call normalization now uses shortest exact ESP displacements and omits
+its dead incoming high-word load while retaining both normalized stores and
+all eight-byte ABI slots. The final esp-displacement-cross-v2 image reduces the
+five measured resident module payloads by 383,112 bytes. At unchanged 8 MiB,
+main-arena startup free spans grow from 30,472 to 411,400 bytes, largest free
+payload from 8,952 to 389,880, and the canonical symbol header now loads. Two
+original rebuild generations, 386/source audits (1,361 files), export retention
+across 16 modules, all 153 emitter cases, all 249 function cases/five expected
+faults, and paired original/native 17-argument call contracts pass. The separate
+normal startup smoke passes in 41.00 seconds. Full 8 MiB default-servant testing
+now loads the fixture and reaches JRContract but still fails compiling the real
+Doc/EdPullDown.DD in its startup hook; this remains a failure, not qualification.
+See docs/i386-stack-call-footprint.md. Full minimal regressions and C1-C5 remain
+open; neither these bootstrap rebuilds nor scoped passes satisfy C5.
+
+The final candidate also passes the 64 MiB default-servant contract and the
+Apple definition popup differential (665,664 compared pixels, close/restoration
+and resumed execution), with persisted fixtures/reports and filesystem audits.
+These preserve the established workstation workflows; the 8 MiB startup-hook
+OutMem and complete resource/qualification gates remain open.

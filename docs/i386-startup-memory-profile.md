@@ -134,3 +134,12 @@ ownership protocol. Any sharing would need to preserve those semantics and
 pass text/graphics/focus restoration and popup raster regressions. No allocator,
 RAM limit, workload, or display ownership policy changes here. The 8 MiB
 servant contract, complete minimal profile and C1-C5 gates remain open.
+
+
+The subsequent stack-call encoding change recovers physical headroom without
+changing the RAM profile: final startup main-arena free spans total 411,400
+bytes, and the canonical symbol header loads successfully. The real 8 MiB
+servant test now reaches JRContract but still exhausts memory compiling
+Doc/EdPullDown.DD in the actual startup hook. See
+[the footprint and regression evidence](i386-stack-call-footprint.md). This
+remains an incomplete minimal resource gate.
