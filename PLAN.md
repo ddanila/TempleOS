@@ -25634,3 +25634,13 @@ inputs (`build/i386-public-block-globals-native-v1`). Unchanged ATA compilation
 now reaches the missing public `DskCacheAdd` binding at line 439
 (`build/i386-ata-dependency-probe-v7`). No ATA operation was executed. Full
 ATA, public block I/O/streams and C1-C5 remain open.
+
+The four shared cache-core functions now have native public bindings.
+Original rebuilds, full native cross-build/386 audit and delivered-source
+audit pass (`build/i386-public-dsk-cache-cross-v1`); the seven-case public
+cache core fixture passes with unchanged inputs
+(`build/i386-public-dsk-cache-native-v1`). The entire unchanged original
+`DskATA.HC` now compiles without stubs, followed by a successful command,
+with inputs unchanged (`build/i386-ata-dependency-probe-v8`). No device
+operation was called. Retained ATA provider integration, full block I/O,
+media initialization/streams and C1-C5 remain open.

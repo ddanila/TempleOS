@@ -14,6 +14,10 @@
 #include "/Kernel/BlkDev/BlockSize.HH"
 #include "/Kernel/BlkDev/BlockGlobalsTypes.HH"
 public _extern _BLKDEV CBlkDevGlbls blkdev;
+public _extern _DSK_CACHE_INIT U0 DskCacheInit(I64 size_in_U8s);
+public _extern _DSK_CACHE_ADD U0 DskCacheAdd(CDrv *dv,U8 *buf,I64 blk,I64 cnt);
+public _extern _R_CACHE U0 RCache(CDrv *dv,U8 **buf,I64 *blk,I64 *cnt);
+public _extern _DSK_CACHE_INVALIDATE2 U0 DskCacheInvalidate2(CDrv *dv);
 public _extern _FILES_FIND_MATCH Bool FilesFindMatch(U8 *test_name,U8 *files_find_mask,I64 fuf_flags=0);
 public _extern _WILD_MATCH Bool WildMatch(U8 *test_str,U8 *wild_str);
 public _extern _BLOCK_DEV_NEXT_FREE_SLOT CBlkDev *BlkDevNextFreeSlot(U8 first_drv_let,I64 type);

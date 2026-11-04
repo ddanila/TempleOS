@@ -361,3 +361,24 @@ The unchanged ATA compile probe advances to missing `DskCacheAdd` at line
 439, with inputs unchanged and no ATA operation executed
 (`build/i386-ata-dependency-probe-v7`). Full ATA, public block I/O/streams
 and C1-C5 remain open.
+
+## Public cache core and complete ATA compilation (2026-11-04)
+
+Native public headers now bind `DskCacheInit`, `DskCacheAdd`, `RCache` and
+`DskCacheInvalidate2` to the existing shared original cache implementation.
+The new exports are appended and retain prior symbol indices. Both original
+rebuild generations, full cross-build/386 audit and 1200-file delivered-source
+audit pass (`build/i386-public-dsk-cache-cross-v1`). The public-name cache
+fixture passes all seven existing core checks with unchanged inputs
+(`build/i386-public-dsk-cache-native-v1`): initialization, leading/trailing
+hits around a miss, drive isolation, selective invalidation, eviction and
+teardown. It does not exercise full public block I/O or media invalidation.
+
+The complete unchanged `Kernel/BlkDev/DskATA.HC` now compiles without stubs
+on the native image, followed by a successful command, with inputs unchanged
+(`build/i386-ata-dependency-probe-v8`). This is compilation evidence only:
+no ATA/ATAPI routine is called, the routines are not yet retained as a native
+provider, and device transfers, initialization and failure behavior remain
+unqualified. The higher-level `DskCacheInvalidate` wrapper still requires
+media initialization and is not replaced by the low-level function. Full
+ATA, public block I/O/streams and C1-C5 remain open.
