@@ -25931,3 +25931,24 @@ The unchanged MakeAC source now loads against real services and a subsequent
 command runs. Actual initialization/dictionaries/suggestions, borrowed native
 bootstrap/compiler accounting, 8 MiB resource gates and C1-C5 remain open. The
 prior-image full workstation run remains live. See docs/i386-hash-memory.md.
+
+
+The frozen staged-v6 full workstation run now passes at 64 MiB KVM 486,-fpu: 576
+submitted lines, 513 native commands, every pixel checkpoint matched and twenty
+bounded document development cycles recover exact task data/code heap. All five
+frozen inputs remain unchanged. This is historical-image desktop regression
+evidence, not qualification of later changes or the failed 8 MiB gates. See
+build/i386-mount-workstation64-kvm-v1/result.json and
+docs/i386-staged-compiler-probes.md. C1-C5 remain open.
+
+
+The original autocomplete dictionary contract passes full initialization of
+95,293 words, exact first/second/all binary definitions, independent pinned-asset
+decoding and task stop/restart (reference-v8). Native shared headers now supply
+StreamDir's __DIR__, StrCmp and exception helpers to root jobs; startup inherits
+them. Two original rebuild generations, 386 audit and 1,260-file source audit
+pass. Native Adam loads the unchanged library and fixture and initializes all
+95,293 words with a real autocomplete task. The native contract still fails its
+first definition lookup, despite a correct hash index and direct block read.
+Definition equivalence, native restart, visible suggestions and C1-C5 remain
+open. See docs/i386-autocomplete-dictionary.md for the failed-run evidence.

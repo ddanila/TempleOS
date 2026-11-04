@@ -163,3 +163,11 @@ successfully against real services (`build/i386-hash-memory-autocomplete-v1`,
 inputs unchanged), followed by resumed command execution. This closes the source
 load gate; initialization, actual dictionary access and visible task workflows
 remain unqualified by that gate alone.
+
+
+The rebuilt-original dictionary workflow now passes actual initialization,
+95,293 indexed words, exact binary definition records and autocomplete task
+stop/restart. An independent pinned-asset decoder reconstructs its full report.
+Native root-context qualification is tracked separately in
+[the dictionary workflow](i386-autocomplete-dictionary.md); the user-console
+source-load pass alone does not cover that context.

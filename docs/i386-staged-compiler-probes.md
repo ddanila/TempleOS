@@ -68,4 +68,12 @@ WinMgr help group passes on the final image at 64 MiB KVM
 run failed on the unbounded host oracle; the copy run was interrupted after the
 same guaranteed host failure was identified. Neither is a suite pass. A fresh
 full workstation run uses frozen real harness/reader inputs at
-`build/i386-mount-workstation64-kvm-v1` and is still in progress.
+`build/i386-mount-workstation64-kvm-v1` and passes. Its provenance confirms
+all five frozen inputs remained unchanged. On the historical staged-v6 image
+(SHA-256 `65b44acc38f929e4c35cf9acc01ab0f81bdf3da30184e8323f06c2f2f428e6f5`),
+the live 64 MiB KVM `486,-fpu` run submitted 576 lines and executed 513 native
+commands. Every VGA checkpoint matched. This includes 20 bounded document
+development cycles with exact task data/code heap recovery, editor navigation,
+file workflows, help links, keyboard breaks and mouse interactions. It does not
+qualify later source changes, the failed 8 MiB diagnostic, autocomplete or all
+C1-C5 requirements.

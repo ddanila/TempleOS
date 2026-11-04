@@ -537,7 +537,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "rebuilt-original-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-dictionary-reference-v8/result.json",
+          "scope": "Actual unchanged initialization of 95,293 words, full 5,270-byte binary definition report checked by independent pinned-asset decoder, live task stop/restart. Not source statistics or visible suggestions."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
+          "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
+        }
+      ]
     },
     {
       "path": "Adam/AutoComplete/ACDictGen.HC",
@@ -582,6 +595,18 @@
           "result": "pass",
           "evidence": "build/i386-hash-memory-autocomplete-v1/result.json",
           "scope": "Unchanged MakeAC and all three source units load against real services; resumed command executes, input pins unchanged. No explicit autocomplete initialization/task activation, dictionary or suggestion workflow qualification."
+        },
+        {
+          "target": "rebuilt-original-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-dictionary-reference-v8/result.json",
+          "scope": "Actual unchanged initialization of 95,293 words, full 5,270-byte binary definition report checked by independent pinned-asset decoder, live task stop/restart. Not source statistics or visible suggestions."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
+          "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
         }
       ]
     },
@@ -621,6 +646,18 @@
           "result": "pass",
           "evidence": "build/i386-hash-memory-autocomplete-v1/result.json",
           "scope": "Unchanged MakeAC and all three source units load against real services; resumed command executes, input pins unchanged. No explicit autocomplete initialization/task activation, dictionary or suggestion workflow qualification."
+        },
+        {
+          "target": "rebuilt-original-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-dictionary-reference-v8/result.json",
+          "scope": "Actual unchanged initialization of 95,293 words, full 5,270-byte binary definition report checked by independent pinned-asset decoder, live task stop/restart. Not source statistics or visible suggestions."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
+          "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
         }
       ]
     },
@@ -659,6 +696,18 @@
           "result": "pass",
           "evidence": "build/i386-hash-memory-autocomplete-v1/result.json",
           "scope": "Unchanged MakeAC and all three source units load against real services; resumed command executes, input pins unchanged. No explicit autocomplete initialization/task activation, dictionary or suggestion workflow qualification."
+        },
+        {
+          "target": "rebuilt-original-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-dictionary-reference-v8/result.json",
+          "scope": "Actual unchanged initialization of 95,293 words, full 5,270-byte binary definition report checked by independent pinned-asset decoder, live task stop/restart. Not source statistics or visible suggestions."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
+          "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
         }
       ]
     },
@@ -677,7 +726,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "rebuilt-original-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-dictionary-reference-v8/result.json",
+          "scope": "Actual unchanged initialization of 95,293 words, full 5,270-byte binary definition report checked by independent pinned-asset decoder, live task stop/restart. Not source statistics or visible suggestions."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
+          "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
+        }
+      ]
     },
     {
       "path": "Adam/AutoComplete/MakeAC.HC",
@@ -704,6 +766,18 @@
           "result": "pass",
           "evidence": "build/i386-hash-memory-autocomplete-v1/result.json",
           "scope": "Unchanged MakeAC and all three source units load against real services; resumed command executes, input pins unchanged. No explicit autocomplete initialization/task activation, dictionary or suggestion workflow qualification."
+        },
+        {
+          "target": "rebuilt-original-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-dictionary-reference-v8/result.json",
+          "scope": "Actual unchanged initialization of 95,293 words, full 5,270-byte binary definition report checked by independent pinned-asset decoder, live task stop/restart. Not source statistics or visible suggestions."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
+          "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
         }
       ]
     },

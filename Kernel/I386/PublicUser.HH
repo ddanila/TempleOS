@@ -18,6 +18,7 @@
 #include "/Kernel/I386/PublicCompression.HH"
 #include "/Kernel/I386/PublicWindow.HH"
 #include "/Kernel/I386/PublicFormat.HH"
+#include "/Kernel/I386/PublicStream.HH"
 #include "/Kernel/I386/PublicSound.HH"
 #include "/Kernel/I386/PublicMouse.HH"
 #include "/Kernel/I386/PublicMacro.HH"

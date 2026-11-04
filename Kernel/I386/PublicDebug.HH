@@ -1,5 +1,8 @@
 #ifndef I386_PUBLIC_DEBUG_INCLUDED
 #define I386_PUBLIC_DEBUG_INCLUDED
+public extern U0 SysTry(U8 *catch_start,U8 *untry_start);
+public extern U0 SysUntry();
+public extern U0 throw(I64 ch=0,Bool no_log=FALSE);
 #include "/Kernel/NumericLimits.HH"
 public _extern _CALLER U8 *Caller(I64 num=1);
 public _extern _DBG U0 Dbg(U8 *msg=0,I64 msg_num=0);
