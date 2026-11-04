@@ -25697,3 +25697,13 @@ stops at missing public `BlkRead` line 7
 (`build/i386-redsea-media-dependency-probe-v1`); no native media function
 was executed. Earlier fixture declaration failures are documented. Full
 block I/O/media/streams and C1-C5 remain open.
+
+The complete original `DrvTypeSet` is now retained with a native public
+binding, backed by shared original MBR records/constants and `INVALID_CLUS`.
+Original rebuilds, native cross-build/386 audit and 1204-file source audit
+pass (`build/i386-drive-type-set-cross-v2`). The copied-image synthetic
+primary MBR fixture passes with unchanged inputs and exact header restoration
+(`build/i386-drive-type-set-native-v1`): type/active-byte updates, untouched
+remaining bytes, invalid type rejection and preowned locks. Extended
+partition traversal and full formatting/media/block I/O/streams remain
+unqualified. C1-C5 remain open.

@@ -489,3 +489,25 @@ line 7 with inputs unchanged and no media function executed
 (`build/i386-redsea-media-dependency-probe-v1`). The core is delivered but
 not bound as a native media provider. Full block I/O, RedSea media lifecycle,
 streams and C1-C5 remain open.
+
+## Retained partition type setter (2026-11-04)
+
+The complete original `DrvTypeSet` body is now shared byte-for-byte through
+`Kernel/BlkDev/DriveTypeSetCore.HC` and retained with a native public binding.
+The original `CMBRPrt`, `CMasterBoot` and partition constants are shared in
+`MasterBootTypes.HH`; `INVALID_CLUS` moves unchanged into the shared block
+header. Both original rebuild generations, full native cross-build/386 audit
+and 1204-file source audit pass (`build/i386-drive-type-set-cross-v2`).
+The first cross-build stopped at the previously unshared `INVALID_CLUS`
+constant; no native fixture ran on that attempt.
+
+The native fixture passes with unchanged inputs and exact restored-header
+verification (`build/i386-drive-type-set-native-v1`). On a copied raw RedSea
+image it temporarily writes a synthetic primary MBR, checks the 16-byte
+partition/512-byte MBR layout, RedSea and FAT32 type/active-byte updates with
+all other bytes unchanged, invalid type rejection without sector changes,
+and preowned lock retention. It restores the original sector and verifies
+all 512 bytes in both the guest and host runner. The source image is
+unchanged. Extended-partition traversal and physical hardware are not
+qualified. This supplies the partition-edit dependency of `RedSeaFmt`;
+complete native formatting, block I/O/media/streams and C1-C5 remain open.

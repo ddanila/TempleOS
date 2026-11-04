@@ -14203,9 +14203,11 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "docs/i386-block-io.md",
+      "oracle": "Complete original DrvTypeSet retained; copied-image synthetic primary MBR RedSea/FAT32 updates, invalid type, preowned lock and exact header restoration; extended partitions and Fmt unqualified",
+      "tests": [
+        "tools/test-i386-drive-type-set.py"
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskStrA.HC",
