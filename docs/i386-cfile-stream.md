@@ -46,3 +46,11 @@ Both original rebuild generations pass (`build/i386-clus-transfer-rebuild.log`),
 as do the full native cross-build and 386 instruction audit
 (`build/i386-clus-transfer-cross`). Neither the cluster transfers nor the file
 stream APIs are yet exported by the native runtime. C1–C5 remain open.
+
+The welcome-console full-content image repeats the native compile boundary
+with the complete shared cluster core
+(`build/i386-cluster-transfer-dependency-probe-v1/result.json`). It rejects
+`ClusTransferCore.HC` at line 11, the first `BlkRead` call, before any transfer
+executes. The source image hash remains unchanged. This identifies public
+block I/O as the next dependency; the private raw-sector transport does not
+provide the original cache/media contract or qualify cluster and stream APIs.
