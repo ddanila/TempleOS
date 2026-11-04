@@ -8,6 +8,7 @@
 #include "/Kernel/DirEntryTypes.HH"
 #include "/Kernel/NumericLimits.HH"
 #include "/Kernel/BlkDev/CFileTypes.HH"
+#include "/Kernel/BlkDev/RedSeaAttr.HH"
 #include "/Kernel/BlkDev/BlockDevTypes.HH"
 #include "/Kernel/BlkDev/ATAConstants.HH"
 #include "/Kernel/BlkDev/ATAPITrackTypes.HH"
@@ -16,6 +17,7 @@
 #include "/Kernel/BlkDev/BlockSize.HH"
 #include "/Kernel/BlkDev/BlockGlobalsTypes.HH"
 public _extern _BLKDEV CBlkDevGlbls blkdev;
+public _extern _FILE_ATTR I64 FileAttr(U8 *name,I64 old_attr=0);
 public _extern _DRV_TYPE_SET Bool DrvTypeSet(U8 drv_let,I64 type=FSt_REDSEA);
 public _extern _ATA_READ_BLKS U0 ATAReadBlks(CBlkDev *bd,U8 *buf,I64 blk,I64 cnt);
 public _extern _ATA_WRITE_BLKS U0 ATAWriteBlks(CBlkDev *bd,U8 *buf,I64 blk,I64 cnt);

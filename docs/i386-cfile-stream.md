@@ -54,3 +54,23 @@ with the complete shared cluster core
 executes. The source image hash remains unchanged. This identifies public
 block I/O as the next dependency; the private raw-sector transport does not
 provide the original cache/media contract or qualify cluster and stream APIs.
+
+## Public file-attribute dependency (2026-11-04)
+
+The existing shared `FileAttr` body now has a native public binding, and
+native PublicFiles includes the unchanged shared RedSea attribute constants.
+No attribute calculation body is replaced. Both original rebuild generations,
+full native cross-build/386 audit and 1207-file source audit pass
+(`build/i386-public-file-attr-cross-v2`). The 14-case native fixture passes
+with unchanged inputs (`build/i386-public-file-attr-native-v2`), checking
+final uppercase suffixes, whole-path dot counting, lowercase rejection,
+empty names, compressed-bit removal and preservation of contiguous and
+unrelated attribute bits. No file operation is executed by that fixture.
+
+The first native fixture and stream-core probe stopped before execution at
+missing public `RS_ATTR_DIR`/`RS_ATTR_CONTIGUOUS` constants; including the
+existing shared header corrects that API gap. The complete unchanged stream
+core now compiles past those attributes and stops at the missing `Del` call
+on line 43, with inputs unchanged and no stream operation called
+(`build/i386-cfile-stream-dependency-probe-v3`). Full streams, block I/O/media
+and C1-C5 remain open.

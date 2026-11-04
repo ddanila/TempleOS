@@ -25729,3 +25729,13 @@ failures are documented. Native compilation with the existing teardown
 provider declared reaches missing `DrvFATBlkSet` line 14
 (`build/i386-redsea-allocation-dependency-probe-v2`); no native allocator
 was called. Full block I/O/media/streams and C1-C5 remain open.
+
+The existing shared `FileAttr` implementation now has a native public
+binding, with shared RedSea attribute constants in PublicFiles. Original
+rebuilds, native cross-build/386 audit and 1207-file source audit pass
+(`build/i386-public-file-attr-cross-v2`); 14 native suffix/attribute-preservation
+cases pass with unchanged inputs (`build/i386-public-file-attr-native-v2`).
+Complete unchanged stream-core compilation now reaches missing `Del` line 43
+(`build/i386-cfile-stream-dependency-probe-v3`), without executing a stream
+operation. Earlier missing-constant probe failures are documented. Full
+streams, block I/O/media and C1-C5 remain open.
