@@ -66,10 +66,10 @@ def has_result_pixels(path):
     return False
 
 class Guest:
-    def __init__(self,image,out,native):
+    def __init__(self,image,out,native,ram_mib=64):
         self.out=out;out.mkdir();self.log=out/'debug.log';self.log.write_text('');self.seen=set()
         common=['-nic','none','-display','none','-no-reboot','-debugcon',f'file:{self.log}','-qmp','stdio']
-        if native:cmd=['qemu-system-i386','-machine','pc','-accel','kvm','-cpu','486,-fpu','-m','64','-drive',f'file={image},format=raw,if=ide']+common
+        if native:cmd=['qemu-system-i386','-machine','pc','-accel','kvm','-cpu','486,-fpu','-m',str(ram_mib),'-drive',f'file={image},format=raw,if=ide']+common
         else:cmd=['qemu-system-x86_64','-machine','pc','-accel','tcg','-cpu','max','-m','2048','-smp','2','-drive',f'file={image},format=raw,media=cdrom,if=ide,index=2','-boot','d']+common
         (out/'command.json').write_text(json.dumps(cmd,indent=2)+'\n')
         self.stderr=(out/'qemu.log').open('w');self.p=subprocess.Popen(cmd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.stderr,text=True,bufsize=1)

@@ -26059,3 +26059,14 @@ records OutMem loading the canonical symbol header before JRContract. The old
 the 64 MiB result. Preload/RAM/acceleration flags are explicit and keyboard/8 MiB/
 TCG defaults retained. One long 64 MiB keyboard setup was deliberately stopped
 and is recorded as interrupted, not a service pass.
+
+
+The 8 MiB physical heap census now reproduces the symbol-header OutMem on the
+popup-cross-v3 image with unchanged input pins. Both arenas are captured and
+validated before/after the real request. Startup main-arena free spans total
+30,472 bytes (largest payload 8,952); fallback free spans total 8,272. Resident
+ConsoleRuntime/CompilerRuntime requests total 4,242,064 bytes. The diagnostic
+passes observation, not header loading or the servant contract. Raw terminal
+pixel retention prevents treating display buffers as interchangeable scratch
+without an ownership redesign. See docs/i386-startup-memory-profile.md. No
+production policy or resource gate is changed; C1-C5 remain open.

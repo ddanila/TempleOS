@@ -93,3 +93,44 @@ requests the selected RAM size as stack payload, which cannot fit alongside its
 record and resident OS, and retains all rejection/recovery assertions. Default
 8 MiB behavior is unchanged. Corrected full control/candidate runs use the
 `-ram-bound` artifact suffix and remain pending until their final verdicts.
+
+
+## Eight-MiB heap census after default servant restoration
+
+`tools/observe-i386-heap-pressure.py` captures both physical allocator arenas
+at normal startup and after actually requesting `/Kernel/SymbolTypes.HH`.
+It uses a disposable image copy, an explicit 8 MiB KVM 486 without FPU, the
+normal welcome and WinMgr startup, and paused QMP physical-memory snapshots.
+Every block is checked for valid span, alignment, tag, reserved field and
+requested size. Full block lists, raw snapshots, size histograms, screenshots,
+command logs and unchanged input hashes are retained. Its `result=pass` means
+that observation succeeded; `header_accepted` separately reports the workload.
+The shared Guest helper retains its existing 64 MiB default.
+
+The baseline `build/i386-heap-pressure-before-v1/result.json`, using
+`build/i386-autocomplete-popup-cross-v3/kernel.img` (SHA-256
+`d49755907e5268d624e85e65ef03ba5bf6c10738b66520e51f1699b7b5969c38`),
+passes observation with unchanged pins but **rejects the header with OutMem**.
+
+| Arena / phase | Capacity | Used spans | Allocations | Free spans | Largest free payload |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Main / startup | 6,649,344 | 6,618,872 | 14,216 | 30,472 | 8,952 |
+| Main / rejected header | 6,649,344 | 6,626,888 | 14,224 | 22,456 | 4,752 |
+| Fallback / startup | 551,936 | 543,664 | 7 | 8,272 | 6,936 |
+| Fallback / rejected header | 551,936 | 549,808 | 13 | 2,128 | 792 |
+
+All sizes are bytes; used/free spans include allocator headers. Largest free
+payload excludes its header. The main arena's two largest requested allocations
+are the compacted ConsoleRuntime (2,698,408) and CompilerRuntime (1,543,656).
+The console's retained raw planar surface requests another 153,600 bytes;
+public graphics backing also occupies both arenas. This is physical pressure,
+not evidence that the requesting public data heap itself holds all RAM.
+At startup 14,216 live main-arena allocations request 6,338,770 bytes, with
+280,102 bytes of headers/alignment overhead.
+
+The census does not justify aliasing display storage: each raw terminal retains
+its planar pixels, while graphics presentation has a distinct lease and frame
+ownership protocol. Any sharing would need to preserve those semantics and
+pass text/graphics/focus restoration and popup raster regressions. No allocator,
+RAM limit, workload, or display ownership policy changes here. The 8 MiB
+servant contract, complete minimal profile and C1-C5 gates remain open.
