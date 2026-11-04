@@ -74,3 +74,25 @@ core now compiles past those attributes and stops at the missing `Del` call
 on line 43, with inputs unchanged and no stream operation called
 (`build/i386-cfile-stream-dependency-probe-v3`). Full streams, block I/O/media
 and C1-C5 remain open.
+
+## Complete shared deletion dispatcher (2026-11-04)
+
+The complete original `Del` dispatcher is now shared byte-for-byte through
+`Kernel/BlkDev/FileDeleteCore.HC`, retaining both RedSea and FAT32 branches.
+Both original rebuild generations, full native cross-build/386 audit and
+1208-file source audit pass (`build/i386-file-delete-core-cross-v1`).
+The original private RAM RedSea fixture passes with unchanged inputs
+(`build/i386-file-delete-reference-v2`): wildcard counts, unmatched masks,
+literal stem preservation, explicit extension masks, `make_mask` expansion
+of directory contents, sibling preservation and the empty-directory option.
+Directory deletion contributes zero to the file count. The fixture restores
+its temporary drive mapping and frees RAM/cache/list storage. It does not
+qualify FAT32 deletion or native dispatch.
+
+Reference v1 reached `Delete6` because the fixture incorrectly expected
+`make_mask` to expand a filename stem; the original only expands directory
+paths. The corrected fixture verifies that distinction without changing
+production behavior. Native compilation stops at missing `DirContextNew`
+on line 6, with unchanged inputs and no deletion executed
+(`build/i386-file-delete-dependency-probe-v1`). Full native `Del`, streams,
+block I/O/media and C1-C5 remain open.

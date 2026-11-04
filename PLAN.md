@@ -25739,3 +25739,13 @@ Complete unchanged stream-core compilation now reaches missing `Del` line 43
 (`build/i386-cfile-stream-dependency-probe-v3`), without executing a stream
 operation. Earlier missing-constant probe failures are documented. Full
 streams, block I/O/media and C1-C5 remain open.
+
+The complete original `Del` dispatcher now shares source byte-for-byte,
+retaining RedSea and FAT32 branches. Original rebuilds, native cross-build/386
+audit and 1208-file source audit pass (`build/i386-file-delete-core-cross-v1`).
+The original private RAM RedSea fixture passes wildcard/count, literal stem,
+directory expansion and directory-option checks with unchanged inputs
+(`build/i386-file-delete-reference-v2`); its earlier incorrect stem-expansion
+oracle is documented. Native core compilation reaches missing `DirContextNew`
+line 6 (`build/i386-file-delete-dependency-probe-v1`), without deleting files.
+Full native Del/streams, block I/O/media and C1-C5 remain open.
