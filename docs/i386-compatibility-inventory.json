@@ -13496,10 +13496,11 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "docs/i386-block-io.md",
-      "oracle": "One-sector native ATA read versus private transport, guarded buffer, counter and lock retention; writes/multisector/ATAPI/init/failures unqualified",
+      "oracle": "Native one/two-sector direct reads and three-sector chunked read/write versus private transport/file reader; guards, counters, zero-count wrappers and preowned locks; ATAPI/init/failures unqualified",
       "tests": [
         "tools/test-i386-original-ata-read.py",
-        "tools/test-i386-retained-ata-read.py"
+        "tools/test-i386-retained-ata-read.py",
+        "tools/test-i386-retained-ata-transfer.py"
       ]
     },
     {

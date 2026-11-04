@@ -25665,3 +25665,13 @@ including sector bytes, guards, counters and lock retention. Earlier
 integration/compiler/import failures are documented in `docs/i386-block-io.md`.
 Writes, multi-sector/ATAPI/init/failure cases, full block I/O/streams and
 C1-C5 remain open.
+
+Retained ATA multi-sector transfers now pass a copied-disk scratch-file
+contract with unchanged inputs (`build/i386-retained-ata-transfer-native-v3`).
+It covers direct two-sector reads, three-sector read/write wrappers with
+two-sector chunks, null-buffer zero-count wrappers, guards, counters and
+preowned locks; independent raw-transport and file-reader comparisons verify
+all written bytes. The file is deleted and device limits restored. Earlier
+fixture setup return-value failures are preserved and documented. ATAPI,
+media initialization/failures and complete public block I/O/streams remain
+unqualified. C1-C5 remain open.

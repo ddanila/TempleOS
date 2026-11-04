@@ -425,3 +425,25 @@ the kernel loader lacked that import. Cross v5 and read-native-v2 include
 that binding and pass. Writes, multi-sector transfers, ATAPI, media initialization
 and failure recovery remain unqualified, and full public block I/O/streams
 and C1-C5 remain open.
+
+## Retained ATA multi-sector transfers (2026-11-04)
+
+`tools/test-i386-retained-ata-transfer.py` passes with unchanged inputs on
+the retained-provider image (`build/i386-retained-ata-transfer-native-v3`).
+It allocates a 1536-byte scratch file in a copied QEMU disk, verifies its
+record and sector bounds, reads two sectors through `ATAReadBlks`, then
+sets read/write limits to two sectors and exercises three-sector
+`ATAWBlks`/`ATARBlks` transfers across the chunk boundary. It verifies
+zero-count wrapper calls, byte guards around unaligned read buffers,
+read/write counter deltas and preowned drive-lock retention. It restores
+the limits, compares all written bytes through both `I386RawBlocks` and
+`FileRead`, then deletes the scratch file. Writes target only its allocated
+sectors. This does not qualify ATAPI, media initialization, failure recovery,
+all transfer sizes, physical hardware or cold-reboot persistence.
+
+The first two attempts stopped at fixture setup: `FileWrite` returns a
+starting cluster, not a byte count. The second attempt added per-assertion
+exception markers and identified `AX0002`; correcting that expectation kept
+the independent file-size and transfer assertions intact. Neither earlier
+run executed an ATA transfer from this fixture. Full public block I/O/streams
+and C1-C5 remain open.
