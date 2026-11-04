@@ -368,9 +368,9 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 if (not editing and len(text)==81 and ' ' not in text[8:]
                         and not any(line=='Help & Index, Quick Start: Cmd line' for line in rows)):
                     return [text[:80],text[80:]]
-                #This exact-width declaration reflows at the reserved cursor
-                #cell after the full workstation's horizontal-scroll session.
-                submitted_width=79 if (groups is None and source.startswith('I64 MouseWideLeftCheck()')) else 80
+                #Typing is fully observed before Enter, so exact-width input
+                #retains the soft wrap made for the reserved cursor cell.
+                submitted_width=79
                 while len(text)>(79 if editing else submitted_width):
                     #The welcome document has word wrap enabled. DocWordWrapAdd
                     #backs up to a space, but never into the first eight cells.
@@ -406,6 +406,11 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     if shift: key('shift',False)
                     if index%4==3:
                         screen((rows[:-1]+typed_rows(source[:index+1],True))[-60:],'command-typing',colors=typing_colors)
+                #Observe the final characters before submitting too. Otherwise
+                #a WinMgr refresh may or may not retain an exact-width soft wrap
+                #between the last sampled key and Enter.
+                if len(source)%4:
+                    screen((rows[:-1]+typed_rows(source,True))[-60:],'command-typing-final',colors=typing_colors)
                 marks=log.read_text().count('@')
                 press('ret')
                 if interaction is not None:
