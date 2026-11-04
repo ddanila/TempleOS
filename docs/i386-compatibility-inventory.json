@@ -535,8 +535,21 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Observed library workflows: full dictionary initialization/stop/restart with exact binary definitions, project-file source suggestions and real Ctrl+F1, and all ten console Ctrl+digit dictionary slots for Appl. UI definitions/source popups, installed-tree statistics, other prefixes, numeric editor input, exact heap recovery and complete application/desktop qualification remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-autocomplete-numeric.py",
+        "checks": [
+          "Independent pinned-asset scan predicts all ten dictionary slots",
+          "Actual completed input and executed argument/counter for every physical Ctrl+digit",
+          "Exact original widget documents, rectangles and all 197120 viewport pixels",
+          "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
+          "Thirty persisted native reports match exports; final offline filesystem audit"
+        ],
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+      },
       "tests": [
         {
           "target": "rebuilt-original-dictionary-lifecycle",
@@ -579,6 +592,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
+        },
+        {
+          "target": "rebuilt-original-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-reference-v6/result.json",
+          "scope": "All ten Ctrl+digit slots for Appl, real keyboard with Ctrl held until completion; independent dictionary neighborhood; exact completed input and executed string argument/counter; per-case source plus adjacent fresh 42; archived unchanged inputs. pixel-audit.json independently checks all ten result images. Not editor numeric input, other prefixes or definition popups."
+        },
+        {
+          "target": "native-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
         }
       ]
     },
@@ -617,8 +642,21 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Observed library workflows: full dictionary initialization/stop/restart with exact binary definitions, project-file source suggestions and real Ctrl+F1, and all ten console Ctrl+digit dictionary slots for Appl. UI definitions/source popups, installed-tree statistics, other prefixes, numeric editor input, exact heap recovery and complete application/desktop qualification remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-autocomplete-numeric.py",
+        "checks": [
+          "Independent pinned-asset scan predicts all ten dictionary slots",
+          "Actual completed input and executed argument/counter for every physical Ctrl+digit",
+          "Exact original widget documents, rectangles and all 197120 viewport pixels",
+          "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
+          "Thirty persisted native reports match exports; final offline filesystem audit"
+        ],
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+      },
       "tests": [
         {
           "target": "native-real-service-source-load",
@@ -667,6 +705,24 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
+        },
+        {
+          "target": "rebuilt-original-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-reference-v6/result.json",
+          "scope": "All ten Ctrl+digit slots for Appl, real keyboard with Ctrl held until completion; independent dictionary neighborhood; exact completed input and executed string argument/counter; per-case source plus adjacent fresh 42; archived unchanged inputs. pixel-audit.json independently checks all ten result images. Not editor numeric input, other prefixes or definition popups."
+        },
+        {
+          "target": "native-numeric-before-console-metadata-filter",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-numeric-native-before-v1/result.json",
+          "scope": "Real held-Ctrl dictionary completion reaches Applaud, but ACTask KeyMap metadata appends/submits characters in the console and compilation fails. Exact first widget check passed before the shortcut; unchanged inputs. Superseded by native-v2 on numeric-cross-v1."
+        },
+        {
+          "target": "native-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
         }
       ]
     },
@@ -686,8 +742,21 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Observed library workflows: full dictionary initialization/stop/restart with exact binary definitions, project-file source suggestions and real Ctrl+F1, and all ten console Ctrl+digit dictionary slots for Appl. UI definitions/source popups, installed-tree statistics, other prefixes, numeric editor input, exact heap recovery and complete application/desktop qualification remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-autocomplete-numeric.py",
+        "checks": [
+          "Independent pinned-asset scan predicts all ten dictionary slots",
+          "Actual completed input and executed argument/counter for every physical Ctrl+digit",
+          "Exact original widget documents, rectangles and all 197120 viewport pixels",
+          "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
+          "Thirty persisted native reports match exports; final offline filesystem audit"
+        ],
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+      },
       "tests": [
         {
           "target": "native-real-service-source-load-after-run-level",
@@ -748,6 +817,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
+        },
+        {
+          "target": "rebuilt-original-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-reference-v6/result.json",
+          "scope": "All ten Ctrl+digit slots for Appl, real keyboard with Ctrl held until completion; independent dictionary neighborhood; exact completed input and executed string argument/counter; per-case source plus adjacent fresh 42; archived unchanged inputs. pixel-audit.json independently checks all ten result images. Not editor numeric input, other prefixes or definition popups."
+        },
+        {
+          "target": "native-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
         }
       ]
     },
@@ -766,8 +847,21 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Observed library workflows: full dictionary initialization/stop/restart with exact binary definitions, project-file source suggestions and real Ctrl+F1, and all ten console Ctrl+digit dictionary slots for Appl. UI definitions/source popups, installed-tree statistics, other prefixes, numeric editor input, exact heap recovery and complete application/desktop qualification remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-autocomplete-numeric.py",
+        "checks": [
+          "Independent pinned-asset scan predicts all ten dictionary slots",
+          "Actual completed input and executed argument/counter for every physical Ctrl+digit",
+          "Exact original widget documents, rectangles and all 197120 viewport pixels",
+          "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
+          "Thirty persisted native reports match exports; final offline filesystem audit"
+        ],
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+      },
       "tests": [
         {
           "target": "native-real-service-source-load-after-constructor",
@@ -828,6 +922,24 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
+        },
+        {
+          "target": "rebuilt-original-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-reference-v6/result.json",
+          "scope": "All ten Ctrl+digit slots for Appl, real keyboard with Ctrl held until completion; independent dictionary neighborhood; exact completed input and executed string argument/counter; per-case source plus adjacent fresh 42; archived unchanged inputs. pixel-audit.json independently checks all ten result images. Not editor numeric input, other prefixes or definition popups."
+        },
+        {
+          "target": "native-numeric-before-console-metadata-filter",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-numeric-native-before-v1/result.json",
+          "scope": "Real held-Ctrl dictionary completion reaches Applaud, but ACTask KeyMap metadata appends/submits characters in the console and compilation fails. Exact first widget check passed before the shortcut; unchanged inputs. Superseded by native-v2 on numeric-cross-v1."
+        },
+        {
+          "target": "native-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
         }
       ]
     },
@@ -844,8 +956,21 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Observed library workflows: full dictionary initialization/stop/restart with exact binary definitions, project-file source suggestions and real Ctrl+F1, and all ten console Ctrl+digit dictionary slots for Appl. UI definitions/source popups, installed-tree statistics, other prefixes, numeric editor input, exact heap recovery and complete application/desktop qualification remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-autocomplete-numeric.py",
+        "checks": [
+          "Independent pinned-asset scan predicts all ten dictionary slots",
+          "Actual completed input and executed argument/counter for every physical Ctrl+digit",
+          "Exact original widget documents, rectangles and all 197120 viewport pixels",
+          "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
+          "Thirty persisted native reports match exports; final offline filesystem audit"
+        ],
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+      },
       "tests": [
         {
           "target": "rebuilt-original-dictionary-lifecycle",
@@ -888,6 +1013,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
+        },
+        {
+          "target": "rebuilt-original-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-reference-v6/result.json",
+          "scope": "All ten Ctrl+digit slots for Appl, real keyboard with Ctrl held until completion; independent dictionary neighborhood; exact completed input and executed string argument/counter; per-case source plus adjacent fresh 42; archived unchanged inputs. pixel-audit.json independently checks all ten result images. Not editor numeric input, other prefixes or definition popups."
+        },
+        {
+          "target": "native-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
         }
       ]
     },
@@ -908,8 +1045,21 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Observed library workflows: full dictionary initialization/stop/restart with exact binary definitions, project-file source suggestions and real Ctrl+F1, and all ten console Ctrl+digit dictionary slots for Appl. UI definitions/source popups, installed-tree statistics, other prefixes, numeric editor input, exact heap recovery and complete application/desktop qualification remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-autocomplete-numeric.py",
+        "checks": [
+          "Independent pinned-asset scan predicts all ten dictionary slots",
+          "Actual completed input and executed argument/counter for every physical Ctrl+digit",
+          "Exact original widget documents, rectangles and all 197120 viewport pixels",
+          "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
+          "Thirty persisted native reports match exports; final offline filesystem audit"
+        ],
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+      },
       "tests": [
         {
           "target": "native-real-service-source-load",
@@ -958,6 +1108,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
+        },
+        {
+          "target": "rebuilt-original-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-reference-v6/result.json",
+          "scope": "All ten Ctrl+digit slots for Appl, real keyboard with Ctrl held until completion; independent dictionary neighborhood; exact completed input and executed string argument/counter; per-case source plus adjacent fresh 42; archived unchanged inputs. pixel-audit.json independently checks all ten result images. Not editor numeric input, other prefixes or definition popups."
+        },
+        {
+          "target": "native-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
         }
       ]
     },
@@ -2711,6 +2873,36 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-editor-cold-after-v4/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image, real library absence asserted. Synthetic Escape/printable metadata do not exit/edit. Physical Ctrl+F1 both release orders, Ctrl+F4/F5 and Ctrl+1 preserve exact source; subsequent plain F1 still opens Help. Console source/42 glyph check, clean offline filesystem and unchanged archived inputs. Not a full key map or minimum-memory qualification."
+        },
+        {
+          "target": "rebuilt-original-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-reference-v6/result.json",
+          "scope": "All ten Ctrl+digit slots for Appl, real keyboard with Ctrl held until completion; independent dictionary neighborhood; exact completed input and executed string argument/counter; per-case source plus adjacent fresh 42; archived unchanged inputs. pixel-audit.json independently checks all ten result images. Not editor numeric input, other prefixes or definition popups."
+        },
+        {
+          "target": "native-numeric-before-console-metadata-filter",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-numeric-native-before-v1/result.json",
+          "scope": "Real held-Ctrl dictionary completion reaches Applaud, but ACTask KeyMap metadata appends/submits characters in the console and compilation fails. Exact first widget check passed before the shortcut; unchanged inputs. Superseded by native-v2 on numeric-cross-v1."
+        },
+        {
+          "target": "native-numeric-dictionary-completion",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
+        },
+        {
+          "target": "native-console-description-query-before-filter",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-console-description-before-v1/result.json",
+          "scope": "Actual printable SCF_KEY_DESC query inserts A into the normal console, so subsequent physical 6*7 becomes A6*7 and compilation fails. Library absence asserted; unchanged inputs. Superseded by description-after-v1."
+        },
+        {
+          "target": "native-console-description-query-after-filter",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-console-description-after-v1/result.json",
+          "scope": "Actual library absence asserted; printable metadata ignored, physical shortcuts preserve exact 6*7 with visible 42; prior editor synthetic-query, Ctrl+F1 both release orders, Ctrl+F4/F5/Ctrl+1 and subsequent plain F1 Help checks pass. Clean offline filesystem and unchanged archived inputs. Not a complete key-description map."
         }
       ]
     },

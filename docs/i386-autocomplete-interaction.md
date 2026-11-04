@@ -82,7 +82,7 @@ live WinMgr/welcome, public input state/timing and exact framebuffer checkpoints
 complete minimal suite. Both original rebuild generations, the 386 instruction
 audit and all 1,261 delivered-source checks pass.
 
-Other symbol indexes and modifiers, actual numeric-word selection, source and
+Other symbol indexes and modifiers, remaining numeric-word workflows, source and
 definition popups, the remaining editor shortcuts, default autoload,
 installed-tree statistics, exact application heap recovery and full desktop/
 minimal-profile/release qualification remain open. C1-C5 remain open.
@@ -102,3 +102,8 @@ The later [editor workflow](i386-autocomplete-editor.md) qualifies Ctrl+F1
 completion and native Ctrl+S persistence in the custom editor, with paired
 release tracking and key-description query filtering. Its pixel scope differs
 from the console comparison above.
+
+The later [numeric dictionary workflow](i386-autocomplete-numeric.md) qualifies
+all ten Ctrl+digit slots for Appl in the console, with exact original widget
+pixels, completed inputs, actual executed arguments and fresh result pixels.
+It also filters ACTask key-description queries before console input actions.

@@ -25,9 +25,11 @@ def main():
     try:
         module=runpy.run_path(str(helper));guest=module['Guest'](working,out/'guest',True);guest.wait('DONE native kernel startup\n')
         guest.command('if(HashFind("AutoComplete",Fs->hash_table,HTT_FUN))throw(\'AutoLoad\',TRUE);')
+        guest.command('Msg(MSG_KEY_DOWN,65,SCF_KEY_DESC);')
         start=len(guest.collect());guest.type('6*');guest.key('ctrl',True);guest.press('f1');guest.press('1');guest.key('ctrl',False);guest.type('7;');guest.press('ret');guest.wait('COMMAND OK\n',start=start)
         text=guest.collect()[start:]
         if 'INPUT LINE 6*7;\n' not in text or 'INPUT REJECT ' in text:raise ValueError('Cold shortcuts modified the input or rejected execution')
+        report['console_description_query_ignored']=True
         report['result_pixels']=guest.result_pixels()
         guest.command('CDoc *cold_doc=DocNew("C:/ColdKeys.HC",Fs);')
         mark=len(guest.collect());guest.type('Msg(MSG_KEY_DOWN,CH_ESC,SCF_KEY_DESC|1);Msg(MSG_KEY_DOWN,65,SCF_KEY_DESC);DocEd(cold_doc);');guest.press('ret');guest.wait('DOC EDIT begin\n',start=mark)

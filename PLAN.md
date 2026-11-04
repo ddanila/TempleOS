@@ -26003,3 +26003,23 @@ and cold-after-v4 on editor-cross-v3; see docs/i386-autocomplete-editor.md. No
 editor/widget pixel equivalence, editor execution, save/reboot/reopen, remaining
 completion keys/popups, full descriptions, full minimal suite or C1-C5 completion
 is claimed.
+
+
+All ten console Ctrl+digit dictionary slots now pass against the rebuilt
+original for Appl, including spaces and hyphens. Real keyboard completion and
+input-filter jobs produce exact asset-derived source and executed string
+arguments, with counters one through ten. Original widget documents/geometry
+and all 197,120 viewport pixels match; unique per-case commands and adjacent
+fresh 42 masks pass both capture and independent offline audit. Thirty native
+reports persist exactly and the final filesystem audit passes. Actual held-Ctrl
+ACTask KeyMap queries exposed console metadata being inserted/submitted as
+input; the console now filters SCF_KEY_DESC before input actions while retaining
+autocomplete descriptions. A cold synthetic-query regression and prior editor
+release/metadata cases pass. Two original rebuild generations, 386 audit, all
+1,261 source checks and a separate 8 MiB normal startup smoke (42.16 seconds)
+pass. Final evidence: numeric reference-v6/native-v2 and console-description-
+after-v1 on numeric-cross-v1; see docs/i386-autocomplete-numeric.md. Previously
+empty workflow/oracle fields for the six autocomplete units/assets now describe
+observed components; compatibility remains unqualified. Other prefixes, numeric
+editor input, popups, full descriptions, exact heap recovery, full minimal
+regressions and C1-C5 remain open.

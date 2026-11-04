@@ -1306,6 +1306,11 @@ U0 NativeTerminalInput()
       doc=DocPut; prompt=NativeConsolePrompt;
       ConsolePresent;
       KernelLog("INPUT RESET\n");
+    } else if(decoded && event.scan&SCF_KEY_DESC) {
+      //ACTask KeyMap probes describe keys; they must not become console input.
+      //Answer the retained completion descriptions without submitting/editing.
+      if(event.type==MSG_KEY_DOWN && NativeDocAutoCompleteKey(event.ch,event.scan))
+        DocPutKey(doc,event.ch,event.scan);
     } else if(decoded && event.type==MSG_KEY_DOWN && NativeDocAutoCompleteKey(event.ch,event.scan)) {
       DocPutKey(doc,event.ch,event.scan);ConsolePresent;
     } else if(decoded && event.type==2) {

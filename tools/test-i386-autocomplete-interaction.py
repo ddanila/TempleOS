@@ -85,7 +85,8 @@ class Guest:
             if 'return' in reply:return reply['return']
     def collect(self):
         text=self.log.read_text(errors='replace')
-        for line in text.splitlines():
+        #E9 output may end partway through an export record while the guest runs.
+        for line in text.split('\n')[:-1]:
             if line.startswith('EXPORT ') and line not in self.seen:
                 _,name,address,size=line.split()
                 if Path(name).name!=name:raise ValueError('Invalid export filename')

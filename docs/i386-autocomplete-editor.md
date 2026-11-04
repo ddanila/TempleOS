@@ -79,3 +79,7 @@ python3 tools/test-i386-autocomplete-interaction.py --editor --out build/ac-edit
 python3 tools/test-i386-autocomplete-interaction.py build/i386-autocomplete-editor-cross-v3/kernel.img --editor --reference build/ac-editor-original --out build/ac-editor-native
 python3 tools/test-i386-autocomplete-cold-keys.py build/i386-autocomplete-editor-cross-v3/kernel.img --out build/ac-editor-cold
 ```
+
+The later [numeric console workflow](i386-autocomplete-numeric.md) qualifies all
+ten dictionary slots and fixes description-query filtering in the separate
+console loop. Numeric selection inside this custom editor remains open.
