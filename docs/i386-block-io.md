@@ -530,3 +530,26 @@ called (`build/i386-block-zero-dependency-probe-v1` and
 `build/i386-fat-alloc-dependency-probe-v1`). These are delivered complete
 sources, not native bindings. Full block I/O, media lifecycle, streams and
 C1-C5 remain open.
+
+## Complete shared RedSea allocation core (2026-11-04)
+
+The complete original free-list build, cluster free and best-fit allocation
+bodies are shared byte-for-byte through `RedSeaAllocationCore.HC`. Both
+original rebuild generations, full native cross-build/386 audit and
+1207-file source audit pass (`build/i386-redsea-allocation-core-cross-v1`).
+The original-system RAM fixture passes with unchanged inputs
+(`build/i386-redsea-allocation-reference-v3`), compiling the complete
+allocation and FAT-cache bodies under fixture-local names because the
+internal kernel helpers are not all exported. It checks contiguous
+allocations, bitmap set/clear, best-fit hole reuse, automatic list rebuilding
+from the bitmap, zero-count allocation rejection and preowned lock retention.
+The original free operation merges one adjacent list entry per call; the
+fixture clears the list before checking recovery of the complete free range.
+It does not claim two-sided coalescing from each individual free call.
+
+The first two reference attempts stopped at undefined internal extern calls,
+not failed allocation assertions. Native compile probe v1 stopped at the
+untyped teardown call; supplying its existing provider declaration lets v2
+reach missing `DrvFATBlkSet` on line 14, with inputs unchanged and no allocator
+called (`build/i386-redsea-allocation-dependency-probe-v2`). Native allocation,
+full public block I/O/media/streams and C1-C5 remain open.

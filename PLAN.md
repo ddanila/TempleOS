@@ -25717,3 +25717,15 @@ behavior, bitmap-cache replacement/reset and nested locks with unchanged
 inputs (`build/i386-media-block-helpers-reference-v1`). Native compile-only
 probes identify missing public `BlkWrite`/`BlkRead`; no native helper was
 called. Full block I/O/media/streams and C1-C5 remain open.
+
+The complete original RedSea free-list build/free/allocation bodies are
+shared byte-for-byte. Original rebuilds, full native cross-build/386 audit
+and 1207-file source audit pass (`build/i386-redsea-allocation-core-cross-v1`).
+The original-system fixture compiles the complete allocation and FAT-cache
+bodies under local aliases and passes bitmap updates, best-fit reuse,
+automatic list rebuild, zero-count rejection and preowned locks with unchanged
+inputs (`build/i386-redsea-allocation-reference-v3`). Earlier private-extern
+failures are documented. Native compilation with the existing teardown
+provider declared reaches missing `DrvFATBlkSet` line 14
+(`build/i386-redsea-allocation-dependency-probe-v2`); no native allocator
+was called. Full block I/O/media/streams and C1-C5 remain open.
