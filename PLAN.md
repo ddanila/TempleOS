@@ -25653,3 +25653,15 @@ ATA bytes match the worktree, pinned inputs are unchanged, and no ATA write
 was performed. This precedes retained-provider integration; multi-sector
 transfers, writes, ATAPI, failure recovery and full public block I/O/streams
 remain unqualified. C1-C5 remain open.
+
+The complete original ATA implementation is now retained in ConsoleRuntime
+with five public entry points. Its four block-counter accesses use a shared
+typed globals accessor, and the original `FloorU64` dependency is explicitly
+bound by both build and kernel-loader contracts. Original two-generation
+rebuilds, native cross-build/386 audit and delivered-source audit pass
+(`build/i386-retained-ata-cross-v5`). The retained public ATA read contract
+passes with unchanged inputs (`build/i386-retained-ata-read-native-v2`),
+including sector bytes, guards, counters and lock retention. Earlier
+integration/compiler/import failures are documented in `docs/i386-block-io.md`.
+Writes, multi-sector/ATAPI/init/failure cases, full block I/O/streams and
+C1-C5 remain open.

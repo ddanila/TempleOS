@@ -13495,9 +13495,12 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "docs/i386-block-io.md",
+      "oracle": "One-sector native ATA read versus private transport, guarded buffer, counter and lock retention; writes/multisector/ATAPI/init/failures unqualified",
+      "tests": [
+        "tools/test-i386-original-ata-read.py",
+        "tools/test-i386-retained-ata-read.py"
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskATAId.HC",

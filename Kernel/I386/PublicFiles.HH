@@ -14,6 +14,11 @@
 #include "/Kernel/BlkDev/BlockSize.HH"
 #include "/Kernel/BlkDev/BlockGlobalsTypes.HH"
 public _extern _BLKDEV CBlkDevGlbls blkdev;
+public _extern _ATA_READ_BLKS U0 ATAReadBlks(CBlkDev *bd,U8 *buf,I64 blk,I64 cnt);
+public _extern _ATA_WRITE_BLKS U0 ATAWriteBlks(CBlkDev *bd,U8 *buf,I64 blk,I64 cnt);
+public _extern _ATA_INIT Bool ATAInit(CBlkDev *bd);
+public _extern _ATA_R_BLKS Bool ATARBlks(CDrv *dv,U8 *buf,I64 blk,I64 cnt);
+public _extern _ATA_W_BLKS Bool ATAWBlks(CDrv *dv,U8 *buf,I64 blk,I64 cnt);
 public _extern _DSK_CACHE_INIT U0 DskCacheInit(I64 size_in_U8s);
 public _extern _DSK_CACHE_ADD U0 DskCacheAdd(CDrv *dv,U8 *buf,I64 blk,I64 cnt);
 public _extern _R_CACHE U0 RCache(CDrv *dv,U8 **buf,I64 *blk,I64 *cnt);

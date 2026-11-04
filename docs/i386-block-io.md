@@ -397,3 +397,31 @@ This is a one-sector ATA read contract, not retained-provider integration,
 multi-sector transfers, ATA writes, ATAPI, initialization, media changes or
 failure recovery. The complete provider and public block I/O/streams remain
 open. Run with `tools/test-i386-original-ata-read.py IMAGE --out FRESH_DIR`.
+
+## Retained original ATA provider (2026-11-04)
+
+The complete `DskATA.HC` is now included by the retained native console
+runtime. `ATAReadBlks`, `ATAWriteBlks`, `ATAInit`, `ATARBlks` and `ATAWBlks`
+have public bindings. The shared source adds a typed `ATAGlobals` accessor
+and routes its four counter accesses through it; the original target returns
+`&blkdev`, and the native target returns the existing kernel-owned cache/block
+record. The rest of the original ATA implementation is retained. `FloorU64`
+is an explicit runtime import, listed in both the build contract and kernel
+loader bindings.
+
+Both original rebuild generations, full native cross-build/386 audit and
+1200-file delivered-source audit pass (`build/i386-retained-ata-cross-v5`).
+The retained public read contract passes with unchanged inputs
+(`build/i386-retained-ata-read-native-v2`), matching one RedSea header sector
+against native raw transport and checking guards, counter accounting and
+preowned lock retention. This fixture does not compile ATA source in the
+guest; it calls the retained binding. No ATA writes are performed.
+
+Earlier integration attempts are preserved: cross v1 rejected a macro-based
+record lvalue; cross v2 rejected the unnecessary `#undef` directive; cross v3
+compiled the module but rejected its added import contract. Cross v4 passed
+build/audits, but read-native-v1 stopped before fixture execution because
+the kernel loader lacked that import. Cross v5 and read-native-v2 include
+that binding and pass. Writes, multi-sector transfers, ATAPI, media initialization
+and failure recovery remain unqualified, and full public block I/O/streams
+and C1-C5 remain open.
