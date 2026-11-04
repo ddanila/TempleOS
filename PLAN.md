@@ -25490,3 +25490,13 @@ the unchanged declaration in a 32-command KVM scrolling test with exact VGA
 and WinMgr active (`build/i386-terminal-final-typing-81-gen2-kvm-v1`). The
 full generation-two v3 rerun is now in progress; the completed v2 run remains
 a screen failure, not a workstation pass.
+
+The older cross-built v6 integration also stopped at the left-autoscroll
+declaration. Unlike v5, its captured declaration occupied one row; the
+command-specific two-row expectation therefore failed. Both commands compiled
+successfully. The opposite layouts at the same checkpoint demonstrate that
+the earlier special case did not resolve the input/reflow timing difference.
+Cross-built v7 now runs with final typing observed and the shared reserved-cell
+rule; v6 is preserved as failed evidence. Native generation two v3 has again
+passed its earlier task-ring checkpoint and continues. Complete integration
+remains open.
