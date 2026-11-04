@@ -20,15 +20,7 @@ U8 *LinkedLstCopy(U8 **_lst,CTask *mem_task=NULL)
 
 #include "/Kernel/LinkedLstCntCore.HC"
 
-I64 LinkedLstSize(U8 **_lst)
-{//Mem size of all nodes in linked-list.
-  I64 res=0;
-  while (_lst) {
-    res+=MSize2(_lst);
-    _lst=*_lst;
-  }
-  return res;
-}
+#include "/Kernel/LinkedLstSizeCore.HC"
 
 U0 QueDel(CQue *head,Bool querem=FALSE)
 {//Free entries in queue, not head.

@@ -30,4 +30,6 @@ public _extern _DEFINE_LOAD CHashDefineStr *DefineLoad(U8 *name,U8 *text);
 public _extern _DEFINE_PRINT U0 DefinePrint(U8 *name,U8 *fmt,...);
 public _extern _BIBLE_INIT U0 BibleInit();
 #include "/Adam/God/BibleTypes.HH"
+public _extern _HASH_ENTRY_SIZE2 I64 HashEntrySize2(CHashSrcSym *entry);
+public _extern _HASH_TABLE_SIZE2 I64 HashTableSize2(CHashTable *table);
 #endif

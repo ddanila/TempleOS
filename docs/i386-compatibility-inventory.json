@@ -576,7 +576,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-real-service-source-load",
+          "result": "pass",
+          "evidence": "build/i386-hash-memory-autocomplete-v1/result.json",
+          "scope": "Unchanged MakeAC and all three source units load against real services; resumed command executes, input pins unchanged. No explicit autocomplete initialization/task activation, dictionary or suggestion workflow qualification."
+        }
+      ]
     },
     {
       "path": "Adam/AutoComplete/ACInit.HC",
@@ -608,6 +615,12 @@
           "result": "fail",
           "evidence": "build/i386-file-size-autocomplete-v1/result.json",
           "scope": "Unchanged MakeAC advances past Size to missing HashTableSize2 at ACInit.HC line 166. No explicit autocomplete task activation or service stubs."
+        },
+        {
+          "target": "native-real-service-source-load",
+          "result": "pass",
+          "evidence": "build/i386-hash-memory-autocomplete-v1/result.json",
+          "scope": "Unchanged MakeAC and all three source units load against real services; resumed command executes, input pins unchanged. No explicit autocomplete initialization/task activation, dictionary or suggestion workflow qualification."
         }
       ]
     },
@@ -640,6 +653,12 @@
           "result": "fail",
           "evidence": "build/i386-input-event-time-autocomplete-v1/result.json",
           "scope": "Unchanged MakeAC advances past KbdMsEvtTime and kbd.scan_code to missing sys_run_level at ACTask.HC line 265. No explicit autocomplete activation or throwing service stubs."
+        },
+        {
+          "target": "native-real-service-source-load",
+          "result": "pass",
+          "evidence": "build/i386-hash-memory-autocomplete-v1/result.json",
+          "scope": "Unchanged MakeAC and all three source units load against real services; resumed command executes, input pins unchanged. No explicit autocomplete initialization/task activation, dictionary or suggestion workflow qualification."
         }
       ]
     },
@@ -679,7 +698,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-real-service-source-load",
+          "result": "pass",
+          "evidence": "build/i386-hash-memory-autocomplete-v1/result.json",
+          "scope": "Unchanged MakeAC and all three source units load against real services; resumed command executes, input pins unchanged. No explicit autocomplete initialization/task activation, dictionary or suggestion workflow qualification."
+        }
+      ]
     },
     {
       "path": "Adam/CPURep.HC",
@@ -7286,7 +7312,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "paired-complete-owned-hash-memory-accounting",
+          "result": "pass",
+          "evidence": "docs/i386-hash-memory.md",
+          "scope": "All four original accounting bodies: eighteen owned standard-record allocator-ledger and heap-recovery cases, including member/class/function/global/debug and pointer normalization branches. Borrowed native bootstrap/compiler tables and full memory reports remain unqualified."
+        }
+      ]
     },
     {
       "path": "Compiler/CInit.HC",
@@ -7594,7 +7627,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "paired-complete-owned-hash-memory-accounting",
+          "result": "pass",
+          "evidence": "docs/i386-hash-memory.md",
+          "scope": "All four original accounting bodies: eighteen owned standard-record allocator-ledger and heap-recovery cases, including member/class/function/global/debug and pointer normalization branches. Borrowed native bootstrap/compiler tables and full memory reports remain unqualified."
+        }
+      ]
     },
     {
       "path": "Compiler/OpCodes.DD",
@@ -15109,7 +15149,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "paired-complete-owned-hash-memory-accounting",
+          "result": "pass",
+          "evidence": "docs/i386-hash-memory.md",
+          "scope": "All four original accounting bodies: eighteen owned standard-record allocator-ledger and heap-recovery cases, including member/class/function/global/debug and pointer normalization branches. Borrowed native bootstrap/compiler tables and full memory reports remain unqualified."
+        }
+      ]
     },
     {
       "path": "Kernel/KDate.HC",

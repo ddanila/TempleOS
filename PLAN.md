@@ -25919,3 +25919,15 @@ MakeAC advances to missing HashTableSize2 at ACInit.HC line 166. Full hash accou
 autocomplete execution, FAT-specific size/error coverage, 8 MiB resource gates
 and C1-C5 remain open. The prior-image full workstation run is still live.
 See docs/i386-file-size.md.
+
+
+Complete original LinkedLstSize, MemberLstSize, HashEntrySize2 and HashTableSize2
+bodies are shared and retained. Console ABI 209 has 582 bindings. All eighteen
+owned standard-record cases pass original/native allocator-ledger equality and
+exact caller-heap recovery, with native exact VGA. Class/function/global/debug,
+member metadata and normalized function-pointer branches are included. Two
+original rebuild generations, the 386 audit and 1,260-file source audit pass.
+The unchanged MakeAC source now loads against real services and a subsequent
+command runs. Actual initialization/dictionaries/suggestions, borrowed native
+bootstrap/compiler accounting, 8 MiB resource gates and C1-C5 remain open. The
+prior-image full workstation run remains live. See docs/i386-hash-memory.md.

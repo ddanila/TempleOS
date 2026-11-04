@@ -153,3 +153,13 @@ missing HashTableSize2 at ACInit.HC line 166
 (`build/i386-file-size-autocomplete-v1`, unchanged input pins). No explicit
 autocomplete initialization, task activation or visible suggestion workflow is
 qualified by the failed source-load probe.
+
+
+The complete original hash accounting dependency is now retained: linked lists,
+member lists, entries and tables, with all original type branches and exclusions.
+Eighteen owned-record cases pass against allocator ledgers on original/native
+systems; see `docs/i386-hash-memory.md`. The unchanged MakeAC source loads
+successfully against real services (`build/i386-hash-memory-autocomplete-v1`,
+inputs unchanged), followed by resumed command execution. This closes the source
+load gate; initialization, actual dictionary access and visible task workflows
+remain unqualified by that gate alone.
