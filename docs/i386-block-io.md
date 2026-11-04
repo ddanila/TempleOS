@@ -344,3 +344,20 @@ from missing `CATAPITrack` at line 281 to missing `blkdev` at
 `blkdev.read_cnt` on line 372 (`build/i386-ata-dependency-probe-v6`), with
 inputs unchanged. Public block-global access and native ATA integration,
 block I/O/streams and C1-C5 remain open.
+
+## Public block-global identity (2026-11-04)
+
+Native `blkdev` now binds directly to the existing kernel-owned
+`CBlkDevGlbls` record as a data symbol. It shares the drive map, block-device
+records and cache state used by existing services. The appended export
+preserves prior indices. Both original rebuild generations, full native
+cross-build/386 audit and 1200-file delivered-source audit pass
+(`build/i386-public-block-globals-cross-v1`). The native identity fixture
+passes with unchanged inputs (`build/i386-public-block-globals-native-v1`),
+checking the cache helper's record address, mapped C drive, block-device
+array and reversible read/write counter updates through both aliases.
+This does not qualify initialization or behavior of every global field.
+The unchanged ATA compile probe advances to missing `DskCacheAdd` at line
+439, with inputs unchanged and no ATA operation executed
+(`build/i386-ata-dependency-probe-v7`). Full ATA, public block I/O/streams
+and C1-C5 remain open.

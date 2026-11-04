@@ -25625,3 +25625,12 @@ pass with unchanged inputs (`build/i386-atapi-track-types-native-v1`).
 Unchanged ATA compilation now reaches the missing public `blkdev` global
 at line 372 (`build/i386-ata-dependency-probe-v6`); no ATA operation was
 called. Full ATA, public block I/O/streams and C1-C5 remain open.
+
+Native public `blkdev` now aliases the kernel-owned block-global record.
+Original rebuilds, full cross-build/386 audit and delivered-source audit pass
+(`build/i386-public-block-globals-cross-v1`); native record identity, mapped
+drive/device pointers and reversible counter alias checks pass with unchanged
+inputs (`build/i386-public-block-globals-native-v1`). Unchanged ATA compilation
+now reaches the missing public `DskCacheAdd` binding at line 439
+(`build/i386-ata-dependency-probe-v7`). No ATA operation was executed. Full
+ATA, public block I/O/streams and C1-C5 remain open.

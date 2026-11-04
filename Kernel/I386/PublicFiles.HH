@@ -13,6 +13,7 @@
 #include "/Kernel/BlkDev/ATAPITrackTypes.HH"
 #include "/Kernel/BlkDev/BlockSize.HH"
 #include "/Kernel/BlkDev/BlockGlobalsTypes.HH"
+public _extern _BLKDEV CBlkDevGlbls blkdev;
 public _extern _FILES_FIND_MATCH Bool FilesFindMatch(U8 *test_name,U8 *files_find_mask,I64 fuf_flags=0);
 public _extern _WILD_MATCH Bool WildMatch(U8 *test_str,U8 *wild_str);
 public _extern _BLOCK_DEV_NEXT_FREE_SLOT CBlkDev *BlkDevNextFreeSlot(U8 first_drv_let,I64 type);
