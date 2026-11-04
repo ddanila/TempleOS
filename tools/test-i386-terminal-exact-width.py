@@ -17,6 +17,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--accel', choices=('tcg', 'kvm'), default='tcg')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir()
@@ -26,13 +27,13 @@ def main():
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     pins = {str(p): sha(p) for p in (disk, Path(__file__).resolve(), helper,
                                    renderer, ROOT/'Kernel/FontStd.HC')}
-    report = dict(result='running', input_sha256=pins,
+    report = dict(result='running', input_sha256=pins, accel=args.accel,
                   scope='Three identical exact-width commands after console scrolling; not full terminal qualification')
     try:
         working = out/'working.img'
         shutil.copyfile(disk, working)
         commands = ['I64 wrap_i;for(wrap_i=0;wrap_i<70;wrap_i++)"\\n";']+[SOURCE]*3
-        runpy.run_path(str(helper))['guest'](working, out/'guest', commands, 64, True)
+        runpy.run_path(str(helper))['guest'](working, out/'guest', commands, 64, True, accel=args.accel)
         rows = [('> '+SOURCE)[:79], ';', '1', '> ']
         colors = {(r, c): 2 for r, line in enumerate(rows) for c in range(len(line))}
         render = runpy.run_path(str(renderer))['console_pixels']

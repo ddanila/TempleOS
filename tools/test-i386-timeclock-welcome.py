@@ -16,9 +16,10 @@ PLAIN={'\\':'backslash','|':'backslash','~':'grave_accent','^':'6','%':'5','#':'
 SHIFTED=set('(){}*+&_"<>#!%$|~:?^')
 
 
-def guest(image,out,commands,ram_mib=64,capture_input=False,key_delay=.3,command_timeout=180,allow_inner_rejection=False):
+def guest(image,out,commands,ram_mib=64,capture_input=False,key_delay=.3,command_timeout=180,allow_inner_rejection=False,accel='tcg'):
+    if accel not in ('tcg','kvm'):raise ValueError('Unsupported accelerator')
     out.mkdir(); log=out/'debug.log'
-    cmd=['qemu-system-i386','-machine','pc','-accel','tcg','-cpu','486,-fpu','-m',str(ram_mib),'-nic','none','-drive',f'file={image},format=raw,if=ide','-display','none','-no-reboot','-debugcon',f'file:{log}','-qmp','stdio']
+    cmd=['qemu-system-i386','-machine','pc','-accel',accel,'-cpu','486,-fpu','-m',str(ram_mib),'-nic','none','-drive',f'file={image},format=raw,if=ide','-display','none','-no-reboot','-debugcon',f'file:{log}','-qmp','stdio']
     p=subprocess.Popen(cmd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,text=True,bufsize=1)
     def reply():
         while True:
