@@ -318,8 +318,11 @@ using the already included, unchanged `Kernel/EndianCore.HC` bodies. The three
 exports are appended without shifting existing symbol indices. Both original
 rebuild generations and the full native cross-build/386 audit pass, as does
 the 1199-file delivered-source audit (`build/i386-endian-public-cross-v1`).
-`tools/test-i386-endian.py` passes with unchanged inputs on the native image
-(`build/i386-endian-public-native-v1`), covering every U16 input, mixed and
+`tools/test-i386-endian-public.py` runs the exhaustive native fixture, kept
+separate from the original-system comparison runner. It passes with unchanged
+inputs on the native image
+(`build/i386-endian-public-native-v1` and the separately named runner
+rerun `build/i386-endian-public-native-v2`), covering every U16 input, mixed and
 all-ones vectors, all U32/U64 bit positions and double-swap recovery.
 The unchanged ATA compile probe now advances from missing `EndianU16` at
 line 112 to missing `CATAPITrack` at line 281, with inputs unchanged and

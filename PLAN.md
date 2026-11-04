@@ -25609,3 +25609,10 @@ the exhaustive U16 and U32/U64 bit/vector fixture passes with unchanged inputs
 the missing `CATAPITrack` record at line 281
 (`build/i386-ata-dependency-probe-v5`). Device operations were not called;
 full ATA, public block I/O/streams and C1-C5 remain open.
+
+The exhaustive endian test is now kept separately as
+`tools/test-i386-endian-public.py` and
+`tests/guest/i386-endian-public/Contract.HC`; the pre-existing original-system
+comparison runner and fixture are restored byte-for-byte. The separately
+named runner passes again with unchanged inputs
+(`build/i386-endian-public-native-v2`).
