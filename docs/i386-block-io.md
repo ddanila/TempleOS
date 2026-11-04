@@ -553,3 +553,25 @@ untyped teardown call; supplying its existing provider declaration lets v2
 reach missing `DrvFATBlkSet` on line 14, with inputs unchanged and no allocator
 called (`build/i386-redsea-allocation-dependency-probe-v2`). Native allocation,
 full public block I/O/media/streams and C1-C5 remain open.
+
+## Complete shared ISO initializer and descriptor records (2026-11-04)
+
+The original `ISOInit` body is shared byte-for-byte as `ISOInitCore.HC`.
+Original palindrome and ISO descriptor records/constants are shared through
+`ISODescriptorTypes.HH`, included by both KernelA and native PublicFiles.
+Both original rebuild generations, full native cross-build/386 audit and
+1211-file source audit pass (`build/i386-iso-init-core-cross-v1`).
+
+The original private RAM initializer contract passes with unchanged inputs
+(`build/i386-iso-init-reference-v1`): primary-descriptor scan, supplementary
+root selection, embedded TempleOS RedSea handoff, terminator rejection and
+cleanup, and preowned locks. The descriptors are synthetic RAM data; this
+does not qualify physical optical media or every ISO variant. The original
+reports record sizes 4/8/34/2044 and root/publisher offsets 152/314. The native
+record fixture matches those measured layouts and checks nested little/big
+integer fields with unchanged inputs (`build/i386-iso-descriptor-types-native-v1`).
+
+The complete native initializer compile probe stops at missing public
+`BlkRead` on line 17, with inputs unchanged and no initializer called
+(`build/i386-iso-init-dependency-probe-v1`). Native ISO/media initialization,
+full block I/O/streams and C1-C5 remain open.

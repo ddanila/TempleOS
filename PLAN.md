@@ -25761,3 +25761,15 @@ init-in-progress branch with unchanged inputs
 `DskDirContext` needs `Drv` and the lifecycle core needs `BlkDevInit`; no
 native operation was called. Full contexts/Del/streams and block I/O/media
 and C1-C5 remain open.
+
+The complete original ISO initializer and descriptor records/constants
+are now shared byte-for-byte. Original rebuilds, native cross-build/386
+audit and 1211-file source audit pass (`build/i386-iso-init-core-cross-v1`).
+The original private RAM ISO contract passes descriptor scanning, root
+selection, embedded RedSea handoff, terminator cleanup and nested locks
+(`build/i386-iso-init-reference-v1`). Native record layout/field checks match
+the original measured values (`build/i386-iso-descriptor-types-native-v1`).
+Inputs remain unchanged. Complete native initializer compilation reaches
+missing `BlkRead` line 17 (`build/i386-iso-init-dependency-probe-v1`), without
+executing initialization. Full native media/block I/O/streams and C1-C5
+remain open.

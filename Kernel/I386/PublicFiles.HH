@@ -14,6 +14,7 @@
 #include "/Kernel/BlkDev/ATAPITrackTypes.HH"
 #include "/Kernel/BlkDev/RedSeaBootTypes.HH"
 #include "/Kernel/BlkDev/MasterBootTypes.HH"
+#include "/Kernel/BlkDev/ISODescriptorTypes.HH"
 #include "/Kernel/BlkDev/BlockSize.HH"
 #include "/Kernel/BlkDev/BlockGlobalsTypes.HH"
 public _extern _BLKDEV CBlkDevGlbls blkdev;
