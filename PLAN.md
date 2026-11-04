@@ -25423,3 +25423,18 @@ there, while the focused group wraps at 79. The input oracle now models that
 observed full-run layout, and its expected pixels match the captured failure
 frame byte-for-byte. The fresh integrated rerun is in progress; C1–C5 remain
 open.
+
+The integrated v5 rerun passed document editing, resource and latency groups,
+then stopped before reverse selection at
+`doc-mouse-autoscroll-left-canonical-definition`. Its helper compiled, but the
+80-character console declaration wrapped before `n;}` while the oracle kept
+one row. The full-session expectation now matches that captured text layout;
+focused mouse expectations are preserved. Screen timeouts now save expected
+rows and frames for direct comparison. Integrated v6 is running and neither
+wrap correction is yet qualified by a complete integrated pass.
+
+The rebuilt full-content image
+(`build/i386-c1c5-welcome-merged-full-cross-v11`) passes the 386 instruction
+audit; its source audit matches all 1,197 delivered source/document files to
+the candidate. This packages the updated harness and does not establish a
+complete workstation or C1–C5 pass.
