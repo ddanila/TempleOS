@@ -25543,3 +25543,11 @@ the last command-specific wrap exception rather than qualifying the stopped
 run. The correction is committed as `38d2ddc9`; generation two v4 is running
 the complete suite with it. Reverse interaction and full integration remain
 unqualified.
+
+Cross-built v7 and native generation-one v2 were deliberately superseded
+after this reverse-command expectation was disproved; their output directories
+contain `superseded.json` with the final checkpoint and reason. They are not
+complete passes or guest failures at reverse selection. Cross-built v8,
+native generation-one v3 and native generation-two v4 now run the complete
+suite with the same current shared wrap rule. Their qualification results
+remain pending.
