@@ -25685,3 +25685,15 @@ Complete initializer compilation now records its missing `RedSeaValidate`
 binding on line 17 (`build/i386-block-init-dependency-probe-v1`), without
 executing initialization. Full RedSea media lifecycle, block I/O/streams
 and C1-C5 remain open.
+
+Complete original RedSea validation/init/format bodies are now shared
+byte-for-byte as `Kernel/BlkDev/RedSeaMediaCore.HC`. The original-system
+private RAM media contract passes before/after extraction
+(`build/i386-redsea-media-reference-v4`/`-v5`), covering header rejection,
+metadata/cache initialization, nested locks and quick-format root entries.
+Original rebuilds, native cross-build/386 audit and 1202-file source audit
+pass (`build/i386-redsea-media-core-cross-v1`). Native core compilation
+stops at missing public `BlkRead` line 7
+(`build/i386-redsea-media-dependency-probe-v1`); no native media function
+was executed. Earlier fixture declaration failures are documented. Full
+block I/O/media/streams and C1-C5 remain open.

@@ -465,3 +465,27 @@ at missing `RedSeaValidate` on line 17, with inputs unchanged and no
 initializer called (`build/i386-block-init-dependency-probe-v1`). Original
 RedSea validation/initialization/formatting, full block I/O/streams and
 C1-C5 remain open.
+
+## Complete shared RedSea media core (2026-11-04)
+
+`RedSeaInit`, `RedSeaValidate` and `RedSeaFmt` now share their complete
+original bodies byte-for-byte through `Kernel/BlkDev/RedSeaMediaCore.HC`.
+Both original rebuild generations and full native cross-build/386 audit
+pass; all 1202 packaged source/doc files match the candidate
+(`build/i386-redsea-media-core-cross-v1`).
+
+The original-system private RAM contract passes before and after extraction
+(`build/i386-redsea-media-reference-v4` and `-v5`). It temporarily maps a
+private RAM device at Z, checks valid/corrupt headers, initialization metadata
+and bitmap-cache allocation, preowned lock retention, and quick-format root
+`.`/`..` entries, then frees backing/cache/list storage and restores the map.
+No physical disk sector is formatted. Three earlier attempts timed out at
+fixture compilation; split declarations and a fixed slot index did not
+resolve it. The decisive correction supplied exact extern declarations for
+these internal original helpers. They were not media runtime failures.
+
+The native compile-only core probe stops at missing public `BlkRead` on
+line 7 with inputs unchanged and no media function executed
+(`build/i386-redsea-media-dependency-probe-v1`). The core is delivered but
+not bound as a native media provider. Full block I/O, RedSea media lifecycle,
+streams and C1-C5 remain open.
