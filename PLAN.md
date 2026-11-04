@@ -25508,3 +25508,9 @@ resource and long-document groups had completed, but this is not a full
 workstation pass. Native generation one v2 now runs with the same final-typing
 and reserved-cell rules as generation two v3 and cross-built v7. All three
 complete integration results remain pending.
+
+Native generation two v3 has passed `command-117` and advanced to
+`command-124`, so both prior exact-width failure checkpoints now pass in the
+full session with final typing observed and the 81-character exception
+removed. Later desktop checks and the complete workstation result remain
+pending; C1–C5 remain open.
