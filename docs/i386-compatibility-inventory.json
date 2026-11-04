@@ -14411,6 +14411,13 @@
           "result": "pass",
           "evidence": "build/i386-fat-disk-shared-v5/result.json",
           "scope": "Rebuilt original creates and cold-reopens names through 37 characters across a root directory cluster boundary; host readback and read-only filesystem check; not native FAT"
+        },
+        {
+          "target": "original-fat-allocation-reference",
+          "command": "python3 tools/test-i386-fat-allocation-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-fat-allocation-reference-v4/result.json",
+          "scope": "Shared complete allocator on private RAM: mirrored FAT writes, sector boundary, chained extension, contiguous run, free-until, overlap, wrap, zero count, nested locks and exhaustion; native allocator not bound"
         }
       ]
     },
@@ -15284,7 +15291,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-fat-media-types",
+          "command": "python3 tools/test-i386-fat-media-types.py IMAGE --out OUT --accel kvm",
+          "result": "pass",
+          "evidence": "build/i386-fat-media-types-native-v2/result.json",
+          "scope": "Shared original FAT32 boot/info sector record sizes, offsets and field reads; no native FAT32 media initialization"
+        }
+      ]
     },
     {
       "path": "Kernel/KernelB.HH",

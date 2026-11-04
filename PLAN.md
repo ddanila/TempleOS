@@ -25794,3 +25794,14 @@ rebuilds, full native cross-build/386 audit and the 1212-file source audit pass
 publication, proves public-table privacy, and passes with unchanged inputs
 (`build/i386-call-ext-scope-native-v2`). General public hash-overlay visibility,
 full media/streams and C1-C5 remain open.
+
+
+The complete existing FAT32 allocator/free/overlap implementation and FAT32
+boot/info records are now shared without body changes. Both original rebuild
+generations, full native cross-build/386 audit and 1214-file source audit pass
+(`build/i386-fat-allocation-core-cross-v1`). The original private RAM contract
+passes mirrored FAT updates, chained/contiguous allocation, sector crossing,
+free-until, extension, wrap, exhaustion and lock recovery with unchanged inputs
+(`build/i386-fat-allocation-reference-v4`). Native media-record checks pass
+(`build/i386-fat-media-types-native-v2`). Full native allocator binding,
+block I/O/media/streams and C1-C5 remain open; see `docs/i386-block-io.md`.

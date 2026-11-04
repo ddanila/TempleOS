@@ -575,3 +575,39 @@ The complete native initializer compile probe stops at missing public
 `BlkRead` on line 17, with inputs unchanged and no initializer called
 (`build/i386-iso-init-dependency-probe-v1`). Native ISO/media initialization,
 full block I/O/streams and C1-C5 remain open.
+
+
+### Shared complete FAT32 allocator and media records
+
+`FATAllocationCore.HC` now contains the complete existing FAT32 free-until,
+free-chain, chain-overlap, chained allocation and contiguous allocation
+implementation. `FileSysFAT.HC` includes it in the original location. The
+FAT32 boot and filesystem-info records are shared in `FATMediaTypes.HH`,
+also exposed through native public file headers. Reconstructing both old
+source files from the extracted components matches their prior bytes exactly.
+
+Both original rebuild generations, the full native cross-build and 386 audit
+pass (`build/i386-fat-allocation-core-cross-v1`). The 1214-file source audit
+matches the candidate before this evidence append. The original private RAM
+contract passes with unchanged inputs
+(`build/i386-fat-allocation-reference-v4`). It compiles the complete shared
+allocator, FAT cache and cluster-next code under fixture-local names, without
+stub services. The synthetic initialized RAM volume is temporarily mapped at
+Z and restored at completion. Assertions cover mirrored FAT sectors,
+126->127->128 traversal across a FAT-sector boundary, free-until suffix
+preservation, complete free, fragmented contiguous selection, chain overlap,
+wraparound, zero counts, existing-chain extension, preowned drive locks,
+filesystem-info writeback and allocation exhaustion with lock recovery.
+
+The test preserves an observed range difference: on its 512-sector volume,
+chained allocation wraps before cluster 501 while contiguous allocation can
+use it. Both ranges are filled before exhaustion checks. Reference v1 lacked
+the temporary Z mapping and stopped in `BlkDevInit`; v2 passed the initial
+contract; v3's added exhaustion assertion exposed the unfilled final cluster.
+These were fixture corrections, with allocator behavior unchanged.
+
+Native FAT32 boot/info record checks pass with unchanged inputs
+(`build/i386-fat-media-types-native-v2`), covering 512-byte sizes, unaligned
+boot fields, signatures, FAT/root offsets and info-sector counters. Complete
+native block I/O/initialization and the allocator binding remain open; this
+is not a native FAT32 mutation or full stream qualification. C1-C5 remain open.

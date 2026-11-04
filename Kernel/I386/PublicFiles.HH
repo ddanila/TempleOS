@@ -13,6 +13,7 @@
 #include "/Kernel/BlkDev/ATAConstants.HH"
 #include "/Kernel/BlkDev/ATAPITrackTypes.HH"
 #include "/Kernel/BlkDev/RedSeaBootTypes.HH"
+#include "/Kernel/BlkDev/FATMediaTypes.HH"
 #include "/Kernel/BlkDev/MasterBootTypes.HH"
 #include "/Kernel/BlkDev/ISODescriptorTypes.HH"
 #include "/Kernel/BlkDev/BlockSize.HH"
