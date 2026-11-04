@@ -13677,6 +13677,13 @@
           "result": "pass",
           "evidence": "build/i386-c4-block-slot-native/result.json",
           "scope": "Twenty original slot/default/error cases, canonical device identity and exact delivery; 24 commands at 64 MiB, unchanged inputs. Not mounting or media initialization."
+        },
+        {
+          "target": "native-retained-block-media",
+          "command": "python3 tools/test-i386-block-media.py IMAGE --out OUT --accel kvm",
+          "result": "pass",
+          "evidence": "build/i386-block-media-native-v7/result.json",
+          "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
         }
       ]
     },
@@ -13712,7 +13719,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-retained-block-media",
+          "command": "python3 tools/test-i386-block-media.py IMAGE --out OUT --accel kvm",
+          "result": "pass",
+          "evidence": "build/i386-block-media-native-v7/result.json",
+          "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskCache.HC",
@@ -13746,7 +13761,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-retained-block-media",
+          "command": "python3 tools/test-i386-block-media.py IMAGE --out OUT --accel kvm",
+          "result": "pass",
+          "evidence": "build/i386-block-media-native-v7/result.json",
+          "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskCluster.HC",
@@ -13801,6 +13824,13 @@
           "result": "pass",
           "evidence": "build/i386-copy-single-z-native-64m-v2/result.json",
           "scope": "Same bounded conversion contract on the native 64 MiB image"
+        },
+        {
+          "target": "native-retained-block-media",
+          "command": "python3 tools/test-i386-block-media.py IMAGE --out OUT --accel kvm",
+          "result": "pass",
+          "evidence": "build/i386-block-media-native-v7/result.json",
+          "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
         }
       ]
     },
@@ -13861,6 +13891,13 @@
           "result": "pass",
           "evidence": "build/i386-dir-sort-native-v1/result.json",
           "scope": "Same name/cluster ordering, recursion and heap checks; not enumeration or all filename cases"
+        },
+        {
+          "target": "native-retained-block-media",
+          "command": "python3 tools/test-i386-block-media.py IMAGE --out OUT --accel kvm",
+          "result": "pass",
+          "evidence": "build/i386-block-media-native-v7/result.json",
+          "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
         }
       ]
     },
@@ -13931,6 +13968,13 @@
           "result": "pass",
           "evidence": "build/i386-c4-directory-owner-native/result.json",
           "scope": "Same four cases at 64 MiB on 486,-fpu, eight commands; representation prerequisite only, not DirContextNew/Del integration or minimal memory qualification"
+        },
+        {
+          "target": "native-retained-block-media",
+          "command": "python3 tools/test-i386-block-media.py IMAGE --out OUT --accel kvm",
+          "result": "pass",
+          "evidence": "build/i386-block-media-native-v7/result.json",
+          "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
         }
       ]
     },
@@ -14138,6 +14182,13 @@
           "result": "pass",
           "evidence": "build/i386-c4-drive-map-native-lifetime/result.json",
           "scope": "15 original mask-31 cases plus mapped root relocation: 22 commands, 83 exact persisted files and unchanged inputs. Separate ATA/task fixture covers external staging, quarantine before/after acquisition, root refresh, deletion and cleanup retry. 8 MiB gate passes; 16 MiB diagnostics pending; not full mounting."
+        },
+        {
+          "target": "native-retained-block-media",
+          "command": "python3 tools/test-i386-block-media.py IMAGE --out OUT --accel kvm",
+          "result": "pass",
+          "evidence": "build/i386-block-media-native-v7/result.json",
+          "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
         }
       ]
     },
@@ -14323,6 +14374,13 @@
           "result": "pass",
           "evidence": "build/i386-cfilename-to-native-v1/result.json",
           "scope": "Same conversion and boundary checks; not filesystem lookup or whole-file qualification"
+        },
+        {
+          "target": "native-retained-block-media",
+          "command": "python3 tools/test-i386-block-media.py IMAGE --out OUT --accel kvm",
+          "result": "pass",
+          "evidence": "build/i386-block-media-native-v7/result.json",
+          "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
         }
       ]
     },
@@ -14418,6 +14476,13 @@
           "result": "pass",
           "evidence": "build/i386-fat-allocation-reference-v4/result.json",
           "scope": "Shared complete allocator on private RAM: mirrored FAT writes, sector boundary, chained extension, contiguous run, free-until, overlap, wrap, zero count, nested locks and exhaustion; native allocator not bound"
+        },
+        {
+          "target": "native-retained-block-media",
+          "command": "python3 tools/test-i386-block-media.py IMAGE --out OUT --accel kvm",
+          "result": "pass",
+          "evidence": "build/i386-block-media-native-v7/result.json",
+          "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
         }
       ]
     },
@@ -14497,7 +14562,21 @@
           "scope": "Metadata checks against the actual mounted volume at 64 MiB; also passes at 8 MiB; not full RedSeaInit"
         },
         "tools/test-i386-redsea-media-reference.py",
-        "tools/test-i386-redsea-allocation-reference.py"
+        "tools/test-i386-redsea-allocation-reference.py",
+        {
+          "target": "native-retained-block-media",
+          "command": "python3 tools/test-i386-block-media.py IMAGE --out OUT --accel kvm",
+          "result": "pass",
+          "evidence": "build/i386-block-media-native-v7/result.json",
+          "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
+        },
+        {
+          "target": "original-redsea-directory-growth",
+          "command": "python3 tools/test-i386-redsea-directory-growth-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-redsea-directory-growth-reference-v3/result.json",
+          "scope": "Original-only private RAM root/non-root relocation and grandchild parent links, mask 63; reproduced stale-parent defect before shared repair"
+        }
       ]
     },
     {

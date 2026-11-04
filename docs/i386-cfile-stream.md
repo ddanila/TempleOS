@@ -176,3 +176,70 @@ lookup did not search pending parent controls; cross v3 required refreshed
 original rebuild provenance; cross v4 rejected an unsupported `continue`
 statement, subsequently replaced with a conditional block. Full native
 media/streams and C1-C5 remain open.
+
+
+### Retained native block/media/stream closure
+
+The native console now retains the complete mutually recursive original
+block read/write dispatch, initializer, RedSea media/allocator, FAT32 allocator,
+cluster transfer, directory lookup/mutation, directory-context, delete and
+CFile routines in `Kernel/I386/BlockMediaRuntime.HC`. Public bindings include
+`FOpen`, `FClose`, `FBlkRead` and `FBlkWrite`, alongside the block/cluster and
+directory APIs listed in `docs/i386-block-io.md`. The RAM, ATA/ATAPI and
+file-backed image branches remain in the implementations. No raw-RedSea-only
+replacement or missing-operation stub is used. Public path operations still
+use the retained file provider; complete FAT32/RAM path dispatch remains open.
+
+Original and retained-provider allocators now share a lock-protected cache
+handoff. `I386RedSeaBegin` calls the installed console-lifetime callback after
+owning the mapped drive. It flushes dirty original FAT state, invalidates its
+FAT block number, drops its free list, and invalidates its read cache. A missing
+FAT buffer is initialized. Callback exceptions end the acquired transaction
+before propagating. Console interface version 203 adds the kernel-owned
+callback slot; the boot-drive global comes from the retained provider. The
+console imports the existing public MemCmp implementation through an explicit
+loader binding (62 console bindings).
+
+Both original rebuild generations and the full native cross-build/386 audit
+pass (`build/i386-block-media-retained-cross-v7`). The 1222-file delivered
+source audit passes both before execution and on the mutated native contract
+image, before this evidence append. The existing original CFile contract
+returns mask 16383 on the rebuilt original
+(`build/i386-block-media-cfile-reference-v1`) and on the native 486/no-FPU TCG
+image (`build/i386-block-media-cfile-native-v2`), with unchanged inputs.
+
+The stronger KVM contract passes with unchanged inputs
+(`build/i386-block-media-native-v7`). It interleaves FOpen/FClose with retained
+FileWrite allocation, creates files through both paths across root growth,
+checks parent links immediately after original-only growth, checks a
+non-root directory's grandchild link before cleanup, and verifies all data.
+It also exercises complete RAM initialization/formatting, block bounds,
+read-only override and nested locks; read and write file-backed RedSea image
+initialization (including the default filename); and a FAT32 stream chain
+with a reserved physical gap and an untouched-gap assertion. The independent
+final audit finds 62 directories and 1687 files, non-overlapping live extents
+and a bitmap matching reachable extents. All delivered source/doc bytes remain
+unchanged after these operations.
+
+This testing exposed and repaired an existing shared RedSea directory-growth
+bug. Relocation copied stale `..` links into the new root and left child
+parent links at the old cluster. An original-only private RAM regression
+reproduced it (`build/i386-redsea-directory-growth-reference-v1`: root 2->18,
+both parent links still 2, mask 1). `RedSeaDirNew` now fixes the relocated root's
+parent and reparents live child directories, skipping a newly created child's
+still-empty dot records. The expanded rebuilt-original regression passes
+root relocation, directory creation during growth, non-root relocation and
+grandchild parent links (`-v3`, mask 63), with unchanged inputs. Native
+`i386-block-media-native-v4` independently caught the stale root-parent link
+before this fix; final native checks pass it immediately, before later retained
+writes can repair the metadata.
+
+Earlier cross attempts found progress aliases, function-pointer declaration
+placement, the missing MemCmp import and unsupported globals-expression/
+forward-data forms; these were corrected in integration glue. Native fixture
+v6 was stopped during boot to split a mixed pointer/value declaration. The
+superseded workstation v1 run was stopped after the directory fix; the current
+full WinMgr/welcome 64 MiB KVM run is in progress at
+`build/i386-block-media-workstation64-kvm-v2`. No full-suite pass is claimed yet.
+Native full FAT32 path handling, ATAPI/optical behavior, general media failure
+recovery, complete resource/release qualification and C1-C5 remain open.

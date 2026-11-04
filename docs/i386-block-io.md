@@ -611,3 +611,36 @@ Native FAT32 boot/info record checks pass with unchanged inputs
 boot fields, signatures, FAT/root offsets and info-sector counters. Complete
 native block I/O/initialization and the allocator binding remain open; this
 is not a native FAT32 mutation or full stream qualification. C1-C5 remain open.
+
+
+### Native block/media integration
+
+The complete original block/media/stream dependency closure is retained and
+bound in the native console. Added public APIs are BlkRead/BlkWrite,
+BlkWriteZero, BlkDevInit, ClusNumNext/ClusAlloc, ClusBlkRead/ClusBlkWrite,
+ClusRead/ClusWrite, FOpen/FClose/FBlkRead/FBlkWrite, DirContextNew/DirContextDel,
+DirNew, Del, Drv, DskChg and DskCacheInvalidate. Their original RAM, ATA/ATAPI,
+file-backed and filesystem branches remain present. Full FAT32 path dispatch
+through the retained high-level provider and actual ATAPI media behavior are
+still unqualified.
+
+A kernel-owned callback slot coordinates original FAT/free-list/read caches
+with retained file transactions under the same mapped drive lock. Console
+service version 203 and its 62 explicit loader bindings agree. The default
+image filename now uses the actual boot-drive letter. Full rebuild/cross/386
+and 1222-file source audits pass
+(`build/i386-block-media-retained-cross-v7`). The native KVM media contract
+passes interleaved allocators, original-only root and non-root growth and
+parent links, RAM initialization/formatting, range/read-only/nested locks,
+file-backed image read/write initialization and physically fragmented FAT32
+streams (`build/i386-block-media-native-v7`). Independent extent/bitmap and
+post-execution delivered-source audits pass with unchanged inputs.
+
+Directory-growth testing found an existing original RedSea stale-parent bug,
+reproduced on the rebuilt original before repair. The shared mutation core
+now reparents children and updates a relocated root's own parent. The original
+RAM regression passes all 63 root/non-root/grandchild checks after repair
+(`build/i386-redsea-directory-growth-reference-v3`). The native regression
+checks these links before later provider operations can mask a defect. See
+`docs/i386-cfile-stream.md` for detailed evidence and earlier failed attempts.
+The final-image full workstation run is still in progress; C1-C5 remain open.

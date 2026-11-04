@@ -25805,3 +25805,20 @@ free-until, extension, wrap, exhaustion and lock recovery with unchanged inputs
 (`build/i386-fat-allocation-reference-v4`). Native media-record checks pass
 (`build/i386-fat-media-types-native-v2`). Full native allocator binding,
 block I/O/media/streams and C1-C5 remain open; see `docs/i386-block-io.md`.
+
+
+The complete original block/media/stream dependency closure is now retained
+and publicly bound, including full BlkRead/BlkWrite/BlkDevInit and CFile bodies,
+both allocators and directory mutation paths. A locked cache handoff coordinates
+it with the retained file provider. Original rebuilds, full native cross/386
+and 1222-file source audits pass (`build/i386-block-media-retained-cross-v7`).
+The original stream mask 16383 passes on rebuilt original and native TCG;
+strong native KVM tests pass RAM and file-backed media, interleaved allocators,
+root/non-root growth, parent links and physically fragmented FAT streams
+(`build/i386-block-media-native-v7`), with independent extent/bitmap and
+post-execution source audits. An original RedSea stale-parent relocation bug
+was reproduced and repaired in the shared routine; the rebuilt-original root/
+child/grandchild regression passes mask 63. The final-image workstation run
+is in progress at `build/i386-block-media-workstation64-kvm-v2`; full FAT32 path
+handling, ATAPI/media failure behavior, release qualification and C1-C5 remain
+open. See `docs/i386-cfile-stream.md` and `docs/i386-block-io.md`.

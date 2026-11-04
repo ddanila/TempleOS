@@ -107,4 +107,25 @@ public _extern _TOGGLE_ZOR_NOT_Z U8 *ToggleZorNotZ(U8 *name);
 public _extern _EXT_DFT U8 *ExtDft(U8 *filename,U8 *extension);
 
 public _extern _DIR_CUR U8 *DirCur(CTask *task=NULL,CTask *mem_task=NULL);
+public _extern _BLK_READ Bool BlkRead(CDrv *dv,U8 *buf,I64 blk,I64 cnt);
+public _extern _BLK_WRITE Bool BlkWrite(CDrv *dv,U8 *buf,I64 blk,I64 cnt);
+public _extern _BLK_WRITE_ZERO U0 BlkWriteZero(CDrv *dv,I64 blk,I64 cnt);
+public _extern _BLKDEV_INIT Bool BlkDevInit(CBlkDev *bd);
+public _extern _CLUS_NUM_NEXT I64 ClusNumNext(CDrv *dv,I64 c,I64 cnt=1);
+public _extern _CLUS_ALLOC I64 ClusAlloc(CDrv *dv,I64 c=0,I64 cnt=1,Bool contiguous=FALSE);
+public _extern _CLUS_BLK_READ I64 ClusBlkRead(CDrv *dv,U8 *buf,I64 c,I64 blks);
+public _extern _CLUS_BLK_WRITE I64 ClusBlkWrite(CDrv *dv,U8 *buf,I64 c,I64 blks);
+public _extern _CLUS_READ I64 ClusRead(CDrv *dv,U8 *buf,I64 c,I64 cnt);
+public _extern _CLUS_WRITE I64 ClusWrite(CDrv *dv,U8 *buf,I64 c,I64 cnt);
+public _extern _FOPEN CFile *FOpen(U8 *filename,U8 *flags,I64 cnt=0);
+public _extern _FCLOSE U0 FClose(CFile *f);
+public _extern _FBLK_READ Bool FBlkRead(CFile *f,U8 *buf,I64 blk=FFB_NEXT_BLK,I64 cnt=1);
+public _extern _FBLK_WRITE Bool FBlkWrite(CFile *f,U8 *buf,I64 blk=FFB_NEXT_BLK,I64 cnt=1);
+public _extern _DIR_CONTEXT_NEW CDirContext *DirContextNew(U8 *mask,Bool make_mask=FALSE,Bool make_dirs=FALSE,Bool no_mask=FALSE);
+public _extern _DIR_CONTEXT_DEL U0 DirContextDel(CDirContext *dirc,Bool restore=TRUE);
+public _extern _DIR_NEW Bool DirNew(CDrv *dv,U8 *cur_dir,CDirEntry *tmpde,Bool free_old_chain=TRUE);
+public _extern _DEL I64 Del(U8 *mask,Bool make_mask=FALSE,Bool del_dir=FALSE,Bool print_msg=TRUE);
+public _extern _DRV Bool Drv(U8 drv_let);
+public _extern _DSK_CHG U0 DskChg(U8 drv_let=0);
+public _extern _DSK_CACHE_INVALIDATE U0 DskCacheInvalidate(CDrv *dv);
 #endif

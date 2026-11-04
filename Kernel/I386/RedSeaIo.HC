@@ -3,8 +3,10 @@
 #include "/Kernel/I386/Task.HH"
 #include "/Kernel/I386/AtaChannel.HH"
 #endif
+U64 I386RedSeaCacheHandoffAddress;
 Bool I386RedSeaBegin(CI386RedSea *volume)
 {
+  U0 (*handoff)(CDrv *drive);
   if(!I386RedSeaValid(volume)) return FALSE;
   if(!volume->io) return TRUE;
   if(!volume->io->begin) return FALSE;
@@ -29,6 +31,11 @@ Bool I386RedSeaBegin(CI386RedSea *volume)
     volume->public_drive_unlock=!Bt(&dv->locked_flags,DVlf_LOCKED);
     if(volume->public_drive_unlock) {
       LBts(&dv->locked_flags,DVlf_LOCKED);dv->owning_task=task;
+    }
+    if(I386RedSeaCacheHandoffAddress) {
+      handoff=I386RedSeaCacheHandoffAddress;
+      try (*handoff)(dv);
+      catch {I386RedSeaEnd(volume);throw;}
     }
   }
 #endif
