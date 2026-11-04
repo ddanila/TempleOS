@@ -51,14 +51,19 @@ U0 I386EspMemory(CI386Out *out,U8 opcode,U8 register_index,U32 displacement)
   if(mode==0x40) I386Byte(out,displacement);
   else if(mode==0x80) I386Dword(out,displacement);
 }
-U0 I386EbpAddress(CI386Out *out,U32 displacement)
-{//LEA EAX,[EBP+displacement]. EBP requires an explicit displacement at zero.
-  I386Byte(out,0x8D);
+U0 I386EbpMemory(CI386Out *out,U8 opcode,U8 register_index,U32 displacement)
+{//EBP always needs a displacement, including zero; no SIB byte is required.
+  if(register_index>7) throw('Compiler');
+  I386Byte(out,opcode);
   if(displacement<=0x7F || displacement>=0xFFFFFF80) {
-    I386Byte(out,0x45); I386Byte(out,displacement);
+    I386Byte(out,0x45|(register_index<<3)); I386Byte(out,displacement);
   } else {
-    I386Byte(out,0x85); I386Dword(out,displacement);
+    I386Byte(out,0x85|(register_index<<3)); I386Dword(out,displacement);
   }
+}
+U0 I386EbpAddress(CI386Out *out,U32 displacement)
+{
+  I386EbpMemory(out,0x8D,0,displacement);
 }
 U0 I386Bytes(CI386Out *out,U8 *bytes,I64 count)
 {//Input must not alias the growable output buffer.

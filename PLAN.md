@@ -26148,3 +26148,21 @@ and C1-C5 remain open. See docs/i386-native-unit-backing.md.
 The separate normal 8 MiB KVM startup smoke for the backing-accounting candidate
 passes in 34.98 seconds with exact arithmetic/input-state pixels and unchanged
 provenance. It does not close the worker-allocation or full minimal gate.
+
+Validated frame-address trees followed by compatible dereferences now emit
+normalized EBP-relative loads with guarded types, flags and logical boundaries.
+The five measured resident module payloads shrink by 335,392 bytes; all 16 module
+exports remain unchanged. Exact original-OS emitter/matcher checks pass 468
+encodings and both guard masks 1023; all 249 native function cases/five expected
+faults, paired call/frame contracts, three heap-source runners, original rebuild
+and source/instruction audits pass. The 8 MiB default servant passes under KVM
+and TCG, and the 64 MiB Apple popup matches 665,664 pixels with close/restore and
+resumed execution. The separate KVM startup smoke passes in 34.03 seconds; TCG
+service startup takes 73.89 seconds and is not a 60-second timing pass.
+The unchanged complete 8 MiB gate now creates and enters the worker, then fails
+its public-memory probe's 131,000-byte allocation. Root compiler/program/header
+checks pass; later worker/full minimal stages remain unqualified. RAM, allocator
+policy, worker budget and workload are unchanged. See
+docs/i386-frame-load-footprint.md and the pinned failure report in
+build/i386-frame-load-minimal-gate-v2. All 686 inventory entries and C1-C5 remain
+open; original bootstrap generations do not satisfy native C5 rebuilds.

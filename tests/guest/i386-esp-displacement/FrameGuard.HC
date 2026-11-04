@@ -42,4 +42,4 @@ I64 FrameGuardContract()
 }
 I64 frame_guard_mask=FrameGuardContract;
 U8 *frame_guard_line=MStrPrint("OBS FRAME GUARD %d\n",frame_guard_mask);
-EspReport(frame_guard_line);Free(frame_guard_line);EspReport("DONE ESP encoding\n");
+EspReport(frame_guard_line);Free(frame_guard_line);

@@ -41,6 +41,24 @@ U0 I386Load(CI386Out *out,CHashClass *c)
   else throw('Compiler');
   I386Normalize(out,c);
 }
+U0 I386LoadFrame(CI386Out *out,CHashClass *type,U32 displacement)
+{//Same reads, normalization and flags as a normalized frame pointer then DEREF.
+  I386Bytes(out,"\x31\xD2",2);
+  switch(I386Size(type)) {
+    case 8:
+      //The general dereference also reads the high word before the low word.
+      I386EbpMemory(out,0x8B,2,displacement+4);
+      I386EbpMemory(out,0x8B,0,displacement);
+      break;
+    case 4: I386EbpMemory(out,0x8B,0,displacement); break;
+    case 2:
+      I386Byte(out,0x0F); I386EbpMemory(out,0xB7,0,displacement); break;
+    case 1:
+      I386Byte(out,0x0F); I386EbpMemory(out,0xB6,0,displacement); break;
+    default: throw('Compiler');
+  }
+  I386Normalize(out,type);
+}
 U0 I386Store(CI386Out *out,CHashClass *c)
 {//Store normalized EDX:EAX through target address ECX.
   I386Normalize(out,c);
@@ -302,11 +320,35 @@ CIntermediateCode *I386FrameAddressEnd(CIntermediateCode *first,CI386Logic *logi
         logic->end==first || logic->end==constant)return 0;
   return last;
 }
+CIntermediateCode *I386FrameLoadEnd(CIntermediateCode *address,CI386Logic *logics)
+{//Caller already recognized the complete frame-address tree.
+  CIntermediateCode *load;
+  CHashClass *pointer_type,*type;
+  CI386Logic *logic;
+  I64 size;
+  if(!address || address->ic_code!=IC_ADD || address->ic_flags || !address->ic_class ||
+      !(load=address->next) || load->ic_code!=IC_DEREF ||
+      load->ic_flags&~(ICF_PUSH_RES|ICF_BY_VAL) ||
+      load->t.arg1_tree!=address || !load->ic_class)return 0;
+  pointer_type=OptClassFwd(address->ic_class);type=OptClassFwd(load->ic_class);
+  //Function pointer variants use CHashFun strides, not CHashClass strides.
+  if(pointer_type->type&HTT_FUN || type->type&HTT_FUN)return 0;
+  if(!pointer_type->ptr_stars_cnt || OptClassFwd(pointer_type-1)!=type)return 0;
+  size=I386Size(type);
+  if(size!=1 && size!=2 && size!=4 && size!=8)return 0;
+  if(!type->ptr_stars_cnt && !(RT_I8<=type->raw_type<=RT_U64 || type->raw_type==RT_F64))return 0;
+  //PUSH_RES/BY_VAL do not alter this stack backend's load operation.
+  //A boundary on the load is processed normally; the address cannot be skipped
+  //when it is itself a logical endpoint.
+  for(logic=logics;logic;logic=logic->next)
+    if(logic->left==address || logic->end==address)return 0;
+  return load;
+}
 U0 I386BackendCore(CI386Backend *backend)
 {
   CCmpCtrl *cc=backend->cc;
   CI386Out *out=backend->out;
-  CIntermediateCode *ic,*post_pointer,*frame_end;
+  CIntermediateCode *ic,*post_pointer,*frame_end,*frame_load;
   CCodeMisc *label,*switch_table,*asm_label;
   CI386Call *call;
   CI386Logic *logic;
@@ -866,9 +908,16 @@ U0 I386BackendCore(CI386Backend *backend)
             if(frame_end=I386FrameAddressEnd(ic,backend->logics)) {
               //The pointer add discards the wide carry. LEA preserves its low
               //word; the same XOR defines EDX and the final arithmetic flags.
-              I386EbpAddress(out,ic->next->ic_data);
-              I386Bytes(out,"\x31\xD2\x52\x50",4);
-              ic=frame_end;c=OptClassFwd(ic->ic_class);backend->current=ic;
+              if(frame_load=I386FrameLoadEnd(frame_end,backend->logics)) {
+                I386LoadFrame(out,frame_load->ic_class,ic->next->ic_data);
+                I386Bytes(out,"\x52\x50",2);
+                ic=frame_load;
+              } else {
+                I386EbpAddress(out,ic->next->ic_data);
+                I386Bytes(out,"\x31\xD2\x52\x50",4);
+                ic=frame_end;
+              }
+              c=OptClassFwd(ic->ic_class);backend->current=ic;
             } else I386Bytes(out,"\x6A\x00\x55",3);
             depth++;
             break;
