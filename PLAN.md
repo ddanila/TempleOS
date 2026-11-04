@@ -25500,3 +25500,11 @@ Cross-built v7 now runs with final typing observed and the shared reserved-cell
 rule; v6 is preserved as failed evidence. Native generation two v3 has again
 passed its earlier task-ring checkpoint and continues. Complete integration
 remains open.
+
+Installed generation one's first full run also stopped at that left-autoscroll
+declaration after successful compilation. Its final four captured rows match
+cross-built v6 byte-for-byte, including the one-row declaration. Its editing,
+resource and long-document groups had completed, but this is not a full
+workstation pass. Native generation one v2 now runs with the same final-typing
+and reserved-cell rules as generation two v3 and cross-built v7. All three
+complete integration results remain pending.
