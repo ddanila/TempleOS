@@ -42,3 +42,6 @@ if(!NativeGraphicsStart) throw('Graphics',TRUE);
 #include "/Kernel/I386/PublicRaster.HH"
 
 if(!NativeWinMgrStart) throw('WinMgr',TRUE);
+
+//Original default servant startup; SrvCmdLine still resolves overrides by name.
+#include "/Adam/SrvStartUpCore.HC"

@@ -63,6 +63,7 @@ public _extern _DOC_SAVE U8 *DocSave(CDoc *doc,I64 *size=0);
 public _extern _DOC_WRITE Bool DocWrite(CDoc *doc,Bool prompt=FALSE);
 public _extern _DOC_READ CDoc *DocRead(U8 *name=0,I64 flags=0);
 public _extern _DOC_ED Bool DocEd(CDoc *doc,I64 flags=0);
+public _extern _DOC_VIEW Bool View();
 public _extern _ED Bool Ed(U8 *filename,I64 flags=0);
 public _extern _POP_UP_ED I64 PopUpEd(U8 *filename,CTask *parent=NULL,CTask **_pu_task=NULL);
 public _extern _DOC_ALLOCATION_CHECK I64 DocAllocationCheck();

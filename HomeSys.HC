@@ -11,13 +11,7 @@ U0 UserStartUp()
   Dir;
 }
 
-U0 SrvStartUp()
-{//Run each time a srv task is spawned.
-  DocTermNew;
-  LBts(&Fs->display_flags,DISPLAYf_SHOW);
-  WinToTop;
-  WinZBufUpdate;
-}
+#include "/Adam/SrvStartUpCore.HC"
 
 U0 StartUpTasks()
 {

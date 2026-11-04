@@ -72,8 +72,8 @@ budget, with live WinMgr/welcome, arithmetic, public input state/timing and exac
 framebuffer checkpoints (`build/i386-autocomplete-numeric-minimal8-v1`). It is
 not the full minimal regression suite, and it does not load the full dictionary.
 
-This workflow does not qualify numeric input in the custom editor, definition
-popups, other prefixes, invalid/unavailable slots, exact application heap
+This workflow does not qualify numeric input in the custom editor, remaining definition
+popup workflows, other prefixes, invalid/unavailable slots, exact application heap
 recovery, complete key descriptions, minimum RAM for the dictionary, complete
 minimal regressions or C1-C5. The result-pixel check covers each command and its
 adjacent 42, not full terminal formatting; the original and native answer formats
@@ -89,3 +89,7 @@ python3 tools/test-i386-autocomplete-numeric.py build/i386-autocomplete-numeric-
 python3 tools/check-i386-autocomplete-numeric-pixels.py build/ac-numeric-native --out build/ac-numeric-native/pixel-audit.json
 python3 tools/test-i386-autocomplete-cold-keys.py build/i386-autocomplete-numeric-cross-v1/kernel.img --out build/ac-numeric-cold
 ```
+
+The later [definition-popup workflow](i386-autocomplete-popup.md) qualifies
+Ctrl+Shift+5 for Apple, real View/Page Up/Page Down/Escape, restored focus/input
+and default servant startup on its separately identified image.

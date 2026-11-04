@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify that a native image delivers the candidate's complete packaged source tree."""
+"""Verify packaged Kernel/Compiler/Adam/Doc source against the candidate."""
 import argparse
 import hashlib
 import json
@@ -8,7 +8,7 @@ import runpy
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-DIRECTORIES = ('Kernel', 'Compiler', 'Adam/DolDoc', 'Adam/Gr', 'Adam/Ctrls', 'Doc')
+DIRECTORIES = ('Kernel', 'Compiler', 'Adam', 'Doc')
 SUFFIXES = ('.HC', '.HH', '.DD', '.PRJ')
 
 
@@ -69,7 +69,7 @@ def audit(disk, repository):
                 source_files=len(expected), source_sha256=identities,
                 source_identity_sha256=hashlib.sha256(json.dumps(identities, sort_keys=True).encode()).hexdigest(),
                 input_sha256=pins, filesystem=filesystem,
-                scope='Complete packaged source/doc tree matches candidate; dirty candidate is identified, not claimed as a clean release revision')
+                scope='Packaged Kernel/Compiler/Adam/Doc source/doc trees match candidate; dirty candidate is identified, not claimed as a clean release revision')
 
 
 def main():

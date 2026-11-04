@@ -180,6 +180,12 @@ U0 NativeDocAutoCompleteSource(I64 n,CTask *parent) { CallExtStr("ACMan",n,paren
 U0 NativeDocAutoCompleteWord(I64 n) { CallExtStr("ACDFillin",n); }
 U0 NativeDocAutoCompleteDefinition(I64 n,CTask *parent) { CallExtStr("ACDDef",n,parent); }
 #include "/Adam/DolDoc/DocAutoCompleteActionCore.HC"
+Bool NativeDocUsesWindowLayout(CDoc *doc)
+{
+  CTask *task=doc->win_task;
+  return doc->flags&DOCF_FORM || task && TaskValidate(task) &&
+    task->display_doc==doc && !NativeLegacyViewActive(task);
+}
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   Bool unlock,printable;
@@ -213,7 +219,9 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
         (!(sc&SCF_CTRL) && (sc.u8[0]==SC_HOME || sc.u8[0]==SC_END) ||
          sc&SCF_CTRL && (sc.u8[0]==SC_CURSOR_UP || sc.u8[0]==SC_CURSOR_DOWN)))
       DocKeyBoundaryCore(doc,sc,sc.u8[0]==SC_END || sc.u8[0]==SC_CURSOR_DOWN);
-    else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
+    //Visible WinMgr documents, including servant View, have original row layout.
+    //The native VGA editor keeps its existing line mover and separate renderer.
+    else if(NativeDocUsesWindowLayout(doc) && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
         (sc.u8[0]==SC_PAGE_UP || sc.u8[0]==SC_PAGE_DOWN))
       DocKeyPageCore(doc,sc,sc.u8[0]==SC_PAGE_DOWN);
     else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_ALT|SCF_KEY_DESC)) &&

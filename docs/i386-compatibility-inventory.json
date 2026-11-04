@@ -548,7 +548,10 @@
           "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
           "Thirty persisted native reports match exports; final offline filesystem audit"
         ],
-        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests.",
+        "additional_tools": [
+          "tools/test-i386-autocomplete-popup.py"
+        ]
       },
       "tests": [
         {
@@ -604,6 +607,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
         }
       ]
     },
@@ -655,7 +670,10 @@
           "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
           "Thirty persisted native reports match exports; final offline filesystem audit"
         ],
-        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests.",
+        "additional_tools": [
+          "tools/test-i386-autocomplete-popup.py"
+        ]
       },
       "tests": [
         {
@@ -723,6 +741,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
         }
       ]
     },
@@ -755,7 +785,10 @@
           "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
           "Thirty persisted native reports match exports; final offline filesystem audit"
         ],
-        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests.",
+        "additional_tools": [
+          "tools/test-i386-autocomplete-popup.py"
+        ]
       },
       "tests": [
         {
@@ -829,6 +862,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
         }
       ]
     },
@@ -860,7 +905,10 @@
           "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
           "Thirty persisted native reports match exports; final offline filesystem audit"
         ],
-        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests.",
+        "additional_tools": [
+          "tools/test-i386-autocomplete-popup.py"
+        ]
       },
       "tests": [
         {
@@ -940,6 +988,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
         }
       ]
     },
@@ -969,7 +1029,10 @@
           "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
           "Thirty persisted native reports match exports; final offline filesystem audit"
         ],
-        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests.",
+        "additional_tools": [
+          "tools/test-i386-autocomplete-popup.py"
+        ]
       },
       "tests": [
         {
@@ -1025,6 +1088,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
         }
       ]
     },
@@ -1058,7 +1133,10 @@
           "Case-specific source and adjacent 42 font masks, also checked offline by tools/check-i386-autocomplete-numeric-pixels.py",
           "Thirty persisted native reports match exports; final offline filesystem audit"
         ],
-        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests."
+        "related_evidence": "Other observed library workflows retain their own scoped oracle/evidence records in tests.",
+        "additional_tools": [
+          "tools/test-i386-autocomplete-popup.py"
+        ]
       },
       "tests": [
         {
@@ -1120,6 +1198,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-numeric-native-v2/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image: all ten physical Ctrl+digit slots, exact original widget documents/rectangles and all 197120 viewport pixels, asset-derived completed inputs and executed arguments/counts, case-specific fresh 42 masks with independent offline pixel audit, thirty exact persisted reports and clean final filesystem; unchanged archived inputs. SCF_KEY_DESC queries do not edit/submit console input. Other prefixes, numeric editor workflows, popups, full descriptions, exact heap recovery, minimum RAM and C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
         }
       ]
     },
@@ -1310,6 +1400,9 @@
           "Partial state and foreground entry type/color",
           "Command-name macro suppression versus attribute expansion",
           "Dollar buffer growth state"
+        ],
+        "additional_tools": [
+          "tools/test-i386-autocomplete-popup.py"
         ]
       },
       "tests": [
@@ -1402,6 +1495,18 @@
           "result": "pass",
           "evidence": "build/i386-doc-form-tab-native-8m-v1/result.json",
           "scope": "Same eight direct form-Tab cases at 8 MiB; full form input remains unqualified"
+        },
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
         }
       ]
     },
@@ -1489,8 +1594,19 @@
       ],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Observed default servant startup, actual dictionary popup View/navigation/close and scoped job dispatch. Full Home/user startup, remaining document actions, failure cleanup and release coverage remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-servant.py",
+        "checks": [
+          "Actual default hook/body, inhibit before exactly-once startup interposition",
+          "Real terminal/border/menu/right-click/Raw setup and ten TaskExe results42",
+          "Completed flags, idle/title/ring/hook restoration and resumed input; source byte equality",
+          "Real definition popup/navigation/close independently checked by tools/test-i386-autocomplete-popup.py"
+        ]
+      },
       "tests": [
         {
           "command": "python3 tools/test-i386-doc-packed-sprite-editor.py IMAGE --mouse --out OUT",
@@ -1773,6 +1889,36 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-editor-cold-after-v4/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu image, real library absence asserted. Synthetic Escape/printable metadata do not exit/edit. Physical Ctrl+F1 both release orders, Ctrl+F4/F5 and Ctrl+1 preserve exact source; subsequent plain F1 still opens Help. Console source/42 glyph check, clean offline filesystem and unchanged archived inputs. Not a full key map or minimum-memory qualification."
+        },
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-default-servant-startup-hook",
+          "result": "pass",
+          "evidence": "build/i386-default-servant-reference-v3/result.json",
+          "scope": "Actual original default SrvStartUp interposed while retaining its body; exactly once after inhibit initialization, full startup properties and ten actual dispatch/results/title/idle/ring cases, hook restored; fixture/source inputs unchanged. Not exact heap recovery or failure cases."
+        },
+        {
+          "target": "native-default-servant-startup-hook-64m",
+          "result": "pass",
+          "evidence": "build/i386-default-servant-preloaded-64-v2/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu with live WinMgr, no manager pause. Identical preloaded fixture and explicit canonical SymbolTypes dependency; startup/body interposition exactly once after inhibit, document/border/menu/right-click/Raw properties, all ten actual TaskExe result42/completion/title/idle/ring cases, hook restoration and resumed arithmetic; seven exact pixel checkpoints, final filesystem clean. Explicit preload mode; legacy keyboard setup retained. Not 8 MiB qualification or exact heaps."
+        },
+        {
+          "target": "native-default-servant-startup-hook-8m",
+          "result": "fail",
+          "evidence": "build/i386-default-servant-preloaded-8-v2/result.json",
+          "scope": "Normal 8 MiB TCG 486,-fpu boots and executes availability probes, but canonical symbol-header loading records PUBLIC ALLOC EXHAUSTED/OutMem before the fixture and JRContract. No startup/dispatch contract result at this profile; full minimal/resource qualification remains open."
         }
       ]
     },
@@ -2660,6 +2806,9 @@
           "Callback data, key and lock state",
           "Default document, text and overstrike flag",
           "Seeded undo, document roles and allocation balance"
+        ],
+        "additional_tools": [
+          "tools/test-i386-autocomplete-popup.py"
         ]
       },
       "tests": [
@@ -2903,6 +3052,24 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-console-description-after-v1/result.json",
           "scope": "Actual library absence asserted; printable metadata ignored, physical shortcuts preserve exact 6*7 with visible 42; prior editor synthetic-query, Ctrl+F1 both release orders, Ctrl+F4/F5/Ctrl+1 and subsequent plain F1 Help checks pass. Clean offline filesystem and unchanged archived inputs. Not a complete key-description map."
+        },
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
+        },
+        {
+          "target": "native-popup-page-before-window-layout-route",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-popup-native-v3/result.json",
+          "scope": "Complete popup text, initial/end state, visible static pixels and close/recovery pass, but Page Up goes from row69 to0 through hard-line fallback instead of original row24. Original row traversal was only routed for forms. Superseded by native-v5."
         }
       ]
     },
@@ -3310,6 +3477,9 @@
           "Thirteen action/cancel and covered-popup cases",
           "Three exact saved menu documents",
           "Caller document roles, popup ownership and refresh progress"
+        ],
+        "additional_tools": [
+          "tools/test-i386-autocomplete-popup.py"
         ]
       },
       "tests": [
@@ -3410,6 +3580,36 @@
           "result": "pass",
           "evidence": "docs/i386-terminal-constructor.md",
           "scope": "Original/native v1 execution mask 1023: complete constructor, actual border/menu/scroll services, Raw OFF and control reuse. Right-click actions, visual terminal workflows and exact heap recovery remain open."
+        },
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-default-servant-startup-hook",
+          "result": "pass",
+          "evidence": "build/i386-default-servant-reference-v3/result.json",
+          "scope": "Actual original default SrvStartUp interposed while retaining its body; exactly once after inhibit initialization, full startup properties and ten actual dispatch/results/title/idle/ring cases, hook restored; fixture/source inputs unchanged. Not exact heap recovery or failure cases."
+        },
+        {
+          "target": "native-default-servant-startup-hook-64m",
+          "result": "pass",
+          "evidence": "build/i386-default-servant-preloaded-64-v2/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu with live WinMgr, no manager pause. Identical preloaded fixture and explicit canonical SymbolTypes dependency; startup/body interposition exactly once after inhibit, document/border/menu/right-click/Raw properties, all ten actual TaskExe result42/completion/title/idle/ring cases, hook restoration and resumed arithmetic; seven exact pixel checkpoints, final filesystem clean. Explicit preload mode; legacy keyboard setup retained. Not 8 MiB qualification or exact heaps."
+        },
+        {
+          "target": "native-default-servant-startup-hook-8m",
+          "result": "fail",
+          "evidence": "build/i386-default-servant-preloaded-8-v2/result.json",
+          "scope": "Normal 8 MiB TCG 486,-fpu boots and executes availability probes, but canonical symbol-header loading records PUBLIC ALLOC EXHAUSTED/OutMem before the fixture and JRContract. No startup/dispatch contract result at this profile; full minimal/resource qualification remains open."
         }
       ]
     },
@@ -14066,9 +14266,51 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Complete original SrvStartUp default body shared byte-for-byte; actual document/window startup and exactly-once hook/ten-job contract observed, plus real dictionary popup and recovery. Native full HomeSys, UserStartUp, StartUpTasks/autoload/customization, fault and heap coverage remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-servant.py",
+        "checks": [
+          "Actual default hook/body, inhibit before exactly-once startup interposition",
+          "Real terminal/border/menu/right-click/Raw setup and ten TaskExe results42",
+          "Completed flags, idle/title/ring/hook restoration and resumed input; source byte equality",
+          "Real definition popup/navigation/close independently checked by tools/test-i386-autocomplete-popup.py"
+        ]
+      },
+      "tests": [
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-default-servant-startup-hook",
+          "result": "pass",
+          "evidence": "build/i386-default-servant-reference-v3/result.json",
+          "scope": "Actual original default SrvStartUp interposed while retaining its body; exactly once after inhibit initialization, full startup properties and ten actual dispatch/results/title/idle/ring cases, hook restored; fixture/source inputs unchanged. Not exact heap recovery or failure cases."
+        },
+        {
+          "target": "native-default-servant-startup-hook-64m",
+          "result": "pass",
+          "evidence": "build/i386-default-servant-preloaded-64-v2/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu with live WinMgr, no manager pause. Identical preloaded fixture and explicit canonical SymbolTypes dependency; startup/body interposition exactly once after inhibit, document/border/menu/right-click/Raw properties, all ten actual TaskExe result42/completion/title/idle/ring cases, hook restoration and resumed arithmetic; seven exact pixel checkpoints, final filesystem clean. Explicit preload mode; legacy keyboard setup retained. Not 8 MiB qualification or exact heaps."
+        },
+        {
+          "target": "native-default-servant-startup-hook-8m",
+          "result": "fail",
+          "evidence": "build/i386-default-servant-preloaded-8-v2/result.json",
+          "scope": "Normal 8 MiB TCG 486,-fpu boots and executes availability probes, but canonical symbol-header loading records PUBLIC ALLOC EXHAUSTED/OutMem before the fixture and JRContract. No startup/dispatch contract result at this profile; full minimal/resource qualification remains open."
+        }
+      ]
     },
     {
       "path": "HomeWrappers.HC",
@@ -16039,8 +16281,19 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Observed default servant startup, actual dictionary popup View/navigation/close and scoped job dispatch. Full Home/user startup, remaining document actions, failure cleanup and release coverage remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-servant.py",
+        "checks": [
+          "Actual default hook/body, inhibit before exactly-once startup interposition",
+          "Real terminal/border/menu/right-click/Raw setup and ten TaskExe results42",
+          "Completed flags, idle/title/ring/hook restoration and resumed input; source byte equality",
+          "Real definition popup/navigation/close independently checked by tools/test-i386-autocomplete-popup.py"
+        ]
+      },
       "tests": [
         {
           "command": "python3 tools/test-i386-control-derived-lifecycle.py IMAGE --out OUT",
@@ -16065,6 +16318,36 @@
           "result": "pass",
           "evidence": "build/i386-c4-spawn-home-native-private-abi/result.json",
           "scope": "Seven public Spawn configured-home cases, all masks 63 and unchanged inputs; selected/default parents, dormant birth, external mapped home, invalid parent drive and NULL parent directory. Not full TaskInit parity."
+        },
+        {
+          "target": "rebuilt-original-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-reference-v7/result.json",
+          "scope": "Physical Ctrl+Shift+5 opens Apple through real ACDDef/servant/View; independent complete 33-field/five-definition text; exact documents, window/cursor states at open/PageUp/PageDown; real Escape close, restored roles/focus/unfinished input and resumed completion/execution. Pointer outside pane; publication-latched raster/visibility; not all definitions, keys or full desktop."
+        },
+        {
+          "target": "native-dictionary-popup-workflow",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-default-servant-startup-hook",
+          "result": "pass",
+          "evidence": "build/i386-default-servant-reference-v3/result.json",
+          "scope": "Actual original default SrvStartUp interposed while retaining its body; exactly once after inhibit initialization, full startup properties and ten actual dispatch/results/title/idle/ring cases, hook restored; fixture/source inputs unchanged. Not exact heap recovery or failure cases."
+        },
+        {
+          "target": "native-default-servant-startup-hook-64m",
+          "result": "pass",
+          "evidence": "build/i386-default-servant-preloaded-64-v2/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu with live WinMgr, no manager pause. Identical preloaded fixture and explicit canonical SymbolTypes dependency; startup/body interposition exactly once after inhibit, document/border/menu/right-click/Raw properties, all ten actual TaskExe result42/completion/title/idle/ring cases, hook restoration and resumed arithmetic; seven exact pixel checkpoints, final filesystem clean. Explicit preload mode; legacy keyboard setup retained. Not 8 MiB qualification or exact heaps."
+        },
+        {
+          "target": "native-default-servant-startup-hook-8m",
+          "result": "fail",
+          "evidence": "build/i386-default-servant-preloaded-8-v2/result.json",
+          "scope": "Normal 8 MiB TCG 486,-fpu boots and executes availability probes, but canonical symbol-header loading records PUBLIC ALLOC EXHAUSTED/OutMem before the fixture and JRContract. No startup/dispatch contract result at this profile; full minimal/resource qualification remains open."
         }
       ]
     },

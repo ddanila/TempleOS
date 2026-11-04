@@ -26023,3 +26023,39 @@ empty workflow/oracle fields for the six autocomplete units/assets now describe
 observed components; compatibility remains unqualified. Other prefixes, numeric
 editor input, popups, full descriptions, exact heap recovery, full minimal
 regressions and C1-C5 remain open.
+
+
+The real Ctrl+Shift+5 Apple definition workflow now passes against the original
+on a normal 64 MiB image: all 33 fields/five definitions (2,878 text bytes),
+identical canonical documents/geometry, page rows 69->24->69, 665,664 mutually
+visible static pixels, actual Escape child retirement, restored parent roles/
+focus/input, and resumed completion/execution. View is published directly from
+its complete retained body (ABI 210, 583 bindings; prior order/bitmap retained).
+Normal startup now supplies the complete original SrvStartUp via a shared core;
+HomeSys expansion and both bodies pass byte-retention checks. Visible WinMgr
+views use the original page traversal; the VGA editor keeps its existing path.
+An observing final-screen latch aligns actual published raster and visibility
+without matching against the golden image; known autocomplete occlusion and
+caret phase are explicit, with caret position checked and pointer moved out.
+Final popup evidence: reference-v7/native-v5 on popup-cross-v3. Two original
+rebuild generations, 386 audit and the expanded all-Adam source audit (1,361
+Kernel/Compiler/Adam/Doc files) pass. The separate 8 MiB KVM startup smoke passes
+in 42.52 seconds. The real default startup/interposition/ten-job/title/idle/ring
+contract passes original and 64 MiB native with live WinMgr and source-identical
+preload setup. The 8 MiB contract remains unqualified: keyboard setup/fixture
+compilation and the final preloaded symbol-header attempt record OutMem before
+JRContract. The legacy keyboard setup remains available; profile/preload options
+are explicit. See docs/i386-autocomplete-popup.md for final evidence and failed
+attempts. Other definitions/slots, Shift-Escape/fault paths, full Home behavior,
+heap recovery, complete minimal regressions and C1-C5 remain open.
+
+The final default-servant source-identical preload contract passes original
+reference-v3 and native preloaded-64-v2: seven pixel checkpoints, real default
+body interposition exactly once after inhibit initialization, constructor roles,
+ten dispatch/results/title/idle/ring checks, restored hook and resumed input,
+plus exact persisted fixture and offline filesystem audit. Native preloaded-8-v2
+records OutMem loading the canonical symbol header before JRContract. The old
+8 MiB keyboard path also failed before that contract; neither is promoted by
+the 64 MiB result. Preload/RAM/acceleration flags are explicit and keyboard/8 MiB/
+TCG defaults retained. One long 64 MiB keyboard setup was deliberately stopped
+and is recorded as interrupted, not a service pass.
