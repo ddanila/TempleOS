@@ -25891,3 +25891,18 @@ in 41.67 seconds. The unchanged MakeAC load advances to missing sys_run_level at
 ACTask.HC line 265. Full autocomplete, input-loss state recovery, all mappings,
 complete minimal regressions and C1-C5 remain open. The prior-image full
 workstation run remains live. See docs/i386-input-event-time.md.
+
+
+The kernel now owns a shared U32 sys_run_level used by public declarations and
+raw output. Compiler, file, raw, Adam, interrupt, document, registry and window
+stages publish only after actual readiness; unsupported architecture, Home,
+Once and autocomplete stages remain clear. Console ABI 207 has 577 bindings.
+The original export type is shared unchanged and available through PublicHash.
+Original readiness/type/shared-write reference mask 7 and final native 64 MiB
+mask 7 pass, including exact stage order and pixels. All thirteen raw-output
+oracles pass on that final image, as do two original rebuild generations, the
+386 audit and 1,255-file source audit. The full 8 MiB run-level contract still
+fails heap allocation during compilation; it is not qualified. MakeAC advances
+to missing Size at ACInit.HC line 116. The prior-image full workstation run is
+still live. Full autocomplete, minimal-profile resource gates and C1-C5 remain
+open. See docs/i386-run-level.md.

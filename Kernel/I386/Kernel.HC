@@ -24,6 +24,7 @@
 #include "/Kernel/I386/Sleep.HH"
 #include "/Kernel/I386/Vga.HH"
 #include "/Kernel/I386/ConsoleRuntime.HH"
+#include "/Kernel/RunLevelTypes.HH"
 #include "/Kernel/I386/KeyboardSetup.HH"
 #include "/Kernel/I386/KeyboardRead.HH"
 #include "/Kernel/I386/Mouse.HH"
@@ -59,6 +60,7 @@ CI386Timer kernel_timer;
 CI386SleepQueue kernel_sleep;
 CI386ConsoleServices kernel_console;
 CI386ConsoleConfig kernel_console_config;
+U32 kernel_run_level;
 U8 *kernel_console_image;
 //Build tooling enables this data flag only in the diagnostic disk copy.
 U32 kernel_diagnostics=0;
@@ -137,6 +139,12 @@ U8 kernel_files_bindings[38]={0,10,11,12,13,14,22,23,24,25,26,27,28,29,30,31,32,
 U8 kernel_memory_bindings[22]={10,11,12,20,13,14,0,18,19,16,42,40,41,8,34,45,72,80,74,75,44,63};
 extern U0 KernelBinding(CI386ModuleBinding *binding,U8 *name);
 extern U0 KernelBindings(CI386ModuleBinding *bindings,U8 *indices,I64 count,I64 capacity);
+U0 KernelRunLevelMark(U32 bits,U8 *stage)
+{//Boot and Adam enrollment run with interrupts masked.
+  kernel_run_level|=bits;
+  KernelLog("RUN LEVEL ");KernelLog(stage);KernelLog(" ");
+  KernelHex(kernel_run_level);KernelLog("\n");
+}
 I64 Main(CI386BootInfo *info,I64 unused)
 {
   CI386MemRange reserved[2],arena,map_arena,low_arena,stack_check[2],verified_stack;
@@ -149,6 +157,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   I64 (*root_jobs)(I64 flags,CTask *task);
   U32 root_flags;
   KernelLog("START native kernel\n");
+  KernelRunLevelMark(RLF_16BIT|RLF_VGA|RLF_32BIT,"boot");
   if(info && info->stage_end==0x11000 && stack_handoff[0]==0x53323349) {
     //The native range arithmetic is bounded U32; reject before publishing
     //either reservation. The old boot stack is always below 0x90000.
@@ -246,8 +255,10 @@ I64 Main(CI386BootInfo *info,I64 unused)
       !I386SleepInit(&kernel_sleep,&kernel_scheduler)) KernelStop;
   KernelSymbols;
   KernelCompilerLoad;
+  KernelRunLevelMark(RLF_COMPILER,"compiler");
   KernelMemoryLoad;
   KernelFileLoad;
+  KernelRunLevelMark(RLF_BLKDEV,"files");
   //Load the large temporary provider before console allocation fragments RAM.
   if(kernel_diagnostics) KernelCompilerProbeLoad;
   if(!kernel_diagnostics) {
@@ -333,6 +344,7 @@ I64 Main(CI386BootInfo *info,I64 unused)
   root_jobs_symbol=HashFind("_JOBS_HNDLR",kernel_root.hash_table,HTT_EXPORT_SYS_SYM);
   if(!root_jobs_symbol || root_jobs_symbol->kind!=1 || !root_jobs_symbol->val)KernelStop;
   root_jobs=root_jobs_symbol->val;
+  KernelRunLevelMark(RLF_ADAM_SERVER,"adam");
   while(1) {
     //The root is also adam_task. Publish idle only while its job queue is
     //empty, and dispatch in the root's own task/compiler context.
@@ -1093,6 +1105,7 @@ U0 KernelConsoleLoad()
   kernel_console_config.doc_diagnostic_load=&KernelDocDiagnosticLoad;
   kernel_console_config.editor_load=&KernelEditorLoad;
   kernel_console_config.drive_cache_handoff=&I386RedSeaCacheHandoffAddress;
+  kernel_console_config.run_level=&kernel_run_level;
   if(!kernel_console.init(&kernel_console_config)) KernelStop;
 }
 

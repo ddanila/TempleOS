@@ -32,10 +32,7 @@ public class CHashReg:CHash
 
 #include "/Kernel/AutoCompleteHashTypes.HH"
 
-public class CHashExport:CHashSrcSym
-{
-  I64	val;
-};
+#include "/Kernel/HashExportTypes.HH"
 
 public class CHashImport:CHashSrcSym
 {

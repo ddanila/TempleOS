@@ -3,6 +3,7 @@
 #include "/Kernel/I386/PublicTaskTypes.HH"
 #include "/Kernel/HashFlags.HH"
 #include "/Kernel/DefineTypes.HH"
+#include "/Kernel/HashExportTypes.HH"
 #help_index "Hash"
 public extern U0 HashAdd(CHash *entry,CHashTable *table);
 public extern CHash *HashFind(U8 *name,CHashTable *table,I64 mask,I64 instance=1);

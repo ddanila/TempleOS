@@ -1,7 +1,7 @@
 #include "/Kernel/VgaPorts.HH"
 #include "/Kernel/RunLevelTypes.HH"
-//The native boot profile enters BIOS VGA mode 12 before protected mode.
-I64 native_raw_run_level=RLF_VGA;
+//All stage consumers share the kernel-owned original-width flag record.
+#define sys_run_level (*console_config->run_level)
 U8 native_raw_reverse_bits[256];
 U0 NativeRawInit()
 {
@@ -10,7 +10,14 @@ U0 NativeRawInit()
     for(j=0;j<8;j++)
       if(Bt(&i,7-j)) LBts(native_raw_reverse_bits+i,j);
 }
-#define sys_run_level native_raw_run_level
+U0 NativeRunLevelMark(I64 bit,U8 *stage)
+{//Stage flags are shared with the kernel; log while retaining the caller's IF.
+  U32 irq=I386IrqSave;
+  LBts(&sys_run_level,bit);
+  KernelLog("RUN LEVEL ");KernelLog(stage);KernelLog(" ");
+  KernelHex(sys_run_level);KernelLog("\n");
+  I386IrqRestore(irq);
+}
 #define rev_bits_table native_raw_reverse_bits
 #define I386_RAW_OUTPUT_IRQ 1
 #include "/Kernel/RawOutputCore.HC"

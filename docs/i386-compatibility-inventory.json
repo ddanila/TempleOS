@@ -589,7 +589,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-real-service-source-load-after-run-level",
+          "result": "fail",
+          "evidence": "build/i386-run-level-autocomplete-v2/result.json",
+          "scope": "Unchanged MakeAC advances through ACTask and public sys_run_level to missing Size at ACInit.HC line 116. No explicit autocomplete activation or service stubs."
+        }
+      ]
     },
     {
       "path": "Adam/AutoComplete/ACTask.HC",
@@ -15704,7 +15711,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "shared-run-level-export-and-stage-state",
+          "result": "pass",
+          "evidence": "docs/i386-run-level.md",
+          "scope": "Complete original CHashExport declaration shared unchanged; original U32/readiness/shared-write reference and native 64 MiB stage ordering/type/shared-write contract. Thirteen raw-output vectors pass. Full 8 MiB contract compilation fails allocation; full headers and release remain unqualified."
+        }
+      ]
     },
     {
       "path": "Kernel/KernelC.HH",

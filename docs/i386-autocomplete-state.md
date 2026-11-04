@@ -134,3 +134,12 @@ both timing and kbd.scan_code and now rejects missing sys_run_level at ACTask.HC
 line 265 (`build/i386-input-event-time-autocomplete-v1`, unchanged input pins).
 No autocomplete task activation, initialization or visible suggestion behavior
 is qualified by that failed source-load probe.
+
+
+The shared kernel-owned U32 sys_run_level is now public. Actual readiness stages
+and cross-task reads/writes pass the native 64 MiB contract; the original reference
+and thirteen raw-output vectors pass too. See `docs/i386-run-level.md` for lifecycle
+differences and the still-failed 8 MiB full-contract compilation. The unchanged
+MakeAC probe now rejects missing Size at ACInit.HC line 116
+(`build/i386-run-level-autocomplete-v2`, unchanged input pins). No explicit
+autocomplete initialization or task activation is qualified.

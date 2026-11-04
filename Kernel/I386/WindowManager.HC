@@ -114,6 +114,7 @@ U0 NativeWindowWorker(U8 *data)
   SetRFlags(GetRFlags|0x200);
   DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
   DocStdDefinesInit;
+  NativeRunLevelMark(RLf_WINMGR,"winmgr");
   while(TRUE) {
     NativeMouseSync;
     Fs->task_end_cb=&NativeWindowCancel;
