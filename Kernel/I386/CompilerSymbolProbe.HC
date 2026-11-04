@@ -23,15 +23,8 @@ U0 ProbeSymbolAdd(U8 *context,CHash *entry,CHashTable *table)
   if(table!=state->table) KernelStop;
   HashAdd(entry,table);
 }
-CHash *ProbeSymbolFind(U8 *context,U8 *name,CHashTable *table,I64 mask)
-{
-  I64 i;
-  CHash *entry;
-  for(i=0;i<=table->mask;i++)
-    for(entry=table->body[i];entry;entry=entry->next)
-      if(entry->type&mask && !StrCmp(entry->str,name)) return entry;
-  return 0;
-}
+#include "/Kernel/I386/CompilerProbeFindCore.HC"
+
 U0 ProbeSymbolSource(U8 *context,CCmpCtrl *cc,CHashSrcSym *symbol,I64 adjust)
 {
   CProbeSymbols *state=context;

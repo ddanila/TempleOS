@@ -242,14 +242,19 @@ public Bool DocWrite(CDoc *doc,Bool prompt=FALSE)
 }
 public Bool DirMk(U8 *filename,I64 entry_cnt=0)
 {
+  if(NativeFileUsesOriginal(filename))return NativeOriginalDirMk(filename,entry_cnt);
   if(!console_config || !console_config->files || !console_config->files->dir_mk)
     return FALSE;
   return (*console_config->files->dir_mk)(filename,entry_cnt);
 }
-public I64 Dir(U8 *filename=NULL)
+public I64 Dir(U8 *filename=NULL,Bool full=FALSE)
 {
   U8 *listing;
   I64 needed,count=0;
+  if(full || NativeFileUsesOriginal(filename)) {
+    if(!filename)filename="*";
+    return NativeOriginalDir(filename,full);
+  }
   if(!filename) filename="C:/";
   if(!console_config || !console_config->files || !console_config->files->dir_list)
     return -1;
@@ -2182,6 +2187,7 @@ U0 ConsoleDocumentStart()
 public I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0)
 {
   I64 result;CI386WriteCache cache;CHashGeneric *entry;
+  if(NativeFileUsesOriginal(filename))return NativeOriginalFileWrite(filename,buffer,size,cdt,attr);
   if(!console_config || !console_config->files || !console_config->files->write_public)return 0;
   MemSet(&cache,0,sizeof(cache));cache.heap=console_config->heap;
   if(!cdt)cdt=NativeNow;
@@ -2205,6 +2211,7 @@ public U8 *NativePublicFileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
   U8 *name=0,*alternate=0,*stored=0,*result=0,*chosen;
   CHashGeneric *entry;I64 bytes=0,attr=0,size=0;
   if(_size)*_size=0;if(_attr)*_attr=0;
+  if(NativeFileUsesOriginal(filename))return NativeOriginalFileRead(filename,_size,_attr);
   if(!console_config || !console_config->files)return 0;
   try {
     name=console_config->files->name_abs(console_config->heap,filename,0);
@@ -2256,6 +2263,7 @@ public Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0)
   I64 result;
   if(flags&~0x140C00) throw('FUF');
   if(!filename) return FALSE;
+  if(NativeFileUsesOriginal(filename))return NativeOriginalFileFind(filename,_de,flags);
   if(_de) {
     selected=&entry;
   }
@@ -2309,4 +2317,9 @@ public U8 *FileNameAbs(U8 *filename,I64 flags=0)
 { return FileNameAbsCore(filename,flags,&NativeFileNameAbsConstruct); }
 
 public Bool Cd(U8 *dirname=0,Bool make_dirs=FALSE)
-{ return console_config->files->cd(dirname,make_dirs); }
+{
+  U8 *selected=dirname;
+  if(!selected)selected="~";
+  if(NativeFileUsesOriginal(selected))return NativeOriginalCd(dirname,make_dirs);
+  return console_config->files->cd(dirname,make_dirs);
+}

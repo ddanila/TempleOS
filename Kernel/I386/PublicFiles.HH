@@ -75,7 +75,7 @@ public _extern _DIR_FILES_FLATTEN CDirEntry *DirFilesFlatten(CDirEntry *entry,CD
 public _extern _DIR_FILES_SORT U0 DirFilesSort(CDirEntry **entry,I64 key);
 public _extern _FILE_WRITE I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0);
 public _extern _DIR_MK Bool DirMk(U8 *filename,I64 entry_cnt=0);
-public _extern _DIR I64 Dir(U8 *filename=NULL);
+public _extern _DIR I64 Dir(U8 *filename=NULL,Bool full=FALSE);
 public _extern _ED_DIR Bool EdDir(U8 *directory=NULL);
 public _extern _FILE_DEL Bool FileDel(U8 *filename);
 public _extern _FILE_RENAME Bool FileRename(U8 *old_filename,U8 *new_filename);
@@ -134,4 +134,6 @@ public _extern _IS_DIR Bool IsDir(U8 *dirname);
 public _extern _COPY_SINGLE Bool CopySingle(U8 *source,U8 *target);
 public _extern _COPY Bool Copy(U8 *source,U8 *target=".");
 public _extern _MOVE Bool Move(U8 *source,U8 *target);
+public _extern _MOUNT_FILE U8 MountFile(U8 *filename);
+public _extern _UNMOUNT U0 Unmount(U8 drv_let=0);
 #endif

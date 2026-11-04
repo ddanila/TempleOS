@@ -258,6 +258,8 @@ I64 Main(CI386BootInfo *info,I64 unused)
   //Public-header probes require the real console/debugger exports.
   if(kernel_diagnostics) {
     KernelCompilerProbe(0);
+    //Keep the next provider contiguous before public headers fragment the arena.
+    KernelCompilerProbeLoad;
   if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
     if(!kernel_console.root_headers || !kernel_console.root_headers()) KernelStop;
   }
@@ -713,7 +715,10 @@ U0 KernelCompilerProbeLoad()
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
   if(kernel_probe_image) KernelStop;
   KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
-  kernel_probe_image=KernelModuleLoad("/Modules/I386/CompilerProbe.t32m",bindings,sizeof(kernel_probe_bindings));
+  CI386RedSeaEntry file;
+  if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/CompilerProbe.t32m",&file)!=1)KernelStop;
+  //Keep the validated file capacity available for the second load after console allocation.
+  kernel_probe_image=I386RedSeaLoadBoundCapacity(&kernel_volume,&file,&kernel_heap,"Main",bindings,sizeof(kernel_probe_bindings),FALSE);
   if(!kernel_probe_image) {
     KernelHeapCheck(used,allocations);
     KernelLog("PROBE REJECT load reclaimed\n"); KernelStop;
@@ -750,15 +755,44 @@ U0 KernelCompilerProbe(I64 phase)
     KernelLog("PROBE REJECT api reclaimed\n"); KernelStop;
   }
   if(!I386BackingCheckRestored(&backing_check)) KernelStop;
-  if(!phase) {
-    KernelLog("PROBE MODULE "); KernelHex((kernel_probe_image+0)(U64)); KernelLog(" ");
-    KernelHex(kernel_probe_size); KernelLog(" "); KernelHex(kernel_probe_span); KernelLog("\n");
-  } else {
-    KernelModuleRelease(&kernel_probe_image,kernel_heap.used-kernel_probe_span,kernel_heap.allocations-1);
-    if(I386HeapSize(&kernel_heap,kernel_compiler_image)!=kernel_compiler_size ||
-        I386HeapSize(&kernel_heap,kernel_file_image)!=kernel_file_size) KernelStop;
-    KernelLog("PROBE RELEASE "); KernelHex(kernel_probe_size); KernelLog(" "); KernelHex(kernel_probe_span); KernelLog("\n");
+  KernelLog("PROBE MODULE ");KernelHex(phase);KernelLog(" ");
+  KernelHex((kernel_probe_image+0)(U64));KernelLog(" ");
+  KernelHex(kernel_probe_size);KernelLog(" ");KernelHex(kernel_probe_span);KernelLog("\n");
+  KernelModuleRelease(&kernel_probe_image,kernel_heap.used-kernel_probe_span,kernel_heap.allocations-1);
+  KernelLog("PROBE RELEASE ");KernelHex(phase);KernelLog(" ");
+  KernelHex(kernel_probe_size);KernelLog(" ");KernelHex(kernel_probe_span);KernelLog("\n");
+  //The primary image is gone before the program vectors and their compiler arena coexist.
+  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)];
+  U8 *program_image;
+  I64 program_size,program_span;
+  U32 irq=I386IrqSave;
+  if(phase && !I386RedSeaBegin(&kernel_volume))KernelStop;
+  used=kernel_heap.used;allocations=kernel_heap.allocations;
+  KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
+  program_image=KernelModuleLoad("/Modules/I386/CompilerProgramRuntimeProbe.t32m",bindings,sizeof(kernel_probe_bindings));
+  if(phase && !I386RedSeaEnd(&kernel_volume))KernelStop;
+  if(!program_image) {
+    KernelHeapCheck(used,allocations);I386IrqRestore(irq);
+    KernelLog("PROGRAM PROBE REJECT load reclaimed\n");KernelStop;
   }
+  if(kernel_heap.allocations!=allocations+1)KernelStop;
+  program_size=I386HeapSize(&kernel_heap,program_image);program_span=kernel_heap.used-used;
+  I386IrqRestore(irq);
+  if(!I386BackingCheckSave(&backing_check,&kernel_heap,I386TaskSelf->code_heap))KernelStop;
+  entry=program_image;
+  if((*entry)(&probe,sizeof(CI386CompilerProbe))!=1 || !I386BackingCheckRestored(&backing_check)) {
+    KernelModuleRelease(&program_image,used,allocations);
+    KernelLog("PROGRAM PROBE REJECT api reclaimed\n");KernelStop;
+  }
+  KernelLog("PROGRAM PROBE MODULE ");KernelHex(phase);KernelLog(" ");
+  KernelHex((program_image+0)(U64));KernelLog(" ");
+  KernelHex(program_size);KernelLog(" ");KernelHex(program_span);KernelLog("\n");
+  KernelModuleRelease(&program_image,kernel_heap.used-program_span,kernel_heap.allocations-1);
+  KernelLog("PROGRAM PROBE RELEASE ");KernelHex(phase);KernelLog(" ");
+  KernelHex(program_size);KernelLog(" ");KernelHex(program_span);KernelLog("\n");
+  if(I386HeapSize(&kernel_heap,kernel_compiler_image)!=kernel_compiler_size ||
+      I386HeapSize(&kernel_heap,kernel_file_image)!=kernel_file_size)KernelStop;
+
 }
 
 I64 KernelResidentPublish(U8 *image,I64 size,
@@ -819,6 +853,36 @@ U0 KernelFileLoad()
   kernel_volumes.letter['C'-'A']=&kernel_volume;
   if(!kernel_files.init(&kernel_root,&kernel_heap,&kernel_paths,&kernel_volumes)) KernelStop;
   if(!kernel_files.compiler_init(&kernel_compiler,"~/Tmp.DD.Z",char_bmp_alpha_numeric,char_bmp_alpha_numeric_no_at)) KernelStop;
+  if(kernel_diagnostics) {
+    CDrv *mapped=kernel_root.cur_dv;
+    CDrv probe;
+    U32 signature=kernel_volume.signature;
+    I64 mask=0;
+    if(kernel_files.drive_backend(mapped))mask|=1;
+    if(!kernel_files.drive_backend(0))mask|=2;
+    I64 byte;
+    for(byte=0;byte<sizeof(CDrv);byte++)(&probe)(U8 *)[byte]=mapped(U8 *)[byte];
+    if(kernel_files.drive_backend(&probe))mask|=4;
+    probe.drv_offset++;if(!kernel_files.drive_backend(&probe))mask|=8;
+    probe.drv_offset--;probe.fs_type=FSt_FAT32;
+    if(!kernel_files.drive_backend(&probe))mask|=16;
+    kernel_volume.signature=0;
+    if(kernel_files.drive_backend(mapped))mask|=32;
+    kernel_volume.signature=signature;
+    CI386TaskFiles *state=kernel_root.file_state;
+    CI386FileVolumes *borrowed=state->volumes;
+    CI386FileVolumes *other=I386HeapAlloc(&kernel_heap,sizeof(CI386FileVolumes),TRUE);
+    if(!other)KernelStop;
+    state->volumes=other;
+    if(!kernel_files.drive_backend(mapped))mask|=64;
+    other->letter[7]=&kernel_volume;
+    if(kernel_files.drive_backend(mapped))mask|=128;
+    state->volumes=borrowed;
+    if(I386HeapFree(&kernel_heap,other))mask|=256;
+    KernelLog("FILE BACKEND MASK ");KernelHex(mask);KernelLog("\n");
+    if(mask!=511)KernelStop;
+    KernelLog("FILE BACKEND IDENTITY quarantine preserved\n");
+  }
   kernel_file_include.context=0; kernel_file_include.push=kernel_files.include;
   kernel_file_include.directive_context=0; kernel_file_include.directive=0;
 }

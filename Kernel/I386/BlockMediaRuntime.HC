@@ -1,5 +1,5 @@
 //Complete mutually recursive original block/media/stream implementations.
-//Public path services still use the retained file provider.
+//Public paths dispatch between retained ATA backends and complete mapped-media services.
 import I64 MemCmp(U8 *left,U8 *right,I64 count);
 Bool NativeBlockBreakLock(CTask *task=NULL)
 { if(!task)task=Fs;return I386TaskBreakLock(task); }
@@ -58,3 +58,13 @@ U0 NativeDriveCacheHandoff(CDrv *dv)
 #include "/Kernel/BlkDev/IsDirCore.HC"
 #include "/Kernel/BlkDev/CopySingleCore.HC"
 #include "/Adam/ABlkDev/CopyMoveCore.HC"
+
+#include "/Kernel/BlkDev/FATInitCore.HC"
+#include "/Kernel/BlkDev/BlockDevDeleteCore.HC"
+#include "/Kernel/BlkDev/BlockDevAddCore.HC"
+#include "/Adam/ABlkDev/MountFileCore.HC"
+
+//x86 boot-sector opcodes used unchanged by the original FAT32 formatter.
+#define OC_JMP_REL8 0xEB
+#define OC_NOP 0x90
+#include "/Kernel/BlkDev/FATFormatCore.HC"

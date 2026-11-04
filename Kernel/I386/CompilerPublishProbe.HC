@@ -1,19 +1,8 @@
 #include "/Kernel/I386/TaskStorage.HC"
 //Publication must outlive the originating control and roll back failed validation.
 #include "/Compiler/I386/SymbolDelete.HC"
-Bool ProbePublishedRemove(CHashTable *table,CHash *entry)
-{
-  I64 i;
-  CHash **link;
-  for(i=0;i<=table->mask;i++) {
-    link=&table->body[i];
-    while(*link) {
-      if(*link==entry) { *link=entry->next; entry->next=0; return TRUE; }
-      link=&(*link)->next;
-    }
-  }
-  return FALSE;
-}
+#include "/Kernel/I386/CompilerProbeRemoveCore.HC"
+
 U0 ProbePublish(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;

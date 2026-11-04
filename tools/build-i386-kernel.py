@@ -13,7 +13,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
-DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime', 'CompilerProbe', 'FileRuntime', 'ConsoleRuntime', 'MemoryRuntime', 'BuildRuntime', 'DocDiagnosticRuntime', 'EditorRuntime')
+DISK_MODULES = MODULES + ('Startup', 'CompilerRuntime', 'CompilerProbe', 'FileRuntime', 'ConsoleRuntime', 'MemoryRuntime', 'BuildRuntime', 'DocDiagnosticRuntime', 'EditorRuntime', 'CompilerProgramRuntimeProbe')
 I386_ALLOWED = set(('bt bts btr btc bsf bsr push pop pushf popf mov lea add adc sub sbb and or xor mul imul neg not ret '
                     'movsx movzx cdq jmp cmp jz jnz jl jg setz setnz setl setnl setg setng setc setnc '
                     'seta setna test shl shr in out sar shld shrd rcl div call inc dec jns jc jnc ja jna '
@@ -123,8 +123,9 @@ def verify_normal_without_probe(disk,volume,out,console):
     """A broken diagnostic module must not prevent interactive startup."""
     work=out/'normal-without-probe'; work.mkdir(parents=True,exist_ok=True)
     image=bytearray(disk.read_bytes())
-    offset=volume['files']['/Modules/I386/CompilerProbe.t32m']['block']*512
-    image[offset]^=0xFF
+    for name in ('CompilerProbe','CompilerProgramRuntimeProbe'):
+        offset=volume['files'][f'/Modules/I386/{name}.t32m']['block']*512
+        image[offset]^=0xFF
     candidate=work/'kernel.img'; candidate.write_bytes(image)
     result=console['run_input'](candidate,work,startup_check={
         'status':'ok','answers':[],'commands':[('6*7;',['42']),('Fs->code_heap!=0;',['1'])]})
@@ -235,7 +236,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 203:
+    if struct.unpack_from('<I', module, version_offset)[0] != 204:
         raise ValueError('Unexpected console version')
     entry_names=('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug', 'ConsoleRootHeaders', 'NativeWinMgrEnsure')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
@@ -362,12 +363,12 @@ def file_runtime_layout(module):
     if set(imports) != {'I386TaskFileBirthHook', 'I386BuildRuntimeAcquire', 'I386HeapAlloc', 'I386HeapFree', 'I386HeapSize', 'I386IrqSave',
             'I386IrqRestore', 'I386RedSeaFind', 'I386RedSeaResolve', 'I386RedSeaReadAll', 'I386LexIncludeTake', 'I386LexIncludeDocTake', 'I386RedSeaBegin', 'I386RedSeaEnd', 'I386RedSeaValid', 'I386AtaIdentifyPolled', 'I386AtaTransfer', 'I386AtaFlushPolled', 'I386SchedBlock', 'I386SchedWake', 'I386SchedYield', 'I386RedSeaSectorRead', 'I386RedSeaSectorWrite', 'I386RedSeaFlush', 'I386RedSeaAlloc', 'I386RedSeaFree', 'I386RedSeaWrite', 'I386RedSeaDirectory', 'I386RedSeaPutWord', 'I386RedSeaMoveIntentSet', 'I386RedSeaMoveIntentClear', 'KernelLog', 'SysTry', 'SysUntry', 'throw'}:
         raise ValueError('Unexpected file-runtime import contract')
-    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386InstallBootArea', 'I386InstallBootImageArea', 'I386TaskInstallBoot', 'I386TaskInstallBootImage', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeInit', 'I386TaskFilesPublicClone', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386TaskDirNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet', 'I386TaskFileWritePublic', 'I386TaskFileReadStored', 'I386ExpandBuf', 'I386TaskFilePublicReader', 'I386TaskCd', 'I386TaskFileFind', 'I386FileRuntimeTmpFilename', 'I386FileRuntimeDriveAlias', 'I386TaskModuleStageNew', 'I386TaskModuleStageCleanup', 'I386TaskModulePublish', 'I386TaskFilesValid', 'I386TaskFilesAccess', 'I386TaskBuildModule'):
+    for name in ('Main', 'I386LexTaskFileInclude', 'I386TaskFileRead', 'I386TaskFileReadRaw', 'I386InstallBootArea', 'I386InstallBootImageArea', 'I386TaskInstallBoot', 'I386TaskInstallBootImage', 'I386TaskFileWrite', 'I386TaskDirMk', 'I386TaskDirList', 'I386TaskFileDelete', 'I386TaskFileRename', 'I386TaskDirDelete', 'I386TaskFileMove', 'I386TaskFileMoveProbe', 'I386TaskFileMoveIoProbe', 'I386FileRuntimeBind', 'I386TaskFilesInit', 'I386FileRuntimeInit', 'I386TaskFilesPublicClone', 'I386FileRuntimeCompiler', 'I386FileRuntimeControl', 'I386TaskFileNameAbs', 'I386TaskDirNameAbs', 'I386FileRuntimeCancelWait', 'I386FileRuntimeExportAt', 'I386ArcEntryGet', 'I386TaskFileWritePublic', 'I386TaskFileReadStored', 'I386ExpandBuf', 'I386TaskFilePublicReader', 'I386TaskCd', 'I386TaskFileFind', 'I386FileRuntimeTmpFilename', 'I386FileRuntimeDriveAlias', 'I386TaskModuleStageNew', 'I386TaskModuleStageCleanup', 'I386TaskModulePublish', 'I386TaskFilesValid', 'I386TaskFilesAccess', 'I386TaskBuildModule', 'I386FileRuntimeDriveLookup', 'I386TaskRawBlocks', 'I386TaskFilePublicDocument', 'I386TaskDirNameAbs', 'I386FileRuntimeDriveBackend'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing file service {name}')
     if exports.get('file_runtime_version', (0, 0))[0] != 3:
         raise ValueError('Missing file-runtime version')
     version_offset = 32+exports['file_runtime_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 64:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 65:
         raise ValueError('Unexpected file-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
         cancel_wait_offset=8+exports['I386FileRuntimeCancelWait'][1],
@@ -394,6 +395,13 @@ def file_runtime_layout(module):
         bind_offset=8+exports['I386FileRuntimeBind'][1],
         init_offset=8+exports['I386FileRuntimeInit'][1], compiler_init_offset=8+exports['I386FileRuntimeCompiler'][1],
         control_new_offset=8+exports['I386FileRuntimeControl'][1], name_abs_offset=8+exports['I386TaskFileNameAbs'][1],
+        tmp_filename_offset=8+exports['I386FileRuntimeTmpFilename'][1],
+        drive_alias_offset=8+exports['I386FileRuntimeDriveAlias'][1],
+        drive_lookup_offset=8+exports['I386FileRuntimeDriveLookup'][1],
+        raw_blocks_offset=8+exports['I386TaskRawBlocks'][1],
+        public_document_offset=8+exports['I386TaskFilePublicDocument'][1],
+        dir_name_abs_offset=8+exports['I386TaskDirNameAbs'][1],
+        drive_backend_offset=8+exports['I386FileRuntimeDriveBackend'][1],
         import_offset=imports['I386RedSeaReadAll'])
 
 
@@ -451,7 +459,7 @@ def verify_console_rejection(disk, volume, out, layout):
     return results
 
 
-def compiler_probe_layout(module):
+def compiler_probe_layout(module, program=False):
     size, count, records = struct.unpack_from('<III', module, 16)
     exports, imports = {}, []
     for index in range(count):
@@ -466,29 +474,40 @@ def compiler_probe_layout(module):
                 'I386HeapValid', 'I386IrqSave', 'I386IrqRestore', 'I386LexRawChar',
                 'I386LexIncludeTake', 'I386LexFilePush', 'I386LexIncludeCopy', 'HashAdd', 'StrCmp', 'char_bmp_alpha_numeric', 'SysTry', 'SysUntry', 'throw', 'I386TaskSpawn', 'I386TaskDestroy', 'I386SchedYield', 'I386RedSeaBegin', 'I386RedSeaEnd'}
     expected.update({'I386RedSeaResolve', 'I386LexFileOwned', 'I386LexFileReleaseDetached', 'I386LexSnapshotValid', 'I386LexSnapshotsPin'})
+    #The split providers retain the complete original import union; each has
+    #an exact contract for the functions its unchanged vectors actually call.
+    if program:
+        expected -= {'I386LexFileOwned','I386LexFilePush','I386LexFileReleaseDetached',
+            'I386LexIncludeCopy','I386LexIncludeTake','I386LexRawChar','I386LexSnapshotValid',
+            'I386LexSnapshotsPin','I386SchedYield','I386TaskDestroy','I386TaskSpawn','char_bmp_alpha_numeric'}
+    else:
+        expected.remove('I386RedSeaResolve')
     if {name for name, _ in imports} != expected:
         raise ValueError('Unexpected compiler-probe import contract')
-    for name in ('Main', 'ProbeStorage', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine', 'ProbeConditional', 'ProbeIncludes', 'ProbeIncludePush', 'ProbeDiskIncludes', 'ProbeCompilerUnwind', 'ProbeBranches', 'ProbeOptimize', 'ProbeEmit', 'ProbeBackend'):
+    required = ('Main','ProbePrograms','ProbeProgramNativeBundle','ProbeProgramNativeLoader','ProbeProgramNativeCreate') if program else ('Main', 'ProbeStorage', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine', 'ProbeConditional', 'ProbeIncludes', 'ProbeIncludePush', 'ProbeDiskIncludes', 'ProbeCompilerUnwind', 'ProbeBranches', 'ProbeOptimize', 'ProbeEmit', 'ProbeBackend')
+    for name in required:
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing compiler-probe function {name}')
     if exports.get('compiler_probe_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-probe version')
     version_offset = 32+exports['compiler_probe_version'][1]
-    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 19:
+    if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 20:
         raise ValueError('Unexpected compiler-probe version')
-    return dict(image_bytes=size+8, version_offset=version_offset,
+    return dict(image_bytes=size+8 if program else len(module), logical_image_bytes=size+8, version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'KernelLog'))
 
 
-def verify_probe_rejection(disk, volume, out, layout):
+def verify_probe_rejection(disk, volume, out, layout, program=False, ram_mib=8):
     original = disk.read_bytes()
-    offset = volume['files']['/Modules/I386/CompilerProbe.t32m']['block']*512
+    module='CompilerProgramRuntimeProbe' if program else 'CompilerProbe'
+    prefix='PROGRAM PROBE' if program else 'PROBE'
+    offset = volume['files'][f'/Modules/I386/{module}.t32m']['block']*512
     results = []
     for label, position, replacement, reason in (
             ('wrong-target', 6, b'\x04', 'load'),
             ('missing-import', layout['import_offset'], b'X', 'load'),
             ('wrong-api', layout['version_offset'], struct.pack('<I', 14), 'api')):
-        work = out/f'reject-probe-{label}'
+        work = out/f'reject-{module}-{label}'
         work.mkdir(parents=True, exist_ok=True)
         changed = bytearray(original)
         changed[offset+position:offset+position+len(replacement)] = replacement
@@ -496,13 +515,13 @@ def verify_probe_rejection(disk, volume, out, layout):
         candidate.write_bytes(changed)
         with (work/'runner.log').open('w') as log:
             result = subprocess.run([sys.executable, str(ROOT/'tools/guest-run.py'), str(candidate),
-                '--i386-disk', '--out', str(work), '--timeout', '90'], cwd=ROOT, stdout=log, stderr=log)
+                '--i386-disk', '--ram-mib',str(ram_mib), '--out', str(work), '--timeout', '90'], cwd=ROOT, stdout=log, stderr=log)
         evidence = (work/'debug.log').read_text()
+        forbidden=('PROGRAM PROBE complete ', 'PROGRAM PROBE MODULE ', 'STARTUP disk module', 'READY native kernel', 'DONE native kernel') if program else ('SOURCE ', 'LEX_SOURCE ', 'RUNTIME PROBE ', 'IDENT PROBE ', 'STRING PROBE ', 'LEX PROBE ', 'DEFINE PROBE ', 'CONDITIONAL PROBE ', 'INCLUDE PROBE ', 'DISK INCLUDE ', 'PROBE MODULE ', 'STARTUP disk module', 'READY native kernel', 'DONE native kernel')
         if (result.returncode == 0 or 'FAIL native kernel\n' not in evidence or
-                f'PROBE REJECT {reason} reclaimed\n' not in evidence or
-                any(marker in evidence for marker in ('SOURCE ', 'LEX_SOURCE ', 'RUNTIME PROBE ', 'IDENT PROBE ',
-                    'STRING PROBE ', 'LEX PROBE ', 'DEFINE PROBE ', 'CONDITIONAL PROBE ', 'INCLUDE PROBE ', 'DISK INCLUDE ', 'PROBE MODULE ',
-                    'STARTUP disk module', 'READY native kernel', 'DONE native kernel'))):
+                f'{prefix} REJECT {reason} reclaimed\n' not in evidence or
+                any(marker in evidence for marker in forbidden) or
+                program and evidence.count('PROBE RELEASE 0000000000000000 ')!=1):
             raise ValueError(f'Compiler probe did not reject/reclaim {label} before use')
         if candidate.read_bytes() != changed:
             raise ValueError('Rejected compiler probe changed the disk')
@@ -1557,7 +1576,7 @@ def verify_native_file_module(disk):
      'I386LoadAlloc', 'I386LoadBoundAlloc', 'I386LoadBoundAt', 'I386LoadBoundInto',
      'I386LoadInto', 'I386ModuleBufferByte', 'I386ModuleCodeWord', 'I386ModuleCompactOwned',
      'I386ModuleCompactPayload', 'I386ModuleValid', 'I386ModuleValidParts', 'I386NameEqual',
-     'I386RedSeaLoad', 'I386RedSeaLoadBound', 'I386RedSeaLoadSet', 'I386RedSeaLoadSetBound',
+     'I386RedSeaLoad', 'I386RedSeaLoadBound', 'I386RedSeaLoadBoundCapacity', 'I386RedSeaLoadSet', 'I386RedSeaLoadSetBound',
      'I386SymbolBucket', 'I386SymbolIndexBuild']
     calls={'I386BoundSymbol': 6,
      'I386BuffersOverlap': 9,
@@ -1581,6 +1600,7 @@ def verify_native_file_module(disk):
      'I386NameEqual': 4,
      'I386RedSeaExtent': 2,
      'I386RedSeaLoadBound': 2,
+     'I386RedSeaLoadBoundCapacity': 1,
      'I386RedSeaLoadSetBound': 1,
      'I386RedSeaRead': 2,
      'I386RedSeaValid': 2,
@@ -2399,7 +2419,9 @@ def verify_file_replace_failure_matrix(disk, exports, out):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--test',action='store_true',help='Boot with 8 MiB and verify startup, keyboard and VGA')
+    parser.add_argument('--test',action='store_true',help='Boot diagnostics and verify startup, keyboard and VGA')
+    parser.add_argument('--diagnostic-ram-mib',type=int,choices=(8,16),default=8,
+                        help='Diagnostic profile only; default 8, existing rebuilding profile 16. Interactive checks keep their own memory limits')
     parser.add_argument('--disk-mib',type=int,choices=(16,32,64),default=16,
                         help='Disk capacity; 32 MiB provides room for full native rebuild outputs')
     parser.add_argument('--content-profile',choices=('minimal','full'),default='minimal',
@@ -2435,6 +2457,7 @@ def main():
     image=audit(exports,out)
     runtime_layout=compiler_runtime_layout((exports/'CompilerRuntime.t32m').read_bytes())
     probe_layout=compiler_probe_layout((exports/'CompilerProbe.t32m').read_bytes())
+    program_probe_layout=compiler_probe_layout((exports/'CompilerProgramRuntimeProbe.t32m').read_bytes(),program=True)
     files_layout=file_runtime_layout((exports/'FileRuntime.t32m').read_bytes())
     build_layout=build_runtime_layout((exports/'BuildRuntime.t32m').read_bytes())
     console_layout=console_runtime_layout((exports/'ConsoleRuntime.t32m').read_bytes())
@@ -2459,6 +2482,7 @@ def main():
     volume['verified_files']=verify_volume(disk,volume)
     normal_disk=disk
     diagnostic_image,diagnostics=diagnostic_disk(normal_disk,exports)
+    diagnostics['ram_mib']=args.diagnostic_ram_mib
     result={'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
             'source_sha256':bootstrap['source_sha256'],
             'bootstrap':bootstrap['generations'][-1],
@@ -2479,7 +2503,7 @@ def main():
             'modules':{name:hashlib.sha256((exports/f'{name}.t32m').read_bytes()).hexdigest() for name in DISK_MODULES},
             'bootstrap_modules':list(MODULES),
             'resident_modules':list(MODULES)+['CompilerRuntime', 'FileRuntime', 'ConsoleRuntime', 'MemoryRuntime'],
-            'temporary_modules':['Startup', 'CompilerProbe'],
+            'temporary_modules':['Startup', 'CompilerProbe', 'CompilerProgramRuntimeProbe'],
             'volume':volume,
             'scope':'Native kernel with a retained HolyC console and disk source startup; full runtime, DolDoc and self-hosting unfinished',
             'diagnostics':diagnostics,
@@ -2489,7 +2513,7 @@ def main():
         disk=diagnostic_image
         guest=out/'boot'
         diagnostic_started=time.monotonic()
-        run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--out',str(guest),'--timeout','1200')
+        run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--ram-mib',str(args.diagnostic_ram_mib),'--out',str(guest),'--timeout','1200')
         diagnostics['startup_seconds']=time.monotonic()-diagnostic_started
         log=(guest/'debug.log').read_text()
         result['live_jit_audit']=audit_live_jit(log,out)
@@ -2501,13 +2525,22 @@ def main():
         result['internal_types']={'names':17,'heap_bytes':7672}
         keyword_names = re.findall(rb'^(?:KEYWORD|ASM_KEYWORD)\s+(\w+)\s+\d+\s*;',
                                    (ROOT/'Compiler/OpCodes.DD').read_bytes(), re.M)
-        #Native table owner/buckets: 48+272. Each CHashGeneric: 40+16; names own an aligned block.
-        keyword_bytes = 320+sum(56+16+((len(name)+8)&~7) for name in keyword_names)
+        #Native owner/buckets: 48+272. CHashGeneric and CHashOpcode are both
+        #40 bytes (CHash 16, opcode fields 8, CInst 16); each name owns a block.
+        opcode_source=(ROOT/'Compiler/I386/Keywords.HC').read_text()
+        opcode_count=int(re.search(r'#define I386_INLINE_OPCODES_NUM (\d+)',opcode_source)[1])
+        opcode_table=opcode_source[opcode_source.index('i386_inline_opcodes['):opcode_source.index('Bool I386KeywordsDelete')]
+        opcode_names=[bytes(int(x) for x in row.split(',')).split(b'\0')[0]
+                      for row in re.findall(r'\{([\d,]+)\}',opcode_table)]
+        if opcode_count!=40 or len(opcode_names)!=opcode_count or len(set(opcode_names))!=opcode_count:
+            raise ValueError('Changed inline opcode registry inventory')
+        keyword_bytes = 320+sum(56+16+((len(name)+8)&~7) for name in keyword_names+opcode_names)
         keywords=[line.split() for line in log.splitlines() if line.startswith('KEYWORDS ')]
         if len(keywords)!=1 or [int(value,16) for value in keywords[0][1:]]!=[73,keyword_bytes]:
             raise ValueError('Missing native keyword registry/footprint evidence')
         result['keywords']={'language':48,'assembler':25,'heap_bytes':keyword_bytes,
-                            'allocations':148,'lifetime':'kernel lifetime'}
+                            'inline_opcodes':opcode_count,'registered_entries':len(keyword_names)+opcode_count,
+                            'allocations':2+2*(len(keyword_names)+opcode_count),'lifetime':'kernel lifetime'}
 
         mounted=[line.split() for line in log.splitlines() if line.startswith('REDSEA ')]
         if len(mounted)!=1 or [int(x,16) for x in mounted[0][1:]]!=[volume['start'],volume['sectors']]:
@@ -2525,7 +2558,11 @@ def main():
         lexical_hash=2166136261
         for byte in normalized: lexical_hash=((lexical_hash^byte)*16777619)&0xFFFFFFFF
         lexical=[line.split() for line in log.splitlines() if line.startswith('LEX_SOURCE ')]
-        transient=((len(source)+1+7)&~7)+576
+        #Source, CCmpCtrl (344), two CI386LexFile wrappers (72 each),
+        #and the owned include name; every allocation has a 16-byte heap header.
+        allocation_span=lambda size:((size+7)&~7)+16
+        transient=(allocation_span(len(source)+1)+allocation_span(344)+
+                   2*allocation_span(72)+allocation_span(len('/Kernel/I386/Kernel.HC')+1))
         expected_lexical=[len(normalized),source.count(b'\n'),lexical_hash,transient]
         if b'\0' in source or len(lexical)!=1 or [int(x,16) for x in lexical[0][1:]]!=expected_lexical:
             raise ValueError('Native lexical source consumption/reclamation mismatch')
@@ -2545,8 +2582,8 @@ def main():
         arena=[line.split() for line in log.splitlines() if line.startswith('ARENA ')]
         if len(arena)!=1: raise ValueError('Missing selected memory arena')
         begin,length=(int(value,16) for value in arena[0][1:])
-        if begin<0x110000 or begin+length>8*1024*1024:
-            raise ValueError('Unexpected 8 MiB memory arena')
+        if begin<0x110000 or begin+length>args.diagnostic_ram_mib*1024*1024:
+            raise ValueError('Unexpected diagnostic memory arena')
         runtime = [line.split() for line in log.splitlines()
                    if line.startswith('RUNTIME ') and not line.startswith('RUNTIME PROBE ')]
         if len(runtime) != 1 or len(runtime[0]) != 64:
@@ -2583,8 +2620,8 @@ def main():
                     (code_append_address,'code_append_offset'), (code_retire_address,'code_retire_offset'), (code_branch_address,'code_branch_offset'), (code_optimize_address,'code_optimize_offset'), (out_new_address,'out_new_offset'), (out_del_address,'out_del_offset'), (backend_address,'backend_offset'), (expression_address,'expression_offset'), (type_address,'type_offset'), (parser_alloc_address,'parser_alloc_offset'), (parser_free_address,'parser_free_offset'), (parser_token_address,'parser_token_offset'), (declarations_address,'declarations_offset'), (code_init_address,'code_init_offset'), (class_address,'class_offset'), (fun_join_address,'fun_join_offset'), (publish_classes_address,'publish_classes_offset'), (bootstrap_scalars_address,'bootstrap_scalars_offset'), (load_scalars_address,'load_scalars_offset'), (scalar_check_address,'scalar_check_offset'), (frontend_address,'frontend_offset'), (statement_address,'statement_offset'), (command_address,'command_offset'), (publish_address,'publish_offset'), (input_address,'input_offset'), (break_poll_address,'break_poll_offset'), (math_bind_address,'math_bind_offset'), (code_span_address,'code_span_offset'), (module_pack_address,'module_pack_offset'), (code_reloc_address,'code_reloc_offset'), (program_pack_address,'program_pack_offset'), (program_pack_data_address,'program_pack_data_offset'), (program_pack_unit_address,'program_pack_unit_offset'), (private_defines_address,'private_defines_offset'), (compiler_export_at_address,'export_at_offset')))):
             raise ValueError('Compiler-runtime placement, ownership or service address mismatch')
         file_rows = [line.split() for line in log.splitlines() if line.startswith('FILES ')]
-        if len(file_rows)!=1 or len(file_rows[0])!=31: raise ValueError('Missing file-runtime ownership evidence')
-        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write, file_dir_mk, file_dir_list, file_delete, file_rename, file_dir_delete, file_move, file_move_probe, file_move_io_probe, file_export_at, file_read_raw, file_install_boot, file_install_image, file_write_public, file_read_stored, file_expand, file_public_reader, file_cd, file_find_public = (int(x,16) for x in file_rows[0][1:])
+        if len(file_rows)!=1 or len(file_rows[0])!=38: raise ValueError('Missing file-runtime ownership evidence')
+        file_address, file_size, file_span, file_include, file_read, file_bind, file_init, file_compiler_init, file_name_abs, file_control_new, file_cancel_wait, file_write, file_dir_mk, file_dir_list, file_delete, file_rename, file_dir_delete, file_move, file_move_probe, file_move_io_probe, file_export_at, file_read_raw, file_install_boot, file_install_image, file_write_public, file_read_stored, file_expand, file_public_reader, file_cd, file_find_public, file_tmp_filename, file_drive_alias, file_drive_lookup, file_raw_blocks, file_public_document, file_dir_name_abs, file_drive_backend = (int(x,16) for x in file_rows[0][1:])
         if (file_size!=files_layout['image_bytes'] or file_span!=((file_size+7)&~7)+16 or
                 file_address<begin or file_address+file_size>begin+length or
                 file_include!=file_address+files_layout['include_offset'] or
@@ -2613,8 +2650,17 @@ def main():
                 file_expand!=file_address+files_layout['expand_offset'] or
                 file_public_reader!=file_address+files_layout['public_reader_offset'] or
                 file_cd!=file_address+files_layout['cd_offset'] or
-                file_find_public!=file_address+files_layout['find_public_offset']):
+                file_find_public!=file_address+files_layout['find_public_offset'] or
+                file_tmp_filename!=file_address+files_layout['tmp_filename_offset'] or
+                file_drive_alias!=file_address+files_layout['drive_alias_offset'] or
+                file_drive_lookup!=file_address+files_layout['drive_lookup_offset'] or
+                file_raw_blocks!=file_address+files_layout['raw_blocks_offset'] or
+                file_public_document!=file_address+files_layout['public_document_offset'] or
+                file_dir_name_abs!=file_address+files_layout['dir_name_abs_offset'] or
+                file_drive_backend!=file_address+files_layout['drive_backend_offset']):
             raise ValueError('File-runtime placement or service mismatch')
+        if log.count('FILE BACKEND IDENTITY quarantine preserved\n')!=1:
+            raise ValueError('File backend identity/quarantine diagnostic failed')
         if 'FILE MOVE PROBE ' in log:
             raise ValueError('Writable file mutation probe ran during read-only diagnostics')
         if [int(line.split()[-1],16) for line in log.splitlines() if line.startswith('FILE CANCEL WAIT ')] != [0,1]:
@@ -2630,7 +2676,7 @@ def main():
                 log.count('DISK IF PRESERVED\n')!=1 or log.count('STORAGE TASK BOUND\n')!=1 or
                 not log.index('STARTUP disk module')<log.index('STORAGE TASK BOUND\n')<log.rindex('DISK INCLUDE ')):
             raise ValueError('Retained disk include execution/rejection failed')
-        result['file_runtime'] = dict(version=64, image_address=file_address, image_bytes=file_size,
+        result['file_runtime'] = dict(version=65, image_address=file_address, image_bytes=file_size,
             retained_heap_bytes=file_span, include_address=file_include, read_address=file_read, bind_address=file_bind, init_address=file_init, compiler_init_address=file_compiler_init, name_abs_address=file_name_abs, control_new_address=file_control_new, cancel_wait_address=file_cancel_wait, dir_list_address=file_dir_list, delete_address=file_delete, rename_address=file_rename, dir_delete_address=file_dir_delete, move_address=file_move, move_probe_address=file_move_probe, move_io_probe_address=file_move_io_probe, export_at_address=file_export_at, read_raw_address=file_read_raw, install_boot_address=file_install_boot, arc_entry_address=file_address+files_layout['arc_entry_offset'],
             write_public_address=file_write_public,
             read_stored_address=file_read_stored,
@@ -2638,6 +2684,14 @@ def main():
             public_reader_address=file_public_reader,
             cd_address=file_cd,
             find_public_address=file_find_public,
+            tmp_filename_address=file_tmp_filename,
+            drive_alias_address=file_drive_alias,
+            drive_lookup_address=file_drive_lookup,
+            raw_blocks_address=file_raw_blocks,
+            public_document_address=file_public_document,
+            dir_name_abs_address=file_dir_name_abs,
+            drive_backend_address=file_drive_backend,
+
             move_failure_stages=4,
             task_volume_bound=True, task_context_inherited=True,
             decoded_read_phases=[0,1], read_failure_outputs_preserved=True,
@@ -2684,20 +2738,31 @@ def main():
                 log.index('INCLUDE PROBE ') > log.index('STARTUP disk module') or
                 log.rindex('INCLUDE PROBE ') < log.rindex('TICK ')):
             raise ValueError('Retained include callbacks failed before/after task activity')
-        probe_modules = [line.split() for line in log.splitlines() if line.startswith('PROBE MODULE ')]
-        releases = [line.split() for line in log.splitlines() if line.startswith('PROBE RELEASE ')]
-        if len(probe_modules)!=1 or len(probe_modules[0])!=5 or len(releases)!=1 or len(releases[0])!=4:
-            raise ValueError('Missing compiler-probe lifetime evidence')
-        probe_address, probe_size, probe_span = (int(value, 16) for value in probe_modules[0][2:])
-        if (probe_size!=probe_layout['image_bytes'] or probe_span!=((probe_size+7)&~7)+16 or
-                probe_address<begin or probe_address+probe_size>begin+length or
-                [int(value, 16) for value in releases[0][2:]]!=[probe_size, probe_span] or
-                not (log.index('DEFINE PROBE ') < log.index('PROBE MODULE ') < log.index('STARTUP disk module')) or
-                not (log.rindex('DEFINE PROBE ') < log.index('PROBE RELEASE ') < log.index('DONE native kernel'))):
-            raise ValueError('Compiler-probe placement, lifetime or reclamation mismatch')
-        result['compiler_probe'] = dict(module='CompilerProbe', version=19, image_address=probe_address,
-            image_bytes=probe_size, temporary_heap_bytes=probe_span, reclaimed_heap_bytes=probe_span,
-            phases=['boot', 'task'], lifetime='released after task probe')
+        probe_lifetimes={}
+        for prefix,layout in [('PROBE',probe_layout),('PROGRAM PROBE',program_probe_layout)]:
+            loads=[line.split()[len(prefix.split())+1:] for line in log.splitlines() if line.startswith(prefix+' MODULE ')]
+            frees=[line.split()[len(prefix.split())+1:] for line in log.splitlines() if line.startswith(prefix+' RELEASE ')]
+            if len(loads)!=2 or len(frees)!=2:raise ValueError('Missing staged diagnostic lifetime evidence: '+prefix)
+            evidence=[]
+            for phase,(loaded,freed) in enumerate(zip(loads,frees)):
+                if len(loaded)!=4 or len(freed)!=3:raise ValueError('Malformed staged diagnostic evidence')
+                actual,address,size,span=map(lambda x:int(x,16),loaded)
+                release_phase,release_size,release_span=map(lambda x:int(x,16),freed)
+                if (actual!=phase or release_phase!=phase or size!=layout['image_bytes'] or
+                        span!=((size+7)&~7)+16 or address<begin or address+size>begin+length or
+                        release_size!=size or release_span!=span):
+                    raise ValueError('Staged compiler-probe placement or reclamation mismatch: '+prefix)
+                evidence.append(dict(phase=phase,image_address=address,image_bytes=size,reclaimed_heap_bytes=span))
+            probe_lifetimes[prefix]=evidence
+        for phase in (0,1):
+            tag=f'{phase:016X} '
+            if not (log.index('PROBE RELEASE '+tag)<log.index('PROGRAM PROBE MODULE '+tag)<log.index('PROGRAM PROBE RELEASE '+tag)):
+                raise ValueError('Diagnostic providers overlapped')
+        if not (log.index('PROGRAM PROBE RELEASE 0000000000000000 ')<log.index('STARTUP disk module') and
+                log.index('PROGRAM PROBE RELEASE 0000000000000001 ')<log.index('DONE native kernel')):
+            raise ValueError('Staged compiler diagnostics escaped boot/task phases')
+        result['compiler_probe']=dict(version=20,phases=['boot','task'],providers=probe_lifetimes,
+            lifetime='each provider released before the next provider loads')
         branch_recovery = [line.split() for line in log.splitlines() if line.startswith('BRANCH RECOVERY ')]
         if [int(row[2], 16) for row in branch_recovery] != [0, 1]:
             raise ValueError('Native branch optimizer allocation recovery failed')
@@ -2729,7 +2794,7 @@ def main():
         if symbol_cases != [(phase, case) for phase in (0,1) for case in range(10)]:
             raise ValueError('Native scalar union/class/function parsing or recovery failed')
         publication_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('PUBLICATION CASE ')]
-        if publication_cases != [(phase, case) for phase in (0,1) for case in range(10)]:
+        if publication_cases != [(phase, case) for phase in (0,1) for case in range(11)]:
             raise ValueError('Native class publication lifetime/recovery failed')
         bootstrap_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('BOOTSTRAP CASE ')]
         if bootstrap_cases != [(phase, case) for phase in (0,1) for case in range(7)]:
@@ -3015,7 +3080,7 @@ def main():
         if bootstrap_sources != [[f'{phase:016X}', f'{case:016X}', f'FL:C:/Kernel/Types.HH,{line}'] for phase in (0,1) for case, line in enumerate(source_lines)]:
             raise ValueError('Native scalar source attribution differs from original file')
         scalar_live = [int(line.split()[2],16) for line in log.splitlines() if line.startswith('SCALAR LIVE ')]
-        if scalar_live != [1] or log.index('SCALAR LIVE ') < log.index('PROBE RELEASE '):
+        if scalar_live != [1] or log.index('SCALAR LIVE ') < log.index('PROGRAM PROBE RELEASE 0000000000000001 '):
             raise ValueError('Permanent scalar bootstrap lifetime evidence missing')
         result['public_scalars'] = dict(source='Kernel/Types.HH', lifetime='root symbol table', validated_phases=scalar_live)
         if sorted([[int(x,16) for x in line.split()[3:]] for line in log.splitlines() if line.startswith('INPUT RUN CASE ')]) != [[phase,kind] for phase in range(2) for kind in range(27)]:
@@ -3198,7 +3263,8 @@ def main():
             rejected=verify_memory_rejection(normal_disk,volume,out,memory_layout))
         result['file_runtime']['rejected']=verify_file_rejection(normal_disk,volume,out,files_layout)
         result['compiler_runtime']['rejected']=verify_compiler_rejection(normal_disk,volume,out,runtime_layout)
-        result['compiler_probe']['rejected']=verify_probe_rejection(disk,volume,out,probe_layout)
+        result['compiler_probe']['rejected']=verify_probe_rejection(disk,volume,out,probe_layout,ram_mib=args.diagnostic_ram_mib)
+        result['compiler_probe']['program_rejected']=verify_probe_rejection(disk,volume,out,program_probe_layout,program=True,ram_mib=args.diagnostic_ram_mib)
         rows=[line.split() for line in log.splitlines() if line.startswith('CONSOLE ') and line!='CONSOLE TASK SPAWNED']
         if len(rows)!=1 or len(rows[0])!=4+len(console_layout['entries']): raise ValueError('Missing retained console')
         cbase,csize,cspan,*entries=[int(x,16) for x in rows[0][1:]]
@@ -3206,7 +3272,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=203,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=204,image_bytes=csize,retained_heap_bytes=cspan,
             service_addresses=dict(zip(console_layout['entry_names'],entries)),
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         # Both header attempts complete exactly these unused forward classes.
@@ -3229,20 +3295,20 @@ def main():
         lifetimes=[int(line.split()[-1],16) for line in log.splitlines() if line.startswith('CODE HEAP LIFETIME ')]
         released=[int(line.split()[-1],16) for line in log.splitlines() if line.startswith('PROBE TASK RELEASE ')]
         if lifetimes!=[0,1] or len(released)!=1 or released[0]<1048576+16384 or not (
-                log.index('PROBE RELEASE ') < log.index('PROBE TASK RELEASE ') < log.index('CONSOLE TASK SPAWNED')):
+                log.index('PROGRAM PROBE RELEASE 0000000000000001 ') < log.index('PROBE TASK RELEASE ') < log.index('CONSOLE TASK SPAWNED')):
             raise ValueError('Missing public code-heap/task reclamation evidence')
         result['code_heap']={'task_phases':lifetimes,'probe_task_reclaimed_bytes':released[0],
                             'locked_heap_reap':'deferred before symbol teardown'}
         result['public_headers']={'result':'pass','layout_checks_per_phase':128,
                                  'task_phases':[0,1],'retained_heap_bytes':memory[0]}
-        result['boot_test']={'boot_mode':'diagnostic','cpu':'486','ram_mib':8,'arena_base':begin,'arena_size':length,
+        result['boot_test']={'boot_mode':'diagnostic','cpu':'486','ram_mib':args.diagnostic_ram_mib,'arena_base':begin,'arena_size':length,
                              'startup_module':'Startup','startup_reclaimed_bytes':startup_reclaimed,
                              'startup_rejected':rejected,
                              'keyboard':keyboard,
                              'source_bytes':len(source),'source_fnv32':checksum,'timer_wakeups':ticks,'vga':'640x480, all pixels matched','result':'pass'}
         mutation_disk,mutation_flags,mutation_source_hash=mutation_probe_disk(normal_disk,exports)
         mutation_out=out/'file-mutation-probe'; mutation_out.mkdir(parents=True,exist_ok=True)
-        run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk','--out',str(mutation_out),'--timeout','1200')
+        run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk','--ram-mib',str(args.diagnostic_ram_mib),'--out',str(mutation_out),'--timeout','1200')
         mutation_log=(mutation_out/'debug.log').read_text()
         if mutation_log.count('FILE MOVE PROBE 0000000000000004\n')!=1:
             raise ValueError('Writable file move failure-stage probe did not complete')
@@ -3288,7 +3354,7 @@ def main():
         if mutation_log.count('NATIVE FILE DISK\n')!=1 or 'NATIVE FILE EXISTING\n' in mutation_log:
             raise ValueError('Fresh guest-built RedSea module loader disk round trip failed')
         module_reboot_out=out/'native-module-reboot'; module_reboot_out.mkdir(parents=True,exist_ok=True)
-        run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk',
+        run(sys.executable,'tools/guest-run.py',str(mutation_disk),'--i386-disk','--ram-mib',str(args.diagnostic_ram_mib),
             '--out',str(module_reboot_out),'--timeout','1200')
         module_reboot_log=(module_reboot_out/'debug.log').read_text()
         if module_reboot_log.count('NATIVE MODULE EXISTING\n')!=1 or \

@@ -3,5 +3,6 @@
 #define BLK_SIZE_BITS	9
 #define BLK_SIZE	(1<<BLK_SIZE_BITS)
 #define DVD_BLK_SIZE	(4*BLK_SIZE)
+#define DVD_BOOT_LOADER_SIZE (DVD_BLK_SIZE*1)
 #define INVALID_CLUS (-1)
 #endif

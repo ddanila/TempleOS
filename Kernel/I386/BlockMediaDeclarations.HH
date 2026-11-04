@@ -55,4 +55,18 @@ extern Bool IsDir(U8 *dirname);
 extern Bool CopySingle(U8 *source,U8 *target);
 extern Bool Copy(U8 *source,U8 *target=".");
 extern Bool Move(U8 *source,U8 *target);
+extern U0 FAT32Fmt(U8 drive,Bool quick=TRUE);
+extern U0 FAT32Init(CDrv *dv);
+extern U0 BlkDevDel(CBlkDev *bd);
+extern I64 BlkDevAdd(CBlkDev *bd,I64 prt_num=I64_MIN,Bool whole_drv=FALSE,Bool make_free=FALSE);
+extern U0 Unmount(U8 drive=0);
+extern U8 MountFile(U8 *filename);
+extern U8 *RedSeaFileRead(CDrv *dv,U8 *cur_dir,U8 *filename,I64 *size,I64 *attr);
+extern U8 *FAT32FileRead(CDrv *dv,U8 *cur_dir,U8 *filename,I64 *size,I64 *attr);
+extern Bool RedSeaCd(U8 *name,I64 cur_dir_clus);
+extern Bool FAT32Cd(U8 *name,I64 cur_dir_clus);
+extern I64 RedSeaFileWrite(CDrv *dv,U8 *cur_dir,U8 *name,U8 *buffer,I64 size,CDate datetime,I64 attr);
+extern I64 FAT32FileWrite(CDrv *dv,U8 *cur_dir,U8 *name,U8 *buffer,I64 size,CDate datetime,I64 attr);
+extern Bool RedSeaMkDir(CDrv *dv,U8 *cur_dir,U8 *name,I64 entry_cnt);
+extern Bool FAT32MkDir(CDrv *dv,U8 *cur_dir,U8 *name,I64 entry_cnt);
 #endif

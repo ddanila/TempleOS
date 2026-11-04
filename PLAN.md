@@ -25851,3 +25851,18 @@ native mounting is still unbound. Complete mapped-drive path dispatch, including
 FAT32 and retained-provider quarantine preservation, remains the next dependency.
 The two historical-image workstation runs are still active. C1-C5 remain open;
 see `docs/i386-mount-file.md`.
+
+
+Mapped RedSea/FAT32 drives now use complete original path implementations;
+MountFile/Unmount are bound, and retained-backend quarantine identity is preserved.
+The paired original/native mounting and FAT path contracts pass (reference v7/v4,
+native v4), including independent FAT, extent/bitmap and all 1,252 delivered
+source/doc checks. Two original rebuild generations pass. The complete terminal
+constructor and right-click callback compile against real services, but global
+DocTermNew and execution remain open. Staged compiler providers complete both
+phases at 16 MiB with all compiler/task/allocator assertions retained; first-run
+registry creation fails the separate disk-read-only gate, and 8 MiB diagnostics
+still fail root-header memory limits. Focused 64 MiB live help tests pass after
+correcting the source viewport oracle to 59 rows. A fresh full workstation run
+is active; the old failed/interrupted runs are not passes. C1-C5 remain open.
+See docs/i386-mount-file.md and docs/i386-staged-compiler-probes.md.

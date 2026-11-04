@@ -21,14 +21,8 @@ I64 ProbeExpressionLex(U8 *context,CCmpCtrl *cc)
   CProbeExpression *state=context;
   return state->probe->compiler->parser_token(state->heap,cc,"Expression",&state->lines,state->probe->disk_include);
 }
-U0 ProbeExpressionReport(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
-{
-  if(!kind) {
-    KernelLog("PARSER DIAGNOSTIC "); KernelLog(message); KernelLog("\n");
-    cc->error_cnt++; throw('Compiler',TRUE);
-  }
-  cc->warning_cnt++;
-}
+#include "/Kernel/I386/CompilerProbeReportCore.HC"
+
 CIntermediateCode *ProbeExpressionAdd(U8 *context,CCmpCtrl *cc,I64 op,I64 value,CHashClass *type,I64 flags)
 {
   CProbeExpression *state=context;

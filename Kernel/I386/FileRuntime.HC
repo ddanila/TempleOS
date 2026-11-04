@@ -140,6 +140,23 @@ CDrv *I386FileRuntimeDriveLookup(U8 letter)
   if(state)result=I386TaskFilesDrive(state->volumes,letter);
   I386IrqRestore(flags);return result;
 }
+Bool I386FileRuntimeDriveBackend(CDrv *drive)
+{//No I/O, allocation or validity probe: retain quarantined backend identity.
+  U32 flags=I386IrqSave;
+  CI386TaskFiles *state=I386TaskFilesValid(I386TaskSelf);
+  CI386RedSea *volume;
+  I64 i;
+  Bool result=FALSE;
+  if(state && drive && drive->fs_type==FSt_REDSEA)
+    for(i=0;i<26;i++) {
+      volume=state->volumes->letter[i];
+      if(volume && volume->disk && drive->bd==volume->disk->public_device &&
+          drive->drv_offset==volume->start && drive->size==volume->sectors) {
+        result=TRUE;break;
+      }
+    }
+  I386IrqRestore(flags);return result;
+}
 U32 file_runtime_version=I386_FILE_SERVICES_VERSION;
 Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
 {
@@ -156,7 +173,7 @@ Bool I386FileRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
   else {binding->name="I386FileVolumeSame";binding->address=(&I386FileVolumeSame+0)(U64);}
   return TRUE;
 }
-#assert sizeof(CI386FileServices)==132
+#assert sizeof(CI386FileServices)==144
 I64 Main(CI386FileServices *services,I64 bytes)
 {
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
@@ -174,6 +191,7 @@ I64 Main(CI386FileServices *services,I64 bytes)
   services->drive_alias=&I386FileRuntimeDriveAlias;
   services->drive_lookup=&I386FileRuntimeDriveLookup;
   services->raw_blocks=&I386TaskRawBlocks;
+  services->drive_backend=&I386FileRuntimeDriveBackend;
   services->cancel_wait=&I386FileRuntimeCancelWait;
   services->write=&I386TaskFileWrite; services->write_public=&I386TaskFileWritePublic;
   services->dir_mk=&I386TaskDirMk;

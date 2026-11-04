@@ -3,7 +3,7 @@
 extern Bool I386RedSeaValid(CI386RedSea *v);
 extern Bool I386RedSeaExtent(CI386RedSea *v,I64 block,I64 size);
 U8 *I386ModuleCompactPayload(CI386Heap *heap,U8 *file,I64 required,
-  U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count)
+  U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count,Bool shrink=TRUE)
 {//Preflight is complete. This frame owns scratch only while resolving/copying.
   CI386ModuleHeader *h=file;
   CI386ModuleRecord *r;
@@ -30,11 +30,11 @@ U8 *I386ModuleCompactPayload(CI386Heap *heap,U8 *file,I64 required,
   for(j=0;j<required-8;j++) file[8+j]=file[32+j];
   file[0]=0xE9; (file+1)(U32 *)[0]=entry-5;
   file[5]=0; file[6]=0; file[7]=0;
-  if(!I386HeapShrink(heap,file,required)) return 0;
+  if(shrink && !I386HeapShrink(heap,file,required)) return 0;
   return file;
 }
 U8 *I386ModuleCompactOwned(CI386Heap *heap,U8 *file,I64 size,
-  U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count)
+  U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count,Bool shrink=TRUE)
 {//Keep validation scratch and compaction scratch out of the same call chain.
   I64 required,address=(file+0)(U64),j,n;
   if(I386HeapSize(heap,file)!=size) return 0;
@@ -52,9 +52,9 @@ U8 *I386ModuleCompactOwned(CI386Heap *heap,U8 *file,I64 size,
            (bindings[j].address+0)(U64)-address<size)) return 0;
     }
   }
-  return I386ModuleCompactPayload(heap,file,required,entry_name,bindings,binding_count);
+  return I386ModuleCompactPayload(heap,file,required,entry_name,bindings,binding_count,shrink);
 }
-public U8 *I386RedSeaLoadBound(CI386RedSea *volume,CI386RedSeaEntry *entry,CI386Heap *heap,U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count)
+U8 *I386RedSeaLoadBoundCapacity(CI386RedSea *volume,CI386RedSeaEntry *entry,CI386Heap *heap,U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count,Bool shrink)
 {//Load one uncompressed module; caller invokes and eventually frees the image.
   U8 *file,*image=0;
   I64 size;
@@ -65,10 +65,14 @@ public U8 *I386RedSeaLoadBound(CI386RedSea *volume,CI386RedSeaEntry *entry,CI386
   file=I386HeapAlloc(heap,size);
   if (!file) return 0;
   if (I386RedSeaRead(volume,entry,0,file,size)==size)
-    image=I386ModuleCompactOwned(heap,file,size,entry_name,bindings,binding_count);
+    image=I386ModuleCompactOwned(heap,file,size,entry_name,bindings,binding_count,shrink);
   if(image) return image;
   I386HeapFree(heap,file);
   return 0;
+}
+public U8 *I386RedSeaLoadBound(CI386RedSea *volume,CI386RedSeaEntry *entry,CI386Heap *heap,U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count)
+{//Public loads retain their original compact allocation and six-argument ABI.
+  return I386RedSeaLoadBoundCapacity(volume,entry,heap,entry_name,bindings,binding_count,TRUE);
 }
 public U8 *I386RedSeaLoad(CI386RedSea *volume,CI386RedSeaEntry *entry,CI386Heap *heap,U8 *entry_name)
 {

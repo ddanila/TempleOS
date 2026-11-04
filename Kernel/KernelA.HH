@@ -446,7 +446,6 @@ public class CATARep
 
 #help_index "File/Low Level"
 #include "/Kernel/BlkDev/BlockSize.HH"
-#define DVD_BOOT_LOADER_SIZE	DVD_BLK_SIZE*1
 
 #include "/Kernel/BlkDev/MasterBootTypes.HH"
 

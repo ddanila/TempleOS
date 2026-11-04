@@ -106,3 +106,12 @@ autocomplete task activation is requested or qualified. The unchanged terminal
 right-click callback now advances past real Copy/Move/Del to missing MountFile
 at line 76 (`build/i386-copy-terminal-callback-probe-v1`). These are current
 dependency boundaries, not autocomplete or terminal-construction passes.
+
+
+The complete MountFile and mapped media services now close that callback's
+compile dependency. Both the unchanged right-click callback and complete
+DocTermNew body compile against actual native services
+(`build/i386-mount-terminal-constructor-probe-v1/result.json`). No constructor or
+menu action executes in this probe. Global DocTermNew publication and real-service
+autocomplete execution remain open; the full original constructor/callback body
+must be preserved when integrated.

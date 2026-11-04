@@ -238,6 +238,12 @@
           "result": "pass",
           "evidence": "build/i386-mount-file-reference-v6/result.json",
           "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        },
+        {
+          "target": "paired-mapped-media-path",
+          "result": "pass",
+          "evidence": "docs/i386-mount-file.md",
+          "scope": "Rebuilt-original MountFile reference v7 and FAT path reference v4; final-image native v4 counterparts, independent filesystem/FAT and 1252 delivered-source checks. Complete mounted RedSea/FAT32 path bodies; hardware, broad filename/volume, repeated heap recovery and whole-file qualification remain open."
         }
       ]
     },
@@ -13563,6 +13569,12 @@
           "result": "pass",
           "evidence": "build/i386-mount-file-reference-v6/result.json",
           "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        },
+        {
+          "target": "paired-mapped-media-path",
+          "result": "pass",
+          "evidence": "docs/i386-mount-file.md",
+          "scope": "Rebuilt-original MountFile reference v7 and FAT path reference v4; final-image native v4 counterparts, independent filesystem/FAT and 1252 delivered-source checks. Complete mounted RedSea/FAT32 path bodies; hardware, broad filename/volume, repeated heap recovery and whole-file qualification remain open."
         }
       ]
     },
@@ -13718,6 +13730,12 @@
           "result": "pass",
           "evidence": "build/i386-mount-file-reference-v6/result.json",
           "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        },
+        {
+          "target": "paired-mapped-media-path",
+          "result": "pass",
+          "evidence": "docs/i386-mount-file.md",
+          "scope": "Rebuilt-original MountFile reference v7 and FAT path reference v4; final-image native v4 counterparts, independent filesystem/FAT and 1252 delivered-source checks. Complete mounted RedSea/FAT32 path bodies; hardware, broad filename/volume, repeated heap recovery and whole-file qualification remain open."
         }
       ]
     },
@@ -13942,6 +13960,12 @@
           "result": "pass",
           "evidence": "build/i386-block-media-native-v7/result.json",
           "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
+        },
+        {
+          "target": "paired-mapped-media-path",
+          "result": "pass",
+          "evidence": "docs/i386-mount-file.md",
+          "scope": "Rebuilt-original MountFile reference v7 and FAT path reference v4; final-image native v4 counterparts, independent filesystem/FAT and 1252 delivered-source checks. Complete mounted RedSea/FAT32 path bodies; hardware, broad filename/volume, repeated heap recovery and whole-file qualification remain open."
         }
       ]
     },
@@ -13967,6 +13991,12 @@
           "result": "pass",
           "evidence": "build/i386-mount-file-reference-v6/result.json",
           "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        },
+        {
+          "target": "paired-mapped-media-path",
+          "result": "pass",
+          "evidence": "docs/i386-mount-file.md",
+          "scope": "Rebuilt-original MountFile reference v7 and FAT path reference v4; final-image native v4 counterparts, independent filesystem/FAT and 1252 delivered-source checks. Complete mounted RedSea/FAT32 path bodies; hardware, broad filename/volume, repeated heap recovery and whole-file qualification remain open."
         }
       ]
     },
@@ -14266,6 +14296,12 @@
           "result": "pass",
           "evidence": "build/i386-mount-file-reference-v6/result.json",
           "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        },
+        {
+          "target": "paired-mapped-media-path",
+          "result": "pass",
+          "evidence": "docs/i386-mount-file.md",
+          "scope": "Rebuilt-original MountFile reference v7 and FAT path reference v4; final-image native v4 counterparts, independent filesystem/FAT and 1252 delivered-source checks. Complete mounted RedSea/FAT32 path bodies; hardware, broad filename/volume, repeated heap recovery and whole-file qualification remain open."
         }
       ]
     },
@@ -14315,6 +14351,12 @@
           "result": "pass",
           "evidence": "build/i386-mount-file-reference-v6/result.json",
           "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        },
+        {
+          "target": "paired-mapped-media-path",
+          "result": "pass",
+          "evidence": "docs/i386-mount-file.md",
+          "scope": "Rebuilt-original MountFile reference v7 and FAT path reference v4; final-image native v4 counterparts, independent filesystem/FAT and 1252 delivered-source checks. Complete mounted RedSea/FAT32 path bodies; hardware, broad filename/volume, repeated heap recovery and whole-file qualification remain open."
         }
       ]
     },
@@ -14577,6 +14619,12 @@
           "result": "pass",
           "evidence": "build/i386-mount-file-reference-v6/result.json",
           "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        },
+        {
+          "target": "paired-mapped-media-path",
+          "result": "pass",
+          "evidence": "docs/i386-mount-file.md",
+          "scope": "Rebuilt-original MountFile reference v7 and FAT path reference v4; final-image native v4 counterparts, independent filesystem/FAT and 1252 delivered-source checks. Complete mounted RedSea/FAT32 path bodies; hardware, broad filename/volume, repeated heap recovery and whole-file qualification remain open."
         }
       ]
     },
@@ -14687,6 +14735,12 @@
           "result": "pass",
           "evidence": "build/i386-mount-file-reference-v6/result.json",
           "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        },
+        {
+          "target": "paired-mapped-media-path",
+          "result": "pass",
+          "evidence": "docs/i386-mount-file.md",
+          "scope": "Rebuilt-original MountFile reference v7 and FAT path reference v4; final-image native v4 counterparts, independent filesystem/FAT and 1252 delivered-source checks. Complete mounted RedSea/FAT32 path bodies; hardware, broad filename/volume, repeated heap recovery and whole-file qualification remain open."
         }
       ]
     },

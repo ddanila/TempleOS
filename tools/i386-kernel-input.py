@@ -20,11 +20,12 @@ import time
 ROOT=Path(__file__).resolve().parents[1]
 
 
-def source_view_rows(disk, path, marker):
+def source_view_rows(disk, path, marker, reader=None):
     """Expected source pixels come from persisted input bytes, not guest output."""
     import runpy
-    build = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
-    data = build['mutated_file_contents'](disk, {path}).get(path)
+    if reader is None:
+        reader = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents']
+    data = reader(disk, {path}).get(path)
     if data is None:
         raise ValueError('Missing source-view fixture: '+path)
     lines = data.decode('latin1').split('\n')
@@ -34,7 +35,8 @@ def source_view_rows(disk, path, marker):
     rows = ['TempleOS i386', 'Help: C:'+path, '']
     for line in lines[starts[0]:]:
         rows.extend(line[i:i+80] for i in range(0, len(line)+1, 80))
-    return rows
+    #The help viewer reserves the final VGA row; compare every visible source row.
+    return rows[:59]
 
 
 def parent_death_signal():
