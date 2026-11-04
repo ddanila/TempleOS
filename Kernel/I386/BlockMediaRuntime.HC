@@ -68,3 +68,5 @@ U0 NativeDriveCacheHandoff(CDrv *dv)
 #define OC_JMP_REL8 0xEB
 #define OC_NOP 0x90
 #include "/Kernel/BlkDev/FATFormatCore.HC"
+
+#include "/Adam/ABlkDev/FileSizeCore.HC"

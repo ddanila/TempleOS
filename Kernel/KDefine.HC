@@ -31,8 +31,7 @@ U0 SysDefinesLoad()
   DefineLstLoad("ST_MONTHS","January\0February\0March\0April\0May\0"
 	"June\0July\0August\0September\0October\0November\0December\0");
   DefineLstLoad("ST_FILE_ATTRS","R\0H\0S\0V\0D\0A\0 \0 \0X\0T\0Z\0C\0F\0");
-  DefineLstLoad("ST_FILE_UTIL_FLAGS","r\0d\0i\0a\0c\0R\0p\0m\0x\0s\0"
-	"D\0F\0T\0$$\0S\0A\0J\0G\0Z\0O\0P\0f\0l\0lb\0la\0");
+#include "/Kernel/FileUtilFlagsDefineCore.HC"
   DefineLstLoad("ST_BLKDEV_TYPES",
 	"NULL\0RAM\0ATA\0FILE_READ\0FILE_WRITE\0ATAPI\0");
   DefineLstLoad("ST_DRV_TYPES",

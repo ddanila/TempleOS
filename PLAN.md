@@ -25906,3 +25906,16 @@ fails heap allocation during compilation; it is not qualified. MakeAC advances
 to missing Size at ACInit.HC line 116. The prior-image full workstation run is
 still live. Full autocomplete, minimal-profile resource gates and C1-C5 remain
 open. See docs/i386-run-level.md.
+
+
+Size/Size1, ScanFlags and the file-utility flag initializer now share their
+complete original bodies. Console ABI 208 has 579 bindings. Paired original/native
+contracts pass fourteen RedSea size cases, including compression, directory and
+filter behavior, 4 GiB rounding, cwd preservation and exact warmed caller heap.
+Flag parsing passes mask 31 with 70 flags, partial updates, error cleanup and
+trailing-sign behavior. Two original rebuild generations, the 386 audit, the
+1,257-file source audit and explicit shared-unit/wrapper equality checks pass.
+MakeAC advances to missing HashTableSize2 at ACInit.HC line 166. Full hash accounting,
+autocomplete execution, FAT-specific size/error coverage, 8 MiB resource gates
+and C1-C5 remain open. The prior-image full workstation run is still live.
+See docs/i386-file-size.md.

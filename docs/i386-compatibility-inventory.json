@@ -104,7 +104,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "paired-original-size-and-flag-parsing",
+          "result": "pass",
+          "evidence": "docs/i386-file-size.md",
+          "scope": "Complete shared Size/Size1, ScanFlags and flag-list initializer: fourteen original/native RedSea size cases, flag parser mask 31 including 70 flags and error cleanup, exact warmed caller heap/cwd, native exact VGA and source equality. Whole files, FAT and I/O failure cleanup remain unqualified."
+        }
+      ]
     },
     {
       "path": "Adam/ABlkDev/ChkDsk.HC",
@@ -595,6 +602,12 @@
           "result": "fail",
           "evidence": "build/i386-run-level-autocomplete-v2/result.json",
           "scope": "Unchanged MakeAC advances through ACTask and public sys_run_level to missing Size at ACInit.HC line 116. No explicit autocomplete activation or service stubs."
+        },
+        {
+          "target": "native-real-service-source-load-after-size",
+          "result": "fail",
+          "evidence": "build/i386-file-size-autocomplete-v1/result.json",
+          "scope": "Unchanged MakeAC advances past Size to missing HashTableSize2 at ACInit.HC line 166. No explicit autocomplete task activation or service stubs."
         }
       ]
     },
@@ -15149,7 +15162,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "paired-original-size-and-flag-parsing",
+          "result": "pass",
+          "evidence": "docs/i386-file-size.md",
+          "scope": "Complete shared Size/Size1, ScanFlags and flag-list initializer: fourteen original/native RedSea size cases, flag parser mask 31 including 70 flags and error cleanup, exact warmed caller heap/cwd, native exact VGA and source equality. Whole files, FAT and I/O failure cleanup remain unqualified."
+        }
+      ]
     },
     {
       "path": "Kernel/KEnd.HC",
@@ -16764,6 +16784,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-string-util-compact-native/result.json",
           "scope": "Eleven public-API contracts at 64 MiB; compact candidate still fails 8 MiB normal startup and is not release qualified"
+        },
+        {
+          "target": "paired-original-size-and-flag-parsing",
+          "result": "pass",
+          "evidence": "docs/i386-file-size.md",
+          "scope": "Complete shared Size/Size1, ScanFlags and flag-list initializer: fourteen original/native RedSea size cases, flag parser mask 31 including 70 flags and error cleanup, exact warmed caller heap/cwd, native exact VGA and source equality. Whole files, FAT and I/O failure cleanup remain unqualified."
         }
       ]
     },

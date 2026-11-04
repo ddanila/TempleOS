@@ -30,4 +30,5 @@ public _extern _STR_FIRST_REM U8 *StrFirstRem(U8 *src,U8 *marker,U8 *dst=NULL);
 public _extern _STR_LAST_REM U8 *StrLastRem(U8 *src,U8 *marker,U8 *dst=NULL);
 public _extern _STR_UTIL U8 *StrUtil(U8 *src,I64 flags);
 public _extern _MSTR_UTIL U8 *MStrUtil(U8 *src,I64 flags,F64 indent_scale_factor=0);
+public _extern _SCAN_FLAGS U0 ScanFlags(U8 *destination,U8 *list,U8 *source);
 #endif

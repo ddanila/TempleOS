@@ -143,3 +143,13 @@ differences and the still-failed 8 MiB full-contract compilation. The unchanged
 MakeAC probe now rejects missing Size at ACInit.HC line 116
 (`build/i386-run-level-autocomplete-v2`, unchanged input pins). No explicit
 autocomplete initialization or task activation is qualified.
+
+
+The complete original Size/Size1, ScanFlags and file-utility flag initializer
+are now retained. Paired original/native contracts pass fourteen size cases and
+flag-parser mask 31, including compression, recursion, 64-bit rounding and heap
+recovery. See `docs/i386-file-size.md`. The unchanged MakeAC source now rejects
+missing HashTableSize2 at ACInit.HC line 166
+(`build/i386-file-size-autocomplete-v1`, unchanged input pins). No explicit
+autocomplete initialization, task activation or visible suggestion workflow is
+qualified by the failed source-load probe.

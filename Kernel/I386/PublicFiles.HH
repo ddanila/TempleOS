@@ -136,4 +136,5 @@ public _extern _COPY Bool Copy(U8 *source,U8 *target=".");
 public _extern _MOVE Bool Move(U8 *source,U8 *target);
 public _extern _MOUNT_FILE U8 MountFile(U8 *filename);
 public _extern _UNMOUNT U0 Unmount(U8 drv_let=0);
+public _extern _SIZE I64 Size(U8 *files_find_mask="/*",U8 *fu_flags=NULL,I64 round_to=0);
 #endif
