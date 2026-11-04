@@ -25564,3 +25564,20 @@ This is regression evidence for the removed command-specific wrap exceptions;
 the remaining mouse, navigation and later groups and complete workstation
 results are still pending. These concurrent runs do not qualify isolated
 startup or latency budgets.
+
+The complete current workstation suites have now passed on all three images:
+`build/i386-c1c5-welcome-merged-workstation64-kvm-v8/result.json`,
+`build/i386-c1c5-welcome-native-gen1-workstation64-kvm-v3/result.json` and
+`build/i386-c1c5-welcome-native-gen2-workstation64-kvm-v4/result.json`. Each
+process exited successfully and reports 576 submitted lines, 513 native
+commands and exact pixel matches at every checkpoint, on KVM `486,-fpu` with
+64 MiB and the window manager active. The complete sequence covers compiler,
+keyboard/break, windows/graphics/text, document editing, resource/latency, mouse,
+file navigation, original-document compatibility, help and sprite checks. Each
+also reports 20 bounded document development cycles with exact task data/code
+heap recovery and allocator high-water tracking. This qualifies the current
+integrated workstation regression suite on the cross-built image and both
+installed native generations, including both repaired mouse wrap expectations.
+The concurrent runs do not qualify isolated startup/latency budgets, minimum
+RAM or complete C1-C5 behavior; autocomplete/terminal construction, full public
+block I/O and streams, applications and other milestone requirements remain open.
