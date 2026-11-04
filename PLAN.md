@@ -25644,3 +25644,12 @@ cache core fixture passes with unchanged inputs
 with inputs unchanged (`build/i386-ata-dependency-probe-v8`). No device
 operation was called. Retained ATA provider integration, full block I/O,
 media initialization/streams and C1-C5 remain open.
+
+The unchanged original ATA source now executes a one-sector read on the
+native device record, matching the existing raw transport byte-for-byte,
+with buffer guards, original read-counter accounting and preowned drive-lock
+retention passing (`build/i386-original-ata-read-native-v1`). Source-image
+ATA bytes match the worktree, pinned inputs are unchanged, and no ATA write
+was performed. This precedes retained-provider integration; multi-sector
+transfers, writes, ATAPI, failure recovery and full public block I/O/streams
+remain unqualified. C1-C5 remain open.

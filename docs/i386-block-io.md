@@ -382,3 +382,18 @@ provider, and device transfers, initialization and failure behavior remain
 unqualified. The higher-level `DskCacheInvalidate` wrapper still requires
 media initialization and is not replaced by the low-level function. Full
 ATA, public block I/O/streams and C1-C5 remain open.
+
+## Original ATA read on native hardware records (2026-11-04)
+
+The complete unchanged `DskATA.HC`, compiled in the native guest, now
+executes its original `ATAReadBlks` successfully on the existing QEMU ATA
+device record (`build/i386-original-ata-read-native-v1`). The runner checks
+that the image's ATA source matches the worktree before boot and preserves
+its pinned inputs. It compares one RedSea header sector byte-for-byte
+against `I386RawBlocks`, checks guards around an unaligned 512-byte target,
+verifies the original read counter increment, and confirms a preowned drive
+lock is retained. The guest uses a copied image and performs no ATA writes.
+This is a one-sector ATA read contract, not retained-provider integration,
+multi-sector transfers, ATA writes, ATAPI, initialization, media changes or
+failure recovery. The complete provider and public block I/O/streams remain
+open. Run with `tools/test-i386-original-ata-read.py IMAGE --out FRESH_DIR`.
