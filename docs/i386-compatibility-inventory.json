@@ -231,7 +231,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "rebuilt-original-mount-file",
+          "command": "python3 tools/test-i386-mount-file.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-mount-file-reference-v6/result.json",
+          "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        }
+      ]
     },
     {
       "path": "Adam/ABlkDev/PrtDsk.HC",
@@ -13548,7 +13556,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "rebuilt-original-mount-file",
+          "command": "python3 tools/test-i386-mount-file.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-mount-file-reference-v6/result.json",
+          "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskBlk.HC",
@@ -13695,6 +13711,13 @@
           "result": "pass",
           "evidence": "build/i386-block-media-native-v7/result.json",
           "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
+        },
+        {
+          "target": "rebuilt-original-mount-file",
+          "command": "python3 tools/test-i386-mount-file.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-mount-file-reference-v6/result.json",
+          "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
         }
       ]
     },
@@ -13937,7 +13960,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "rebuilt-original-mount-file",
+          "command": "python3 tools/test-i386-mount-file.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-mount-file-reference-v6/result.json",
+          "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskDirContext.HC",
@@ -14228,7 +14259,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "rebuilt-original-mount-file",
+          "command": "python3 tools/test-i386-mount-file.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-mount-file-reference-v6/result.json",
+          "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
+        }
+      ]
     },
     {
       "path": "Kernel/BlkDev/DskFind.HC",
@@ -14269,6 +14308,13 @@
             "build/i386-copy-files-find-native-v1/result.json"
           ],
           "scope": "Five original/native RedSea single/files-only/recursive/flattened/missing searches, order/parent links and exact caller-heap recovery; full FAT32 paths and failures remain open"
+        },
+        {
+          "target": "rebuilt-original-mount-file",
+          "command": "python3 tools/test-i386-mount-file.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-mount-file-reference-v6/result.json",
+          "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
         }
       ]
     },
@@ -14524,6 +14570,13 @@
             "build/i386-copy-files-find-native-v1/result.json"
           ],
           "scope": "Five original/native RedSea single/files-only/recursive/flattened/missing searches, order/parent links and exact caller-heap recovery; full FAT32 paths and failures remain open"
+        },
+        {
+          "target": "rebuilt-original-mount-file",
+          "command": "python3 tools/test-i386-mount-file.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-mount-file-reference-v6/result.json",
+          "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
         }
       ]
     },
@@ -14627,6 +14680,13 @@
             "build/i386-copy-files-find-native-v1/result.json"
           ],
           "scope": "Five original/native RedSea single/files-only/recursive/flattened/missing searches, order/parent links and exact caller-heap recovery; full FAT32 paths and failures remain open"
+        },
+        {
+          "target": "rebuilt-original-mount-file",
+          "command": "python3 tools/test-i386-mount-file.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-mount-file-reference-v6/result.json",
+          "scope": "Fourteen complete original bodies shared unchanged; offset-88 RAM image, MountFile geometry/lock forwarding, absolute/relative reads, read-only rejection and unmount cleanup; unchanged input pins. Native mounting, FAT32 paths, ATA partitions and optical hardware remain unqualified."
         }
       ]
     },

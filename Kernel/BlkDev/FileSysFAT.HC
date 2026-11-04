@@ -2,31 +2,7 @@
 
 #include "/Kernel/BlkDev/FATDateFromDosCore.HC"
 
-U0 FAT32Init(CDrv *dv)
-{
-  CFAT32Boot br32;
-  Bool unlock;
-  try {
-    unlock=DrvLock(dv);
-    dv->fs_type=FSt_FAT32;
-    BlkRead(dv,&br32,dv->drv_offset,1);
-    dv->file_system_info_sect=dv->drv_offset+br32.file_system_info_sect;
-    dv->fat1=dv->drv_offset+br32.reserved_sects;
-    dv->fat2=dv->fat1+br32.sects_per_fat;
-    dv->data_area=dv->fat2+br32.sects_per_fat
-	  -2*br32.sects_per_clus; //Starts at Clus 2
-    dv->spc=br32.sects_per_clus;
-    dv->root_clus=br32.root_clus;
-    DrvFATBlkAlloc(dv);
-    Free(dv->fis);
-    dv->fis=AMAlloc(BLK_SIZE);
-    BlkRead(dv,dv->fis,dv->file_system_info_sect,1);
-    if (unlock)
-      DrvUnlock(dv);
-  } catch
-    if (unlock)
-      DrvUnlock(dv);
-}
+#include "/Kernel/BlkDev/FATInitCore.HC"
 
 U0 FAT32Fmt(U8 drv_let,Bool quick=TRUE)
 {
@@ -108,138 +84,14 @@ U0 FAT32Fmt(U8 drv_let,Bool quick=TRUE)
 
 #include "/Kernel/BlkDev/FATFileFindCore.HC"
 
-U8 *FAT32FileRead(CDrv *dv,U8 *cur_dir,U8 *filename,I64 *_size,I64 *_attr)
-{
-  U8 *buf=NULL;
-  CDirEntry de;
-  I64 c,blk_cnt,cur_dir_clus;
-  Bool unlock=FALSE;
-  DrvChk(dv);
-  *_size=0;
-  *_attr=0;
-  if (dv->fs_type!=FSt_FAT32)
-    PrintErr("Not FAT32 Drv\n");
-  else
-    try {
-      unlock=DrvLock(dv);
-      cur_dir_clus=Name2DirClus(dv,cur_dir);
-      if (FAT32FileFind(dv,cur_dir_clus,filename,&de,FUF_JUST_FILES)) {
-	blk_cnt=(de.size+BLK_SIZE-1)>>BLK_SIZE_BITS;
-	buf=MAlloc(blk_cnt<<BLK_SIZE_BITS+1);
-	c=de.clus;
-	if (!(0<c<0x0FFFFFF8))
-	  c=0x0FFFFFFF;
-	else
-	  c=ClusBlkRead(dv,buf,c,blk_cnt);
-	buf[de.size]=0; //Terminate
-	*_size=de.size;
-	*_attr=FileAttr(de.name,de.attr);
-      }
-      if (unlock) DrvUnlock(dv);
-    } catch
-      if (unlock) DrvUnlock(dv);
-  return buf;
-}
-
-Bool FAT32Cd(U8 *name,I64 cur_dir_clus)
-{
-  CDirEntry de;
-  if (Fs->cur_dv->fs_type!=FSt_FAT32)
-    PrintErr("Not FAT32 Drv\n");
-  else if (FAT32FileFind(Fs->cur_dv,cur_dir_clus,name,&de,FUF_JUST_DIRS))
-    return TRUE;
-  else
-    PrintErr("File not found: \"%s\".\n",name);
-  return FALSE;
-}
+#include "/Kernel/BlkDev/FATReadDirectoryCore.HC"
 
 #include "/Kernel/BlkDev/FATAllocationCore.HC"
 
 #include "/Kernel/BlkDev/FATDirectoryMutationCore.HC"
 
-I64 FAT32FileWrite(CDrv *dv,U8 *cur_dir,U8 *name,U8 *buf,I64 size,
-	CDate cdt,I64 attr)
-{
-  CDirEntry de,existing;
-  I64 c=0,blk_cnt;
-  Bool contiguous,unlock=FALSE,unlock_break=FALSE;
-  MemSet(&de,0,sizeof(CDirEntry));
-  if (size<0) size=0;
-  if (dv->fs_type!=FSt_FAT32)
-    PrintErr("Not FAT32 Drv\n");
-  else if (!CFileNameTo(de.name,name))
-    PrintErr("Invalid FileName: \"%s\".\n",name);
-  else try {
-    unlock_break=BreakLock;
-    unlock=DrvLock(dv);
-    if (FAT32FileFind(dv,Name2DirClus(dv,cur_dir),de.name,&existing,
-	  FUF_JUST_FILES))
-      StrCpy(de.name,existing.name);
-    FAT32FilesDel(dv,cur_dir,de.name,0,FALSE,FALSE);
-    if (attr & RS_ATTR_CONTIGUOUS)
-      contiguous=TRUE;
-    else
-      contiguous=FALSE;
-    de.size=size;
-    if (blk_cnt=(size+BLK_SIZE-1)>>BLK_SIZE_BITS)
-      c=ClusAlloc(dv,0,(blk_cnt+dv->spc-1)/dv->spc,contiguous);
-    else
-      c=0x0FFFFFFF;
-    de.clus=c;
-    de.attr=attr;
-    de.datetime=cdt;
-    if (blk_cnt)
-      ClusBlkWrite(dv,buf,c,blk_cnt);
-    FAT32DirNew(dv,cur_dir,&de,TRUE);
-    if (unlock) {DrvUnlock(dv);unlock=FALSE;}
-    if (unlock_break) {unlock_break=FALSE;BreakUnlock;}
-  } catch {
-    if (unlock) DrvUnlock(dv);
-    if (unlock_break) BreakUnlock;
-  }
-  return c;
-}
+#include "/Kernel/BlkDev/FATWriteCore.HC"
 
 #include "/Kernel/BlkDev/FATFilesFindCore.HC"
 
-Bool FAT32MkDir(CDrv *dv,U8 *cur_dir,U8 *name,I64 entry_cnt)
-{
-  I64 c,cur_dir_clus=Name2DirClus(dv,cur_dir),
-//Rough estimate of size
-	size=CeilU64((entry_cnt+2)<<FAT32_ENTRIES_BITS,dv->spc<<BLK_SIZE_BITS);
-  U8 *buf=CAlloc(size);
-  CDirEntry d_native;
-  CFAT32DirEntry *dFAT=buf;
-  Bool unlock_break;
-
-  try {
-    unlock_break=BreakLock;
-    c=FileWrite(name,buf,size,0,RS_ATTR_DIR);
-    MemSet(&d_native,0,sizeof(CDirEntry));
-    d_native.attr=RS_ATTR_DIR;
-    *d_native.name='.';
-    d_native.name[1]=0;
-    d_native.clus=c;
-    d_native.size=0;
-    d_native.datetime=Now;
-    FAT32DirFill(dFAT,&d_native,NULL,dv->fat32_local_time_offset);
-    dFAT++;
-
-    MemSet(&d_native,0,sizeof(CDirEntry));
-    d_native.attr=RS_ATTR_DIR;
-    *d_native.name='.';
-    d_native.name[1]='.';
-    d_native.name[2]=0;
-    d_native.clus=cur_dir_clus;
-    d_native.size=0;
-    d_native.datetime=Now;
-    FAT32DirFill(dFAT,&d_native,NULL,dv->fat32_local_time_offset);
-    ClusWrite(dv,buf,c,1);
-    Free(buf);
-    if (unlock_break)
-      BreakUnlock;
-  } catch
-    if (unlock_break)
-      BreakUnlock;
-  return TRUE;
-}
+#include "/Kernel/BlkDev/FATMakeDirectoryCore.HC"

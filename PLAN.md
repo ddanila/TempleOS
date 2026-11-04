@@ -25839,3 +25839,15 @@ still reaches missing DocTermNew, without stream stubs. Full workstation runs
 for the media and copy images remain in progress. Full FAT32 path, mounting,
 terminal/autocomplete/settings, release and C1-C5 qualification remain open.
 See `docs/i386-copy-single-z.md` and `docs/i386-files-find.md` for evidence.
+
+
+The complete original file-backed mounting and high-level media-path bodies
+are now extracted into fourteen shared units without implementation changes.
+Two generations of original rebuild pass, and the rebuilt-original MountFile
+contract passes offset-88 geometry, backing lock forwarding, full absolute and
+relative reads, read-only rejection, unmount cleanup and unchanged input pins
+(`build/i386-mount-file-reference-v6`). This is a source-sharing checkpoint;
+native mounting is still unbound. Complete mapped-drive path dispatch, including
+FAT32 and retained-provider quarantine preservation, remains the next dependency.
+The two historical-image workstation runs are still active. C1-C5 remain open;
+see `docs/i386-mount-file.md`.
