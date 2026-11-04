@@ -25475,3 +25475,10 @@ passes all pixels with WinMgr active
 (`build/i386-terminal-final-typing-gen2-kvm-v2`). The full generation-two
 workstation rerun with this change is in progress; complete integration and
 C1–C5 remain open.
+
+The updated full generation-two run
+(`build/i386-c1c5-welcome-native-gen2-workstation64-kvm-v2`) has passed
+`command-06` and advanced to `command-07`, clearing the earlier task-ring
+exact-width screen failure in the complete session. Later desktop and
+application checks are still in progress; this is checkpoint evidence rather
+than a complete workstation pass.
