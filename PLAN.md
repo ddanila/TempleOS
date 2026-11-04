@@ -25749,3 +25749,15 @@ directory expansion and directory-option checks with unchanged inputs
 oracle is documented. Native core compilation reaches missing `DirContextNew`
 line 6 (`build/i386-file-delete-dependency-probe-v1`), without deleting files.
 Full native Del/streams, block I/O/media and C1-C5 remain open.
+
+Complete original drive switch/change/cache-invalidation bodies are now
+shared byte-for-byte, retaining all initialization and removable-media
+branches. Original rebuilds, native cross-build/386 audit and 1209-file
+source audit pass (`build/i386-drive-media-lifecycle-cross-v1`). The original
+private RAM directory-context contract passes saved state, masks/expansion,
+restore/no-restore, parent failure rollback, directory creation and the
+init-in-progress branch with unchanged inputs
+(`build/i386-dir-context-reference-v1`). Native compile-only probes confirm
+`DskDirContext` needs `Drv` and the lifecycle core needs `BlkDevInit`; no
+native operation was called. Full contexts/Del/streams and block I/O/media
+and C1-C5 remain open.

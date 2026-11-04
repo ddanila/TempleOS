@@ -96,3 +96,25 @@ production behavior. Native compilation stops at missing `DirContextNew`
 on line 6, with unchanged inputs and no deletion executed
 (`build/i386-file-delete-dependency-probe-v1`). Full native `Del`, streams,
 block I/O/media and C1-C5 remain open.
+
+## Directory-context and full drive lifecycle dependency (2026-11-04)
+
+The complete original `DskCacheInvalidate`, `DskChg` and `Drv` bodies are
+shared byte-for-byte through `DriveMediaLifecycleCore.HC`, preserving media
+initialization and removable-media branches. Both original rebuild generations,
+full native cross-build/386 audit and 1209-file source audit pass
+(`build/i386-drive-media-lifecycle-cross-v1`). They are not native bindings.
+
+The original private RAM directory-context contract passes with unchanged
+inputs (`build/i386-dir-context-reference-v1`). It checks saved drive/path
+identity, ordinary masks, directory-to-star expansion, semicolon masks,
+`no_mask`, restoration and explicit non-restoration, failed parent rollback,
+recursive directory creation, and the initialization-in-progress restore
+branch. The fixture restores its original path/drive and RAM map and frees
+its private storage. It does not qualify native contexts or removable media.
+
+Compile-only native probes stop at `Drv` on line 9 of `DskDirContext.HC`
+and `BlkDevInit` on line 8 of the shared lifecycle core, with inputs unchanged
+and no lifecycle operation called (`build/i386-dir-context-dependency-probe-v1`,
+`build/i386-drive-media-dependency-probe-v1`). Full native contexts, deletion,
+streams, block I/O/media and C1-C5 remain open.
