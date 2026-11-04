@@ -310,3 +310,18 @@ fixture passes as v3. Compiling unchanged `DskATA.HC` on the corrected image
 now advances to missing `EndianU16` on line 112, with inputs unchanged and
 no ATA routine called (`build/i386-ata-dependency-probe-v4`). Native ATA,
 public block I/O, streams and C1-C5 remain open.
+
+## Public endian bindings (2026-11-04)
+
+The native public kernel now exposes `EndianU16`, `EndianU32` and `EndianI64`
+using the already included, unchanged `Kernel/EndianCore.HC` bodies. The three
+exports are appended without shifting existing symbol indices. Both original
+rebuild generations and the full native cross-build/386 audit pass, as does
+the 1199-file delivered-source audit (`build/i386-endian-public-cross-v1`).
+`tools/test-i386-endian.py` passes with unchanged inputs on the native image
+(`build/i386-endian-public-native-v1`), covering every U16 input, mixed and
+all-ones vectors, all U32/U64 bit positions and double-swap recovery.
+The unchanged ATA compile probe now advances from missing `EndianU16` at
+line 112 to missing `CATAPITrack` at line 281, with inputs unchanged and
+no ATA routine called (`build/i386-ata-dependency-probe-v5`). Native ATA,
+public block I/O, streams and C1-C5 remain open.

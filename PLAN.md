@@ -25600,3 +25600,12 @@ qualified. The unchanged ATA compile probe now stops at `EndianU16` line 112
 (`build/i386-ata-dependency-probe-v4`). Earlier export-table boot and fixture
 syntax failures are preserved and documented in `docs/i386-block-io.md`.
 Public block I/O/streams and C1-C5 remain open.
+
+The existing shared endian conversion routines now have native public
+bindings. Original two-generation rebuilds, native cross-build/386 audit and
+the 1199-file delivered-source audit pass (`build/i386-endian-public-cross-v1`);
+the exhaustive U16 and U32/U64 bit/vector fixture passes with unchanged inputs
+(`build/i386-endian-public-native-v1`). Unchanged ATA compilation now reaches
+the missing `CATAPITrack` record at line 281
+(`build/i386-ata-dependency-probe-v5`). Device operations were not called;
+full ATA, public block I/O/streams and C1-C5 remain open.
