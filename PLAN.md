@@ -25707,3 +25707,13 @@ primary MBR fixture passes with unchanged inputs and exact header restoration
 remaining bytes, invalid type rejection and preowned locks. Extended
 partition traversal and full formatting/media/block I/O/streams remain
 unqualified. C1-C5 remain open.
+
+Complete original block zeroing and bitmap-cache allocation helpers are
+now shared byte-for-byte. Original rebuilds, full native cross-build/386
+audit and 1206-file source audit pass
+(`build/i386-media-block-helpers-cross-v1`). The original private RAM
+contract passes chunk-boundary zeroing, boundary preservation, zero-count
+behavior, bitmap-cache replacement/reset and nested locks with unchanged
+inputs (`build/i386-media-block-helpers-reference-v1`). Native compile-only
+probes identify missing public `BlkWrite`/`BlkRead`; no native helper was
+called. Full block I/O/media/streams and C1-C5 remain open.

@@ -511,3 +511,22 @@ all 512 bytes in both the guest and host runner. The source image is
 unchanged. Extended-partition traversal and physical hardware are not
 qualified. This supplies the partition-edit dependency of `RedSeaFmt`;
 complete native formatting, block I/O/media/streams and C1-C5 remain open.
+
+## Complete shared media block helpers (2026-11-04)
+
+The complete original `BlkWriteZero` and `DrvFATBlkAlloc` bodies are shared
+byte-for-byte through `BlockWriteZeroCore.HC` and `DriveFATAllocCore.HC`.
+Both original rebuild generations, full native cross-build/386 audit and
+1206-file delivered-source audit pass (`build/i386-media-block-helpers-cross-v1`).
+The original-system private RAM fixture passes with unchanged inputs
+(`build/i386-media-block-helpers-reference-v1`): 2049 sectors zeroed across
+the 2048-sector chunk boundary, untouched surrounding sectors, zero-count
+behavior, bitmap-cache replacement/data/reset and preowned lock retention.
+It does not exercise non-RAM progress reporting or native block operations.
+
+Native compile-only probes stop at missing public `BlkWrite` on line 17
+and `BlkRead` on line 8 respectively, with inputs unchanged and no helper
+called (`build/i386-block-zero-dependency-probe-v1` and
+`build/i386-fat-alloc-dependency-probe-v1`). These are delivered complete
+sources, not native bindings. Full block I/O, media lifecycle, streams and
+C1-C5 remain open.
