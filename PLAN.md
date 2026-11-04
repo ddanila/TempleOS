@@ -25448,3 +25448,10 @@ same installed image with exact tail pixels and unchanged inputs
 80-character prompt plus expression wraps its final semicolon to a second
 row. The broader wrap expectation and generation-two integration remain open;
 this bounded diagnostic does not qualify complete desktop behavior.
+
+The same exact-width diagnostic also passes all three pixel checks on the
+cross-built welcome image with unchanged inputs
+(`build/i386-terminal-exact-width-cross-v1/result.json`). Thus the wrapped
+semicolon observed on generation two is reproducible on the cross-built
+image too. These TCG runs use the helper's normal key delay; the differing
+full-suite KVM layout still needs an explanation and a verified correction.
