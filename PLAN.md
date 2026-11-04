@@ -25581,3 +25581,11 @@ installed native generations, including both repaired mouse wrap expectations.
 The concurrent runs do not qualify isolated startup/latency budgets, minimum
 RAM or complete C1-C5 behavior; autocomplete/terminal construction, full public
 block I/O and streams, applications and other milestone requirements remain open.
+
+The next public block-I/O dependency now shares the original ATA constants
+through `Kernel/BlkDev/ATAConstants.HH`. Both original rebuild generations,
+full native cross-build/386 audit and 1198-file delivered-source audit pass
+(`build/i386-ata-constants-cross-v1`). The unchanged ATA source compile probe
+now advances from missing `ATAR1_CTRL` at line 4 to missing `RepInU16` at line
+87, with inputs unchanged and no device operations called. Native ATA, full
+block I/O/streams and C1-C5 remain open; see `docs/i386-block-io.md`.

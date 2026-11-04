@@ -267,3 +267,18 @@ contents and the guest runs on a snapshot. The fixture yields to the waiting
 task before each change; this samples cooperative contention and does not
 establish all remapping or device teardown cases. Public block I/O remains
 unimplemented.
+
+## Original ATA constants (2026-11-04)
+
+Compiling the unchanged `DskATA.HC` on the full workstation image first
+stopped at missing `ATAR1_CTRL` on line 4
+(`build/i386-ata-dependency-probe-v1`). The original command, status and
+register-offset constants are now shared byte-for-byte through
+`Kernel/BlkDev/ATAConstants.HH`, included by both KernelA and native
+PublicFiles. Both original rebuild generations pass, as do the full native
+cross-build, 386 instruction audit and delivered-source audit (1198 files)
+in `build/i386-ata-constants-cross-v1`. The follow-up unchanged-source compile
+probe advances to missing `RepInU16` on line 87
+(`build/i386-ata-dependency-probe-v2`); both probes preserve their inputs and
+call no ATA routine. This supplies original constants, not native ATA, public
+block I/O or media support.

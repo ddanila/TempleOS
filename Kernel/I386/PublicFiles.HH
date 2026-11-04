@@ -9,6 +9,7 @@
 #include "/Kernel/NumericLimits.HH"
 #include "/Kernel/BlkDev/CFileTypes.HH"
 #include "/Kernel/BlkDev/BlockDevTypes.HH"
+#include "/Kernel/BlkDev/ATAConstants.HH"
 #include "/Kernel/BlkDev/BlockSize.HH"
 #include "/Kernel/BlkDev/BlockGlobalsTypes.HH"
 public _extern _FILES_FIND_MATCH Bool FilesFindMatch(U8 *test_name,U8 *files_find_mask,I64 fuf_flags=0);
