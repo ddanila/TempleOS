@@ -827,6 +827,12 @@ def package_volume(disk, exports, content_profile="minimal"):
                      'HelpAnchorTarget.DD': b'Top\nBefore\n$AN,"",A="Wanted"$Wanted heading\nAnchor body\n',
                      'OriginalCompat.DD': original_doc}
     tree['Modules']={'I386':{f'{name}.t32m':(exports/f'{name}.t32m').read_bytes() for name in DISK_MODULES}}
+    registry=(exports/'StartupRegistry.HC.Z').read_bytes()
+    registry_oracle=json.loads((ROOT/'tests/i386/startup-registry-reference.json').read_text())
+    if (registry!=bytes.fromhex(registry_oracle['archive_hex']) or
+            (exports/'StartupRegistry.HC').read_bytes()!=bytes.fromhex(registry_oracle['logical_hex'])):
+        raise ValueError('Original startup registry differs from pinned default document/archive')
+    tree['Registry.HC.Z']=registry
     files={}
     def entry(name,attr,block,size):
         raw=name.encode('ascii')
@@ -843,7 +849,7 @@ def package_volume(disk, exports, content_profile="minimal"):
                 if cursor>start+sectors: raise ValueError('RedSea image full')
                 image[block*512:block*512+len(node)]=node
             files[path]={'block':block,'size':len(node),'sha256':hashlib.sha256(node).hexdigest()}
-            return block,len(node),0x800
+            return block,len(node),0xC00 if path=='/Registry.HC.Z' else 0x800
         block=cursor
         size=((len(node)+3)*64+511)//512*512
         cursor+=size//512
@@ -934,7 +940,7 @@ def verify_volume(disk, volume):
                 directory(child,block,child_path)
                 if struct.unpack_from('<q',image,child*512+48)[0]!=length:
                     raise ValueError('Directory extent sizes disagree')
-            elif attr==0x800:
+            elif attr==0x800 or attr==0xC00 and child_path=='/Registry.HC.Z':
                 claim(child,length)
                 content=image[child*512:child*512+length] if length else b''
                 found[child_path]={'block':child,'size':length,'sha256':hashlib.sha256(content).hexdigest()}
@@ -2489,7 +2495,7 @@ def main():
             'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
             'build_inputs_sha256':{name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
                 'tools/build-i386-kernel.py','tools/audit-i386-boot.py','tools/audit-i386-keyword-table.py','tools/i386-bios.inc','tools/i386-extended-stage.asm',
-                'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/guest/i386-kernel/GraphicsFrameOracle.HC','tools/guest/i386-kernel/DateOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
+                'tools/guest/i386-kernel/Once.HC','tools/guest/i386-kernel/StartupRegistryOracle.HC','tests/i386/startup-registry-reference.json','tools/guest/i386-kernel/DocDefaultsOracle.HC','tools/guest/i386-kernel/TextBaseOracle.HC','tools/guest/i386-kernel/TextRenderOracle.HC','tools/guest/i386-kernel/GraphicsFrameOracle.HC','tools/guest/i386-kernel/DateOracle.HC','tools/test-i386.py','tools/build-iso.py','tools/guest-run.py',
                 'tools/i386-kernel-input.py','tools/test-i386-doc-compat.py','tests/guest/i386-doc-compat/Once.HC','tools/i386-text-frame.py','tools/i386-graphics-frame.py','tools/gen-i386-public-math.py',
                 'tools/i386_f64_oracle.py','tools/i386_log_oracle.py','tools/i386_integer_oracle.py','tools/gen-i386-date.py')},
             'boot_instruction_audit':boot_audit,

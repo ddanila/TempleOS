@@ -1,5 +1,6 @@
 #include "/Kernel/I386/Module.HH"
 U0 Report(U8 *text) { while(*text) OutU8(0xE9,*text++); }
+#include "T:/StartupRegistryOracle.HC"
 #include "/Kernel/I386/StrCopyCheck.HC"
 #include "/Kernel/I386/QueueCheck.HC"
 #include "/Kernel/I386/HashTableCheck.HC"
@@ -179,6 +180,7 @@ U0 BuildKernel()
   if(!source || size!=48) { Report("FAIL original document compatibility fixture\n"); return; }
   line=MStrPrint("EXPORT OriginalCompat.DD %X %X\n",source,size); Report(line); Free(line);
   Report("PASS original document compatibility fixture\n");
+  OriginalStartupRegistry;
   for(i=0;i<16;i++) {
     switch(i) {
       case 0: name="Kernel"; break;
