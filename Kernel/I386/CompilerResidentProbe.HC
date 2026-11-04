@@ -1,5 +1,16 @@
 //Resident code/data are borrowed; publication owns only declaration metadata.
 I64 ProbeResidentAdd(I64 value) { return value+2; }
+CHashFun *ProbeResidentHeader(CHashTable *table,U8 *name,I64 args)
+{
+  CHashFun *fun;
+  for(;table;table=table->next)
+    if(fun=ProbeSymbolFind(0,name,table,HTT_FUN)) {
+      if(!fun->exe_addr || Bt(&fun->flags,Cf_EXTERN) || fun->arg_cnt!=args) KernelStop;
+      return fun;
+    }
+  KernelStop;
+  return 0;
+}
 U0 ProbeResidents(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -10,6 +21,9 @@ U0 ProbeResidents(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CHashExport service,catch_flag,collision;
   CHashSrcSym *roots[8],*entry;
   CHashFun *fun;
+  CHashFun *headers[3];
+  U8 *header_addresses[3];
+  U64 header_flags[3];
   CHashGlblVar *global;
   U8 *bytes,*source,*address;
   I64 kind,i,count,before_used,before_allocations;
@@ -17,6 +31,15 @@ U0 ProbeResidents(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   U32 flags=GetRFlags;
   Bool old_answer=task->new_answer;
   U8 old_answer_type=task->answer_type;
+  if(probe->phase) {
+    headers[0]=ProbeResidentHeader(task->hash_table,"SysTry",2);
+    headers[1]=ProbeResidentHeader(task->hash_table,"SysUntry",0);
+    headers[2]=ProbeResidentHeader(task->hash_table,"throw",2);
+    for(i=0;i<3;i++) {
+      header_addresses[i]=headers[i]->exe_addr;header_flags[i]=headers[i]->flags;
+    }
+    KernelLog("RESIDENT HEADERS ");KernelHex(probe->phase);KernelLog("\n");
+  }
   task->new_answer=TRUE; task->answer_type=0xA5;
   bytes=&service; for(i=0;i<sizeof(CHashExport);i++) bytes[i]=0;
   bytes=&catch_flag; for(i=0;i<sizeof(CHashExport);i++) bytes[i]=0;
@@ -32,6 +55,11 @@ U0 ProbeResidents(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     source="extern I64i ProbeResident(I64i n);extern Bool ProbeCatch;"
       "extern U0 SysTry(U8i *caught,U8i *leave);extern U0 SysUntry();"
       "extern U0 throw(I64i ch=0,Bool no_log=0);"
+      "I64i ResidentMain(){I64i n=0;try{n=ProbeResident(40);throw('Resident',1);}"
+      "catch{if(n==42)ProbeCatch=1;}return n;}";
+    //The worker inherits PublicDebug's resolved helpers. Redeclaring them in
+    //this AOT control reuses foreign metadata that cannot be published as owned.
+    if(probe->phase) source="extern I64i ProbeResident(I64i n);extern Bool ProbeCatch;"
       "I64i ResidentMain(){I64i n=0;try{n=ProbeResident(40);throw('Resident',1);}"
       "catch{if(n==42)ProbeCatch=1;}return n;}";
     if(kind==5) source="extern I64i ProbeResident(I64i n);";
@@ -80,8 +108,16 @@ U0 ProbeResidents(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
         heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap) ||
         (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
     if(!task->new_answer || task->answer_type!=0xA5) KernelStop;
+    if(probe->phase) {
+      if(ProbeResidentHeader(task->hash_table,"SysTry",2)!=headers[0] ||
+          ProbeResidentHeader(task->hash_table,"SysUntry",0)!=headers[1] ||
+          ProbeResidentHeader(task->hash_table,"throw",2)!=headers[2]) KernelStop;
+      for(i=0;i<3;i++)
+        if(headers[i]->exe_addr!=header_addresses[i] || headers[i]->flags!=header_flags[i]) KernelStop;
+    }
     KernelLog("RESIDENT CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(kind); KernelLog("\n");
   }
   task->new_answer=old_answer; task->answer_type=old_answer_type;
+  if(probe->phase) {KernelLog("RESIDENT HEADERS PRESERVED ");KernelHex(probe->phase);KernelLog("\n");}
   if(!ProbePublishedRemove(task->hash_table,&service) || !ProbePublishedRemove(task->hash_table,&catch_flag)) KernelStop;
 }

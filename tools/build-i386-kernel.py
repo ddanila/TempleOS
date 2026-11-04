@@ -2815,6 +2815,13 @@ def main():
         if intrinsic_cases != [(0,37),(1,37)] or intrinsic_rejections != [(phase,case) for phase in (0,1) for case in range(15)]:
             raise ValueError('Native intrinsic publication or execution failed')
         resident_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('RESIDENT CASE ')]
+        if (log.splitlines().count('RESIDENT HEADERS 0000000000000001')!=1 or
+                log.splitlines().count('RESIDENT HEADERS PRESERVED 0000000000000001')!=1 or
+                not (log.index('RESIDENT HEADERS 0000000000000001') <
+                     log.index('RESIDENT CASE 0000000000000001 0000000000000000') <
+                     log.index('RESIDENT CASE 0000000000000001 0000000000000006') <
+                     log.index('RESIDENT HEADERS PRESERVED 0000000000000001'))):
+            raise ValueError('Resident publication changed inherited exception header bindings')
         opaque_cases = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('OPAQUE CASE ')]
         task_layouts = [tuple(int(value,16) for value in line.split()[2:]) for line in log.splitlines() if line.startswith('TASK LAYOUT ')]
         if task_layouts != [(phase,992,232) for phase in (0,1)]:

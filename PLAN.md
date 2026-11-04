@@ -26179,3 +26179,18 @@ unisolated. Original bootstrap generations and 1,361-file/386 audits pass; norma
 byte-identical. See docs/i386-worker-probe-staging.md and the pinned failure in
 build/i386-staged-worker-probe-minimal-v1. Full minimal regressions and C1-C5
 remain open.
+
+The worker resident-publication failure is isolated to publication after valid
+parse/address checks. Its AOT fixture unnecessarily redeclared exception helpers
+already supplied by inherited public headers, reusing foreign declaration
+metadata. The worker now uses those resolved bindings and checks identity,
+address, flags and argument counts before/after all seven resident cases.
+All fourteen root/worker cases now pass without changing compiler ownership or
+collision checks. Both guest compiler/program phases finish, the worker is
+released and startup reaches live WinMgr. The full host gate still fails its
+old disk-immutability assertion: only a new 114-byte /Registry.HC.Z appears;
+all existing live files are unchanged and the filesystem audit passes. No
+assertion is bypassed and later host/regression stages remain unqualified.
+Original bootstrap generations, source/386 audits and 33.48-second normal KVM
+startup smoke pass. See docs/i386-resident-header-probe.md and
+build/i386-resident-headers-minimal-v1/failure.json. C1-C5 remain open.
