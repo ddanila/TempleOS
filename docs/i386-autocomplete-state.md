@@ -85,3 +85,12 @@ unchanged autocomplete sources reject with an undefined identifier at
 remain unchanged. The shared `Adam/DolDoc/DocTermNewCore.HC` body exists but
 is not exposed by the native image. This compile probe still supplies throwing
 stream providers and establishes neither real stream nor autocomplete behavior.
+
+Compiling the original terminal right-click callback separately on that image
+stops earlier than its mounting branch: `Copy` at line 40 is not bound in the
+native public file API
+(`build/i386-terminal-constructor-dependency-probe-v1/result.json`). The guest
+reports `Invalid lval` at token `Copy`; the source image hash remains unchanged.
+No callback executes. Completing `DocTermNew` therefore also requires the
+original copy workflow and subsequent callback dependencies, rather than only
+publishing the constructor.
