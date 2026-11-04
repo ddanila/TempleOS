@@ -26166,3 +26166,16 @@ policy, worker budget and workload are unchanged. See
 docs/i386-frame-load-footprint.md and the pinned failure report in
 build/i386-frame-load-minimal-gate-v2. All 686 inventory entries and C1-C5 remain
 open; original bootstrap generations do not satisfy native C5 rebuilds.
+
+The worker's temporary CompilerProbe provider now loads after its independent
+memory probe, inside a protected volume transaction. This removes 554,040 raw
+heap bytes of unnecessary overlap without changing RAM, worker budgets,
+allocation sizes or assertions. The unchanged full 8 MiB gate now passes both
+memory phases with exact preservation/cleanup, then successfully loads and runs
+the worker compiler provider. It advances through parser and conditional-pressure
+checks and stops at RESIDENT START phase 1 kind 0; the precise assertion is still
+unisolated. Original bootstrap generations and 1,361-file/386 audits pass; normal
+8 MiB KVM startup passes in 33.48 seconds. Fifteen non-kernel module files remain
+byte-identical. See docs/i386-worker-probe-staging.md and the pinned failure in
+build/i386-staged-worker-probe-minimal-v1. Full minimal regressions and C1-C5
+remain open.

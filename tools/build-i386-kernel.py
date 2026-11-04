@@ -2763,6 +2763,14 @@ def main():
             raise ValueError('Staged compiler diagnostics escaped boot/task phases')
         result['compiler_probe']=dict(version=20,phases=['boot','task'],providers=probe_lifetimes,
             lifetime='each provider released before the next provider loads')
+        provider_loads=[line.split()[2:] for line in log.splitlines() if line.startswith('PROBE LOAD ')]
+        expected_loads=[[item['image_address'],item['image_bytes'],item['reclaimed_heap_bytes']]
+                        for item in probe_lifetimes['PROBE']]
+        if ([list(map(lambda x:int(x,16),row)) for row in provider_loads]!=expected_loads or
+                not (log.index('MEMORY PROBE 0000000000000001\n') <
+                     log.rindex('PROBE LOAD ') < log.index('PROBE MODULE 0000000000000001 '))):
+            raise ValueError('Worker compiler provider overlapped its independent memory probe')
+        result['compiler_probe']['worker_load']='after independent worker memory probe; volume transaction with IRQ restoration'
         branch_recovery = [line.split() for line in log.splitlines() if line.startswith('BRANCH RECOVERY ')]
         if [int(row[2], 16) for row in branch_recovery] != [0, 1]:
             raise ValueError('Native branch optimizer allocation recovery failed')

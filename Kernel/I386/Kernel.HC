@@ -269,8 +269,8 @@ I64 Main(CI386BootInfo *info,I64 unused)
   //Public-header probes require the real console/debugger exports.
   if(kernel_diagnostics) {
     KernelCompilerProbe(0);
-    //Keep the next provider contiguous before public headers fragment the arena.
-    KernelCompilerProbeLoad;
+    //The worker loads its provider after its independent memory probe. Keeping
+    //that temporary module here needlessly overlaps both diagnostic workloads.
   if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
     if(!kernel_console.root_headers || !kernel_console.root_headers()) KernelStop;
   }
@@ -447,6 +447,7 @@ U0 KernelFatal(CI386Task *task,I64 status,I64 ch)
 U0 KernelPulse(I64 unused)
 {
   I64 pulses;
+  U32 flags;
   for(pulses=0;pulses<2;pulses++) {
     if(!I386SleepTicks(&kernel_sleep,25)) KernelStop;
     KernelLog("TICK "); KernelHex(I386TimerTicks(&kernel_timer)); KernelLog("\n");
@@ -456,6 +457,11 @@ U0 KernelPulse(I64 unused)
     KernelLog("FILE MOVE PROBE 0000000000000004\n");
   }
   kernel_memory.probe(1);
+  flags=I386IrqSave;
+  if(!I386RedSeaBegin(&kernel_volume))KernelStop;
+  KernelCompilerProbeLoad;
+  if(!I386RedSeaEnd(&kernel_volume))KernelStop;
+  I386IrqRestore(flags);
   KernelCompilerProbe(1);
   if(!kernel_compiler.scalar_types_check(kernel_scalars,FALSE)) KernelStop;
   kernel_probe_ready=TRUE;
@@ -732,7 +738,7 @@ U0 KernelCompilerProbeLoad()
   KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
   CI386RedSeaEntry file;
   if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/CompilerProbe.t32m",&file)!=1)KernelStop;
-  //Keep the validated file capacity available for the second load after console allocation.
+  //Retain the validated file capacity for this provider's complete probe phase.
   kernel_probe_image=I386RedSeaLoadBoundCapacity(&kernel_volume,&file,&kernel_heap,"Main",bindings,sizeof(kernel_probe_bindings),FALSE);
   if(!kernel_probe_image) {
     KernelHeapCheck(used,allocations);
@@ -741,6 +747,8 @@ U0 KernelCompilerProbeLoad()
   kernel_probe_size=I386HeapSize(&kernel_heap,kernel_probe_image);
   kernel_probe_span=kernel_heap.used-used;
   if((kernel_probe_image+0)(U64)<0x110000 || kernel_probe_size<8 || kernel_heap.allocations!=allocations+1) KernelStop;
+  KernelLog("PROBE LOAD ");KernelHex((kernel_probe_image+0)(U64));KernelLog(" ");
+  KernelHex(kernel_probe_size);KernelLog(" ");KernelHex(kernel_probe_span);KernelLog("\n");
 }
 U0 KernelCompilerProbe(I64 phase)
 {//Run both phases with real public exports; provider was loaded before console.
