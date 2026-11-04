@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import runpy
 import shutil
@@ -18,7 +19,10 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--accel', choices=('tcg', 'kvm'), default='tcg')
+    parser.add_argument('--key-delay', type=float, default=.3)
     args = parser.parse_args()
+    if not math.isfinite(args.key_delay) or args.key_delay < 0:
+        parser.error('--key-delay must be finite and nonnegative')
     out = args.out.resolve()
     out.mkdir()
     disk = args.disk.resolve()
@@ -27,13 +31,14 @@ def main():
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     pins = {str(p): sha(p) for p in (disk, Path(__file__).resolve(), helper,
                                    renderer, ROOT/'Kernel/FontStd.HC')}
-    report = dict(result='running', input_sha256=pins, accel=args.accel,
+    report = dict(result='running', input_sha256=pins, accel=args.accel, key_delay=args.key_delay,
                   scope='Three identical exact-width commands after console scrolling; not full terminal qualification')
     try:
         working = out/'working.img'
         shutil.copyfile(disk, working)
         commands = ['I64 wrap_i;for(wrap_i=0;wrap_i<70;wrap_i++)"\\n";']+[SOURCE]*3
-        runpy.run_path(str(helper))['guest'](working, out/'guest', commands, 64, True, accel=args.accel)
+        runpy.run_path(str(helper))['guest'](working, out/'guest', commands, 64, True,
+                                          key_delay=args.key_delay, accel=args.accel)
         rows = [('> '+SOURCE)[:79], ';', '1', '> ']
         colors = {(r, c): 2 for r, line in enumerate(rows) for c in range(len(line))}
         render = runpy.run_path(str(renderer))['console_pixels']
