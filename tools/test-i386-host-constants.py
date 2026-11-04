@@ -31,7 +31,7 @@ def main():
         files += [ROOT / p for p in ('Compiler/I386/Core.HC', 'Compiler/OptPass012Core.HC', 'Compiler/PrsExp.HC', 'tools/build-iso.py', 'tools/guest-run.py', 'build/rebuild-test/overlay/0000Boot/0000Kernel.BIN.C', 'build/rebuild-test/overlay/Compiler/Compiler.BIN')]
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     pins = {str(p): sha(p) for p in files}
-    report = dict(result='running', input_sha256=pins, scope='Cross-compiler host constants: integer, positive/negative/zero F64 and folded arithmetic, mixed integer/pi product and nested division, pointer/nonconstant rejection; exact result type and IEEE bits')
+    report = dict(result='running', input_sha256=pins, scope='Cross-compiler host constants: integer, positive/negative/zero F64 and folded arithmetic, mixed integer/pi product and nested division, pointer/nonconstant rejection, owned string/empty/concatenated literal data and post-release copy lifetime; exact result type and IEEE bits')
     (out / 'result.json').write_text(json.dumps(report, indent=2)+'\n')
     try:
         if args.original:
@@ -39,14 +39,14 @@ def main():
             overlay.mkdir()
             source = fixture.read_text() + '\nU0 DPReport(U8 *s){while(*s)OutU8(0xE9,*s++);}\n'
             source += 'I64 dp_mask=JRContract(84);U8 *dp_line=MStrPrint("OBS host constant vectors mask %d\\n",dp_mask);DPReport(dp_line);Free(dp_line);\n'
-            source += 'if(dp_mask==1023)DPReport("PASS original host constant vectors\\n");else DPReport("FAIL original host constant vectors\\n");\nDPReport("DONE host constant vectors\\n");\n'
+            source += 'if(dp_mask==8191)DPReport("PASS original host constant vectors\\n");else DPReport("FAIL original host constant vectors\\n");\nDPReport("DONE host constant vectors\\n");\n'
             (overlay / 'Once.HC').write_text(source)
             iso = out / 'original.iso'
             subprocess.run([sys.executable, 'tools/build-iso.py', '--overlay', 'build/rebuild-test/overlay', '--overlay', str(overlay), '--output', str(iso)], cwd=ROOT, check=True)
             subprocess.run([sys.executable, 'tools/guest-run.py', str(iso), '--out', str(out / 'behavior'), '--timeout', '90', '--qmp-stdio'], cwd=ROOT, check=True)
             log = (out / 'behavior/debug.log').read_text()
-            if 'OBS host constant vectors mask 1023\n' not in log or 'PASS original host constant vectors\n' not in log:
-                raise ValueError('Original parser contract did not pass all six checks')
+            if 'OBS host constant vectors mask 8191\n' not in log or 'PASS original host constant vectors\n' not in log:
+                raise ValueError('Original host-constant contract did not pass all vectors')
         report['result'] = 'pass'
     except Exception as error:
         report.update(result='fail', error=str(error))

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile unchanged AutoComplete source with explicitly failing stream probes."""
+"""Load unchanged AutoComplete source against the real native services."""
 import argparse
 import hashlib
 import json
@@ -18,13 +18,13 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     paths=[source,Path(__file__).resolve(),helper,build,inventory,ROOT/'Kernel/FontStd.HC']
     pins={str(p):sha(p) for p in paths}
-    report=dict(result='running',input_sha256=pins,scope='Compile unchanged AutoComplete source with deliberately throwing file-stream test providers; no stream or autocomplete functionality is exercised')
+    report=dict(result='running',input_sha256=pins,scope='Load unchanged AutoComplete source against real native services without stream stubs; definitions/metadata may execute, but no explicit autocomplete task activation')
     try:
         expected={('/'+e['path']):e['reference_sha256'] for e in json.loads(inventory.read_text())['entries'] if e['path'].startswith('Adam/AutoComplete/') and e['path'].endswith('.HC')}
         read=runpy.run_path(str(build))['mutated_file_contents'];files=read(source,set(expected))
         if {name:hashlib.sha256(data).hexdigest() for name,data in files.items()}!=expected:raise ValueError('AutoComplete source differs from original')
         shutil.copyfile(source,image)
-        runpy.run_path(str(helper))['guest'](image,out/'guest',["CFile *FOpen(U8 *name,U8 *flags,I64 cnt=0){throw('Missing',TRUE);return NULL;}","Bool FBlkRead(CFile *f,U8 *buf,I64 blk=FFB_NEXT_BLK,I64 cnt=1){throw('Missing',TRUE);return FALSE;}","U0 FClose(CFile *f){throw('Missing',TRUE);}",'#include "C:/Adam/AutoComplete/MakeAC.HC"','6*7;'],64,True)
+        runpy.run_path(str(helper))['guest'](image,out/'guest',['#include "C:/Adam/AutoComplete/MakeAC.HC"','6*7;'],64,True)
         report['result']='pass'
     except Exception as exc:
         report.update(result='fail',error=str(exc));raise

@@ -26,9 +26,11 @@ U0 I386HostBackendReport(U8 *context,I64 reason,CIntermediateCode *ic,U8 *name)
 }
 U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
 {//Array bounds/defaults are evaluated by the running x86-64 compiler.
- //Return folded scalar bits in the host Call ABI, never execute target code.
+ //Return scalar bits or owned literal data in the host Call ABI.
+ //Never execute target code or embed a host literal address in target code.
   CIntermediateCode *ic;
-  I64 count=0,value=0,result_type=RT_I64;
+  CCodeMisc *literal=NULL;
+  I64 count=0,value=0,result_type=RT_I64,literal_bytes=0;
   U8 *res;
   if (cc->flags&CCF_EXE_BLK) throw('Compiler');
   cc->pass=0;
@@ -53,18 +55,31 @@ U8 *I386HostConstant(CCmpCtrl *cc,I64 *_size,I64 *_type)
         value=ic->ic_data;
         if(ic->ic_code==IC_IMM_F64) result_type=RT_F64;
         break;
+      case IC_STR_CONST:
+        if(++count!=1 || ic->ic_class->ptr_stars_cnt!=1)throw('Compiler');
+        literal=ic->ic_data;
+        if(!literal || literal->type!=CMT_STR_CONST || !literal->str ||
+            literal->st_len<1 || literal->str[literal->st_len-1])throw('Compiler');
+        literal_bytes=literal->st_len;
+        result_type=RT_PTR;
+        break;
       default:
-        PrintErr("i386 host evaluation requires a folded scalar constant\n");
+        PrintErr("i386 host evaluation requires a folded scalar or string literal\n");
         throw('Compiler');
     }
   }
   if (count!=1) { PrintErr("i386 host constant has no value\n"); throw('Compiler'); }
-  res=MAlloc(11,Fs->code_heap);
+  res=MAlloc(11+literal_bytes,Fs->code_heap);
+  if(literal_bytes) {
+    MemCpy(res+11,literal->str,literal_bytes);
+    value=res+11;
+  }
   res[0]=0x48; res[1]=0xB8; //Host MOV RAX,imm64; RET.
   MemCpy(res+2,&value,8); res[10]=0xC3;
-  if (_size) *_size=11;
+  if (_size) *_size=11+literal_bytes;
   if (_type) *_type=result_type;
   COCDel(cc,&cc->coc);
+  if(literal_bytes)cc->flags|=CCF_HAS_MISC_DATA;
   return res;
 }
 

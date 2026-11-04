@@ -554,6 +554,18 @@ U0 CompileTests()
   EmitCase("return QueueCheck;",0,0,9,&cursor,
     "#include \"/Kernel/I386/Queue.HH\"\nextern I64 QueueCheck();",
     "#include \"/Kernel/I386/QueueCheck.HC\"\n");
+  EmitCase("return DefaultDot;",0,0,46,&cursor,
+    "extern I64 DefaultDot(U8 *text=\".\");",
+    "I64 DefaultDot(U8 *text=\".\"){return text[0];}");
+  EmitCase("return DefaultEmpty;",0,0,0,&cursor,
+    "extern I64 DefaultEmpty(U8 *text=\"\");",
+    "I64 DefaultEmpty(U8 *text=\"\"){return text[0];}");
+  EmitCase("return DefaultDot(\"Z\");",0,0,90,&cursor,
+    "extern I64 DefaultDot(U8 *text=\".\");",
+    "I64 DefaultDot(U8 *text=\".\"){return text[0];}");
+  EmitCase("return DefaultWide;",0,0,0x1000006261,&cursor,
+    "extern I64 DefaultWide(U8 *text=\"ab\");",
+    "I64 DefaultWide(U8 *text=\"ab\"){return 0x1000000000+text[0]+(text[1]<<8);}");
   *cursor(U32 *)=0; cursor+=4;
   line=MStrPrint("EXPORT expressions.bin %X %X\n",data,cursor-data);
   Report(line);

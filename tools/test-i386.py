@@ -42,6 +42,52 @@ def disassemble_i386(code):
     return '\n'.join(result)+'\n'
 
 
+
+def run_function_chunks(data, out, boot_sectors):
+    """Keep every audited case below the existing 0x70000 first arena."""
+    records=[];offset=0
+    while True:
+        size=struct.unpack_from('<I',data,offset)[0]
+        if not size:break
+        records.append(data[offset:offset+28+size]);offset+=28+size
+    if offset+4!=len(data) or not records:raise ValueError('Malformed function corpus')
+    limit=boot_sectors*512-4096  #Reserve assembly/terminator space; check actual images below.
+    chunks=[];current=[];used=0
+    for record in records:
+        if len(record)>limit:raise ValueError('Individual function case exceeds bounded stage')
+        if current and used+len(record)>limit:
+            chunks.append(current);current=[];used=0
+        current.append(record);used+=len(record)
+    if current:chunks.append(current)
+    if b''.join(record for chunk in chunks for record in chunk)!=data[:-4]:
+        raise ValueError('Function split changed or omitted cases')
+    faults=sum(struct.unpack_from('<Q',record,4)[0]==0xDEADBEEFCAFEBABE for record in records)
+    if faults!=5:raise ValueError('Function corpus must retain all five deliberate faults')
+    parts=[];first=0
+    for index,chunk in enumerate(chunks):
+        cases=out/f'functions-part-{index}.bin';cases.write_bytes(b''.join(chunk)+bytes(4))
+        disk=out/f'runner-part-{index}.img';log=out/f'runner-part-{index}.log'
+        expected_faults=sum(struct.unpack_from('<Q',record,4)[0]==0xDEADBEEFCAFEBABE for record in chunk)
+        run('nasm','-DFUNCTION_CORPUS_STAGE=1','-DFUNCTIONS=1',
+            f'-DBOOT_SECTORS={boot_sectors}',f'-DEXPECTED_FAULTS={expected_faults}',
+            '-f','bin',f'-DCASES_FILE="{cases}"','tests/i386/runner.asm','-o',str(disk))
+        loaded_bytes=disk.stat().st_size
+        if loaded_bytes>(boot_sectors+1)*512:raise ValueError('Bounded function runner exceeds transfer')
+        with disk.open('ab') as stream:stream.truncate(16*1024*1024)
+        log.write_text('')
+        result=subprocess.run(['qemu-system-i386','-machine','pc','-accel','tcg','-cpu','486',
+            '-m','8','-nic','none','-drive',f'file={disk},format=raw,if=ide','-display','none',
+            '-debugcon',f'file:{log}','-device','isa-debug-exit,iobase=0xf4,iosize=4','-no-reboot'],timeout=20)
+        if result.returncode!=33 or log.read_text()!='PASS i386 functions\n':
+            raise RuntimeError(f'Function part {index}, starting case {first}: {log.read_text()}')
+        parts.append(dict(first_case=first,cases=len(chunk),fault_cases=expected_faults,
+            loaded_bytes=loaded_bytes,corpus_sha256=hashlib.sha256(cases.read_bytes()).hexdigest(),result='pass'))
+        first+=len(chunk)
+    return dict(result='pass',cases=len(records),fault_cases=faults,cpu='486',ram_mib=8,
+        boot_sectors=boot_sectors,corpus_sha256=hashlib.sha256(data).hexdigest(),parts=parts,
+        scope='All audited function cases executed in bounded stages below the unchanged 0x70000 first heap arena')
+
+
 def native_assembly_args(exports, out, module, prefix, names, cleanup, macro, imports=None):
     """Embed HolyC assembly, binding only explicitly allowed REL32 call imports."""
     imports = imports or {}
@@ -599,11 +645,17 @@ def main():
             listing.append(f'; Case {count}, offset {start}: expected {expected:016X}\n'+disassembly)
         offset += size
         count += 1
-    if offset != len(data) or count != {'data': 27, 'functions': 245, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
+    if offset != len(data) or count != {'data': 27, 'functions': 249, 'expressions': 9, 'redsea-load': 2, 'redsea-load-set': 2, 'redsea-bind': 2}.get(kind, 1):
         raise ValueError('Unexpected test corpus')
     if interrupt_ranges:
         raise ValueError('Unmatched interrupt code range')
     (OUT/'expressions.asm.txt').write_text('\n'.join(listing))
+    if args.functions:
+        result=run_function_chunks(data,OUT,boot_sectors)
+        (OUT/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+        print(f'PASS: {count} i386 function cases in {len(result["parts"])} bounded runners; instruction audit.')
+        return
+
     if args.lex_state and not args.lex_snapshot_boundary and not args.lex_control:
         #Single-CPU value tests cannot prove that the locked prefix was emitted.
         instructions = [line.split()[2:] for block in listing for line in block.splitlines()

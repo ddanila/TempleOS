@@ -51,3 +51,10 @@ U0 NativeDriveCacheHandoff(CDrv *dv)
   if(dv->next_free)RedSeaFreeFreeLst(dv);
   if(dv->bd->flags&BDF_READ_CACHE)DskCacheInvalidate2(dv);
 }
+
+#include "/Kernel/BlkDev/RedSeaFilesFindCore.HC"
+#include "/Kernel/BlkDev/FATFilesFindCore.HC"
+#include "/Kernel/BlkDev/FilesFindCore.HC"
+#include "/Kernel/BlkDev/IsDirCore.HC"
+#include "/Kernel/BlkDev/CopySingleCore.HC"
+#include "/Adam/ABlkDev/CopyMoveCore.HC"

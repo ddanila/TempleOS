@@ -66,9 +66,20 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Copy single files and wildcard sets, convert compression by filename, preserve size/date, copy into directories and move by copy/delete.",
+      "oracle": "docs/i386-copy-single-z.md: paired original/native RedSea stream, wildcard, default destination, empty, metadata, compression and selected failure/heap checks; full file, FAT32, cross-volume and arbitrary failure behavior remain unqualified.",
+      "tests": [
+        {
+          "target": "paired-copy-move",
+          "command": "python3 tools/test-i386-copy-move.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": [
+            "build/i386-copy-move-reference-v3/result.json",
+            "build/i386-copy-move-native-v1/result.json"
+          ],
+          "scope": "Real original Copy/Move/CopySingle bodies on RedSea: >128-block chunking, wildcard directory destination, empty, default destination, size/date, compressed conversion, self/missing source, copy-delete move, repeated missing-source heap recovery and native disk/source audits"
+        }
+      ]
     },
     {
       "path": "Adam/ABlkDev/ADskB.HC",
@@ -13831,6 +13842,16 @@
           "result": "pass",
           "evidence": "build/i386-block-media-native-v7/result.json",
           "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
+        },
+        {
+          "target": "paired-copy-move",
+          "command": "python3 tools/test-i386-copy-move.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": [
+            "build/i386-copy-move-reference-v3/result.json",
+            "build/i386-copy-move-native-v1/result.json"
+          ],
+          "scope": "Real original Copy/Move/CopySingle bodies on RedSea: >128-block chunking, wildcard directory destination, empty, default destination, size/date, compressed conversion, self/missing source, copy-delete move, repeated missing-source heap recovery and native disk/source audits"
         }
       ]
     },
@@ -14223,7 +14244,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Enumerate real RedSea directories using single-file, files-only, recursive, flattened and missing-file searches, then release returned trees.",
-      "oracle": "docs/i386-files-find.md: five original cases compare names, order, parent links, single-file metadata and exact caller-heap recovery. Native traversal is missing; FAT, filters, failures and whole-file behavior remain unqualified.",
+      "oracle": "docs/i386-files-find.md: five original/native RedSea cases compare names, order, parent links, single-file metadata and exact caller-heap recovery; native cluster-ordered copy is separately exercised. FAT32 paths, all filters, failures and concurrent mutation remain unqualified.",
       "tests": [
         {
           "target": "original-files-find",
@@ -14238,6 +14259,16 @@
           "result": "fail",
           "evidence": "build/i386-files-find-native-red/result.json",
           "scope": "Missing FilesFind binding rejected fixture before setup or behavior cases"
+        },
+        {
+          "target": "paired-files-find",
+          "command": "python3 tools/test-i386-files-find.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": [
+            "build/i386-copy-files-find-reference-v1/result.json",
+            "build/i386-copy-files-find-native-v1/result.json"
+          ],
+          "scope": "Five original/native RedSea single/files-only/recursive/flattened/missing searches, order/parent links and exact caller-heap recovery; full FAT32 paths and failures remain open"
         }
       ]
     },
@@ -14483,6 +14514,16 @@
           "result": "pass",
           "evidence": "build/i386-block-media-native-v7/result.json",
           "scope": "Complete retained bodies: allocator handoff, root/non-root growth and parent links, RAM and file-backed RedSea initialization, block bounds/read-only/nested locks, physically fragmented FAT32 block streams; independent extent/bitmap/source audit. Full FAT32 paths, ATAPI and complete media failure recovery remain open."
+        },
+        {
+          "target": "paired-files-find",
+          "command": "python3 tools/test-i386-files-find.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": [
+            "build/i386-copy-files-find-reference-v1/result.json",
+            "build/i386-copy-files-find-native-v1/result.json"
+          ],
+          "scope": "Five original/native RedSea single/files-only/recursive/flattened/missing searches, order/parent links and exact caller-heap recovery; full FAT32 paths and failures remain open"
         }
       ]
     },
@@ -14576,6 +14617,16 @@
           "result": "pass",
           "evidence": "build/i386-redsea-directory-growth-reference-v3/result.json",
           "scope": "Original-only private RAM root/non-root relocation and grandchild parent links, mask 63; reproduced stale-parent defect before shared repair"
+        },
+        {
+          "target": "paired-files-find",
+          "command": "python3 tools/test-i386-files-find.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": [
+            "build/i386-copy-files-find-reference-v1/result.json",
+            "build/i386-copy-files-find-native-v1/result.json"
+          ],
+          "scope": "Five original/native RedSea single/files-only/recursive/flattened/missing searches, order/parent links and exact caller-heap recovery; full FAT32 paths and failures remain open"
         }
       ]
     },

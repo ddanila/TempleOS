@@ -94,3 +94,15 @@ reports `Invalid lval` at token `Copy`; the source image hash remains unchanged.
 No callback executes. Completing `DocTermNew` therefore also requires the
 original copy workflow and subsequent callback dependencies, rather than only
 publishing the constructor.
+
+
+The stream and copy dependencies are now actual retained native services; see
+`docs/i386-cfile-stream.md` and `docs/i386-copy-single-z.md`. The autocomplete
+compile probe no longer supplies throwing FOpen/FBlkRead/FClose replacements.
+Loading the unchanged MakeAC source against real services still rejects at
+ACTask.HC line 222, immediately after the missing DocTermNew
+(`build/i386-copy-autocomplete-real-probe-v1`, inputs unchanged). No explicit
+autocomplete task activation is requested or qualified. The unchanged terminal
+right-click callback now advances past real Copy/Move/Del to missing MountFile
+at line 76 (`build/i386-copy-terminal-callback-probe-v1`). These are current
+dependency boundaries, not autocomplete or terminal-construction passes.

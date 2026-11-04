@@ -1,5 +1,6 @@
 #ifndef I386_BLOCK_MEDIA_DECLARATIONS_INCLUDED
 #define I386_BLOCK_MEDIA_DECLARATIONS_INCLUDED
+#include "/Kernel/FileUtilityFlags.HH"
 #include "/Kernel/BlkDev/DirContextTypes.HH"
 #include "/Kernel/BlkDev/FATMediaTypes.HH"
 #include "/Kernel/BlkDev/ISODescriptorTypes.HH"
@@ -47,4 +48,11 @@ extern U0 DskCacheInvalidate(CDrv *dv);
 extern U0 DskChg(U8 drv_let=0);
 extern Bool Drv(U8 drv_let);
 extern U0 NativeDriveCacheHandoff(CDrv *dv);
+extern CDirEntry *RedSeaFilesFind(U8 *mask,I64 flags,CDirEntry *parent=NULL);
+extern CDirEntry *FAT32FilesFind(U8 *mask,I64 flags,CDirEntry *parent=NULL,I64 *dir_size=NULL);
+extern CDirEntry *FilesFind(U8 *mask,I64 flags=0);
+extern Bool IsDir(U8 *dirname);
+extern Bool CopySingle(U8 *source,U8 *target);
+extern Bool Copy(U8 *source,U8 *target=".");
+extern Bool Move(U8 *source,U8 *target);
 #endif

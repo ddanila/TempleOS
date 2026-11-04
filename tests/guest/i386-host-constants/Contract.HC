@@ -32,6 +32,22 @@ Bool HCReject(U8 *source)
   Bool rejected=!code;
   Free(code);CmpCtrlDel(cc);return rejected;
 }
+Bool HCString(U8 *source,U8 *expected)
+{
+  CCmpCtrl *cc=CmpCtrlNew(source,CCF_DONT_FREE_BUF|CCF_TARGET_I386);
+  U8 *code=NULL,*copy=NULL,*value;
+  I64 type=0;Bool ok=FALSE;
+  try {
+    Lex(cc);code=LexExpression2Bin(cc,&type);
+    if(code) {
+      value=Call(code);
+      ok=type==RT_PTR && value==code+11 && !StrCmp(value,expected) && cc->flags&CCF_HAS_MISC_DATA;
+      copy=StrNew(value);
+    }
+  } catch {Fs->catch_except=TRUE;}
+  Free(code);CmpCtrlDel(cc);
+  ok=ok && copy && !StrCmp(copy,expected);Free(copy);return ok;
+}
 I64 JRContract(I64 unused)
 {
   I64 mask=0;
@@ -49,5 +65,8 @@ I64 JRContract(I64 unused)
      HCCheck("2*(0x400921FB54442D18(F64))/2",RT_F64,0x400921FB54442D18))mask|=128;
   if(HCReject("1(U8 *)"))mask|=256;
   if(HCReject("Fs->num"))mask|=512;
+  if(HCString("\".\"","."))mask|=1024;
+  if(HCString("\"\"",""))mask|=2048;
+  if(HCString("\"a\" \"b\\n\"","ab\n"))mask|=4096;
   return mask;
 }

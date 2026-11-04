@@ -1,5 +1,6 @@
 #ifndef I386_PUBLIC_FILES_INCLUDED
 #define I386_PUBLIC_FILES_INCLUDED
+#include "/Kernel/FileUtilityFlags.HH"
 #include "/Kernel/DateTypes.HH"
 #include "/Kernel/FileMaskTypes.HH"
 #include "/Kernel/BlkDev/FreeListTypes.HH"
@@ -128,4 +129,9 @@ public _extern _DEL I64 Del(U8 *mask,Bool make_mask=FALSE,Bool del_dir=FALSE,Boo
 public _extern _DRV Bool Drv(U8 drv_let);
 public _extern _DSK_CHG U0 DskChg(U8 drv_let=0);
 public _extern _DSK_CACHE_INVALIDATE U0 DskCacheInvalidate(CDrv *dv);
+public _extern _FILES_FIND CDirEntry *FilesFind(U8 *files_find_mask,I64 fuf_flags=0);
+public _extern _IS_DIR Bool IsDir(U8 *dirname);
+public _extern _COPY_SINGLE Bool CopySingle(U8 *source,U8 *target);
+public _extern _COPY Bool Copy(U8 *source,U8 *target=".");
+public _extern _MOVE Bool Move(U8 *source,U8 *target);
 #endif

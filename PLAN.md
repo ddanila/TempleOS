@@ -25822,3 +25822,20 @@ child/grandchild regression passes mask 63. The final-image workstation run
 is in progress at `build/i386-block-media-workstation64-kvm-v2`; full FAT32 path
 handling, ATAPI/media failure behavior, release qualification and C1-C5 remain
 open. See `docs/i386-cfile-stream.md` and `docs/i386-block-io.md`.
+
+
+Original CopySingle/Copy/Move and complete directory enumeration are now shared
+and natively bound. The original `"."` destination default required restoring
+owned string-literal evaluation in the host cross-compiler, not changing Copy's
+API. Original rebuilds, full native cross/386 and 1228-file source audits pass
+(`build/i386-copy-move-cross-v2`). Paired original/native copy tests pass streamed
+chunking, wildcard destinations, compression, empty files, metadata, default
+arguments, moves and scoped heap recovery; enumeration passes the five original
+cases. Independent post-mutation disk and source audits pass. Host constants
+pass mask 8191, and all 249 protected function cases plus five faults pass in
+two bounded runners with unchanged memory limits. The unchanged right-click
+callback now reaches missing MountFile; the real-service autocomplete probe
+still reaches missing DocTermNew, without stream stubs. Full workstation runs
+for the media and copy images remain in progress. Full FAT32 path, mounting,
+terminal/autocomplete/settings, release and C1-C5 qualification remain open.
+See `docs/i386-copy-single-z.md` and `docs/i386-files-find.md` for evidence.
