@@ -77,3 +77,17 @@ The difference after full initialization remains under investigation. Native
 exact definition bytes and stop/restart are still unqualified. Historical native
 v1-v3 failed root loading at __DIR__, StrCmp and exception helpers respectively;
 the common declarations resolve those source-context failures.
+
+Further reduced diagnostics narrow the failure without qualifying the contract.
+The unchanged getter and a traced copy both return a definition immediately after
+full ACInit in one Adam command (`build/i386-acd-search-diagnostic-v4`). The full
+report also succeeds with a three-entry diagnostic index and the pinned word list
+(`build/i386-acd-search-diagnostic-v5`); that constructed index is not a substitute
+for initialization. With the actual contract's initialization in a preceding Adam
+command, the next diagnostic's first getter succeeds, but the traced second call
+cannot open the file and the report's direct FOpen also returns NULL
+(`build/i386-acd-search-diagnostic-v6`). Thus a compiled-search or caller-only
+explanation is not established. Repeated file opening with the live task is the
+next investigation. The native channel explicitly rejects a contended root
+acquisition, and the existing ATA task test expects that behavior; contention is
+a candidate cause, not yet a confirmed explanation for this application failure.
