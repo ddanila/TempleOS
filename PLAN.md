@@ -25866,3 +25866,15 @@ still fail root-header memory limits. Focused 64 MiB live help tests pass after
 correcting the source viewport oracle to 59 rows. A fresh full workstation run
 is active; the old failed/interrupted runs are not passes. C1-C5 remain open.
 See docs/i386-mount-file.md and docs/i386-staged-compiler-probes.md.
+
+
+The complete original DocTermNew and TermRightClickLink bodies are now resident,
+with a public constructor binding (console ABI 205, 574 exports). Paired rebuilt
+original/native execution passes mask 1023 for task-owned put/display documents,
+4096-entry limit, border callbacks/title, actual editor menu, scroll controls,
+Raw OFF and existing-control reuse. Two original rebuild generations and the
+386/source audits pass. The 8 MiB startup smoke passes in 41.57 seconds with exact
+pixels. The unchanged MakeAC load advances to missing KbdMsEvtTime at ACTask.HC
+line 230; autocomplete, terminal action workflows, full minimal regressions and
+C1-C5 remain open. The prior-image full workstation run is still live. See
+docs/i386-terminal-constructor.md.

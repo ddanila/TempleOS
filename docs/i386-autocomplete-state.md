@@ -115,3 +115,12 @@ DocTermNew body compile against actual native services
 menu action executes in this probe. Global DocTermNew publication and real-service
 autocomplete execution remain open; the full original constructor/callback body
 must be preserved when integrated.
+
+
+DocTermNew is now a resident public binding. Its complete original constructor
+and right-click callback bodies are retained; paired original/native constructor
+execution passes mask 1023 with actual border/menu/scroll services. See
+`docs/i386-terminal-constructor.md`. The unchanged MakeAC real-service probe
+now rejects at missing KbdMsEvtTime (ACTask.HC line 230,
+`build/i386-terminal-constructor-autocomplete-v1`), with unchanged input pins.
+Autocomplete execution and visible suggestions remain unqualified.

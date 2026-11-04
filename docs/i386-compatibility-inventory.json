@@ -608,7 +608,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-real-service-source-load-after-constructor",
+          "result": "fail",
+          "evidence": "build/i386-terminal-constructor-autocomplete-v1/result.json",
+          "scope": "Unchanged MakeAC advances past real DocTermNew to missing KbdMsEvtTime at ACTask.HC line 230; no explicit autocomplete activation and no throwing service stubs."
+        }
+      ]
     },
     {
       "path": "Adam/AutoComplete/ACWords.DATA",
@@ -2839,6 +2846,12 @@
           "result": "pass",
           "evidence": "build/i386-doc-char-action-native-menu-v1/result.json",
           "scope": "Same thirteen keyboard-driven popup cases and exact menu documents; full document and terminal behavior unqualified"
+        },
+        {
+          "target": "paired-complete-terminal-constructor",
+          "result": "pass",
+          "evidence": "docs/i386-terminal-constructor.md",
+          "scope": "Original/native v1 execution mask 1023: complete constructor, actual border/menu/scroll services, Raw OFF and control reuse. Right-click actions, visual terminal workflows and exact heap recovery remain open."
         }
       ]
     },
