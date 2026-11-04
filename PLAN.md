@@ -25986,3 +25986,20 @@ qualify the full key map, numeric selection/popups, custom-editor routing,
 default autoload, installed-tree traversal, full minimal regressions or C1-C5.
 See docs/i386-autocomplete-interaction.md for current evidence and failed
 observer attempts; native v5 is the final passing interaction record.
+
+
+The custom editor now routes autocomplete presses through retained DocPutKey
+actions and consumes their paired function releases even if Ctrl is released
+first. Original/native real Ctrl+F1 workflows pass the full dictionary/project
+choice oracle and identical completed editor source; native Ctrl+S persists the
+exact bytes and the final offline filesystem audit passes. Actual ACTask KeyMap
+queries exposed another editor bug: synthetic SCF_KEY_DESC Escape exited editing.
+Those queries are now separated before input actions; retained autocomplete
+descriptions still reach DocPutKey. A cold-library regression passes explicit
+Escape/printable metadata, both Ctrl+F1 release orders, Ctrl+F4/F5, Ctrl+1 and a
+subsequent plain F1 Help action. Two original rebuild generations, 386 audit and
+all 1,261 source checks pass. Final evidence is editor reference-v4, native-v3
+and cold-after-v4 on editor-cross-v3; see docs/i386-autocomplete-editor.md. No
+editor/widget pixel equivalence, editor execution, save/reboot/reopen, remaining
+completion keys/popups, full descriptions, full minimal suite or C1-C5 completion
+is claimed.

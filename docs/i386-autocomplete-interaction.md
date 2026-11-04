@@ -83,7 +83,7 @@ complete minimal suite. Both original rebuild generations, the 386 instruction
 audit and all 1,261 delivered-source checks pass.
 
 Other symbol indexes and modifiers, actual numeric-word selection, source and
-definition popups, the custom editor's shortcut routing, default autoload,
+definition popups, the remaining editor shortcuts, default autoload,
 installed-tree statistics, exact application heap recovery and full desktop/
 minimal-profile/release qualification remain open. C1-C5 remain open.
 
@@ -97,3 +97,8 @@ python3 tools/test-i386-autocomplete-interaction.py --out build/ac-ui-reference
 python3 tools/test-i386-autocomplete-interaction.py build/i386-autocomplete-interaction-cross-v1/kernel.img --reference build/ac-ui-reference --out build/ac-ui-native
 python3 tools/test-i386-autocomplete-cold-keys.py build/i386-autocomplete-interaction-cross-v1/kernel.img --out build/ac-ui-cold
 ```
+
+The later [editor workflow](i386-autocomplete-editor.md) qualifies Ctrl+F1
+completion and native Ctrl+S persistence in the custom editor, with paired
+release tracking and key-description query filtering. Its pixel scope differs
+from the console comparison above.

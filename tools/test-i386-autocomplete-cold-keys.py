@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import runpy
 import shutil
+import time
 ROOT=Path(__file__).resolve().parents[1]
 
 def main():
@@ -27,7 +28,26 @@ def main():
         start=len(guest.collect());guest.type('6*');guest.key('ctrl',True);guest.press('f1');guest.press('1');guest.key('ctrl',False);guest.type('7;');guest.press('ret');guest.wait('COMMAND OK\n',start=start)
         text=guest.collect()[start:]
         if 'INPUT LINE 6*7;\n' not in text or 'INPUT REJECT ' in text:raise ValueError('Cold shortcuts modified the input or rejected execution')
-        report['result_pixels']=guest.result_pixels();guest.close();guest=None
+        report['result_pixels']=guest.result_pixels()
+        guest.command('CDoc *cold_doc=DocNew("C:/ColdKeys.HC",Fs);')
+        mark=len(guest.collect());guest.type('Msg(MSG_KEY_DOWN,CH_ESC,SCF_KEY_DESC|1);Msg(MSG_KEY_DOWN,65,SCF_KEY_DESC);DocEd(cold_doc);');guest.press('ret');guest.wait('DOC EDIT begin\n',start=mark)
+        guest.type('6*')
+        for key in ['f1','f4','f5']:
+            guest.key('ctrl',True);guest.key(key,True)
+            time.sleep(.1);guest.key('ctrl',False);time.sleep(.1);guest.key(key,False)
+        guest.key('ctrl',True);guest.press('f1');guest.press('1');guest.key('ctrl',False)
+        guest.type('7;');guest.screenshot('editor-cold')
+        text=guest.collect()[mark:]
+        if any(word in text for word in ['HELP VIEW begin\n','DOC EXEC begin\n','DIR PICKER begin\n']):raise ValueError('Cold editor shortcut triggered a legacy command')
+        guest.press('esc');guest.wait('COMMAND OK\n',30,start=mark)
+        guest.command("I64 cold_size;U8 *cold_text=DocSave(cold_doc,&cold_size);if(cold_size!=5||cold_text[0]!='6'||cold_text[1]!='*'||cold_text[2]!='7'||cold_text[3]!=';'||cold_text[4]!=5)throw('ColdEdit',TRUE);Free(cold_text);")
+        mark=len(guest.collect());guest.type('DocEd(cold_doc);');guest.press('ret');guest.wait('DOC EDIT begin\n',start=mark)
+        guest.press('f1');guest.wait('HELP VIEW begin\n',start=mark)
+        guest.press('esc');guest.wait('HELP VIEW end\n',start=mark)
+        guest.press('esc');guest.wait('COMMAND OK\n',30,start=mark)
+        guest.command('DocDel(cold_doc);')
+        report['editor_cold_keys']=['Ctrl+F1 (both release orders)','Ctrl+F4','Ctrl+F5','Ctrl+1','synthetic Escape and printable key descriptions do not edit/exit','subsequent plain F1 still opens Help']
+        guest.close();guest=None
         report['filesystem_integrity']=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['verify_mutated_volume'](working)
         report.update(result='pass',library_absent=True,submitted_source='6*7;')
     except Exception as exc:report.update(result='fail',error=str(exc));raise

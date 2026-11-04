@@ -99,7 +99,9 @@ class Guest:
             if 'INPUT REJECT ' in text[start:] or '\nFAIL ' in text[start:]:raise ValueError(text[start:][-1000:])
             time.sleep(.1)
         raise TimeoutError('Missing guest marker: '+needle)
-    def key(self,name,down):self.call('input-send-event',events=[{'type':'key','data':{'down':down,'key':{'type':'qcode','data':name}}}])
+    def key(self,name,down):
+        with (self.out/'keys.jsonl').open('a') as trace:trace.write(json.dumps(dict(time=time.monotonic(),key=name,down=down,log_bytes=self.log.stat().st_size))+'\n')
+        self.call('input-send-event',events=[{'type':'key','data':{'down':down,'key':{'type':'qcode','data':name}}}])
     def press(self,name):self.key(name,True);time.sleep(.04);self.key(name,False)
     def type(self,text):
         for ch in text:
@@ -127,14 +129,14 @@ class Guest:
         self.p.wait(timeout=15);self.stderr.close()
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--reference',type=Path);ap.add_argument('--out',type=Path,required=True);args=ap.parse_args();out=args.out.resolve();native=args.disk is not None
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--reference',type=Path);ap.add_argument('--editor',action='store_true');ap.add_argument('--out',type=Path,required=True);args=ap.parse_args();out=args.out.resolve();native=args.disk is not None
     if out.exists():ap.error('Use a fresh output directory')
     if native and not args.reference:ap.error('Native run needs --reference')
     out.mkdir(parents=True)
-    fixture=ROOT/'tests/guest/i386-autocomplete-interaction/Contract.HC';project=fixture.with_name('Project.HC');archive=ROOT/'build/i386-autocomplete-archive-original/guest/ACWords.DATA.Z'
-    paths=[Path(__file__).resolve(),fixture,project,archive,ROOT/'docs/i386-compatibility-inventory.json']+[ROOT/p for p in ['tools/build-iso.py','tools/guest-run.py','tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC','Adam/AutoComplete/MakeAC.HC','Adam/AutoComplete/ACFill.HC','Adam/AutoComplete/ACTask.HC','Adam/AutoComplete/ACInit.HC','Adam/AutoComplete/ACWords.DATA','Adam/AutoComplete/ACDefs.DATA']]
+    fixture=ROOT/'tests/guest/i386-autocomplete-interaction/Contract.HC';project=fixture.with_name('Project.HC');editor=fixture.with_name('Editor.HC');archive=ROOT/'build/i386-autocomplete-archive-original/guest/ACWords.DATA.Z'
+    paths=[Path(__file__).resolve(),fixture,project,editor,archive,ROOT/'docs/i386-compatibility-inventory.json']+[ROOT/p for p in ['tools/build-iso.py','tools/guest-run.py','tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC','Adam/AutoComplete/MakeAC.HC','Adam/AutoComplete/ACFill.HC','Adam/AutoComplete/ACTask.HC','Adam/AutoComplete/ACInit.HC','Adam/AutoComplete/ACWords.DATA','Adam/AutoComplete/ACDefs.DATA']]
     paths += [ROOT/name for name in ['Adam/DolDoc/DocPutKey.HC','Adam/DolDoc/DocAutoCompleteActionCore.HC','Kernel/I386/DocumentRuntime.HC','Kernel/I386/ConsoleRuntime.HC']]
-    for source,name in [(Path(__file__).resolve(),'runner-source.py'),(fixture,'fixture.HC'),(project,'project.HC')]:
+    for source,name in [(Path(__file__).resolve(),'runner-source.py'),(fixture,'fixture.HC'),(project,'project.HC'),(editor,'editor.HC')]:
         snapshot=out/name;snapshot.write_bytes(source.read_bytes());paths.append(snapshot)
     inventory=json.loads((ROOT/'docs/i386-compatibility-inventory.json').read_text())
     originals={entry['path']:entry['reference_sha256'] for entry in inventory['entries'] if entry['path'] in {str(path.relative_to(ROOT)) for path in paths if path.is_relative_to(ROOT/'Adam/AutoComplete')}}
@@ -144,7 +146,7 @@ def main():
     if native:
         image=out/'working.img';paths.append(args.disk.resolve());gold=args.reference.resolve();paths += [gold/'result.json',gold/'guest/ACUIPrefix.DATA',gold/'guest/prefix.png']
         golden=json.loads((gold/'result.json').read_text())
-        if golden.get('result')!='pass' or not golden.get('inputs_unchanged'):raise ValueError('Passed original interaction reference required')
+        if golden.get('result')!='pass' or not golden.get('inputs_unchanged') or golden.get('editor',False)!=args.editor:raise ValueError('Passed original interaction reference required')
     else:
         image=out/'original.iso';manifest=ROOT/'build/rebuild-test/result.json';paths.append(manifest);bootstrap=json.loads(manifest.read_text())
         if bootstrap.get('result')!='pass':raise ValueError('Qualified original rebuild required')
@@ -152,40 +154,58 @@ def main():
             path=ROOT/'build/rebuild-test/overlay'/relative
             if sha(path)!=bootstrap['generations'][-1][name]:raise ValueError('Stale original binary')
             paths.append(path)
-    pins={str(p):sha(p) for p in paths};report=dict(result='running',mode='native' if native else 'rebuilt-original',input_sha256=pins,scope='Actual ACInit project traversal and full dictionary, visible source prefix choices, Ctrl+F1 through real keyboard and input queue, completed symbol execution. Not all autocomplete keys, popup definitions, exact app heap recovery or full desktop qualification.')
+    pins={str(p):sha(p) for p in paths};report=dict(result='running',editor=args.editor,mode='native' if native else 'rebuilt-original',input_sha256=pins,scope=('Editor completion, Ctrl-before-F1 release, completed source retention and native Ctrl+S persistence. No widget pixel comparison or execution in editor mode. ' if args.editor else '')+'Actual ACInit project traversal and full dictionary, visible source prefix choices, Ctrl+F1 through real keyboard and input queue, '+('completed source saved and editor exited' if args.editor else 'completed symbol execution')+'. Not all autocomplete keys, popup definitions, exact app heap recovery or full desktop qualification.')
     guest=None
     try:
-        additions={'/ACUIProject.HC':project.read_bytes(),'/ACUIContract.HC':fixture.read_bytes(),'/Adam/AutoComplete/ACWords.DATA.Z':archive.read_bytes()}
+        additions={'/ACUIProject.HC':project.read_bytes(),'/ACUIContract.HC':fixture.read_bytes(),'/ACUIEditor.HC':editor.read_bytes(),'/Adam/AutoComplete/ACWords.DATA.Z':archive.read_bytes()}
         if native:
             packer=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));report['packaging']=packer['package'](args.disk.resolve(),image,additions=additions,addition_attributes={'/Adam/AutoComplete/ACWords.DATA.Z':0xC00})
         else:
             overlay=out/'overlay'
             for name,data in additions.items():p=overlay/name.lstrip('/');p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
-            (overlay/'Once.HC').write_text('while(!Bt(&sys_run_level,RLf_ADAM_SERVER))Yield;\nAdamFile("T:/ACUIProject.HC",FALSE);\nAdamFile("T:/ACUIContract.HC",FALSE);\nAdam("ACUIStart;");\nTaskWait(sys_focus_task,TRUE);\nAdam("ACUIArm(sys_focus_task);");\n')
+            (overlay/'Once.HC').write_text('while(!Bt(&sys_run_level,RLf_ADAM_SERVER))Yield;\nAdamFile("T:/ACUIProject.HC",FALSE);\nAdamFile("T:/ACUIContract.HC",FALSE);\nAdamFile("T:/ACUIEditor.HC",FALSE);\nAdam("ACUIStart;");\nTaskWait(sys_focus_task,TRUE);\n' + ('Adam("ACUIArm(sys_focus_task);");\n' if not args.editor else ''))
             subprocess.run([sys.executable,'tools/build-iso.py','--overlay','build/rebuild-test/overlay','--overlay',str(overlay),'--output',str(image)],cwd=ROOT,check=True)
         guest=Guest(image,out/'guest',native)
         if native:
             guest.wait('DONE native kernel startup\n');time.sleep(3)
-            for command in ['AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);','AdamFile("C:/ACUIProject.HC",FALSE);','AdamFile("C:/ACUIContract.HC",FALSE);','Adam("ACUIStart(TRUE);");','ACUIArm(Fs);']:guest.command(command,1800)
-        else:guest.wait('ACUI armed\n',600);time.sleep(2)
+            for command in ['AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);','AdamFile("C:/ACUIProject.HC",FALSE);','AdamFile("C:/ACUIContract.HC",FALSE);','AdamFile("C:/ACUIEditor.HC",FALSE);','Adam("ACUIStart(TRUE);");']+([] if args.editor else ['ACUIArm(Fs);']):guest.command(command,1800)
+        else:guest.wait('ACUI initialized\n' if args.editor else 'ACUI armed\n',600);time.sleep(2)
+        if args.editor:
+            guest.type('ACUIEdit;');guest.press('ret');guest.wait('ACUI editor opening\n');time.sleep(2)
         guest.type('ACUI');guest.wait('ACUI prefix ready\n',45);time.sleep(1);guest.screenshot('prefix')
         record=prefix_record((out/'guest/ACUIPrefix.DATA').read_bytes());report['prefix']={k:v for k,v in record.items() if k!='document'}
-        guest.key('ctrl',True);guest.press('f1');guest.key('ctrl',False)
-        guest.wait('ACUI selected\n',30);guest.screenshot('selected');guest.type(';');guest.press('ret');guest.wait('ACUI executed\n',30)
-        report['result_pixels']=guest.result_pixels()
+        guest.key('ctrl',True)
+        if args.editor:
+            guest.key('f1',True);time.sleep(.1);guest.key('ctrl',False);time.sleep(.1);guest.key('f1',False)
+        else:guest.press('f1');guest.key('ctrl',False)
+        guest.wait('ACUI selected\n',30);guest.screenshot('selected');guest.type(';')
+        if args.editor:
+            if native:
+                mark=len(guest.collect());guest.key('ctrl',True);guest.press('s');guest.key('ctrl',False);guest.wait('DOC EDIT save ok\n',start=mark)
+            guest.press('esc');guest.wait('ACUI editor closed\n',30)
+            if (out/'guest/ACUIEdited.DATA').read_bytes()!=b'ACUIAlpha;\x05':raise ValueError('Editor did not retain completed source')
+            if native and any(marker in guest.collect().split('ACUI editor opening\n',1)[1] for marker in ['HELP VIEW begin\n','DOC EXEC begin\n']):raise ValueError('Autocomplete release triggered a legacy command')
+            report['editor_completion']='Ctrl released before F1; completed document exported after editor exit'
+        else:
+            guest.press('ret');guest.wait('ACUI executed\n',30)
+            report['result_pixels']=guest.result_pixels()
         guest.close();guest=None
         counts,expected=expected_matches(project.read_bytes(),(ROOT/'Adam/AutoComplete/ACWords.DATA').read_bytes())
         if record['source_words']!=len(counts) or record['dictionary_words']!=95293 or record['word']!='ACUI' or record['partial']!=4 or record['count']!=len(expected) or record['matches']!=expected:raise ValueError('Suggestions differ from independent project token counts')
         if (out/'guest/ACUISelected.DATA').read_bytes()!=b'SELECTED ACUIAlpha\n':raise ValueError('Incorrect completed input')
         if native:
             original=prefix_record((gold/'guest/ACUIPrefix.DATA').read_bytes())
-            if record['rect']!=original['rect'] or record['document'].replace(b'C:/ACUIProject.HC',b'T:/ACUIProject.HC')!=original['document']:raise ValueError('Widget geometry/document differs from original')
+            if not args.editor and (record['rect']!=original['rect'] or record['document'].replace(b'C:/ACUIProject.HC',b'T:/ACUIProject.HC')!=original['document']):raise ValueError('Widget geometry/document differs from original')
             l,r,t,b=record['rect'];crop=(max(0,l*8),max(0,t*8),min(640,(r+1)*8),min(480,(b+1)*8))
             if crop[0]>=crop[2] or crop[1]>=crop[3]:raise ValueError('Empty autocomplete viewport')
             left=Image.open(gold/'guest/prefix.png').convert('RGB').crop(crop);right=Image.open(out/'guest/prefix.png').convert('RGB').crop(crop)
-            if ImageChops.difference(left,right).getbbox():raise ValueError('Autocomplete viewport pixels differ')
-            report['widget_pixels']='all viewport pixels matched original'
+            if not args.editor and ImageChops.difference(left,right).getbbox():raise ValueError('Autocomplete viewport pixels differ')
+            report['widget_pixels']='not compared for editor' if args.editor else 'all viewport pixels matched original'
             build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'));report['filesystem_integrity']=build['verify_mutated_volume'](image)
+            if args.editor:
+                edited=build['mutated_file_contents'](image,{'/ACUIEdited.HC'})['/ACUIEdited.HC']
+                if edited!=b'ACUIAlpha;\x05':raise ValueError('Ctrl+S did not persist completed editor source')
+                report['editor_saved_hex']=edited.hex()
             files=build['mutated_file_contents'](image,{'/ACUIPrefix.DATA','/ACUISelected.DATA'})
             if any(files['/'+name]!=(out/'guest'/name).read_bytes() for name in ['ACUIPrefix.DATA','ACUISelected.DATA']):raise ValueError('Persisted UI reports differ')
         report.update(result='pass',expected_matches=expected,prefix_sha256=sha(out/'guest/ACUIPrefix.DATA'))

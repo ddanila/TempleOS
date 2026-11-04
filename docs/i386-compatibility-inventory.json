@@ -567,6 +567,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
           "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-reference-v4/result.json",
+          "scope": "Actual full dictionary and project statistics; five independently predicted choices; real Ctrl+F1 with Ctrl released before F1; exact completed editor document. No editor/widget pixel comparison or execution."
+        },
+        {
+          "target": "native-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
         }
       ]
     },
@@ -643,6 +655,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
           "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-reference-v4/result.json",
+          "scope": "Actual full dictionary and project statistics; five independently predicted choices; real Ctrl+F1 with Ctrl released before F1; exact completed editor document. No editor/widget pixel comparison or execution."
+        },
+        {
+          "target": "native-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
         }
       ]
     },
@@ -712,6 +736,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
           "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-reference-v4/result.json",
+          "scope": "Actual full dictionary and project statistics; five independently predicted choices; real Ctrl+F1 with Ctrl released before F1; exact completed editor document. No editor/widget pixel comparison or execution."
+        },
+        {
+          "target": "native-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
         }
       ]
     },
@@ -780,6 +816,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
           "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-reference-v4/result.json",
+          "scope": "Actual full dictionary and project statistics; five independently predicted choices; real Ctrl+F1 with Ctrl released before F1; exact completed editor document. No editor/widget pixel comparison or execution."
+        },
+        {
+          "target": "native-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
         }
       ]
     },
@@ -828,6 +876,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
           "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-reference-v4/result.json",
+          "scope": "Actual full dictionary and project statistics; five independently predicted choices; real Ctrl+F1 with Ctrl released before F1; exact completed editor document. No editor/widget pixel comparison or execution."
+        },
+        {
+          "target": "native-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
         }
       ]
     },
@@ -886,6 +946,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
           "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "rebuilt-original-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-reference-v4/result.json",
+          "scope": "Actual full dictionary and project statistics; five independently predicted choices; real Ctrl+F1 with Ctrl released before F1; exact completed editor document. No editor/widget pixel comparison or execution."
+        },
+        {
+          "target": "native-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
         }
       ]
     },
@@ -1515,6 +1587,30 @@
           "result": "pass",
           "evidence": "build/i386-doc-bible-sample-native-v1/result.json",
           "scope": "Bail-mode Genesis verse and range, invalid book and task roles using the first 400 original Bible lines; full document and interactive editing remain unqualified"
+        },
+        {
+          "target": "rebuilt-original-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-reference-v4/result.json",
+          "scope": "Actual full dictionary and project statistics; five independently predicted choices; real Ctrl+F1 with Ctrl released before F1; exact completed editor document. No editor/widget pixel comparison or execution."
+        },
+        {
+          "target": "native-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
+        },
+        {
+          "target": "native-editor-autocomplete-before-description-filter",
+          "result": "fail",
+          "evidence": "build/i386-autocomplete-editor-native-v2/result.json",
+          "scope": "Real Ctrl+F1 completes the symbol, but ACTask KeyMap synthetic Escape with SCF_KEY_DESC exits the custom editor. Guest exit trace and host key trace identify metadata as the cause; save fails. Superseded by native-v3."
+        },
+        {
+          "target": "native-editor-cold-autocomplete-and-description-queries",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-cold-after-v4/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image, real library absence asserted. Synthetic Escape/printable metadata do not exit/edit. Physical Ctrl+F1 both release orders, Ctrl+F4/F5 and Ctrl+1 preserve exact source; subsequent plain F1 still opens Help. Console source/42 glyph check, clean offline filesystem and unchanged archived inputs. Not a full key map or minimum-memory qualification."
         }
       ]
     },
@@ -2597,6 +2693,24 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-cold-keys-native-v3/result.json",
           "scope": "Normal native boot; actual library absence asserted through HashFind; real Ctrl+F1 and Ctrl+1 preserve submitted source 6*7; exact visible 42 glyphs; clean offline filesystem audit and unchanged archived harness inputs. Not the complete key map."
+        },
+        {
+          "target": "rebuilt-original-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-reference-v4/result.json",
+          "scope": "Actual full dictionary and project statistics; five independently predicted choices; real Ctrl+F1 with Ctrl released before F1; exact completed editor document. No editor/widget pixel comparison or execution."
+        },
+        {
+          "target": "native-editor-autocomplete",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-native-v3/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image; real library and input-filter completion; exact independently predicted choices and completed document match original; actual Ctrl+S and exact persisted file bytes, clean offline filesystem and unchanged archived inputs. Description queries filtered before input actions. No visual/editor execution/reboot/full key-map or C1-C5 qualification."
+        },
+        {
+          "target": "native-editor-cold-autocomplete-and-description-queries",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-editor-cold-after-v4/result.json",
+          "scope": "Normal 64 MiB KVM 486,-fpu image, real library absence asserted. Synthetic Escape/printable metadata do not exit/edit. Physical Ctrl+F1 both release orders, Ctrl+F4/F5 and Ctrl+1 preserve exact source; subsequent plain F1 still opens Help. Console source/42 glyph check, clean offline filesystem and unchanged archived inputs. Not a full key map or minimum-memory qualification."
         }
       ]
     },

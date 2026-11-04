@@ -1414,7 +1414,7 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
   U8 *undo_bodies[16];
   I64 undo_sizes[16];
   U8 find[128],replace[128];
-  I64 decoded,pending_key=0,queued_events=0,blink_phase,next_blink_phase,find_length=0,replace_length=0,
+  I64 decoded,pending_key=0,autocomplete_releases=0,queued_events=0,blink_phase,next_blink_phase,find_length=0,replace_length=0,
       goto_line,undo_count=0,undo_index,undo_group_kind=0,undo_group_jiffy=0,
       undo_kind,mouse_x,mouse_y,mouse_buttons=0,mouse_packets=0,
       next_mouse_x,next_mouse_y,next_mouse_buttons,next_mouse_packets,
@@ -1443,9 +1443,31 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
       if(decoded>0) queued_events++;
       yield_frame=queued_events>=8;
       changed=FALSE; redraw=FALSE;
+      //ACTask's KeyMap probes are metadata, including synthetic Escape. The
+      //original DocGetKey filters these before the editor sees an input key.
+      if(decoded>0 && event.scan&SCF_KEY_DESC) {
+        if(event.type==2 && NativeDocAutoCompleteKey(event.ch,event.scan))
+          DocPutKey(doc,event.ch,event.scan);
+        decoded=0;
+      }
       if(decoded>0) {
-        if(event.type==2 && (event.ch==CH_ESC || event.ch==CH_SHIFT_ESC)) {
+        //Legacy function commands run on release. Remember the completion press
+        //so releasing Ctrl first cannot open Help or execute the document.
+        if(event.type==2 && event.scan.u8[0]>=SC_F1 && event.scan.u8[0]<=SC_F10)
+          Btr(&autocomplete_releases,event.scan.u8[0]-SC_F1);
+        if(event.type==2 && NativeDocAutoCompleteKey(event.ch,event.scan)) {
           undo_group_kind=0;
+          if(event.scan.u8[0]>=SC_F1 && event.scan.u8[0]<=SC_F10)
+            Bts(&autocomplete_releases,event.scan.u8[0]-SC_F1);
+          DocPutKey(doc,event.ch,event.scan);
+          redraw=TRUE;
+        } else if(event.type==3 && event.scan.u8[0]>=SC_F1 &&
+            event.scan.u8[0]<=SC_F10 &&
+            Btr(&autocomplete_releases,event.scan.u8[0]-SC_F1)) {
+          //Consumed by the matching autocomplete key-down.
+        } else if(event.type==2 && (event.ch==CH_ESC || event.ch==CH_SHIFT_ESC)) {
+          undo_group_kind=0;
+          KernelLog("DOC EDIT exit key ");KernelHex(event.ch);KernelHex(event.scan);KernelLog("\n");
           result=event.ch==CH_ESC; done=TRUE;
         } else if(event.type==3 && event.scan.u8[0]==SC_F5) {
           undo_group_kind=0;
