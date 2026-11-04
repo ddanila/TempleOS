@@ -362,12 +362,6 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     return [text[index:index+width] for index in range(0,len(text)+1,width)]
                 rows=[]
                 #The live input cursor reserves the last cell while typing.
-                #After the document scrolls, an 81-cell submitted line fills
-                #column 80 before its final character moves to the next row.
-                #Before scrolling, and while typing, the cursor reserves it.
-                if (not editing and len(text)==81 and ' ' not in text[8:]
-                        and not any(line=='Help & Index, Quick Start: Cmd line' for line in rows)):
-                    return [text[:80],text[80:]]
                 #Typing is fully observed before Enter, so exact-width input
                 #retains the soft wrap made for the reserved cursor cell.
                 submitted_width=79
