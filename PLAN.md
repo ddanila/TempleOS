@@ -25675,3 +25675,13 @@ all written bytes. The file is deleted and device limits restored. Earlier
 fixture setup return-value failures are preserved and documented. ATAPI,
 media initialization/failures and complete public block I/O/streams remain
 unqualified. C1-C5 remain open.
+
+The complete original RedSea boot record and signature constant are now
+shared with native public headers. Original rebuilds, full cross-build/386
+audit and 1201-file delivered-source audit pass
+(`build/i386-public-redsea-boot-cross-v1`); the live header/offset/drive-field
+fixture passes with unchanged inputs (`build/i386-public-redsea-boot-native-v1`).
+Complete initializer compilation now records its missing `RedSeaValidate`
+binding on line 17 (`build/i386-block-init-dependency-probe-v1`), without
+executing initialization. Full RedSea media lifecycle, block I/O/streams
+and C1-C5 remain open.

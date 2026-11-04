@@ -447,3 +447,21 @@ exception markers and identified `AX0002`; correcting that expectation kept
 the independent file-size and transfer assertions intact. Neither earlier
 run executed an ATA transfer from this fixture. Full public block I/O/streams
 and C1-C5 remain open.
+
+## Shared RedSea boot record (2026-11-04)
+
+The complete original `CRedSeaBoot` declaration and `MBR_PT_REDSEA` value
+are now shared through `Kernel/BlkDev/RedSeaBootTypes.HH` by KernelA and
+native PublicFiles. The record body is byte-identical to the original. Both
+original rebuild generations, full native cross-build/386 audit and 1201-file
+delivered-source audit pass (`build/i386-public-redsea-boot-cross-v1`).
+The native live-header fixture passes with unchanged inputs
+(`build/i386-public-redsea-boot-native-v1`): 512-byte size, field offsets,
+header signatures and volume/root/bitmap fields match the mounted drive
+record after a retained ATA read. This does not initialize or format media.
+
+A compile-only probe of the complete shared `BlockDevInitCore.HC` stops
+at missing `RedSeaValidate` on line 17, with inputs unchanged and no
+initializer called (`build/i386-block-init-dependency-probe-v1`). Original
+RedSea validation/initialization/formatting, full block I/O/streams and
+C1-C5 remain open.

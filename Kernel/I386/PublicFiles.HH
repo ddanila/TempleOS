@@ -11,6 +11,7 @@
 #include "/Kernel/BlkDev/BlockDevTypes.HH"
 #include "/Kernel/BlkDev/ATAConstants.HH"
 #include "/Kernel/BlkDev/ATAPITrackTypes.HH"
+#include "/Kernel/BlkDev/RedSeaBootTypes.HH"
 #include "/Kernel/BlkDev/BlockSize.HH"
 #include "/Kernel/BlkDev/BlockGlobalsTypes.HH"
 public _extern _BLKDEV CBlkDevGlbls blkdev;

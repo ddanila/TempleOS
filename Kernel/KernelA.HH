@@ -470,18 +470,7 @@ class CMasterBoot
   U16	signature; //AA55
 };
 
-class CRedSeaBoot
-{
-  U8	jump_and_nop[3],
-	signature,reserved[4]; //MBR_PT_REDSEA=0x88. Distinguish from real FAT32
-  I64	drv_offset,	//For CD/DVD image copy.
-	sects,
-	root_clus,
-	bitmap_sects,
-	unique_id;
-  U8	code[462];
-  U16	signature2;	//0xAA55
-};
+#include "/Kernel/BlkDev/RedSeaBootTypes.HH"
 
 class CFAT32Boot
 {
@@ -663,7 +652,6 @@ class CISOPriDesc
 #define MBR_PT_FAT32e	0x8B
 #define MBR_PT_FAT32f	0x8C
 #define MBR_PT_NTFS	0x07
-#define MBR_PT_REDSEA	0x88
 
 #include "/Kernel/BlkDev/FreeListTypes.HH"
 
