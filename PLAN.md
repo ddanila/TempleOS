@@ -25462,3 +25462,16 @@ checks with unchanged inputs
 layout baseline now agrees across the cross-built image and both native
 generations; the full KVM integration and original-system comparison remain
 unqualified.
+
+Generation two also passes the focused exact-width diagnostic under KVM at
+both 0.3 and 0.03 seconds per key, with unchanged inputs
+(`build/i386-terminal-exact-width-gen2-kvm-v1` and
+`build/i386-terminal-exact-width-gen2-kvm-fast-v1`). The main input harness
+previously sampled every fourth key and could submit the remaining characters
+before observing their reflow. It now observes the final typing frame too and
+uses the reserved-cell wrap for exact-width submitted input. A 34-command
+KVM check, including scrolling and three unchanged task-ring expressions,
+passes all pixels with WinMgr active
+(`build/i386-terminal-final-typing-gen2-kvm-v2`). The full generation-two
+workstation rerun with this change is in progress; complete integration and
+C1–C5 remain open.
