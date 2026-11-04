@@ -25784,3 +25784,13 @@ with unchanged inputs (`build/i386-call-ext-str-native-v4`). Same-include
 lookup before definition commit remains explicitly unqualified; earlier
 failures and the precise disassembler workaround are documented in
 `docs/i386-cfile-stream.md`. Full media/streams and C1-C5 remain open.
+
+
+`CallExtStr` now resolves validated active include scopes, including pending
+parent functions invoked through nested `ExePutS`, without early publication.
+Compiler service version 83 and host interface/address checks agree. Original
+rebuilds, full native cross-build/386 audit and the 1212-file source audit pass
+(`build/i386-call-ext-scope-cross-v5`). The KVM contract runs before and after
+publication, proves public-table privacy, and passes with unchanged inputs
+(`build/i386-call-ext-scope-native-v2`). General public hash-overlay visibility,
+full media/streams and C1-C5 remain open.

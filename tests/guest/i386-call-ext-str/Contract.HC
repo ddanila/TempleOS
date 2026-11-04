@@ -29,5 +29,10 @@ U0 CallExtStrContract()
   try CallExtStr("CESThrow",7);
   catch {caught=TRUE;Fs->catch_except=TRUE;}
   if(!caught)throw('CES9',TRUE);
+  if(ExePutS("CallExtStr(\"CESZero\");","CESChild.HC")!=CESZero)throw('CESB',TRUE);
   for(i=0;i<100;i++)if(CallExtStr("CESOne",i)!=CESOne(i))throw('CESA',TRUE);
 }
+
+//Exercise the private source scope before this include publishes definitions.
+if(HashFind("CESZero",Fs->hash_table,HTT_FUN))throw('CESP',TRUE);
+CallExtStrContract;

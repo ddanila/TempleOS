@@ -54,6 +54,7 @@ extern U0 I386ExecutionBreakPoll();
 extern I64 I386FrontendModuleWriteUnit(CPrsSymbolServices *symbols,
   I64 (*sink)(U8 *context,U32 offset,U8 *buffer,U32 bytes),U8 *sink_context,
   U8 *scratch,I64 scratch_bytes);
+extern Bool I386FrontendCallAddress(CI386Heap *heap,CI386Task *task,U8 *name,U8 **address);
 extern Bool I386FrontendBindFiles(CPrsSymbolServices *symbols,CI386FileServices *files);
 extern I64 I386ModulePackRaw(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
   CI386ModuleRecord *records,I64 record_count,U8 *strings,I64 string_bytes);
@@ -129,6 +130,7 @@ I64 Main(CI386CompilerServices *services,I64 bytes)
   services->frontend_private_defines=&I386FrontendPrivateDefines;
   services->export_at=&I386CompilerRuntimeExportAt;
   services->frontend_bind_files=&I386FrontendBindFiles;
+  services->frontend_call_address=&I386FrontendCallAddress;
   return 1;
 }
 #include "/Compiler/I386/LexString.HC"

@@ -147,3 +147,32 @@ exact-byte indirect-branch decoder workaround now includes this encoding;
 checks preserve following instruction boundaries and retain invalid bytes
 as `db`. No instruction allowlist was broadened. Full native media/streams
 and C1-C5 remain open.
+
+
+### Active-source CallExtStr lookup
+
+The earlier same-include lookup failure is now fixed for `CallExtStr`.
+Compiler service version 83 adds a narrow callable-address lookup over the
+current task's validated active frontend tables, from child to parent.
+Each lookup uses a temporary single-table view; it neither changes parent
+links nor publishes declarations. Missing names fall back to the task's
+published table, and a found null address still returns zero. Only the
+borrowed callable address crosses the compiler service boundary.
+
+Both original rebuild generations, the full native cross-build and 386
+instruction audit pass (`build/i386-call-ext-scope-cross-v5`). The 1212-file
+source audit matches the checkout before this evidence append. The native
+KVM contract passes with unchanged pinned inputs
+(`build/i386-call-ext-scope-native-v2`): the full existing argument/return,
+missing/null, exception and repeated-call checks run both inside the
+unpublished include and after publication. Nested `ExePutS` also resolves a
+pending parent function. An explicit public `HashFind` assertion proves the
+pending function remains absent from the task table during the include.
+General public `HashFind` overlay visibility is not changed or qualified.
+
+Earlier attempts remain diagnostic evidence: cross v1 stopped at the old
+host interface-version check; native v1 found that the first active-table
+lookup did not search pending parent controls; cross v3 required refreshed
+original rebuild provenance; cross v4 rejected an unsupported `continue`
+statement, subsequently replaced with a conditional block. Full native
+media/streams and C1-C5 remain open.

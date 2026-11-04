@@ -20,7 +20,7 @@
 #include "/Kernel/I386/Module.HH"
 #include "/Kernel/I386/ModuleBind.HH"
 //Snapshot layout and kernel lifetime helpers must match the retained compiler.
-#define I386_COMPILER_SERVICES_VERSION 82
+#define I386_COMPILER_SERVICES_VERSION 83
 //Versioned caller-owned interface, borrowing code from the retained module image.
 //Detach all users before unloading; the boot kernel retains it for its lifetime.
 class CI386CompilerServices {
@@ -97,5 +97,7 @@ class CI386CompilerServices {
   Bool (*export_at)(I64 index,CI386ModuleBinding *binding);
   //Borrow the task's file path service for source directives such as #help_file.
   Bool (*frontend_bind_files)(CPrsSymbolServices *symbols,CI386FileServices *files);
+  //Borrow a callable address from this task's validated active source scope.
+  Bool (*frontend_call_address)(CI386Heap *heap,CI386Task *task,U8 *name,U8 **address);
 };
 #endif

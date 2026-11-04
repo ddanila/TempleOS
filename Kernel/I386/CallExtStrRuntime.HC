@@ -29,11 +29,14 @@ I64 NativeCallArgs(U8 *address,I64 count,I64 *arguments)
 }
 I64 CallExtStr(U8 *name,...)
 {
-  CHash *hook=HashFind(name,Fs->hash_table,HTT_FUN|HTT_EXPORT_SYS_SYM);
+  CHash *hook;
   U8 *address;
-  if(!hook)return 0;
-  if(hook->type&HTT_FUN)address=hook(CHashFun *)->exe_addr;
-  else address=hook(CHashExport *)->val;
+  if(!(*console_config->compiler->frontend_call_address)(console_config->heap,Fs,name,&address)) {
+    hook=HashFind(name,Fs->hash_table,HTT_FUN|HTT_EXPORT_SYS_SYM);
+    if(!hook)return 0;
+    if(hook->type&HTT_FUN)address=hook(CHashFun *)->exe_addr;
+    else address=hook(CHashExport *)->val;
+  }
   if(!address)return 0;
   return NativeCallArgs(address,argc,argv);
 }

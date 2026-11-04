@@ -1107,6 +1107,37 @@ CI386Frontend *I386FrontendTableOwner(CI386Heap *heap,CI386Task *task,CHashTable
   }
   return 0;
 }
+Bool I386FrontendCallAddress(CI386Heap *heap,CI386Task *task,U8 *name,U8 **address)
+{//Borrow only the address: pending declarations remain privately owned.
+  CCmpCtrl *cc;
+  CI386CmpCtrl *owned;
+  CI386Frontend *state;
+  CHash *hook;
+  CHashTable scope;
+  I64 remaining;
+  *address=0;
+  if(!task)return FALSE;
+  remaining=task->active_controls;
+  for(cc=task->last_cc;cc!=&task->next_cc;cc=cc->last) {
+    if(remaining--<1 || !I386CmpControlValid(heap,cc) || !I386CmpActiveValid(cc))return FALSE;
+    owned=cc;
+    if(owned->task!=task)return FALSE;
+    state=owned->frontend;
+    if(state) {
+      if(!I386ParserRecord(owned,state) || I386HeapSize(heap,state)!=sizeof(CI386Frontend))return FALSE;
+      if(I386FrontendTableOwner(heap,task,state->table)!=state)return FALSE;
+      //A borrowed view searches this overlay only, without changing its parent.
+      scope.next=0;scope.mask=state->table->mask;scope.locked_flags=0;scope.body=state->table->body;
+      hook=HashFind(name,&scope,HTT_FUN|HTT_EXPORT_SYS_SYM);
+      if(hook) {
+        if(hook->type&HTT_FUN)*address=hook(CHashFun *)->exe_addr;
+        else *address=hook(CHashExport *)->val;
+        return TRUE;
+      }
+    }
+  }
+  return FALSE;
+}
 Bool I386FrontendTableValid(CI386Heap *heap,CI386Task *task,CHashTable *table)
 {//Root arena tables and original public tables have distinct allocation headers.
   CI386TaskHeaps *owner;

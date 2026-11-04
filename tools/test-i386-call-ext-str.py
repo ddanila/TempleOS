@@ -22,7 +22,7 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     paths=[source,fixture,helper,package,build,Path(__file__).resolve(),ROOT/'Kernel/FontStd.HC']
     pins={str(p):sha(p) for p in paths}
-    report=dict(result='running',input_sha256=pins,scope='CallExtStr missing symbol/null export, zero/one/three/ten arguments, wide values, pointer, soft-float bits, nested calls, export lookup, exception and repeated stack recovery')
+    report=dict(result='running',input_sha256=pins,scope='CallExtStr private same-include and published scopes, nested ExePutS, missing symbol/null export, zero/one/three/ten arguments, wide values, pointer, soft-float bits, nested calls, export lookup, exception and repeated stack recovery')
     try:
         image=out/'working.img'
         runpy.run_path(str(package))['package'](source,image,additions={'/CallExtStr.HC':fixture.read_bytes()})
