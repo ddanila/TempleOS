@@ -77,3 +77,11 @@ to the unbound `DocTermNew` call in `ACTask.HC` line 221
 (`build/i386-autocomplete-keymap-probe-v1`). The diagnostic uses deliberately
 throwing stream providers and does not qualify autocomplete execution. See
 [key-map sorting](i386-keymap-sort.md).
+
+The welcome-console full-content image repeats this boundary
+(`build/i386-c1c5-welcome-autocomplete-compile-probe-v1/result.json`): the
+unchanged autocomplete sources reject with an undefined identifier at
+`ACTask.HC` line 222, immediately after `DocTermNew`. All pinned probe inputs
+remain unchanged. The shared `Adam/DolDoc/DocTermNewCore.HC` body exists but
+is not exposed by the native image. This compile probe still supplies throwing
+stream providers and establishes neither real stream nor autocomplete behavior.
