@@ -7,6 +7,7 @@
 #include "/Kernel/I386/Task.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/Ports.HH"
+#include "/Kernel/I386/ExceptNative.HH"
 extern Bool I386DataSegment(U8 *descriptor,U8 *base,I64 size);
 #include "/Kernel/I386/Irq.HH"
 #include "/Kernel/I386/PicPit.HH"
@@ -25,7 +26,9 @@ CI386AtaChannel channel,other;
 CI386Ata disks[2];
 CBlkDev public_records[2];
 CI386OwnedTask *workers[3];
+public I64 ata_task_record_bytes=sizeof(CI386OwnedTask);
 U32 errors,completed,competitors,queued,observed,ticks,keys,irq_owned,failed,poll_steps,timer_owned,keys_owned,failed_queued;
+U32 root_reads,first_reads;
 extern Bool I386AtaWait(U16 io,U8 mask,U8 wanted,Bool errors,I64 polls,CI386AtaPoll *poll);
 U0 PollProbe(U8 *context)
 {
@@ -47,6 +50,10 @@ extern U0 Reader(I64 id);
 extern U0 FailedReader(I64 id);
 extern U0 Competitor(I64 unused);
 extern U0 OnIrq(CI386IrqFrame *frame);
+U0 ExceptReport(CI386Task *task,I64 ch)
+{ errors++;Diagnostic(ch); }
+U0 ExceptFatal(CI386Task *task,I64 status,I64 ch)
+{ Diagnostic(status);Diagnostic(ch);while(1) {} }
 U0 Bind(CI386Task *task)
 {
   if((GetRFlags&0x200) || !I386DataSegment(control->task_descriptor,task,sizeof(CI386Task))) errors++;
@@ -65,8 +72,12 @@ I64 DiskTest()
   cpu.addr=&cpu; cpu.scheduler=&scheduler;
   if(!I386SchedInit(&scheduler,&root,swap) ||
       !I386DataSegment(control->cpu_descriptor,&cpu,sizeof(CI386Cpu)) ||
-      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x100000,32768) ||
+      !I386SchedSetBind(&scheduler,&Bind) || !I386HeapInit(&heap,0x100000,65536) ||
       !I386AtaChannelInit(&channel,&scheduler,0) || !I386AtaChannelInit(&other,&scheduler,1)) return 1;
+  //Match the ATA runner's 32 KiB boot-stack range; workers own their stacks.
+  root.stk=0x94000;root.stk->next_stk=0;root.stk->stk_ptr=0;
+  root.stk->stk_size=32768-offset(CTaskStk.stk_base);root.memory=&heap;
+  if(!I386ExceptInstallNative(&ExceptReport,&ExceptFatal)) return 17;
   disks[0].public_device=&public_records[0];disks[1].public_device=&public_records[1];
   if(!I386AtaTaskIdentify(&channel,&disks[0],0) || !I386AtaTaskIdentify(&channel,&disks[1],1) ||
       disks[0].sectors!=32768 || disks[1].sectors!=32768 || channel.owner || channel.poisoned ||
@@ -93,13 +104,21 @@ I64 DiskTest()
     if(!I386SchedYield(&scheduler) || (GetRFlags&0x200)) return 7;
     if(channel.owner) {
       observed++;
-      if(!channel.owner->io_locks || I386AtaTaskRead(&channel,&disks[0],512,buffer)) return 8;
-      if(channel.head) queued++;
+      if(!channel.owner->io_locks) return 8;
+      if(channel.head) {
+        queued++;
+        if(!root_reads) {
+          if(!I386AtaTaskRead(&channel,&disks[0],1056,buffer) || first_reads!=2 ||
+              root.io_locks || root.wait || (GetRFlags&0x200)) return 8;
+          for(i=0;i<512;i++) if(buffer[i]!=((i*37)^(i>>1)^0x24)(U8)) return 8;
+          root_reads++;
+        }
+      }
     }
     if(workers[0]->task.finished && workers[1]->task.finished && workers[2]->task.finished) break;
   }
   I386PicMask(0xFFFF);
-  if(errors || completed!=2 || !observed || !queued || !competitors || !ticks || keys!=1 ||
+  if(errors || root_reads!=1 || first_reads!=2 || completed!=2 || !observed || !queued || !competitors || !ticks || keys!=1 ||
       !timer_owned || keys_owned!=1 || channel.owner || channel.head || channel.poisoned || root.io_locks) {
     Diagnostic(errors); Diagnostic(completed); Diagnostic(observed); Diagnostic(queued);
     Diagnostic(competitors); Diagnostic(ticks); Diagnostic(keys); Diagnostic(irq_owned);
@@ -140,6 +159,7 @@ U0 Reader(I64 id)
     lba=1056+round*127;
     if(!I386AtaTaskRead(&channel,&disks[id],lba,buffer+1) ||
         (GetRFlags&0x200)!=wanted || I386TaskSelf->io_locks) { errors++; break; }
+    if(!round) first_reads++;
     for(i=0;i<512;i++) {
       expected=(i*37)^(i>>1)^((lba^(lba>>8))&255);
       if(id) expected^=0x5A;
@@ -202,6 +222,10 @@ U0 OnIrq(CI386IrqFrame *frame)
 #include "/Kernel/I386/Ata.HC"
 #include "/Kernel/I386/AtaChannel.HC"
 #include "/Kernel/I386/AtaTask.HC"
+#include "/Kernel/I386/Frame.HC"
+#include "/Kernel/I386/Except.HC"
+#include "/Kernel/I386/ExceptRuntime.HC"
+#include "/Kernel/I386/ExceptNative.HC"
 #define I386_STAGE_VALIDATION_NATIVE
 #include "T:/Validation.HC"
 

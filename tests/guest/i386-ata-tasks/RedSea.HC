@@ -2,7 +2,7 @@
 #include "/Kernel/I386/FileRead.HH"
 CI386RedSea volumes[2];
 CI386RedSeaIo volume_io;
-U32 fs_stage,fs_queued,fs_done;
+U32 fs_stage,fs_queued,fs_done,fs_root_reads;
 extern U0 FileWriter(I64 unused);
 extern U0 FileReader(I64 unused);
 I64 FileSessionTest()
@@ -29,11 +29,18 @@ I64 FileSessionTest()
   for(round=0;round<1000;round++) {
     I386SchedYield(&scheduler);
     if(channel.head) fs_queued++;
-    if(channel.owner && I386RedSeaFileRead(&volumes[0],&heap,volumes[0].root,"Data.BIN")) return 24;
+    if(channel.owner) {
+      fs_root_reads++;
+      bytes=I386RedSeaFileRead(&volumes[0],&heap,volumes[0].root,"Data.BIN",&size);
+      if(!bytes || fs_stage!=2 || size!=1024 || bytes[size] ||
+          root.io_locks || (GetRFlags&0x200)) return 24;
+      for(i=0;i<size;i++) if(bytes[i]!=0x6C) return 24;
+      if(!I386HeapFree(&heap,bytes)) return 24;
+    }
     if(workers[0]->task.finished && workers[1]->task.finished) break;
   }
   I386PicMask(0xFFFF);
-  if(errors || fs_done!=2 || fs_stage!=2 || !fs_queued || channel.owner || channel.head ||
+  if(errors || fs_done!=2 || fs_stage!=2 || !fs_queued || fs_root_reads!=1 || channel.owner || channel.head ||
       channel.poisoned || root.io_locks || (GetRFlags&0x200)) return 25;
   for(i=0;i<2;i++) if(!I386TaskDestroy(workers[i])) return 26;
   bytes=I386RedSeaFileRead(&volumes[1],&heap,volumes[1].root,"/Data.BIN",&size);

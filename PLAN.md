@@ -25952,3 +25952,20 @@ pass. Native Adam loads the unchanged library and fixture and initializes all
 first definition lookup, despite a correct hash index and direct block read.
 Definition equivalence, native restart, visible suggestions and C1-C5 remain
 open. See docs/i386-autocomplete-dictionary.md for the failed-run evidence.
+
+
+Root/Adam ATA requests now wait in the FIFO channel queue while remaining
+runnable, instead of returning failure when another task owns the disk. The
+complete 8 MiB ATA task suite passes exact ordering/data/IF/lock checks for one
+root sector read and one root whole-file read, all existing worker/file/stage
+cases, exact hardware commands, poison suppression and both backing images.
+Its stale fixture now links actual exception providers and uses a measured
+64 KiB private heap for its unchanged three 8 KiB-stack workers (native owned
+record 1,264 bytes). No machine memory profile or native execution timeout was
+raised. Two original rebuild generations, 386 audit and all 1,260 source checks
+pass. On the normal 64 MiB image the unchanged autocomplete dictionary contract
+now passes both 95,293-word initializations, the exact independently decoded
+5,270-byte definition report, task stop/restart and resumed input. The 8 MiB
+normal startup smoke passes too. Visible suggestions/function keys, source
+statistics, complete minimal regressions and C1-C5 remain open. See
+docs/i386-root-io-wait.md and docs/i386-autocomplete-dictionary.md.

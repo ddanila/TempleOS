@@ -171,3 +171,13 @@ stop/restart. An independent pinned-asset decoder reconstructs its full report.
 Native root-context qualification is tracked separately in
 [the dictionary workflow](i386-autocomplete-dictionary.md); the user-console
 source-load pass alone does not cover that context.
+
+
+The native dictionary contract now passes too: actual Adam loading, both 95,293-word
+initializations, exact binary definitions with independent pinned-asset decoding,
+and task stop/restart. Root ATA requests now wait in FIFO order under contention
+instead of returning failure. The full ATA task regression passes with exact
+commands and backing images. See [root I/O waiting](i386-root-io-wait.md) and
+[the dictionary workflow](i386-autocomplete-dictionary.md). Visible suggestions,
+function-key selection, source statistics and complete C1-C5 qualification remain
+open.

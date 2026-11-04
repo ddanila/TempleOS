@@ -59,7 +59,7 @@ channel_acquire:
     channel->owner=task;channel->public_unlock=public_unlock;
     task->io_locks++; ok=TRUE; goto channel_done;
   }
-  if(task==scheduler->root || task->wait) goto channel_done;
+  if(task->wait) goto channel_done;
   registration.kind=I386_WAIT_ATA; registration.object=channel;
   registration.cancel=&I386AtaChannelCancelWait;
   registration.cancelled=FALSE; registration.cancelling=FALSE;
@@ -69,7 +69,13 @@ channel_acquire:
   else channel->head=&waiter;
   channel->tail=&waiter;
   while(waiter.queued) {
-    if(!I386SchedBlock(scheduler)) {
+    if(task==scheduler->root) {
+      //Adam cannot leave the runnable ring. Keep its FIFO reservation while
+      //yielding to the owner instead of reporting contention as missing data.
+      SetRFlags(GetRFlags|0x200);
+      I386SchedYield(scheduler);
+      I386IrqSave;
+    } else if(!I386SchedBlock(scheduler)) {
       previous=0; node=channel->head;
       while(node && node!=&waiter) { previous=node; node=node->next; }
       if(node) {

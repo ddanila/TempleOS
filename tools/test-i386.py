@@ -356,8 +356,14 @@ def main():
     task_stage_inputs = {}
     if args.ata_tasks:
         for name in ('tests/guest/i386-ata-tasks/Target.HC',
+                     'tests/guest/i386-ata-tasks/Once.HC',
                      'tests/guest/i386-ata-tasks/TaskFiles.HC',
                      'tests/guest/i386-ata-tasks/RedSea.HC',
+                     'Kernel/I386/AtaChannel.HC', 'Kernel/I386/AtaChannel.HH',
+                     'Kernel/I386/TaskLifetime.HC', 'Kernel/I386/Task.HH',
+                     'Kernel/I386/Except.HC', 'Kernel/I386/ExceptRuntime.HC',
+                     'Kernel/I386/ExceptNative.HC', 'Kernel/I386/ExceptContext.HC',
+                     'Kernel/I386/SysTry.HC', 'Kernel/I386/Frame.HC',
                      'Kernel/I386/TaskModuleStage.HC', 'Kernel/I386/TaskModuleStage.HH',
                      'Kernel/I386/ModuleStageCore.HC', 'Kernel/I386/ModuleStage.HH',
                      'Kernel/I386/TaskFiles.HC', 'Kernel/I386/TaskFiles.HH',
@@ -1014,6 +1020,13 @@ def main():
     if not (args.input or args.messages) and (result.returncode != 33 or runner_text != f'PASS i386 {runner_kind}\n'):
         raise RuntimeError(f'Protected-mode runner failed: {log.read_text()}')
     if args.ata_tasks:
+        task_size_rows=[line for line in (exports/'debug.log').read_text().splitlines()
+                        if line.startswith('ATA TASK RECORD BYTES ')]
+        if len(task_size_rows)!=1:
+            raise ValueError('Missing or duplicate native task-record measurement')
+        task_record_bytes=int(task_size_rows[0].split()[-1])
+        if not 0<task_record_bytes<65536:
+            raise ValueError('Invalid native task-record measurement')
         commands = [int(line.rsplit('cmd 0x', 1)[1], 16)
                     for line in ata_trace.read_text().splitlines()
                     if 'ide_bus_exec_cmd' in line and 'cmd 0x' in line]
@@ -1058,8 +1071,10 @@ def main():
         # private remount plus retry, then explicit mounted-record publication.
         mapped_stage_commands = ([0x20]*3+[0x30,0xE7]+[0x20,0x30]+
                                  [0x20]*3+[0x30]+[0x20]*5+[0x30,0xE7]+[0x20]*2)
-        expected_commands = ([0xEC]*2+[0x20]*64+[0x30]*2+[0xE7]*2+[0x20]*2+
-                             [0x20]*6+[0x30]*2+[0xE7]+[0x20]*6+
+        #One FIFO root sector read, then one root whole-file read (directory
+        #plus two payload sectors) after the concurrent writer and reader.
+        expected_commands = ([0xEC]*2+[0x20]*65+[0x30]*2+[0xE7]*2+[0x20]*2+
+                             [0x20]*6+[0x30]*2+[0xE7]+[0x20]*9+
                              stage_commands+publication_commands+publication_worker_commands+
                              publication_growth_commands+mapped_stage_commands+[0x20]*8)
         if commands[-len(expected_commands):] != expected_commands:
@@ -1085,6 +1100,8 @@ def main():
                 raise RuntimeError(f'Cooperative ATA drive {drive_id} backing image differs')
         (OUT/'ata-task-check.json').write_text(json.dumps({
             'result':'pass','drives':2,'pattern_reads':64,'writes':2,'flushes':2,
+            'root_fifo_sector_reads':1,'root_serialized_file_reads':1,
+            'private_heap_bytes':65536,'task_record_bytes':task_record_bytes,
             'failed_commands':1,'poisoned_requests_issued':0,
             'redsea_volumes':2,'serialized_file_bytes':1024,'file_sector_writes':2,
             'inherited_task_directories':2,'relative_file_reads':2,'borrowed_reap_rejected':True,

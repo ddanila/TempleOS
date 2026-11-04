@@ -549,6 +549,12 @@
           "result": "fail",
           "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
           "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
+          "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
         }
       ]
     },
@@ -607,6 +613,12 @@
           "result": "fail",
           "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
           "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
+          "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
         }
       ]
     },
@@ -658,6 +670,12 @@
           "result": "fail",
           "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
           "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
+          "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
         }
       ]
     },
@@ -708,6 +726,12 @@
           "result": "fail",
           "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
           "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
+          "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
         }
       ]
     },
@@ -738,6 +762,12 @@
           "result": "fail",
           "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
           "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
+          "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
         }
       ]
     },
@@ -778,6 +808,12 @@
           "result": "fail",
           "evidence": "build/i386-autocomplete-dictionary-native-v6/result.json",
           "scope": "Real Adam library/fixture load and 95,293-word initialization observed. Definition getters return NULL despite correct Apple hash index and direct block read. Native definition equivalence and stop/restart remain unqualified."
+        },
+        {
+          "target": "native-root-dictionary-lifecycle",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
+          "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
         }
       ]
     },

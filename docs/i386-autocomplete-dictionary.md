@@ -1,5 +1,18 @@
 # Autocomplete dictionary workflow
 
+The rebuilt original and native 64 MiB normal image now pass the complete
+dictionary-only contract. Native evidence is
+`build/i386-autocomplete-root-io-native-v1/result.json`, with all inputs unchanged
+and a clean final filesystem audit. Both 95,293-word initializations and task
+shutdowns complete, the replacement task has a new task number, and the console
+resumes. All 5,270 report bytes match the original and the independent asset
+decoder. Native owned accounting is 8,355,320 bytes.
+
+The native fix is a root-task ATA wait: contention previously returned failure
+while the live autocomplete task used the disk. Root now keeps a FIFO reservation
+and yields until ownership transfers. See [root I/O waiting](i386-root-io-wait.md)
+for the failing regression, full passing ATA suite and fixture resource repairs.
+
 The reference runs the unchanged original autocomplete implementation with the
 pinned 1,253,930-byte word list and 26,381,073-byte definitions. It uses the
 previously qualified original-system word archive, added before startup so the
@@ -37,9 +50,9 @@ set now includes it, providing that real service to root jobs and servants as
 well as user tasks. The library and fixture load through actual AdamFile jobs;
 application source and runtime services are not replaced. The updated image
 (`build/i386-autocomplete-dictionary-cross-v3`) passes two original rebuild
-generations, the 386 audit and all 1,260 delivered-source checks. Native
-root-context loading and initialization now execute; dictionary comparison
-still fails. A second
+generations, the 386 audit and all 1,260 delivered-source checks.
+That historical image loads and initializes the dictionary but fails its
+definition comparison. An earlier
 root-context failure at ACTask line 104 was a call to StrCmp without its typed
 declaration: that declaration existed only in user StartOS. PublicFormat now
 publishes the real resident StrCmp signature, and StartOS uses the inherited
@@ -73,8 +86,8 @@ file size, read result and record offset and passes the complete lifecycle.
 A separate one-entry native search diagnostic successfully calls the unchanged
 getter and a traced copy against the actual definitions file. This is a reduced
 diagnostic with manually constructed index state, not application qualification.
-The difference after full initialization remains under investigation. Native
-exact definition bytes and stop/restart are still unqualified. Historical native
+These historical diagnostics did not qualify native definition bytes or
+stop/restart; the root-I/O fix and complete passing run above supersede them. Historical native
 v1-v3 failed root loading at __DIR__, StrCmp and exception helpers respectively;
 the common declarations resolve those source-context failures.
 
@@ -89,5 +102,5 @@ cannot open the file and the report's direct FOpen also returns NULL
 (`build/i386-acd-search-diagnostic-v6`). Thus a compiled-search or caller-only
 explanation is not established. Repeated file opening with the live task is the
 next investigation. The native channel explicitly rejects a contended root
-acquisition, and the existing ATA task test expects that behavior; contention is
-a candidate cause, not yet a confirmed explanation for this application failure.
+acquisition, and the existing ATA task test expects that behavior; this led to the failing root-read regression and subsequent fix documented
+above. The unchanged full dictionary contract now passes.
