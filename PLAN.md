@@ -25526,3 +25526,10 @@ advanced to `doc-session-resource-accounting` with the current input/reflow
 rules. This provides integrated editing evidence on the guest-built image,
 including the save and cancellation cases, while resource completion, later
 mouse/navigation groups and the complete workstation result remain pending.
+
+Generation two v3 has also passed
+`doc-mouse-autoscroll-left-canonical-definition` and its output check, then
+advanced to `doc-mouse-drag-new`. This clears the timing-sensitive checkpoint
+that stopped both earlier cross-built runs and generation one's older run,
+using the shared final-typing rule. Drag/reverse selection, later groups and
+the complete workstation result are still pending.
