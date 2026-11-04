@@ -3038,10 +3038,16 @@ def main():
                 native_alloc[0][1:]!=native_alloc[1][1:] or \
                 native_alloc[0][1]<256 or native_alloc[0][2]<128:
             raise ValueError('Guest-built original module allocator did not execute')
+        native_alloc_backing=[tuple(int(value,16) for value in line.split()[3:])
+                              for line in log.splitlines() if line.startswith('NATIVE ALLOC BACKING ')]
+        if len(native_alloc_backing)!=2 or [row[0] for row in native_alloc_backing]!=[0,1] or any(
+                len(row)!=7 or row[1]!=row[2] for row in native_alloc_backing):
+            raise ValueError('Native allocation-loader public payload/backing accounting failed')
         result['native_alloc']={'phases':[0,1],
                                 'module_bytes':native_alloc[0][1],
                                 'loaded_bytes':native_alloc[0][2],
-                                'source':'/Kernel/I386/ModuleAlloc.HC'}
+                                'source':'/Kernel/I386/ModuleAlloc.HC',
+                                'public_payload_and_backing':native_alloc_backing}
         native_file = [tuple(int(value,16) for value in line.split()[2:])
                        for line in log.splitlines()
                        if re.match(r'^NATIVE FILE [0-9A-F]{16} ',line)]

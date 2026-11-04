@@ -231,3 +231,11 @@ unchanged 60-second limit, with welcome/live WinMgr and exact arithmetic/public
 input-state pixels (`build/i386-public-header-bools-smoke8-v1`). Its input pins
 remain unchanged. The 1,361-file delivered-source audit and 386 boot audit pass.
 These are scoped checks; the full minimal gate and C1-C5 remain open.
+
+The later allocation-loader stop was isolated to a bare physical-heap cleanup
+comparison that counted a retained public backing region. The source-unit
+checks now use the same ownership-aware accounting as the enclosing probe.
+The root program/header suite completes; the full gate next fails allocating
+the unchanged diagnostic worker arena at 8 MiB. See
+[native source-unit backing evidence](i386-native-unit-backing.md). Worker-phase
+header checks and the complete minimal gate remain unqualified.

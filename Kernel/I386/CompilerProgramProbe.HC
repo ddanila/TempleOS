@@ -923,8 +923,9 @@ U0 ProbeProgramKMath(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CPrsSymbolServices *symbols;
   U8 *module=0,*disk=0;
   I64 module_bytes,disk_bytes,image_bytes,i;
-  I64 used=heap->used,allocations=heap->allocations;
+  CI386BackingCheck backing_check;
   U32 irq;
+  if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
   cc=probe->files->control_new("#include \"/Kernel/KMathInt.HC\";",
@@ -961,8 +962,7 @@ U0 ProbeProgramKMath(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
-  if(heap->used!=used ||
-      heap->allocations!=allocations) KernelStop;
+  if(!I386BackingCheckRestored(&backing_check)) KernelStop;
   KernelLog("NATIVE KMATH "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
@@ -1007,8 +1007,9 @@ U0 ProbeProgramArc(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CPrsSymbolServices *symbols;
   U8 *module=0,*disk=0;
   I64 module_bytes,disk_bytes,image_bytes,i;
-  I64 used=heap->used,allocations=heap->allocations;
+  CI386BackingCheck backing_check;
   U32 irq;
+  if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
   cc=probe->files->control_new("#include \"/Kernel/ArcSeed.HC\";",
@@ -1046,7 +1047,7 @@ U0 ProbeProgramArc(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
-  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  if(!I386BackingCheckRestored(&backing_check)) KernelStop;
   KernelLog("NATIVE ARC "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
@@ -1103,8 +1104,9 @@ U0 ProbeProgramExpand(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CPrsSymbolServices *symbols;
   U8 *module=0,*disk=0;
   I64 module_bytes,disk_bytes,image_bytes,i;
-  I64 used=heap->used,allocations=heap->allocations;
+  CI386BackingCheck backing_check;
   U32 irq;
+  if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
   cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/ArcExpand.HC\";",
@@ -1142,7 +1144,7 @@ U0 ProbeProgramExpand(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
-  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  if(!I386BackingCheckRestored(&backing_check)) KernelStop;
   KernelLog("NATIVE EXPAND "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
@@ -1229,8 +1231,9 @@ U0 ProbeProgramNativeExpand(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   CPrsSymbolServices *symbols;
   U8 *module=0,*disk=0;
   I64 module_bytes,disk_bytes,image_bytes,i;
-  I64 used=heap->used,allocations=heap->allocations;
+  CI386BackingCheck backing_check;
   U32 irq;
+  if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
   cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/ArcExpand.HC\";",
@@ -1268,7 +1271,7 @@ U0 ProbeProgramNativeExpand(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
-  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  if(!I386BackingCheckRestored(&backing_check)) KernelStop;
   KernelLog("NATIVE RESIDENT "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
@@ -1339,8 +1342,9 @@ U0 ProbeProgramNativePacker(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   CPrsSymbolServices *symbols;
   U8 *module=0,*disk=0;
   I64 module_bytes,disk_bytes,image_bytes,i;
-  I64 used=heap->used,allocations=heap->allocations;
+  CI386BackingCheck backing_check;
   U32 irq;
+  if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
   cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/ModulePackCore.HC\";",
@@ -1378,7 +1382,7 @@ U0 ProbeProgramNativePacker(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
-  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  if(!I386BackingCheckRestored(&backing_check)) KernelStop;
   KernelLog("NATIVE PACKER "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
@@ -1390,8 +1394,9 @@ U0 ProbeProgramNativeBundle(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   CPrsSymbolServices *symbols;
   U8 *module=0,*disk=0;
   I64 module_bytes,disk_bytes,image_bytes,i;
-  I64 used=heap->used,allocations=heap->allocations;
+  CI386BackingCheck backing_check;
   U32 irq;
+  if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
   cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/ModuleCheck.HC\";\n#include \"/Kernel/I386/ModulePackCore.HC\";",
@@ -1429,7 +1434,7 @@ U0 ProbeProgramNativeBundle(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
-  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  if(!I386BackingCheckRestored(&backing_check)) KernelStop;
   KernelLog("NATIVE BUNDLE "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
@@ -1443,7 +1448,7 @@ I64 ProbeProgramNativeLoaderRun(CI386CompilerProbe *probe,CI386Heap *heap,
   I64 image_bytes,fixture_bytes,loaded_bytes,i,offset=-1;
   I64 (*loader)(U8 **modules,I64 *sizes,I64 count,U8 *image,I64 capacity,
     U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count);
-  I64 (*answer)();
+  U32 (*answer)(); //The synthetic MOV EAX,42; RET entry returns a 32-bit value.
   if(!I386ModuleValid(module,module_bytes)) KernelStop;
   record=module+header->records_offset;
   for(i=0;i<header->record_count;i++,record++)
@@ -1496,8 +1501,9 @@ U0 ProbeProgramNativeLoader(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   CPrsSymbolServices *symbols;
   U8 *module=0,*disk=0;
   I64 module_bytes,disk_bytes,image_bytes,i;
-  I64 used=heap->used,allocations=heap->allocations;
+  CI386BackingCheck backing_check;
   U32 irq;
+  if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
   cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/ModuleLoad.HC\";",
@@ -1535,7 +1541,7 @@ U0 ProbeProgramNativeLoader(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
-  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  if(!I386BackingCheckRestored(&backing_check)) KernelStop;
   KernelLog("NATIVE LOADER "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
@@ -1556,7 +1562,7 @@ I64 ProbeProgramNativeAllocRun(CI386CompilerProbe *probe,CI386Heap *heap,
   Bool (*guest_free)(CI386Heap *heap,U8 *ptr);
   U8 *(*guest_load)(CI386Heap *heap,U8 **modules,I64 *sizes,I64 count,
     U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count);
-  I64 (*answer)();
+  U32 (*answer)(); //The synthetic MOV EAX,42; RET entry returns a 32-bit value.
   if(!I386ModuleValid(module,module_bytes)) KernelStop;
   record=module+header->records_offset;
   for(i=0;i<header->record_count;i++,record++) if(record->kind==I386_MODULE_EXPORT) {
@@ -1621,8 +1627,9 @@ U0 ProbeProgramNativeAlloc(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *o
   CPrsSymbolServices *symbols;
   U8 *module=0,*disk=0;
   I64 module_bytes,disk_bytes,image_bytes,i;
-  I64 used=heap->used,allocations=heap->allocations;
+  CI386BackingCheck backing_check;
   U32 irq;
+  if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
   cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#define I386_HEAP_SOURCE_BUILD 1\n#include \"/Kernel/I386/ModuleAlloc.HC\";",
@@ -1660,7 +1667,11 @@ U0 ProbeProgramNativeAlloc(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *o
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
-  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  KernelLog("NATIVE ALLOC BACKING ");KernelHex(probe->phase);KernelLog(" ");
+  KernelHex(backing_check.public_used);KernelLog(" ");KernelHex(task->code_heap->used_u8s);KernelLog(" ");
+  KernelHex(backing_check.retained);KernelLog(" ");KernelHex(backing_check.pool->retained);KernelLog(" ");
+  KernelHex(backing_check.count);KernelLog(" ");KernelHex(backing_check.pool->owned_count);KernelLog("\n");
+  if(!I386BackingCheckRestored(&backing_check)) KernelStop;
   KernelLog("NATIVE ALLOC "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }
@@ -1780,8 +1791,9 @@ U0 ProbeProgramNativeFile(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *ou
   CPrsSymbolServices *symbols;
   U8 *module=0,*disk=0;
   I64 module_bytes,disk_bytes,image_bytes,i;
-  I64 used=heap->used,allocations=heap->allocations;
+  CI386BackingCheck backing_check;
   U32 irq;
+  if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
   cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#define I386_HEAP_SOURCE_BUILD 1\n#include \"/Kernel/I386/ModuleFile.HC\";",
@@ -1824,9 +1836,9 @@ U0 ProbeProgramNativeFile(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *ou
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
-  if(heap->used!=used || heap->allocations!=allocations) {
-    KernelLog("NATIVE FILE CLEANUP FAILURE "); KernelHex(heap->used); KernelLog(" "); KernelHex(used);
-    KernelLog(" "); KernelHex(heap->allocations); KernelLog(" "); KernelHex(allocations);
+  if(!I386BackingCheckRestored(&backing_check)) {
+    KernelLog("NATIVE FILE CLEANUP FAILURE "); KernelHex(heap->used); KernelLog(" "); KernelHex(backing_check.used);
+    KernelLog(" "); KernelHex(heap->allocations); KernelLog(" "); KernelHex(backing_check.allocations);
     KernelLog("\n"); KernelStop;
   }
   KernelLog("NATIVE FILE "); KernelHex(probe->phase); KernelLog(" ");
@@ -1981,8 +1993,9 @@ U0 ProbeProgramNativeCreate(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   CPrsSymbolServices *symbols;
   U8 *module=0,*disk=0;
   I64 module_bytes,disk_bytes,image_bytes,i;
-  I64 used=heap->used,allocations=heap->allocations;
+  CI386BackingCheck backing_check;
   U32 irq;
+  if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
   cc=probe->files->control_new("#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/RedSeaCreate.HC\";",
@@ -2020,7 +2033,7 @@ U0 ProbeProgramNativeCreate(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
     if(!ProbePublishedRemove(task->hash_table,roots[i]) ||
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
-  if(heap->used!=used || heap->allocations!=allocations) KernelStop;
+  if(!I386BackingCheckRestored(&backing_check)) KernelStop;
   KernelLog("NATIVE CREATE "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }

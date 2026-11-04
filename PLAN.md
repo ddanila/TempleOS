@@ -26130,3 +26130,21 @@ still fails later in the native allocation-loader probe after NATIVE LOADER 0;
 its exact assertion remains to be isolated, and the worker phase is not reached.
 See docs/i386-public-headers.md and the scoped failure report in
 build/i386-public-header-bools-minimal-gate-v2. C1-C5 remain open.
+
+The native allocation-loader itself passes load/validation, result42, rejection
+and all frees; detailed checkpoints isolate the stop to its old raw-heap cleanup
+comparison. Ten source-unit probes now use the existing verified backing-cache
+accounting already used by the enclosing program/header/format checks. Exact
+live public bytes and non-backing allocations must recover; a separate worker
+compiler arena still requires exact raw totals. Both backing-accounting fault
+injection variants and the three-runner portable heap corpus pass. The final
+8 MiB default gate completes the root compiler/program suite and headers; its
+allocation-loader records live bytes 790720->790720 and one verified retained
+region (8880 bytes). It then reaches foundation startup but fails worker creation:
+request 1,070,343, largest free payload 911,920, total heap capacity 6,768,128 and
+used 5,826,784. Worker budgets/RAM/workload remain unchanged, and worker/later stages
+and C1-C5 remain open. See docs/i386-native-unit-backing.md.
+
+The separate normal 8 MiB KVM startup smoke for the backing-accounting candidate
+passes in 34.98 seconds with exact arithmetic/input-state pixels and unchanged
+provenance. It does not close the worker-allocation or full minimal gate.
