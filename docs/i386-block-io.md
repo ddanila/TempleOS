@@ -282,3 +282,31 @@ probe advances to missing `RepInU16` on line 87
 (`build/i386-ata-dependency-probe-v2`); both probes preserve their inputs and
 call no ATA routine. This supplies original constants, not native ATA, public
 block I/O or media support.
+
+## Native repeated port transfers (2026-11-04)
+
+The native public kernel now binds all six `RepInU8/U16/U32` and
+`RepOutU8/U16/U32` entry points with the original signatures. The native
+implementation uses scalar port intrinsics with element counts and byte
+strides, without scheduler yields between accesses. Exports are appended to
+the console table, retaining all prior data-symbol indices. Both original
+rebuild generations and the full cross-build/386 audit pass
+(`build/i386-port-string-cross-v2`).
+
+`tools/test-i386-port-string.py` passes on that image with unchanged inputs
+(`build/i386-port-string-native-v3`). In QEMU it checks zero-count calls with
+null buffers, byte/word/dword unassigned-port reads into unaligned guarded
+buffers, output count/stride through the UART scratch register, and source
+buffer preservation. Only each output element's low byte is observable at
+the scratch register; this does not establish full-width ATA transfers or
+physical hardware behavior.
+
+The first image boot failed because an initial edit shifted the indexed
+export table; its fixture and ATA probe never ran
+(`build/i386-port-string-native-v1`, `build/i386-ata-dependency-probe-v3`).
+The corrected image boots, but the first fixture attempt had an unsupported
+expected-value expression (`build/i386-port-string-native-v2`); the simplified
+fixture passes as v3. Compiling unchanged `DskATA.HC` on the corrected image
+now advances to missing `EndianU16` on line 112, with inputs unchanged and
+no ATA routine called (`build/i386-ata-dependency-probe-v4`). Native ATA,
+public block I/O, streams and C1-C5 remain open.

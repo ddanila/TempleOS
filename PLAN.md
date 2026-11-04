@@ -25589,3 +25589,14 @@ full native cross-build/386 audit and 1198-file delivered-source audit pass
 now advances from missing `ATAR1_CTRL` at line 4 to missing `RepInU16` at line
 87, with inputs unchanged and no device operations called. Native ATA, full
 block I/O/streams and C1-C5 remain open; see `docs/i386-block-io.md`.
+
+Native repeated-port APIs are now bound for all three widths in both
+directions. Both original rebuild generations and the corrected full native
+cross-build/386 audit pass (`build/i386-port-string-cross-v2`). The QEMU
+transfer fixture passes with unchanged inputs (`build/i386-port-string-native-v3`),
+covering null zero-count calls, guarded unaligned reads, output low-byte
+stride/count and source preservation. Full-width ATA behavior is not yet
+qualified. The unchanged ATA compile probe now stops at `EndianU16` line 112
+(`build/i386-ata-dependency-probe-v4`). Earlier export-table boot and fixture
+syntax failures are preserved and documented in `docs/i386-block-io.md`.
+Public block I/O/streams and C1-C5 remain open.
