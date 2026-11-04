@@ -3,6 +3,7 @@
 #include "/Kernel/NumericLimits.HH"
 #include "/Kernel/TimeTypes.HH"
 #include "/Kernel/KeyDevTypes.HH"
+#include "/Kernel/KeyboardStateTypes.HH"
 #include "/Kernel/ScanFlags.HH"
 #include "/Kernel/GetStrFlags.HH"
 public _extern _CHAR_2_SCAN_CODE I64 Char2ScanCode(I64 ch,I64 sc_flags=0);
@@ -27,4 +28,6 @@ public _extern _GET_F64 F64 GetF64(U8 *msg=NULL,F64 dft=0,F64 lo=F64_MIN,F64 hi=
 public _extern _GET_DATE CDate GetDate(U8 *msg=NULL,CDate dft=I64_MIN,CDate lo=I64_MIN,CDate hi=I64_MAX);
 public _extern _DOC_GET_STR2 U8 *DocGetStr2(I64 flags=0);
 public _extern _FP_GETSTR2 U8 *(*fp_getstr2)(I64 flags=0);
+public _extern _KBD_MS_EVT_TIME I64 KbdMsEvtTime();
+public _extern _KBD_GLOBALS CKbdStateGlbls kbd;
 #endif

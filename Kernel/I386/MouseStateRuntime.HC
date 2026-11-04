@@ -1,11 +1,15 @@
 //Logical mouse state is updated in scheduled context, never from IRQ12.
 CMsStateGlbls ms;
 CGridGlbls ms_grid;
-class CNativeMouseKeyboard { I64 scan_code; };
-CNativeMouseKeyboard native_mouse_keyboard;
+#include "/Kernel/KeyboardStateTypes.HH"
+CKbdStateGlbls native_keyboard;
+class CNativeInputMouse { I64 timestamp; };
+CNativeInputMouse native_input_mouse;
 F64 (*native_mouse_trunc)(F64 value);
 F64 NativeMouseTrunc(F64 value) { return (*native_mouse_trunc)(value); }
-#define kbd native_mouse_keyboard
+#define kbd native_keyboard
+#define ms_hard native_input_mouse
+#include "/Kernel/KbdMsEventTimeCore.HC"
 #define Trunc NativeMouseTrunc
 #include "/Kernel/MouseUpdateCore.HC"
 U32 native_mouse_serial;
@@ -15,6 +19,7 @@ U0 NativeMouseStateInit()
   ms.scale.x=ms.scale.y=ms.scale.z=1.0;
   ms.dbl_time=0.350; ms.show=TRUE;
   ms.timestamp=NativeTimeStamp;
+  native_input_mouse.timestamp=ms.timestamp;
   native_mouse_last_stamp=ms.timestamp;
   if(console_config->mouse) {
     native_mouse_last_x=console_config->mouse->x;

@@ -124,3 +124,13 @@ execution passes mask 1023 with actual border/menu/scroll services. See
 now rejects at missing KbdMsEvtTime (ACTask.HC line 230,
 `build/i386-terminal-constructor-autocomplete-v1`), with unchanged input pins.
 Autocomplete execution and visible suggestions remain unqualified.
+
+
+The original KbdMsEvtTime body and complete CKbdStateGlbls layout are now shared
+and bound to actual native raw input timestamps and scheduled key state. The
+original timing-decision cases and native hardware key/mouse contract pass;
+see `docs/i386-input-event-time.md`. The unchanged MakeAC probe advances past
+both timing and kbd.scan_code and now rejects missing sys_run_level at ACTask.HC
+line 265 (`build/i386-input-event-time-autocomplete-v1`, unchanged input pins).
+No autocomplete task activation, initialization or visible suggestion behavior
+is qualified by that failed source-load probe.

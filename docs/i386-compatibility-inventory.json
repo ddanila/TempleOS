@@ -614,6 +614,12 @@
           "result": "fail",
           "evidence": "build/i386-terminal-constructor-autocomplete-v1/result.json",
           "scope": "Unchanged MakeAC advances past real DocTermNew to missing KbdMsEvtTime at ACTask.HC line 230; no explicit autocomplete activation and no throwing service stubs."
+        },
+        {
+          "target": "native-real-service-source-load-after-input-timing",
+          "result": "fail",
+          "evidence": "build/i386-input-event-time-autocomplete-v1/result.json",
+          "scope": "Unchanged MakeAC advances past KbdMsEvtTime and kbd.scan_code to missing sys_run_level at ACTask.HC line 265. No explicit autocomplete activation or throwing service stubs."
         }
       ]
     },
@@ -16451,6 +16457,12 @@
           "result": "pass",
           "evidence": "build/i386-public-scan-translation-native-v2/result.json",
           "scope": "Exact conversion and key-name bytes against pinned original under ten modifier sets"
+        },
+        {
+          "target": "original-event-time-and-native-public-input-state",
+          "result": "pass",
+          "evidence": "docs/i386-input-event-time.md",
+          "scope": "Complete shared original timing body/layout; original five decision cases, native actual PS/2 make/break state and mouse-only timing with exact VGA and resumed console. Full keyboard driver, mappings, typematic and loss recovery remain open."
         }
       ]
     },

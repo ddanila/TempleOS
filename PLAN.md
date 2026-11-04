@@ -25878,3 +25878,16 @@ pixels. The unchanged MakeAC load advances to missing KbdMsEvtTime at ACTask.HC
 line 230; autocomplete, terminal action workflows, full minimal regressions and
 C1-C5 remain open. The prior-image full workstation run is still live. See
 docs/i386-terminal-constructor.md.
+
+
+The complete original KbdMsEvtTime body and keyboard-state layout are shared;
+console ABI 206 binds the actual native state (576 exports). Raw keyboard and
+mouse bytes receive PIT timestamps through the resident observer, and the
+scheduled decoder updates public counts, scan codes and bitmaps before posting
+messages. Original decision mask 31 and native real PS/2 key/mouse timing checks
+pass, with exact VGA and resumed input. Two original rebuild generations, the
+386 audit and 1,254-file source audit pass. The 8 MiB normal-startup smoke passes
+in 41.67 seconds. The unchanged MakeAC load advances to missing sys_run_level at
+ACTask.HC line 265. Full autocomplete, input-loss state recovery, all mappings,
+complete minimal regressions and C1-C5 remain open. The prior-image full
+workstation run remains live. See docs/i386-input-event-time.md.

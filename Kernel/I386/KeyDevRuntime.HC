@@ -109,3 +109,20 @@ U0 NativeKeyDevStart()
   KeyDevAdd(&NativeKeyDevConsoleKey,&NativeKeyDevConsoleString,0x80000000,TRUE);
   native_keydev_ready=TRUE;
 }
+
+U0 NativeKeyboardStateEvent(CI386KeyEvent *event)
+{//The scheduled decoder publishes the original public keyboard-state fields.
+  I64 scan=event->scan;
+  U32 merged=scan&255,raw=(scan>>32)&255;
+  if(console_config->mouse && console_config->mouse->installed) {
+    if(console_config->mouse->buttons&1)scan|=SCF_MS_L_DOWN;
+    if(console_config->mouse->buttons&2)scan|=SCF_MS_R_DOWN;
+  }
+  kbd.scan_code=scan;kbd.new_key_timestamp=kbd.timestamp;kbd.cnt++;
+  if(event->type==MSG_KEY_UP) {
+    Btr(kbd.down_bitmap,merged);Btr(kbd.down_bitmap2,raw);
+  } else {
+    kbd.last_down_scan_code=scan;
+    Bts(kbd.down_bitmap,merged);Bts(kbd.down_bitmap2,raw);
+  }
+}

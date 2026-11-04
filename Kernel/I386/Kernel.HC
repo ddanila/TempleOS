@@ -369,7 +369,10 @@ Bool KernelInputPoll()
 {//Caller owns controller access with interrupts masked; preserve normal routing.
   U8 data,status;
   if(!I386KbcRead(&data,&status)) return FALSE;
-  if(status&0x20) I386MouseFeed(&kernel_mouse,data,status);
+  if(status&0x20) {
+    kernel_console.key_irq(data,status); //The resident observer timestamps raw mouse bytes too.
+    I386MouseFeed(&kernel_mouse,data,status);
+  }
   else if(!kernel_console.key_irq(data,status)) I386KbcInputPut(&kernel_input,data,status);
   return TRUE;
 }

@@ -49,6 +49,7 @@ Bool NativeKeyboardPump()
   }
   try {
     decoded=I386KeyboardRead(console_config->reader,&event,FALSE);
+    if(decoded>0)NativeKeyboardStateEvent(&event);
     if(decoded<0) {
       native_keyboard_losses++;
       NativeTerminalDiscardKeyboard;
