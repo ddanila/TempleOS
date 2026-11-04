@@ -25414,3 +25414,12 @@ audits and identical 15-module/boot/RedSea identities. The linked boot image
 is 555,336 bytes. Full workstation integration has reached mouse reverse
 selection but found a harness wrap mismatch; complete C1–C5 qualification
 remains open. See [native build evidence](docs/i386-module-compiler-types.md).
+
+The focused mouse group passes 46 commands with exact VGA at 64 MiB on the
+full-content image (`build/i386-c1c5-welcome-merged-mouse64-kvm-v5/result.json`).
+The full workstation run exposed a longer retained-console history at the
+reverse-selection checkpoint: the second source segment wraps at 80 columns
+there, while the focused group wraps at 79. The input oracle now models that
+observed full-run layout, and its expected pixels match the captured failure
+frame byte-for-byte. The fresh integrated rerun is in progress; C1–C5 remain
+open.
