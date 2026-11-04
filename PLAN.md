@@ -25520,3 +25520,9 @@ advanced past `command-117`. Both repaired compiler-input wrap checkpoints
 therefore pass in all three full-session candidates. Later mouse/history
 checkpoints and complete workstation results are still pending; the earlier
 failed runs remain preserved.
+
+Installed generation two v3 has completed the document-editing group and
+advanced to `doc-session-resource-accounting` with the current input/reflow
+rules. This provides integrated editing evidence on the guest-built image,
+including the save and cancellation cases, while resource completion, later
+mouse/navigation groups and the complete workstation result remain pending.
