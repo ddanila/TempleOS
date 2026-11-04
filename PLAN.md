@@ -25533,3 +25533,13 @@ advanced to `doc-mouse-drag-new`. This clears the timing-sensitive checkpoint
 that stopped both earlier cross-built runs and generation one's older run,
 using the shared final-typing rule. Drag/reverse selection, later groups and
 the complete workstation result are still pending.
+
+Generation two v3 subsequently stopped at `doc-mouse-reverse-new` after
+successful compilation. Final typing retained 79 columns for both source
+segments; the remaining reverse-command special case expected 80 for the
+second segment. Removing it makes the shared rule's expected full frame
+match the captured pixels byte-for-byte, including the cursor. This removes
+the last command-specific wrap exception rather than qualifying the stopped
+run. The correction is committed as `38d2ddc9`; generation two v4 is running
+the complete suite with it. Reverse interaction and full integration remain
+unqualified.
