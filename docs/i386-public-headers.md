@@ -185,3 +185,49 @@ also passes (`build/i386-public-task-default-smoke-8m-v1`). The prior 8 MiB
 diagnostic exhausted
 its bootstrap heap before reaching this header check; this change does not close
 that resource gate or C1–C5.
+
+## Boolean constants in direct kernel-header loading
+
+`PublicKernel.HH` now defines guarded `TRUE=1` and `FALSE=0` alongside its
+existing NULL/ON/OFF constants. `PublicDebug.HH` uses FALSE for throw's default;
+a direct kernel-header include previously depended on PublicUser.HH
+constants and failed before publication. Existing caller definitions remain
+untouched. The atomic-include probe now checks both boolean definitions retain
+their prior identities after rollback and evaluates their values after success.
+
+The next probe setup issue was redundant plain extern declarations of SysTry
+and SysUntry after PublicDebug.HH had already bound them. The pinned original
+accepts those declarations but replaces both resolved bindings with unresolved
+prototypes: `build/i386-public-header-redeclare-original-v3/result.json` records
+before/after extern flags and address changes. The preceding original try/catch
+attempt (`...-original-v2`) reaches an Undefined Extern error; its screenshot and
+terminal failure are retained. The native isolated observation
+(`build/i386-public-header-redeclare-observe-v1/result.json`) rejects each
+redeclaration while accepting the independent flags intrinsic and arithmetic.
+An initial original observer was interrupted because source restoration had
+overwritten its injected Once.HC; it is not evidence of declaration behavior.
+
+The memory probe now explicitly verifies the header's SysTry/SysUntry bindings
+are resolved, non-null and have the expected argument counts, then uses those
+bindings for its existing handled-OutMem/interrupt-flag checks. It still runs all
+twelve memory cases. The host verifier requires the binding check in both task
+phases. The console version in the full-gate report is corrected from stale 204
+to 210, matching the existing strict module validator.
+
+Two original rebuild generations pass
+(`build/public-header-bools-rebuild-v2.log`). The new complete default 8 MiB
+attempt (`build/i386-public-header-bools-minimal-gate-v2`) passes root header
+rollback/publication, all twelve memory cases including handled OutMem and IF,
+and exact heap/allocation/reference/exception restoration. The gate remains
+**fail**: it stops later in ProbeProgramNativeAlloc, after the successful native
+loader check, before the allocation-loader completion marker. The precise
+assertion still needs isolation; no worker-phase or full-suite pass is claimed.
+`failure.json` preserves this scope and input hashes; `boot/debug.log` retains
+the exact checks. The first corrected-header attempt (`...-minimal-gate-v1`)
+stopped at the obsolete extern setup and remains a failure.
+
+The normal 8 MiB KVM 486 without FPU smoke passes in 34.984716 seconds under the
+unchanged 60-second limit, with welcome/live WinMgr and exact arithmetic/public
+input-state pixels (`build/i386-public-header-bools-smoke8-v1`). Its input pins
+remain unchanged. The 1,361-file delivered-source audit and 386 boot audit pass.
+These are scoped checks; the full minimal gate and C1-C5 remain open.

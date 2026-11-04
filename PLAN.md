@@ -26115,3 +26115,18 @@ a 60-second TCG timing budget. The 36.25-second smoke uses KVM explicitly. The
 64 MiB Apple popup regression passes all 665,664 compared pixels, close/restore
 and resumed execution. Inventory keeps earlier 8 MiB failures and adds the two
 new scoped service passes; all 686 entries remain unqualified.
+
+Direct PublicKernel.HH loading now supplies guarded TRUE/FALSE before public
+throw declarations. Atomic rollback checks preserve both boolean definitions;
+success evaluates their values. The full 8 MiB gate advances through root header
+publication, all twelve memory/handled-OutMem/IF cases and exact cleanup. Its
+obsolete SysTry/SysUntry extern setup is replaced with checks of the header's
+resolved bindings: paired original evidence shows plain redeclarations shadow
+those bindings with unresolved prototypes and fail on the following try/catch.
+No OutMem or cleanup assertion is removed, and the host requires binding checks
+in both phases. Two original rebuild generations and 386/source audits pass;
+the separate normal 8 MiB KVM smoke passes in 34.98 seconds. The complete gate
+still fails later in the native allocation-loader probe after NATIVE LOADER 0;
+its exact assertion remains to be isolated, and the worker phase is not reached.
+See docs/i386-public-headers.md and the scoped failure report in
+build/i386-public-header-bools-minimal-gate-v2. C1-C5 remain open.

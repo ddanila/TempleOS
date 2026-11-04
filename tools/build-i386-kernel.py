@@ -3252,6 +3252,10 @@ def main():
                        for line in log.splitlines() if line.startswith('PUBLIC MEMORY CASE ')]
         if public_memory!=[(0,12),(1,12)]:
             raise ValueError('Native public allocation/lifetime/OutMem checks failed')
+        exception_headers=[int(line.split()[-1],16) for line in log.splitlines()
+                           if line.startswith('PUBLIC EXCEPT HEADERS ')]
+        if exception_headers!=[0,1]:
+            raise ValueError('Public SysTry/SysUntry bindings were not checked in both phases')
         if log.count('PUBLIC HASH TABLES OK\n')!=2 or 'PASS original public tables\n' not in (exports/'debug.log').read_text():
             raise ValueError('Public hash table ownership/rollback failed')
         if log.count('PUBLIC DEFINE LIST OK\n')!=2 or 'PASS original define list\n' not in (exports/'debug.log').read_text():
@@ -3272,7 +3276,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=204,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=210,image_bytes=csize,retained_heap_bytes=cspan,
             service_addresses=dict(zip(console_layout['entry_names'],entries)),
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         # Both header attempts complete exactly these unused forward classes.

@@ -68,8 +68,9 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CI386TaskStorage *old_storage=scope->storage,*storage;
   CHashTable *table=task->hash_table;
   CHash **heads;
-  CHash *entry,*initial_null;
+  CHash *entry,*initial_null,*initial_true,*initial_false;
   CHashClass *forward;
+  CHashFun *try_fun,*untry_fun;
   CHashSrcSym *help;
   CHashClass *document_type;
   CMemberLst *document_member;
@@ -107,12 +108,16 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     if(!forward || !Bt(&forward->flags,Cf_EXTERN)) KernelStop;
   }
   initial_null=ProbeHeaderFind("NULL",table,HTT_DEFINE_STR);
+  initial_true=ProbeHeaderFind("TRUE",table,HTT_DEFINE_STR);
+  initial_false=ProbeHeaderFind("FALSE",table,HTT_DEFINE_STR);
   before_used=heap->used; before_allocations=heap->allocations;
   input.flags=I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD;
   input.source="#include \"/Kernel/I386/PublicKernel.HH\"\nUnknown bad;";
   if(probe->compiler->input(&input) || input.exception!='Compiler' ||
       heap->used!=before_used || heap->allocations!=before_allocations ||
-      ProbeHeaderFind("NULL",table,HTT_DEFINE_STR)!=initial_null) KernelStop;
+      ProbeHeaderFind("NULL",table,HTT_DEFINE_STR)!=initial_null ||
+      ProbeHeaderFind("TRUE",table,HTT_DEFINE_STR)!=initial_true ||
+      ProbeHeaderFind("FALSE",table,HTT_DEFINE_STR)!=initial_false) KernelStop;
   if(probe->phase) {
     if(ProbeHeaderFind("CTask",table,HTT_CLASS)!=forward ||
         Bt(&forward->flags,Cf_EXTERN) || forward->size!=sizeof(CTask)) KernelStop;
@@ -154,7 +159,7 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       !ProbeSymbolFind(0,"C:/Doc/ProbeHelp.DD",table,HTT_HELP_FILE)) KernelStop;
   KernelLog("PUBLIC HELP CASE "); KernelHex(probe->phase); KernelLog("\n");
   input.flags=0;
-  input.source="Fs->addr==Fs && Fs->gs==Gs && Gs->addr==Gs && Gs->num==0;";
+  input.source="TRUE==1 && FALSE==0 && Fs->addr==Fs && Fs->gs==Gs && Gs->addr==Gs && Gs->num==0;";
   if(!probe->compiler->input(&input) || answer.value!=1 || input.answers!=1) KernelStop;
   input.source="Fs->next_task->last_task==Fs && Fs->last_task->next_task==Fs && Fs->next_task->task_signature==TASK_SIGNATURE_VAL;";
   if(!probe->compiler->input(&input) || answer.value!=1) KernelStop;
@@ -196,8 +201,15 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   if(!ProbePublicMemoryInput(probe,&input,&answer,7) || answer.value!=1) KernelStop;
   input.source="Free(pub_mem);Free(0);MSize(0)==0 && MSize2(0)==0 && MHeapCtrl(0)==0;";
   if(!ProbePublicMemoryInput(probe,&input,&answer,8) || answer.value!=1) KernelStop;
-  input.source="extern U0 SysTry(U8 *caught,U8 *leave);extern U0 SysUntry();"
-    "_intern 0x6C I64 MemProbeFlags();";
+  //PublicDebug already supplies these resolved bindings. A plain extern here
+  //shadows them with unresolved prototypes on the original compiler as well.
+  try_fun=ProbeHeaderFind("SysTry",table,HTT_FUN);
+  untry_fun=ProbeHeaderFind("SysUntry",table,HTT_FUN);
+  if(!try_fun || !untry_fun || !try_fun->exe_addr || !untry_fun->exe_addr ||
+      Bt(&try_fun->flags,Cf_EXTERN) || Bt(&untry_fun->flags,Cf_EXTERN) ||
+      try_fun->arg_cnt!=2 || untry_fun->arg_cnt)KernelStop;
+  KernelLog("PUBLIC EXCEPT HEADERS ");KernelHex(probe->phase);KernelLog("\n");
+  input.source="_intern 0x6C I64 MemProbeFlags();";
   if(!ProbePublicMemoryInput(probe,&input,&answer,9)) KernelStop;
   input.source="I64 MemFailure(){I64 ok=0,saved=MemProbeFlags&512;try{MAlloc(0x800000);}"
     "catch{ok=Fs->except_ch=='OutMem' && (MemProbeFlags&512)==saved;Fs->catch_except=1;}return ok;}"
