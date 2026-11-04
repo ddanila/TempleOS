@@ -25514,3 +25514,9 @@ Native generation two v3 has passed `command-117` and advanced to
 full session with final typing observed and the 81-character exception
 removed. Later desktop checks and the complete workstation result remain
 pending; C1–C5 remain open.
+
+The updated cross-built v7 and installed generation-one v2 runs have also
+advanced past `command-117`. Both repaired compiler-input wrap checkpoints
+therefore pass in all three full-session candidates. Later mouse/history
+checkpoints and complete workstation results are still pending; the earlier
+failed runs remain preserved.
