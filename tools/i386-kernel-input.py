@@ -309,7 +309,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                                 raise RuntimeError(f'{name}: {rejection_message}')
                             raise MutationDetected(f'{name}: observed injected faulty answer')
                         return image.size==(640,480) and (pixels==expected or pixels==expected_cursor)
-                wait_for(matches,timeout=timeout)
+                try:
+                    wait_for(matches,timeout=timeout)
+                except TimeoutError:
+                    (out/f'{name}-expected-rows.json').write_text(json.dumps(rows,indent=2)+'\n')
+                    Image.frombytes('RGB',(640,480),expected).save(out/f'{name}-expected.png')
+                    if expected_cursor is not None:
+                        Image.frombytes('RGB',(640,480),expected_cursor).save(out/f'{name}-expected-cursor.png')
+                    raise
                 with Image.open(path) as image: image.save(out/f'{name}.png')
 
             command('qmp_capabilities')
