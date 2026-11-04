@@ -16348,6 +16348,18 @@
           "result": "fail",
           "evidence": "build/i386-default-servant-preloaded-8-v2/result.json",
           "scope": "Normal 8 MiB TCG 486,-fpu boots and executes availability probes, but canonical symbol-header loading records PUBLIC ALLOC EXHAUSTED/OutMem before the fixture and JRContract. No startup/dispatch contract result at this profile; full minimal/resource qualification remains open."
+        },
+        {
+          "target": "native-default-servant-startup-hook-8m-kvm-frame-address",
+          "result": "pass",
+          "evidence": "build/i386-default-servant-frame-8-v1/result.json",
+          "scope": "Final frame-address-cross-v2, physical 8 MiB 486,-fpu with live WinMgr; canonical symbol header and exact preloaded fixture, actual default startup interposed once after inhibit initialization, constructor roles/menu/document properties, ten dispatch/result42/title/idle/ring cases, hook restoration and resumed input, seven pixel checkpoints, exact persisted fixture and filesystem audit. KVM startup 36.148405 seconds. Legacy keyboard fixture transfer, exact heap recovery, allocation-failure policy, complete minimal suite and whole-file/C1-C5 qualification remain open. Earlier failed profile attempts are retained."
+        },
+        {
+          "target": "native-default-servant-startup-hook-8m-tcg-frame-address",
+          "result": "pass",
+          "evidence": "build/i386-default-servant-frame-8-tcg-v1/result.json",
+          "scope": "Final frame-address-cross-v2, physical 8 MiB 486,-fpu with live WinMgr; canonical symbol header and exact preloaded fixture, actual default startup interposed once after inhibit initialization, constructor roles/menu/document properties, ten dispatch/result42/title/idle/ring cases, hook restoration and resumed input, seven pixel checkpoints, exact persisted fixture and filesystem audit. TCG startup 76.912414 seconds: functional service pass, not a 60-second timing pass. Legacy keyboard fixture transfer, exact heap recovery, allocation-failure policy, complete minimal suite and whole-file/C1-C5 qualification remain open. Earlier failed profile attempts are retained."
         }
       ]
     },

@@ -39,3 +39,23 @@ I64 ESContract()
  for(i=0;i<256;i++)if(canary[i]!=(i^0xA5))return mask;
  return mask|32;
 }
+
+I64 ESFrameMutate(I64 *value) {*value=*value+1;return *value;}
+I64 ESFrameContract()
+{
+ U8 large[1024];
+ I64 a=40,b=2,*pointer=&a,**alias=&pointer,i,mask=0;
+ F64 real=1.25,*real_pointer=&real;
+ for(i=0;i<1024;i++)large[i]=i^0xA5;
+ if(&a && *pointer==40 && **alias==40)mask|=1;
+ es_calls=0;
+ if((&a && ESValue(7)==7) && es_calls==1)mask|=2;
+ if((FALSE && &a) || (&b && ESValue(9)==9))mask|=4;
+ if(ESFrameMutate(*alias)==41 && a+b==43)mask|=8;
+ if(&large[1023]-large==1023 && large[0]==0xA5 && large[1023]==0x5A)mask|=16;
+ real+=2.5;
+ if(Abs(*real_pointer-3.75)<0.000000000001 && real(U64)==0x400E000000000000)mask|=32;
+ if(&pointer!=NULL && *alias==&a && &b!=&a)mask|=64;
+ for(i=0;i<1024;i++)if(large[i]!=((i^0xA5)&255))return mask;
+ return mask|128;
+}

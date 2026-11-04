@@ -1,0 +1,45 @@
+I64 FrameGuardContract()
+{
+ CIntermediateCode *first=CAlloc(sizeof(CIntermediateCode)),*constant=CAlloc(sizeof(CIntermediateCode)),*last=CAlloc(sizeof(CIntermediateCode));
+ CI386Logic *logic=CAlloc(sizeof(CI386Logic));
+ CHashClass *type=cmp.internal_types[RT_U8]+1;
+ I64 mask=0,i;
+ first->ic_code=IC_RBP;first->ic_class=type;first->next=constant;
+ constant->ic_code=IC_IMM_I64;constant->ic_class=type;constant->next=last;
+ last->ic_code=IC_ADD;last->ic_class=type;last->t.arg1_tree=first;last->t.arg2_tree=constant;
+ if(I386FrameAddressEnd(first,NULL)==last)mask|=1;
+ if(!I386FrameAddressEnd(NULL,NULL))mask|=2;
+ first->ic_code=IC_IMM_I64;
+ if(!I386FrameAddressEnd(first,NULL))mask|=4;
+ first->ic_code=IC_RBP;constant->ic_code=IC_IMM_F64;
+ if(!I386FrameAddressEnd(first,NULL))mask|=8;
+ constant->ic_code=IC_IMM_I64;last->ic_code=IC_SUB;
+ if(!I386FrameAddressEnd(first,NULL))mask|=16;
+ last->ic_code=IC_ADD;
+ first->ic_flags=1;i=!I386FrameAddressEnd(first,NULL);first->ic_flags=0;
+ constant->ic_flags=1;i&=!I386FrameAddressEnd(first,NULL);constant->ic_flags=0;
+ last->ic_flags=1;i&=!I386FrameAddressEnd(first,NULL);last->ic_flags=0;
+ if(i)mask|=32;
+ last->t.arg1_tree=constant;i=!I386FrameAddressEnd(first,NULL);last->t.arg1_tree=first;
+ last->t.arg2_tree=first;i&=!I386FrameAddressEnd(first,NULL);last->t.arg2_tree=constant;
+ if(i)mask|=64;
+ last->ic_class=cmp.internal_types[RT_I16]+1;i=!I386FrameAddressEnd(first,NULL);last->ic_class=type;
+ constant->ic_class=NULL;i&=!I386FrameAddressEnd(first,NULL);constant->ic_class=type;
+ first->ic_class=constant->ic_class=last->ic_class=cmp.internal_types[RT_I64];
+ i&=!I386FrameAddressEnd(first,NULL);
+ first->ic_class=constant->ic_class=last->ic_class=type;
+ if(i)mask|=128;
+ logic->left=first;i=!I386FrameAddressEnd(first,logic);
+ logic->left=constant;i&=!I386FrameAddressEnd(first,logic);logic->left=NULL;
+ logic->end=first;i&=!I386FrameAddressEnd(first,logic);
+ logic->end=constant;i&=!I386FrameAddressEnd(first,logic);logic->end=NULL;
+ if(i)mask|=256;
+ logic->left=last;i=I386FrameAddressEnd(first,logic)==last;
+ first->next=NULL;i&=!I386FrameAddressEnd(first,NULL);first->next=constant;
+ constant->next=NULL;i&=!I386FrameAddressEnd(first,NULL);constant->next=last;
+ if(i && first->next==constant && constant->next==last && last->t.arg1_tree==first && last->t.arg2_tree==constant)mask|=512;
+ Free(logic);Free(last);Free(constant);Free(first);return mask;
+}
+I64 frame_guard_mask=FrameGuardContract;
+U8 *frame_guard_line=MStrPrint("OBS FRAME GUARD %d\n",frame_guard_mask);
+EspReport(frame_guard_line);Free(frame_guard_line);EspReport("DONE ESP encoding\n");

@@ -283,11 +283,30 @@ Bool I386DeferredAssignmentPointer(CCmpCtrl *cc,CIntermediateCode *pointer)
     if(I386AssignmentPostPointer(assignment)==pointer) return TRUE;
   return FALSE;
 }
+CIntermediateCode *I386FrameAddressEnd(CIntermediateCode *first,CI386Logic *logics)
+{//Fold only the complete pointer-valued frame/constant/add tree, without IR edits.
+  CIntermediateCode *constant,*last;
+  CHashClass *type;
+  CI386Logic *logic;
+  if(!first || first->ic_code!=IC_RBP || first->ic_flags ||
+      !(constant=first->next) || constant->ic_code!=IC_IMM_I64 || constant->ic_flags ||
+      !(last=constant->next) || last->ic_code!=IC_ADD || last->ic_flags ||
+      last->t.arg1_tree!=first || last->t.arg2_tree!=constant ||
+      !first->ic_class || !constant->ic_class || !last->ic_class)return 0;
+  type=OptClassFwd(first->ic_class);
+  if(!type->ptr_stars_cnt || OptClassFwd(constant->ic_class)!=type ||
+      OptClassFwd(last->ic_class)!=type)return 0;
+  //The add's logical boundary is processed normally after the fused emission.
+  for(logic=logics;logic;logic=logic->next)
+    if(logic->left==first || logic->left==constant ||
+        logic->end==first || logic->end==constant)return 0;
+  return last;
+}
 U0 I386BackendCore(CI386Backend *backend)
 {
   CCmpCtrl *cc=backend->cc;
   CI386Out *out=backend->out;
-  CIntermediateCode *ic,*post_pointer;
+  CIntermediateCode *ic,*post_pointer,*frame_end;
   CCodeMisc *label,*switch_table,*asm_label;
   CI386Call *call;
   CI386Logic *logic;
@@ -844,7 +863,13 @@ U0 I386BackendCore(CI386Backend *backend)
             depth++;
             break;
           case IC_RBP:
-            I386Bytes(out,"\x6A\x00\x55",3);
+            if(frame_end=I386FrameAddressEnd(ic,backend->logics)) {
+              //The pointer add discards the wide carry. LEA preserves its low
+              //word; the same XOR defines EDX and the final arithmetic flags.
+              I386EbpAddress(out,ic->next->ic_data);
+              I386Bytes(out,"\x31\xD2\x52\x50",4);
+              ic=frame_end;c=OptClassFwd(ic->ic_class);backend->current=ic;
+            } else I386Bytes(out,"\x6A\x00\x55",3);
             depth++;
             break;
           case IC_DEREF:

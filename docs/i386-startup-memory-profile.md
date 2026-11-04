@@ -143,3 +143,10 @@ servant test now reaches JRContract but still exhausts memory compiling
 Doc/EdPullDown.DD in the actual startup hook. See
 [the footprint and regression evidence](i386-stack-call-footprint.md). This
 remains an incomplete minimal resource gate.
+
+The subsequent frame-address fold reduces the five measured resident modules
+by another 927,512 bytes. At 8 MiB it leaves 1,341,128 main-arena bytes free at
+startup, and the actual default-servant contract now passes, including its real
+EdPullDown.DD startup hook. See [frame-address evidence](i386-frame-address-footprint.md).
+The complete default diagnostic gate was also attempted and fails on a missing
+FALSE definition during direct public-kernel header loading; it remains open.

@@ -41,13 +41,13 @@ def main():
             overlay.mkdir()
             report['reference_sha256'] = runpy.run_path(str(ROOT / 'tools/test-i386-timeclock-reference.py'))['restore_reference'](overlay)
             source = fixture.read_text() + '\nU0 ESReport(U8*s){while(*s)OutU8(0xE9,*s++);}\n'
-            source += 'I64 es_mask=ESContract;U8*es_line=MStrPrint("OBS stack call %d\\n",es_mask);ESReport(es_line);Free(es_line);ESReport("DONE stack call\\n");\n'
+            source += 'I64 es_mask=ESContract;U8*es_line=MStrPrint("OBS stack call %d\\n",es_mask);ESReport(es_line);Free(es_line);es_mask=ESFrameContract;es_line=MStrPrint("OBS frame runtime %d\\n",es_mask);ESReport(es_line);Free(es_line);ESReport("DONE stack call\\n");\n'
             (overlay / 'Once.HC').write_text(source)
             iso = out / 'original.iso'
             subprocess.run([sys.executable, 'tools/build-iso.py', '--overlay', str(overlay), '--output', str(iso)], cwd=ROOT, check=True)
             subprocess.run([sys.executable, 'tools/guest-run.py', str(iso), '--out', str(out / 'guest'), '--qmp-stdio', '--timeout', '120'], cwd=ROOT, check=True)
             log = (out / 'guest/debug.log').read_text()
-            if log.count('OBS stack call 63\n') != 1:
+            if log.count('OBS stack call 63\n') != 1 or log.count('OBS frame runtime 255\n') != 1:
                 raise ValueError('Original stack-call contract failed')
         else:
             disk = out / 'working.img'
@@ -56,7 +56,7 @@ def main():
                 disk, out / 'guest', cpu='486,-fpu', ram_mib=8, accel='kvm', qmp_stdio=True,
                 snapshot=False, welcome=True, keep_window_manager=True,
                 startup_check=dict(status='ok', answers=[], pause_window_manager=False,
-                                   commands=[('#include "C:/StackCall.HC"', []), ('ESContract;', ['63']), ('6*7;', ['42'])]))
+                                   commands=[('#include "C:/StackCall.HC"', []), ('ESContract;', ['63']), ('ESFrameContract;', ['255']), ('6*7;', ['42'])]))
             build = runpy.run_path(str(ROOT / 'tools/build-i386-kernel.py'))
             report['filesystem'] = build['verify_mutated_volume'](disk)
             contents = build['mutated_file_contents'](disk, {'/StackCall.HC'})

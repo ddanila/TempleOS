@@ -28,10 +28,21 @@ U0 EspContract()
     EspReport(line);Free(line);
     }
   }
+  for(i=0;i<9;i++) {
+    sink->count=0;sink->measuring=FALSE;
+    I386EbpAddress(sink,offsets[i]);count=sink->count;
+    for(k=0;k<count;k++) {
+      hex[2*k]=digits[buffer[k]>>4];hex[2*k+1]=digits[buffer[k]&15];
+    }
+    hex[2*count]=0;sink->count=0;sink->measuring=TRUE;
+    I386EbpAddress(sink,offsets[i]);
+    line=MStrPrint("OBS EBP %X %d %d %s\n",offsets[i],count,sink->count,hex);
+    EspReport(line);Free(line);
+  }
   sink->count=0;sink->measuring=FALSE;
   try { I386EspMemory(sink,0x8B,8,0); }
   catch { if(Fs->except_ch=='Compiler') {Fs->catch_except=TRUE;rejected=TRUE;} }
   line=MStrPrint("OBS ESP REJECT %d %d\n",rejected,sink->count);
-  EspReport(line);Free(line);Free(sink);EspReport("DONE ESP encoding\n");
+  EspReport(line);Free(line);Free(sink);
 }
 EspContract;

@@ -26091,3 +26091,27 @@ Apple definition popup differential (665,664 compared pixels, close/restoration
 and resumed execution), with persisted fixtures/reports and filesystem audits.
 These preserve the established workstation workflows; the 8 MiB startup-hook
 OutMem and complete resource/qualification gates remain open.
+
+The exact pointer-valued RBP/constant/add tree now emits an EBP-relative LEA
+with the same normalized result and stack depth, guarded by matching classes,
+operand links, flags and logical boundaries. The frame-address-cross-v2 image
+reduces five measured resident modules by another 927,512 bytes. The actual
+8 MiB KVM default-servant contract now passes its real startup hook, constructor
+roles, ten dispatch/results, title/idle/ring/hook restoration, resumed input,
+pixels and filesystem checks. Header loading leaves 1,266,528 raw main-arena
+bytes free; startup leaves 1,341,128. All 249 function cases/five expected faults,
+153 ESP and nine EBP encodings, ten matcher guards and paired call/frame runtime
+contracts pass, alongside original rebuild generations and 386/source/export
+audits. The separate 8 MiB normal startup smoke passes in 36.25 seconds.
+The unchanged complete --test default 8 MiB gate was attempted and fails in
+public-header phase zero: PublicDebug.HH uses FALSE without a definition on
+direct PublicKernel.HH inclusion. No gate is bypassed; this header dependency
+and unhandled-failure policy still need work. See docs/i386-frame-address-footprint.md.
+Complete minimal regressions and C1-C5 remain open.
+
+The final 8 MiB source-identical preload servant contract also passes under
+TCG, with startup 76.91 seconds; this is a functional pass and does not satisfy
+a 60-second TCG timing budget. The 36.25-second smoke uses KVM explicitly. The
+64 MiB Apple popup regression passes all 665,664 compared pixels, close/restore
+and resumed execution. Inventory keeps earlier 8 MiB failures and adds the two
+new scoped service passes; all 686 entries remain unqualified.

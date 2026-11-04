@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the production ESP operand emitter on the pinned original OS."""
+"""Run the production stack operand emitters and frame-fold guards on the pinned original OS."""
 import argparse
 import hashlib
 import json
@@ -26,12 +26,23 @@ def main():
     fixture = ROOT / 'tests/guest/i386-esp-displacement/Contract.HC'
     types = ROOT / 'Compiler/I386/Emit.HH'
     core = ROOT / 'Compiler/I386/EmitCore.HC'
-    paths = [Path(__file__).resolve(), helper, fixture, types, core,
+    backend = ROOT / 'Compiler/I386/BackendCore.HC'
+    backend_types = ROOT / 'Compiler/I386/Backend.HH'
+    guards = fixture.with_name('FrameGuard.HC')
+    paths = [Path(__file__).resolve(), helper, fixture, types, core, backend, backend_types, guards,
              ROOT / 'tools/build-iso.py', ROOT / 'tools/guest-run.py']
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     pins = {str(p): sha(p) for p in paths}
     sources = reference['restore_reference'](overlay)
-    source = types.read_text() + core.read_text().replace('#include "/Compiler/I386/Emit.HH"', '') + fixture.read_text()
+    def extract(path, start):
+        text = path.read_text()
+        a = text.index(start)
+        b = text.index('\n}\n', a) + 3
+        return text[a:b]
+    logic_text = backend_types.read_text()
+    a = logic_text.index('class CI386Logic\n')
+    logic_source = logic_text[a:logic_text.index('};', a)+2] + '\n'
+    source = types.read_text() + core.read_text().replace('#include "/Compiler/I386/Emit.HH"', '') + logic_source + extract(backend, 'CIntermediateCode *I386FrameAddressEnd(') + fixture.read_text() + guards.read_text()
     (overlay / 'Once.HC').write_text(source)
     report = dict(result='running', input_sha256=pins, reference_sha256=sources,
                   generated_source_sha256=hashlib.sha256(source.encode()).hexdigest(),
@@ -57,7 +68,20 @@ def main():
         expected.append('OBS ESP REJECT 1 0')
         if rows != expected:
             raise ValueError('ESP encodings, measure/write sizes, or invalid-register rejection differ; inspect guest log')
-        report.update(result='pass', encodings=len(expected)-1, invalid_register_rejected_before_write=True)
+        ebp_rows = [s for s in (out / 'guest/debug.log').read_text().splitlines() if s.startswith('OBS EBP ')]
+        ebp_expected = []
+        for displacement in (0, 1, 127, 128, 0xFFFFFF7F, 0xFFFFFF80, 0xFFFFFFFF, 0x7FFFFFFF, 0x80000000):
+            signed = struct.unpack('<i', struct.pack('<I', displacement))[0]
+            code = (bytes((0x8D, 0x45)) + struct.pack('b', signed) if -128 <= signed <= 127
+                    else bytes((0x8D, 0x85)) + struct.pack('<i', signed))
+            ebp_expected.append(f'OBS EBP {displacement:X} {len(code)} {len(code)} {code.hex().upper()}')
+        if ebp_rows != ebp_expected:
+            raise ValueError('EBP encodings or measure/write lengths differ')
+        log = (out / 'guest/debug.log').read_text()
+        if log.count('OBS FRAME GUARD 1023\n') != 1:
+            raise ValueError('Frame fold acceptance/rejection guards failed')
+        report.update(result='pass', encodings=len(expected)-1, ebp_encodings=len(ebp_expected),
+                      frame_guard_mask=1023, invalid_register_rejected_before_write=True)
     except Exception as exc:
         report.update(result='fail', error=str(exc))
         raise
