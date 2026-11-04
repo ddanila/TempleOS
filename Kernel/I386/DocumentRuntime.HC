@@ -168,6 +168,18 @@ extern Bool NativeDocBEqu(U8 *bits,I64 index,I64 value);
 #define BEqu NativeDocBEqu
 #include "/Adam/DolDoc/DocKeyBoundaryCore.HC"
 #include "/Adam/DolDoc/DocKeyPageCore.HC"
+//Application code is loaded into task scopes; resolve it through the real
+//CallExtStr ABI so resident document code need not import optional applications.
+extern I64 CallExtStr(U8 *name,...);
+extern U0 KeyDescSet(U8 *fmt,...);
+Bool NativeDocAutoCompleteKey(I64 ch,I64 sc)
+{ return sc&SCF_CTRL && (!ch && SC_F1<=sc.u8[0]<=SC_F10 || '0'<=ch<='9'); }
+Bool NativeDocAutoCompleteEnable(Bool value) { return CallExtStr("AutoComplete",value)!=0; }
+U0 NativeDocAutoCompleteFill(I64 n) { CallExtStr("ACFillIn",n); }
+U0 NativeDocAutoCompleteSource(I64 n,CTask *parent) { CallExtStr("ACMan",n,parent); }
+U0 NativeDocAutoCompleteWord(I64 n) { CallExtStr("ACDFillin",n); }
+U0 NativeDocAutoCompleteDefinition(I64 n,CTask *parent) { CallExtStr("ACDDef",n,parent); }
+#include "/Adam/DolDoc/DocAutoCompleteActionCore.HC"
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   Bool unlock,printable;
@@ -179,7 +191,21 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
     if(!Bt(doldoc.clean_scan_codes,sc.u8[0])) doc->flags|=DOCF_UNDO_DIRTY;
     DocCaptureUndo(doc);
     printable=0<=ch<512 && Bt(native_doc_printable,ch);
-    if(ch==CH_BACKSPACE && sc&SCF_ALT && !(sc&(SCF_SHIFT|SCF_CTRL|SCF_KEY_DESC)))
+    if(NativeDocAutoCompleteKey(ch,sc)) {
+      if(sc&SCF_KEY_DESC) {
+        if(!ch) {
+          if(sc&SCF_SHIFT)KeyDescSet("Cmd /Src Code of Sym");
+          else KeyDescSet("Edit/Autocomplete Sym");
+        } else {
+          if(sc&SCF_SHIFT)KeyDescSet("Cmd /Word Definition");
+          else KeyDescSet("Edit/Autocomplete Word");
+        }
+      } else if(!ch)
+        DocAutoCompleteSymbolCore(doc,sc,&NativeDocAutoCompleteEnable,
+          &NativeDocAutoCompleteFill,&NativeDocAutoCompleteSource);
+      else DocAutoCompleteWordCore(doc,ch,sc,&NativeDocAutoCompleteEnable,
+        &NativeDocAutoCompleteWord,&NativeDocAutoCompleteDefinition);
+    } else if(ch==CH_BACKSPACE && sc&SCF_ALT && !(sc&(SCF_SHIFT|SCF_CTRL|SCF_KEY_DESC)))
       DocUndoRestore(doc);
     else if(!ch && sc.u8[0]==SC_INS && !(sc&(SCF_SHIFT|SCF_CTRL|SCF_ALT|SCF_KEY_DESC)))
       doc->flags^=DOCF_OVERSTRIKE;

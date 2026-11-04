@@ -555,6 +555,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
           "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
+        },
+        {
+          "target": "rebuilt-original-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-reference-v7/result.json",
+          "scope": "Real project-file ACInit with full dictionary, independently predicted five choices, actual Ctrl+F1 completion/input filters and selected function execution. Widget document/geometry and visible result captured; unchanged inputs. Not all keys, popups, editor routing or full application qualification."
+        },
+        {
+          "target": "native-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
+          "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -619,6 +631,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
           "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
+        },
+        {
+          "target": "rebuilt-original-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-reference-v7/result.json",
+          "scope": "Real project-file ACInit with full dictionary, independently predicted five choices, actual Ctrl+F1 completion/input filters and selected function execution. Widget document/geometry and visible result captured; unchanged inputs. Not all keys, popups, editor routing or full application qualification."
+        },
+        {
+          "target": "native-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
+          "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -676,6 +700,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
           "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
+        },
+        {
+          "target": "rebuilt-original-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-reference-v7/result.json",
+          "scope": "Real project-file ACInit with full dictionary, independently predicted five choices, actual Ctrl+F1 completion/input filters and selected function execution. Widget document/geometry and visible result captured; unchanged inputs. Not all keys, popups, editor routing or full application qualification."
+        },
+        {
+          "target": "native-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
+          "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -732,6 +768,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
           "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
+        },
+        {
+          "target": "rebuilt-original-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-reference-v7/result.json",
+          "scope": "Real project-file ACInit with full dictionary, independently predicted five choices, actual Ctrl+F1 completion/input filters and selected function execution. Widget document/geometry and visible result captured; unchanged inputs. Not all keys, popups, editor routing or full application qualification."
+        },
+        {
+          "target": "native-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
+          "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -768,6 +816,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
           "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
+        },
+        {
+          "target": "rebuilt-original-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-reference-v7/result.json",
+          "scope": "Real project-file ACInit with full dictionary, independently predicted five choices, actual Ctrl+F1 completion/input filters and selected function execution. Widget document/geometry and visible result captured; unchanged inputs. Not all keys, popups, editor routing or full application qualification."
+        },
+        {
+          "target": "native-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
+          "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -814,6 +874,18 @@
           "result": "pass",
           "evidence": "build/i386-autocomplete-root-io-native-v1/result.json",
           "scope": "Unchanged actual Adam loading; both 95,293-word initializations; complete 5,270-byte binary definition report identical to rebuilt original and independent pinned-asset decoder; task stop/restart and resumed console; clean final filesystem audit; unchanged inputs. Root ATA contention now waits in FIFO order. Not visible suggestions/selection, source statistics, exact application heap recovery or full desktop qualification."
+        },
+        {
+          "target": "rebuilt-original-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-reference-v7/result.json",
+          "scope": "Real project-file ACInit with full dictionary, independently predicted five choices, actual Ctrl+F1 completion/input filters and selected function execution. Widget document/geometry and visible result captured; unchanged inputs. Not all keys, popups, editor routing or full application qualification."
+        },
+        {
+          "target": "native-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
+          "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -2507,6 +2579,24 @@
           "result": "fail",
           "evidence": "build/i386-menu-large-default-native-v1/result.json",
           "scope": "Default native task window is rows 0-59 and Page Down selects entry 60; original rows 2-58 select 57; desktop geometry remains open"
+        },
+        {
+          "target": "rebuilt-original-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-reference-v7/result.json",
+          "scope": "Real project-file ACInit with full dictionary, independently predicted five choices, actual Ctrl+F1 completion/input filters and selected function execution. Widget document/geometry and visible result captured; unchanged inputs. Not all keys, popups, editor routing or full application qualification."
+        },
+        {
+          "target": "native-source-suggestion-interaction",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-interaction-native-v5/result.json",
+          "scope": "Normal 64 MiB 486,-fpu KVM image; actual library, project-file statistics, all dictionary words, five exact choices/hits/order, all 28,672 original viewport pixels, exact widget document/geometry, real Ctrl+F1 and completed input execution, persisted reports and final offline filesystem audit; unchanged archived inputs. Other indexes/modifiers, numeric selection, popups, editor routing, default autoload and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "native-cold-autocomplete-shortcuts",
+          "result": "pass",
+          "evidence": "build/i386-autocomplete-cold-keys-native-v3/result.json",
+          "scope": "Normal native boot; actual library absence asserted through HashFind; real Ctrl+F1 and Ctrl+1 preserve submitted source 6*7; exact visible 42 glyphs; clean offline filesystem audit and unchanged archived harness inputs. Not the complete key map."
         }
       ]
     },

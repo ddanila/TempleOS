@@ -2,6 +2,7 @@
 
 #include "/Adam/DolDoc/DocKeyBoundaryCore.HC"
 #include "/Adam/DolDoc/DocKeyPageCore.HC"
+#include "/Adam/DolDoc/DocAutoCompleteActionCore.HC"
 
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {//$LK,"PutKey",A="MN:PutKey"$(ch,sc) at doc insert pt, cur_entry.
@@ -182,14 +183,7 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 		  else
 		    KeyDescSet("Edit/Autocomplete Sym");
 		} else {
-		  DocUnlock(doc);
-		  if (AutoComplete(ON)) {
-		    if (sc&SCF_SHIFT)
-		      ACMan(sc.u8[0]-SC_F1+1,Fs);
-		    else
-		      ACFillIn(sc.u8[0]-SC_F1+1);
-		  }
-		  DocLock(doc);
+		  DocAutoCompleteSymbolCore(doc,sc,&AutoComplete,&ACFillIn,&ACMan);
 		}
 	      } else {
 		switch (sc.u8[0]) {
@@ -633,14 +627,7 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 	      else
 		KeyDescSet("Edit/Autocomplete Word");
 	    } else {
-	      if (AutoComplete(ON)) {
-		DocUnlock(doc);
-		if (sc&SCF_SHIFT)
-		  ACDDef(ch-'0',Fs);
-		else
-		  ACDFillin(ch-'0');
-		DocLock(doc);
-	      }
+	      DocAutoCompleteWordCore(doc,ch,sc,&AutoComplete,&ACDFillin,&ACDDef);
 	    }
 	  }
 	  break;

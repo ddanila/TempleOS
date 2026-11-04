@@ -25969,3 +25969,20 @@ now passes both 95,293-word initializations, the exact independently decoded
 normal startup smoke passes too. Visible suggestions/function keys, source
 statistics, complete minimal regressions and C1-C5 remain open. See
 docs/i386-root-io-wait.md and docs/i386-autocomplete-dictionary.md.
+
+
+Autocomplete's real project-file statistics and Ctrl+F1 interaction now pass on
+rebuilt original and native systems: eleven distinct project words, all 95,293
+dictionary words, five independently predicted choices with exact counts/order,
+real input-filter completion and exactly one execution of the selected function.
+The widget document and geometry agree, and all 28,672 viewport pixels match.
+Original symbol/word action bodies are shared without changing their lock order;
+resident native code resolves the real loaded services through CallExtStr, and
+console key-downs now reach DocPutKey. Key descriptions remain in the caller.
+Source-retention checks, two original rebuild generations, 386 audit and all
+1,261 packaged-source checks pass. The cold no-library shortcut check passes;
+the separate 8 MiB normal startup smoke passes in 42.66 seconds. These do not
+qualify the full key map, numeric selection/popups, custom-editor routing,
+default autoload, installed-tree traversal, full minimal regressions or C1-C5.
+See docs/i386-autocomplete-interaction.md for current evidence and failed
+observer attempts; native v5 is the final passing interaction record.

@@ -484,7 +484,6 @@ extern I64 Char2ScanCode(I64 ch,I64 sc_flags=0);
 extern U8 ScanCode2Char(I64 sc);
 extern U8 *ScanCode2KeyName(I64 sc);
 extern U0 CtrlAltCBSet(U8 ch,U0 (*callback)(I64 sc),U8 *plain=NULL,U8 *shifted=NULL,Bool in_irq=FALSE);
-extern U0 KeyDescSet(U8 *fmt,...);
 extern U0 PutKey(I64 ch=0,I64 sc=0);
 extern U0 PutChars(U64 chars);
 extern U0 PutS(U8 *s);
@@ -1307,6 +1306,8 @@ U0 NativeTerminalInput()
       doc=DocPut; prompt=NativeConsolePrompt;
       ConsolePresent;
       KernelLog("INPUT RESET\n");
+    } else if(decoded && event.type==MSG_KEY_DOWN && NativeDocAutoCompleteKey(event.ch,event.scan)) {
+      DocPutKey(doc,event.ch,event.scan);ConsolePresent;
     } else if(decoded && event.type==2) {
       ch=event.ch;
       if(ch==CH_SHIFT_ESC) {

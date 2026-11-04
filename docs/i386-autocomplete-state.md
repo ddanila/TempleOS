@@ -181,3 +181,11 @@ commands and backing images. See [root I/O waiting](i386-root-io-wait.md) and
 [the dictionary workflow](i386-autocomplete-dictionary.md). Visible suggestions,
 function-key selection, source statistics and complete C1-C5 qualification remain
 open.
+
+
+Visible project suggestions and real Ctrl+F1 completion/execution now pass on
+original/native systems. All five independently predicted choices, serialized
+widget content and all 28,672 viewport pixels agree. The console routes the
+shortcut to shared original actions and the real loaded library. See
+[the interaction evidence](i386-autocomplete-interaction.md) for scope, observer
+readiness and the remaining editor/modifier/popup/default-startup gaps.
