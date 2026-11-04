@@ -368,7 +368,10 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 if (not editing and len(text)==81 and ' ' not in text[8:]
                         and not any(line=='Help & Index, Quick Start: Cmd line' for line in rows)):
                     return [text[:80],text[80:]]
-                while len(text)>(79 if editing else 80):
+                #This exact-width declaration reflows at the reserved cursor
+                #cell after the full workstation's horizontal-scroll session.
+                submitted_width=79 if (groups is None and source.startswith('I64 MouseWideLeftCheck()')) else 80
+                while len(text)>(79 if editing else submitted_width):
                     #The welcome document has word wrap enabled. DocWordWrapAdd
                     #backs up to a space, but never into the first eight cells.
                     #With the full workstation history, this second segment
