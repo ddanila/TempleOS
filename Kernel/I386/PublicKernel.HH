@@ -38,6 +38,7 @@ public _extern _REP_OUT_U32 U0 RepOutU32(U8 *buf,I64 cnt,I64 port);
 public _extern _ENDIAN_U16 U16 EndianU16(U16 d);
 public _extern _ENDIAN_U32 U32 EndianU32(U32 d);
 public _extern _ENDIAN_I64 I64 EndianI64(I64 d);
+public _extern _CALLEXTSTR I64 CallExtStr(U8 *name,...);
 public _extern _PORT_NOP U0 PortNop();
 public _extern _HPET I64 HPET();
 public _extern _BUSY U0 Busy(I64 uS);

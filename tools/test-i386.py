@@ -21,7 +21,7 @@ def run(*args):
 
 
 def disassemble_i386(code):
-    """Keep auditing after ndisasm 3.01's failure to decode FF E0/E2 (JMP EAX/EDX)."""
+    """Keep auditing after ndisasm 3.01's FF E0/E2/D0 register-branch decode gaps."""
     result = []
     offset = 0
     while offset < len(code):
@@ -30,9 +30,10 @@ def disassemble_i386(code):
         for line in listing.splitlines():
             parts = line.split()
             address = int(parts[0], 16)
-            if parts[1:3] == ['FF', 'db'] and code[address:address+2] in (b'\xff\xe0', b'\xff\xe2'):
-                register = 'eax' if code[address+1] == 0xe0 else 'edx'
-                result.append(f'{address:08X}  FF{code[address+1]:02X}              jmp {register}')
+            branches = {b'\xff\xe0': 'jmp eax', b'\xff\xe2': 'jmp edx', b'\xff\xd0': 'call eax'}
+            encoding = code[address:address+2]
+            if parts[1:3] == ['FF', 'db'] and encoding in branches:
+                result.append(f'{address:08X}  {encoding.hex().upper()}              {branches[encoding]}')
                 offset = address+2
                 break
             result.append(line)

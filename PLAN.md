@@ -25773,3 +25773,14 @@ Inputs remain unchanged. Complete native initializer compilation reaches
 missing `BlkRead` line 17 (`build/i386-iso-init-dependency-probe-v1`), without
 executing initialization. Full native media/block I/O/streams and C1-C5
 remain open.
+
+Native general `CallExtStr` now implements task-visible function/export
+lookup and fixed-arity argument forwarding, including absent/null handling.
+Original rebuilds, native cross-build/386 audit and 1212-file source audit
+pass (`build/i386-call-ext-str-cross-v2`). Published-definition native tests
+pass wide integer/pointer/soft-float arguments, zero through ten argument
+cases, nested/export calls, exception propagation and repeated stack recovery
+with unchanged inputs (`build/i386-call-ext-str-native-v4`). Same-include
+lookup before definition commit remains explicitly unqualified; earlier
+failures and the precise disassembler workaround are documented in
+`docs/i386-cfile-stream.md`. Full media/streams and C1-C5 remain open.

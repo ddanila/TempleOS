@@ -118,3 +118,32 @@ and `BlkDevInit` on line 8 of the shared lifecycle core, with inputs unchanged
 and no lifecycle operation called (`build/i386-dir-context-dependency-probe-v1`,
 `build/i386-drive-media-dependency-probe-v1`). Full native contexts, deletion,
 streams, block I/O/media and C1-C5 remain open.
+
+## Native dynamic fixed-argument calls (2026-11-04)
+
+Native public `CallExtStr` now resolves functions and system exports from
+the current task hash table, returns zero for absent/null addresses, and
+forwards the caller's eight-byte argument slots through a native stack
+bridge. The matching fixed-arity target removes those slots and returns
+integer/soft-float bits in EDX:EAX. This supplies the dynamic callback
+mechanism used by file-backed device initialization; it does not implement
+the remaining media or stream services.
+
+Both original rebuild generations, full native cross-build/386 audit and
+1212-file source audit pass (`build/i386-call-ext-str-cross-v2`). The native
+fixture passes with unchanged inputs (`build/i386-call-ext-str-native-v4`):
+missing symbols/null export, zero/one/three/ten arguments, wide integers,
+pointers, soft-float bits, nested calls, system exports, propagated exceptions
+and 100 subsequent calls. Definitions are committed by one command before
+the separate contract invocation. The earlier same-include invocation
+returned zero while a direct call succeeded (`-v2`/`-v3`); publication-time
+visibility remains a separate compiler compatibility boundary. No same-unit
+dynamic visibility qualification is claimed. Fixture v1 stopped at an
+opaque public function-record field before execution.
+
+The first cross-build stopped at ndisasm 3.01's undecoded `FF D0`. GNU
+objdump independently identifies those bytes as `call eax`. The existing
+exact-byte indirect-branch decoder workaround now includes this encoding;
+checks preserve following instruction boundaries and retain invalid bytes
+as `db`. No instruction allowlist was broadened. Full native media/streams
+and C1-C5 remain open.
