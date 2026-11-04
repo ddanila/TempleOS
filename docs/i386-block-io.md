@@ -328,3 +328,19 @@ The unchanged ATA compile probe now advances from missing `EndianU16` at
 line 112 to missing `CATAPITrack` at line 281, with inputs unchanged and
 no ATA routine called (`build/i386-ata-dependency-probe-v5`). Native ATA,
 public block I/O, streams and C1-C5 remain open.
+
+## Shared ATAPI track record (2026-11-04)
+
+The complete original `CATAPITrack` declaration is now shared byte-for-byte
+through `Kernel/BlkDev/ATAPITrackTypes.HH` by KernelA and native PublicFiles.
+Both original rebuild generations and the full cross-build/386 audit pass;
+the delivered-source audit matches all 1200 packaged source/doc files
+(`build/i386-atapi-track-types-cross-v1`). The native packed-layout fixture
+passes with unchanged inputs (`build/i386-atapi-track-types-native-v1`),
+checking the 48-byte size, typed reads of a byte-pattern record, unaligned
+fields and both union aliases. Reserved fields are not individually checked.
+No ATAPI command is executed. The unchanged ATA compile probe now advances
+from missing `CATAPITrack` at line 281 to missing `blkdev` at
+`blkdev.read_cnt` on line 372 (`build/i386-ata-dependency-probe-v6`), with
+inputs unchanged. Public block-global access and native ATA integration,
+block I/O/streams and C1-C5 remain open.

@@ -25616,3 +25616,12 @@ The exhaustive endian test is now kept separately as
 comparison runner and fixture are restored byte-for-byte. The separately
 named runner passes again with unchanged inputs
 (`build/i386-endian-public-native-v2`).
+
+The original packed `CATAPITrack` record is now shared with native public
+headers, byte-for-byte. Original two-generation rebuilds, full native
+cross-build/386 audit and 1200-file delivered-source audit pass
+(`build/i386-atapi-track-types-cross-v1`). Native size/field/union checks
+pass with unchanged inputs (`build/i386-atapi-track-types-native-v1`).
+Unchanged ATA compilation now reaches the missing public `blkdev` global
+at line 372 (`build/i386-ata-dependency-probe-v6`); no ATA operation was
+called. Full ATA, public block I/O/streams and C1-C5 remain open.
