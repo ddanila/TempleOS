@@ -25551,3 +25551,16 @@ complete passes or guest failures at reverse selection. Cross-built v8,
 native generation-one v3 and native generation-two v4 now run the complete
 suite with the same current shared wrap rule. Their qualification results
 remain pending.
+
+The current cross-built v8, native generation-one v3 and native generation-two
+v4 runs have all cleared both previously failing mouse setup checkpoints
+(`doc-mouse-autoscroll-left-canonical-definition` and `doc-mouse-reverse-new`)
+with the shared 79-column rule and final typing observation. Each has also
+passed `doc-mouse-reverse-canonical-check`: the observed subsequent checkpoints
+were `mouse-picker-two`, `mouse-picker-one` and `directory-browse-root`,
+respectively, with all three processes confirmed live. All
+three have advanced beyond the integrated document-editing and resource groups.
+This is regression evidence for the removed command-specific wrap exceptions;
+the remaining mouse, navigation and later groups and complete workstation
+results are still pending. These concurrent runs do not qualify isolated
+startup or latency budgets.
