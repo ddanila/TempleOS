@@ -25438,3 +25438,13 @@ The rebuilt full-content image
 audit; its source audit matches all 1,197 delivered source/document files to
 the candidate. This packages the updated harness and does not establish a
 complete workstation or C1–C5 pass.
+
+The first full workstation run on installed native generation two stops at
+`command-06`: the task-ring invariant returns one, but the exact-width input
+wrap differs from the host expectation. A focused repeatable diagnostic
+(`tools/test-i386-terminal-exact-width.py`) passes three repetitions on that
+same installed image with exact tail pixels and unchanged inputs
+(`build/i386-terminal-exact-width-gen2-v1/result.json`). After scrolling, the
+80-character prompt plus expression wraps its final semicolon to a second
+row. The broader wrap expectation and generation-two integration remain open;
+this bounded diagnostic does not qualify complete desktop behavior.
