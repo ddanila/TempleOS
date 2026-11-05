@@ -32,6 +32,7 @@ I64 FrontierDocument(U8 *needle)
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('disk',type=Path)
  p.add_argument('--reference',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
+ p.add_argument('--compound-only',action='store_true',help='Run the six completed compound cases; default retains all ten cases')
  args=p.parse_args();disk=args.disk.resolve();ref=args.reference.resolve();out=args.out.resolve()
  if out.exists():p.error('Use a fresh output directory')
  fixture=ROOT/'tests/guest/i386-declaration-frontier-reference/Once.HC'
@@ -41,8 +42,8 @@ def main():
   raise ValueError('Passing unchanged original ten-case frontier reference required')
  original=fixture.read_text();inspector=original[original.index('I64 FrontierHeader('):original.index('U0 DeclarationFrontier()')]
  source=inspector+WRAPPER;commands=[('#include "/Kernel/I386/PublicUser.HH"',[]),('#include "/Kernel/SymbolTypes.HH"',[]),('#include "C:/Probe/FrontierInspect.HC"',[])]
- for mode in range(2):
-  for kind in range(5):
+ #Both flag modes of the compound cases precede the known header gap.
+ for mode,kind in [(m,k) for k in range(3 if args.compound_only else 5) for m in range(2)]:
    name=['NativeFrontierThrow','NativeFrontierParse','NativeFrontierLost','NativeFrontierHeader','NativeFrontierHeader'][kind]+str(mode)
    if kind==0:text=f'{{I64 {name}(){{return 99;}}41;throw(\'Delib\',TRUE);}}';probe=name+';';expected='99';diagnostic=None
    elif kind==1:text=f'{{I64 {name}(){{return 99;}}Unknown frontier_bad;}}';probe=name+';';expected='99';diagnostic='Undefined identifier'
@@ -58,8 +59,8 @@ def main():
  if any(len(c[0])>255 for c in commands):raise ValueError('Input exceeds native buffer')
  paths=[disk,ref/'result.json',fixture,Path(__file__).resolve(),ROOT/'tools/i386-kernel-input.py',ROOT/'tools/build-i386-kernel.py',ROOT/'tools/package-i386-native-image.py',ROOT/'Kernel/FontStd.HC']
  pins={str(f):sha(f) for f in paths};out.mkdir(parents=True);working=out/'working.img'
- report=dict(result='fail',input_sha256=pins,commands=commands,inspector_sha256=hashlib.sha256(source.encode()).hexdigest(),
-  scope='All ten original-derived default/command-line frontier cases: compound-statement function/global persistence, failed header/default-argument/real UndefinedExtern target, unresolved exception and actual put-document diagnostic routing. 8 MiB KVM 486,-fpu/live WinMgr, exact visible pixels plus real saved-document message predicates; not full diagnostic byte/style parity or all APIs.')
+ report=dict(result='fail',input_sha256=pins,commands=commands,compound_only=args.compound_only,inspector_sha256=hashlib.sha256(source.encode()).hexdigest(),
+  scope=('Six completed compound cases only; failed headers and UndefinedExtern remain unqualified. ' if args.compound_only else 'All ten original-derived cases. ')+ ' default/command-line frontier cases: compound-statement function/global persistence, failed header/default-argument/real UndefinedExtern target, unresolved exception and actual put-document diagnostic routing. 8 MiB KVM 486,-fpu/live WinMgr, exact visible pixels plus real saved-document message predicates; not full diagnostic byte/style parity or all APIs.')
  try:
   report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](disk,working,additions={'/Probe/FrontierInspect.HC':source.encode()})
   report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](working,out/'qemu',snapshot=True,ram_mib=8,cpu='486,-fpu',accel='kvm',qmp_stdio=True,welcome=True,keep_window_manager=True,startup_check={'status':'ok','answers':[],'commands':commands,'pause_window_manager':False})

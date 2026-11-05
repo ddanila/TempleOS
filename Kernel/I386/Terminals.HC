@@ -61,6 +61,15 @@ Bool NativeTerminalProjects(CDoc *doc,U8 *text=NULL,I64 sc=0)
     while(*text)if(*text++=='$$')terminal->document_view=TRUE;
   return !terminal->document_view;
 }
+Bool NativeDiagnosticDocument(U8 *prefix,U8 *message)
+{//ExePutS follows its caller's actual put document, including temporary captures.
+  CNativeTerminal *terminal=NativeTerminalFind(Fs);
+  CDoc *target=DocPut;
+  if(!target || terminal && target==terminal->document)return FALSE;
+  if(!message)message="";
+  DocPrint(target,"%s%s\n",prefix,message);
+  return TRUE;
+}
 U0 NativeTerminalDiagnosticRecord(U8 *text)
 {
   CNativeTerminal *terminal=NativeTerminalFind(Fs);

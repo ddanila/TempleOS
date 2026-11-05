@@ -11,6 +11,7 @@ class CPrsGlobalServices {
   U0 (*resolve)(U8 *context,CCmpCtrl *cc,U8 *name);
   Bool (*same_heap)(U8 *context,U8 *left,U8 *right);
   U0 (*alias_warning)(U8 *context,CCmpCtrl *cc,CHashSrcSym *symbol);
+  U0 (*completed)(U8 *context,CHashSrcSym *symbol);
 };
 extern U0 PrsGlblVarLstCore(CPrsGlobalServices *services,CCmpCtrl *cc,
   I64 saved_mode,CHashClass *saved_type,I64 saved_value,I64 flags);

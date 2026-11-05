@@ -45,6 +45,7 @@ U0 PrsGlblVarLstCore(CPrsGlobalServices *services,CCmpCtrl *cc,I64 saved_mode,CH
 	  tmpf->exe_addr=val;
 	  Bts(&tmpf->flags,Ff_INTERNAL);
 	  LBtr(&tmpf->flags,Cf_EXTERN);
+          if(services->completed)(*services->completed)(services->context,tmpf);
 	  return;
 	case PRS0__EXTERN:
 	  if (!(fsp_flags&FSF__) && !(mode&PRS1_NOT_REALLY__EXTERN))
@@ -57,6 +58,7 @@ U0 PrsGlblVarLstCore(CPrsGlobalServices *services,CCmpCtrl *cc,I64 saved_mode,CH
 	    LBts(&tmpf->flags,Ff__EXTERN);
 	  if (cc->flags&CCF_AOT_COMPILE)
 	    tmpf->type|=HTF_RESOLVE;
+          if(services->completed)(*services->completed)(services->context,tmpf);
 	  return;
 	case PRS0_EXTERN:
 	  PrsFunJoinCore(symbols,cc,tmpc,st,fsp_flags);
@@ -239,6 +241,8 @@ U0 PrsGlblVarLstCore(CPrsGlobalServices *services,CCmpCtrl *cc,I64 saved_mode,CH
 	tmpex(CHashGlblVar *)->data_addr=tmpg->data_addr;
 	tmpex(CHashGlblVar *)->data_addr_rip=tmpg->data_addr_rip;
       }
+      if ((cc->token==',' || cc->token==';') && services->completed)
+        (*services->completed)(services->context,tmpg);
       if (cc->token==',')
 	(*expression->lex)(expression->context,cc);
       else {

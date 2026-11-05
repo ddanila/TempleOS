@@ -657,6 +657,7 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
   CHashTable *source=frontend->table,*destination=frontend->parent;
   CI386FrontendResident *binding;
   CI386FrontendCompletion *completion;
+  CI386FrontendDeclaration *declaration;
   CI386CompletionTransfer visit;
   CI386FrontendCode *code;
   CI386FrontendReloc *reloc;
@@ -708,6 +709,12 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
             entry->type&(HTF_IMPORT|HTF_UNRESOLVED) || !entry->src_link) goto done;
       } else if(!(entry->type&HTT_DEFINE_STR)) goto done;
       SymbolHashVisit(&visitor,entry);
+      if(parent && frontend->command_publication && entry->type&(HTT_CLASS|HTT_FUN|HTT_GLBL_VAR)) {
+        declaration=I386FrontendDeclarationFind(frontend,entry);
+        if(!declaration || !declaration->complete ||
+            I386HeapSize(heap,declaration)!=sizeof(CI386FrontendDeclaration))goto done;
+        I386ClassTransferVisit(transfer,declaration);
+      }
       if(!transfer->ok) goto done;
       if(entry->type&(HTT_CLASS|HTT_FUN))
         for(member=entry(CHashClass *)->member_lst_and_root;member;member=member->next) {
@@ -743,7 +750,7 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
 done:
   return FALSE;
 }
-Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols)
+Bool I386FrontendPublishCore(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols,Bool terminal)
 {
   CI386CmpCtrl *owned=cc;
   CI386Frontend *frontend,*parent=0;
@@ -755,6 +762,7 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   CI386FrontendCode *code,*code_last;
   CI386FrontendResident *binding,*binding_last;
   CI386FrontendCompletion *completion;
+  CI386FrontendDeclaration *declaration,*next_declaration;
   CHashTable *source,*destination;
   CHashSrcSym *entry,*prior;
   I64 capacity=0,i,j,slots,map_bytes;
@@ -764,8 +772,10 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
   if(!I386CmpCodeOwner(heap,cc) || !symbols || !(frontend=symbols->context) ||
       frontend->heap!=heap || frontend->cc!=cc || symbols!=&frontend->symbols ||
       !owned->task || !(scope=I386TaskSymbolsValid(owned->task)) || scope->heap!=heap ||
-      frontend->fixups || cc->error_cnt || cc->lex_prs_stk || cc->htc.next || cc->htc.fun ||
+      frontend->fixups || cc->error_cnt && !terminal || cc->lex_prs_stk || cc->htc.next || cc->htc.fun ||
       owned->code_next!=&owned->code_next) goto done;
+  if(terminal && (!frontend->command_publication || cc->flags&CCF_MODULE_SOURCE ||
+      !I386FrontendDeclarationsReady(frontend)))goto done;
   source=frontend->table; destination=frontend->parent;
   parent=I386FrontendTableOwner(heap,owned->task,destination);
   if(parent) {
@@ -908,10 +918,21 @@ Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbol
     while(entry=prior) {
       prior=entry->next; entry->next=0;
       completion=I386CompletionFind(frontend,entry);
-      if(completion) I386CompletionCommit(frontend,completion);
-      else HashAdd(entry,destination);
+      if(completion) {
+        declaration=I386FrontendDeclarationFind(frontend,entry);
+        if(declaration)declaration->entry=completion->published;
+        I386CompletionCommit(frontend,completion);
+      } else HashAdd(entry,destination);
     }
   }
+  for(declaration=frontend->completed_declarations;declaration;declaration=next_declaration) {
+    next_declaration=declaration->next;
+    if(parent && I386ParserRecord(parent_owned,declaration)) {
+      declaration->next=parent->completed_declarations;
+      parent->completed_declarations=declaration;
+    }
+  }
+  frontend->completed_declarations=0;
   frontend->completions=0;
   if(frontend->defines)
     for(i=0;i<=frontend->defines->mask;i++) {
@@ -939,3 +960,8 @@ done:
   if(transfer.records) I386HeapFree(heap,transfer.records);
   I386IrqRestore(irq); return result;
 }
+
+Bool I386FrontendPublish(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols)
+{ return I386FrontendPublishCore(heap,cc,symbols,FALSE); }
+Bool I386FrontendPublishTerminal(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols)
+{ return I386FrontendPublishCore(heap,cc,symbols,TRUE); }

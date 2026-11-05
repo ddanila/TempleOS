@@ -2,6 +2,7 @@ class CConsoleExecutionResult {
   I64 diagnostics,last_value;
 };
 extern U0 NativeReportFlush();
+extern Bool NativeDiagnosticDocument(U8 *prefix,U8 *message);
 U0 NativeExecutionAnswer(U8 *context,I64 value,CHashClass *type)
 {
   CConsoleExecutionResult *result=context;
@@ -40,6 +41,7 @@ U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 {
   CConsoleExecutionResult *result=context;
   I64 index;
+  U8 *prefix;
   result->diagnostics++;
   if(!kind && !console_diagnostic_line && cc && cc->lex_include_stk) {
     console_diagnostic_line=cc->last_line_num;
@@ -54,6 +56,8 @@ U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
     console_diagnostic_filename[index]=0;
   }
   try {
+    if(kind)prefix="Warning: ";else prefix="Error: ";
+    if(NativeDiagnosticDocument(prefix,message))return;
     if(kind)NativeTerminalDiagnosticRecord("Warning: ");
     else NativeTerminalDiagnosticRecord("Error: ");
     if(message)NativeTerminalDiagnosticRecord(message);

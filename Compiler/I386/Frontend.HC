@@ -12,6 +12,11 @@ extern class CI386FrontendReloc;
 extern class CI386FrontendAddress;
 extern class CI386FrontendStatic;
 extern class CI386FrontendTopBundle;
+class CI386FrontendDeclaration {
+  CI386FrontendDeclaration *next;
+  CHashSrcSym *entry;
+  Bool complete;
+};
 class CI386FrontendCode {
   CI386FrontendCode *next;
   CI386FrontendReloc *relocs;
@@ -64,6 +69,7 @@ class CI386Frontend {
   CI386LexIncludeService lex_services;
   CHashTable *table,*parent,*defines;
   Bool published_children,command_publication;
+  CI386FrontendDeclaration *completed_declarations;
   CPrsExpressionServices expression;
   CPrsTypeServices types;
   CPrsDeclarationServices declarations;
@@ -349,10 +355,45 @@ U8 *I386FrontendString(U8 *context,CCmpCtrl *cc,I64 *size)
   if(size) *size=length;
   return text;
 }
+CI386FrontendDeclaration *I386FrontendDeclarationFind(CI386Frontend *state,CHashSrcSym *entry)
+{
+  CI386FrontendDeclaration *record;
+  for(record=state->completed_declarations;record;record=record->next)
+    if(record->entry==entry)return record;
+  return 0;
+}
+U0 I386FrontendCompleted(U8 *context,CHashSrcSym *entry)
+{
+  CI386Frontend *state=context;
+  CI386FrontendDeclaration *record;
+  if(!state->command_publication)return;
+  record=I386FrontendDeclarationFind(state,entry);
+  if(!record)I386FrontendUnavailable(state);
+  record->complete=TRUE;
+}
+Bool I386FrontendDeclarationsReady(CI386Frontend *state)
+{
+  CHashSrcSym *entry;
+  CI386FrontendDeclaration *record;
+  I64 i;
+  for(i=0;i<=state->table->mask;i++)
+    for(entry=state->table->body[i];entry;entry=entry->next)
+      if(entry->type&(HTT_CLASS|HTT_FUN|HTT_GLBL_VAR)) {
+        record=I386FrontendDeclarationFind(state,entry);
+        if(!record || !record->complete)return FALSE;
+      }
+  return TRUE;
+}
 U0 I386FrontendHashAdd(U8 *context,CHash *entry,CHashTable *table)
 {
   CI386Frontend *state=context;
+  CI386FrontendDeclaration *record;
   if(table!=state->table) I386FrontendUnavailable(state);
+  if(state->command_publication && entry->type&(HTT_CLASS|HTT_FUN|HTT_GLBL_VAR)) {
+    record=I386FrontendAlloc(state,sizeof(CI386FrontendDeclaration),TRUE,FALSE);
+    record->entry=entry;record->next=state->completed_declarations;
+    state->completed_declarations=record;
+  }
   HashAdd(entry,table);
 }
 U0 I386FrontendHashAfter(U8 *context,CHash *entry,CHash *after,CHashTable *table)
@@ -994,10 +1035,13 @@ CHashClass *I386FrontendClass(U8 *context,CCmpCtrl *cc,I64 keyword,I64 flags,Boo
   }
   if(!is_extern) {
     result=I386FrontendSingleFind(state,cc->cur_str,state->table,HTT_CLASS);
+    if(result && I386FrontendDeclarationFind(state,result))
+      I386FrontendDeclarationFind(state,result)->complete=FALSE;
     if(result && Bt(&result->flags,Cf_EXTERN)) I386CompletionCheckPriorValues(state,result);
   }
   result=I386ParseClass(state->heap,cc,&state->symbols,keyword,flags,is_extern);
   if(!result) I386FrontendUnavailable(state);
+  I386FrontendCompleted(state,result);
   return result;
 }
 CHashFun *I386FrontendFun(U8 *context,CCmpCtrl *cc,CHashClass *type,U8 *name,I64 flags)

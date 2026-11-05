@@ -69,6 +69,7 @@ U0 PrsHostGlobalServices(CPrsGlobalServices *services,
   services->context=0; services->symbols=symbols; services->initializers=initializers;
   services->function=&PrsHostFunction; services->resolve=&PrsHostResolve;
   services->same_heap=&PrsHostSameHeap; services->alias_warning=&PrsHostAliasWarning;
+  services->completed=0;
 }
 
 U0 PrsGlblVarLst(CCmpCtrl *cc,I64 saved_mode,CHashClass *saved_tmpc,

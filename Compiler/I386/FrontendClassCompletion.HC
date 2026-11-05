@@ -89,7 +89,7 @@ U0 I386FrontendStageClass(CI386Frontend *state,CHashClass *published)
   staged->type=published->type;
   completion->published=published; completion->staged=staged;
   completion->next=state->completions; state->completions=completion;
-  HashAdd(staged,state->table);
+  I386FrontendHashAdd(state,staged,state->table);
 }
 CI386FrontendCompletion *I386CompletionFind(CI386Frontend *state,CHashSrcSym *entry)
 {

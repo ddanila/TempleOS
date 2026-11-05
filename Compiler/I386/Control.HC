@@ -169,6 +169,20 @@ Bool I386CmpControlValid(CI386Heap *heap,CCmpCtrl *cc)
     owned->heap==heap && owned->signature==I386_COMPILER_CONTROL_MAGIC;
 }
 #include "/Compiler/I386/Code.HC"
+Bool I386CmpCtrlRetireCode(CI386Heap *heap,CCmpCtrl *cc)
+{//Terminal boundary only: no saved optimizer/parser view will be restored.
+  CI386CmpCtrl *owned=cc;
+  CI386CmpRelease release;
+  U32 irq=I386IrqSave;
+  if(!I386CmpCodeOwner(heap,cc)) { I386IrqRestore(irq);return FALSE; }
+  owned->code_busy=1;if(owned->task)owned->task->compiler_busy=1;
+  release.heap=heap;release.control=cc;release.ok=TRUE;release.label=0;release.context=0;
+  I386IrqRestore(irq);
+  I386CmpCodeRelease(cc,&release);
+  irq=I386IrqSave;
+  owned->code_busy=0;if(owned->task)owned->task->compiler_busy=0;
+  I386IrqRestore(irq);return release.ok;
+}
 Bool I386CmpActiveValid(CI386CmpCtrl *owned)
 {
   CCmpCtrl *cc=&owned->control;

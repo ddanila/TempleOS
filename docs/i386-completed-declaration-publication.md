@@ -197,3 +197,51 @@ answer 23 survive, but the required function hash lookup returns 0 instead of 1.
 Inputs are unchanged. Later cases remain unreached, not passing. This is the
 next ownership/publication requirement beyond the measured top-level repair;
 complete C4 and C1–C5 remain open.
+
+
+## Completed declarations inside failed compound statements
+
+The declaration-frontier candidate records completion separately from hash
+insertion. Function completion follows code generation and fixup validation;
+globals are marked after initializer processing, before the following token is
+lexed. Class completion follows the shared class parser. Ordinary command
+recovery first retires registered IR and saved optimizer views, then attempts
+the same two-pass ownership transfer used by successful publication. The
+terminal-only entry point retains the error count and requires every staged
+core declaration to be complete. Atomic headers and module transactions do not
+use this recovery path. Parent publication transfers readiness records along
+with the validated graph, including canonical class-completion identities.
+
+Diagnostics now follow a redirected actual put document through DocPrint;
+normal terminal presentation keeps its existing path. This supports real
+DocSave-based message checks without introducing a diagnostic capture stub.
+Full original diagnostic bytes and styles remain a separate fidelity gap.
+
+The current candidate passes both original x64 bootstrap generations, native
+cross-compilation, the 386 instruction audit and the 1,362-file source-image
+audit (`build/i386-completed-frontier-v2` and
+`build/i386-completed-frontier-source-audit-v1.json`). Its unchanged-image answer
+regression passes all 34 commands in
+`build/i386-frontier-answer-regression-v1/result.json`. The 16 MiB TCG diagnostic
+run (`build/i386-completed-frontier-diagnostic-v1`) reaches normal startup after
+both boot and worker compiler probes, with an exact 307,200-pixel welcome frame.
+These are focused checks, not native C5 rebuild generations or a complete gate.
+
+The full ten-case frontier test keeps the failed-header expectations intact.
+Completed compound functions after throws/parse failures and the string global
+after a throw now survive in both flag modes, while preserving answer 23 and
+actual redirected-document messages. A malformed function header is still
+absent. Unfinished siblings still prevent publication of the whole staged
+graph; selective graph recovery, persistent extern/default metadata, actual
+UndefinedExtern behavior and late binding remain open C4 work. No inventory
+entry or C1–C5 milestone is promoted by this repair.
+
+
+The top-level publication regression also passes all 19 commands with unchanged
+inputs (`build/i386-frontier-publication-regression-v1/result.json`). The full
+frontier run is retained as a failure at command 35, the malformed-header hash
+lookup, with unchanged input hashes and a frozen driver in
+`build/i386-completed-frontier-native-v1`. Its preceding six compound cases and
+all 30 per-case checks passed. The default driver still runs all ten cases;
+`--compound-only` explicitly selects the six completed-declaration cases for a
+separate focused result and does not qualify failed headers or unresolved calls.

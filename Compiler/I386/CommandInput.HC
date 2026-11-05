@@ -157,20 +157,20 @@ Bool I386CommandInput(CI386CommandInput *input)
     task->except_ch=input->exception; task->except_rbp=saved_rbp;
     for(i=0;i<TASK_EXCEPT_CALLERS;i++) task->except_callers[i]=saved_callers[i];
   }
-  //A completed child graph also survives an uncaught break in its caller.
-  //The same graph validator still rejects unfinished or invalid declarations.
-  if(raised && !(input->flags&I386_INPUT_ATOMIC_DEFINES) &&
-      state && state->published_children &&
-      input->exception!='Compiler' && input->exception!='OutMem') {
+  //Preserve a fully completed declaration graph when a compound statement fails.
+  //Partial headers/classes/globals remain private; error counts are never reset.
+  if(raised && !(input->flags&I386_INPUT_ATOMIC_DEFINES) && state &&
+      (state->published_children || I386CommandInputHasDeclarations(state))) {
     try {
-      if(code && !(cc->flags&CCF_HAS_MISC_DATA)) {
-        I386FrontendFree(state,code);code=0;
-      }
-      if(I386COCDiscard(heap,cc) && !I386FrontendPublish(heap,cc,&state->symbols))
-        KernelLog("PARENT EXCEPTION publication rejected\n");
+      //An interrupted output can contain literal pools referenced by a global.
+      //Retain its registered payload with the graph instead of freeing it here.
+      code=0;
+      if(I386CmpCtrlRetireCode(heap,cc) &&
+          !I386FrontendPublishTerminal(heap,cc,&state->symbols))
+        KernelLog("TERMINAL publication rejected\n");
     } catch {
       task->catch_except=TRUE;
-      KernelLog("PARENT EXCEPTION publication failed\n");
+      KernelLog("TERMINAL publication failed\n");
     }
   }
   if(cc) { input->errors=cc->error_cnt; input->warnings=cc->warning_cnt; }

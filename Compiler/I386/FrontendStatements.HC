@@ -53,6 +53,7 @@ U0 I386FrontendFunction(U8 *context,CCmpCtrl *cc,CHashClass *type,U8 *name,I64 f
   I386FrontendStack(state,cc);
   if(cc->flags&CCF_AOT_COMPILE || cc->htc.fun) I386FrontendUnavailable(state);
   PrsFunCore(&state->functions,cc,type,name,flags);
+
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE FUNCTION DONE\n");
 }
 U0 I386FrontendResolve(U8 *context,CCmpCtrl *cc,U8 *name)
@@ -90,6 +91,7 @@ U0 I386FrontendResolve(U8 *context,CCmpCtrl *cc,U8 *name)
       *link=fixup->next; I386FrontendFree(state,fixup);
     } else link=&fixup->next;
   }
+  I386FrontendCompleted(state,fun);
 }
 Bool I386FrontendSameHeap(U8 *context,U8 *left,U8 *right)
 {
@@ -550,6 +552,7 @@ U0 I386FrontendStatementsInit(CI386Frontend *state)
   g->context=state; g->symbols=&state->symbols; g->initializers=i;
   g->function=&I386FrontendFunction; g->resolve=&I386FrontendResolve;
   g->same_heap=&I386FrontendSameHeap; g->alias_warning=&I386FrontendAliasWarning;
+  g->completed=&I386FrontendCompleted;
   f->context=state; f->globals=g; f->statement=&I386FrontendStatementCall;
   f->compile=&I386FrontendFunctionCode; f->disassemble=&I386FrontendDisassemble;
   f->member_warning=&I386FrontendMemberWarning;
