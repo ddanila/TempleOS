@@ -245,3 +245,11 @@ lookup, with unchanged input hashes and a frozen driver in
 all 30 per-case checks passed. The default driver still runs all ten cases;
 `--compound-only` explicitly selects the six completed-declaration cases for a
 separate focused result and does not qualify failed headers or unresolved calls.
+
+
+The separate six-case compound run now passes all 35 commands, including
+cleanup and a final 42, with exact pixels and unchanged inputs in
+`build/i386-completed-compound-native-v1/result.json`. This independently
+qualifies the completed-declaration repair while the ten-case failure remains
+preserved. The next candidate adds parsed-header readiness and the real
+UndefinedExtern export/exception path; it is not yet qualified by native tests.
