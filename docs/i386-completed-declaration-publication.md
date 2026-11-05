@@ -497,7 +497,7 @@ global initializer and an unfinished parameter list, each in both flag modes.
 Every case retains the earlier callable function as 42, the incomplete symbol
 in the public hash table, the prior answer 23 and its actual saved parser
 diagnostic. `build/i386-partial-declaration-reference-v5/result.json` passes
-all eight records with unchanged inputs. The probe also checks stable
+all eight records with unchanged inputs. That passing run also observed
 descriptor fields: zero argument count and non-null partial parameter list
 for the unresolved functions, size 8 for the class, and size 8 with allocated
 storage for the global. It does not compare unspecified uninitialized data.
@@ -516,3 +516,39 @@ A candidate terminal-publication change passes both original bootstrap
 generations, the cross-build, 386 audit and 1,364-file source audit. Native
 partial-declaration and diagnostic runs are pending; this is not completed
 partial-signature or C1–C5 qualification.
+
+### Retained compiler regression and partial ownership (2026-11-05)
+
+`build/i386-batch-full-compiler-v1/result.json` now passes all 146 retained
+native compiler commands, including file/module help publication, with exact
+frames, the independent nonzero-pointer oracle and unchanged pinned inputs.
+KVM startup takes 33.531 seconds. This qualifies that command group on the
+same-input-redefinition candidate, not the newer partial-declaration runtime
+or the whole release gate.
+
+The corrected original observer in
+`build/i386-partial-declaration-reference-v9/result.json` passes all eight
+records with unchanged inputs. It is a precompiled function: immediately after
+the actual ExePutS failure it observes descriptor fields and calls the completed
+function through Call. It then unlinks the malformed entry by pointer identity,
+without freeing its unsafe metadata, before saving the diagnostic document or
+compiling another case. Native checks additionally use public lookup after
+further compilation as an explicit ownership safety policy.
+
+The v6 original run faulted during StrCmp/hash lookup after further compilation.
+The v8 observer faulted during document processing while the malformed entry
+remained linked. Both captured debugger frames and failing reports are kept.
+Consequently v5's earlier passing observation does not establish repeatable
+original post-error metadata lifetime. The direct v3 immediate-observer run
+also passes; v1/v7 observer setup errors are separately classified.
+
+Native partial functions and classes pass their first-mode checks, but the
+failed-global-initializer case still fails in native-v3/v4. Draining terminal
+lexer snapshots alone was insufficient: FrontendCompile left a synthetic
+function context after an exception. The next candidate restores its caller's
+context on both paths, retains failed IR under control ownership and drains
+terminal snapshots without restoring them. Both original bootstrap generations
+pass; its cross-build and native tests are pending. The earlier candidate's
+16 MiB TCG diagnostic-v2 passes both phases, 54 input cases and exact welcome.
+Partial declaration completion/lifetime, full current-image regression, all
+C1–C5 milestones and inventory qualification remain open.
