@@ -64,3 +64,25 @@ green. The source line has not been submitted. Its frozen failure report is
 `build/i386-welcome-compiler-v1/failure.json`; completed cases through command
 123 do not qualify remaining cases. The oracle's first-prompt identity needs a
 fix after the active full run's inputs are no longer pinned.
+
+## Original second launch after document reload
+
+`tools/test-i386-registry-demo-repeat-reference.py` uses the unchanged first
+launch fixture, reloads the actual written registry document, and includes the
+unchanged bundled demo again on the pinned original OS. It captures a fresh put
+document, raw value/time records and the second persisted registry. The first
+fixture's completion marker becomes a progress marker so host capture continues;
+no demo or registry function is replaced.
+
+`build/i386-registry-demo-repeat-reference-v3/result.json` passes with unchanged
+inputs: the second output exactly displays the persisted first score and
+`Val:1235`, including DocSave's trailing 0x05, then persists 1236 and a newly
+sampled score. The first attempt stopped host capture at the reused first
+completion marker; the second captured all records but omitted the trailing
+DocSave marker in its host expectation. Neither is a passing reference.
+
+This original workflow proves document reload and repeated launch in one boot,
+not an original machine reboot. A native three-boot workflow is being tested
+separately: first launch, second launch from the persisted volume after reboot,
+then value/score verification after another reboot. Broad registry qualification
+remains open.

@@ -11942,7 +11942,8 @@
           "Exact initial high-score/value text in captured original document and native full-frame expectation",
           "Increment to 1235 and five-decimal persisted score bounded by actual execution time",
           "Native persisted fixture identity, time samples and filesystem audit are required but not reached after current display failure",
-          "No second-boot, repeated-launch, customized registry or error-cleanup qualification"
+          "No second-boot, repeated-launch, customized registry or error-cleanup qualification",
+          "Original second launch after saved document reload: exact persisted score/Val:1235 output, increment 1236, new sampled score and trailing DocSave marker"
         ]
       },
       "tests": [
@@ -11963,6 +11964,12 @@
           "result": "pass",
           "evidence": "build/i386-answer-isolated-v1/build/i386-registry-demo-native-v2/result.json",
           "scope": "Isolated fork branch experiment/i386-deferred-console-answers, commit ed4df9d3, 64 MiB KVM/live WinMgr. Unchanged demo first launch now matches exact original-derived output, persists 1235 and bounded five-decimal score, preserves fixture and passes filesystem audit with unchanged inputs. Not merged into active branch; second launch/reboot, customized state and cleanup remain unqualified. Earlier native display failure is retained."
+        },
+        {
+          "command": "python3 tools/test-i386-registry-demo-repeat-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-registry-demo-repeat-reference-v3/result.json",
+          "scope": "Pinned original unchanged demo twice with actual saved registry document reload. Exact second output displays first persisted score and Val:1235; second state persists 1236 and score within sampled times. Raw records/documents, unchanged inputs. Original machine reboot and native repeated launch remain unqualified."
         }
       ]
     },
