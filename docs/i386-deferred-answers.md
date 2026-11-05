@@ -150,3 +150,34 @@ or picker sequencing migrations; see its pinned failure and the separate
 compiler-history investigation. A fresh main-branch gate with picker
 acknowledgements is running at `build/i386-picker-ack-gate-minimal-v1`. No
 full-suite pass is claimed.
+
+## Current focused regression outcomes
+
+The combined answer/picker image in
+`build/i386-answer-break-oracles-v1/build/i386-answer-picker-combined-v1`
+passes both original bootstrap generations, the 386 instruction audit and all
+1,361 delivered-source comparisons. It passes all 34 answer commands in
+`build/i386-answer-oracles-v1/build/i386-answer-picker-combined-prompts-v1/result.json`
+and the isolated TCG picker workflow in
+`build/i386-answer-picker-combined-clicks-v1/result.json`. The experimental fork
+branch records this combination at `5586985e`; the active branch's console-answer
+runtime is not yet changed.
+
+The revised answer image also passes the 212-command documents/document-editing
+groups in
+`build/i386-answer-oracles-v1/build/i386-answer-state-documents-v1/result.json`.
+Its frozen runner source/hash are stored beside the result. All exact checkpoint
+pixels pass, including nested execution, editing, clipboard/search, color/style
+field checks and final error recovery. The recorded 78.9-second focused startup
+does not qualify the 60-second minimal startup gate.
+
+The instrumented 147-command compiler group passes in
+`build/i386-answer-break-oracles-v1/build/i386-answer-break-compiler-v1/result.json`,
+including a pre-break flags read, pending answer 2048, cleanup, locked breaks,
+scalar formats and module building. Its recorded startup is 77.8 seconds; no
+startup-budget pass is claimed. Both this run and the earlier focused failure
+used the identical immutable source image (SHA-256
+`b65d5c3c7673af36aa4de247ba3dd2cc30abefd5f53d2f15e3d58fce100847f9`).
+A repeat without the added pre-break query is running. The earlier 3329 remains
+open until its cause or reproducibility is understood. The default main-branch
+full gate with picker acknowledgements is still live.

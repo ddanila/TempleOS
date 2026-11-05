@@ -8213,6 +8213,18 @@
           "result": "fail",
           "evidence": "build/i386-answer-oracles-v1/build/i386-answer-state-gate-v1/failure.json",
           "scope": "Complete default 8 MiB TCG diagnostic/console gate: root/worker/startup and console through compiler 113 pass. Old oracle at 114 expects Exception only; actual Exception plus completed 2048 agrees with original and cold native checks. Not the earlier focused 3329. Later tests not reached; full suite remains fail, compiler-history discrepancy open."
+        },
+        {
+          "target": "experimental-compiler-with-baseline-probe",
+          "result": "pass",
+          "evidence": "build/i386-answer-break-oracles-v1/build/i386-answer-break-compiler-v1/result.json",
+          "scope": "147 commands at 8 MiB TCG 486,-fpu/live WinMgr: explicit flags read before pending assignment, then completed 2048, consumed flags, interrupted publication, locked/unlock, scalar formats and module building. All pixels pass. Source image identical to earlier focused failure; unprobed repeat pending. Startup 77.8 seconds is not a minimal startup gate pass. Full compiler-history discrepancy remains open."
+        },
+        {
+          "target": "experimental-documents-and-editing",
+          "result": "pass",
+          "evidence": "build/i386-answer-oracles-v1/build/i386-answer-state-documents-v1/result.json",
+          "scope": "212 commands across documents/document-editing at 8 MiB TCG 486,-fpu/live WinMgr, exact checkpoint pixels. Nested DocExe initializer retained, formatted execution, explicit state checks, editing/clipboard/search/color/style and error recovery pass. Frozen runner source/hash retained. Startup 78.9 seconds does not qualify minimal startup budget; not whole original API fidelity."
         }
       ]
     },
