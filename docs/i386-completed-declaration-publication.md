@@ -612,3 +612,28 @@ The current v3 image also passes all 146 retained compiler commands in
 publication and the independent pointer check, with unchanged pinned inputs
 and exact frames. This closes that current-image regression, not the complete
 minimal-profile gate, native C5 generations or all C1–C5 qualification.
+
+### Window fixture diagnostic and full-gate checkpoint (2026-11-05)
+
+The complete current minimal gate in `build/i386-partial-minimal-gate-v1`
+stops at the unchanged WindowServiceCheck.HC include: its old oracle expects
+no output, while compilation correctly emits one unused-parameter warning.
+All 3,714 tracked input hashes still match the initial pin file. The original
+builder, console helper, pointer oracle and font are frozen alongside the
+failed frame, log/checkpoint hashes and failure classification. This gate is
+failed; later cases and source/rejection/install stages are not qualified.
+
+`tools/test-i386-window-service-warning-reference.py` includes the complete
+unchanged fixture in the actual original ExePutS and saves its real diagnostic.
+The original reference in the isolated public-break worktree passes with
+exactly one WARNING: Unused var for c in WindowCheckInside. Its fixture/tool
+hashes match this checkout. The helper now expects the observed native
+Warning: Unused var output without changing the source or the following
+window state/frame checks.
+
+`build/i386-window-warning-regression-v1/result.json` passes all seven retained
+window commands on the failed gate's unchanged image: 8 MiB TCG/486, live
+window manager, every raster exact and all pins unchanged. Startup takes
+77.711 seconds, above the existing 60-second minimal budget. This focused
+functional pass neither repairs that resource failure nor relabels the failed
+full gate. Full current release/profile and C1–C5 qualification remain open.
