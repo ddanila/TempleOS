@@ -18,6 +18,7 @@ def main():
     parser.add_argument('disk',type=Path)
     parser.add_argument('--reference',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--require-bundled',action='store_true',help='Exercise the source image bundled demo without adding a fixture')
     args=parser.parse_args();source=args.disk.resolve();ref=args.reference.resolve();out=args.out.resolve()
     if out.exists():parser.error('Use a fresh output directory')
     reference=json.loads((ref/'result.json').read_text())
@@ -32,10 +33,14 @@ def main():
     report=dict(result='fail',input_sha256=pins,
         scope='Unchanged RegistryDemo first launch, second launch after real persisted reboot, and third-boot reload; 64 MiB KVM 486 without FPU/live WinMgr, exact pixels and filesystem checks. Original reference covers document reload, not original machine reboot.')
     try:
+        pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))
+        initial_files=pack['snapshot'](source.read_bytes())[1]
         subprocess.run(['python3',str(first_tool),str(source),'--reference',str(ref),
-            '--out',str(out/'first')],cwd=ROOT,check=True)
+            '--out',str(out/'first')]+(['--require-bundled'] if args.require_bundled else []),cwd=ROOT,check=True)
         first=json.loads((out/'first/result.json').read_text())
         if first['result']!='pass' or not first['inputs_unchanged']:raise ValueError('First launch failed')
+        report['demo_source']=first['demo_source']
+        if args.require_bundled and report['demo_source']!='bundled':raise ValueError('First launch added a demo fixture')
         build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
         extract=build['mutated_file_contents'];verify=build['verify_mutated_volume']
         initial=extract(out/'first/working.img',{'/DemoRegistryState.HC'})['/DemoRegistryState.HC']
@@ -73,6 +78,15 @@ def main():
         report['third_commands']=third;report['third']=boot(third,'third')
         after_files=extract(working,{'/DemoRegistryState.HC','/DemoTimes.DATA','/Demo/RegistryDemo.HC'})
         if after_files!=files:raise ValueError('Third-boot verification changed saved files')
+        final_files=pack['snapshot'](working.read_bytes())[1]
+        allowed={'/Registry.HC.Z','/DemoRegistryState.HC','/DemoTimes.DATA'}
+        if report['demo_source']=='added-fixture':allowed.add('/Demo/RegistryDemo.HC')
+        changed=[name for name in set(initial_files)|set(final_files)
+            if initial_files.get(name)!=final_files.get(name)]
+        unexpected=sorted(set(changed)-allowed)
+        if unexpected:raise ValueError('Unrelated files changed: '+repr(unexpected))
+        report['changed_files']=sorted(changed)
+        report['preserved_source_files']=len(set(initial_files)-allowed)
         report.update(result='pass',second_score=score,second_time_bounds=[before,after],
             persisted_sha256=hashlib.sha256(state).hexdigest(),filesystem=verify(working))
     except Exception as exc:

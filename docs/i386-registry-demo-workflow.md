@@ -112,3 +112,36 @@ retained in the failing result with unchanged inputs. The corrected verification
 explicitly checks the branch return equals 1236 and then checks the published
 score. Customized registries, failure cleanup, complete original UI/API fidelity
 and full application qualification remain open.
+
+## Shipped full-content demo and unrelated-file preservation
+
+The drivers now accept an already bundled unchanged demo. `--require-bundled`
+rejects an image missing it before launching QEMU; the default minimal-image
+fixture path remains available. Existing bundled bytes must exactly match the
+pinned original demo. The reboot driver compares all pre-existing source-image
+files after the workflow, permitting only the registry and the two explicit test
+record files to change (plus the demo addition in fixture mode).
+
+`build/i386-registry-demo-full-reboot-v1/result.json` passes in required-bundled
+mode on the combined experimental full-content image
+`build/i386-answer-break-oracles-v1/build/i386-answer-picker-full-v1/kernel.img`.
+No demo fixture is added. All three actual 64 MiB KVM 486,-fpu/live WinMgr boots
+pass the original-derived display, persisted value/score, time bounds and
+filesystem checks. The three observed startups are 34.00, 33.99 and 33.89 seconds;
+these do not qualify a complete desktop startup budget. Exactly three files
+change: `/Registry.HC.Z`, `/DemoRegistryState.HC` and `/DemoTimes.DATA`. The other
+1,729 pre-existing source-image files retain bytes, attributes and timestamps.
+All input pins remain unchanged.
+
+The same image passes the 1,361-file delivered-source audit and
+`build/i386-answer-break-oracles-v1/build/i386-answer-picker-full-content-v1/result.json`:
+all 686 inventory files match the candidate workspace (568 remain identical to
+the pinned original; 118 are ported/modified), and guest lookup, a 4.3 MB Bible
+read and heap recovery pass at 64 MiB. This is content/access evidence, not all
+application qualification.
+
+The required-bundled negative case in
+`build/i386-registry-demo-require-bundled-red-v1/result.json` rejects the minimal
+image with unchanged pins and no guest launch. A default fixture-mode regression
+with the stronger file-preservation checks is running separately. The full
+C1-C5 requirements and active-branch runtime integration remain open.
