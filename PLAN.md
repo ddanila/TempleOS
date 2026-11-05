@@ -26236,3 +26236,14 @@ qualified; progress.json freezes an explicitly incomplete checkpoint. All 16
 modules remain identical and 1,361 delivered source files match. See
 docs/i386-welcome-keyboard-gate.md. C1-C5 and complete minimal regressions remain
 open pending terminal test outcomes and the remaining broad qualification work.
+
+C1 now records the previously verified original/default-registry workflow on
+Adam/ARegistry.HC: exact original document/archive generation, native Adam
+ownership/default values, public deletion, boot-time recreation and byte-identical
+subsequent reboot. The inventory links executable reference/native tools and
+frozen result manifests with their profile/source limits. Once/AOnce/OneTimePopUp,
+other registry APIs/error/cross-drive cases and whole-file status remain open.
+Inventory validation and all five guard tests pass; all 686 entries remain
+unqualified. The default gate and focused compiler run continue: the former has
+reached math after graphics, the latter has passed its handled allocation-failure
+case. Neither live session is claimed as a complete pass.

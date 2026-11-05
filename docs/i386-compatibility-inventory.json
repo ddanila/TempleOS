@@ -485,9 +485,35 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Initialize defaults in a fresh writable registry, verify Adam/SysMsgFlags and Adam/SysRegVer, persist exact DolDoc/archive content; native seeded boot, public deletion, missing-file recreation and immutable subsequent reboot. Once/AOnce/OneTimePopUp and complete registry API/error/cross-drive workflows remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-startup-registry-reference.py",
+        "native_tool": "tools/test-i386-startup-registry.py",
+        "checks": [
+          "Pinned original RegInit creates both default tree branches and exact 132-byte DolDoc/114-byte CompressBuf archive",
+          "Native initialized document belongs to Adam and evaluates default message flags/version",
+          "Public FileDel persists across VM exit; next actual boot recreates the exact original archive",
+          "Third actual boot leaves entire disk byte-identical; unrelated live files/metadata and complete extent/bitmap ownership preserved",
+          "All initial/result VGA checkpoints, live WinMgr and unchanged input pins; no Once API or whole-file qualification"
+        ]
+      },
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-startup-registry-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-startup-registry-reference-v5/result.json",
+          "scope": "Pinned original with established repair revision; fresh writable document and actual RegInit, complete default DolDoc and compressed archive match exact fixture. Frozen capture associated with registry packaging commit 52a70209; input pins unchanged during capture. Not customized registry/Once or whole-file coverage."
+        },
+        {
+          "command": "python3 tools/test-i386-startup-registry.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-startup-registry-native-v1/result.json",
+          "scope": "Frozen seeded-registry-minimal-v1 image: three persisted 8 MiB KVM 486,-fpu boots, defaults/Adam ownership, public deletion, exact recreation, subsequent byte-identical disk; live WinMgr, exact checkpoint pixels, unrelated-file/metadata preservation, filesystem audits and unchanged pins. Startup 33.33/33.23/33.23 seconds. Later harness changes do not refresh this evidence; all remaining registry/Once APIs, errors, other drives and whole-file compatibility remain unqualified."
+        }
+      ]
     },
     {
       "path": "Adam/ASnd.HC",
