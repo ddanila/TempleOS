@@ -649,7 +649,7 @@ Bool I386SourceMacroPrepare(CI386Heap *heap,CI386CmpCtrl *owned,
   return I386ParentMacroPrepare(heap,owned,records,allocation);
 }
 Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
-  CI386ClassTransfer *transfer)
+  CI386ClassTransfer *transfer,Bool terminal)
 {//Validate and visit the same graph for counting and the ownership journal.
   CI386Heap *heap=frontend->heap;
   CCmpCtrl *cc=frontend->cc;
@@ -695,7 +695,7 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
         declaration=I386FrontendDeclarationFind(frontend,fun);
         unresolved=Bt(&fun->flags,Cf_EXTERN);
         if(unresolved && (!frontend->command_publication || cc->flags&CCF_MODULE_SOURCE || !declaration ||
-            !declaration->complete || !declaration->header ||
+            (!terminal && (!declaration->complete || !declaration->header)) ||
             fun->exe_addr!=&I386FrontendUndefined))goto done;
         if(I386HeapSize(heap,fun)!=sizeof(CHashFun)*(PTR_STARS_NUM+1) ||
             fun->ext_lst || fun->type&HTF_IMPORT ||
@@ -721,7 +721,7 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
       SymbolHashVisit(&visitor,entry);
       if(parent && frontend->command_publication && entry->type&(HTT_CLASS|HTT_FUN|HTT_GLBL_VAR)) {
         declaration=I386FrontendDeclarationFind(frontend,entry);
-        if(!declaration || !declaration->complete ||
+        if(!declaration || !terminal && !declaration->complete ||
             I386HeapSize(heap,declaration)!=sizeof(CI386FrontendDeclaration))goto done;
         I386ClassTransferVisit(transfer,declaration);
       }
@@ -794,7 +794,7 @@ Bool I386FrontendPublishCore(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *sy
       cc->error_cnt && !terminal || cc->lex_prs_stk || cc->htc.next || cc->htc.fun ||
       owned->code_next!=&owned->code_next) goto done;
   if(terminal && (!frontend->command_publication || cc->flags&CCF_MODULE_SOURCE ||
-      !I386FrontendDeclarationsReady(frontend)))goto done;
+      !I386FrontendDeclarationsTracked(frontend)))goto done;
   source=frontend->table; destination=frontend->parent;
   parent=I386FrontendTableOwner(heap,owned->task,destination);
   if(parent) {
@@ -854,7 +854,7 @@ Bool I386FrontendPublishCore(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *sy
   if(capacity<1 || capacity>0xFFFFFFD) goto done;
   transfer.owned=owned; transfer.source=source; transfer.count=0;
   transfer.capacity=capacity; transfer.storage_count=0; transfer.ok=TRUE;
-  if(!I386FrontendTransferGraph(frontend,parent,&transfer)) goto done;
+  if(!I386FrontendTransferGraph(frontend,parent,&transfer,terminal)) goto done;
   slots=capacity; capacity=transfer.count;
   if(capacity) {
     //Two bits per parser record: selected payload and retained storage.
@@ -866,7 +866,7 @@ Bool I386FrontendPublishCore(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *sy
     }
     transfer.stored=transfer.selected+map_bytes; transfer.slots=slots;
     transfer.count=0; transfer.capacity=capacity; transfer.storage_count=0;
-    if(!I386FrontendTransferGraph(frontend,parent,&transfer) || transfer.count!=capacity) goto done;
+    if(!I386FrontendTransferGraph(frontend,parent,&transfer,terminal) || transfer.count!=capacity) goto done;
   }
   if(parent) {
     if(frontend->defines)

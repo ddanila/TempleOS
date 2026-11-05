@@ -177,8 +177,12 @@ Bool I386CmpCtrlRetireCode(CI386Heap *heap,CCmpCtrl *cc)
   if(!I386CmpCodeOwner(heap,cc)) { I386IrqRestore(irq);return FALSE; }
   owned->code_busy=1;if(owned->task)owned->task->compiler_busy=1;
   release.heap=heap;release.control=cc;release.ok=TRUE;release.label=0;release.context=0;
+  //A failed initializer can leave saved lexer positions. No terminal view is
+  //restored; release its file/document pins before validating publication.
+  while(cc->lex_prs_stk && release.ok)
+    if(!I386LexPop(heap,cc,FALSE))release.ok=FALSE;
   I386IrqRestore(irq);
-  I386CmpCodeRelease(cc,&release);
+  if(release.ok)I386CmpCodeRelease(cc,&release);
   irq=I386IrqSave;
   owned->code_busy=0;if(owned->task)owned->task->compiler_busy=0;
   I386IrqRestore(irq);return release.ok;

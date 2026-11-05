@@ -157,8 +157,8 @@ Bool I386CommandInput(CI386CommandInput *input)
     task->except_ch=input->exception; task->except_rbp=saved_rbp;
     for(i=0;i<TASK_EXCEPT_CALLERS;i++) task->except_callers[i]=saved_callers[i];
   }
-  //Preserve a fully completed declaration graph when a compound statement fails.
-  //Partial headers/classes/globals remain private; error counts are never reset.
+  //Preserve the structurally owned declaration graph after a parser failure.
+  //Partial descriptors keep their actual parsed metadata; error counts stay set.
   if(raised && !(input->flags&I386_INPUT_ATOMIC_DEFINES) && state &&
       (state->published_children || I386CommandInputHasDeclarations(state))) {
     try {

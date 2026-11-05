@@ -552,3 +552,42 @@ pass; its cross-build and native tests are pending. The earlier candidate's
 16 MiB TCG diagnostic-v2 passes both phases, 54 input cases and exact welcome.
 Partial declaration completion/lifetime, full current-image regression, all
 C1–C5 milestones and inventory qualification remain open.
+
+### Owned partial graph publication (2026-11-05)
+
+The v3 candidate passes all 53 top-level partial-declaration commands in
+`build/i386-partial-declaration-native-v5/result.json`, with unchanged inputs,
+exact frames and 33.570-second KVM startup. Both ExePutS flag modes retain
+completed callable functions and incomplete functions/classes/globals with
+the observed descriptor fields, prior answer and real parser diagnostic.
+Terminal publication accepts tracked incomplete descriptors only through the
+existing complete ownership/structural graph validation. Atomic header and
+static-module collision/rejection policy stays in force.
+
+Failed initializer cleanup now discards terminal lexer snapshots without
+restoring them. FrontendCompile restores its caller's function, AOT, hash,
+flags and pass context on exceptions as well as success. Failed IR and its
+synthetic bound remain control-owned until retirement; no synthetic function
+is exposed as a published declaration. The v3 bootstrap generations,
+cross-build, 386 audit and 1,364-file source audit pass.
+
+`tools/test-i386-partial-lifecycle.py` passes all 13 commands in
+`build/i386-partial-lifecycle-native-v1/result.json`: after warmup, all eight
+partial cases survive eight further compilations, earlier functions execute
+as 42, partial parameter names/types remain readable and natural child exit
+restores exact shared arena used/allocated counts. This is native ownership
+safety rather than equivalence to the original's unsafe metadata lifetime.
+The 16 MiB TCG/486 diagnostic-v3 passes both phases, 54 input cases, both
+header/lifetime and actual queued-file cancellation cases, and exact welcome.
+
+The compound extension preserves its submitted sources. A final closing brace
+after the trailing parameter comma produces a defined one-argument function
+and actual return-value/unused-variable warnings in the original, rather than
+an unresolved partial header. The frozen compound-reference-v1 failure keeps
+that observation; corrected reference-v2 passes all eight records. The native
+compound-v1 failure is the stale unresolved-header expectation, not a source
+substitution. The corrected compound-v2 run and a fresh current-image full
+compiler regression remain pending. Final reusable-oracle default/compound
+source and predicate generation match the frozen passing references. All
+C1–C5 milestones, full partial-metadata/API coverage and inventory qualification
+remain open.

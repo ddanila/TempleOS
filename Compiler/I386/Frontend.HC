@@ -392,19 +392,18 @@ U0 I386FrontendHeader(U8 *context,CHashFun *function,Bool complete)
   record->header=complete;record->complete=complete;
 }
 Bool I386FrontendRetireFunction(CI386Frontend *state)
-{//A failed body may leave its fully parsed extern signature in the hash table.
+{//A failed parse leaves its owned partial extern descriptor in the hash table.
   CCmpCtrl *cc=state->cc;
   CHashFun *fun=cc->htc.fun;
   CI386FrontendDeclaration *record;
   if(!fun)return TRUE;
   record=I386FrontendDeclarationFind(state,fun);
-  if(!record || !record->header || !record->complete ||
-      !Bt(&fun->flags,Cf_EXTERN) || fun->exe_addr!=&I386FrontendUndefined)
+  if(!record || !Bt(&fun->flags,Cf_EXTERN) || fun->exe_addr!=&I386FrontendUndefined)
     return FALSE;
   cc->htc.local_var_lst=cc->htc.fun=cc->fun_lex_file=0;
   return TRUE;
 }
-Bool I386FrontendDeclarationsReady(CI386Frontend *state)
+Bool I386FrontendDeclarationsTracked(CI386Frontend *state)
 {
   CHashSrcSym *entry;
   CI386FrontendDeclaration *record;
@@ -413,7 +412,7 @@ Bool I386FrontendDeclarationsReady(CI386Frontend *state)
     for(entry=state->table->body[i];entry;entry=entry->next)
       if(entry->type&(HTT_CLASS|HTT_FUN|HTT_GLBL_VAR)) {
         record=I386FrontendDeclarationFind(state,entry);
-        if(!record || !record->complete)return FALSE;
+        if(!record)return FALSE;
       }
   return TRUE;
 }
@@ -869,33 +868,40 @@ U8 *I386FrontendCompile(U8 *context,CCmpCtrl *cc,I64 *raw_type)
   CHashTable *old_hash=cc->htc.hash_table_lst;
   CI386Out *out;
   CAOTImportExport *metadata;
-  I64 old_flags=cc->flags,old_pass=cc->pass,i;
+  I64 old_flags=cc->flags,old_pass=cc->pass,i,exception=0;
+  Bool failed=FALSE;
   I64 mask=CCF_DONT_MAKE_RES|CCF_AOT_COMPILE|CCF_EXE_BLK|CCF_TARGET_HOST_CONST|1<<CCf_PASS_TRACE_PRESENT;
   if(cc!=state->cc || !I386CmpCodeOwner(state->heap,cc)) I386FrontendUnavailable(state);
   bound=I386FrontendAlloc(context,sizeof(CI386FrontendParseBound),TRUE,FALSE);
-  I386FrontendPush(state,cc); I386FrontendInit(state,cc);
-  bound->fun.return_class=state->expression.types[RT_I64];
-  bound->aot.next_ie=bound->aot.last_ie=&bound->aot.next_ie;
-  bound->typer.types=state->expression.types;
-  cc->htc.fun=&bound->fun; cc->aot=&bound->aot; cc->aotc=&bound->aotc;
-  cc->flags=cc->flags&~mask|old_flags&CCF_AOT_COMPILE; cc->pass=0;
-  I386FrontendAdd(state,cc,IC_ENTER,0,0,0);
-  if(I386FrontendExpression(state,cc,0,FALSE,0)) {
-    for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next)
-      if(node->ic_code==IC_RBP) I386FrontendUnavailable(state);
-    ret=I386FrontendAdd(state,cc,IC_RETURN_VAL,0,state->expression.types[RT_I64],0);
-    I386FrontendAdd(state,cc,IC_LEAVE,0,0,0);
-    I386FrontendOptimize(state,cc);
-    if(!ret->t.arg1_tree || !(type=I386ValueClass(&bound->typer,ret->t.arg1_tree)))
-      I386FrontendUnavailable(state);
-    ret->ic_class=bound->fun.return_class=type;
-    result=I386FrontendOutput(state,cc,type,old_flags&CCF_HAS_MISC_DATA);
-    if(raw_type) *raw_type=type->raw_type;
+  try {
+    I386FrontendPush(state,cc); I386FrontendInit(state,cc);
+    bound->fun.return_class=state->expression.types[RT_I64];
+    bound->aot.next_ie=bound->aot.last_ie=&bound->aot.next_ie;
+    bound->typer.types=state->expression.types;
+    cc->htc.fun=&bound->fun; cc->aot=&bound->aot; cc->aotc=&bound->aotc;
+    cc->flags=cc->flags&~mask|old_flags&CCF_AOT_COMPILE; cc->pass=0;
+    I386FrontendAdd(state,cc,IC_ENTER,0,0,0);
+    if(I386FrontendExpression(state,cc,0,FALSE,0)) {
+      for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next)
+        if(node->ic_code==IC_RBP) I386FrontendUnavailable(state);
+      ret=I386FrontendAdd(state,cc,IC_RETURN_VAL,0,state->expression.types[RT_I64],0);
+      I386FrontendAdd(state,cc,IC_LEAVE,0,0,0);
+      I386FrontendOptimize(state,cc);
+      if(!ret->t.arg1_tree || !(type=I386ValueClass(&bound->typer,ret->t.arg1_tree)))
+        I386FrontendUnavailable(state);
+      ret->ic_class=bound->fun.return_class=type;
+      result=I386FrontendOutput(state,cc,type,old_flags&CCF_HAS_MISC_DATA);
+      if(raw_type) *raw_type=type->raw_type;
+    }
+    if(!I386COCDiscard(state->heap,cc)) I386FrontendUnavailable(state);
+    I386FrontendPop(state,cc);
+  } catch {
+    failed=TRUE;exception=I386TaskSelf->except_ch;I386TaskSelf->catch_except=TRUE;
   }
-  if(!I386COCDiscard(state->heap,cc)) I386FrontendUnavailable(state);
-  I386FrontendPop(state,cc);
   cc->htc.fun=old_fun; cc->aot=old_aot; cc->aotc=old_aotc; cc->htc.hash_table_lst=old_hash;
   cc->flags=cc->flags&~mask|old_flags&mask; cc->pass=old_pass;
+  //Failed IR and its temporary bound stay control-owned for terminal retirement.
+  if(failed)throw(exception,TRUE);
   I386FrontendFree(state,bound);
   if(result) return result->code;
   return 0;
