@@ -80,3 +80,25 @@ expected completed value. Cold native probes also pass after the nearby
 try/exception sequence, without re-including public headers, and with only
 PublicKernel.HH. The isolated full compiler prefix remains running with an
 explicit flags read before the pending assignment. The open discrepancy prevents claiming a verified full compiler result.
+
+## Repeat without the extra query and physical hotkeys
+
+The complete compiler group without the extra pre-break query passes all 146
+commands in
+`build/i386-answer-break-oracles-v1/build/i386-answer-break-compiler-unprobed-v1/result.json`.
+It uses the identical immutable source image as the earlier 3329 failure and
+requires exactly 2048, not an alternative value. Its frozen runner is retained.
+The combined answer/picker image also passes all 17 physical hotkey-group
+commands, including six Ctrl-Alt-C interactions, in
+`build/i386-answer-break-oracles-v1/build/i386-answer-picker-breaks-v1/result.json`.
+Locked-state assertions and the unlock's completed 2048 remain explicit.
+Startup is 77.9 and 76.0 seconds respectively; neither qualifies the minimal
+60-second startup gate. The historical 3329 has not recurred and remains open.
+
+Fork commit `89ea01fb` records the completed-value oracle migration. Its
+command-retention audit preserves all 509 original command-expression
+occurrences and adds thirteen state checks. A separate original differential
+now contradicts native declaration rollback; see
+`docs/i386-completed-declaration-publication.md`. The passing native regression
+groups do not qualify that legacy behavior. Completed-declaration preservation
+and public Break availability are the next implementation work.

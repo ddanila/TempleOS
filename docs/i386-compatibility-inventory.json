@@ -8249,6 +8249,18 @@
           "result": "pass",
           "evidence": "build/i386-answer-oracles-v1/build/i386-answer-state-documents-v1/result.json",
           "scope": "212 commands across documents/document-editing at 8 MiB TCG 486,-fpu/live WinMgr, exact checkpoint pixels. Nested DocExe initializer retained, formatted execution, explicit state checks, editing/clipboard/search/color/style and error recovery pass. Frozen runner source/hash retained. Startup 78.9 seconds does not qualify minimal startup budget; not whole original API fidelity."
+        },
+        {
+          "target": "experimental-compiler-without-extra-query",
+          "result": "pass",
+          "evidence": "build/i386-answer-break-oracles-v1/build/i386-answer-break-compiler-unprobed-v1/result.json",
+          "scope": "146 compiler-group commands at 8 MiB TCG 486,-fpu/live WinMgr, same pristine image as earlier 3329 failure, no extra pre-break query. Exact 2048 and all checkpoint pixels pass, including module building. Frozen runner retained. 77.9-second startup is not startup-gate qualification. Legacy declaration-rollback expectations are contradicted by the new original CMain observation and remain unqualified."
+        },
+        {
+          "target": "experimental-physical-hotkey-group",
+          "result": "pass",
+          "evidence": "build/i386-answer-break-oracles-v1/build/i386-answer-picker-breaks-v1/result.json",
+          "scope": "Combined image, 17 commands and six real Ctrl-Alt-C interactions at 8 MiB TCG 486,-fpu/live WinMgr. Lock/pending-state checks, unlock completed answer 2048, loop interruption/catch and recovery pass with exact pixels. Frozen runner retained; 76.0-second startup is not minimal startup-gate qualification. Public Break API availability and completed-declaration preservation remain open."
         }
       ]
     },

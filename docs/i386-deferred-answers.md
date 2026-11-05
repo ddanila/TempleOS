@@ -178,6 +178,7 @@ scalar formats and module building. Its recorded startup is 77.8 seconds; no
 startup-budget pass is claimed. Both this run and the earlier focused failure
 used the identical immutable source image (SHA-256
 `b65d5c3c7673af36aa4de247ba3dd2cc30abefd5f53d2f15e3d58fce100847f9`).
-A repeat without the added pre-break query is running. The earlier 3329 remains
-open until its cause or reproducibility is understood. The default main-branch
+The repeat without the added pre-break query passes 146 commands, and the
+physical hotkey group passes 17, recorded in `docs/i386-break-answer-state.md`.
+The earlier 3329 remains open until its cause or reproducibility is understood. The default main-branch
 full gate with picker acknowledgements is still live.
