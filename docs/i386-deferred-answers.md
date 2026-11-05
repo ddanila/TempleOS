@@ -125,3 +125,27 @@ the native task-symbol ownership test in
 `build/answer-state-task-symbols-v1.log`. These are scoped prerequisites, not C5
 native rebuild generations or a complete minimal regression result. Focused
 compiler and document groups are running against this image.
+
+## Combined picker and answer runtime
+
+The worktree `build/i386-answer-break-oracles-v1` combines this runtime with the
+consumed-mouse-transition test sequencing. Both original bootstrap generations
+pass in `build/i386-answer-picker-combined-rebuild-v1.log`; the normal image is
+`build/i386-answer-picker-combined-v1`. Its 386 audit and all 1,361 delivered
+source/doc comparisons pass. The combined image passes all 34 exact-pixel
+answer commands in
+`build/i386-answer-oracles-v1/build/i386-answer-picker-combined-prompts-v1/result.json`
+and the complete isolated TCG picker workflow in
+`build/i386-answer-picker-combined-clicks-v1/result.json` in the main worktree.
+Inputs remain unchanged. These are scoped regressions, not native C5 generations.
+
+The separate instrumented compiler session passes 147 commands at 8 MiB TCG
+486 without FPU/live WinMgr in
+`build/i386-answer-break-oracles-v1/build/i386-answer-break-compiler-v1/result.json`.
+It reads zero flags immediately before the pending assignment, then verifies
+2048, cleanup, locked/unlock behavior, scalar formats and module building. The
+frozen runner source and hash are stored beside that result. Its 77.8-second
+startup is not evidence of the 60-second minimal startup gate. A second run
+without the extra pre-break query remains running, because that query could
+otherwise mask the earlier 3329 discrepancy. No new shared break oracle is
+qualified yet.
