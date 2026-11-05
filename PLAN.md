@@ -26221,3 +26221,18 @@ out before any commands. Actual pixels match the welcome oracle. That session's
 workload and later stages remain unqualified. See
 docs/i386-diagnostic-welcome.md and build/i386-welcome-gate-minimal-v1/failure.json.
 Complete minimal regressions and C1-C5 remain open.
+
+The full gate now selects the delivered welcome document for its normal keyboard
+session, preserving editing/cancel/wrap/tab/scroll and its later component
+commands. Welcome-mode sound now uses the stronger existing PIT counter and IF
+restoration probes rather than the simpler speaker-bit-only commands. Focused
+8 MiB KVM keyboard/sound passes with live WinMgr, exact pixels, unchanged pins
+and 33.17-second startup; its three native commands are the sound checks, while
+raw keyboard events are counted separately. The full default TCG gate in
+build/i386-welcome-keyboard-gate-minimal-v1 is still running: diagnostics, exact
+disk/welcome checks, keyboard, mouse, sound and WindowServiceCheck have passed.
+A separate focused compiler run is also live. Their remaining stages are not
+qualified; progress.json freezes an explicitly incomplete checkpoint. All 16
+modules remain identical and 1,361 delivered source files match. See
+docs/i386-welcome-keyboard-gate.md. C1-C5 and complete minimal regressions remain
+open pending terminal test outcomes and the remaining broad qualification work.

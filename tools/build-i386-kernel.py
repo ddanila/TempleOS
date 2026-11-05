@@ -3149,7 +3149,7 @@ def main():
             raise ValueError('VGA console mismatch')
         result['diagnostic_welcome']=json.loads((guest/'screen-oracle.json').read_text())
         screen.save(guest/'screen.png')
-        keyboard=console['run_input'](normal_disk,out/'input')
+        keyboard=console['run_input'](normal_disk,out/'input',welcome=True)
         if keyboard['document_access_cases']!=8 or 'PASS original document selection\n' not in (exports/'debug.log').read_text():
             raise ValueError('Original/native task document selection failed')
         result['document_access']={'cases':8,'original_x64':'pass','native_public_bindings':'pass'}
