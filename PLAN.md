@@ -26262,3 +26262,20 @@ The focused compiler run separately stops before submitting repeated command
 oracle matches first-prompt text rather than identity. The full default TCG gate
 continues in its compiler group. Both gaps and later stages remain unqualified;
 all 686 entries and C1-C5 remain open.
+
+C4 now has a six-case original prompt oracle using actual ExePutS/includes,
+ExeDoc and the private CmdLinePmt system-export routine. It proves final-only
+answers, void clearing, explicit output, silent nested results, pending 41 after
+a syntax error and new_answer consumption. The error case waits for actual
+ADAM_SERVER readiness; it does not set the bit. An isolated implementation
+copies result type metadata before unwind, defers console presentation and
+suppresses nested document echoes while retaining internal compiler callbacks.
+It is pushed to the user's fork on experiment/i386-deferred-console-answers
+(ed4df9d3), separate from the still-running active gate. All 22 native checks
+pass at 8 MiB; the unchanged registry demo now passes first-launch output/time/
+persistence/filesystem checks at 64 MiB. Original bootstrap generations,
+386/source audits and unchanged input pins pass. These are scoped experimental
+passes, not full minimal or C1-C5 qualification. The runtime is not yet merged;
+complete gate outcomes and faithful migration of old intermediate-answer
+oracles remain required. See docs/i386-deferred-answers.md. Inventory retains
+all prior failures and keeps all 686 entries unqualified.
