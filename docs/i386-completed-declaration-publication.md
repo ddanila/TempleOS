@@ -591,3 +591,24 @@ compiler regression remain pending. Final reusable-oracle default/compound
 source and predicate generation match the frozen passing references. All
 C1–C5 milestones, full partial-metadata/API coverage and inventory qualification
 remain open.
+
+### Current-image repair and compiler checks (2026-11-05)
+
+The corrected compound run passes all 53 commands in
+`build/i386-partial-compound-native-v2/result.json`, with unchanged inputs and
+exact frames (33.381-second KVM startup). Its frozen oracle matches the final
+reusable tool's generated source, predicates and expected diagnostics.
+`tools/test-i386-partial-completion.py` passes all 13 commands in
+`build/i386-partial-completion-native-v2/result.json` (33.535-second startup).
+All eight mode/kind combinations make real ExePutS calls: unresolved partial
+functions throw UndefExt, valid definitions complete through the same descriptor
+and execute as 42; class/global replacements preserve earlier caller bindings
+and old storage. The first run passed every repair case but stopped at the
+cleanup command's stale empty-output expectation. Its frozen failure is kept;
+the unchanged null-pointer assignment now correctly expects 0x0.
+
+The current v3 image also passes all 146 retained compiler commands in
+`build/i386-partial-full-compiler-v1/result.json`, including module help-file
+publication and the independent pointer check, with unchanged pinned inputs
+and exact frames. This closes that current-image regression, not the complete
+minimal-profile gate, native C5 generations or all C1–C5 qualification.

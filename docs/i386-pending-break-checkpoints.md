@@ -45,3 +45,25 @@ The previous 384-sector transfer limit rejected the expanded runner before boot;
 no runtime failure was hidden by this adjustment. Other fixture profiles remain
 unchanged. Production kernel modules, service versions and the QEMU preview are
 unchanged; this slice is a tested internal implementation awaiting integration.
+
+### Public BreakLock/BreakUnlock reference (2026-11-05)
+
+`tools/test-i386-break-lock.py` captures 30 actual public-API observations in
+`build/i386-public-break-lock-reference-v1/result.json`, all passing with
+unchanged inputs. The original returns 1 only for the first lock or for an
+unlock that removed the lock. Default and explicit current-task arguments
+agree. Unlocking a pending current-task break clears both bits and synchronously
+throws Break before the following statement. For a suspended foreign target,
+unlock clears the pending bit immediately while preserving suspension; after
+resumption the child catches Break and exits without executing the next user
+statement. Both initially locked and unlocked foreign targets are checked.
+
+The delivered native public interface lacks these APIs. The real fixture fails
+to compile its BreakUnlock call in
+`build/i386-public-break-lock-native-red-v1`; its frozen driver and failure
+classification are retained. No native state transition is qualified by that
+failed setup. Existing internal I386TaskBreakUnlock deliberately leaves pending
+delivery to guarded checkpoints and cannot simply stand in for this public
+contract. A native foreign-task delivery must respect its saved-ESP context and
+resource/borrow cleanup rather than replacing only a saved PC. Shift-Esc routing,
+foreign kernel waits and the broader API/application milestones remain open.
