@@ -862,7 +862,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 active_group=None
                 submit('U0 TestPauseWM(){if(sys_winmgr_task!=adam_task)Suspend(sys_winmgr_task,TRUE);}TestPauseWM;',[],'window-manager-pause')
             active_group='windows'
-            submit('#include "/Kernel/I386/WindowServiceCheck.HC"', [], 'window-service-source')
+            submit('#include "/Kernel/I386/WindowServiceCheck.HC"', ['Warning: Unused var'], 'window-service-source')
             submit('WindowServiceCheck;', ['14'], 'window-service-check')
             submit('#include "/Kernel/I386/WindowVisibilityCheck.HC"', [], 'window-visibility-source')
             submit('WindowVisibilityCheck(sys_winmgr_task);', ['6'], 'window-visibility-check')
