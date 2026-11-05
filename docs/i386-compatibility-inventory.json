@@ -8162,8 +8162,8 @@
         {
           "command": "python3 tools/test-i386-answer-prompt-reference.py --out OUT",
           "result": "pass",
-          "evidence": "build/i386-answer-prompt-reference-v5/result.json",
-          "scope": "Pinned original actual private prompt routine through function/system-export lookup, six cases with task/document snapshots and queued real GetStr. Error case waits for real ADAM_SERVER readiness without setting the bit. Unchanged inputs; not physical keyboard or whole CMisc coverage."
+          "evidence": "build/i386-answer-prompt-reference-v8/result.json",
+          "scope": "Pinned original actual private prompt routine through function/system-export lookup, nine cases with task/document snapshots and queued real GetStr, including integer/F64/pointer nested declaration initializers. Error case waits for real ADAM_SERVER readiness without setting the bit. Unchanged inputs; not physical keyboard or whole CMisc coverage."
         },
         {
           "command": "python3 tools/test-i386-answer-prompt.py IMAGE --reference REFERENCE --out OUT",

@@ -89,3 +89,24 @@ long-running gate's inputs are pinned. The experimental branch makes the tested
 implementation reviewable without mutating those inputs. Full minimal
 regressions, complete terminal/API/exception behavior, second-boot demo coverage,
 all application qualifications and C1-C5 remain open.
+
+## Nested declaration initializer reference
+
+The extended original capture at
+`build/i386-answer-prompt-reference-v8/result.json` passes nine cases. Three
+additional cases execute integer, F64 and pointer documents from declaration
+initializers. The outer ExePutS returns zero while the nested execution leaves a
+pending task answer for CmdLinePmt. For the integer case the prompt presents 22;
+the floating case presents 3.7500000; the zero pointer is recorded with the
+original RT_PTR/RT_I64 alias and presented as integer zero. No automatic output
+appears before the prompt.
+
+The original floating calculation produces the canonical 3.75 representation
+plus one ULP. The reference accepts that observed representation or canonical
+3.75, requires the same raw bits after prompt consumption, and checks the actual
+formatted value. Native formatting remains a separate architecture difference.
+The earlier callback-only prototype did not cover these initializer cases;
+final presentation must use the task's pending answer rather than the last
+outer callback. The expanded native driver includes all three initializer
+cases and checks their values and consumed flags. Native qualification of this
+extension is pending.
