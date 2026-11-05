@@ -253,3 +253,35 @@ cleanup and a final 42, with exact pixels and unchanged inputs in
 qualifies the completed-declaration repair while the ten-case failure remains
 preserved. The next candidate adds parsed-header readiness and the real
 UndefinedExtern export/exception path; it is not yet qualified by native tests.
+
+
+## Persistent extern and caller binding reference
+
+`tools/test-i386-extern-binding-reference.py` passes sixteen original cases in
+`build/i386-extern-binding-reference-v3/result.json`, with unchanged inputs.
+Each flag mode declares an extern with integer default 7, compiles a caller,
+calls it unresolved (real UndefExt and saved-document diagnostic), defines the
+target as a+90, then shadows it with a function returning 101. The original
+reuses the extern descriptor for the first definition, fixes the already
+compiled caller to return 97, and creates a new descriptor for the later
+redefinition. The old caller keeps returning 97; direct lookup calls 101.
+The actual unused-argument warning during redefinition is also required.
+`tools/test-i386-extern-binding.py` preserves these sources and checks native
+answers, descriptor identity and actual saved documents. Its native candidate
+run remains pending; this reference does not establish native late binding.
+
+The first experiment used a string default and observed old callers returning
+7 rather than the assumed 97 after the initial definition. Its frozen fixture,
+driver, exported documents and unchanged-input failure remain in
+`build/i386-extern-binding-reference-v1`; string-default storage lifetime is a
+separate investigation, not inferred compatible. The integer-default v2 had
+all numeric rows correct but omitted the real unused-argument warning from its
+document oracle. V3 keeps the source and requires that warning. Nothing is
+substituted for UndefinedExtern or for actual guest compilation/execution.
+
+The header candidate also exposes a stale diagnostic expectation: low-level
+statement case 11 executes an unresolved function, so its actual original
+exception is UndefExt rather than Compiler. The first candidate diagnostic
+failure and exact packaged probe source are frozen in
+`build/i386-persistent-header-diagnostic-v1`. Only that case's exception oracle
+changes; its unwind, heap, task lifetime and interrupt checks are retained.
