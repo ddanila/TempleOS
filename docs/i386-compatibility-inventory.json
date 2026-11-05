@@ -11954,7 +11954,7 @@
           "Exact initial high-score/value text in captured original document and native full-frame expectation",
           "Increment to 1235 and five-decimal persisted score bounded by actual execution time",
           "Native persisted fixture identity, time samples and filesystem audit are required but not reached after current display failure",
-          "No second-boot, repeated-launch, customized registry or error-cleanup qualification",
+          "Original machine reboot, customized registry, error cleanup and full qualification remain open; native repeated launch/reboot is separately scoped",
           "Original second launch after saved document reload: exact persisted score/Val:1235 output, increment 1236, new sampled score and trailing DocSave marker"
         ]
       },
@@ -11982,6 +11982,12 @@
           "result": "pass",
           "evidence": "build/i386-registry-demo-repeat-reference-v3/result.json",
           "scope": "Pinned original unchanged demo twice with actual saved registry document reload. Exact second output displays first persisted score and Val:1235; second state persists 1236 and score within sampled times. Raw records/documents, unchanged inputs. Original machine reboot and native repeated launch remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-registry-demo-reboot.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-answer-oracles-v1/build/i386-registry-demo-reboot-v2/result.json",
+          "scope": "Runtime 82312957 on fork experimental branch: actual three persisted 64 MiB KVM 486,-fpu/live WinMgr boots. First unchanged launch saves 1235; second displays persisted score/Val:1235 and saves 1236/new sampled score; third reload verifies branch return, score and unchanged saved files. Exact screens, fixture identity, time bounds, filesystem and input pins pass. Original reference covers saved-document reload, not original machine reboot. Full compatibility remains unqualified."
         }
       ]
     },

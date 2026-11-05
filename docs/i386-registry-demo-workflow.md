@@ -86,3 +86,29 @@ not an original machine reboot. A native three-boot workflow is being tested
 separately: first launch, second launch from the persisted volume after reboot,
 then value/score verification after another reboot. Broad registry qualification
 remains open.
+
+## Native persisted reboot workflow
+
+`tools/test-i386-registry-demo-reboot.py` first runs the unchanged first-launch
+workflow, preserves its image, and clones that persisted volume for a second
+actual QEMU boot. The second unchanged demo launch must display the stored score
+and `Val:1235`, then persist 1236 and a newly sampled score. A third actual boot
+executes both registry branches, verifies their return values and the stored
+five-decimal score, and confirms that verification did not change the saved
+fixture/state/time files. Every boot checks exact displayed pixels; volume
+integrity is checked after mutation and at completion.
+
+`build/i386-answer-oracles-v1/build/i386-registry-demo-reboot-v2/result.json`
+passes with unchanged inputs against runtime commit `82312957`, at 64 MiB KVM
+486 without FPU and live WinMgr. The original repeated-launch reference is
+`build/i386-registry-demo-repeat-reference-v3`. Original machine reboot is not
+covered by that reference; native persistence here is checked against its
+original-derived saved values and actual host-extracted volume contents.
+
+The earlier native v1 passed both demo launches but failed the third-boot oracle:
+a declaration initializer executed the whole Game1 branch, including nested
+SimpleVal, leaving 1236 pending. Its incorrect empty-output expectation is
+retained in the failing result with unchanged inputs. The corrected verification
+explicitly checks the branch return equals 1236 and then checks the published
+score. Customized registries, failure cleanup, complete original UI/API fidelity
+and full application qualification remain open.
