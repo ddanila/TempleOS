@@ -35,3 +35,9 @@ runner and driver inputs. Both
 original bootstrap generations, the 386 instruction audit, and all 1,361
 packaged source/document comparisons pass for `build/i386-mouse-picker-sync-v1`.
 These prerequisites do not replace a complete minimal gate.
+
+The fresh full minimal gate at `build/i386-picker-ack-gate-minimal-v1` has passed
+the previously failing picker stage and advanced into file navigation. Its
+`input/picker-stage-pass.json` pins the six completed selection/open/editor/return
+frames, helper hash and next authoritative checkpoint. It remains a live full
+run, not a complete-suite pass or original desktop qualification.
