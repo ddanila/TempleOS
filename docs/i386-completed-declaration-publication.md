@@ -89,3 +89,21 @@ a following statement before returning to the command publication boundary.
 The next candidate adds an explicit return-after-declaration option for native
 commands; function and block parsers retain their existing defaults. Full
 publication and answer regression results are still required for that candidate.
+
+The parser-boundary candidate passes all 19 native publication commands in
+`build/i386-answer-break-oracles-v1/build/i386-declaration-boundary-publication-v1/result.json`,
+with unchanged image, original reference and runner pins. Completed functions
+remain callable after all eight default/command-line failure cases, including
+pending breaks. The source audit matches all 1,362 packaged source/document
+files. This precedes a further policy repair that keeps low-level transactions,
+modules and atomic headers strict while allowing ordinary command redefinition;
+the final policy candidate still needs its own native verification.
+
+The declaration-state run reaches the malformed-function source after passing
+class/global/function redefinition and retained old-caller binding. It stops
+at command 22 because its expected diagnostic was incorrectly `Undefined
+identifier`. The pinned original `guest/state-7.DD` explicitly contains `Invalid
+lval` and `Compiler Parse Error`; the native log reports `Invalid lval` too.
+The driver now requires that specific native diagnostic prefix, preserving the
+source and all subsequent checks, including the required malformed-function
+hash entry. The v1 run remains a failure, and those later checks are unqualified.

@@ -22,7 +22,7 @@ COMMANDS=[
  ('I64 OriginalCount(){return 1;}I64 OriginalCaller(){return OriginalCount;}',[]),
  ('OriginalCount;',['1']),('OriginalCaller;',['1']),
  ('I64 OriginalCount(){return 2;}',[]),('OriginalCount;',['2']),('OriginalCaller;',['1']),
- ('I64 OriginalGood(){return 99;}I64 OriginalBad(){return original_missing;}',['Error: Undefined identifier at ']),
+ ('I64 OriginalGood(){return 99;}I64 OriginalBad(){return original_missing;}',['Error: Invalid lval at ']),
  ('OriginalGood;',['99']),('HashFind("OriginalBad",Fs->hash_table,HTT_FUN)!=NULL;',['1']),
  ('6*7;',['42']),
 ]
