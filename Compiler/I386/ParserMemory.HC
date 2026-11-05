@@ -21,6 +21,28 @@ U0 I386ParserFailure(U8 *label,CCmpCtrl *cc)
   KernelLog("\n");
 }
 #endif
+#include "/Kernel/I386/HeapAllocateBlock.HC"
+U8 *I386ParserHeapAllocKnown(CI386Heap *heap,I64 bytes,Bool zeroed,Bool high)
+{//Only after CodeOwner validates the entire heap, with IRQ exclusion retained.
+  CI386HeapBlock *block,*selected=0;
+  U32 position=0,need;
+  if(bytes<0 || bytes>0xFFFFFFFF-23)return 0;
+  need=(bytes+7)&~7;
+  if(!need)need=8;
+  need+=16;
+  while(position<heap->size) {
+    block=heap->base+position;
+    if(block->tag==I386_HEAP_FREE && block->span>=need) {
+      selected=block;
+      if(!high)break;
+    }
+    position+=block->span;
+  }
+  if(selected)return I386HeapAllocateBlock(heap,selected,bytes,need,zeroed,high);
+  //Preserve the public allocator's failure diagnostics on exhaustion.
+  if(high)return I386HeapAllocHigh(heap,bytes,zeroed);
+  return I386HeapAlloc(heap,bytes,zeroed);
+}
 U8 *I386ParserAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes,Bool zeroed=TRUE)
 {
   CI386CmpCtrl *owned=cc;
@@ -30,14 +52,14 @@ U8 *I386ParserAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes,Bool zeroed=TRUE)
   if(!I386CmpCodeOwner(heap,cc) || bytes<1 || bytes>0x7FFFFFFF) {
     I386IrqRestore(irq); return 0;
   }
-  allocation=I386HeapAlloc(heap,bytes,zeroed);
+  allocation=I386ParserHeapAllocKnown(heap,bytes,zeroed,FALSE);
   if(!allocation) {
 #ifdef I386_PARSER_FAILURE_TRACE
     I386ParserFailure("PARSER PAYLOAD ALLOCATION REJECT ",cc);
 #endif
     I386IrqRestore(irq); throw('OutMem',TRUE);
   }
-  record=I386HeapAllocHigh(heap,offset(CI386ParserAllocation.requested),TRUE);
+  record=I386ParserHeapAllocKnown(heap,offset(CI386ParserAllocation.requested),TRUE,TRUE);
   if(!record) {
     I386HeapFree(heap,allocation);
     I386IrqRestore(irq); throw('OutMem',TRUE);

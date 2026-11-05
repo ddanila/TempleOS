@@ -235,11 +235,12 @@ U0 I386HeapExhausted(CI386Heap *hc,I64 request)
 }
 #endif
 
+#include "/Kernel/I386/HeapAllocateBlock.HC"
+
 public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
 {//Validate all metadata before locating a first-fit block and mutating the arena.
-  CI386HeapBlock *block=0,*rest;
-  U8 *result;
-  U32 offset=0,need,i,requested;
+  CI386HeapBlock *block=0;
+  U32 need,requested;
   if(size<0 || size>0xFFFFFFFF-23) return 0;
   requested=size; need=(size+7)&~7;
   if(!need) need=8;
@@ -252,19 +253,7 @@ public U8 *I386HeapAlloc(CI386Heap *hc,I64 size,Bool zero=FALSE)
 #endif
     return 0;
   }
-  offset=block(U8 *)-hc->base;
-  if(block->span-need>=24) {
-    rest=hc->base+offset+need;
-    rest->span=block->span-need; rest->requested=0;
-    rest->tag=I386_HEAP_FREE; rest->reserved=0;
-    block->span=need;
-  }
-  block->requested=size; block->tag=I386_HEAP_USED;
-  hc->used+=block->span; hc->allocations++;
-  if(hc->used>hc->peak) hc->peak=hc->used;
-  result=hc->base+offset+16;
-  if(zero) for(i=0;i<requested;i++) result[i]=0;
-  return result;
+  return I386HeapAllocateBlock(hc,block,requested,need,zero,FALSE);
 }
 
 //Caller holds heap exclusion across this operation. Validate a prior payload and
@@ -310,8 +299,7 @@ public U8 *I386HeapAllocGuarded(CI386Heap *hc,I64 size,U8 *guard,Bool *guard_val
 public U8 *I386HeapAllocHigh(CI386Heap *hc,I64 size,Bool zero=FALSE)
 {//Validate the complete arena; use the high end of the last fitting free block.
   CI386HeapBlock *block=0;
-  U8 *result;
-  U32 need,prefix,i,requested;
+  U32 need,requested;
   if(size<0 || size>0xFFFFFFFF-23)return 0;
   requested=size;need=(size+7)&~7;
   if(!need)need=8;
@@ -324,18 +312,7 @@ public U8 *I386HeapAllocHigh(CI386Heap *hc,I64 size,Bool zero=FALSE)
 #endif
     return 0;
   }
-  prefix=block->span-need;
-  if(prefix>=24) {
-    block->span=prefix;
-    block=block(U8 *)+prefix;
-    block->span=need;block->reserved=0;
-  }
-  block->requested=size;block->tag=I386_HEAP_USED;
-  hc->used+=block->span;hc->allocations++;
-  if(hc->used>hc->peak)hc->peak=hc->used;
-  result=block(U8 *)+16;
-  if(zero)for(i=0;i<requested;i++)result[i]=0;
-  return result;
+  return I386HeapAllocateBlock(hc,block,requested,need,zero,TRUE);
 }
 
 public I64 I386HeapSize(CI386Heap *hc,U8 *ptr)

@@ -754,3 +754,44 @@ accepts `inc`, a valid 386 instruction emitted in that test; the corrected
 loader run passed 41 cases. These focused checks do not qualify the full native
 build or the startup timing gate. The retained build continues on its pinned
 version-76 image, and C1–C5 remain open.
+
+## Parser allocation validation reuse (2026-11-05)
+
+The public-break runtime's paused 8 MiB TCG/486 startup profile collected 399
+PC samples (`build/i386-public-break-boot-profile-v1` in the public-break
+frontier checkout). Root-header loading accounts for 270 samples, including
+84 in `I386HeapScan`, 68 in `I386HeapFree`, and 50 in
+`I386HeapScanSelect`. Sixteen root-header stack samples place the query scan
+under `CmpControlValid`, `CmpCodeOwner`, and `ParserAlloc`. These are
+statistical observations, not call counts or elapsed-time measurements.
+
+`I386ParserAlloc` now retains the complete heap validation performed by
+`I386CmpCodeOwner` across its payload and tracking-record allocations. The
+outer IRQ exclusion remains held throughout; there are no external callbacks
+between validation and these mutations. Physical-block walks select the same
+first fitting payload block and last fitting record block. Both public heap
+allocators still validate the complete heap before mutation. They and the
+parser share the block-splitting, accounting, and zeroing implementation in
+`HeapAllocateBlock.HC`. Exhaustion falls back to the public path for its
+existing failure diagnostics. Code-provider allocation, parser freeing, and
+validation across callbacks are unchanged. No interface or layout changes.
+
+In the parser-heap-reuse checkout, both original bootstrap generations pass
+(`build-parser-heap-rebuild-v1.log`), as do the cross-build and 386 instruction
+audit (`build/i386-parser-heap-reuse-cross-v1`). The native high-placement
+regression passes with assembly and portable validators; the native core heap
+regression also passes (`build/i386-heap-high-test`,
+`build/i386-heap-high-source-test`, `build/i386-heap-core-test`). High-placement
+coverage includes later-header corruption rejection, zeroing, exact payload
+sizes, fragmentation recovery, and tiny-prefix absorption. The delivered
+source audit matches all 1,366 packaged source/doc files
+(`build/i386-parser-heap-reuse-source-audit-v1.json`). The 16 MiB TCG/486 diagnostic also passes both phases, including both parser
+memory probes, 54 input cases, and exact comparison of all 307,200 welcome
+pixels (`build/i386-parser-heap-reuse-diagnostic-v1/verification.json`).
+Normal-image interactive compiler checks and startup qualification remain
+pending; C1–C5 remain open.
+
+The first high-placement launcher attempt preceded completion of the bootstrap
+manifest and stopped with `FileNotFoundError`, before compilation or guest
+execution (`build-parser-heap-high-v1.log`). The subsequent `v2` launcher run
+passed; the failed attempt is retained separately.
