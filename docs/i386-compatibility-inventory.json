@@ -11885,9 +11885,35 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-reference",
+        "description": "Launch unchanged Demo/RegistryDemo.HC against a fresh default registry. Require High Score:1.23000 and Val:1234, then SimpleVal=1235 and a persisted five-decimal score within sampled tS bounds. Original first launch observed; native exact display currently fails from extra automatic answers. Second launch/reboot persistence and failure cleanup remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-registry-demo-reference.py",
+        "native_tool": "tools/test-i386-registry-demo.py",
+        "checks": [
+          "Pinned original source bytes and fresh original RegInit defaults; no substitution of Game or time function",
+          "Exact initial high-score/value text in captured original document and native full-frame expectation",
+          "Increment to 1235 and five-decimal persisted score bounded by actual execution time",
+          "Native persisted fixture identity, time samples and filesystem audit are required but not reached after current display failure",
+          "No second-boot, repeated-launch, customized registry or error-cleanup qualification"
+        ]
+      },
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-registry-demo-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-registry-demo-reference-v2/result.json",
+          "scope": "Pinned original first launch of unchanged bundled demo from fresh defaults: explicit output, value increment, sampled score/time and persisted DolDoc state. Input pins unchanged. Not second launch/reboot or native qualification."
+        },
+        {
+          "command": "python3 tools/test-i386-registry-demo.py IMAGE --reference REFERENCE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-registry-demo-native-v1/result.json",
+          "scope": "64 MiB KVM 486,-fpu/live WinMgr, unchanged demo explicitly packaged on seeded normal image. Include executes and prints the two expected demo lines, but extra automatic 0/1234 answers break the exact displayed-output oracle. Test stops before time/state capture; later persistence/filesystem checks unqualified. Expected output remains original-derived and is not expanded to accept the extra lines. Input pins unchanged."
+        }
+      ]
     },
     {
       "path": "Demo/RevFileDemo/DemoPoemBwd.DD",

@@ -26247,3 +26247,18 @@ Inventory validation and all five guard tests pass; all 686 entries remain
 unqualified. The default gate and focused compiler run continue: the former has
 reached math after graphics, the latter has passed its handled allocation-failure
 case. Neither live session is claimed as a complete pass.
+
+C1/C3 now have an executable first-launch oracle for the unchanged bundled
+Demo/RegistryDemo.HC. The pinned original passes exact initial score/value,
+1235 increment, bounded actual timestamp and persisted five-decimal score.
+The native 64 MiB/live WinMgr check fails exact pixels because automatic scalar
+answers are printed before the correct demo lines. Expected rows remain
+original-derived; time/state/filesystem capture after that failure is not
+qualified. The inventory links both outcomes and keeps the demo unqualified.
+Second launch/reboot, customized state and cleanup remain open. See
+docs/i386-registry-demo-workflow.md. No runtime or active-run input changes.
+The focused compiler run separately stops before submitting repeated command
+124: fourteen prompt pixels are incorrectly expected black because the host
+oracle matches first-prompt text rather than identity. The full default TCG gate
+continues in its compiler group. Both gaps and later stages remain unqualified;
+all 686 entries and C1-C5 remain open.
