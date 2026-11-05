@@ -8207,6 +8207,12 @@
           "result": "pass",
           "evidence": "build/i386-answer-break-oracles-v1/build/i386-answer-break-native-v2/result.json",
           "scope": "15 cold native commands at 8 MiB KVM 486,-fpu/live WinMgr: direct break retains completed 41; pending assignment answer 2048, consumed flags, interrupted private publication, locked/unlock behavior and fresh compilation. Exact pixels, unchanged inputs. Four-command cold flags probe passes TCG too. Longer compiler-prefix value 3329 remains unexplained; whole group/API compatibility remains unqualified."
+        },
+        {
+          "target": "experimental-task-owned-answer-complete-gate",
+          "result": "fail",
+          "evidence": "build/i386-answer-oracles-v1/build/i386-answer-state-gate-v1/failure.json",
+          "scope": "Complete default 8 MiB TCG diagnostic/console gate: root/worker/startup and console through compiler 113 pass. Old oracle at 114 expects Exception only; actual Exception plus completed 2048 agrees with original and cold native checks. Not the earlier focused 3329. Later tests not reached; full suite remains fail, compiler-history discrepancy open."
         }
       ]
     },

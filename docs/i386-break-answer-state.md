@@ -63,3 +63,20 @@ Both cold accelerators therefore produce zero initial flags, pending answer
 remains an open discrepancy. That session is being rerun with the complete
 original command prefix and an additional baseline-flags read; no full-group
 pass or whole break qualification is claimed.
+
+## Complete revised-runtime gate outcome
+
+The separate full diagnostic/console gate at
+`build/i386-answer-oracles-v1/build/i386-answer-state-gate-v1` is terminal.
+It passes its root/worker/startup probes and console groups through compiler
+command 113, then fails the old pending-break oracle at command 114. Its actual
+screen is Exception followed by 2048, matching the completed original pending
+assignment and cold native checks. Its `failure.json` pins image, sources, log,
+checkpoint and frames. This is not a full-suite pass: later compiler, document,
+filesystem/rejection/install work is not reached in this run.
+
+Unlike the earlier focused run's 3329, this independent full gate has the
+expected completed value. Cold native probes also pass after the nearby
+try/exception sequence, without re-including public headers, and with only
+PublicKernel.HH. The isolated full compiler prefix remains running with an
+explicit flags read before the pending assignment. The open discrepancy prevents claiming a verified full compiler result.

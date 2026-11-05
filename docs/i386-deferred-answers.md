@@ -144,6 +144,9 @@ qualification remain pending.
 
 The revised focused compiler run terminated at pending-break command 114;
 `docs/i386-break-answer-state.md` records that failure and the passing original
-comparison. The revised full gate remains running with its original frozen
-oracles, so it has not yet incorporated the pending-break or picker sequencing
-migrations. No full-suite pass is claimed.
+comparison. The revised full gate terminated at the same old pending-break oracle,
+displaying the expected completed 2048. It has not incorporated the pending-break
+or picker sequencing migrations; see its pinned failure and the separate
+compiler-history investigation. A fresh main-branch gate with picker
+acknowledgements is running at `build/i386-picker-ack-gate-minimal-v1`. No
+full-suite pass is claimed.
