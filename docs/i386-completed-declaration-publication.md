@@ -56,3 +56,19 @@ group remain useful native regression evidence, but their legacy rollback
 expectations do not qualify original declaration publication. In particular,
 BreakPrivate being undefined after interruption must be reconciled with the new
 original observation. Complete C4 and C1-C5 remain open.
+
+The eight-case original declaration-state reference also passes in
+`build/i386-declaration-state-reference-v3/result.json`. A completed forward
+class remains size 8 after a later undefined type; a string global remains
+readable after the same failure. Repeated class, global and function definitions
+are accepted. A caller compiled against the first function keeps returning 1
+after the new definition returns 2. The original also retains the hash entry for
+a malformed function after a preceding valid function. These are required
+observations, not permission to publish an invalid native ownership graph.
+
+The first incremental-publication candidate reaches class redefinition and
+fails there in `build/i386-declaration-state-native-v1/result.json`; the preceding
+forward completion survives the error and remains usable. All input pins remain
+unchanged. The strict native corpus retains the later global redefinition,
+old-caller binding and malformed-function entry checks even though they are
+unreached in this run.
