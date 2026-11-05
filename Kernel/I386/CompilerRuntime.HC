@@ -60,10 +60,14 @@ extern I64 I386ModulePackRaw(U8 *output,I64 capacity,U8 *code,I64 code_bytes,
   CI386ModuleRecord *records,I64 record_count,U8 *strings,I64 string_bytes);
 U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
 extern Bool I386MathBind(CHashTable *symbols);
+extern U0 I386FrontendUndefined();
 Bool I386CompilerRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
 {
-  if(index<0 || index>3 || !binding) return FALSE;
-  if(index==3) {
+  if(index<0 || index>4 || !binding) return FALSE;
+  if(index==4) {
+    binding->name="UndefinedExtern";
+    binding->address=(&I386FrontendUndefined+0)(U64);
+  } else if(index==3) {
     binding->name="I386ModuleValidParts";
     binding->address=(&I386ModuleValidParts+0)(U64);
   } else if(index==2) {

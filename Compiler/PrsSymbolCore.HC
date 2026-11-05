@@ -111,6 +111,7 @@ CHashFun *PrsFunJoinCore(CPrsSymbolServices *services,CCmpCtrl *cc,CHashClass *t
     if (name) //if not fun_ptr
       (*expression->hash_add)(expression->context,tmpf,cc->htc.glbl_hash_table);
   }
+  if (services->header)(*services->header)(services->context,tmpf,FALSE);
   if (fsp_flags&FSF_PUBLIC)
     Bts(&tmpf->type,HTf_PUBLIC);
   else
@@ -140,5 +141,6 @@ CHashFun *PrsFunJoinCore(CPrsSymbolServices *services,CCmpCtrl *cc,CHashClass *t
     }
     (*services->members_delete)(services->context,header_lst);
   }
+  if (services->header)(*services->header)(services->context,tmpf,TRUE);
   return tmpf;
 }

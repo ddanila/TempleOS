@@ -23,6 +23,7 @@ U0 PrsHostSymbolServices(CPrsSymbolServices *services,CPrsDeclarationServices *d
   services->used_mask=REGG_CLOBBERED+REGG_SAVED+REGG_STK_TMP;
   services->clobbered_mask=REGG_CLOBBERED+REGG_STK_TMP;
   services->undefined_function=&UndefinedExtern;
+  services->header=0;
   services->class_new=&PrsHostClassNew; services->fun_new=&PrsHostFunNew;
   services->single_find=&PrsHostSingleFind; services->class_members_delete=&PrsHostClassMembersDelete;
   services->members_delete=&PrsHostMembersDelete; services->source=&PrsHostSource;

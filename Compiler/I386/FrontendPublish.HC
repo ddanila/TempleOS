@@ -667,7 +667,7 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
   CMemberLst *member;
   CSymbolRelease visitor;
   I64 i,j;
-  Bool found;
+  Bool found,unresolved;
   visit.transfer=transfer; visit.completion=0;
   visitor.context=&visit; visitor.release=&I386CompletionVisit;
   for(i=0;i<=source->mask;i++)
@@ -687,14 +687,19 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
               !((prior->type&HTT_HELP_FILE) && (entry->type&HTT_HELP_FILE))) goto done;
       if(entry->type&HTT_FUN) {
         fun=entry;
+        declaration=I386FrontendDeclarationFind(frontend,fun);
+        unresolved=Bt(&fun->flags,Cf_EXTERN);
+        if(unresolved && (!frontend->command_publication || cc->flags&CCF_MODULE_SOURCE || !declaration ||
+            !declaration->complete || !declaration->header ||
+            fun->exe_addr!=&I386FrontendUndefined))goto done;
         if(I386HeapSize(heap,fun)!=sizeof(CHashFun)*(PTR_STARS_NUM+1) ||
-            Bt(&fun->flags,Cf_EXTERN) || fun->ext_lst || fun->type&HTF_IMPORT ||
+            fun->ext_lst || fun->type&HTF_IMPORT ||
             !I386ProgramTypeReady(fun->return_class)) goto done;
         found=FALSE;
         for(code=frontend->codes;code;code=code->next) if(code->code==fun->exe_addr) found=TRUE;
         if(Bt(&fun->flags,Ff_INTERNAL)) {
           if(found || binding || !I386IntrinsicValid(fun)) goto done;
-        } else if(!found && !binding) goto done;
+        } else if(!found && !binding && !unresolved) goto done;
       } else if(entry->type&HTT_CLASS) {
         if(I386HeapSize(heap,entry)!=sizeof(CHashClass)*(PTR_STARS_NUM+1) ||
             !I386ProgramClassReady(entry)) goto done;

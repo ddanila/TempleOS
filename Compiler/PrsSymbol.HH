@@ -9,6 +9,7 @@ class CPrsSymbolServices {
   CPrsDeclarationServices *declarations;
   I64 used_mask,clobbered_mask;
   U8 *undefined_function;
+  U0 (*header)(U8 *context,CHashFun *function,Bool complete);
   CHashClass *(*class_new)(U8 *context);
   CHashFun *(*fun_new)(U8 *context);
   CHash *(*single_find)(U8 *context,U8 *name,CHashTable *table,I64 mask);

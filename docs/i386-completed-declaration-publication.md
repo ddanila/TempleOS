@@ -285,3 +285,35 @@ exception is UndefExt rather than Compiler. The first candidate diagnostic
 failure and exact packaged probe source are frozen in
 `build/i386-persistent-header-diagnostic-v1`. Only that case's exception oracle
 changes; its unwind, heap, task lifetime and interrupt checks are retained.
+
+
+## Native failed-header checkpoint
+
+The header candidate passes all ten original-derived cases / 55 commands at
+8 MiB KVM 486,-fpu with live WinMgr, exact pixels and unchanged input hashes in
+`build/i386-persistent-header-native-v1/result.json`. Both malformed headers
+remain present with Cf_EXTERN, integer default 7, string default AZ and the
+actual exported UndefinedExtern address. Both real unresolved calls preserve
+answer 23, emit a saved-document diagnostic and throw UndefExt. Completion of
+argument parsing is recorded independently from body completion. Terminal
+recovery retires the failed body view only for a validated completed signature;
+error counts and whole-graph ownership checks remain in force. Module
+transactions continue to reject unresolved publication.
+
+Both original bootstrap generations, cross-build, 386 audit and the 1,362-file
+source audit pass for `build/i386-persistent-header-v3`. The v2 ten-case image
+and v3 have identical production modules; only CompilerProbe.t32m changes to
+require UndefExt in statement case 11, as recorded in
+`build/i386-persistent-header-module-identity-v1.json`. The next diagnostic run
+gets through that statement check and stops at input case 12, whose legacy
+catch/persistence oracle assumes Compiler and rollback for a prototype call.
+That failed run and exact packaged source are frozen. Input case reconciliation,
+extern descriptor reuse, retained caller patching, and complete diagnostic
+cleanup remain unqualified. The sixteen-case native binding run explicitly
+fails first-definition descriptor identity at command 17; it is not a pass.
+
+Separately, the earlier completed-compound candidate passes the full retained
+146-command compiler group with exact pixels, independent pointer validation
+and unchanged inputs in `build/i386-frontier-compiler-regression-v1/result.json`.
+It predates the new extern semantics and does not qualify the header candidate's
+full command group. C4, all inventory qualification and C1–C5 remain open.

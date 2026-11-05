@@ -165,7 +165,7 @@ Bool I386CommandInput(CI386CommandInput *input)
       //An interrupted output can contain literal pools referenced by a global.
       //Retain its registered payload with the graph instead of freeing it here.
       code=0;
-      if(I386CmpCtrlRetireCode(heap,cc) &&
+      if(I386CmpCtrlRetireCode(heap,cc) && I386FrontendRetireFunction(state) &&
           !I386FrontendPublishTerminal(heap,cc,&state->symbols))
         KernelLog("TERMINAL publication rejected\n");
     } catch {

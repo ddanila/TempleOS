@@ -9,7 +9,7 @@ U0 ProbeStatements(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CHashFun *main_fun;
   CIntermediateCode *node;
   U8 *source,*deep;
-  I64 kind,expected,actual,accepted,i,length,source_flags,count;
+  I64 kind,expected,actual,accepted,i,length,source_flags,count,expected_exception;
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   U32 flags=GetRFlags;
   I64 (*entry)();
@@ -82,7 +82,9 @@ U0 ProbeStatements(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       if(actual!=expected) KernelStop;
       accepted=1;
     } catch {
-      if(!((kind==10 || kind==11 || kind==13 || kind==14 || kind==18 || kind==19 || kind==25 || kind==29 || kind==30 || kind==31 || kind==33)) || task->except_ch!='Compiler') {
+      expected_exception='Compiler';
+      if(kind==11)expected_exception='UndefExt';
+      if(!((kind==10 || kind==11 || kind==13 || kind==14 || kind==18 || kind==19 || kind==25 || kind==29 || kind==30 || kind==31 || kind==33)) || task->except_ch!=expected_exception) {
         KernelLog("STATEMENT EXCEPTION "); KernelHex(kind); KernelLog(" "); KernelHex(task->except_ch); KernelLog("\n");
         KernelLog("STATEMENT TOKEN "); KernelHex(cc->token); KernelLog(" ERRORS "); KernelHex(cc->error_cnt); KernelLog("\n");
         if(cc->cur_str) { KernelLog("STATEMENT IDENTIFIER "); KernelLog(cc->cur_str); KernelLog("\n"); }

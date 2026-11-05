@@ -15,7 +15,7 @@ extern class CI386FrontendTopBundle;
 class CI386FrontendDeclaration {
   CI386FrontendDeclaration *next;
   CHashSrcSym *entry;
-  Bool complete;
+  Bool complete,header;
 };
 class CI386FrontendCode {
   CI386FrontendCode *next;
@@ -168,7 +168,20 @@ Bool I386FrontendBindFiles(CPrsSymbolServices *symbols,CI386FileServices *files)
   state->files=files;
   return TRUE;
 }
-U0 I386FrontendUndefined() { throw('Compiler',TRUE); }
+U0 I386FrontendUndefined()
+{//The real unresolved-function target: report through this task's active input.
+  CI386Task *task=I386TaskSelf;
+  CI386CmpCtrl *owned;
+  CI386Frontend *state;
+  KernelLog("Undefined Extern\n");
+  if(task && task->last_cc!=&task->next_cc) {
+    owned=task->last_cc;
+    if(owned->signature==I386_COMPILER_CONTROL_MAGIC &&
+        (state=owned->frontend) && state->cc==task->last_cc && state->diagnostic)
+      state->diagnostic(state->diagnostic_context,state->cc,0,"Undefined Extern");
+  }
+  throw('UndefExt');
+}
 U0 I386FrontendReport(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 {
   CI386Frontend *state=context;
@@ -370,6 +383,28 @@ U0 I386FrontendCompleted(U8 *context,CHashSrcSym *entry)
   record=I386FrontendDeclarationFind(state,entry);
   if(!record)I386FrontendUnavailable(state);
   record->complete=TRUE;
+}
+U0 I386FrontendHeader(U8 *context,CHashFun *function,Bool complete)
+{
+  CI386Frontend *state=context;
+  CI386FrontendDeclaration *record;
+  if(!state->command_publication || !function->str)return;
+  record=I386FrontendDeclarationFind(state,function);
+  if(!record)I386FrontendUnavailable(state);
+  record->header=complete;record->complete=complete;
+}
+Bool I386FrontendRetireFunction(CI386Frontend *state)
+{//A failed body may leave its fully parsed extern signature in the hash table.
+  CCmpCtrl *cc=state->cc;
+  CHashFun *fun=cc->htc.fun;
+  CI386FrontendDeclaration *record;
+  if(!fun)return TRUE;
+  record=I386FrontendDeclarationFind(state,fun);
+  if(!record || !record->header || !record->complete ||
+      !Bt(&fun->flags,Cf_EXTERN) || fun->exe_addr!=&I386FrontendUndefined)
+    return FALSE;
+  cc->htc.local_var_lst=cc->htc.fun=cc->fun_lex_file=0;
+  return TRUE;
 }
 Bool I386FrontendDeclarationsReady(CI386Frontend *state)
 {
@@ -587,7 +622,8 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
         call->fun.ie_lst=0; call->fun.ext_lst=0;
         call->target=fun->exe_addr; call->recursive=fun==cc->htc.fun;
         call->original=fun;
-        call->unresolved=!call->recursive && Bt(&fun->flags,Cf_EXTERN) && !(fun->type&HTF_IMPORT);
+        call->unresolved=!call->recursive && Bt(&fun->flags,Cf_EXTERN) && !(fun->type&HTF_IMPORT) &&
+          I386ParserRecord(state->cc,fun);
         call->next=bound->calls; bound->calls=call;
       }
       stack[depth++]=call;
@@ -1245,7 +1281,7 @@ CI386Frontend *I386FrontendNew(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,C
   d->initialize_static=&I386FrontendInitialize; d->static_init=&I386FrontendStatic;
   d->store_u64=&I386FrontendStore; d->store_u8_at=&I386FrontendStoreAt; d->data_range=&I386FrontendRange;
   d->compile_expression=&I386FrontendCompile; d->execute=&I386FrontendExecute; d->release=&I386FrontendFree;
-  s=&state->symbols; s->context=state; s->declarations=d; s->undefined_function=&I386FrontendUndefined;
+  s=&state->symbols; s->context=state; s->declarations=d; s->undefined_function=&I386FrontendUndefined; s->header=&I386FrontendHeader;
   s->used_mask=REGG_CLOBBERED+REGG_SAVED+REGG_STK_TMP;
   s->clobbered_mask=REGG_CLOBBERED+REGG_STK_TMP;
   s->class_new=&I386FrontendClassNew; s->fun_new=&I386FrontendFunNew; s->single_find=&I386FrontendSingleFind;
