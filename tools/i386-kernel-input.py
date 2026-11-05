@@ -118,6 +118,25 @@ def console_pixels(rows, foreground_cells=None, background_cells=None, underline
     return bytes(pixels)
 
 
+def startup_console_rows(welcome=False):
+    rows=['TempleOS i386','HolyC console','']
+    if welcome:
+        rows+=[' '*33+'TempleOS V5.03','',' '*25+'Public Domain Operating System',
+               '','Help & Index, Quick Start: Cmd line','']
+    return rows+['> ']
+
+
+def startup_console_variants():
+    """Independent complete welcome raster; only the final cursor may blink."""
+    rows=startup_console_rows(welcome=True)
+    colors={(3,col):5 for col in range(33,47)}
+    links={(7,col) for col in (*range(12),*range(14,35))}
+    colors.update({cell:4 for cell in links})
+    cursor={(16+dx,72+dy):0 for dy in range(8) for dx in range(8)}
+    return {'cursor-off':console_pixels(rows,colors,underline_cells=links),
+            'cursor-on':console_pixels(rows,colors,underline_cells=links,pixel_colors=cursor)}
+
+
 GROUPS=('keyboard','mouse','sound','windows','graphics','date','math','definitions','text-frames',
         'compiler','breaks','documents','file-navigation','document-editing','document-resources','document-latency',
         'document-sprites','document-compatibility','help','text')
@@ -326,10 +345,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             #Normal interactive boot must not pay for the diagnostic probe suite.
             wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=1200 if diagnostics else startup_timeout)
             startup_seconds=time.monotonic()-startup_started
-            heading=['TempleOS i386','HolyC console','']
-            if welcome:
-                heading+=[' '*33+'TempleOS V5.03','',' '*25+'Public Domain Operating System',
-                          '','Help & Index, Quick Start: Cmd line','']
+            heading=startup_console_rows(welcome)[:-1]
             status='ok' if startup_check is None else startup_check['status']
             evidence=log.read_text()
             if evidence.count('PUBLIC HEADERS ok\n')!=1:

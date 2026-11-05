@@ -26208,3 +26208,16 @@ compiler/program checks, then fails its static four-line diagnostic VGA oracle
 while startup runs live WinMgr. That comparison and later stages remain open;
 no full-suite or C1-C5 qualification is claimed. See
 docs/i386-startup-registry.md and build/i386-seeded-registry-minimal-v1/failure.json.
+
+The diagnostic runner now waits after native startup completion for the full
+welcome raster and prompt, comparing all 307,200 pixels with explicit text,
+original font, palette, heading/link styles and exact cursor-on/off variants.
+Normal 8 MiB TCG and full diagnostic runs pass; negative checks reject the old
+transitional/plain frames and single-pixel mutations. Exact diagnostic disk
+immutability and all 1,361 delivered source matches remain passing; all sixteen
+compiled modules are unchanged. The full gate advances into its normal keyboard
+runner, which independently still expects the old four-line console and times
+out before any commands. Actual pixels match the welcome oracle. That session's
+workload and later stages remain unqualified. See
+docs/i386-diagnostic-welcome.md and build/i386-welcome-gate-minimal-v1/failure.json.
+Complete minimal regressions and C1-C5 remain open.

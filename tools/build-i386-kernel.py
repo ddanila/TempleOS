@@ -2519,7 +2519,7 @@ def main():
         disk=diagnostic_image
         guest=out/'boot'
         diagnostic_started=time.monotonic()
-        run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--ram-mib',str(args.diagnostic_ram_mib),'--out',str(guest),'--timeout','1200')
+        run(sys.executable,'tools/guest-run.py',str(disk),'--i386-disk','--ram-mib',str(args.diagnostic_ram_mib),'--out',str(guest),'--timeout','1200','--native-welcome')
         diagnostics['startup_seconds']=time.monotonic()-diagnostic_started
         log=(guest/'debug.log').read_text()
         result['live_jit_audit']=audit_live_jit(log,out)
@@ -3144,9 +3144,10 @@ def main():
         screen=Image.open(guest/'screen.ppm').convert('RGB')
         if screen.size!=(640,480): raise ValueError('Unexpected VGA resolution')
         console=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))
-        expected=console['console_pixels'](['TempleOS i386','HolyC console','','> '])
-        if screen.tobytes()!=expected:
+        variants=console['startup_console_variants']()
+        if screen.tobytes() not in variants.values():
             raise ValueError('VGA console mismatch')
+        result['diagnostic_welcome']=json.loads((guest/'screen-oracle.json').read_text())
         screen.save(guest/'screen.png')
         keyboard=console['run_input'](normal_disk,out/'input')
         if keyboard['document_access_cases']!=8 or 'PASS original document selection\n' not in (exports/'debug.log').read_text():

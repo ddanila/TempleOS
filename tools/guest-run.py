@@ -2,7 +2,9 @@
 """Run an isolated build/test guest and collect debugcon reports, exports, and display."""
 import argparse
 import json
+import hashlib
 from pathlib import Path
+import runpy
 import socket
 import subprocess
 import tempfile
@@ -20,7 +22,11 @@ def main():
     parser.add_argument('--target-disk', type=Path, help='Attach a separate IDE target disk')
     parser.add_argument('--qmp-stdio', action='store_true',
                         help='Control QEMU over stdio when Unix sockets are unavailable')
+    parser.add_argument('--native-welcome', action='store_true',
+                        help='After native startup DONE, require the complete welcome raster and prompt')
     args = parser.parse_args()
+    if args.native_welcome and not args.i386_disk:
+        parser.error('--native-welcome requires --i386-disk')
     if args.target_disk and args.target_disk.resolve()==args.iso.resolve():
         parser.error('--target-disk must be distinct from the boot image')
     out = args.out.resolve()
@@ -81,6 +87,11 @@ def main():
 
             command('qmp_capabilities')
             consumed = 0
+            ready_deadline=None
+            if args.native_welcome:
+                from PIL import Image
+                helper=Path(__file__).resolve().with_name('i386-kernel-input.py')
+                variants=runpy.run_path(str(helper))['startup_console_variants']()
             while time.monotonic()<deadline and proc.poll() is None:
                 lines = log.read_text(errors='replace').splitlines(keepends=True)
                 for line in lines[consumed:]:
@@ -98,8 +109,27 @@ def main():
                         command('screendump', filename=str(out / 'screen.ppm'))
                         raise RuntimeError(line.rstrip())
                     if line.startswith('DONE '):
-                        command('screendump', filename=str(out / 'screen.ppm'))
+                        if args.native_welcome:
+                            if line!='DONE native kernel startup\n':
+                                raise ValueError('Unexpected completion before native welcome')
+                            ready_deadline=time.monotonic()+30
+                        else:
+                            command('screendump', filename=str(out / 'screen.ppm'))
+                            return
+                if ready_deadline is not None:
+                    command('screendump', filename=str(out / 'screen.ppm'))
+                    with Image.open(out/'screen.ppm') as screen:
+                        pixels=screen.convert('RGB').tobytes()
+                        variant=next((name for name,expected in variants.items()
+                                      if screen.size==(640,480) and pixels==expected),None)
+                    if variant is not None:
+                        (out/'screen-oracle.json').write_text(json.dumps(dict(result='pass',
+                            variant=variant,compared_pixels=640*480,
+                            raster_sha256=hashlib.sha256(pixels).hexdigest(),
+                            scope='Complete welcome frame and prompt after startup; only exact cursor on/off variants'),indent=2)+'\n')
                         return
+                    if time.monotonic()>ready_deadline:
+                        raise TimeoutError('Native startup did not present the complete welcome raster')
                 time.sleep(.2)
             command('screendump', filename=str(out / 'screen.ppm'))
             raise TimeoutError(f'Guest did not finish; inspect {out}')
