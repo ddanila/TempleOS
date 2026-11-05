@@ -339,3 +339,57 @@ teardown and explicit symbol deletion. Its native retarget, child-exit and
 cleanup checks remain pending. Static module packing continues to use its
 separate relocation path; task-local JIT slot references cannot silently be
 serialized as relocatable function addresses.
+
+
+## Indirect-call and lifetime comparisons
+
+The indirect-call candidate (`build/i386-extern-binding-v4`) passes all 69
+binding commands, all 42 live-slot commands, all 55 frontier commands and all
+18 lifecycle commands, with exact VGA pixels and unchanged inputs. Results are
+`build/i386-extern-indirect-binding-native-v1`,
+`build/i386-extern-retarget-native-v1`,
+`build/i386-extern-indirect-frontier-v1` and
+`build/i386-extern-lifecycle-native-v1`. The preceding relative-call candidate
+passed basic binding/frontier checks but returned 97 instead of 101 after slot
+redirection; its unchanged-input red result and observed frame remain in
+`build/i386-extern-retarget-native-red-v1`. The live-slot test distinguishes the
+actual original dispatch contract from a first-definition-only patch.
+
+`tools/test-i386-extern-lifecycle.py --original` passes five child-exit cases in
+`build/i386-extern-lifecycle-reference-v2`. A child compiles against its parent's
+unresolved extern and exits; the parent then has no outstanding usage and can
+define/call the target as 42. Native also requires HashRemDel to retire compiled
+indirect descriptor borrows to the real UndefExt target before deleting the
+descriptor. An old caller must keep throwing UndefExt with answer 23 and an
+actual document diagnostic, including after a same-name replacement. This is
+an explicit cleanup policy for a deleted-descriptor borrow, not equivalence to
+an original dangling dereference. The failed initial experiment preserves raw
+U0 return bits and allocator-dependent reuse observations; neither supplies a
+defined original return-value contract. Native's task-owned borrow records and
+ext_lst bookkeeping still require broader public-metadata/API review.
+
+## Following-include lexer error reference
+
+`tools/test-i386-include-header-reference.py` passes the original seven-field
+record in `build/i386-include-header-reference-v4`: a function body followed by
+an include containing an overlength identifier retains an unresolved header.
+ExePutS consumes the Compiler error, preserves answer 23, and keeps Cf_EXTERN
+and the real UndefinedExtern address. An actual call throws UndefExt and still
+preserves 23. This verifies the lexer-error boundary; it is not an original ATA
+cancellation timing comparison.
+
+Three failed experiments are preserved with frozen fixtures/drivers. Break
+inside #exe is caught by nested compilation and does not model a cancelled
+include read. #assert 0 is a warning and lets the function complete as 99. The
+first overlength-identifier capture checked only HTT_FUN for UndefinedExtern,
+missing the kernel export form; the corrected reader handles HTT_FUN and
+HTT_EXPORT_SYS_SYM, as the existing frontier inspector already does. No expected
+address or routine is substituted.
+
+The diagnostic file-break fixture now requires the actual retained unresolved
+header, removes it explicitly, and keeps its exact heap, lock, lifetime,
+interrupt and subsequent file/input recovery checks. Its fresh native diagnostic
+verification remains pending. The latest cleanup candidate also masks the
+symbol teardown transaction and bounds ownership-list validation by actual heap
+allocation count. It needs its own final native reruns. Full C4 and C1–C5 remain
+open; none of these component results promotes the inventory or a release.
