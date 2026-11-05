@@ -33,7 +33,7 @@ def main():
     report=json.loads((ref/'result.json').read_text());demo=ROOT/'Demo/RegistryDemo.HC'
     if report.get('result')!='pass' or not report.get('inputs_unchanged'):raise ValueError('Reference not qualified')
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
-    if sha(demo)!=report['input_sha256'][str(demo)]:raise ValueError('Demo differs from original reference')
+    if sha(demo)!=report['reference_sha256']['Demo/RegistryDemo.HC']:raise ValueError('Demo differs from original reference')
     paths=[source,demo,ref/'result.json',ref/'guest/demo-record.bin',ref/'guest/demo-registry.HC',
         ref/'guest/demo-output.DD',Path(__file__).resolve(),ROOT/'tools/i386-kernel-input.py',
         ROOT/'tools/build-i386-kernel.py',ROOT/'tools/package-i386-native-image.py',ROOT/'Kernel/FontStd.HC']

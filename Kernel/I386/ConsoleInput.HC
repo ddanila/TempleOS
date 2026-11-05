@@ -1,5 +1,6 @@
 class CConsoleExecutionResult {
-  I64 diagnostics,last_value;
+  I64 diagnostics,last_value,last_raw_type,last_ptr_stars;
+  Bool has_answer;
 };
 extern U0 NativeReportFlush();
 U0 NativeExecutionAnswer(U8 *context,I64 value,CHashClass *type)
@@ -20,15 +21,20 @@ F64 NativeExecutionTime(U8 *context)
 U0 ConsoleAnswer(U8 *context,I64 value,CHashClass *type)
 {
   CConsoleExecutionResult *result=context;
-  result->last_value=value;
+  result->last_value=value;result->last_raw_type=type->raw_type;
+  result->last_ptr_stars=type->ptr_stars_cnt;result->has_answer=TRUE;
+}
+U0 ConsolePresentAnswer(CConsoleExecutionResult *result)
+{
+  I64 value=result->last_value;
   NativeReportFlush;
   //Silent and document-less tasks still receive the value without screen output.
   if(!DocPut || Bt(&Fs->display_flags,DISPLAYf_SILENT))return;
-  if(type->ptr_stars_cnt) {
+  if(result->last_ptr_stars) {
     NativeConsoleWrite("0x"); ConsoleUnsigned(value(U32),16);
-  } else if(type->raw_type==RT_F64) ConsoleFloat(value);
-  else if(type->raw_type==RT_U64 || type->raw_type==RT_U32 ||
-      type->raw_type==RT_U16 || type->raw_type==RT_U8) ConsoleUnsigned(value);
+  } else if(result->last_raw_type==RT_F64) ConsoleFloat(value);
+  else if(result->last_raw_type==RT_U64 || result->last_raw_type==RT_U32 ||
+      result->last_raw_type==RT_U16 || result->last_raw_type==RT_U8) ConsoleUnsigned(value);
   else ConsoleSigned(value);
   NativeConsolePut(10);
 }
@@ -62,7 +68,7 @@ U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
 }
 Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
   CDoc *document=NULL,Bool execute_api=FALSE,CLexHashTableContext *hash_context=NULL,
-  Bool throw_errors=FALSE)
+  Bool throw_errors=FALSE,Bool present_answer=TRUE)
 {
   CI386CommandInput input;
   CI386Task *task=I386TaskSelf;
@@ -78,11 +84,13 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
   if(!scope || scope->task!=task) KernelStop;
   input.heap=scope->heap; input.types=console_config->types;
   input.files=console_config->files; input.includes=console_config->includes;
-  execution.diagnostics=0; execution.last_value=0;
+  execution.diagnostics=0; execution.last_value=0;execution.has_answer=FALSE;
+  execution.last_raw_type=RT_U0;execution.last_ptr_stars=0;
+  if(!execute_api && present_answer)task->new_answer=FALSE;
   input.flags=flags; input.source=source; input.filename=filename; input.context=&execution;
   input.document=document;input.inherit_context=execute_api;
   input.hash_context=hash_context;
-  if(execute_api)input.answer=&NativeExecutionAnswer;
+  if(execute_api || !present_answer)input.answer=&NativeExecutionAnswer;
   else input.answer=&ConsoleAnswer;
   input.execution_time=&NativeExecutionTime;
   input.diagnostic=&ConsoleDiagnostic;
@@ -129,6 +137,13 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
       I386TextWrite(&console_text,"Compilation failed\n");
     }
   }
+  //Like CmdLinePmt, present only the final result after the source completes.
+  //Class metadata was copied by the callback before its control was unwound.
+  if(!execute_api && present_answer && task->new_answer) {
+    if((task->answer_type&~1)==RT_I0)task->answer=0;
+    else if(execution.has_answer)ConsolePresentAnswer(&execution);
+    task->new_answer=FALSE;
+  }
   if(last_value) *last_value=execution.last_value;
   return accepted;
 }
@@ -155,7 +170,7 @@ I64 NativeExeDoc(CDoc *doc,I64 flags,Bool *accepted)
     I386IrqRestore(irq);
   }
   try {
-    okay=ConsoleSourceResult("",doc->filename.name,flags,&value,doc);
+    okay=ConsoleSourceResult("",doc->filename.name,flags,&value,doc,FALSE,NULL,FALSE,FALSE);
   } catch {
     okay=FALSE;
   }
