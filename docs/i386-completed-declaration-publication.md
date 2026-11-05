@@ -72,3 +72,20 @@ forward completion survives the error and remains usable. All input pins remain
 unchanged. The strict native corpus retains the later global redefinition,
 old-caller binding and malformed-function entry checks even though they are
 unreached in this run.
+
+The shadowing candidate advances through class redefinition and the existing
+holder pointer in `build/i386-shadow-declaration-native-v1/result.json`, then
+fails at the first string-global comparison. The subsequent focused hash lookup
+also reports the global absent; a missing declaration, rather than string
+comparison alone, needs repair. The candidate's 1,362 packaged source/document
+files match its dirty source snapshot. This is partial progress, not a passing
+declaration-state corpus.
+
+The public-Break candidate reaches the synthetic pending-break case in
+`build/i386-public-break-publication-native-v1/result.json`, then loses that
+case's function. Extending child-publication unwind alone does not repair it.
+The shared statement parser consumes global declarations and can continue into
+a following statement before returning to the command publication boundary.
+The next candidate adds an explicit return-after-declaration option for native
+commands; function and block parsers retain their existing defaults. Full
+publication and answer regression results are still required for that candidate.
