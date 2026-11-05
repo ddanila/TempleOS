@@ -788,8 +788,8 @@ source audit matches all 1,366 packaged source/doc files
 (`build/i386-parser-heap-reuse-source-audit-v1.json`). The 16 MiB TCG/486 diagnostic also passes both phases, including both parser
 memory probes, 54 input cases, and exact comparison of all 307,200 welcome
 pixels (`build/i386-parser-heap-reuse-diagnostic-v1/verification.json`).
-Normal-image interactive compiler checks and startup qualification remain
-pending; C1–C5 remain open.
+Normal-image interactive compiler checks subsequently pass as recorded below;
+startup qualification and C1–C5 remain open.
 
 The first high-placement launcher attempt preceded completion of the bootstrap
 manifest and stopped with `FileNotFoundError`, before compilation or guest
@@ -805,3 +805,11 @@ this run does not establish an isolated performance improvement or regression.
 A controlled timing comparison remains pending. The source audit was repeated
 against commit `fd95ddda` and still matches all 1,366 delivered files
 (`build/i386-parser-heap-reuse-committed-source-audit-v1.json`).
+
+The normal 8 MiB TCG/486 math/compiler regression completes all 149 commands
+with exact VGA checkpoints and an unchanged source disk
+(`build/i386-parser-heap-reuse-startup-v1/result.json`). It includes the
+independent public symbol/storage/literal pointer oracle and source-module help
+publication/build checks. Startup is 89.032848 seconds; this concurrent run is
+not an isolated performance comparison and does not qualify the 60-second
+budget. It used CPU `486`, separately from the explicit no-FPU smoke above.
