@@ -29,10 +29,17 @@ exact record and prompt-output assertions. Empty pre-prompt documents remain
 required. No intermediate automatic answer is accepted.
 
 The native compiler checks pending breaks at explicit safe checkpoints and
-prints its existing Exception diagnostic. Its task flags begin at 1281, so a
-completed pending-bit assignment is 3329. Those architecture/runtime differences
-are explicit; this is not whole break/API compatibility qualification. The
-migrated compiler oracle retains every old command and Exception expectation,
-adds baseline/locked-state checks, and requires the completed answer as well.
-A dedicated native workflow is running in
-`build/i386-answer-break-oracles-v1/build/i386-answer-break-native-v1`.
+prints its existing Exception diagnostic. A focused raw-flags probe passes with
+initial flags zero, pending answer 2048, and cleared flags afterward in
+`build/i386-answer-break-oracles-v1/build/i386-answer-break-flags-v1/result.json`.
+Thus the 3329 seen after the long compiler prefix is not yet explained. A fixed
+1281 baseline assumption failed a separate native check and is not accepted as
+an oracle. The original result establishes retention of completed answers, not
+the correctness of arbitrary native values.
+
+The dedicated native workflow and full compiler prefix are being rerun with an
+explicit baseline-flags probe. Their sources are isolated in
+`build/i386-answer-break-oracles-v1`; no new break oracle is committed or merged.
+Existing commands and Exception checks remain in that experimental migration.
+Native immediate pending-break handling and diagnostic display remain explicit
+architecture differences; whole break/API compatibility is unqualified.
