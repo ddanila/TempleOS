@@ -168,3 +168,32 @@ independent pointer oracle checks the actual published bad-string pointer and
 then exact VGA formatting. The source-retention audit preserves every original
 submitted source occurrence. This regression retains native unsupported-prototype
 expectations and does not close the separate original-fidelity gaps above.
+
+## Compound statements and incomplete headers
+
+`tools/test-i386-declaration-frontier-reference.py` passes ten actual original
+cases in `build/i386-declaration-frontier-reference-v2/result.json`, with flags
+0 and CCF_CMD_LINE and unchanged inputs. A completed function remains callable
+as 99 after a later throw or parse failure inside the same compound statement;
+a string global inside a throwing compound statement remains readable as 97.
+Each failing source preserves the preceding task answer 23. A malformed function
+retains its actual header: Cf_EXTERN, two arguments, default integer 7 and string
+AZ, and the real UndefinedExtern address. Calling that header uses its defaults,
+prints the actual Undefined Extern diagnostic and throws UndefExt. The fixture
+inspects live metadata and calls the real routine, without replacement stubs.
+
+The first capture's numeric records matched, but it freed exported document
+buffers before the host collected them at DONE. Reuse corrupted the diagnostic
+captures. Its frozen fixture and failed result remain preserved; v2 keeps export
+payloads and borrowed failed-control source buffers alive and passes all numeric
+and diagnostic assertions. No diagnostic expectation was weakened.
+
+`tools/test-i386-declaration-frontier.py` retains all ten cases, including saved
+put-document diagnostic routing. Its first native run stopped during setup
+because the inspector needed the canonical SymbolTypes header. The v2 driver
+loads that actual header, then reaches the first compound-source case in
+`build/i386-declaration-frontier-native-v2/result.json`. The custom throw and
+answer 23 survive, but the required function hash lookup returns 0 instead of 1.
+Inputs are unchanged. Later cases remain unreached, not passing. This is the
+next ownership/publication requirement beyond the measured top-level repair;
+complete C4 and C1–C5 remain open.
