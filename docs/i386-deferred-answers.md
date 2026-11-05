@@ -76,9 +76,10 @@ an isolated checkout without depending on its absolute host path.
 ## Integration and remaining gates
 
 The original complete default TCG run remains live in the main worktree at
-`build/i386-welcome-keyboard-gate-minimal-v1`. A full diagnostic run for the new
-runtime is also live at `build/i386-deferred-answers-gate-v1` inside the isolated
-worktree. Their terminal outcomes are still required. Existing console oracles
+`build/i386-welcome-keyboard-gate-minimal-v1`. The earlier experimental full run at
+`build/i386-answer-isolated-v1/build/i386-deferred-answers-gate-v1` stopped at
+the obsolete Holder per-expression output oracle. Its terminal `failure.json`
+pins the image, helper, checkpoint, screenshots and log. It is not a full pass. Existing console oracles
 that expected intermediate automatic answers must be reconciled with the
 original observations while retaining their commands and explicit-output
 checks. The repeated-initial-prompt host color bug remains separate.
@@ -110,3 +111,31 @@ final presentation must use the task's pending answer rather than the last
 outer callback. The expanded native driver includes all three initializer
 cases and checks their values and consumed flags. Native qualification of this
 extension is pending.
+
+## Revised experimental state and verification
+
+Fork commit `82312957` on `experiment/i386-deferred-console-answers` fixes the
+initializer gap in the current development worktree
+`build/i386-answer-oracles-v1`. Presentation reads the task pending answer. Its
+owned private compiler scope records pointer depth; the public task layout and
+service ABI are unchanged. The private scope epoch/size changes, so the image
+rebuilds all modules together. No class descriptor survives its control unwind.
+
+The earlier prototype fails the new integer initializer, displaying stale 0x0
+instead of 22 (`build/i386-answer-state-old-red-v1/result.json`). The revised
+image passes all 34 commands in `build/i386-answer-state-native-v1/result.json`,
+including integer/F64/pointer initializer values, consumed flags, exact pixels
+and filesystem checks at 8 MiB KVM 486 without FPU and live WinMgr. Inputs remain
+unchanged. It also passes the native task-symbol ownership test and the
+1,361-file delivered-source audit. Two original bootstrap rebuild generations
+pass; these are not native C5 generations. Paths in this paragraph are relative
+to the current development worktree.
+
+The migrated console oracles retain every old literal command and add eleven
+explicit field checks where intermediate assignment output used to check state.
+Explicit directory/report output and the original DocExe initializer expectation
+remain intact. Focused compiler/document runs and a fresh complete diagnostic
+gate (`build/i386-answer-state-gate-v1`) are running against the frozen revised
+inputs. The first-prompt color fix is on that same experimental branch and has
+its own passing physical-keyboard regression. Integration and full C1-C5
+qualification remain pending.

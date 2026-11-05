@@ -8151,11 +8151,12 @@
         "tool": "tools/test-i386-answer-prompt-reference.py",
         "native_tool": "tools/test-i386-answer-prompt.py",
         "checks": [
-          "Six original cases capture actual task answer/type/new_answer and documents around the actual prompt routine; real server readiness before the error case",
+          "Nine original cases capture actual task answer/type/new_answer and documents around the actual prompt routine; real server readiness before the error case",
           "No intermediate automatic output; final 22 at prompt, void clears answer, explicit MARK preserved, nested document values silent",
           "Completed value 41 survives a syntax error and is consumed at the following prompt",
           "Native checks final value, includes, void/flag clearing, nested APIs, declaration-only preservation, scalar/pointer formatting and exact pixels",
-          "Existing native numeric style retained; original ans/timing formatting and whole-file compatibility remain unqualified"
+          "Existing native numeric style retained; original ans/timing formatting and whole-file compatibility remain unqualified",
+          "Nested integer/F64/pointer declaration initializers preserve the task pending answer even when outer ExePutS returns zero"
         ]
       },
       "tests": [
@@ -8176,6 +8177,18 @@
           "result": "pass",
           "evidence": "build/i386-answer-isolated-v1/build/i386-answer-prompt-native-v2/result.json",
           "scope": "Isolated fork branch experiment/i386-deferred-console-answers, commit ed4df9d3: all 22 commands at 8 MiB KVM 486,-fpu/live WinMgr, exact pixels, state/error/include/void/nested/declaration/format checks and filesystem audit. Inputs unchanged. Not merged into active long-run branch; complete regressions and original timing/ans format remain open."
+        },
+        {
+          "target": "experimental-callback-prototype",
+          "result": "fail",
+          "evidence": "build/i386-answer-oracles-v1/build/i386-answer-state-old-red-v1/result.json",
+          "scope": "Expanded test fails integer nested initializer: stale 0x0 displayed instead of task answer 22. Unchanged image/runner pins; earlier 22-command pass remains scoped to its corpus."
+        },
+        {
+          "target": "experimental-task-owned-answer-state",
+          "result": "pass",
+          "evidence": "build/i386-answer-oracles-v1/build/i386-answer-state-native-v1/result.json",
+          "scope": "Fork experiment/i386-deferred-console-answers commit 82312957: all 34 commands, including integer/F64/pointer nested initializers and consumed task flags. 8 MiB KVM 486,-fpu/live WinMgr; exact pixels, filesystem audit, unchanged inputs. Not merged into active branch; broader compiler/document/full gates still running."
         }
       ]
     },
