@@ -585,6 +585,8 @@ Bool NativeDirPicker(U8 *directory,U8 **picked,Bool pick_directory=FALSE)
       if(MouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
           next_mouse_packets!=mouse_packets) {
         native_dir_mouse_visible=TRUE;
+        if(mouse_buttons&1 && !(next_mouse_buttons&1))
+          KernelLog("FILE PICK mouse release\n");
         if(next_mouse_buttons&1 && !(mouse_buttons&1) &&
             !new_mode && !rename_mode && !delete_mode && count &&
             32<=next_mouse_y<480) {
