@@ -317,3 +317,25 @@ Separately, the earlier completed-compound candidate passes the full retained
 and unchanged inputs in `build/i386-frontier-compiler-regression-v1/result.json`.
 It predates the new extern semantics and does not qualify the header candidate's
 full command group. C4, all inventory qualification and C1–C5 remain open.
+
+
+## Live extern executable slot
+
+The shared original expression parser emits IC_CALL_INDIRECT2 through
+`&function->exe_addr` for JIT extern calls (static modules use IC_CALL_EXTERN).
+`tools/test-i386-extern-retarget.py --original` verifies this behavior in
+`build/i386-extern-retarget-reference-v1/result.json`, with unchanged inputs.
+Both flag modes create an extern caller, define the target, redirect its live
+executable slot to another compatible function and restore it. The caller
+returns 97, 101, then 97. A later name redefinition returns 107 through new
+lookup while the existing caller keeps 97. The original's raw U0 ExePutS
+return bits are captured but deliberately unconstrained; numeric I64 returns
+are asserted. No function implementation is replaced with a test stub.
+
+A first-definition-only relative-call patch would miss the slot-redirection
+case. The next native candidate therefore emits an actual indirect call
+through the stable descriptor slot, with ownership records retained for caller
+teardown and explicit symbol deletion. Its native retarget, child-exit and
+cleanup checks remain pending. Static module packing continues to use its
+separate relocation path; task-local JIT slot references cannot silently be
+serialized as relocatable function addresses.
