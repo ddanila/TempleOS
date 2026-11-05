@@ -443,3 +443,17 @@ The 26-command declaration-state regression also passes on v7
 (`build/i386-extern-declaration-state-v1/result.json`). Full retained command-oracle migration,
 whole-gate/current-image checks, selective recovery with unfinished siblings,
 partial signatures and all C1–C5 qualification remain open.
+
+### Retained compiler expectations (2026-11-05)
+
+The full current compiler group in `build/i386-extern-full-compiler-v1` stops
+at retained command 69, the unchanged PubDraw declaration. Its old expected
+empty output conflicts with the native unused-argument warning. The frozen
+inputs and failed report are preserved; later commands are not qualified.
+`tools/test-i386-compiler-warning-reference.py` captures the actual original
+warning document for exactly that declaration. The extended original run
+`build/i386-retained-compiler-reference-v2/result.json` also passes the exact
+retained Pending/Broken declaration: both function symbols exist and its
+output document is empty. This supports removing the old unsupported-feature
+expectation without changing the source command. Full diagnostic byte/style
+parity and the complete current compiler group remain open.

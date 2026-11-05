@@ -6,7 +6,9 @@ import json
 from pathlib import Path
 import runpy
 import subprocess
+import struct
 ROOT=Path(__file__).resolve().parents[1]
+PENDING_SOURCE='extern I64 Pending();I64 Broken(){return Pending();}'
 SOURCE='U0 PubDraw(CTask *t,CDC *d){t->user_data=42;}'
 
 
@@ -15,7 +17,7 @@ def main():
  if out.exists():p.error('Use a fresh output directory')
  out.mkdir(parents=True);sha=lambda f:hashlib.sha256(f.read_bytes()).hexdigest()
  paths=[Path(__file__).resolve(),ROOT/'tools/test-i386-timeclock-reference.py',ROOT/'tools/build-iso.py',ROOT/'tools/guest-run.py']
- pins={str(f):sha(f) for f in paths};report=dict(result='fail',input_sha256=pins,source=SOURCE,scope='Actual original ExePutS of unchanged retained compiler PubDraw declaration, saved document unused-argument warning; not native full warning byte/style qualification.')
+ pins={str(f):sha(f) for f in paths};report=dict(result='fail',input_sha256=pins,source=SOURCE,pending_source=PENDING_SOURCE,scope='Actual original ExePutS of unchanged retained compiler PubDraw declaration, saved document unused-argument warning; not native full warning byte/style qualification.')
  try:
   overlay=out/'overlay';overlay.mkdir();report['reference_sha256']=runpy.run_path(str(paths[1]))['restore_reference'](overlay)
   source='''U0 WReport(U8 *s){while(*s)OutU8(0xE9,*s++);}
@@ -25,6 +27,14 @@ CDoc *old=Fs->put_doc,*doc=DocNew;Fs->put_doc=doc;
 '''
   source+='ExePutS('+json.dumps(SOURCE)+');\n'
   source+='''I64 size;U8 *text=DocSave(doc,&size),*notice=MStrPrint("EXPORT warning.DD %X %X\\n",text,size);WReport(notice);
+Fs->put_doc=old;
+CDoc *pending=DocNew;Fs->put_doc=pending;
+'''
+  source+='ExePutS('+json.dumps(PENDING_SOURCE)+');\n'
+  source+='''
+I64 status[3];status[0]=HashFind("Pending",Fs->hash_table,HTT_FUN)!=NULL;status[1]=HashFind("Broken",Fs->hash_table,HTT_FUN)!=NULL;
+text=DocSave(pending,&size);status[2]=size;
+notice=MStrPrint("EXPORT pending.bin %X %X\\n",status,24);WReport(notice);
 Fs->put_doc=old;WReport("DONE original unused argument\\n");
 '''
   (overlay/'Once.HC').write_text(source)
@@ -32,6 +42,9 @@ Fs->put_doc=old;WReport("DONE original unused argument\\n");
   subprocess.run(['python3','tools/guest-run.py',str(out/'original.iso'),'--out',str(out/'guest'),'--qmp-stdio','--timeout','120'],cwd=ROOT,check=True)
   text=(out/'guest/warning.DD').read_bytes()
   if any(part not in text for part in [b'WARNING:',b'Unused var',b"'d' in 'PubDraw'"]):raise ValueError('Missing actual unused argument warning')
+  rows=list(struct.unpack('<3q',(out/'guest/pending.bin').read_bytes()))
+  if rows!=[1,1,0]:raise ValueError('Original pending extern declaration differs')
+  report['pending_records']=rows
   report['diagnostic_sha256']=hashlib.sha256(text).hexdigest();report['result']='pass'
  except Exception as exc:report['error']=str(exc);raise
  finally:
