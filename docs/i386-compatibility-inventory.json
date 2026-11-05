@@ -5611,6 +5611,12 @@
           "result": "fail",
           "evidence": "build/i386-task-settings-native-red-v2/result.json",
           "scope": "Preceding native image rejected at missing SettingsPush before settings cases ran"
+        },
+        {
+          "command": "python3 tools/test-i386-settings-lifecycle.py IMAGE --reference REFERENCE --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-settings-lifecycle-v1/build/i386-settings-lifecycle-native-v2/result.json",
+          "scope": "Complete pinned-original settings bodies; real autocomplete source/dictionary and task initialized in Adam, settings published in Adam, five mask/count rows [255,127,31,63,95293] match fresh original reference. Child console checks nested fields/palette/window/directory, song/animation replacement and TSF_SAME_SONG, remote-task stack, active autocomplete preservation/restart and inactive restoration. 64 MiB KVM 486,-fpu; input pins unchanged, filesystem audit pass. Explicit library loading, not default boot, waveform, failure cleanup or whole qualification."
         }
       ]
     },
@@ -6088,6 +6094,12 @@
           "result": "fail",
           "evidence": "build/i386-budget-current-native-load/result.json",
           "scope": "Original loader stops at missing SettingsPush before installation and account views"
+        },
+        {
+          "command": "python3 tools/test-i386-budget-native-load.py IMAGE --require-bundled --load-settings --accel kvm --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-settings-lifecycle-v1/build/i386-budget-settings-load-v1/result.json",
+          "scope": "Current full-content runtime verifies all unchanged original bundled Budget files and adds no app fixture. Real autocomplete/settings libraries load in Adam, and app compilation passes SettingsPush/AutoComplete but rejects unbound MenuPush at BgtMain.HC line 187. Inputs unchanged. Installation, account views and application workflows do not run."
         }
       ]
     },
@@ -6211,6 +6223,12 @@
           "result": "pass",
           "evidence": "build/i386-c1-budget-storage-current-v1/result.json",
           "scope": "Original Load/Install and constructed BANK-to-RENT transaction; exact data/string table and same-session reopen, unchanged inputs. Not interactive, cold reboot, native behavior or whole application."
+        },
+        {
+          "command": "python3 tools/test-i386-budget-native-load.py IMAGE --require-bundled --load-settings --accel kvm --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-settings-lifecycle-v1/build/i386-budget-settings-load-v1/result.json",
+          "scope": "Current full-content runtime verifies all unchanged original bundled Budget files and adds no app fixture. Real autocomplete/settings libraries load in Adam, and app compilation passes SettingsPush/AutoComplete but rejects unbound MenuPush at BgtMain.HC line 187. Inputs unchanged. Installation, account views and application workflows do not run."
         }
       ]
     },

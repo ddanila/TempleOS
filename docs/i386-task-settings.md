@@ -91,3 +91,40 @@ shared original implementation (mask 31, unchanged inputs;
 `SettingsPush` before executing the fixture
 (`build/i386-task-settings-remote-native-red-v1`). This is not complete
 cross-task, autocomplete, failure-cleanup or settings-stack qualification.
+
+## Real autocomplete lifecycle comparison (2026-11-05)
+
+The complete original settings bodies now execute successfully on the current
+native runtime after loading the real autocomplete and settings libraries.
+`tools/test-i386-settings-lifecycle.py` combines the existing nested-fields,
+song/animation and remote-task contracts with actual dictionary initialization
+and autocomplete preservation/restart/stop checks. It asserts that the shared
+settings core still contains the complete pinned-original bodies. No provider
+replaces AutoComplete, task handling, the palette, or directory operations.
+
+In `build/i386-settings-lifecycle-v1`, the fresh pinned-original reference and
+native v2 both return `[255,127,31,63,95293]` with unchanged inputs. Native v2
+loads both libraries through actual AdamFile jobs; the contracts then execute
+in the child console against inherited public bindings. SettingsPop recreates
+an autocomplete task that was active at push and restores an inactive state by
+killing a replacement task. Existing field, palette, window, directory,
+song/animation, TSF_SAME_SONG and remote-task assertions also pass. The native
+filesystem audit passes at 64 MiB KVM `486,-fpu`. The reference uses the pinned
+original and the previously verified original word-list archive.
+
+The v1 native pass loaded settings directly in the user namespace; v2 adds the
+Adam-publication/child-inheritance check and null-safe failure recording in the
+fixture. Its earlier exact driver/fixture are frozen beside the v1 result.
+Evidence directories `build/i386-settings-lifecycle-reference-v2` and
+`build/i386-settings-lifecycle-native-v2` are inside the settings-lifecycle
+checkout. These runs do not establish automatic boot loading, source-statistics
+initialization, audio waveforms, allocation/break cleanup or whole settings/UI
+qualification. Public bindings become available after explicit real-library
+loading; the default native startup still needs integration.
+
+The Budget load driver now supports already bundled original files and explicit
+real-library loading. With both libraries loaded in Adam, unchanged Budget
+compiles past SettingsPush and AutoComplete, then rejects MenuPush at
+BgtMain.HC line 187 (`build/i386-budget-settings-load-v1/result.json`, inputs
+unchanged). No app fixture is added; installation and application execution do
+not run after that rejection. Menu stack bindings are the next dependency.
