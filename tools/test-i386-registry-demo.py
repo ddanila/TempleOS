@@ -27,6 +27,7 @@ def main():
     parser.add_argument('disk',type=Path)
     parser.add_argument('--reference',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--require-bundled',action='store_true',help='Require the unchanged demo in the source image')
     args=parser.parse_args();source=args.disk.resolve();out=args.out.resolve();ref=args.reference.resolve()
     if out.exists():parser.error('Use a fresh output directory')
     if any(len(c[0])>255 for c in COMMANDS):raise ValueError('Demo command exceeds input buffer')
@@ -42,7 +43,12 @@ def main():
         scope='Actual unchanged RegistryDemo first launch with fresh seeded defaults at 64 MiB; exact displayed values, time bounds, persisted increment/score, fixture identity and filesystem. No second boot or whole registry qualification')
     try:
         pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))
-        report['packaging']=pack['package'](source,working,additions={'/Demo/RegistryDemo.HC':demo.read_bytes()})
+        existing=pack['snapshot'](source.read_bytes())[1].get('/Demo/RegistryDemo.HC')
+        if existing is not None and existing[2]!=demo.read_bytes():raise ValueError('Bundled demo differs from original reference')
+        if args.require_bundled and existing is None:raise ValueError('Source image does not bundle RegistryDemo')
+        report['demo_source']='bundled' if existing is not None else 'added-fixture'
+        report['packaging']=pack['package'](source,working,
+            additions={} if existing is not None else {'/Demo/RegistryDemo.HC':demo.read_bytes()})
         build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
         report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](
             working,out/'qemu',snapshot=False,ram_mib=64,cpu='486,-fpu',accel='kvm',qmp_stdio=True,

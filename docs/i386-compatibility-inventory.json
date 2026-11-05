@@ -11887,7 +11887,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-reference",
-        "description": "Launch unchanged Demo/RegistryDemo.HC against a fresh default registry. Require High Score:1.23000 and Val:1234, then SimpleVal=1235 and a persisted five-decimal score within sampled tS bounds. Original first launch observed; native exact display currently fails from extra automatic answers. Second launch/reboot persistence and failure cleanup remain open."
+        "description": "Launch unchanged Demo/RegistryDemo.HC against fresh defaults, then launch again after actual saved-document reload. Require exact displayed score/value, increments 1235/1236 and persisted five-decimal scores within sampled tS bounds. Original first/repeated launch and experimental native first/reboot/same-boot workflows pass at their recorded scopes; active-primary legacy display failure remains recorded. Customized state, cleanup and complete qualification remain open."
       },
       "oracle": {
         "tool": "tools/test-i386-registry-demo-reference.py",
@@ -11896,8 +11896,10 @@
           "Pinned original source bytes and fresh original RegInit defaults; no substitution of Game or time function",
           "Exact initial high-score/value text in captured original document and native full-frame expectation",
           "Increment to 1235 and five-decimal persisted score bounded by actual execution time",
-          "Native persisted fixture identity, time samples and filesystem audit are required but not reached after current display failure",
-          "No second-boot, repeated-launch, customized registry or error-cleanup qualification"
+          "Native persisted source identity, time samples, filesystem integrity and unrelated-file preservation; older active-runtime display failure remains separate from experimental passes",
+          "Original machine reboot, customized registry, error cleanup and full qualification remain open; native repeated launch/reboot is separately scoped",
+          "Original second launch after saved document reload: exact persisted score/Val:1235 output, increment 1236, new sampled score and trailing DocSave marker",
+          "Native second launch in the same boot after actual registry document reload, preserving old namespace: exact persisted first score/Val:1235 display, increment 1236 and newly sampled/persisted score; no reboot substitution"
         ]
       },
       "tests": [
@@ -11912,6 +11914,49 @@
           "result": "fail",
           "evidence": "build/i386-registry-demo-native-v1/result.json",
           "scope": "64 MiB KVM 486,-fpu/live WinMgr, unchanged demo explicitly packaged on seeded normal image. Include executes and prints the two expected demo lines, but extra automatic 0/1234 answers break the exact displayed-output oracle. Test stops before time/state capture; later persistence/filesystem checks unqualified. Expected output remains original-derived and is not expanded to accept the extra lines. Input pins unchanged."
+        },
+        {
+          "target": "experimental-deferred-console-answers",
+          "result": "pass",
+          "evidence": "build/i386-answer-isolated-v1/build/i386-registry-demo-native-v2/result.json",
+          "scope": "Isolated fork branch experiment/i386-deferred-console-answers, commit ed4df9d3, 64 MiB KVM/live WinMgr. Unchanged demo first launch now matches exact original-derived output, persists 1235 and bounded five-decimal score, preserves fixture and passes filesystem audit with unchanged inputs. Not merged into active branch; second launch/reboot, customized state and cleanup remain unqualified. Earlier native display failure is retained."
+        },
+        {
+          "command": "python3 tools/test-i386-registry-demo-repeat-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-registry-demo-repeat-reference-v3/result.json",
+          "scope": "Pinned original unchanged demo twice with actual saved registry document reload. Exact second output displays first persisted score and Val:1235; second state persists 1236 and score within sampled times. Raw records/documents, unchanged inputs. Original machine reboot and native repeated launch remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-registry-demo-reboot.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-answer-oracles-v1/build/i386-registry-demo-reboot-v2/result.json",
+          "scope": "Runtime 82312957 on fork experimental branch: actual three persisted 64 MiB KVM 486,-fpu/live WinMgr boots. First unchanged launch saves 1235; second displays persisted score/Val:1235 and saves 1236/new sampled score; third reload verifies branch return, score and unchanged saved files. Exact screens, fixture identity, time bounds, filesystem and input pins pass. Original reference covers saved-document reload, not original machine reboot. Full compatibility remains unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-registry-demo-reboot.py IMAGE --require-bundled --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-registry-demo-full-reboot-v1/result.json",
+          "scope": "Combined experimental full-content image, 64 MiB KVM 486,-fpu/live WinMgr, three actual persisted boots. Demo is already shipped and matches original; no fixture addition. Exact output, values 1235/1236, sampled/persisted scores, fixture identity and filesystem pass. Exactly registry plus two test-record files change; 1729 other pre-existing source-image files preserve bytes/attributes/times. Inputs unchanged. All 686 inventory bytes and guest file-access/heap checks pass separately; original reboot and complete OS/application qualification remain open."
+        },
+        {
+          "target": "require-bundled-harness-negative",
+          "result": "fail",
+          "evidence": "build/i386-registry-demo-require-bundled-red-v1/result.json",
+          "scope": "Expected preflight rejection: result file is fail because the minimal image lacks bundled Demo/RegistryDemo.HC; no QEMU guest is launched, input pins unchanged. Proves required-bundled mode does not silently add a fixture; not a runtime pass.",
+          "expected_result": "fail"
+        },
+        {
+          "target": "fixture-mode-preservation-regression",
+          "result": "pass",
+          "evidence": "build/i386-registry-demo-fixture-regression-v3/result.json",
+          "scope": "Stronger driver still passes the default added-fixture path across three 64 MiB KVM boots on combined runtime. Exact output, values/scores, time bounds, source identity, filesystem and input pins pass; 1386 other source-image files preserve bytes/attributes/times. Same-boot re-inclusion/redefinition remains unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-registry-demo-repeat.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-command-policy-registry-warm-v2/result.json",
+          "scope": "Command-publication policy experimental image, 64 MiB KVM 486,-fpu/live WinMgr, one actual boot and 18 exact-pixel commands. Original unchanged demo is added as an explicitly identified fixture. First launch persists 1235; actual DocRead reload replaces the registry document, second include redefines globals/functions, displays the first saved score/Val:1235 and persists 1236/new time-bounded score. Source identity, input pins and filesystem audit pass; exactly fixture, registry and two test records change, while 1387 unrelated source-image files preserve bytes/attributes/times. Not a bundled-image warm pass, original machine reboot, customized/error cleanup, or whole qualification. The v1 run stopped from host disk exhaustion, not an observed native mismatch."
         }
       ]
     },
