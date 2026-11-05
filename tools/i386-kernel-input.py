@@ -137,6 +137,32 @@ def startup_console_variants():
             'cursor-on':console_pixels(rows,colors,underline_cells=links,pixel_colors=cursor)}
 
 
+class FirstPromptRow(str):
+    """A retained first input row; equal text in later rows is ordinary input."""
+
+
+def welcome_styles(rows, colors=None, underlines=None, row_styles=None):
+    default_colors={};underlines=set(underlines or ())
+    input_started=not any(line=='Help & Index, Quick Start: Cmd line' for line in rows)
+    for row,line in enumerate(rows):
+        if line==' '*33+'TempleOS V5.03':
+            default_colors.update({(row,col):5 for col in range(33,47)})
+        if line=='Help & Index, Quick Start: Cmd line':
+            cells={(row,col) for col in (*range(12),*range(14,35))}
+            default_colors.update({cell:4 for cell in cells});underlines.update(cells)
+        if line.startswith('> ') and not input_started:
+            input_started=True
+            default_colors.update({(row,col):2 for col in range(2,len(line))})
+        elif input_started:
+            default_colors.update({(row,col):2 for col in range(len(line))})
+        for start,end,color in (row_styles or {}).get(line,()):
+            default_colors.update({(row,col):color for col in range(start,end)})
+        if isinstance(line,FirstPromptRow):
+            default_colors[(row,0)]=default_colors[(row,1)]=0
+    default_colors.update(colors or {})
+    return default_colors,underlines
+
+
 GROUPS=('keyboard','mouse','sound','windows','graphics','date','math','definitions','text-frames',
         'compiler','breaks','documents','file-navigation','document-editing','document-resources','document-latency',
         'document-sprites','document-compatibility','help','text')
@@ -170,7 +196,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
         raise ValueError('Audio capture must not overwrite a disk image')
     active_group=None
     submitted=0
-    initial_prompt_line=None
+    first_prompt_pending=True
     command_log_start=0
     rejection_prefixes=tuple(startup_check.get('rejection_prefixes', ())) if startup_check else ()
     interaction_latencies={}
@@ -286,32 +312,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             def screen(rows,name,timeout=30,rejected_rows=None,colors=None,backgrounds=None,underlines=None,pixels=None,pointer=None,rejection_message=None,canvas_color=15,welcome_style=None):
                 if welcome_style is None: welcome_style=welcome
                 if welcome_style:
-                    default_colors={};underlines=set(underlines or ())
-                    #After enough lines scroll the welcome heading away, all
-                    #remaining prompt rows retain the document's input color.
-                    input_started=not any(line=='Help & Index, Quick Start: Cmd line' for line in rows)
-                    for row,line in enumerate(rows):
-                        if line==' '*33+'TempleOS V5.03':
-                            default_colors.update({(row,col):5 for col in range(33,47)})
-                        if line=='Help & Index, Quick Start: Cmd line':
-                            cells={(row,col) for col in (*range(12),*range(14,35))}
-                            default_colors.update({cell:4 for cell in cells});underlines.update(cells)
-                        if line.startswith('> ') and not input_started:
-                            input_started=True
-                            default_colors.update({(row,col):2 for col in range(2,len(line))})
-                        elif input_started:
-                            default_colors.update({(row,col):2 for col in range(len(line))})
-                        if startup_check is not None:
-                            for start,end,color in startup_check.get('row_styles',{}).get(line,()):
-                                default_colors.update({(row,col):color for col in range(start,end)})
-                    #The first prompt's two cells are black even after the
-                    #welcome heading has scrolled away. Later prompts are green.
-                    if initial_prompt_line is not None:
-                        for row,line in enumerate(rows):
-                            if line==initial_prompt_line:
-                                default_colors[(row,0)]=default_colors[(row,1)]=0
-                                break
-                    default_colors.update(colors or {});colors=default_colors
+                    colors,underlines=welcome_styles(rows,colors,underlines,
+                        startup_check.get('row_styles',{}) if startup_check is not None else None)
                 expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer,canvas_color)
                 expected_cursor=None
                 if welcome_style and rows and len(rows[-1])<80:
@@ -398,10 +400,13 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
 
             def submit(source, answers, name, hotkey=False, frame=None, timeout=30,
                        interaction=None, typing_colors=None, return_colors=None, return_rows=None):
-                nonlocal rows,submitted,initial_prompt_line,mouse_host_x,mouse_host_y,command_log_start
+                nonlocal rows,submitted,first_prompt_pending,mouse_host_x,mouse_host_y,command_log_start
                 if groups is not None and active_group is not None and active_group not in groups:
                     return
-                if initial_prompt_line is None: initial_prompt_line=typed_rows(source)[0]
+                first_submission=first_prompt_pending
+                first_prompt_pending=False
+                submitted_rows=typed_rows(source)
+                if first_submission: submitted_rows[0]=FirstPromptRow(submitted_rows[0])
                 submitted+=1
                 command_log_start=len(log.read_text())
                 (out/'checkpoint.json').write_text(json.dumps({'group':active_group,'name':name,'source':source})+'\n')
@@ -572,10 +577,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     rejected_rows=(rows[:-1]+typed_rows(source)+mutation['answers']+['> '])[-60:]
                 if return_rows is not None:
                     rows=list(return_rows)[-60:]
+                    if first_submission:
+                        for index,line in enumerate(rows):
+                            if line==submitted_rows[0]:
+                                rows[index]=FirstPromptRow(line);break
                 elif interaction is not None and not interaction.get('preserve_history',welcome):
                     rows=list(interaction.get('return_rows',heading+answers+['> ']))[-60:]
                 else:
-                    rows=(rows[:-1]+typed_rows(source)+answers+['> '])[-60:]
+                    rows=(rows[:-1]+submitted_rows+answers+['> '])[-60:]
                 screen(rows,name,timeout=timeout,rejected_rows=rejected_rows,colors=return_colors,
                        pointer=interaction.get('return_pointer') if interaction is not None else None,
                        rejection_message=rejection_message)
@@ -611,13 +620,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 for name in ('a','b','c','backspace'): press(name)
                 key('shift',True); press('d'); key('shift',False); press('ret')
                 wait_for(lambda:'INPUT LINE abD\n' in log.read_text())
-                initial_prompt_line='> abD'
-                screen(heading+['> abD','Error: Undefined identifier at ','> '],'edited')
+                first_keyboard_row=FirstPromptRow('> abD')
+                first_prompt_pending=False
+                screen(heading+[first_keyboard_row,'Error: Undefined identifier at ','> '],'edited')
                 if not welcome and uploads()!=[60,1,1,1,1,1,1,2]:
                     raise ValueError(f'Unexpected ordinary-edit upload spans: {uploads()}')
                 press('y'); press('z'); key('ctrl',True); press('c'); key('ctrl',False)
                 wait_for(lambda:'INPUT CANCEL\n' in log.read_text())
-                rows=heading+['> abD','Error: Undefined identifier at ','> yz^C','> ']
+                rows=heading+[first_keyboard_row,'Error: Undefined identifier at ','> yz^C','> ']
                 screen(rows,'cancelled')
                 #Cross a physical text row, then backspace across the wrap boundary.
                 for count in range(1,79):
