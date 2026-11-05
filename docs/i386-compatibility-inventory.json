@@ -8083,8 +8083,20 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Actual ExePutS default/CCF_CMD_LINE with a completed function followed by explicit Break, custom throw, later parse error or pending assignment; capture state, lookup real hash entry and call its code after failure. Other declaration kinds, redefinition, forward declarations and complete source/API behavior remain open."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-break-publication-reference.py",
+        "native_tool": "tools/test-i386-break-publication.py",
+        "checks": [
+          "Eight original cases require each completed function to remain callable as 99 after failure; real server readiness, no substituted compiler/exception routines",
+          "Capture real return, propagated custom exception, answer/type/new_answer and pending flag before inspection; default and command-line flags",
+          "Native wrapper catches runtime throw, then later lookup must call the same completed function as 99; exact pixels, no allowance for undefined lookup",
+          "Current native publication failure and missing public Break remain explicit gaps; safe transient cleanup must retain completed code/metadata owners"
+        ]
+      },
       "tests": [
         {
           "target": "original-exefile",
@@ -8127,6 +8139,18 @@
           "result": "pass",
           "evidence": "build/i386-exefile2-puts-exceptions-v1/result.json",
           "scope": "Ordinary ExePutS retains explicit Compiler/Break absorption and custom exception propagation; unchanged inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-break-publication-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-break-publication-reference-v3/result.json",
+          "scope": "Eight pinned original cases, flags 0/CCF_CMD_LINE. Completed functions survive Break, custom runtime throw, later parse error and pending flag; actual hash lookup and real code call return 99. Captured task state/diagnostics, unchanged inputs. No native or physical Ctrl-Alt-C qualification. Final host guard also rejects changed input pins with nonzero exit; native red uses qualified v2 of the same eight cases."
+        },
+        {
+          "command": "python3 tools/test-i386-break-publication.py IMAGE --reference REFERENCE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-break-publication-native-red-v3/result.json",
+          "scope": "Combined experimental image at 8 MiB KVM 486,-fpu/live WinMgr: nested ExePutS custom throw is caught and returns, but next NativePub01 lookup is undefined instead of callable as 99. Exact display fails with unchanged input pins. Later cases unqualified. Earlier v1/v2 expose missing public Break before reaching lookup; snapshots preserved."
         }
       ]
     },
@@ -12025,6 +12049,12 @@
           "evidence": "build/i386-registry-demo-require-bundled-red-v1/result.json",
           "scope": "Expected preflight rejection: result file is fail because the minimal image lacks bundled Demo/RegistryDemo.HC; no QEMU guest is launched, input pins unchanged. Proves required-bundled mode does not silently add a fixture; not a runtime pass.",
           "expected_result": "fail"
+        },
+        {
+          "target": "fixture-mode-preservation-regression",
+          "result": "pass",
+          "evidence": "build/i386-registry-demo-fixture-regression-v3/result.json",
+          "scope": "Stronger driver still passes the default added-fixture path across three 64 MiB KVM boots on combined runtime. Exact output, values/scores, time bounds, source identity, filesystem and input pins pass; 1386 other source-image files preserve bytes/attributes/times. Same-boot re-inclusion/redefinition remains unqualified."
         }
       ]
     },
@@ -16163,7 +16193,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-break-task-answer",
+          "result": "pass",
+          "evidence": "build/i386-answer-break-reference-v2/result.json",
+          "scope": "Actual original Break/BreakUnlock task-answer observations with real prompt; completed 41 survives, pending assignment 2048, flags captured before synthetic-bit restoration. Not full lock/driver/message side-effect qualification."
+        },
+        {
+          "target": "native-public-break-availability",
+          "result": "fail",
+          "evidence": "build/i386-break-publication-native-red-v2/result.json",
+          "scope": "Normal combined experimental image with PublicUser.HH: ExePutS child source declares a function and evaluates 41, then reports Undefined identifier for public Break. No replacement Break is injected. Low-level I386 task-break primitives and hotkey checks do not qualify this missing original interface."
+        }
+      ]
     },
     {
       "path": "Kernel/KExts.HC",

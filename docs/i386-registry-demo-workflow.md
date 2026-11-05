@@ -145,3 +145,11 @@ The required-bundled negative case in
 image with unchanged pins and no guest launch. A default fixture-mode regression
 with the stronger file-preservation checks is running separately. The full
 C1-C5 requirements and active-branch runtime integration remain open.
+
+The strengthened default fixture path also passes in
+`build/i386-registry-demo-fixture-regression-v3/result.json`: all three boots,
+source/value/time/filesystem checks and unchanged input pins pass; the other
+1,386 pre-existing source-image files are preserved. Only the explicitly added
+demo, registry and two record files change. Same-boot re-inclusion of the demo
+is not exercised by these reboot workflows and remains an explicit declaration/
+redefinition dependency alongside the new CMain publication gap.
