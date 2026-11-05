@@ -12004,7 +12004,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-reference",
-        "description": "Launch unchanged Demo/RegistryDemo.HC against a fresh default registry. Require High Score:1.23000 and Val:1234, then SimpleVal=1235 and a persisted five-decimal score within sampled tS bounds. Original first launch observed; native exact display currently fails from extra automatic answers. Second launch/reboot persistence and failure cleanup remain open."
+        "description": "Launch unchanged Demo/RegistryDemo.HC against fresh defaults, then launch again after actual saved-document reload. Require exact displayed score/value, increments 1235/1236 and persisted five-decimal scores within sampled tS bounds. Original first/repeated launch and experimental native first/reboot/same-boot workflows pass at their recorded scopes; active-primary legacy display failure remains recorded. Customized state, cleanup and complete qualification remain open."
       },
       "oracle": {
         "tool": "tools/test-i386-registry-demo-reference.py",
@@ -12015,7 +12015,8 @@
           "Increment to 1235 and five-decimal persisted score bounded by actual execution time",
           "Native persisted source identity, time samples, filesystem integrity and unrelated-file preservation; older active-runtime display failure remains separate from experimental passes",
           "Original machine reboot, customized registry, error cleanup and full qualification remain open; native repeated launch/reboot is separately scoped",
-          "Original second launch after saved document reload: exact persisted score/Val:1235 output, increment 1236, new sampled score and trailing DocSave marker"
+          "Original second launch after saved document reload: exact persisted score/Val:1235 output, increment 1236, new sampled score and trailing DocSave marker",
+          "Native second launch in the same boot after actual registry document reload, preserving old namespace: exact persisted first score/Val:1235 display, increment 1236 and newly sampled/persisted score; no reboot substitution"
         ]
       },
       "tests": [
@@ -12067,6 +12068,12 @@
           "result": "pass",
           "evidence": "build/i386-registry-demo-fixture-regression-v3/result.json",
           "scope": "Stronger driver still passes the default added-fixture path across three 64 MiB KVM boots on combined runtime. Exact output, values/scores, time bounds, source identity, filesystem and input pins pass; 1386 other source-image files preserve bytes/attributes/times. Same-boot re-inclusion/redefinition remains unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-registry-demo-repeat.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-command-policy-registry-warm-v2/result.json",
+          "scope": "Command-publication policy experimental image, 64 MiB KVM 486,-fpu/live WinMgr, one actual boot and 18 exact-pixel commands. Original unchanged demo is added as an explicitly identified fixture. First launch persists 1235; actual DocRead reload replaces the registry document, second include redefines globals/functions, displays the first saved score/Val:1235 and persists 1236/new time-bounded score. Source identity, input pins and filesystem audit pass; exactly fixture, registry and two test records change, while 1387 unrelated source-image files preserve bytes/attributes/times. Not a bundled-image warm pass, original machine reboot, customized/error cleanup, or whole qualification. The v1 run stopped from host disk exhaustion, not an observed native mismatch."
         }
       ]
     },

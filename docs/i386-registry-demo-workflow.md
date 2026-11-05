@@ -153,3 +153,28 @@ source/value/time/filesystem checks and unchanged input pins pass; the other
 demo, registry and two record files change. Same-boot re-inclusion of the demo
 is not exercised by these reboot workflows and remains an explicit declaration/
 redefinition dependency alongside the new CMain publication gap.
+
+## Native second launch in one boot
+
+`tools/test-i386-registry-demo-repeat.py` now executes the original repeated
+workflow without rebooting. After the first unchanged include saves its score,
+the host reads the acknowledged saved bytes to derive the exact second display
+expectation. A public `DocRead` reload replaces the registry document. The second
+include must redefine its globals and Game function in the existing namespace,
+print the first persisted score and `Val:1235`, then save 1236 and a new score
+within its measured execution interval. Test save helpers are also redefined so
+their second invocations bind the second launch's globals, rather than old data.
+
+`build/i386-command-policy-registry-warm-v2/result.json` passes all 18 commands
+at 64 MiB KVM 486 without FPU with live WinMgr, exact pixels and unchanged input
+pins. Its first saved score is 26.34000; the second is 172.00200, both independently
+bounded by their recorded tS samples. The minimal source image lacks the demo,
+so this run explicitly adds its exact original bytes as a fixture. Only that
+addition, Registry.HC.Z and the two test records change; all 1,387 other files
+preserve bytes, attributes and timestamps. The filesystem audit passes.
+
+The earlier v1 guest stopped when host screendump writes exhausted disk space;
+`host-failure.json` retains its checkpoint and log hashes. It is not a native
+compatibility result. The v2 pass closes the measured warm-redefinition gap for
+this workflow. A bundled full-image warm pass, customized-state/error cleanup,
+whole registry compatibility and C1–C5 qualification remain open.
