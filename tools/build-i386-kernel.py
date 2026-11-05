@@ -127,7 +127,7 @@ def verify_normal_without_probe(disk,volume,out,console):
         offset=volume['files'][f'/Modules/I386/{name}.t32m']['block']*512
         image[offset]^=0xFF
     candidate=work/'kernel.img'; candidate.write_bytes(image)
-    result=console['run_input'](candidate,work,startup_check={
+    result=console['run_input'](candidate,work,welcome=True,startup_check={
         'status':'ok','answers':[],'commands':[('6*7;',['42']),('Fs->code_heap!=0;',['1'])]})
     if candidate.read_bytes()!=image: raise ValueError('Normal probe-independence test changed disk')
     return result
