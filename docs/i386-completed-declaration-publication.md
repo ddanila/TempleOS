@@ -437,7 +437,9 @@ the 15-command child-shadow test. The 16 MiB TCG diagnostic run
 54 input cases, both public-header and executable-lifetime checks, both actual
 queued-file break/cancellation cases, normal startup and all 307,200 welcome
 pixels. Removing the retained FileBreakPrivate header restores the exact heap
-baseline before further file reads and arithmetic. The last 69-command rerun
-on v7 remains pending at this checkpoint. Full retained command-oracle migration,
+baseline before further file reads and arithmetic. The final v7 rerun passes all 69 binding commands with unchanged inputs and
+exact pixels (`build/i386-extern-indirect-binding-native-v3/result.json`).
+The 26-command declaration-state regression also passes on v7
+(`build/i386-extern-declaration-state-v1/result.json`). Full retained command-oracle migration,
 whole-gate/current-image checks, selective recovery with unfinished siblings,
 partial signatures and all C1–C5 qualification remain open.
