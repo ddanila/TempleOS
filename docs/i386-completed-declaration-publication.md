@@ -457,3 +457,34 @@ retained Pending/Broken declaration: both function symbols exist and its
 output document is empty. This supports removing the old unsupported-feature
 expectation without changing the source command. Full diagnostic byte/style
 parity and the complete current compiler group remain open.
+
+### Same-input redefinition (2026-11-05)
+
+Ordinary interactive publication now allows same-name sibling declarations.
+The graph retains both definitions, and its existing hash move preserves
+newest-first lookup. Earlier compiled callers retain their original function,
+global or class binding. Atomic header and module publication keep their
+existing collision rejection.
+
+`tools/test-i386-batch-redefinition.py` compares twelve original cases in both
+ExePutS flag modes. Functions, globals and classes are redefined in a single
+compound input, including actual malformed closing expressions, a later real
+Delib throw and successful blocks ending with an integer expression. The real
+saved diagnostic document is checked along with exception and answer state.
+The original passes in `build/i386-batch-redefinition-reference-v4`; the native
+candidate passes all 64 commands in `build/i386-batch-redefinition-native-v2`,
+with unchanged inputs, exact frames and 33.530-second KVM startup.
+
+Both original bootstrap generations and the cross-build pass. All 1,364
+packaged source/doc files match (`build/i386-batch-redefinition-source-audit-v1.json`).
+The 26-command declaration-state regression passes with unchanged inputs in
+`build/i386-batch-declaration-state-v1`. The 16 MiB TCG/486 diagnostic passes
+both phases, 54 input cases, both header/lifetime and actual queued-file
+cancellation checks and all welcome pixels in
+`build/i386-batch-redefinition-diagnostic-v1/verification.json`.
+
+The retained compiler oracle now expects the observed unused-argument warning
+for unchanged PubDraw and accepts unchanged Pending/Broken. No command or
+independent pointer oracle is removed. A fresh full compiler run is required.
+Incomplete declarations, their metadata and dependency ownership still need
+original-compatible publication; all C1–C5 milestones remain open.

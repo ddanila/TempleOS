@@ -682,10 +682,14 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
       } else if((!frontend->command_publication || cc->flags&CCF_MODULE_SOURCE) &&
           !(entry->type&HTT_HELP_FILE) &&
           !completion && I386ClassNamePresent(destination,entry->str)) goto done;
-      for(j=0;j<=i;j++)
-        for(prior=source->body[j];prior && prior!=entry;prior=prior->next)
-          if(!StrCmp(prior->str,entry->str) &&
-              !((prior->type&HTT_HELP_FILE) && (entry->type&HTT_HELP_FILE))) goto done;
+      //Ordinary JIT declarations can shadow earlier siblings in this input.
+      //The complete graph retains both definitions and earlier compiled calls;
+      //the final hash move already preserves original newest-first lookup order.
+      if(!frontend->command_publication || cc->flags&CCF_MODULE_SOURCE)
+        for(j=0;j<=i;j++)
+          for(prior=source->body[j];prior && prior!=entry;prior=prior->next)
+            if(!StrCmp(prior->str,entry->str) &&
+                !((prior->type&HTT_HELP_FILE) && (entry->type&HTT_HELP_FILE))) goto done;
       if(entry->type&HTT_FUN) {
         fun=entry;
         declaration=I386FrontendDeclarationFind(frontend,fun);
