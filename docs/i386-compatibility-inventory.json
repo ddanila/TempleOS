@@ -8201,6 +8201,12 @@
           "result": "fail",
           "evidence": "build/i386-answer-oracles-v1/build/i386-answer-state-compiler-v1/failure.json",
           "scope": "Passed compiler commands through 113, then pending-break command 114 displayed native Exception plus completed flags value 3329 while old oracle expected only Exception. Original follow-up confirms completed pending assignment remains an answer. Full compiler result remains fail; later cases not qualified."
+        },
+        {
+          "command": "python3 tools/test-i386-answer-break.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-answer-break-oracles-v1/build/i386-answer-break-native-v2/result.json",
+          "scope": "15 cold native commands at 8 MiB KVM 486,-fpu/live WinMgr: direct break retains completed 41; pending assignment answer 2048, consumed flags, interrupted private publication, locked/unlock behavior and fresh compilation. Exact pixels, unchanged inputs. Four-command cold flags probe passes TCG too. Longer compiler-prefix value 3329 remains unexplained; whole group/API compatibility remains unqualified."
         }
       ]
     },

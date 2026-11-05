@@ -43,3 +43,23 @@ explicit baseline-flags probe. Their sources are isolated in
 Existing commands and Exception checks remain in that experimental migration.
 Native immediate pending-break handling and diagnostic display remain explicit
 architecture differences; whole break/API compatibility is unqualified.
+
+## Scoped native checks
+
+`tools/test-i386-answer-break.py` passes all 15 native commands in
+`build/i386-answer-break-oracles-v1/build/i386-answer-break-native-v2/result.json`,
+with exact pixels and unchanged inputs. These check completed 41 through a
+direct break, pending assignment 2048, consumed flags/answer, interrupted private
+publication, locked pending state and unlock, and fresh compilation afterward.
+It uses 8 MiB KVM 486 without FPU and live WinMgr. The earlier v1 assumed a
+1281 baseline and failed; that assumption was removed rather than accepted. The
+committed driver's report text clarifies that immediate checkpoint/diagnostic
+behavior differs from original; its checked commands are unchanged from v2.
+
+The four-command cold flags probe also passes on TCG in
+`build/i386-answer-break-oracles-v1/build/i386-answer-break-flags-tcg-v1/result.json`.
+Both cold accelerators therefore produce zero initial flags, pending answer
+2048 and consumed flags afterward. The 3329 in the longer compiler session
+remains an open discrepancy. That session is being rerun with the complete
+original command prefix and an additional baseline-flags read; no full-group
+pass or whole break qualification is claimed.
