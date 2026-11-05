@@ -488,3 +488,31 @@ for unchanged PubDraw and accepts unchanged Pending/Broken. No command or
 independent pointer oracle is removed. A fresh full compiler run is required.
 Incomplete declarations, their metadata and dependency ownership still need
 original-compatible publication; all C1–C5 milestones remain open.
+
+### Partial declaration reference (2026-11-05)
+
+`tools/test-i386-partial-declaration.py` now captures eight actual original
+ExePutS cases: an unknown parameter type, an interrupted class member, a failed
+global initializer and an unfinished parameter list, each in both flag modes.
+Every case retains the earlier callable function as 42, the incomplete symbol
+in the public hash table, the prior answer 23 and its actual saved parser
+diagnostic. `build/i386-partial-declaration-reference-v5/result.json` passes
+all eight records with unchanged inputs. The probe also checks stable
+descriptor fields: zero argument count and non-null partial parameter list
+for the unresolved functions, size 8 for the class, and size 8 with allocated
+storage for the global. It does not compare unspecified uninitialized data.
+
+The unchanged native candidate fails the incomplete-function hash lookup in
+`build/i386-partial-declaration-native-v1`; its frozen driver and failure
+classification are preserved. The original metadata experiment v4 entered
+the debugger while comparing a retained parameter name after further compiler
+use. Its actual fault frame is preserved. The passing v5 probe avoids
+dereferencing that retained parameter; safe ownership and later completion
+need separate native checks. No equivalence to original dangling metadata is
+claimed. The earlier v2 observation recorded scalar descriptor fields directly
+after the failed parse and does not establish their later storage lifetime.
+
+A candidate terminal-publication change passes both original bootstrap
+generations, the cross-build, 386 audit and 1,364-file source audit. Native
+partial-declaration and diagnostic runs are pending; this is not completed
+partial-signature or C1–C5 qualification.
