@@ -140,11 +140,30 @@ CMemoryTaskRecord *MemoryTaskFind(CTask *task)
     if(&record->owned->task==task) return record;
   return 0;
 }
+CI386Task *MemoryTaskPublicResolve(CTask *task)
+{//Prove native storage by identity before reading any private task fields.
+  U32 irq=I386IrqSave;
+  CI386Task *node=memory_root,*result=0;
+  CMemoryTaskRecord *record;
+  if(task && node) {
+    do {
+      if(node==task){result=node;break;}
+      node=node->next;
+    } while(node && node!=memory_root);
+    if(!result && (record=MemoryTaskFind(task)))result=&record->owned->task;
+    if(result && (!result->owner || result->finished || result->finishing))result=0;
+  }
+  I386IrqRestore(irq);return result;
+}
+
 U0 MemoryTaskEntry(U8 *data)
 {//A canceled queued task must not enter user code for the first time.
   CMemoryTaskRecord *record=MemoryTaskFind(I386TaskSelf);
   if(!record) KernelStop;
-  if(!(I386TaskSelf->task_flags&(1<<TASKf_KILL_TASK))) (*record->entry)(data);
+  //A queued public Break replaces first entry too. If Shift-Esc makes Break
+  //return, retire this task instead of entering the displaced user function.
+  if(!(I386TaskSelf->task_flags&(1<<TASKf_KILL_TASK)) &&
+      !I386PublicBreakPoll(I386TaskSelf)) (*record->entry)(data);
   Exit;
 }
 Bool MemoryTaskActivate(CTask *public_task,CTask *pred)

@@ -58,7 +58,7 @@ unlock clears the pending bit immediately while preserving suspension; after
 resumption the child catches Break and exits without executing the next user
 statement. Both initially locked and unlocked foreign targets are checked.
 
-The delivered native public interface lacks these APIs. The real fixture fails
+The eb98054d native interface lacks these APIs. The real fixture fails
 to compile its BreakUnlock call in
 `build/i386-public-break-lock-native-red-v1`; its frozen driver and failure
 classification are retained. No native state transition is qualified by that
@@ -67,3 +67,50 @@ delivery to guarded checkpoints and cannot simply stand in for this public
 contract. A native foreign-task delivery must respect its saved-ESP context and
 resource/borrow cleanup rather than replacing only a saved PC. Shift-Esc routing,
 foreign kernel waits and the broader API/application milestones remain open.
+
+### Public native break locks (2026-11-05)
+
+The isolated public-break candidate implements public BreakLock and BreakUnlock
+with default/current and foreign task arguments. Lock operations touch only the
+public writable CTask flags. Unlock clears both lock and pending bits immediately
+and returns the old lock bit; a pending current-task action calls the actual
+NativeBreak synchronously, including its Shift-Esc message path.
+
+For another task, unlock sets the public RIP to Break and queues a private
+action on proven native task storage. The memory provider resolves native
+identity through its private scheduler ring or owned-task records, including
+unqueued tasks; a standalone CTask descriptor never exposes private fields.
+The action runs on the target after native waits/borrows have ended, at public
+yield, generated execution/input checkpoints or guarded task checkpoints.
+Suspension and wait state are preserved. No saved-ESP return frame is rewritten.
+A fresh task processes the action before user entry; if Shift-Esc makes Break
+return, that task exits instead of entering its displaced user function.
+
+The additional pointer is private to CI386Task; public CTask layout is unchanged.
+Memory/Compiler/Console runtime versions advance to 40/84/211. Host validators
+accept the exact new provider modules and reject actual previous 39/83/210
+modules (`build/i386-public-break-lock-v5/interface-version-audit.json`).
+The ordinary no-action polling path returns before IRQ work.
+
+The expanded original lock reference passes 36 observations, including writable
+standalone-descriptor flags and RIP, in
+`build/i386-public-break-lock-reference-v2/result.json`. The original routing
+reference passes 29 observations in
+`build/i386-public-break-routing-reference-v1/result.json`: exact Shift-Esc key
+and scan-code messages for current and suspended foreign tasks, immediate
+flags, preserved IRQ state, and fresh unqueued task replacement without user
+entry. Native lock-v2 and routing-v1 pass the same observations through five
+normal-image commands each, with unchanged inputs and exact frames, at 8 MiB
+KVM/486 without FPU. Startup is 33.730 and 33.722 seconds respectively. The first
+native checker stopped at an unsupported local array initializer; its frozen
+failure is retained and the constants now reside in a global array. Exercised
+actions and expected values are unchanged from the passing original references.
+
+Both original bootstrap generations, cross-build and 386 instruction audit pass.
+All 1,365 delivered source/doc files match. The 16 MiB TCG/486 diagnostic passes
+both phases, 54 input cases, both header/code-lifetime and actual queued-file
+cancellation cases, and the exact welcome frame in
+`build/i386-public-break-lock-diagnostic-v1/verification.json`. These are ordinary
+cancellation regressions, not public-break coverage of every foreign kernel
+wait. Such wait/resource cases, broader desktop/API behavior, minimal-profile
+resource acceptance and all C1–C5 milestones remain open.

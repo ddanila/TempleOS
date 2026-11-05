@@ -40,10 +40,13 @@ public Bool I386TaskBreakUnlock(CI386Task *task)
   }
   I386IrqRestore(flags); return result;
 }
+#include "/Kernel/I386/PublicBreakPollCore.HC"
 public Bool I386TaskBreakPoll()
 {
-  U32 flags=I386IrqSave;
   CI386Task *task=I386TaskSelf;
+  U32 flags;
+  I386PublicBreakPoll(task);
+  flags=I386IrqSave;
   //Inherited child state and code references prevent retirement, not a caught
   //exception on this live task. Busy operations have their own guards below.
   if(!I386TaskBreakLive(task) || task->owner->current!=task ||

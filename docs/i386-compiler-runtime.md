@@ -1,8 +1,9 @@
 # Retained compiler runtime in extended memory
 
-CompilerRuntime now requires ABI 39 (200 bytes) for the public task-stack layout
-and native `GetRSP`. The outer service-table size is unchanged. Header macro
-transactions and lexer directive services remain available. See
+CompilerRuntime currently requires ABI 84. Its service-table layout is unchanged
+from ABI 83; the new version guards the private native task break-action field
+shared with MemoryRuntime 40 and ConsoleRuntime 211. Public task-stack layout,
+native `GetRSP`, header macro transactions and lexer directives remain available. See
 [stack ownership](i386-public-stacks.md) and [native public headers](i386-public-headers.md).
 
 The bootstrap kernel no longer contains the quoted-string/number/character/operator decoders,
@@ -22,12 +23,12 @@ bootstrap modules from all resident modules.
 
 ## Interface and provider lifetime
 
-`CompilerRuntime.HH` defines version 31 of CI386CompilerServices: a U32 version,
+The initial `CompilerRuntime.HH` version 31 defined CI386CompilerServices: a U32 version,
 U32 byte count, and native function pointers for string chunks, numeric tokens, character constants, punctuation, identifier scanning,
 identifier-token completion, owned string tokens, mixed-token dispatch, dispatch
 with an explicit include provider, compiler-control construction/destruction,
 root task-symbol initialization, and active-control entry/leave/drain, bounded unwind, and temporary IR allocation/discard, saved-header operations, instruction retirement, shared branch optimization and pass 0/1/2 constant folding/type analysis owned output buffers and shared function lowering.
-The current structure is 184 bytes on i386; later entries add owned parser
+That initial structure was 184 bytes on i386; later entries add owned parser
 services, class publication and scalar bootstrap as described below. The entry receives caller-owned interface
 storage and its capacity, rejects missing storage or the wrong size, and publishes
 these fields only into that caller's candidate record. It does not retain the

@@ -51,6 +51,7 @@ class CI386Task:CTask
   U0 (*debug_cleanup)(CI386Task *task);
   U0 (*debug_bpt_cleanup)(CI386Task *task);
   U32 inherited_refs; //Subset of lifetime_refs: child heaps/symbols and entry code.
+  U0 (*public_break)(); //Queued public BreakUnlock action; delivered on this task.
 };
 #define I386_WAIT_SLEEP 1
 #define I386_WAIT_JOIN 2

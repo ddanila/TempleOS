@@ -1,3 +1,4 @@
+#include "/Kernel/I386/PublicBreakPollCore.HC"
 //Active controls are owned by this catch/unwind boundary. Persistent child
 //references survive caught exceptions; borrowed contexts must return first.
 Bool I386CommandInputBreakReady(CI386Task *task)
@@ -13,16 +14,19 @@ Bool I386CommandInputBreakReady(CI386Task *task)
 U0 I386ExecutionBreakPoll()
 {//Entered by generated branches, never from IRQ context. The nearest HolyC
 //handler may catch the break; an uncaught break reaches compiler input cleanup.
-  U32 irq=I386IrqSave;
   CI386Task *task=I386TaskSelf;
-  Bool ready=I386CommandInputBreakReady(task);
+  U32 irq;Bool ready;
+  I386PublicBreakPoll(task);
+  irq=I386IrqSave;ready=I386CommandInputBreakReady(task);
   if(ready) task->task_flags&=~(1<<TASKf_PENDING_BREAK);
   I386IrqRestore(irq);
   if(ready) throw('Break',TRUE);
 }
 U0 I386CommandInputCheckpoint(CI386Task *task,Bool *interrupted)
 {
-  Bool ready=I386CommandInputBreakReady(task);
+  Bool ready;
+  I386PublicBreakPoll(task);
+  ready=I386CommandInputBreakReady(task);
   if(ready) *interrupted=TRUE;
   if(ready) throw('Break',TRUE);
 }

@@ -1,5 +1,10 @@
 # Retained native HolyC console
 
+The current interface is version 211, paired with MemoryRuntime 40 and
+CompilerRuntime 84 for the private queued public-break action. Public BreakLock
+and BreakUnlock are exported; see [delivery and verification](i386-pending-break-checkpoints.md).
+The earlier interface descriptions below record its development stages.
+
 `ConsoleRuntime.t32m` owns the VGA text console, original 8×8 font, keyboard line
 editing, command submission, diagnostics and scalar answer rendering. Its ABI 5
 service record is 20 bytes: version/size followed by initialization, display and
