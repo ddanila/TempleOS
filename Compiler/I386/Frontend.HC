@@ -63,7 +63,7 @@ class CI386Frontend {
   CI386FileServices *files;
   CI386LexIncludeService lex_services;
   CHashTable *table,*parent,*defines;
-  Bool published_children;
+  Bool published_children,command_publication;
   CPrsExpressionServices expression;
   CPrsTypeServices types;
   CPrsDeclarationServices declarations;
@@ -1003,7 +1003,9 @@ CHashClass *I386FrontendClass(U8 *context,CCmpCtrl *cc,I64 keyword,I64 flags,Boo
 CHashFun *I386FrontendFun(U8 *context,CCmpCtrl *cc,CHashClass *type,U8 *name,I64 flags)
 {
   CI386Frontend *state=context;
-  if(name && HashFind(name,state->parent,HTT_FUN)) I386FrontendUnavailable(state);
+  //Interactive definitions shadow older code; existing callers keep its owner.
+  if((!state->command_publication || cc->flags&CCF_MODULE_SOURCE) && name &&
+      HashFind(name,state->parent,HTT_FUN)) I386FrontendUnavailable(state);
   return I386ParseFunJoin(state->heap,cc,&state->symbols,type,name,flags);
 }
 U0 I386FrontendClassMembers(U8 *context,CHashClass *type)

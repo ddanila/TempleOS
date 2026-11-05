@@ -524,6 +524,7 @@ Bool PrsStmtCore(CPrsStatementServices *services,CCmpCtrl *cc,I64 try_cnt=0,
   CPrsExpressionServices *expression=declarations->expression;
   CPrsTypeServices *types=declarations->types;
   I64 i,fsp_flags=0;
+  Bool declaration_done=FALSE;
   CHashExport *tmpex;
   CCodeMisc *g_lb;
   U8 *import_name;
@@ -629,6 +630,7 @@ Bool PrsStmtCore(CPrsStatementServices *services,CCmpCtrl *cc,I64 try_cnt=0,
 		      (*expression->report)(expression->context,cc,0,"Expecting type at ");
 		    (*expression->lex)(expression->context,cc);
 		    PrsGlblVarLstCore(globals,cc,PRS0__EXTERN|PRS1_NULL,tmpex,i,fsp_flags);
+		    declaration_done=TRUE;
 		    break;
 		  case KW__IMPORT:
 sm_underscore_import:
@@ -644,6 +646,7 @@ sm_underscore_import:
 		    (*expression->lex)(expression->context,cc);
 		    PrsGlblVarLstCore(globals,cc,PRS0__IMPORT|PRS1_NULL,tmpex,
 			  import_name,fsp_flags);
+		    declaration_done=TRUE;
 		    (*declarations->release)(declarations->context,import_name);
 		    break;
 		  case KW_EXTERN:
@@ -664,6 +667,7 @@ sm_underscore_import:
 		      goto sm_import;
 		    (*expression->lex)(expression->context,cc);
 		    PrsGlblVarLstCore(globals,cc,PRS0_EXTERN|PRS1_NULL,tmpex,0,fsp_flags);
+		    declaration_done=TRUE;
 		    break;
 		  case KW_IMPORT:
 		    if (cc->token!=TK_IDENT || !(tmpex=cc->hash_entry) ||
@@ -672,6 +676,7 @@ sm_underscore_import:
 sm_import:
 		    (*expression->lex)(expression->context,cc);
 		    PrsGlblVarLstCore(globals,cc,PRS0_IMPORT|PRS1_NULL,tmpex,0,fsp_flags);
+		    declaration_done=TRUE;
 		    break;
 		  case KW__INTERN:
 		    i=(*types->integer_expression)(types->context,cc);
@@ -680,6 +685,7 @@ sm_import:
 		      (*expression->report)(expression->context,cc,0,"Expecting type at ");
 		    (*expression->lex)(expression->context,cc);
 		    PrsGlblVarLstCore(globals,cc,PRS0__INTERN|PRS1_NULL,tmpex,i,fsp_flags);
+		    declaration_done=TRUE;
 		    break;
 		end:
 		  fsp_flags&=FSF_ASM;
@@ -768,6 +774,7 @@ sm_import:
 		  tmpex=(*types->class_join)(types->context,cc,i,fsp_flags,FALSE);
 		  if (!cc->htc.fun && cc->token!=';') {
 		    PrsGlblVarLstCore(globals,cc,PRS0_NULL|PRS1_NULL,tmpex,0,fsp_flags);
+		    declaration_done=TRUE;
 		    fsp_flags&=FSF_ASM;
 		    break;
 		  } else {
@@ -787,6 +794,7 @@ sm_not_keyword_afterall:
 		} else {
 		  (*expression->lex)(expression->context,cc);
 		  PrsGlblVarLstCore(globals,cc,PRS0_NULL|PRS1_NULL,tmpex,0,fsp_flags);
+		  declaration_done=TRUE;
 		}
 	      } else {
 		if (tmpex->type & (HTT_OPCODE|HTT_ASM_KEYWORD)) {
@@ -837,6 +845,11 @@ sm_semicolon:
 	  if (cc->token!=',') goto sm_done;
 	} else
 	  goto sm_done; //TK_EOF
+      }
+      if(declaration_done && cmp_flags&CMPF_ONE_DECLARATION) {
+        //Function prototypes leave their terminating semicolon to this parser.
+        if(cc->token==';') (*expression->lex)(expression->context,cc);
+        goto sm_done;
       }
     }
 sm_done:

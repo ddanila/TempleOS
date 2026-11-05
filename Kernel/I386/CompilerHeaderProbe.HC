@@ -65,7 +65,7 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
   CI386TaskSymbols *scope=task->symbol_state;
-  CI386TaskStorage *old_storage=scope->storage,*storage;
+  CI386TaskStorage *old_storage=scope->storage,*storage,*break_storage;
   CHashTable *table=task->hash_table;
   CHash **heads;
   CHash *entry,*initial_null,*initial_true,*initial_false;
@@ -211,7 +211,9 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   KernelLog("PUBLIC EXCEPT HEADERS ");KernelHex(probe->phase);KernelLog("\n");
   input.source="_intern 0x6C I64 MemProbeFlags();";
   if(!ProbePublicMemoryInput(probe,&input,&answer,9)) KernelStop;
-  input.source="I64 MemFailure(){I64 ok=0,saved=MemProbeFlags&512;try{MAlloc(0x800000);}"
+  //The original 8 MiB request can succeed with a larger diagnostic RAM map.
+  //Retain it and free success before forcing exhaustion above every test profile.
+  input.source="I64 MemFailure(){I64 ok=0,saved=MemProbeFlags&512;try{U8 *p=MAlloc(0x800000);Free(p);MAlloc(0x40000000);}"
     "catch{ok=Fs->except_ch=='OutMem' && (MemProbeFlags&512)==saved;Fs->catch_except=1;}return ok;}"
     "MHeapCtrl(&MemFailure)==Fs->code_heap && MSize(&MemFailure)>0;";
   if(!ProbePublicMemoryInput(probe,&input,&answer,10) || answer.value!=1) KernelStop;
@@ -219,6 +221,7 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   if(!ProbePublicMemoryInput(probe,&input,&answer,11) || answer.value!=1) KernelStop;
   for(i=0;i<3;i++) {
     before_used=heap->used; before_allocations=heap->allocations;
+    break_storage=scope->storage;
     break_caught=FALSE;
     input.source="I64 BreakPrivate(){return 99;} Fs->task_flags|=1<<TASKf_PENDING_BREAK;";
     if(!i) task->task_flags|=1<<TASKf_PENDING_BREAK;
@@ -228,8 +231,23 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       task->catch_except=TRUE; break_caught=TRUE;
     }
     if(!break_caught || task->task_flags&(1<<TASKf_PENDING_BREAK) ||
-        task->lifetime_refs!=refs || heap->used!=before_used || heap->allocations!=before_allocations ||
-        ProbeSymbolFind(0,"BreakPrivate",table,HTT_FUN) || (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
+        task->lifetime_refs!=refs || (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
+    entry=ProbeSymbolFind(0,"BreakPrivate",table,HTT_FUN);
+    if(!i) {
+      //A break already pending at entry cannot publish an unparsed declaration.
+      if(entry || scope->storage!=break_storage) KernelStop;
+    } else {
+      //Original ExePutS retains a definition completed before the interrupted stmt.
+      if(!entry) KernelStop;
+      input.source="BreakPrivate;";
+      if(!probe->compiler->input(&input) || input.answers!=1 || answer.value!=99) KernelStop;
+      if(!ProbePublishedRemove(table,entry) || !I386HashDel(heap,entry)) KernelStop;
+      while(scope->storage!=break_storage) {
+        storage=scope->storage; scope->storage=storage->next;
+        if(!I386TaskStorageRelease(heap,storage)) KernelStop;
+      }
+    }
+    if(heap->used!=before_used || heap->allocations!=before_allocations || !I386HeapValid(heap)) KernelStop;
     KernelLog("INPUT BREAK CLEANUP "); KernelHex(probe->phase); KernelLog(" "); KernelHex(i); KernelLog("\n");
   }
   KernelLog("PUBLIC MEMORY CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(12); KernelLog("\n");

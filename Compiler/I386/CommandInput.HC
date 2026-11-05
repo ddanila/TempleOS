@@ -26,7 +26,15 @@ U0 I386CommandInputCheckpoint(CI386Task *task,Bool *interrupted)
   if(ready) *interrupted=TRUE;
   if(ready) throw('Break',TRUE);
 }
-//One submitted buffer: compile/execute, publish, then unwind its private control.
+Bool I386CommandInputHasDeclarations(CI386Frontend *state)
+{
+  I64 i;
+  for(i=0;i<=state->table->mask;i++)
+    if(state->table->body[i])return TRUE;
+  return FALSE;
+}
+//Commit completed statements before parsing or executing a later failing one.
+//The publisher validates and retains the complete ownership graph atomically.
 Bool I386CommandInput(CI386CommandInput *input)
 {
   CI386Task *task=I386TaskSelf;
@@ -78,6 +86,7 @@ Bool I386CommandInput(CI386CommandInput *input)
         symbols=I386FrontendServices(heap,cc,input->types,input->includes);
         if(!symbols) throw('OutMem',TRUE);
         state=symbols->context; state->files=input->files;
+        state->command_publication=!(input->flags&I386_INPUT_ATOMIC_DEFINES);
         if(input->flags&I386_INPUT_ATOMIC_DEFINES &&
             !I386FrontendPrivateDefines(symbols)) throw('OutMem',TRUE);
         state->diagnostic_context=input->context; state->diagnostic=input->diagnostic;
@@ -114,6 +123,13 @@ Bool I386CommandInput(CI386CommandInput *input)
             if(!(cc->flags&CCF_HAS_MISC_DATA)) I386FrontendFree(state,code);
             code=0; //The completed expression is freed or belongs to retained storage.
           }
+          if(!(input->flags&I386_INPUT_ATOMIC_DEFINES) && !state->fixups &&
+              I386CommandInputHasDeclarations(state)) {
+            if(!I386COCDiscard(heap,cc))throw('Compiler',TRUE);
+            //Unresolved declarations can still be completed later in this input.
+            //A rejected transfer leaves the staged graph owned by this control.
+            I386FrontendPublish(heap,cc,symbols);
+          }
         }
         //Saved command views are gone; collect retired optimizer nodes as well.
         I386CommandInputCheckpoint(task,&interrupted);
@@ -141,10 +157,11 @@ Bool I386CommandInput(CI386CommandInput *input)
     task->except_ch=input->exception; task->except_rbp=saved_rbp;
     for(i=0;i<TASK_EXCEPT_CALLERS;i++) task->except_callers[i]=saved_callers[i];
   }
-  //Original ExePutS preserves completed child publication on a later runtime
-  //exception. Unfinished declarations and parser/allocation errors are separate.
-  if(raised && input->inherit_context && state && state->published_children &&
-      input->exception!='Compiler' && input->exception!='OutMem' && input->exception!='Break') {
+  //A completed child graph also survives an uncaught break in its caller.
+  //The same graph validator still rejects unfinished or invalid declarations.
+  if(raised && !(input->flags&I386_INPUT_ATOMIC_DEFINES) &&
+      state && state->published_children &&
+      input->exception!='Compiler' && input->exception!='OutMem') {
     try {
       if(code && !(cc->flags&CCF_HAS_MISC_DATA)) {
         I386FrontendFree(state,code);code=0;

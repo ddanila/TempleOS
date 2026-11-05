@@ -677,7 +677,9 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
       if(!entry->str || !I386ParserRecord(owned,entry) || entry->ie_lst) goto done;
       if(binding) {
         if(I386FrontendResidentCollision(destination,entry->str,binding->export)) goto done;
-      } else if(!(entry->type&HTT_HELP_FILE) && !completion && I386ClassNamePresent(destination,entry->str)) goto done;
+      } else if((!frontend->command_publication || cc->flags&CCF_MODULE_SOURCE) &&
+          !(entry->type&HTT_HELP_FILE) &&
+          !completion && I386ClassNamePresent(destination,entry->str)) goto done;
       for(j=0;j<=i;j++)
         for(prior=source->body[j];prior && prior!=entry;prior=prior->next)
           if(!StrCmp(prior->str,entry->str) &&

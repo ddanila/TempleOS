@@ -40,17 +40,23 @@ exceptions return false after cleanup. Other exceptions, including callback
 exceptions (including code zero), are rethrown after cleanup so the surrounding task policy handles
 them. Input and callback storage must remain live through that cleanup.
 
-Publication of frontend classes/functions/globals is per submitted buffer.
-By default, preprocessor defines use the task define table immediately and can
-persist after a later failure. With `I386_INPUT_ATOMIC_DEFINES`, a private table
-belongs to the control and moves into the task scope only on successful
-publication. Failed inputs reclaim its entries and leave existing guards intact.
-See [native public headers](i386-public-headers.md). A later failed buffer preserves definitions
-from earlier successful buffers. Execution is not transactional: assignments and
-other side effects before a later failure remain. In particular, user code must
-not retain references to unpublished private data across failure. Ordinary collisions are
-rejected; forward classes support transactional completion. General definition
-replacement and dependency-aware unloading remain pending.
+Ordinary source attempts publication after each completed statement, before a
+later statement can fail. The graph validator retains code, literal pools and
+metadata together; an unresolved graph remains private until it can be completed.
+Completed child declarations are also transferred when a later runtime exception
+or break unwinds their caller. Parser and allocation failures still require
+separate handling for any uncommitted partial graph.
+
+By default, preprocessor defines use the task define table immediately. With
+`I386_INPUT_ATOMIC_DEFINES`, publication remains per buffer: the private table
+moves only on success, and failed headers leave existing guards intact. Execution
+side effects are not transactional. Interactive declarations may shadow earlier
+definitions while retaining their storage for existing callers. Module namespace
+collision checks remain in place. Forward-class completion still validates the
+ownership graph before updating its published descriptor. General unresolved
+function publication and dependency-aware unloading remain pending. The original
+comparison corpus, including currently failing cases, is described in
+[completed declaration publication](i386-completed-declaration-publication.md).
 See [program publication](i386-program-publication.md) for storage ownership.
 
 The retained [VGA console](i386-console-runtime.md) now submits keyboard lines to

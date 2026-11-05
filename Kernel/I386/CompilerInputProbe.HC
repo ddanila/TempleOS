@@ -156,8 +156,14 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
         input.exception!='Compiler' || !input.errors)) KernelStop;
     if(kind==5 && (answer.count || input.answers || input.commands!=2)) KernelStop;
     if(kind==6 && input.exception!='InputCb') KernelStop;
-    if(kind==7 && (ProbeSymbolFind(0,"InputTemp",task->hash_table,HTT_GLBL_VAR) ||
-        !answer.diagnostics || input.exception!='Compiler')) KernelStop;
+    if(kind==7) {
+      //Original ExePutS keeps a completed global after a later parse error.
+      entry=ProbeSymbolFind(0,"InputTemp",task->hash_table,HTT_GLBL_VAR);
+      if(!entry || !answer.diagnostics || input.exception!='Compiler') KernelStop;
+      input.source="InputTemp;";
+      if(!probe->compiler->input(&input) || answer.value!=1 || answer.count!=1) KernelStop;
+      if(!ProbePublishedRemove(task->hash_table,entry) || !I386HashDel(heap,entry)) KernelStop;
+    }
     if(kind==8 && (input.commands || input.answers || input.exception ||
         heap->used!=case_used || heap->allocations!=case_allocations ||
         !I386HeapValid(heap))) KernelStop;

@@ -30,7 +30,8 @@ U0 ProbeCodeChild(I64 argument)
   KernelLog("CODE CHILD INPUT "); KernelHex(accepted); KernelLog(" ");
   KernelHex(state->answer); KernelLog(" "); KernelHex(input.commands); KernelLog(" ");
   KernelHex(input.answers); KernelLog(" "); KernelHex(input.exception); KernelLog("\n");
-  if(!accepted || state->answer!=42 || input.commands!=1 ||
+  //The declaration and following call are separate publication boundaries.
+  if(!accepted || state->answer!=42 || input.commands!=2 ||
       input.answers!=1 || task->active_controls || task->last_cc!=&task->next_cc) KernelStop;
   for(i=0;i<=scope->table->mask;i++)
     for(entry=scope->table->body[i];entry;entry=entry->next)

@@ -585,7 +585,7 @@ U8 *I386FrontendCommand(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols
   old_flags=cc->flags; old_pass=cc->pass;
   I386FrontendPush(state,cc); I386FrontendInit(state,cc);
   cc->flags&=~(CCF_AOT_COMPILE|CCF_HAS_MISC_DATA|(1<<CCf_PASS_TRACE_PRESENT));
-  if(PrsStmtCore(&state->statements,cc,0,0,CMPF_PRS_SEMICOLON) &&
+  if(PrsStmtCore(&state->statements,cc,0,0,CMPF_PRS_SEMICOLON|CMPF_ONE_DECLARATION) &&
       !(cc->flags&CCF_MODULE_SOURCE)) I386FrontendUnavailable(state);
   if(cc->coc.coc_head.next!=&cc->coc.coc_head) {
     cc->coc.coc_head.last->ic_flags&=~ICF_RES_NOT_USED;
