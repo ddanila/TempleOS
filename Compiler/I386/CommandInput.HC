@@ -31,13 +31,14 @@ Bool I386CommandInput(CI386CommandInput *input)
 {
   CI386Task *task=I386TaskSelf;
   CI386Heap *heap;
+  CI386TaskSymbols *answer_scope;
   CCmpCtrl *boundary,*cc=0;
   CI386Frontend *state=0;
   CPrsSymbolServices *symbols;
   CI386FrontendCode *output;
   U8 *code=0;
   U8 *context_source,*context_dest;
-  I64 raw_type,value,i,saved_rbp;
+  I64 raw_type,value,i,saved_rbp,pointer_stars;
   U8 *saved_callers[TASK_EXCEPT_CALLERS];
   Bool accepted=FALSE,raised=FALSE,interrupted=FALSE,unwound;
   U32 irq;
@@ -52,6 +53,7 @@ Bool I386CommandInput(CI386CommandInput *input)
       input->files->bytes!=sizeof(CI386FileServices) || !input->files->control_new ||
       input->flags&CCF_AOT_COMPILE ||
       input->document && *input->source) return FALSE;
+  answer_scope=task->symbol_state;
   boundary=task->last_cc;
   try {
     I386CommandInputCheckpoint(task,&interrupted);
@@ -89,10 +91,15 @@ Bool I386CommandInput(CI386CommandInput *input)
           input->commands++;
           if(code) {
             if(!(input->flags&CCF_JUST_LOAD)) {
+              //Capture the category before nested execution can retire metadata.
+              for(output=state->codes;output && output->code!=code;output=output->next);
+              if(!output || !output->value_class) throw('Compiler',TRUE);
+              pointer_stars=output->value_class->ptr_stars_cnt;
               if(input->execution_time)started=(*input->execution_time)(input->context);
               value=state->declarations.execute(state,code);
               if(input->execution_time) {
                 task->answer=value;task->answer_type=raw_type;
+                answer_scope->answer_ptr_stars=pointer_stars;
                 task->answer_time=(*input->execution_time)(input->context)-started;
                 task->new_answer=TRUE;
               }

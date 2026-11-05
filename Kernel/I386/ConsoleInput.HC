@@ -1,6 +1,5 @@
 class CConsoleExecutionResult {
-  I64 diagnostics,last_value,last_raw_type,last_ptr_stars;
-  Bool has_answer;
+  I64 diagnostics,last_value;
 };
 extern U0 NativeReportFlush();
 U0 NativeExecutionAnswer(U8 *context,I64 value,CHashClass *type)
@@ -20,21 +19,20 @@ F64 NativeExecutionTime(U8 *context)
 }
 U0 ConsoleAnswer(U8 *context,I64 value,CHashClass *type)
 {
-  CConsoleExecutionResult *result=context;
-  result->last_value=value;result->last_raw_type=type->raw_type;
-  result->last_ptr_stars=type->ptr_stars_cnt;result->has_answer=TRUE;
+  NativeExecutionAnswer(context,value,type);
 }
-U0 ConsolePresentAnswer(CConsoleExecutionResult *result)
+U0 ConsolePresentAnswer(CI386Task *task)
 {
-  I64 value=result->last_value;
+  CI386TaskSymbols *scope=task->symbol_state;
+  I64 value=task->answer,raw_type=task->answer_type;
+  if(!scope || scope->task!=task || scope->signature!=I386_TASK_SYMBOLS_MAGIC)throw('Compiler',TRUE);
   NativeReportFlush;
-  //Silent and document-less tasks still receive the value without screen output.
   if(!DocPut || Bt(&Fs->display_flags,DISPLAYf_SILENT))return;
-  if(result->last_ptr_stars) {
+  if(scope->answer_ptr_stars) {
     NativeConsoleWrite("0x"); ConsoleUnsigned(value(U32),16);
-  } else if(result->last_raw_type==RT_F64) ConsoleFloat(value);
-  else if(result->last_raw_type==RT_U64 || result->last_raw_type==RT_U32 ||
-      result->last_raw_type==RT_U16 || result->last_raw_type==RT_U8) ConsoleUnsigned(value);
+  } else if(raw_type==RT_F64) ConsoleFloat(value);
+  else if(raw_type==RT_U64 || raw_type==RT_U32 || raw_type==RT_U16 || raw_type==RT_U8)
+    ConsoleUnsigned(value);
   else ConsoleSigned(value);
   NativeConsolePut(10);
 }
@@ -84,8 +82,7 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
   if(!scope || scope->task!=task) KernelStop;
   input.heap=scope->heap; input.types=console_config->types;
   input.files=console_config->files; input.includes=console_config->includes;
-  execution.diagnostics=0; execution.last_value=0;execution.has_answer=FALSE;
-  execution.last_raw_type=RT_U0;execution.last_ptr_stars=0;
+  execution.diagnostics=0; execution.last_value=0;
   if(!execute_api && present_answer)task->new_answer=FALSE;
   input.flags=flags; input.source=source; input.filename=filename; input.context=&execution;
   input.document=document;input.inherit_context=execute_api;
@@ -138,10 +135,10 @@ Bool ConsoleSourceResult(U8 *source,U8 *filename,I64 flags,I64 *last_value,
     }
   }
   //Like CmdLinePmt, present only the final result after the source completes.
-  //Class metadata was copied by the callback before its control was unwound.
+  //The task also records answers produced during nested declaration initializers.
   if(!execute_api && present_answer && task->new_answer) {
     if((task->answer_type&~1)==RT_I0)task->answer=0;
-    else if(execution.has_answer)ConsolePresentAnswer(&execution);
+    else ConsolePresentAnswer(task);
     task->new_answer=FALSE;
   }
   if(last_value) *last_value=execution.last_value;

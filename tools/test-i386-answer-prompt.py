@@ -29,6 +29,18 @@ COMMANDS=[
     ('-1;',['-1']),
     ('41;Unknown prompt_bad;',['Error: Undefined identifier at ','41']),
     ('Fs->answer==41 && !Fs->new_answer;',['1']),
+    ('CDoc *PromptInitDoc=DocNew;',[]),
+    ('DocPrint(PromptInitDoc,"11;22;");I64 PromptInitValue=ExeDoc(PromptInitDoc);',['22']),
+    ('PromptInitValue==22 && Fs->answer==22 && !Fs->new_answer;',['1']),
+    ('DocDel(PromptInitDoc);',[]),
+    ('CDoc *PromptInitFloatDoc=DocNew;',[]),
+    ('DocPrint(PromptInitFloatDoc,"1.5+2.25;");F64 PromptInitFloat=ExeDoc(PromptInitFloatDoc)(F64);',['3.75']),
+    ('PromptInitFloat==3.75 && Fs->answer(F64)==3.75 && !Fs->new_answer;',['1']),
+    ('DocDel(PromptInitFloatDoc);',[]),
+    ('CDoc *PromptInitPointerDoc=DocNew;',[]),
+    ('DocPrint(PromptInitPointerDoc,"0(U8 *);");U8 *PromptInitPointer=ExeDoc(PromptInitPointerDoc)(U8 *);',['0x0']),
+    ('PromptInitPointer==0 && Fs->answer==0 && !Fs->new_answer;',['1']),
+    ('DocDel(PromptInitPointerDoc);',[]),
     ('6*7;',['42']),
 ]
 
@@ -41,14 +53,14 @@ def main():
     if out.exists():parser.error('Use a fresh output directory')
     if any(len(c[0])>255 for c in COMMANDS):raise ValueError('Input exceeds native buffer')
     reference=json.loads((ref/'result.json').read_text())
-    if reference.get('result')!='pass' or not reference.get('inputs_unchanged') or len(reference.get('records',[]))!=6:raise ValueError('Invalid original reference')
+    if reference.get('result')!='pass' or not reference.get('inputs_unchanged') or len(reference.get('records',[]))!=9:raise ValueError('Invalid original reference')
     fixture=ROOT/'tests/guest/i386-answer-prompt-reference'
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     for name in ['Values.HC','VoidEnd.HC']:
         keys=[k for k in reference['input_sha256'] if k.endswith('/i386-answer-prompt-reference/'+name)]
         if len(keys)!=1 or sha(fixture/name)!=reference['input_sha256'][keys[0]]:raise ValueError('Fixture differs from original capture')
     paths=[source,ref/'result.json',Path(__file__).resolve(),fixture/'Values.HC',fixture/'VoidEnd.HC',
-        ROOT/'tools/i386-kernel-input.py',ROOT/'tools/build-i386-kernel.py',ROOT/'tools/package-i386-native-image.py',ROOT/'Kernel/FontStd.HC',ROOT/'Kernel/I386/ConsoleInput.HC']
+        ROOT/'tools/i386-kernel-input.py',ROOT/'tools/build-i386-kernel.py',ROOT/'tools/package-i386-native-image.py',ROOT/'Kernel/FontStd.HC']
     pins={str(p):sha(p) for p in paths};out.mkdir(parents=True);working=out/'working.img'
     report=dict(result='fail',input_sha256=pins,commands=COMMANDS,
         scope='Original-derived final-answer/include/void/explicit-output/nested-document semantics, prompt task state, declaration-only preservation and scalar formatting at 8 MiB; native numeric answer format retained, not original timing/header formatting')

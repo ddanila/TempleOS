@@ -40,15 +40,30 @@ The implementation is on the user's fork branch
 created at `build/i386-answer-isolated-v1`. It is not yet merged into the active
 `experiment/i386-cache-merge-progress` branch, whose complete gate remains live.
 
-Console answer callbacks capture the last value and copy its raw type/pointer
-count while the class descriptor is live. Presentation happens after the source
-completes and its control has been unwound. A final void result clears answer;
-new_answer is consumed. No class pointer is retained for display after unwind.
-Nested NativeExeDoc requests execution without automatic answer presentation;
-its explicit output and result return remain active. The low-level compiler's
-per-expression callbacks, command/answer counters and public service ABI remain
-unchanged. Current native numeric formatting is retained; original prompt timing
-and `ans=` formatting are not qualified by this change.
+Console execution defers automatic output until the source completes. Final
+presentation reads the task's pending answer and raw type. Its owned private
+compiler scope also records pointer depth, since the public RT_PTR value aliases
+RT_I64. That private scope has a new epoch and size; all modules are rebuilt
+together. The public task layout and service ABI are unchanged. No class pointer
+is retained after its compiler control is unwound. Nested NativeExeDoc executes
+without presenting automatic answers, while explicit output remains active.
+The low-level per-expression callbacks and counters remain unchanged. Current
+native numeric formatting is retained; original `ans=`/timing formatting is
+still unqualified.
+
+The first callback-only prototype missed declaration initializers that execute
+a nested document: the outer callback can describe an earlier expression while
+the nested document leaves the actual pending task answer. The extended original
+nine-case capture is `build/i386-answer-prompt-reference-v8` in the main worktree.
+The old prototype fails the expanded native test at its integer initializer,
+printing stale `0x0` instead of 22, with unchanged inputs, in
+`build/i386-answer-oracles-v1/build/i386-answer-state-old-red-v1/result.json`.
+The revised task-owned metadata avoids both that stale value and a borrowed
+class descriptor. All 34 expanded native commands pass in
+`build/i386-answer-oracles-v1/build/i386-answer-state-native-v1/result.json`,
+including integer/F64/pointer initializers, exact checkpoint pixels, consumed
+answer flags and filesystem integrity. The image and runner inputs remain
+unchanged; the run uses 8 MiB KVM 486 without FPU and live WinMgr.
 
 Evidence in that worktree:
 
@@ -76,12 +91,15 @@ an isolated checkout without depending on its absolute host path.
 ## Integration and remaining gates
 
 The original complete default TCG run remains live in the main worktree at
-`build/i386-welcome-keyboard-gate-minimal-v1`. A full diagnostic run for the new
-runtime is also live at `build/i386-deferred-answers-gate-v1` inside the isolated
-worktree. Their terminal outcomes are still required. Existing console oracles
+`build/i386-welcome-keyboard-gate-minimal-v1`. The earlier prototype's full
+run at `build/i386-deferred-answers-gate-v1` in the first isolated worktree is
+terminal: it stopped at `Holder h;h.p=0;h.value=42;` because the old oracle
+expected both assignment answers. Its `failure.json` pins the checkpoint, image,
+helper, screenshots and log; this is not a full-suite pass. Existing console oracles
 that expected intermediate automatic answers must be reconciled with the
 original observations while retaining their commands and explicit-output
-checks. The repeated-initial-prompt host color bug remains separate.
+checks. The repeated-initial-prompt host color bug has a separate focused regression
+and fix documented in `docs/i386-prompt-identity.md`.
 
 The active branch contains the new executable reference/native checks and
 records the unchanged-runtime failure; its runtime remains unchanged while the
@@ -89,3 +107,21 @@ long-running gate's inputs are pinned. The experimental branch makes the tested
 implementation reviewable without mutating those inputs. Full minimal
 regressions, complete terminal/API/exception behavior, second-boot demo coverage,
 all application qualifications and C1-C5 remain open.
+
+## Oracle migration and revised build
+
+The current development worktree is `build/i386-answer-oracles-v1`. Its console
+oracles retain every previous literal command and all explicit directory/report
+output. Eleven added state checks preserve field coverage where intermediate
+assignment echoes used to provide it. The original `DocExe` initializer check
+still requires its nested answer. The command-retention audit is
+`build/oracle-migration-retention.json`; a passing static audit does not replace
+running the commands.
+
+The revised runtime passes two original bootstrap generations in
+`build/answer-state-rebuild-v1.log`, builds `build/i386-answer-state-v1`, passes
+the 386 instruction audit and all 1,361 delivered-source comparisons, and passes
+the native task-symbol ownership test in
+`build/answer-state-task-symbols-v1.log`. These are scoped prerequisites, not C5
+native rebuild generations or a complete minimal regression result. Focused
+compiler and document groups are running against this image.

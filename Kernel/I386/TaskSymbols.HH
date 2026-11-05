@@ -3,7 +3,7 @@
 #include "/Kernel/I386/Task.HH"
 #include "/Kernel/I386/HashTable.HH"
 #include "/Kernel/I386/TaskHeaps.HH"
-#define I386_TASK_SYMBOLS_MAGIC 0x54535931
+#define I386_TASK_SYMBOLS_MAGIC 0x54535932
 class CI386StoredAllocation {
   U8 *allocation;
   //NULL means bootstrap storage; otherwise this retained provider owns the bytes.
@@ -21,6 +21,8 @@ class CI386TaskSymbols {
   CHashTable *table;
   U32 signature,children,buckets;
   CI386TaskStorage *storage;
+  //Private answer category: the public RT_PTR value aliases RT_I64.
+  U32 answer_ptr_stars;
 };
 extern Bool I386TaskStorageValid(CI386Heap *heap,CI386TaskStorage *storage);
 extern Bool I386TaskStorageRelease(CI386Heap *heap,CI386TaskStorage *storage);

@@ -35,8 +35,8 @@ def main():
         if (out/'guest/debug.log').read_text().count('ADAM SERVER READY\n')!=1:
             raise ValueError('Original error case ran before real server readiness')
         data=(out/'guest/prompt-state.bin').read_bytes()
-        if len(data)!=288:raise ValueError('Bad prompt state size')
-        records=[list(struct.unpack_from('<6q',data,n*48)) for n in range(6)]
+        if len(data)!=432:raise ValueError('Bad prompt state size')
+        records=[list(struct.unpack_from('<6q',data,n*48)) for n in range(9)]
         for n,row in enumerate(records):
             before=(out/f'guest/before-{n}.DD').read_bytes();after=(out/f'guest/after-{n}.DD').read_bytes()
             if b'ans=' in before or b'ansf=' in before:raise ValueError('Original printed answers before prompt')
@@ -46,8 +46,15 @@ def main():
             if n==5:
                 if row[0]!=0 or row[1]!=41 or row[4]!=41 or b'Undefined' not in before or not re.search(rb'ans=0x[0-9A-F]+=41\n',after):
                     raise ValueError('Pending answer after syntax error differs')
-            elif n<2:
-                if row[0]!=22 or row[1]!=22 or row[4]!=22 or not re.search(rb'ans=0x[0-9A-F]+=22\n',after):
+            elif n==7:
+                #The original decimal/x87 path can be one ULP above exact 3.75.
+                if row[1] not in (0x400E000000000000,0x400E000000000001) or row[4]!=row[1] or not re.search(rb'ansf= +3\.7500000\n',after):
+                    raise ValueError('Nested initializer floating answer differs')
+            elif n==8:
+                if row[1] or row[4] or not re.search(rb'ans=0x[0-9A-F]+=0\n',after):
+                    raise ValueError('Nested initializer pointer answer differs')
+            elif n<2 or n==6:
+                if (n!=6 and row[0]!=22) or row[1]!=22 or row[4]!=22 or not re.search(rb'ans=0x[0-9A-F]+=22\n',after):
                     raise ValueError('Final scalar answer differs')
                 if after.count(b'ans=')!=1:raise ValueError('Prompt printed intermediate answers')
             elif b'ans=' in after or b'ansf=' in after or row[4]:raise ValueError('Void result printed scalar answer')

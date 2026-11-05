@@ -735,7 +735,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
 
                 ('extern class Opaque;class Holder{Opaque *p;I64 value;};', []),
                 ('sizeof(Holder);', ['12']),
-                ('Holder h;h.p=0;h.value=42;', ['0x0','42']),
+                ('Holder h;h.p=0;h.value=42;', ['42']),
+                ('h.p==0&&h.value==42;', ['1']),
                 ('h.value;', ['42']),
                 ('class Opaque{I64 value;};Unknown bad;', ['Error: Undefined identifier at ']),
                 ('sizeof(Opaque);', ['0']),
@@ -929,14 +930,16 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             submit('DocDel(exe_check);', [], 'doc-execute-delete')
             submit('CDoc *original_exe=DocNew("C:/OriginalExe.HC",Fs);U8 *original_src="6*7;";', [], 'original-exedoc-new')
             submit('while(*original_src)DocPutKey(original_exe,*original_src++);', [], 'original-exedoc-source')
-            submit('ExeDoc(original_exe);', ['42','42'], 'original-exedoc-result')
+            submit('ExeDoc(original_exe);', ['42'], 'original-exedoc-result')
             submit('DocDel(original_exe);', [], 'original-exedoc-delete')
             submit('CDoc *fmt_exe=DocNew("C:/Probe/FormattedExe.HC",Fs);', [], 'formatted-exedoc-new')
-            submit('CDocEntry *fmt_color=CAlloc(sizeof(CDocEntry),fmt_exe->mem_task);fmt_color->type=DOCT_FOREGROUND;fmt_color->de_flags=doldoc.dft_de_flags[DOCT_FOREGROUND];', ['15','0'], 'formatted-exedoc-color')
-            submit('fmt_color->attr=4;DocInsEntry(fmt_exe,fmt_color);', ['4'], 'formatted-exedoc-insert')
+            submit('CDocEntry *fmt_color=CAlloc(sizeof(CDocEntry),fmt_exe->mem_task);fmt_color->type=DOCT_FOREGROUND;fmt_color->de_flags=doldoc.dft_de_flags[DOCT_FOREGROUND];', ['0'], 'formatted-exedoc-color')
+            submit('fmt_color->type==DOCT_FOREGROUND&&fmt_color->de_flags==doldoc.dft_de_flags[DOCT_FOREGROUND];', ['1'], 'formatted-exedoc-color-fields')
+            submit('fmt_color->attr=4;DocInsEntry(fmt_exe,fmt_color);', [], 'formatted-exedoc-insert')
+            submit('fmt_color->attr==4;', ['1'], 'formatted-exedoc-insert-fields')
             submit('U8 *fmt_src="6*7;";while(*fmt_src)DocPutKey(fmt_exe,*fmt_src++);', [], 'formatted-exedoc-source')
             submit('U8 *fmt_saved=DocSave(fmt_exe);fmt_saved[0]==36;', ['1'], 'formatted-exedoc-record')
-            submit('Free(fmt_saved);ExeDoc(fmt_exe);', ['42','42'], 'formatted-exedoc-result')
+            submit('Free(fmt_saved);ExeDoc(fmt_exe);', ['42'], 'formatted-exedoc-result')
             submit('DocDel(fmt_exe);', [], 'formatted-exedoc-delete')
             submit('#include "/Kernel/I386/DocBasicEditCheck.HC"', [], 'doc-basic-edit-definition')
             submit('DocBasicEditCheck(&DocPutKey);', ['5'], 'doc-basic-edit-check')
@@ -1262,20 +1265,28 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
               'final_rows':goto_missing_rows})
             submit('DocDel(goto_check);', [], 'doc-goto-delete')
             submit('CDoc *color_check=DocNew("C:/Color.DD",Fs);CDocEntry *color_entry=CAlloc(sizeof(CDocEntry));', [], 'doc-color-new')
-            submit('color_entry->type=DOCT_FOREGROUND;color_entry->attr=4;DocInsEntry(color_check,color_entry);', ['15','4'], 'doc-color-red')
+            submit('color_entry->type=DOCT_FOREGROUND;color_entry->attr=4;DocInsEntry(color_check,color_entry);', [], 'doc-color-red')
+            submit('color_entry->type==DOCT_FOREGROUND&&color_entry->attr==4;', ['1'], 'doc-color-red-fields')
             submit('U8 *color_text="red";while(*color_text)DocPutKey(color_check,*color_text++);', [], 'doc-color-red-text')
-            submit('CDocEntry *color_default=CAlloc(sizeof(CDocEntry));color_default->type=DOCT_FOREGROUND;color_default->attr=DOC_DFT;DocInsEntry(color_check,color_default);', ['15','-2147483648'], 'doc-color-default')
+            submit('CDocEntry *color_default=CAlloc(sizeof(CDocEntry));color_default->type=DOCT_FOREGROUND;color_default->attr=DOC_DFT;DocInsEntry(color_check,color_default);', [], 'doc-color-default')
+            submit('color_default->type==DOCT_FOREGROUND&&color_default->attr==DOC_DFT;', ['1'], 'doc-color-default-fields')
             submit('U8 *color_plain=" plain";while(*color_plain)DocPutKey(color_check,*color_plain++);', [], 'doc-color-default-text')
-            submit('CDocEntry *color_background=CAlloc(sizeof(CDocEntry));color_background->type=DOCT_BACKGROUND;color_background->attr=1;DocInsEntry(color_check,color_background);', ['16','1'], 'doc-color-blue-background')
+            submit('CDocEntry *color_background=CAlloc(sizeof(CDocEntry));color_background->type=DOCT_BACKGROUND;color_background->attr=1;DocInsEntry(color_check,color_background);', [], 'doc-color-blue-background')
+            submit('color_background->type==DOCT_BACKGROUND&&color_background->attr==1;', ['1'], 'doc-color-blue-background-fields')
             submit('U8 *color_blue=" blue";while(*color_blue)DocPutKey(color_check,*color_blue++);', [], 'doc-color-blue-text')
-            submit('CDocEntry *color_background_default=CAlloc(sizeof(CDocEntry));color_background_default->type=DOCT_BACKGROUND;color_background_default->attr=DOC_DFT;DocInsEntry(color_check,color_background_default);', ['16','-2147483648'], 'doc-color-background-default')
+            submit('CDocEntry *color_background_default=CAlloc(sizeof(CDocEntry));color_background_default->type=DOCT_BACKGROUND;color_background_default->attr=DOC_DFT;DocInsEntry(color_check,color_background_default);', [], 'doc-color-background-default')
+            submit('color_background_default->type==DOCT_BACKGROUND&&color_background_default->attr==DOC_DFT;', ['1'], 'doc-color-background-default-fields')
             submit('U8 *color_end=" end";while(*color_end)DocPutKey(color_check,*color_end++);', [], 'doc-color-end-text')
-            submit('CDocEntry *style_invert=CAlloc(sizeof(CDocEntry));style_invert->type=DOCT_INVERT;style_invert->attr=1;DocInsEntry(color_check,style_invert);', ['22','1'], 'doc-style-invert')
+            submit('CDocEntry *style_invert=CAlloc(sizeof(CDocEntry));style_invert->type=DOCT_INVERT;style_invert->attr=1;DocInsEntry(color_check,style_invert);', [], 'doc-style-invert')
+            submit('style_invert->type==DOCT_INVERT&&style_invert->attr==1;', ['1'], 'doc-style-invert-fields')
             submit('U8 *style_invert_text=" inv";while(*style_invert_text)DocPutKey(color_check,*style_invert_text++);', [], 'doc-style-invert-text')
-            submit('CDocEntry *style_normal=CAlloc(sizeof(CDocEntry));style_normal->type=DOCT_INVERT;style_normal->attr=0;DocInsEntry(color_check,style_normal);', ['22','0'], 'doc-style-normal')
-            submit('CDocEntry *style_underline=CAlloc(sizeof(CDocEntry));style_underline->type=DOCT_UNDERLINE;style_underline->attr=1;DocInsEntry(color_check,style_underline);', ['23','1'], 'doc-style-underline')
+            submit('CDocEntry *style_normal=CAlloc(sizeof(CDocEntry));style_normal->type=DOCT_INVERT;style_normal->attr=0;DocInsEntry(color_check,style_normal);', [], 'doc-style-normal')
+            submit('style_normal->type==DOCT_INVERT&&style_normal->attr==0;', ['1'], 'doc-style-normal-fields')
+            submit('CDocEntry *style_underline=CAlloc(sizeof(CDocEntry));style_underline->type=DOCT_UNDERLINE;style_underline->attr=1;DocInsEntry(color_check,style_underline);', [], 'doc-style-underline')
+            submit('style_underline->type==DOCT_UNDERLINE&&style_underline->attr==1;', ['1'], 'doc-style-underline-fields')
             submit('U8 *style_under_text=" under";while(*style_under_text)DocPutKey(color_check,*style_under_text++);', [], 'doc-style-underline-text')
-            submit('CDocEntry *style_plain=CAlloc(sizeof(CDocEntry));style_plain->type=DOCT_UNDERLINE;style_plain->attr=0;DocInsEntry(color_check,style_plain);', ['23','0'], 'doc-style-plain')
+            submit('CDocEntry *style_plain=CAlloc(sizeof(CDocEntry));style_plain->type=DOCT_UNDERLINE;style_plain->attr=0;DocInsEntry(color_check,style_plain);', [], 'doc-style-plain')
+            submit('style_plain->type==DOCT_UNDERLINE&&style_plain->attr==0;', ['1'], 'doc-style-plain-fields')
             submit('U8 *style_done=" done";while(*style_done)DocPutKey(color_check,*style_done++);', [], 'doc-style-done-text')
             color_rows=['TempleOS i386','DolDoc editor','C:/Color.DD','',
                         'red plain blue end inv under done'+bytes([0xDB]).decode('cp437')]
@@ -2149,7 +2160,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         'startup_seconds':startup_seconds,
                     'vga_uploads':len(uploads()), 'vga_text_rows':sum(uploads()),
                     'vga_payload_bytes':sum(uploads())*2560,
-                    'ordinary_edit_payload_bytes':2560,
+                    'ordinary_edit_payload_bytes':None if welcome else 2560,
+                    'vga_transfer_scope':'Raw terminal uploads only; WinMgr frame traffic is not measured by these counters',
                     'interaction_latencies_seconds':interaction_latencies,
                     'checks':['make/break','shift','backspace','cancel','wrap','tab','scroll','native compilation','multirow source input','public allocation API','persistent definitions','error recovery','integer and F64 answers','20 bounded document development cycles with exact task data/code heap recovery'],
                     'vga':'all pixels matched at each checkpoint',
