@@ -795,3 +795,13 @@ The first high-placement launcher attempt preceded completion of the bootstrap
 manifest and stopped with `FileNotFoundError`, before compilation or guest
 execution (`build-parser-heap-high-v1.log`). The subsequent `v2` launcher run
 passed; the failed attempt is retained separately.
+
+The committed candidate's normal 8 MiB TCG `486,-fpu` smoke passes arithmetic,
+public structure sizes, and exact VGA with live WinMgr
+(`build/i386-parser-heap-reuse-nofpu-v1`). Its startup is 89.027938 seconds;
+`build/i386-parser-heap-reuse-startup-budget-v1.json` correctly fails the
+unchanged 60-second limit. Other guest suites were running concurrently, so
+this run does not establish an isolated performance improvement or regression.
+A controlled timing comparison remains pending. The source audit was repeated
+against commit `fd95ddda` and still matches all 1,366 delivered files
+(`build/i386-parser-heap-reuse-committed-source-audit-v1.json`).
