@@ -161,4 +161,10 @@ recovery. The third counted a declaration and call as one parser batch; the
 lifetime probe now requires two commands and keeps all execution/ownership checks.
 The production-module identity report proves that only CompilerProbe.t32m changed
 across these fixture iterations. The full retained compiler-command regression
-with updated original-derived oracles is still running.
+with updated original-derived oracles passes all 146 commands at 8 MiB KVM
+486 without FPU/live WinMgr in
+`build/i386-command-policy-compiler-v1/result.json`, with unchanged inputs. Its
+independent pointer oracle checks the actual published bad-string pointer and
+then exact VGA formatting. The source-retention audit preserves every original
+submitted source occurrence. This regression retains native unsupported-prototype
+expectations and does not close the separate original-fidelity gaps above.

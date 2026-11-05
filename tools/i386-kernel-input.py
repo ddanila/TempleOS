@@ -200,6 +200,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
     command_log_start=0
     rejection_prefixes=tuple(startup_check.get('rejection_prefixes', ())) if startup_check else ()
     interaction_latencies={}
+    pointer_evidence=[]
     audio_emission={}
     mouse_host_x=320
     mouse_host_y=240
@@ -279,6 +280,35 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     reply=qmp_reply()
                     if 'error' in reply: raise RuntimeError(reply)
                     if 'return' in reply: return reply['return']
+
+            def pointer_answer(spec,name,timeout):
+                if set(spec)!={'pointer_symbol','literal'}:
+                    raise ValueError('Unknown dynamic answer oracle')
+                wait_for(lambda:'COMMAND OK\n' in log.read_text()[command_log_start:],timeout=timeout)
+                tasks=re.findall(r'KEYBOARD MESSAGE start ([0-9A-F]{16}) [0-9A-F]{16}\n',log.read_text())
+                if len(tasks)!=1:raise ValueError('Missing unique console task identity')
+                path=out/f'{name}-pointer-memory.bin'
+                #Read an atomic physical snapshot after command cleanup/presentation.
+                #The flat native address space maps these public pointers directly.
+                command('stop')
+                try:
+                    response=command('human-monitor-command',**{'command-line':
+                        f'pmemsave 0 {ram_mib*1024*1024} "{path}"'})
+                    if response:raise ValueError('Physical memory capture failed: '+response)
+                finally:command('cont')
+                driver=ROOT/'tools/i386-pointer-oracle.py'
+                driver_hash=hashlib.sha256(driver.read_bytes()).hexdigest()
+                import runpy
+                memory=path.read_bytes()
+                proof=runpy.run_path(str(driver))['pointer_oracle'](memory,int(tasks[0],16),
+                    spec['pointer_symbol'],spec['literal'].encode('ascii'))
+                if hashlib.sha256(driver.read_bytes()).hexdigest()!=driver_hash:
+                    raise ValueError('Pointer oracle changed during validation')
+                proof.update(memory_dump=str(path),memory_sha256=hashlib.sha256(memory).hexdigest(),
+                    oracle_sha256=driver_hash,scope='Independent public hash/type/storage/literal and consumed-answer checks, then exact VGA pointer formatting')
+                (out/f'{name}-pointer-oracle.json').write_text(json.dumps(proof,indent=2)+'\n')
+                pointer_evidence.append(proof)
+                return [proof['answer']]
 
             def wait_for(predicate, timeout=30):
                 stop=time.monotonic()+timeout
@@ -568,6 +598,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         wait_for(frame_matches)
                         with Image.open(path) as image: image.save(out/f'{name}-frame.png')
                     key('ctrl',True); key('alt',True); press('c'); key('alt',False); key('ctrl',False)
+                if isinstance(answers,dict): answers=pointer_answer(answers,name,timeout)
                 rejected_rows=None
                 rejection_message=None
                 if startup_check is not None and startup_check.get('rejected_answers') is not None:
@@ -607,6 +638,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         'window_manager_pause_requested':pause_window_manager,
                         'vga':'all pixels matched at each checkpoint',
                         'interaction_latencies_seconds':interaction_latencies}
+                if pointer_evidence: result['pointer_oracles']=pointer_evidence
                 (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
                 return result
             def uploads():
@@ -739,7 +771,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 ('h.p==0&&h.value==42;', ['1']),
                 ('h.value;', ['42']),
                 ('class Opaque{I64 value;};Unknown bad;', ['Error: Undefined identifier at ']),
-                ('sizeof(Opaque);', ['0']),
+                ('sizeof(Opaque);', ['8']),
                 ('class Opaque{I64 value;};Opaque item;', []),
                 ('I64 Attach(){h.p=&item;item.value=42;return h.p->value;}', []),
                 ('Attach;', ['42']),
@@ -757,7 +789,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 ('greet[1];', ['66']),
                 ('greet[1]=90;', ['90']),
                 ('U8 *lost="bad";Unknown bad;', ['Error: Undefined identifier at ']),
-                ('lost;', ['Error: Undefined identifier at ']),
+                ('lost;', {'pointer_symbol':'lost','literal':'bad'}),
                 ('greet[1];', ['90']),
                 ('U8 *lost="ok";', []), ('lost[1];', ['107']),
                 ('I64 Letter(){static U8 *s="AZ";return ++s[0];}', []),
@@ -773,7 +805,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 ('Fs->task_flags|=1<<TASKf_PENDING_BREAK;', ['Exception','2048']),
                 ('Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['0']),
                 ('I64 BreakPrivate(){return 99;} Fs->task_flags|=1<<TASKf_PENDING_BREAK;', ['Exception','2048']),
-                ('BreakPrivate;', ['Error: Undefined identifier at ']),
+                ('BreakPrivate;', ['99']),
                 ('U0 LockPending(){Fs->task_flags|=1<<TASKf_BREAK_LOCKED|1<<TASKf_PENDING_BREAK;}', []),
                 ('LockPending;', []),
                 ('Bt(&Fs->task_flags,TASKf_BREAK_LOCKED)&&Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['1']),
@@ -2158,6 +2190,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         'vga':'all pixels matched at each checkpoint',
                         'interaction_latencies_seconds':interaction_latencies}
                 if audio_wav is not None: result['audio_emission']=audio_emission
+                if pointer_evidence: result['pointer_oracles']=pointer_evidence
                 (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
                 return result
             result={'result':'pass','cpu':cpu,'ram_mib':ram_mib,
@@ -2173,6 +2206,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     'vga':'all pixels matched at each checkpoint',
                     'submitted_lines':sum(1 for line in log.read_text().splitlines() if line.startswith('INPUT LINE ')),
                     'native_commands':submitted, 'window_service_cases':14, 'window_visibility_cases':6, 'window_text_cases':10, 'graphics_frames':4, 'graphics_frame_cases':5, 'graphics_allocation_cases':2, 'graphics_context_cases':20, 'date_checks':1333, 'public_math_checks':4107, 'definition_lookup_cases':16, 'definition_missing_cases':4, 'text_frames':4, 'keyboard_break_cases':11, 'document_lock_cases':11, 'document_access_cases':8, 'document_lifecycle_cases':7, 'document_basic_edit_cases':5, 'document_basic_multiline_cases':7, 'document_basic_navigation_cases':8, 'document_basic_vertical_cases':8, 'document_basic_boundary_cases':13, 'document_basic_save_cases':5, 'document_allocation_cases':13, 'document_session_resource_cycles':20, 'document_session_exact_heap_recovery':'shared task heap', 'document_session_peak_tracking':'allocator high-water'}
+            if pointer_evidence: result['pointer_oracles']=pointer_evidence
             (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
             return result
         finally:
