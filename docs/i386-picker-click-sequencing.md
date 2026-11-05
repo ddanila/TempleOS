@@ -45,3 +45,7 @@ initial and selected frames. `failure.json` pins the terminal checkpoint, logs,
 image, frames and frozen runner/source copies. The picker fix passed inside the
 full workload, but the complete minimal gate and original desktop qualification
 remain open. The Help interaction failure needs investigation.
+
+The later Help timeout now has a consumed-release acknowledgement fix and fresh
+isolated TCG/KVM passes; see [Help click sequencing](i386-help-click-sequencing.md).
+The full workload still requires another run.

@@ -2163,6 +2163,8 @@ Bool NativeHelpView(U8 *name,I64 line,U8 *find,I64 occurrence,U8 *anchor)
       if(MouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
           next_mouse_packets!=mouse_packets) {
         native_help_mouse_visible=TRUE;
+        if(mouse_buttons&1 && !(next_mouse_buttons&1))
+          KernelLog("HELP mouse release\n");
         if(next_mouse_buttons&1 && !(mouse_buttons&1)) {
           mouse_offset=NativeHelpMouseOffset(plain,pages[page],next,
                                              next_mouse_x,next_mouse_y);
