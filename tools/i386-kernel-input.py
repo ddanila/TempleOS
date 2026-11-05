@@ -872,7 +872,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             active_group='graphics'
             submit('#include "/Kernel/I386/GraphicsAllocationCheck.HC"', [], 'graphics-allocation-source')
             submit('GraphicsAllocationCheck;', ['2'], 'graphics-allocation-check')
-            submit('#include "/Kernel/I386/GraphicsFrameCheck.HC"', [], 'graphics-frame-source')
+            submit('#include "/Kernel/I386/GraphicsFrameCheck.HC"', ['Warning: Unused var'], 'graphics-frame-source')
             submit('GraphicsFrameCheck;', ['5'], 'graphics-frame-check')
             submit('#include "/Kernel/I386/GraphicsFrameDemo.HC"', [], 'graphics-frame-definition', timeout=120)
             for mode in range(4):

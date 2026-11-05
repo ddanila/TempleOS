@@ -114,3 +114,20 @@ cancellation cases, and the exact welcome frame in
 cancellation regressions, not public-break coverage of every foreign kernel
 wait. Such wait/resource cases, broader desktop/API behavior, minimal-profile
 resource acceptance and all C1–C5 milestones remain open.
+
+### Public wait boundaries (2026-11-05)
+
+`tools/test-i386-break-lock-wait.py` adds actual public Sleep and GetMsg receiver
+workflows. The parent queues a pending unlock while the receiver is suspended,
+checks immediate flag clearing and preserved suspension, posts a real key for
+the message case, then resumes the target. Each child catches Break before
+its post-wait statement, exits naturally, reports zero wake/pending/await flags
+and no remaining key message, and preserves its IRQ state. No stand-in wait
+or simulated return value is used.
+
+The original and native each pass all 28 observations in
+`build/i386-public-break-wait-reference-v1/result.json` and
+`build/i386-public-break-wait-native-v1/result.json`. The native normal-image
+session passes all five commands with unchanged inputs and exact frames.
+This extends public-wait coverage; ATA/file/provider borrows, other foreign
+resource classes and all C1–C5 acceptance still remain open.

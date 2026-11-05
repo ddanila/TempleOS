@@ -637,3 +637,28 @@ window manager, every raster exact and all pins unchanged. Startup takes
 77.711 seconds, above the existing 60-second minimal budget. This focused
 functional pass neither repairs that resource failure nor relabels the failed
 full gate. Full current release/profile and C1–C5 qualification remain open.
+
+### Graphics callback warning and current runtime (2026-11-05)
+
+The next frozen full gate, `build/i386-partial-minimal-gate-v2`, passes the
+corrected window include and stops at GraphicsFrameCheck.HC's old empty-output
+expectation. The captured frame contains the real unused-parameter warning;
+all 3,715 original tracked input hashes match, and the original helper, builder,
+font and pointer oracle are frozen alongside the failed frame and classification.
+Later full-gate cases and release stages are unqualified.
+
+`tools/test-i386-graphics-frame-warning-reference.py` compiles the exact
+GraphicsFrameThrow callback prefix on the original and captures exactly one
+unused-dc warning. The complete fixture is pinned, and the captured prefix
+and checksum are recorded. Native-only GraphicsFrameCheck body is excluded
+from this original compilation; no stand-in functions are supplied. The source
+callback and following native checks remain unchanged. Only its visible
+expected warning is migrated.
+
+`build/i386-graphics-warning-regression-v1/result.json` passes the complete
+11-command graphics group on the public-break runtime: allocation/ownership,
+throw cleanup, four actual frame patterns, context behavior and exact rasters,
+with unchanged pinned inputs at 8 MiB KVM/486 without FPU. This verifies the
+focused group, not a completed full gate or the 60-second TCG resource profile.
+The public-break implementation and window correction are pushed separately
+as 67dd3867 and 130c8a9f; current full release and C1–C5 qualification remain open.
