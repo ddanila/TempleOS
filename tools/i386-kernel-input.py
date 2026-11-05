@@ -770,13 +770,14 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 ('I64 T(){I64 x=0;try{x=42;}catch{}return x;}', []),
                 ('T;', ['42']),
                 ("throw('Console',TRUE);", ['Exception']),
-                ('Fs->task_flags|=1<<TASKf_PENDING_BREAK;', ['Exception']),
+                ('Fs->task_flags|=1<<TASKf_PENDING_BREAK;', ['Exception','2048']),
                 ('Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['0']),
-                ('I64 BreakPrivate(){return 99;} Fs->task_flags|=1<<TASKf_PENDING_BREAK;', ['Exception']),
+                ('I64 BreakPrivate(){return 99;} Fs->task_flags|=1<<TASKf_PENDING_BREAK;', ['Exception','2048']),
                 ('BreakPrivate;', ['Error: Undefined identifier at ']),
                 ('U0 LockPending(){Fs->task_flags|=1<<TASKf_BREAK_LOCKED|1<<TASKf_PENDING_BREAK;}', []),
                 ('LockPending;', []),
-                ('Fs->task_flags&=~(1<<TASKf_BREAK_LOCKED);', ['Exception']),
+                ('Bt(&Fs->task_flags,TASKf_BREAK_LOCKED)&&Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['1']),
+                ('Fs->task_flags&=~(1<<TASKf_BREAK_LOCKED);', ['Exception','2048']),
                 ('Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['0']),
                 ('T;', ['42']),
                 ('ToI64(Sqrt(Sqr(6.0))+Abs(-36.0));', ['42']),
@@ -875,7 +876,8 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             submit("U0 HotkeyWait(I64 locked){if(locked) Fs->task_flags|=1<<TASKf_BREAK_LOCKED;OutU8(0xE9,64);while(!Bt(&Fs->task_flags,TASKf_PENDING_BREAK)){}}", [], 'hotkey-definition')
             submit('HotkeyWait(0);', ['Exception'], 'hotkey-break', hotkey=True)
             submit('HotkeyWait(1);', [], 'hotkey-locked', hotkey=True)
-            submit('Fs->task_flags&=~(1<<TASKf_BREAK_LOCKED);', ['Exception'], 'hotkey-unlock')
+            submit('Fs->task_flags==(1<<TASKf_BREAK_LOCKED|1<<TASKf_PENDING_BREAK);', ['1'], 'hotkey-locked-flags')
+            submit('Fs->task_flags&=~(1<<TASKf_BREAK_LOCKED);', ['Exception','2048'], 'hotkey-unlock')
             submit('Bt(&Fs->task_flags,TASKf_PENDING_BREAK);', ['0'], 'hotkey-consumed')
             submit('6*7;', ['42'], 'hotkey-recovery')
             submit('U0 Forever(){OutU8(0xE9,64);while(1){}}', [], 'loop-definition')

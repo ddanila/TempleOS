@@ -149,3 +149,26 @@ startup is not evidence of the 60-second minimal startup gate. A second run
 without the extra pre-break query remains running, because that query could
 otherwise mask the earlier 3329 discrepancy. No new shared break oracle is
 qualified yet.
+
+The repeat without the extra pre-break query now passes all 146 compiler-group
+commands at 8 MiB TCG 486,-fpu/live WinMgr in
+`build/i386-answer-break-compiler-unprobed-v1/result.json` in this worktree.
+The exact runner is preserved beside it. The isolated physical hotkey group
+also passes all 17 commands, including six Ctrl-Alt-C cases and the locked
+unlock's completed 2048, in `build/i386-answer-picker-breaks-v1/result.json`.
+Focused startup is 77.9 and 76.0 seconds respectively, not 60-second startup
+qualification. The old 3329 has not recurred but remains a historical unexplained
+failure. No oracle accepts it as an alternative.
+
+The final command-retention audit (`build/answer-oracle-retention-final-v1.json`)
+checks occurrences rather than just unique strings: all 509 original command
+expressions remain, with thirteen added explicit state checks. Pending-break
+oracles now retain Exception and require the completed value 2048. The checked
+unprobed runner is byte-identical to the committed helper.
+
+A new original differential exposes a separate source-publication gap; see
+`docs/i386-completed-declaration-publication.md`. Completed functions survive
+errors and breaks on the original, while the normal native public API loses one
+after a caught custom throw. Existing BreakPrivate rollback checks are legacy
+native behavior, not original fidelity. Public Break availability is also open.
+The new failing checks remain strict; full C4/API/OS qualification is not claimed.
