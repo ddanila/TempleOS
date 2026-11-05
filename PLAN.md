@@ -26262,3 +26262,25 @@ The focused compiler run separately stops before submitting repeated command
 oracle matches first-prompt text rather than identity. The full default TCG gate
 continues in its compiler group. Both gaps and later stages remain unqualified;
 all 686 entries and C1-C5 remain open.
+
+## Bundled warm registry and current native-build checkpoint (2026-11-05)
+
+The parser-heap-reuse runtime passes a fresh pinned-original repeated-demo
+reference and the full-content bundled same-boot RegistryDemo workflow. All 18
+native commands match exact pixels at 64 MiB KVM 486,-fpu/live WinMgr; actual
+registry DocRead reload and warm namespace redefinition preserve the first score,
+display Val:1235, then save 1236 and a new time-bounded score. No demo fixture is
+added. Exactly registry plus two explicit test records change; 1,734 other files
+preserve bytes/attributes/timestamps. Filesystem and input-pin checks pass. See
+`docs/i386-registry-demo-workflow.md` and its inventory evidence links.
+
+The same full-content image passes the 1,366-file delivered-source audit and
+all-686 inventory content/guest-access check (568 original-identical, 118
+ported/modified). The inventory and five guards pass; all 686 entries remain
+unqualified. Customized registry/error cleanup, whole applications, complete
+desktop parity and C1-C5 qualification remain open. A new full nine-module
+native build is live in the parser-heap-reuse checkout's
+`build/i386-parser-heap-native-nine-v1`, with source/tool pins frozen separately.
+Its terminal export/module audit, installation and two native generations are
+not yet established. The normal no-FPU smoke remains above the unchanged
+60-second startup budget; bootstrap generations are not native C5 generations.

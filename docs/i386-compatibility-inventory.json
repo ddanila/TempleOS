@@ -11957,6 +11957,18 @@
           "result": "pass",
           "evidence": "build/i386-command-policy-registry-warm-v2/result.json",
           "scope": "Command-publication policy experimental image, 64 MiB KVM 486,-fpu/live WinMgr, one actual boot and 18 exact-pixel commands. Original unchanged demo is added as an explicitly identified fixture. First launch persists 1235; actual DocRead reload replaces the registry document, second include redefines globals/functions, displays the first saved score/Val:1235 and persists 1236/new time-bounded score. Source identity, input pins and filesystem audit pass; exactly fixture, registry and two test records change, while 1387 unrelated source-image files preserve bytes/attributes/times. Not a bundled-image warm pass, original machine reboot, customized/error cleanup, or whole qualification. The v1 run stopped from host disk exhaustion, not an observed native mismatch."
+        },
+        {
+          "command": "python3 tools/test-i386-registry-demo-repeat-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-parser-heap-reuse-v1/build/i386-registry-demo-repeat-reference-current-v1/result.json",
+          "scope": "Fresh pinned-original same-boot unchanged demo twice with saved-document reload under current tooling. Exact second display, values 1235/1236, raw records, persisted time-bounded scores, and unchanged inputs. Original machine reboot and whole qualification remain open."
+        },
+        {
+          "command": "python3 tools/test-i386-registry-demo-repeat.py IMAGE --require-bundled --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-parser-heap-reuse-v1/build/i386-registry-demo-bundled-warm-current-v1/result.json",
+          "scope": "Runtime fd95ddda (source unchanged at documentation commit 1dc4b5c5), full-content image, 64 MiB KVM 486,-fpu/live WinMgr. No demo addition: both unchanged includes execute in one boot with actual DocRead registry reload and warm global/function redefinition. All 18 exact-pixel commands pass; values 1235/1236 and actual sampled/persisted scores pass. Exactly registry and two test records change; 1734 unrelated pre-existing files preserve bytes/attributes/timestamps. Input pins and filesystem audit pass. Separate full-content check matches all 686 inventory bytes. Customized state, failure cleanup, original reboot, and complete qualification remain open."
         }
       ]
     },

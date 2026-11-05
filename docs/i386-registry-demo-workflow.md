@@ -180,3 +180,32 @@ The earlier v1 guest stopped when host screendump writes exhausted disk space;
 compatibility result. The v2 pass closes the measured warm-redefinition gap for
 this workflow. A bundled full-image warm pass, customized-state/error cleanup,
 whole registry compatibility and C1–C5 qualification remain open.
+
+## Current bundled same-boot workflow (2026-11-05)
+
+The parser-heap-reuse checkout's full-content image now passes the previously
+open bundled warm workflow. A fresh pinned-original run also passes with the
+current tooling (`build/i386-registry-demo-repeat-reference-current-v1`).
+The native `build/i386-registry-demo-bundled-warm-current-v1/result.json` passes
+all 18 exact-pixel commands at 64 MiB KVM `486,-fpu` with live WinMgr. Both
+includes use the already shipped, unchanged demo; no demo fixture is added.
+Actual saved-document reload and same-namespace redefinition produce the
+persisted first score with `Val:1235`, then save 1236 and a new score.
+
+The first score is 28.93000 and the second 176.89200, each bounded by actual
+tS samples around its include. Only `/Registry.HC.Z`, `/DemoRegistryState.HC`
+and `/DemoTimes.DATA` change; 1,734 other pre-existing files preserve bytes,
+attributes and timestamps. Input pins and filesystem audit pass. Runtime source
+is commit `fd95ddda`, unchanged at documentation commit `1dc4b5c5`. These paths
+are inside `build/i386-parser-heap-reuse-v1`; the inventory records full evidence
+paths from the primary checkout. Customized state, failure cleanup, original
+machine reboot and complete demo/registry qualification remain open.
+
+The same image passes the independent 1,366-file delivered-source audit and
+`build/i386-parser-heap-full-content-v1`: all 686 inventory files match the
+workspace, with 568 identical to the pinned original and 118 ported/modified.
+Guest lookup, the 4.3 MB Bible read and exact task-heap recovery pass. This is
+content/access coverage rather than all application behavior. A new full
+nine-module native build is running separately in
+`build/i386-parser-heap-native-nine-v1`; no C5 build or generation pass is
+claimed before its terminal audit.
