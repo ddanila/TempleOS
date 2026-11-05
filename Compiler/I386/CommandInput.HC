@@ -123,7 +123,7 @@ Bool I386CommandInput(CI386CommandInput *input)
             if(!(cc->flags&CCF_HAS_MISC_DATA)) I386FrontendFree(state,code);
             code=0; //The completed expression is freed or belongs to retained storage.
           }
-          if(!(input->flags&I386_INPUT_ATOMIC_DEFINES) && !state->fixups &&
+          if(!(input->flags&I386_INPUT_ATOMIC_DEFINES) &&
               I386CommandInputHasDeclarations(state)) {
             if(!I386COCDiscard(heap,cc))throw('Compiler',TRUE);
             //Unresolved declarations can still be completed later in this input.

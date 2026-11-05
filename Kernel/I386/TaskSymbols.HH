@@ -3,7 +3,28 @@
 #include "/Kernel/I386/Task.HH"
 #include "/Kernel/I386/HashTable.HH"
 #include "/Kernel/I386/TaskHeaps.HH"
-#define I386_TASK_SYMBOLS_MAGIC 0x54535932
+#define I386_TASK_SYMBOLS_MAGIC 0x54535933
+#define I386_TASK_EXTERN_MAGIC 0x45585433
+extern class CI386TaskSymbols;
+#ifndef KERNEL_SYMBOL_TYPES_INCLUDED
+extern class CHashFun;
+extern class CHashClass;
+#endif
+class CI386TaskExternUsage {
+  //Public CExternUsage prefix, followed by the native ownership journal.
+  CI386TaskExternUsage *next;
+  I64 rip;
+  CI386TaskExternUsage *pending_next;
+  CI386TaskSymbols *scope;
+  CHashFun *function;
+  U8 *code,*undefined_address;
+  Bool indirect;
+  CI386TaskHeaps *code_owner;
+  I64 code_bytes,offset,argument_count,flags;
+  CHashClass *result_type;
+  U32 signature;
+  CHashClass *arguments[1];
+};
 class CI386StoredAllocation {
   U8 *allocation;
   //NULL means bootstrap storage; otherwise this retained provider owns the bytes.
@@ -23,6 +44,7 @@ class CI386TaskSymbols {
   CI386TaskStorage *storage;
   //Private answer category: the public RT_PTR value aliases RT_I64.
   U32 answer_ptr_stars;
+  CI386TaskExternUsage *pending_externs;
 };
 extern Bool I386TaskStorageValid(CI386Heap *heap,CI386TaskStorage *storage);
 extern Bool I386TaskStorageRelease(CI386Heap *heap,CI386TaskStorage *storage);

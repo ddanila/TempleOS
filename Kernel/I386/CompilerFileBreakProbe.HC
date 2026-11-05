@@ -16,6 +16,9 @@ U0 ProbeFileBreakChild(I64 argument)
   CI386TaskSymbols *scope=task->symbol_state;
   CI386TaskFiles *files=task->file_state;
   CI386CommandInput input;
+  CHashFun *header;
+  CHashExport *undefined;
+  CHashTable *table;
   U8 *bytes=&input,*data,*name=0;
   I64 i,size,attr,used=scope->heap->used,allocations=scope->heap->allocations;
   Bool caught=FALSE;
@@ -34,9 +37,20 @@ U0 ProbeFileBreakChild(I64 argument)
         (GetRFlags&0x200)!=state->flags) KernelStop;
     task->catch_except=TRUE; caught=TRUE;
   }
-  if(!caught || task->except_top || scope->heap->used!=used ||
-      scope->heap->allocations!=allocations || scope->storage ||
-      ProbeSymbolFind(0,"FileBreakPrivate",scope->table,HTT_FUN)) KernelStop;
+  //The header was complete before the following include blocked in its lexer.
+  //Keep the actual unresolved descriptor, then explicitly reclaim it before
+  //requiring the original exact heap baseline and subsequent file/input reuse.
+  header=ProbeSymbolFind(0,"FileBreakPrivate",scope->table,HTT_FUN);
+  undefined=0;
+  for(table=task->hash_table;table && !undefined;table=table->next)
+    undefined=ProbeSymbolFind(0,"UndefinedExtern",table,HTT_EXPORT_SYS_SYM);
+  if(!caught || task->except_top || scope->storage || !header || !undefined ||
+      !Bt(&header->flags,Cf_EXTERN) || header->arg_cnt || header->exe_addr!=undefined->val) {
+    KernelLog("FILE BREAK HEADER REJECT\n");KernelStop;
+  }
+  if(!ProbePublishedRemove(scope->table,header) || !I386HashDel(scope->heap,header) ||
+      scope->heap->used!=used || scope->heap->allocations!=allocations ||
+      scope->pending_externs || !I386HeapValid(scope->heap))KernelStop;
   KernelLog("FILE BREAK CAUGHT\n");
   data=state->probe->files->read(scope->heap,"C:/Probe/Outer.HC",&size,&attr,&name);
   if(!data || !name || size<1 || files->busy || task->lifetime_refs || task->io_locks ||

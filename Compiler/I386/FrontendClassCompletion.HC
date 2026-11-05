@@ -21,6 +21,7 @@ Bool I386CompletionTargetValid(CI386Frontend *state,CHashClass *type)
 {
   I64 i;
   CHash *prior;
+  if(type && type->type&HTT_FUN)return I386FunctionCompletionTargetValid(state,type);
   if(!type || type->type&HTT_FUN || !(type->type&HTT_CLASS) || !type->str ||
       !Bt(&type->flags,Cf_EXTERN) || !I386ProgramClassReady(type) ||
       type->import_name || type->ie_lst || type->dbg_info ||
@@ -101,6 +102,7 @@ CI386FrontendCompletion *I386CompletionFind(CI386Frontend *state,CHashSrcSym *en
 Bool I386CompletionValid(CI386Frontend *state,CI386FrontendCompletion *completion)
 {
   CHashClass *type=completion->staged;
+  if(type->type&HTT_FUN)return I386FunctionCompletionValid(state,completion);
   return I386ParserRecord(state->cc,completion) &&
     I386HeapSize(state->heap,completion)==sizeof(CI386FrontendCompletion) &&
     I386CompletionTargetValid(state,completion->published) &&
@@ -125,7 +127,13 @@ CHashClass *I386CompletionCanonical(CI386Frontend *state,CHashClass *type)
 {
   CI386FrontendCompletion *completion;
   CHashClass *base;
-  if(!type || !(type->type&HTT_CLASS)) return type;
+  if(!type || !(type->type&(HTT_CLASS|HTT_FUN))) return type;
+  if(type->type&HTT_FUN) {
+    for(completion=state->completions;completion;completion=completion->next)
+      if(type(CHashFun *)-type->ptr_stars_cnt==completion->staged)
+        return completion->published(CHashFun *)+type->ptr_stars_cnt;
+    return type;
+  }
   base=type-type->ptr_stars_cnt;
   for(completion=state->completions;completion;completion=completion->next)
     if(base==completion->staged) return completion->published+type->ptr_stars_cnt;
@@ -194,6 +202,7 @@ U0 I386CompletionCommit(CI386Frontend *state,CI386FrontendCompletion *completion
   CHashClass *published=completion->published,*staged=completion->staged;
   U8 *destination=published,*source=staged;
   I64 i;
+  if(published->type&HTT_FUN) {I386FunctionCompletionCommit(state,completion);return;}
   //The target's hash link, name and use count remain live. New source metadata
   //and members have already passed the ownership transfer validation.
   if(!I386CompletionReleaseMetadata(state,published->src_link) ||

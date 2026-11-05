@@ -393,3 +393,51 @@ verification remains pending. The latest cleanup candidate also masks the
 symbol teardown transaction and bounds ownership-list validation by actual heap
 allocation count. It needs its own final native reruns. Full C4 and C1–C5 remain
 open; none of these component results promotes the inventory or a release.
+
+
+## Scoped extern completion and current native checkpoint
+
+Native ordinary JIT extern calls now use the actual stable executable-address
+slot (FF /2 absolute indirect call), not a first-definition-only relative patch.
+Completion stages a private replacement, checks signatures and the full graph,
+retains old default storage that compiled callers can borrow, and updates the
+existing descriptor only at the publication boundary. Later non-extern
+redefinitions still create new descriptors. Static modules keep their existing
+relocation/fixup path; task-local descriptor-slot references are rejected by
+module packing rather than serialized as function-address relocations.
+
+Task-owned usage records retain code owner, byte extent, call-site encoding,
+argument/result classes and descriptor identity. Child teardown removes its
+borrows before releasing code. Explicit HashDel rewrites outstanding indirect
+borrows to the real UndefinedExtern call before freeing the descriptor; the
+same-name replacement cannot accidentally bind callers through reused storage.
+Pending queues use the private TSY3 scope layout. Native ext_lst borrow tracking
+and the cleanup policy remain recorded architecture details requiring broader
+API review, not an all-metadata parity claim. Symbol teardown holds interrupt
+exclusion, and ownership-list bounds follow actual heap allocation count.
+
+Declaration joining now searches the immediate destination table, matching the
+original HashSingleTableFind rule. The original child-shadow reference passes
+all defined numeric returns in
+`build/i386-extern-child-shadow-reference-v1/result.json`. The previous native
+image fails its parent-descriptor check at command 8; the corrected image passes
+all 15 commands with exact pixels and unchanged inputs in
+`build/i386-extern-child-shadow-native-v1/result.json`. The child calls its local
+definition as 42 and exits; the parent retains its unresolved prototype and an
+actual call still throws UndefExt with answer 23 and a real document diagnostic.
+Explicit completion through an ancestor task's foreign hash context is rejected
+until code/storage ownership can be transferred safely; that C4 gap stays open.
+
+The cleanup candidate v6 passes 69 binding, 42 slot-redirection, 55 frontier and
+18 lifecycle commands with unchanged inputs in the corresponding native-v2
+reports. The final immediate-scope candidate v7 passes both original x64
+bootstrap generations, cross-build, 386 audit, the 1,364-file source audit and
+the 15-command child-shadow test. The 16 MiB TCG diagnostic run
+`build/i386-extern-indirect-diagnostic-v3/verification.json` passes both phases,
+54 input cases, both public-header and executable-lifetime checks, both actual
+queued-file break/cancellation cases, normal startup and all 307,200 welcome
+pixels. Removing the retained FileBreakPrivate header restores the exact heap
+baseline before further file reads and arithmetic. The last 69-command rerun
+on v7 remains pending at this checkpoint. Full retained command-oracle migration,
+whole-gate/current-image checks, selective recovery with unfinished siblings,
+partial signatures and all C1–C5 qualification remain open.

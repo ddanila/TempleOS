@@ -1,6 +1,7 @@
 #include "/Kernel/I386/HashPublic.HH"
 #include "/Kernel/HashTablePublicCore.HC"
 #include "/Kernel/SymbolDelete.HC"
+#include "/Kernel/I386/TaskExtern.HC"
 U0 MemorySymbolFree(U8 *context,U8 *allocation)
 {//Published compiler metadata has arena ownership, not a CMemUsed header.
   CI386TaskSymbols *scope;
@@ -23,6 +24,15 @@ U0 MemorySymbolFree(U8 *context,U8 *allocation)
 U0 MemoryHashDel(CHashSrcSym *symbol)
 {
   CSymbolRelease owner;
+  CI386TaskSymbols *scope;
+  U32 flags;
+  if(!symbol)return;
+  if(symbol->type&HTT_FUN && symbol(CHashFun *)->ext_lst) {
+    flags=I386IrqSave;scope=I386TaskSelf->symbol_state;
+    while(scope && I386HeapSize(scope->heap,symbol)<0)scope=scope->parent;
+    if(!scope || !I386TaskExternSymbolDetach(scope->heap,symbol))KernelStop;
+    I386IrqRestore(flags);
+  }
   owner.context=0; owner.release=&MemorySymbolFree;
   SymbolHashDel(&owner,symbol);
 }

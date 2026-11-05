@@ -444,7 +444,7 @@ U0 I386BackendCore(CI386Backend *backend)
             case IC_SHL_CONST: case IC_SHR_CONST:
             case IC_DEREF: case IC_ADDR: case IC_HOLYC_TYPECAST:
             case IC_CALL: case IC_CALL_EXTERN: case IC_CALL_IMPORT:
-            case IC_CALL_INDIRECT: case IC_LEAVE:
+            case IC_CALL_INDIRECT: case IC_CALL_INDIRECT2: case IC_LEAVE:
             case IC_ADD_RSP: case IC_ADD_RSP1:
             case IC_CALL_START: case IC_PUSH_REGS: case IC_SET_RAX:
             case IC_ENTER: case IC_RET: case IC_LABEL: case IC_JMP:
@@ -742,6 +742,7 @@ U0 I386BackendCore(CI386Backend *backend)
           case IC_CALL:
           case IC_CALL_EXTERN:
           case IC_CALL_IMPORT:
+          case IC_CALL_INDIRECT2:
             if (!backend->calls || backend->calls->called ||
                 backend->calls->indirect!=(ic->ic_code==IC_CALL_INDIRECT)) throw('Compiler');
             backend->calls->slots=depth-backend->calls->depth-backend->calls->indirect;
@@ -766,6 +767,17 @@ U0 I386BackendCore(CI386Backend *backend)
             if (backend->calls->indirect) {
               if (ic->ic_data!=backend->calls->slots*8) throw('Compiler');
               I386EspMemory(out,0xFF,2,ic->ic_data);
+            } else if(ic->ic_code==IC_CALL_INDIRECT2) {
+              if(ic->ic_data<0 || ic->ic_data>U32_MAX)throw('Compiler');
+              I386Bytes(out,"\xFF\x15",2);
+              if(pass) {
+                import_rec=(*backend->allocate)(backend->context,sizeof(CAOTImportExport));
+                import_rec->type=IET_IMM_U32;
+                import_rec->rip=cc->aotc->rip+out->count;
+                import_rec->next=backend->calls->fun->ie_lst;
+                backend->calls->fun->ie_lst=import_rec;
+              }
+              I386Dword(out,ic->ic_data);
             } else {
               I386Byte(out,0xE8);
               if (ic->ic_code==IC_CALL) {

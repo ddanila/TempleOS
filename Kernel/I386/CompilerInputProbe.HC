@@ -139,10 +139,10 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     }
     result=FALSE;
     try { result=probe->compiler->input(&input); }
-    catch { if((kind==6 || kind==18 || kind==24) && task->except_ch=='InputCb' || kind==10 && !task->except_ch) { task->catch_except=TRUE; caught=TRUE; } }
+    catch { if((kind==6 || kind==18 || kind==24) && task->except_ch=='InputCb' || kind==10 && !task->except_ch || kind==12 && task->except_ch=='UndefExt') { task->catch_except=TRUE; caught=TRUE; } }
     KernelLog("INPUT RUN RESULT "); KernelHex(result); KernelLog(" \n");
     KernelLog("INPUT RUN COUNTS "); KernelHex(input.commands); KernelLog(" "); KernelHex(input.answers); KernelLog(" "); KernelHex(input.exception); KernelLog(" "); KernelHex(answer.value); KernelLog(" "); KernelHex(answer.raw_type); KernelLog("\n");
-    if(result!=(kind<4 || kind==5 || kind==9 || kind==11 || kind==15 || kind==16 || kind==19 || kind==21 || kind==22 || kind==25 || kind==26) || caught!=(kind==6 || kind==10 || kind==18 || kind==24)) KernelStop;
+    if(result!=(kind<4 || kind==5 || kind==9 || kind==11 || kind==15 || kind==16 || kind==19 || kind==21 || kind==22 || kind==25 || kind==26) || caught!=(kind==6 || kind==10 || kind==12 || kind==18 || kind==24)) KernelStop;
     if((kind==22 || kind==25 || kind==26) &&
         (answer.count!=1 || answer.value!=42 || input.answers!=1 || input.commands!=1 || input.exception)) KernelStop;
     if(kind==23 && (answer.count || !answer.diagnostics || !input.errors ||
@@ -175,9 +175,17 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       if(!entry || !ProbePublishedRemove(task->hash_table,entry) || !I386HashDel(heap,entry)) KernelStop;
     }
     if(kind==12 || kind==13) {
-      if(input.exception!='Compiler' || answer.count ||
-          ProbeSymbolFind(0,"InputLater",task->hash_table,HTT_FUN) ||
-          ProbeSymbolFind(0,"InputCaller",task->hash_table,HTT_FUN)) KernelStop;
+      //Original input executes the unresolved call before any later definition,
+      //and retains declarations completed before an exception or parse failure.
+      if(answer.count || input.answers || input.commands!=2 ||
+          kind==12 && (input.exception!='UndefExt' || input.errors) ||
+          kind==13 && (input.exception!='Compiler' || !input.errors))KernelStop;
+      entry=ProbeSymbolFind(0,"InputLater",task->hash_table,HTT_FUN);
+      if(!entry || !Bt(&entry(CHashFun *)->flags,Cf_EXTERN) ||
+          !ProbePublishedRemove(task->hash_table,entry) || !I386HashDel(heap,entry))KernelStop;
+      entry=ProbeSymbolFind(0,"InputCaller",task->hash_table,HTT_FUN);
+      if(kind==12 && entry || kind==13 && (!entry || Bt(&entry(CHashFun *)->flags,Cf_EXTERN)))KernelStop;
+      if(entry && (!ProbePublishedRemove(task->hash_table,entry) || !I386HashDel(heap,entry)))KernelStop;
     }
     if(kind==9) {
       if(answer.value!=42 || answer.count!=1) KernelStop;
@@ -216,7 +224,7 @@ U0 ProbeInputs(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       storage=scope->storage; scope->storage=storage->next;
       if(!I386TaskStorageRelease(heap,storage)) KernelStop;
     }
-    if(kind>=22 && (heap->used!=case_used || heap->allocations!=case_allocations ||
+    if((kind>=22 || kind==11 || kind==12 || kind==13) && (heap->used!=case_used || heap->allocations!=case_allocations ||
         !I386HeapValid(heap))) KernelStop;
     if(task->last_cc!=outer || task->active_controls!=1 || task->lifetime_refs!=refs ||
         task->except_top || outer->coc.coc_head.next!=sentinel || sentinel->ic_data!=123 ||

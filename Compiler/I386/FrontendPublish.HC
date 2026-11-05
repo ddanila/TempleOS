@@ -278,7 +278,7 @@ I64 I386FrontendModulePackDataCore(CPrsSymbolServices *symbols,CHashFun **functi
     for(j=0;j<i;j++) if(!StrCmp(fun->str,functions[j]->str)) return I386FrontendPackReject(frontend,"duplicate-function",pack_name);
     code=frontend->codes;
     while(code && code->code!=fun->exe_addr) code=code->next;
-    if(!code || code->bytes<1 || code->data_start<1 ||
+    if(!code || code->indirect_slots || code->bytes<1 || code->data_start<1 ||
         code->data_start>code->bytes ||
         code->bytes>0xFFFFFFF0-payload) return I386FrontendPackReject(frontend,"code-span",pack_name);
     payload=(payload+7)&~7;
@@ -661,6 +661,7 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
   CI386CompletionTransfer visit;
   CI386FrontendCode *code;
   CI386FrontendReloc *reloc;
+  CI386FrontendFixup *fixup;
   CHashSrcSym *entry,*prior;
   CHashFun *fun;
   CHashGlblVar *global;
@@ -730,6 +731,14 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
           }
         }
     }
+  if(frontend->fixups) {
+    if(!frontend->command_publication || cc->flags&CCF_MODULE_SOURCE ||
+        !I386FrontendFixupsReady(frontend))goto done;
+    for(fixup=frontend->fixups;fixup;fixup=fixup->pending_next) {
+      I386ProgramStorageVisit(transfer,fixup);
+      if(!transfer->ok)goto done;
+    }
+  }
   //Live command literal pools may be referenced by published data. Retain every
   //remaining registered output, not only named function entry points.
   for(code=frontend->codes;code;code=code->next) {
@@ -758,7 +767,7 @@ done:
 Bool I386FrontendPublishCore(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols,Bool terminal)
 {
   CI386CmpCtrl *owned=cc;
-  CI386Frontend *frontend,*parent=0;
+  CI386Frontend *frontend=0,*parent=0;
   CI386CmpCtrl *parent_owned=0;
   CI386ClassTransfer transfer;
   CI386TaskSymbols *scope;
@@ -771,13 +780,14 @@ Bool I386FrontendPublishCore(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *sy
   CHashTable *source,*destination;
   CHashSrcSym *entry,*prior;
   I64 capacity=0,i,j,slots,map_bytes;
-  Bool result=FALSE;
+  Bool result=FALSE,completions_prepared=FALSE;
   U32 irq=I386IrqSave;
   transfer.records=0; transfer.selected=0; transfer.stored=0;
   if(!I386CmpCodeOwner(heap,cc) || !symbols || !(frontend=symbols->context) ||
       frontend->heap!=heap || frontend->cc!=cc || symbols!=&frontend->symbols ||
       !owned->task || !(scope=I386TaskSymbolsValid(owned->task)) || scope->heap!=heap ||
-      frontend->fixups || cc->error_cnt && !terminal || cc->lex_prs_stk || cc->htc.next || cc->htc.fun ||
+      frontend->fixups && (!frontend->command_publication || cc->flags&CCF_MODULE_SOURCE) ||
+      cc->error_cnt && !terminal || cc->lex_prs_stk || cc->htc.next || cc->htc.fun ||
       owned->code_next!=&owned->code_next) goto done;
   if(terminal && (!frontend->command_publication || cc->flags&CCF_MODULE_SOURCE ||
       !I386FrontendDeclarationsReady(frontend)))goto done;
@@ -812,8 +822,10 @@ Bool I386FrontendPublishCore(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *sy
             if(!StrCmp(prior->str,entry->str) && !(prior->type&HTT_DEFINE_STR)) goto done;
       }
   }
+  completions_prepared=TRUE;
   for(completion=frontend->completions;completion;completion=completion->next)
-    if(!I386CompletionValid(frontend,completion)) goto done;
+    if(!I386CompletionValid(frontend,completion) ||
+        !I386FunctionCompletionPrepare(frontend,completion)) goto done;
   for(binding=frontend->residents;binding;binding=binding->next)
     if(!I386FrontendResidentValid(frontend,binding)) goto done;
   //Direct parent-context #define publication precedes this control's commit.
@@ -938,6 +950,7 @@ Bool I386FrontendPublishCore(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *sy
     }
   }
   frontend->completed_declarations=0;
+  I386FrontendFixupsCommit(frontend,parent,scope);
   frontend->completions=0;
   if(frontend->defines)
     for(i=0;i<=frontend->defines->mask;i++) {
@@ -954,6 +967,11 @@ Bool I386FrontendPublishCore(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *sy
     }
   result=TRUE;
 done:
+  if(completions_prepared)
+    for(completion=frontend->completions;completion;completion=completion->next)
+      if(completion->retired_storage) {
+        I386HeapFree(heap,completion->retired_storage);completion->retired_storage=0;
+      }
   while(record=source_macro_records) {
     source_macro_records=record->next;I386HeapFree(heap,record);
   }

@@ -2,6 +2,7 @@
 #include "/Compiler/I386/SymbolDelete.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/I386/TaskStorage.HC"
+#include "/Kernel/I386/TaskExtern.HC"
 CI386TaskSymbols *I386TaskSymbolsValid(CI386Task *task)
 {
   CI386TaskSymbols *state;
@@ -67,11 +68,13 @@ Bool I386TaskSymbolsDestroy(CI386Task *task)
   //final payload release after its names have already disappeared.
   for(storage=state->storage;storage;storage=storage->next)
     if(!I386TaskStorageValid(state->heap,storage)) goto symbols_destroy_done;
+  if(!I386TaskExternScopeValid(state->heap,state))goto symbols_destroy_done;
   parent=state->parent; table=state->table;
   if(parent) {
     if(I386TaskSymbolsValid(parent->task)!=parent || !parent->children || !parent->task->lifetime_refs ||
         table->next!=parent->table || !I386HashTableValid(state->heap,table) || table->locked_flags) goto symbols_destroy_done;
     //Exclusive, valid owned symbol graph. Failed release is corruption, not rollback.
+    I386TaskExternScopeDetach(state);
     for(i=0;i<=table->mask;i++)
       while(entry=table->body[i]) {
         table->body[i]=entry->next; entry->next=0;
@@ -80,6 +83,7 @@ Bool I386TaskSymbolsDestroy(CI386Task *task)
     table->next=0;
     if(!I386HashTableDelete(state->heap,table)) goto symbols_destroy_done;
   }
+  if(!parent)I386TaskExternScopeDetach(state);
   while(storage=state->storage) {
     state->storage=storage->next;
     if(!I386TaskStorageRelease(state->heap,storage)) goto symbols_destroy_done;

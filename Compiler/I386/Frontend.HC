@@ -22,6 +22,7 @@ class CI386FrontendCode {
   CI386FrontendReloc *relocs;
   U8 *code;
   I64 bytes,data_start,raw_type,prior_misc;
+  Bool indirect_slots;
   CHashClass *value_class;
 };
 class CI386FrontendReloc {
@@ -35,14 +36,7 @@ class CI386FrontendAddress {
   CHashSrcSym *original;
   U8 *target;
 };
-class CI386FrontendFixup {
-  CI386FrontendFixup *next;
-  CHashFun *function;
-  U8 *code;
-  I64 offset,argument_count,flags;
-  CHashClass *result_type;
-  CHashClass *arguments[1];
-};
+#define CI386FrontendFixup CI386TaskExternUsage
 class CI386FrontendResident {
   CI386FrontendResident *next;
   CHashSrcSym *declaration;
@@ -52,6 +46,8 @@ class CI386FrontendResident {
 class CI386FrontendCompletion {
   CI386FrontendCompletion *next;
   CHashClass *published,*staged;
+  CI386TaskStorage *retired_storage;
+  CI386TaskSymbols *retired_scope;
 };
 class CI386FrontendStatic {
   CI386FrontendStatic *next;
@@ -95,7 +91,7 @@ class CI386FrontendCall {
   CHashFun fun;
   U8 *target;
   CHashFun *original;
-  Bool recursive,unresolved;
+  Bool recursive,unresolved,indirect;
 };
 class CI386FrontendParseBound {
   CHashFun fun;
@@ -117,6 +113,8 @@ class CI386FrontendBound {
   CMemberLst arguments[20];
   U8 *addresses[10];
 };
+extern CHashFun *I386CompletionFunction(CI386Frontend *state,CHashFun *function);
+extern Bool I386FrontendPublishedExtern(CI386Frontend *state,CHashFun *function);
 extern I64 I386FrontendDirective(U8 *context,CCmpCtrl *cc,I64 keyword);
 extern U0 I386FrontendStatementsInit(CI386Frontend *state);
 //Keep source-unit macros private until publication or control teardown.
@@ -237,9 +235,9 @@ U0 I386FrontendFree(U8 *context,U8 *allocation)
   CI386FrontendFixup **pending=&state->fixups,*fixup;
   while(fixup=*pending) {
     if(fixup->code==allocation) {
-      *pending=fixup->next;
+      *pending=fixup->pending_next;
       if(!I386ParserFree(state->heap,state->cc,fixup)) I386FrontendUnavailable(state);
-    } else pending=&fixup->next;
+    } else pending=&fixup->pending_next;
   }
   while(record=*link) {
     if(record->code==allocation) {
@@ -622,8 +620,8 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
         call->fun.ie_lst=0; call->fun.ext_lst=0;
         call->target=fun->exe_addr; call->recursive=fun==cc->htc.fun;
         call->original=fun;
-        call->unresolved=!call->recursive && Bt(&fun->flags,Cf_EXTERN) && !(fun->type&HTF_IMPORT) &&
-          I386ParserRecord(state->cc,fun);
+        call->unresolved=!call->recursive && Bt(&fun->flags,Cf_EXTERN) && !(fun->type&HTF_IMPORT);
+        call->indirect=call->unresolved && state->command_publication && !(cc->flags&CCF_MODULE_SOURCE);
         call->next=bound->calls; bound->calls=call;
       }
       stack[depth++]=call;
@@ -635,9 +633,14 @@ U0 I386FrontendCalls(CI386Frontend *state,CI386FrontendBound *bound,CCmpCtrl *cc
       if(!call->recursive && (!call->target ||
           call->fun.type&HTF_IMPORT && !(cc->flags&CCF_MODULE_SOURCE)))
         I386FrontendCallsReject(state,2,node);
-      if(call->unresolved && !I386ParserRecord(state->cc,call->original))
+      if(call->unresolved && !I386ParserRecord(state->cc,call->original) &&
+          !I386FrontendPublishedExtern(state,call->original))
         I386FrontendCallsReject(state,3,node);
-      node->ic_code=IC_CALL_IMPORT;
+      if(call->indirect) {
+        node->ic_code=IC_CALL_INDIRECT2;
+        fun=I386CompletionFunction(state,call->original);
+        node->ic_data=&fun->exe_addr;
+      } else node->ic_code=IC_CALL_IMPORT;
     } else if(node->ic_code==IC_CALL_END) {
       if(!depth) I386FrontendCallsReject(state,4,node);
       node->ic_data=&stack[--depth]->fun;
@@ -704,6 +707,7 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
   CI386FrontendAddress *address,*next_address;
   CI386FrontendFixup *fixup;
   CMemberLst *member;
+  CHashFun *canonical;
   U8 *target;
   I64 i,j,offset,bytes=output->bytes;
   U8 *code=output->code;
@@ -724,12 +728,16 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
   call=bound->calls; bound->calls=0;
   while(call) {
     next_call=call->next; target=call->target;
+    canonical=I386CompletionFunction(state,call->original);
     if(call->recursive) target=code;
     record=call->fun.ie_lst;
     while(record) {
       next=record->next; offset=record->rip;
-      if(record->type!=IET_REL_I32 || offset<0 || offset>bytes-4) I386FrontendUnavailable(state);
-      I386FrontendRelocAdd(state,output,offset,I386_MODULE_REL32,call->original->str);
+      if(offset<0 || offset>bytes-4 ||
+          call->indirect && record->type!=IET_IMM_U32 ||
+          !call->indirect && record->type!=IET_REL_I32)I386FrontendUnavailable(state);
+      if(call->indirect)output->indirect_slots=TRUE;
+      else I386FrontendRelocAdd(state,output,offset,I386_MODULE_REL32,call->original->str);
       if(call->unresolved) {
         if(call->fun.arg_cnt<0 || call->fun.arg_cnt>4095) I386FrontendUnavailable(state);
         fixup=I386FrontendAlloc(state,sizeof(CI386FrontendFixup)+call->fun.arg_cnt*sizeof(CHashClass *),TRUE,FALSE);
@@ -741,10 +749,16 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
           if(!member) I386FrontendUnavailable(state);
           fixup->arguments[j]=member->member_class; member=member->next;
         }
-        fixup->next=state->fixups; state->fixups=fixup;
+        fixup->signature=I386_TASK_EXTERN_MAGIC;fixup->indirect=call->indirect;
+        fixup->undefined_address=&I386FrontendUndefined;
+        fixup->code_bytes=bytes;fixup->rip=(code+offset+0)(U64);
+        fixup->code_owner=I386ParserRecord(state->cc,code)->owner;
+        fixup->pending_next=state->fixups; state->fixups=fixup;
         target=&I386FrontendUndefined;
       }
-      (code+offset)(U32 *)[0]=(target+0)(U64)-(code+offset+4)(U64);
+      if(call->indirect)
+        (code+offset)(U32 *)[0]=(&canonical->exe_addr+0)(U64);
+      else (code+offset)(U32 *)[0]=(target+0)(U64)-(code+offset+4)(U64);
       I386NativeBackendFree(&bound->release_owner,record); record=next;
     }
     I386FrontendFree(state,call); call=next_call;
@@ -1043,16 +1057,35 @@ CHashFun *I386FrontendFunNew(U8 *context)
   CHashFun *fun=I386FrontendAlloc(context,sizeof(CHashFun)*(PTR_STARS_NUM+1),TRUE,FALSE);
   PrsFunInit(fun); return fun;
 }
+extern CHashFun *I386FrontendStageFunction(CI386Frontend *state,CHashFun *published);
 CHash *I386FrontendSingleFind(U8 *context,U8 *name,CHashTable *table,I64 mask)
 {
   CHash *entry;
   I64 i;
   for(i=0;i<=table->mask;i++)
     for(entry=table->body[i];entry;entry=entry->next)
-      if(entry->type&mask && !StrCmp(entry->str,name)) return entry;
+      if(entry->type&mask && !StrCmp(entry->str,name))return entry;
   return 0;
 }
+CHash *I386FrontendJoinFind(U8 *context,U8 *name,CHashTable *table,I64 mask)
+{//Only the shared join requests a mutable private copy of a published extern.
+  CI386Frontend *state=context;
+  CHash *entry=I386FrontendSingleFind(context,name,table,mask);
+  CHashFun *prior;
+  if(entry)return entry;
+  if(table==state->table && mask==HTT_FUN && state->command_publication &&
+      !(state->cc->flags&CCF_MODULE_SOURCE)) {
+    prior=I386FrontendSingleFind(state,name,state->parent,HTT_FUN);
+    if(prior && Bt(&prior->flags,Cf_EXTERN) && !(prior->type&HTF_IMPORT))
+      return I386FrontendStageFunction(state,prior);
+  }
+  return 0;
+}
+extern Bool I386FunctionCompletionTargetValid(CI386Frontend *state,CHashFun *published);
+extern Bool I386FunctionCompletionValid(CI386Frontend *state,CI386FrontendCompletion *completion);
+extern U0 I386FunctionCompletionCommit(CI386Frontend *state,CI386FrontendCompletion *completion);
 #include "/Compiler/I386/FrontendClassCompletion.HC"
+#include "/Compiler/I386/FrontendFunctionCompletion.HC"
 CHashClass *I386FrontendClass(U8 *context,CCmpCtrl *cc,I64 keyword,I64 flags,Bool is_extern)
 {
   CI386Frontend *state=context;
@@ -1284,7 +1317,7 @@ CI386Frontend *I386FrontendNew(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,C
   s=&state->symbols; s->context=state; s->declarations=d; s->undefined_function=&I386FrontendUndefined; s->header=&I386FrontendHeader;
   s->used_mask=REGG_CLOBBERED+REGG_SAVED+REGG_STK_TMP;
   s->clobbered_mask=REGG_CLOBBERED+REGG_STK_TMP;
-  s->class_new=&I386FrontendClassNew; s->fun_new=&I386FrontendFunNew; s->single_find=&I386FrontendSingleFind;
+  s->class_new=&I386FrontendClassNew; s->fun_new=&I386FrontendFunNew; s->single_find=&I386FrontendJoinFind;
   s->class_members_delete=&I386FrontendClassMembers; s->members_delete=&I386FrontendMembers;
   s->source=&I386FrontendSource; s->option=&I386FrontendOption; s->warning=&I386FrontendWarning;
   I386FrontendStatementsInit(state);

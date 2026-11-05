@@ -61,7 +61,7 @@ U0 I386FrontendResolve(U8 *context,CCmpCtrl *cc,U8 *name)
   CI386Frontend *state=context;
   CHash *symbol=I386FrontendSingleFind(state,name,state->table,HTT_FUN|HTT_GLBL_VAR);
   CI386FrontendFixup **link=&state->fixups,*fixup;
-  CHashFun *fun;
+  CHashFun *fun,*canonical;
   CMemberLst *member;
   CI386FrontendCode *code;
   I64 i;
@@ -87,9 +87,15 @@ U0 I386FrontendResolve(U8 *context,CCmpCtrl *cc,U8 *name)
       }
       for(code=state->codes;code && code->code!=fixup->code;code=code->next);
       if(!code || fixup->offset<0 || fixup->offset>code->bytes-4) I386FrontendUnavailable(state);
-      (code->code+fixup->offset)(U32 *)[0]=(fun->exe_addr+0)(U64)-(code->code+fixup->offset+4)(U64);
-      *link=fixup->next; I386FrontendFree(state,fixup);
-    } else link=&fixup->next;
+      if(fixup->indirect) {
+        canonical=I386CompletionFunction(state,fun);
+        (code->code+fixup->offset)(U32 *)[0]=(&canonical->exe_addr+0)(U64);
+        link=&fixup->pending_next;
+      } else {
+        (code->code+fixup->offset)(U32 *)[0]=(fun->exe_addr+0)(U64)-(code->code+fixup->offset+4)(U64);
+        *link=fixup->pending_next; I386FrontendFree(state,fixup);
+      }
+    } else link=&fixup->pending_next;
   }
   I386FrontendCompleted(state,fun);
 }
@@ -101,7 +107,10 @@ Bool I386FrontendSameHeap(U8 *context,U8 *left,U8 *right)
 U0 I386FrontendAliasWarning(U8 *context,CCmpCtrl *cc,CHashSrcSym *symbol)
 { cc->warning_cnt++; }
 U0 I386FrontendMemberWarning(U8 *context,CCmpCtrl *cc,CMemberLst *member,Bool unneeded)
-{ cc->warning_cnt++; }
+{
+  if(unneeded)I386FrontendReport(context,cc,1,"Unneeded no_warn");
+  else I386FrontendReport(context,cc,1,"Unused var");
+}
 U0 I386FrontendDisassemble(U8 *context,U8 *code,I64 bytes)
 { I386FrontendUnavailable(context); }
 U8 *I386FrontendInitializerCode(U8 *context,CCmpCtrl *cc,I64 *bytes)
