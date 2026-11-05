@@ -8189,6 +8189,18 @@
           "result": "pass",
           "evidence": "build/i386-answer-oracles-v1/build/i386-answer-state-native-v1/result.json",
           "scope": "Fork experiment/i386-deferred-console-answers commit 82312957: all 34 commands, including integer/F64/pointer nested initializers and consumed task flags. 8 MiB KVM 486,-fpu/live WinMgr; exact pixels, filesystem audit, unchanged inputs. Not merged into active branch; broader compiler/document/full gates still running."
+        },
+        {
+          "command": "python3 tools/test-i386-answer-break-reference.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-answer-break-reference-v2/result.json",
+          "scope": "Four actual original ExePutS/prompt cases: completed 41 survives Break/BreakUnlock; pending-bit assignment leaves 2048. Exact task records and prompt output, no pre-prompt answer, unchanged inputs. Synthetic pending flags restored only after capture; native immediate break checkpoints and diagnostic display remain architecture differences."
+        },
+        {
+          "target": "experimental-task-owned-answer-compiler-group",
+          "result": "fail",
+          "evidence": "build/i386-answer-oracles-v1/build/i386-answer-state-compiler-v1/failure.json",
+          "scope": "Passed compiler commands through 113, then pending-break command 114 displayed native Exception plus completed flags value 3329 while old oracle expected only Exception. Original follow-up confirms completed pending assignment remains an answer. Full compiler result remains fail; later cases not qualified."
         }
       ]
     },

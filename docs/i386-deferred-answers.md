@@ -38,7 +38,7 @@ the six-case passing baseline.
 The implementation is on the user's fork branch
 `experiment/i386-deferred-console-answers`, in the detached worktree originally
 created at `build/i386-answer-isolated-v1`. It is not yet merged into the active
-`experiment/i386-cache-merge-progress` branch, whose complete gate remains live.
+`experiment/i386-cache-merge-progress` branch, whose broader integration checks remain incomplete.
 
 Console answer callbacks capture the last value and copy its raw type/pointer
 count while the class descriptor is live. Presentation happens after the source
@@ -75,8 +75,10 @@ an isolated checkout without depending on its absolute host path.
 
 ## Integration and remaining gates
 
-The original complete default TCG run remains live in the main worktree at
-`build/i386-welcome-keyboard-gate-minimal-v1`. The earlier experimental full run at
+The original complete default TCG run in the main worktree at
+`build/i386-welcome-keyboard-gate-minimal-v1` terminated at the picker click
+sequence; see `docs/i386-picker-click-sequencing.md` for its pinned failure and
+scoped TCG/KVM sequencing checks. The earlier experimental full run at
 `build/i386-answer-isolated-v1/build/i386-deferred-answers-gate-v1` stopped at
 the obsolete Holder per-expression output oracle. Its terminal `failure.json`
 pins the image, helper, checkpoint, screenshots and log. It is not a full pass. Existing console oracles
@@ -85,8 +87,8 @@ original observations while retaining their commands and explicit-output
 checks. The repeated-initial-prompt host color bug remains separate.
 
 The active branch contains the new executable reference/native checks and
-records the unchanged-runtime failure; its runtime remains unchanged while the
-long-running gate's inputs are pinned. The experimental branch makes the tested
+records the unchanged-runtime failure; its console-answer runtime remains unchanged while experimental regression
+checks continue. The experimental branch makes the tested
 implementation reviewable without mutating those inputs. Full minimal
 regressions, complete terminal/API/exception behavior, second-boot demo coverage,
 all application qualifications and C1-C5 remain open.
@@ -139,3 +141,9 @@ gate (`build/i386-answer-state-gate-v1`) are running against the frozen revised
 inputs. The first-prompt color fix is on that same experimental branch and has
 its own passing physical-keyboard regression. Integration and full C1-C5
 qualification remain pending.
+
+The revised focused compiler run terminated at pending-break command 114;
+`docs/i386-break-answer-state.md` records that failure and the passing original
+comparison. The revised full gate remains running with its original frozen
+oracles, so it has not yet incorporated the pending-break or picker sequencing
+migrations. No full-suite pass is claimed.
