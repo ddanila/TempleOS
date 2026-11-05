@@ -39,5 +39,9 @@ These prerequisites do not replace a complete minimal gate.
 The fresh full minimal gate at `build/i386-picker-ack-gate-minimal-v1` has passed
 the previously failing picker stage and advanced into file navigation. Its
 `input/picker-stage-pass.json` pins the six completed selection/open/editor/return
-frames, helper hash and next authoritative checkpoint. It remains a live full
-run, not a complete-suite pass or original desktop qualification.
+frames, helper hash and next authoritative checkpoint. The run has now ended
+with a timeout in the later `mouse-help-link` interaction, after capturing its
+initial and selected frames. `failure.json` pins the terminal checkpoint, logs,
+image, frames and frozen runner/source copies. The picker fix passed inside the
+full workload, but the complete minimal gate and original desktop qualification
+remain open. The Help interaction failure needs investigation.
