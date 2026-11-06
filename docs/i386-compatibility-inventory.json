@@ -619,7 +619,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-note-conversion.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-note-conversion-original-v2/result.json",
+          "scope": "Exact 1,482-byte Note2Ona/Ona2Note/Ona2Octave oracle: signed I8 domain, signed note/octave pairs, default octave and I64 boundaries. Inputs unchanged; frequency, playback and whole-file qualification remain open."
+        },
+        {
+          "command": "python3 tools/test-i386-note-conversion.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-note-conversion-native-v3/result.json",
+          "scope": "Exact 1,482-byte Note2Ona/Ona2Note/Ona2Octave oracle: signed I8 domain, signed note/octave pairs, default octave and I64 boundaries. Inputs unchanged; frequency, playback and whole-file qualification remain open."
+        }
+      ]
     },
     {
       "path": "Adam/AutoComplete/ACDefs.DATA",
@@ -4079,6 +4092,12 @@
           "result": "fail",
           "evidence": "build/i386-frame-capture-native-v1/result.json",
           "scope": "Interface 222 rejects first DCCopy invocation at fixture line 10; no behavior checks execute, inputs unchanged."
+        },
+        {
+          "command": "python3 tools/test-i386-frame-capture.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-frame-capture-native-v2/result.json",
+          "scope": "Twelve deep-copy, exact crop/pixel, compression and real GR write/read checks with independent bytes and fresh arithmetic. Inputs unchanged; actual compositor recording, all failure cleanup and whole-file qualification remain open."
         }
       ]
     },
@@ -4210,6 +4229,12 @@
           "result": "fail",
           "evidence": "build/i386-frame-capture-native-v1/result.json",
           "scope": "Interface 222 rejects first DCCopy invocation at fixture line 10; no behavior checks execute, inputs unchanged."
+        },
+        {
+          "command": "python3 tools/test-i386-frame-capture.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-frame-capture-native-v2/result.json",
+          "scope": "Twelve deep-copy, exact crop/pixel, compression and real GR write/read checks with independent bytes and fresh arithmetic. Inputs unchanged; actual compositor recording, all failure cleanup and whole-file qualification remain open."
         }
       ]
     },
@@ -4613,6 +4638,18 @@
           "result": "pass",
           "evidence": "build/i386-c2-bitmap-document-bytes-native/result.json",
           "scope": "Four exact bitmap records, padding, document copy ownership, tags and default/no-document insertion; six checks; unchanged inputs; rendering, GR loading and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-sprite-output.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-sprite-output-original-v1/result.json",
+          "scope": "Six Sprite wrapper output-document/deep-copy/ownership/tag/no-document checks. Original passes; native baseline rejects Sprite before behavior. Inputs unchanged; rendering and complete app/file qualification remain open."
+        },
+        {
+          "command": "python3 tools/test-i386-sprite-output.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-sprite-output-native-v1/result.json",
+          "scope": "Six Sprite wrapper output-document/deep-copy/ownership/tag/no-document checks. Original passes; native baseline rejects Sprite before behavior. Inputs unchanged; rendering and complete app/file qualification remain open."
         }
       ]
     },
@@ -5664,7 +5701,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-note-conversion.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-note-conversion-original-v2/result.json",
+          "scope": "Exact 1,482-byte Note2Ona/Ona2Note/Ona2Octave oracle: signed I8 domain, signed note/octave pairs, default octave and I64 boundaries. Inputs unchanged; frequency, playback and whole-file qualification remain open."
+        },
+        {
+          "command": "python3 tools/test-i386-note-conversion.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-note-conversion-native-v3/result.json",
+          "scope": "Exact 1,482-byte Note2Ona/Ona2Note/Ona2Octave oracle: signed I8 domain, signed note/octave pairs, default octave and I64 boundaries. Inputs unchanged; frequency, playback and whole-file qualification remain open."
+        }
+      ]
     },
     {
       "path": "Adam/Snd/SndMusic.HC",
@@ -7551,6 +7601,12 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-screencast-v3/result.json",
           "scope": "Full original-byte application loads past scrncast and stops at missing Ona2Octave in PsalmodyDraw line 163. Recording/deletion/abort unexecuted; inputs unchanged."
+        },
+        {
+          "command": "python3 tools/test-i386-psalmody-keyboard.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-note-conversion-v1/result.json",
+          "scope": "Original app bytes verified. Load advances beyond Ona2Octave and rejects the embedded Sprite call in PsalmodyDraw line 381. Inputs unchanged; recording/deletion/abort unexecuted."
         }
       ]
     },
@@ -7647,6 +7703,12 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-screencast-v3/result.json",
           "scope": "Full original-byte application loads past scrncast and stops at missing Ona2Octave in PsalmodyDraw line 163. Recording/deletion/abort unexecuted; inputs unchanged."
+        },
+        {
+          "command": "python3 tools/test-i386-psalmody-keyboard.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-note-conversion-v1/result.json",
+          "scope": "Original app bytes verified. Load advances beyond Ona2Octave and rejects the embedded Sprite call in PsalmodyDraw line 381. Inputs unchanged; recording/deletion/abort unexecuted."
         }
       ]
     },
