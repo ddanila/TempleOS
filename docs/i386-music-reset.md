@@ -48,3 +48,7 @@ Kernel/SymbolTypes.HH resolves that type visibility gap and reaches missing
 TaskCaller at line 17 (`build/i386-psalmody-symbol-types-probe-v1/result.json`).
 Both probes preserve their inputs; function debug metadata and task stack
 inspection still need their own compatibility work.
+
+The [function-symbol comparison](i386-function-symbol.md) now confirms that
+the original emits debug ranges while native compilation currently does not.
+Type visibility and generated debug metadata are tracked as separate gaps.

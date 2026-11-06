@@ -9439,7 +9439,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-function-symbol-debug-range",
+          "result": "pass",
+          "evidence": "build/i386-function-symbol-original-v2/result.json",
+          "scope": "Actual function kind/name/argument count/return type/address/default call and nonempty generated debug range: 63,1,1,1,1,4; unchanged inputs. See docs/i386-function-symbol.md."
+        },
+        {
+          "target": "native-function-symbol-shared-types",
+          "result": "fail",
+          "evidence": "build/i386-function-symbol-shared-types-v1/result.json",
+          "scope": "Explicit complete shared types give symbol-field mask 63 but no debug record: 63,0,0,0,0,4. Unchanged inputs; full test remains failing."
+        }
+      ]
     },
     {
       "path": "Compiler/PrsExp.HC",
@@ -17544,6 +17557,18 @@
           "result": "pass",
           "evidence": "build/i386-fat-media-types-native-v2/result.json",
           "scope": "Shared original FAT32 boot/info sector record sizes, offsets and field reads; no native FAT32 media initialization"
+        },
+        {
+          "target": "original-function-symbol-debug-range",
+          "result": "pass",
+          "evidence": "build/i386-function-symbol-original-v2/result.json",
+          "scope": "Actual function kind/name/argument count/return type/address/default call and nonempty generated debug range: 63,1,1,1,1,4; unchanged inputs. See docs/i386-function-symbol.md."
+        },
+        {
+          "target": "native-function-symbol-shared-types",
+          "result": "fail",
+          "evidence": "build/i386-function-symbol-shared-types-v1/result.json",
+          "scope": "Explicit complete shared types give symbol-field mask 63 but no debug record: 63,0,0,0,0,4. Unchanged inputs; full test remains failing."
         }
       ]
     },
