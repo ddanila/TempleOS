@@ -53,3 +53,10 @@ Both artifacts are preserved.
 python3 tools/test-i386-screencast.py --out OUT_ORIGINAL
 python3 tools/test-i386-screencast.py IMAGE --out OUT_NATIVE
 ```
+
+The Beep integration regression passes at 8 MiB TCG 486,-fpu in
+`build/i386-screencast-beep-v2/result.json`, with unchanged inputs: actual
+speaker on/off observation, delay, busy cleanup and fresh arithmetic. The v1
+attempt stopped before Beep because the old harness omitted the fixture's
+unused-parameter warning; v2 expects that exact single warning. This does not
+qualify the emitted waveform or frequency.

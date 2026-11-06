@@ -26491,3 +26491,11 @@ PsalmodyDraw line 163. No recording/deletion/abort assertion runs. Evidence is
 build/i386-psalmody-screencast-v3/result.json, with unchanged inputs. The earlier
 minimal-image attempt lacked examples, and the first repack was rejected for
 stale directory padding; those failures remain preserved. C1–C5 remain open.
+
+## Beep integration with shared capture-aware Snd (2026-11-06)
+
+The 8 MiB TCG Beep regression passes with unchanged inputs in
+build/i386-screencast-beep-v2: speaker on/off, delay, busy cleanup and fresh
+arithmetic. The older harness omitted the fixture's unused-parameter warning
+and stopped before executing Beep; only that exact expectation changed.
+Waveform/frequency and complete screencast qualification remain open.

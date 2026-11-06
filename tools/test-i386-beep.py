@@ -9,7 +9,7 @@ import runpy
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"tests/guest/i386-beep-reference/Beep.HC"
 COMMANDS = [('#include "/Kernel/I386/PublicUser.HH"',[]),
-            ('#include "C:/Beep.HC"',[]),('BECheck;',['31']),('6*7;',['42'])]
+            ('#include "C:/Beep.HC"',['Warning: Unused var']),('BECheck;',['31']),('6*7;',['42'])]
 
 if any(len(c[0])>255 for c in COMMANDS):
     raise ValueError("Beep fixture exceeds native input limit")

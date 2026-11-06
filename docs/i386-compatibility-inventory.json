@@ -17438,6 +17438,12 @@
           "result": "pass",
           "evidence": "build/i386-screencast-native-v2/result.json",
           "scope": "Twenty native state/real sound-queue, mute/debug gate, semaphore recovery and IF checks match original; fresh arithmetic and unchanged inputs. Video/audio waveform and whole-file qualification open."
+        },
+        {
+          "command": "python3 tools/test-i386-beep.py IMAGE --out OUT --ram-mib 8",
+          "result": "pass",
+          "evidence": "build/i386-screencast-beep-v2/result.json",
+          "scope": "8 MiB TCG 486,-fpu with shared Snd: real speaker gating, delay, busy cleanup and fresh arithmetic; unchanged inputs. Not waveform/frequency qualification."
         }
       ]
     },
