@@ -12,23 +12,25 @@ ROOT=Path(__file__).resolve().parents[1]
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 
 def expected_bytes():
-    return struct.pack("<16q",*([1]*16))
+    return struct.pack("<24q",*([1]*24))
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);args=ap.parse_args();out=args.out.resolve()
     if out.exists():ap.error('Use a fresh output directory')
     fixture=ROOT/'tests/guest/i386-public-lexer/Contract.HC'
-    paths=[Path(__file__).resolve(),fixture,ROOT/'Kernel/FontStd.HC']+[ROOT/('tools/'+n) for n in ['test-i386-timeclock-reference.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','build-iso.py','package-i386-native-image.py','build-i386-kernel.py']]
+    includes=sorted(fixture.parent.glob('PublicLexer*.HC'))
+    paths=includes+[Path(__file__).resolve(),fixture,ROOT/'Kernel/FontStd.HC']+[ROOT/('tools/'+n) for n in ['test-i386-timeclock-reference.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','build-iso.py','package-i386-native-image.py','build-i386-kernel.py']]
     if args.disk:paths.append(args.disk.resolve())
-    out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Sixteen public CmpCtrlNew/CmpCtrlDel/Lex/LexExtStr checks: buffer identity, scalar tokens, adjacent strings, borrowing, prompt allocation, flags and heap cleanup. Includes and full compiler/Psalmody behavior remain separate.');g=None
+    out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Twenty-four public CmpCtrlNew/CmpCtrlDel/Lex/LexExtStr checks: buffer identity, scalar tokens, adjacent strings, borrowing, prompt allocation, flags and heap cleanup. Nested includes and song tokens are checked; full compiler/Psalmody behavior remains separate.');g=None
     (out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     try:
         if args.disk:
             pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));image=out/'working.img'
-            report['packaging']=pack['package'](args.disk.resolve(),image,additions={'/Probe/PublicLexer.HC':fixture.read_bytes()})
+            report['packaging']=pack['package'](args.disk.resolve(),image,additions={'/Probe/PublicLexer.HC':fixture.read_bytes(),**{'/'+p.name:p.read_bytes() for p in includes}})
         else:
             overlay=out/'overlay';overlay.mkdir();report['reference_sha256']=runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))['restore_reference'](overlay)
             (overlay/'PublicLexer.HC').write_bytes(fixture.read_bytes())
+            for p in includes:(overlay/p.name).write_bytes(p.read_bytes())
             (overlay/'Once.HC').write_bytes(b'while(!Bt(&sys_run_level,RLf_ADAM_SERVER))Yield;\n#include "::/PublicLexer.HC"\nPLCheck();\n')
             image=out/'original.iso';subprocess.run(['python3','tools/build-iso.py','--overlay',str(overlay),'--output',str(image)],cwd=ROOT,check=True)
         Guest=runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest'];g=Guest(image,out/'guest',bool(args.disk))

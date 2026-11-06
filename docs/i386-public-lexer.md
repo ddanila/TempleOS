@@ -5,12 +5,14 @@ The original Psalmody source now reaches `CmpCtrlNew` in PsalmodyFile line
 The public control and lexer must preserve original ownership semantics;
 exporting the private native constructor directly is insufficient.
 
-`tests/guest/i386-public-lexer/Contract.HC` records sixteen checks in an exact
-128-byte table. It covers constructor flags and self-links, input-buffer
+`tests/guest/i386-public-lexer/Contract.HC` records twenty-four checks in an exact
+192-byte table. It covers constructor flags and self-links, input-buffer
 identity, current-task symbols, default filename and line, identifier/integer/
 floating/string tokens, adjacent-string concatenation and returned ownership,
 EOF, borrowed input lifetime, prompt allocation, at-sign handling, and heap
-restoration after destruction. The independent expected table contains sixteen
+restoration after destruction. It also reads nested include files containing
+Psalmody-style tempo and Play statements, concatenated notes and embedded-NUL
+lyrics, and checks single-string pointer identity with `lex_next=FALSE`. The independent expected table contains twenty-four
 64-bit ones. The runner preserves its source, fixture and input hashes.
 
 Run the original oracle and native candidate into fresh directories:
@@ -41,7 +43,23 @@ strings returned by `LexExtStr` use public `MSize`/`Free` conventions. Private
 `I386CmpCtrlNew` instead validates arena-owned inputs, adds private control
 state and uses arena cleanup. A direct export would violate this contract.
 
-The fixture does not cover include files, document input, directives, error
-unwinding, task death, or all `LexExtStr` modes. Psalmody uses an include directive
-and needs the actual song token stream. These require further oracle coverage
-and implementation; this baseline closes no C1–C5 milestone.
+The fixture does not cover document input, general directives, error unwinding,
+task death, or all `LexExtStr` modes. These require further oracle coverage and
+implementation. The nested include fixture exercises the token pattern used by
+Psalmody, but does not execute the full application or qualify its workflow.
+This baseline closes no C1–C5 milestone.
+
+## Nested include and song-token extension (2026-11-07)
+
+`build/i386-public-lexer-original-v3/result.json` passes all 24 checks with
+unchanged inputs. The added song and notes source files are pinned and included
+in the reference ISO and native packaging. Nested includes return to EOF and
+restore the initial public heap usage; embedded-NUL lyrics remain intact.
+
+The preceding v2 result is preserved as a fixture error: check 18 expected seven
+bytes for the seven-character note string, omitting its terminator. It was the
+only failing check. V3 corrects the expected size to eight and reruns the full
+original oracle; no production change was needed.
+
+`build/i386-public-lexer-native-v2/result.json` still fails at CmpCtrlNew
+before assertions, with unchanged inputs and the nested files packaged.

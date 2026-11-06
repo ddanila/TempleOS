@@ -1,7 +1,7 @@
 U0 PLLog(U8 *s){while(*s)OutU8(0xE9,*s++);}
 U0 PLCheck()
 {
-  I64 v[16],used=Fs->data_heap->used_u8s,size;
+  I64 v[24],used=Fs->data_heap->used_u8s,size;
   U8 *buffer=StrNew("UniquePublicLexName 42 -7 3.5 \"ab\" \"cd\" +\n"),*joined,*s;
   CCmpCtrl *cc=CmpCtrlNew(buffer);
   v[0]=cc && !cc->flags && cc->next==cc && cc->last==cc;
@@ -29,6 +29,25 @@ U0 PLCheck()
   cc=CmpCtrlNew(,CCF_KEEP_AT_SIGN);
   v[14]=cc->flags==CCF_KEEP_AT_SIGN && !Bt(cc->char_bmp_alpha_numeric,'@');
   CmpCtrlDel(cc);v[15]=Fs->data_heap->used_u8s==used;
+  cc=CmpCtrlNew(StrNew("#include \"::/PublicLexerSong.HC\""));
+  v[16]=Lex(cc)==TK_IDENT && !StrCmp(cc->cur_str,"music") &&
+    Lex(cc)=='.' && Lex(cc)==TK_IDENT && !StrCmp(cc->cur_str,"tempo") &&
+    Lex(cc)=='=' && Lex(cc)==TK_F64 && cc->cur_f64==2.5 && Lex(cc)==';';
+  v[17]=Lex(cc)==TK_IDENT && !StrCmp(cc->cur_str,"Play") &&
+    Lex(cc)=='(' && Lex(cc)==TK_STR;
+  joined=LexExtStr(cc,&size);
+  v[18]=size==8 && !StrCmp(joined,"5qCqDqE") && cc->token==',';Free(joined);
+  v[19]=Lex(cc)==TK_STR;
+  joined=LexExtStr(cc,&size);
+  v[19]=v[19] && size==9 && !MemCmp(joined,"one\0two\0",9) && cc->token==')';Free(joined);
+  v[20]=Lex(cc)==';' && Lex(cc)==TK_EOF;CmpCtrlDel(cc);
+  v[21]=Fs->data_heap->used_u8s==used;
+  cc=CmpCtrlNew(StrNew("\"single\"+"));
+  Lex(cc);buffer=cc->cur_str;joined=LexExtStr(cc,&size,FALSE);
+  v[22]=joined==buffer && size==7 && !StrCmp(joined,"single") &&
+    !cc->cur_str && cc->token==TK_STR && Lex(cc)=='+';
+  Free(joined);CmpCtrlDel(cc);
+  v[23]=Fs->data_heap->used_u8s==used;
   s=MStrPrint("EXPORT public-lexer.bin %X %X\n",v,sizeof(v));PLLog(s);Free(s);
   PLLog("PUBLIC LEXER DONE\n");Sleep(1000);
 }

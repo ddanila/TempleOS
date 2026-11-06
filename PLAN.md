@@ -26590,3 +26590,12 @@ High-end archive workspace placement leaves the full 8 MiB diagnostic failure
 and heap totals unchanged. The experiment was reverted after its narrow archive
 and welcome tests passed. See docs/i386-frame-capture.md. The native nine-module
 build remains live; no generation or milestone qualification is inferred.
+
+## Public lexer nested include contract (2026-11-07)
+
+The expanded original oracle passes 24 checks, including nested song includes,
+notes, embedded-NUL lyrics, LexExtStr pointer identity with lex_next=FALSE, and
+heap restoration. Native interface 225 still rejects CmpCtrlNew before these
+assertions. See docs/i386-public-lexer.md for the preserved initial fixture
+length error and corrected full rerun. Public compiler-control implementation
+and complete Psalmody interaction remain open.
