@@ -217,6 +217,14 @@ U0 BuildKernel()
   image=CompressBuf(source,size);
   if(image(CArcCompress *)->compression_type!=CT_7_BIT) { Report("FAIL include archive mode\n"); return; }
   line=MStrPrint("EXPORT IncludeInner.HC.Z %X %X\n",image,image(CArcCompress *)->compressed_size); Report(line);
+  source=FileRead("T:/Apps/Budget/Accts.DD",&size);
+  image=CompressBuf(source,size);
+  U8 *budget_expanded=ExpandBuf(image);
+  if(!image || !budget_expanded || MemCmp(source,budget_expanded,size)) {
+    Report("FAIL Budget template archive\n");return;
+  }
+  line=MStrPrint("EXPORT BudgetAccts.DD.Z %X %X\n",image,image(CArcCompress *)->compressed_size);Report(line);
+  line=MStrPrint("EXPORT BudgetAccts.DD %X %X\n",budget_expanded,size);Report(line);
   Report("DONE kernel cross-build\n");
 }
 BuildKernel;

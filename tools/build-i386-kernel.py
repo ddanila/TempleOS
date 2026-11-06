@@ -779,6 +779,8 @@ def package_volume(disk, exports, content_profile="minimal"):
                 for part in parts[:-1]: node=node.setdefault(part,{})
                 node[parts[-1]]=path.read_bytes()
     inventory_hashes = {}
+    compressed_paths = {"/Registry.HC.Z"}
+    derived_archives = {}
     if content_profile == "full":
         inventory_path = ROOT/'docs/i386-compatibility-inventory.json'
         inventory = json.loads(inventory_path.read_text())
@@ -808,6 +810,20 @@ def package_volume(disk, exports, content_profile="minimal"):
             if isinstance(node.get(parts[-1]), dict):
                 raise ValueError(f'Inventory file collides with a directory: {name}')
             node[parts[-1]] = payload
+        # The unchanged installer uses an exact .Z mask, not logical lookup.
+        # Retain the inventory source and supply its original-compressor archive.
+        archive = (exports/'BudgetAccts.DD.Z').read_bytes()
+        template = (ROOT/'Apps/Budget/Accts.DD').read_bytes()
+        if (len(archive) < 17 or struct.unpack_from('<qq', archive) !=
+                (len(archive), len(template)) or archive[16] not in (1, 2, 3) or
+                (exports/'BudgetAccts.DD').read_bytes() != template):
+            raise ValueError('Invalid original-compressor Budget template')
+        tree['Apps']['Budget']['Accts.DD.Z'] = archive
+        compressed_paths.add('/Apps/Budget/Accts.DD.Z')
+        derived_archives['/Apps/Budget/Accts.DD.Z'] = {
+            'source': '/Apps/Budget/Accts.DD',
+            'source_sha256': hashlib.sha256(template).hexdigest(),
+            'archive_sha256': hashlib.sha256(archive).hexdigest()}
     packed = (exports/'IncludeInner.HC.Z').read_bytes()
     inner = (ROOT/'tools/guest/i386-kernel/IncludeInner.HC').read_bytes()
     if len(packed)<17 or struct.unpack_from('<qqB', packed) != (len(packed), len(inner), 2):
@@ -849,7 +865,7 @@ def package_volume(disk, exports, content_profile="minimal"):
                 if cursor>start+sectors: raise ValueError('RedSea image full')
                 image[block*512:block*512+len(node)]=node
             files[path]={'block':block,'size':len(node),'sha256':hashlib.sha256(node).hexdigest()}
-            return block,len(node),0xC00 if path=='/Registry.HC.Z' else 0x800
+            return block,len(node),0xC00 if path in compressed_paths else 0x800
         block=cursor
         size=((len(node)+3)*64+511)//512*512
         cursor+=size//512
@@ -892,7 +908,7 @@ def package_volume(disk, exports, content_profile="minimal"):
     disk.write_bytes(image)
     return {'start':start,'sectors':sectors,'root':root,'bitmap_sectors':bitmap_blocks,
             'first_free':cursor,'files':files,'content_profile':content_profile,
-            'inventory_sha256':inventory_hashes}
+            'inventory_sha256':inventory_hashes,'derived_archives':derived_archives}
 
 
 def verify_volume(disk, volume):
@@ -940,7 +956,7 @@ def verify_volume(disk, volume):
                 directory(child,block,child_path)
                 if struct.unpack_from('<q',image,child*512+48)[0]!=length:
                     raise ValueError('Directory extent sizes disagree')
-            elif attr==0x800 or attr==0xC00 and child_path=='/Registry.HC.Z':
+            elif attr==0x800 or attr==0xC00 and (child_path=='/Registry.HC.Z' or child_path in volume.get('derived_archives', {})):
                 claim(child,length)
                 content=image[child*512:child*512+length] if length else b''
                 found[child_path]={'block':child,'size':length,'sha256':hashlib.sha256(content).hexdigest()}

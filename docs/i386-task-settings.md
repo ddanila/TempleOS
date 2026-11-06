@@ -180,3 +180,35 @@ image still has only the original eleven application files and no accounts
 copy under /Budget. Compression-name resolution/packaging is the next issue
 to investigate; a successful include is not a successful installation or
 Budget workflow. No application qualification is claimed.
+
+## Packaged Budget template and installation (2026-11-06)
+
+The full-content packager now supplies /Apps/Budget/Accts.DD.Z, produced by
+the original CompressBuf during cross-build and roundtripped with ExpandBuf.
+The 95-byte archive expands to the unchanged 97-byte Accts.DD inventory file,
+which remains bundled as well. The derived archive is recorded separately in
+the volume manifest and marked RS_ATTR_COMPRESSED|RS_ATTR_CONTIGUOUS. No
+application source or wildcard/Copy behavior changed. The original installer
+uses an exact .Z mask, so this supplies its missing physical input.
+
+The unchanged original Install.HC runs twice and installs exact template bytes
+in build/i386-budget-install-reference-v1. The native run in
+build/i386-budget-template-native-v1 passes after loading the actual autocomplete
+and settings libraries and all unchanged Budget sources. It runs Install.HC
+twice, verifies that the copied archive preserves bytes/attributes/date, then
+reads the installed archive through public FileRead and compares every expanded
+byte with the pinned original. Only /Budget/Accts.DD.Z and the test readback
+/BudgetTemplate.DATA are created; 1738 existing files are preserved. Both test
+runs retain unchanged inputs and the native filesystem audit passes.
+
+The candidate is build/i386-budget-template-cross-v1/kernel.img. Its content
+audit in build/i386-budget-template-content-audit-v1.json verifies all 686
+inventory files byte-for-byte. The delivered-source audit also checks all 1368
+source/doc files. Capacity and inventory rejection still pass. The extended
+full-content guard rejects a truncated archive, a wrong expanded size and a
+wrong roundtrip template without modifying the destination disk
+(build/i386-budget-template-archive-guard-v1).
+
+This establishes source loading and first/repeated installation, not transaction
+entry, account views, persistence across reboot, the interactive application or
+default startup-library integration. Those workflows and C1-C5 remain open.

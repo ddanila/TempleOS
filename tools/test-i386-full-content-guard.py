@@ -17,6 +17,7 @@ def sha(path):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--out', type=Path, required=True)
+    ap.add_argument('--exports', type=Path, help='Also reject corrupt derived Budget archives before writing')
     args = ap.parse_args()
     out = args.out.resolve()
     if out.exists():
@@ -24,6 +25,8 @@ def main():
     out.mkdir(parents=True)
     inventory = ROOT/'docs/i386-compatibility-inventory.json'
     inputs = [Path(__file__).resolve(), inventory, ROOT/'tools/build-i386-kernel.py']
+    if args.exports:
+        inputs += [args.exports/'BudgetAccts.DD.Z', args.exports/'BudgetAccts.DD']
     pins = {str(path):sha(path) for path in inputs}
     report = {'result':'running', 'input_sha256':pins,
               'scope':'Reject incomplete inventory and undersized full-profile disk without writes'}
@@ -51,6 +54,28 @@ def main():
                     raise ValueError(f'Expected rejection for {size} MiB case')
                 if sha(disk) != before:
                     raise ValueError('Rejected packaging modified the disk')
+        if args.exports:
+            package.__globals__['ROOT'] = ROOT
+            archive=(args.exports/'BudgetAccts.DD.Z').read_bytes()
+            expanded=(args.exports/'BudgetAccts.DD').read_bytes()
+            cases=[('truncated', archive[:16], expanded),
+                   ('wrong-size', archive[:8]+b'\xff'*8+archive[16:], expanded),
+                   ('wrong-expanded-template', archive, expanded+b'x')]
+            with tempfile.TemporaryDirectory(dir=out) as tmp:
+                root=Path(tmp)
+                for name, packed, plain in cases:
+                    exports=root/name;exports.mkdir()
+                    (exports/'BudgetAccts.DD.Z').write_bytes(packed)
+                    (exports/'BudgetAccts.DD').write_bytes(plain)
+                    disk=root/(name+'.img')
+                    with disk.open('wb') as stream:stream.truncate(64*1024*1024)
+                    before=sha(disk)
+                    try:package(disk,exports,'full')
+                    except ValueError as exc:
+                        if 'Budget template' not in str(exc):raise
+                    else:raise ValueError('Corrupt archive accepted: '+name)
+                    if sha(disk)!=before:raise ValueError('Rejected archive changed disk')
+            report['archive_rejections']=[case[0] for case in cases]
         report['result'] = 'pass'
     except Exception as exc:
         report.update(result='fail', error=str(exc))

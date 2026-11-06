@@ -6000,6 +6000,18 @@
           "result": "pass",
           "evidence": "build/i386-c1-budget-storage-current-v1/result.json",
           "scope": "Original Load/Install and constructed BANK-to-RENT transaction; exact data/string table and same-session reopen, unchanged inputs. Not interactive, cold reboot, native behavior or whole application."
+        },
+        {
+          "target": "original-budget-compressed-template-install",
+          "result": "pass",
+          "evidence": "build/i386-budget-install-reference-v1/result.json",
+          "scope": "Unchanged original installer runs twice with original-compressor template archive; installed logical bytes exact; unchanged inputs."
+        },
+        {
+          "target": "native-budget-compressed-template-install",
+          "result": "pass",
+          "evidence": "build/i386-budget-template-native-v1/result.json",
+          "scope": "64 MiB KVM, real settings/autocomplete libraries, complete original Budget source load, repeated Install, exact archive bytes/attributes/date and guest-expanded original template. 1738 files preserved, clean filesystem, unchanged inputs. Not interactive/reboot/application or C1-C5 qualification."
         }
       ]
     },
@@ -6221,6 +6233,18 @@
           "result": "fail",
           "evidence": "build/i386-budget-put-except-load-v1/result.json",
           "scope": "All Load/Install console commands return and inputs unchanged. Offline audit finds /Budget but no accounts file: original installer requests Accts.DD.Z while native bundle delivers Accts.DD. Full installation/application remains unqualified."
+        },
+        {
+          "target": "original-budget-compressed-template-install",
+          "result": "pass",
+          "evidence": "build/i386-budget-install-reference-v1/result.json",
+          "scope": "Unchanged original installer runs twice with original-compressor template archive; installed logical bytes exact; unchanged inputs."
+        },
+        {
+          "target": "native-budget-compressed-template-install",
+          "result": "pass",
+          "evidence": "build/i386-budget-template-native-v1/result.json",
+          "scope": "64 MiB KVM, real settings/autocomplete libraries, complete original Budget source load, repeated Install, exact archive bytes/attributes/date and guest-expanded original template. 1738 files preserved, clean filesystem, unchanged inputs. Not interactive/reboot/application or C1-C5 qualification."
         }
       ]
     },
@@ -6272,6 +6296,18 @@
           "result": "fail",
           "evidence": "build/i386-budget-put-except-load-v1/result.json",
           "scope": "All Load/Install console commands return and inputs unchanged. Offline audit finds /Budget but no accounts file: original installer requests Accts.DD.Z while native bundle delivers Accts.DD. Full installation/application remains unqualified."
+        },
+        {
+          "target": "original-budget-compressed-template-install",
+          "result": "pass",
+          "evidence": "build/i386-budget-install-reference-v1/result.json",
+          "scope": "Unchanged original installer runs twice with original-compressor template archive; installed logical bytes exact; unchanged inputs."
+        },
+        {
+          "target": "native-budget-compressed-template-install",
+          "result": "pass",
+          "evidence": "build/i386-budget-template-native-v1/result.json",
+          "scope": "64 MiB KVM, real settings/autocomplete libraries, complete original Budget source load, repeated Install, exact archive bytes/attributes/date and guest-expanded original template. 1738 files preserved, clean filesystem, unchanged inputs. Not interactive/reboot/application or C1-C5 qualification."
         }
       ]
     },

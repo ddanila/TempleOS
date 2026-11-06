@@ -19,7 +19,7 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     paths=[source,Path(__file__).resolve(),helper,packager,inventory,ROOT/'tools/build-i386-kernel.py',ROOT/'Kernel/FontStd.HC']
     pins={str(p):sha(p) for p in paths}
-    report=dict(result='running',input_sha256=pins,scope='Original Budget source load and Install on native 64 MiB; not application workflow qualification')
+    report=dict(result='running',input_sha256=pins,scope='Original Budget source load, repeated Install, physical archive and guest-expanded template on native 64 MiB; not application workflow qualification')
     try:
         entries=[e for e in json.loads(inventory.read_text())['entries'] if e['path'].startswith('Apps/Budget/')]
         pack=runpy.run_path(str(packager));initial_files=pack['snapshot'](source.read_bytes())[1]
@@ -32,6 +32,10 @@ def main():
                 if initial_files[name][2]!=data:raise ValueError('Bundled Budget differs: '+name)
             elif args.require_bundled:raise ValueError('Budget file is not bundled: '+name)
             else:additions[name]=data
+        archive_name='/Apps/Budget/Accts.DD.Z'
+        if archive_name not in initial_files or initial_files[archive_name][0]!=0xC00:
+            raise ValueError('Bundled compressed accounts template missing')
+        report['template_archive_sha256']=hashlib.sha256(initial_files[archive_name][2]).hexdigest()
         report['added_app_files']=sorted(additions)
         report['bundled_app_files']=len(expected)-len(additions)
         commands=[]
@@ -40,17 +44,25 @@ def main():
                 path=ROOT/name;pins[str(path)]=sha(path)
                 if initial_files['/'+name][2]!=path.read_bytes():raise ValueError('Shipped dependency differs: '+name)
             commands += ['AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);','AdamFile("C:/Adam/TaskSettings.HC",FALSE);']
-        commands += ['#include "C:/Apps/Budget/Load.HC"','#include "C:/Apps/Budget/Install.HC"','6*7;']
+        commands += ['#include "C:/Apps/Budget/Load.HC"','#include "C:/Apps/Budget/Install.HC"',
+                     '#include "C:/Apps/Budget/Install.HC"',
+                     'U0 BudgetTemplateRead(){I64 n;U8 *s=FileRead("C:/Budget/Accts.DD.Z",&n);if(!s)throw(1,TRUE);FileWrite("C:/BudgetTemplate.DATA",s,n);Free(s);}BudgetTemplateRead;',
+                     '6*7;']
         report['commands']=commands
         report['packaging']=pack['package'](source,image,additions=additions)
         runpy.run_path(str(helper))['guest'](image,out/'guest',commands,64,True,accel=args.accel)
         snapshot=runpy.run_path(str(packager))['snapshot']
         _,files,dirs=snapshot(image.read_bytes())
         if '/Budget' not in dirs:raise ValueError('Budget installation directory missing')
-        if not any(name in files for name in ('/Budget/Accts.DD','/Budget/Accts.DD.Z')):raise ValueError('Installed accounts missing')
+        installed=files.get('/Budget/Accts.DD.Z')
+        if not installed or installed != initial_files[archive_name]:
+            raise ValueError('Installed archive bytes/attributes/date differ from bundled template')
+        if files.get('/BudgetTemplate.DATA', (0,0,None))[2] != expected['/Apps/Budget/Accts.DD']:
+            raise ValueError('Guest-expanded installed template differs from original')
+        report['installed_template_sha256']=hashlib.sha256(files['/BudgetTemplate.DATA'][2]).hexdigest()
         for name,data in expected.items():
             if files[name][2]!=data:raise ValueError('Delivered Budget source changed: '+name)
-        allowed=set(additions)|{'/Budget/Accts.DD','/Budget/Accts.DD.Z'}
+        allowed=set(additions)|{'/Budget/Accts.DD.Z','/BudgetTemplate.DATA'}
         changed={name for name in set(initial_files)|set(files) if initial_files.get(name)!=files.get(name)}
         if changed-allowed:raise ValueError('Unrelated files changed: '+repr(sorted(changed-allowed)))
         report['changed_files']=sorted(changed)
