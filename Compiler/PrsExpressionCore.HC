@@ -441,7 +441,7 @@ I64 PrsFunCallCore(CPrsExpressionServices *services,CCmpCtrl *cc,CPrsStk *ps,Boo
       if (tmpm->flags & MLF_LASTCLASS && last_class)
 	dft_val=(last_class-last_class->ptr_stars_cnt)->str;
       if (tmpm->flags & (MLF_STR_DFT_AVAILABLE|MLF_LASTCLASS) &&
-	    cc->flags&CCF_AOT_COMPILE) {
+	    cc->flags&(CCF_AOT_COMPILE|CCF_MODULE_SOURCE)) {
 	cm=(*services->misc)(services->context,cc,CMT_STR_CONST);
 	PrsEmit(services,cc,IC_STR_CONST,cm,services->types[RT_U8]+1);
 	cm->st_len=StrLen(dft_val)+1;

@@ -26556,3 +26556,16 @@ The original command-line Sprite oracle passes six output-document and binary
 ownership checks. Native interface 224 rejects Sprite before any behavior
 assertions. Both input audits pass; see docs/i386-sprite-output.md. This isolates
 Psalmody's next missing service without claiming rendering or app qualification.
+
+## Native module default-string ownership fix (2026-11-06)
+
+The shared parser now copies string/lastclass defaults for CCF_MODULE_SOURCE,
+which remains set while native command parsing clears CCF_AOT_COMPILE. A focused
+native baseline demonstrates missing owned strings and heap-dependent bytes;
+the fixed candidate produces identical modules and correct strings. Four calls
+to actual emitted i386 code pass at two load addresses. Both bootstrap
+generations, cross-build/source audit and 8 MiB welcome/clear/input pass. See
+docs/i386-module-default-strings.md for evidence and the preserved checker issue.
+
+A fresh nine-module native generation is running from the frozen fixed image.
+Full provider reproduction, required memory profiles and C5 remain unqualified.
