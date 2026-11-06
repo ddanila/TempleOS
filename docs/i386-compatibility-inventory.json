@@ -6085,6 +6085,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-views-installed-native-v1/result.json",
           "scope": "64 MiB KVM: three exact original/independent DolDoc reports, cursor/colors/balances and transaction IDs across account changes/deletion, same mask 31; clean filesystem, 1738 files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not View/physical input, rendered pixels, popup entry, templates or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-view-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-budget-keyboard-reference-v2/result.json",
+          "scope": "QEMU Ctrl-Y through real View/DocGetKey with delegating observer, actual BgtPutKey deletion, Escape exit, exact independent documents/cursor/surviving IDs and mask 31; unchanged inputs."
+        },
+        {
+          "target": "native-budget-view-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-budget-keyboard-native-v1/result.json",
+          "scope": "64 MiB KVM: same physical emulated key sequence, exactly one Ctrl-Y with modifier, two surviving rows and bank balance 70, Escape View return, exact original/independent DolDoc and mask 31, rendered fresh 42. Clean filesystem, 1738 files preserved, unchanged inputs. Not navigation-selected initial row, popup entry, persisted deletion, pixel equality or full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -6134,6 +6146,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-views-installed-native-v1/result.json",
           "scope": "64 MiB KVM: three exact original/independent DolDoc reports, cursor/colors/balances and transaction IDs across account changes/deletion, same mask 31; clean filesystem, 1738 files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not View/physical input, rendered pixels, popup entry, templates or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-view-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-budget-keyboard-reference-v2/result.json",
+          "scope": "QEMU Ctrl-Y through real View/DocGetKey with delegating observer, actual BgtPutKey deletion, Escape exit, exact independent documents/cursor/surviving IDs and mask 31; unchanged inputs."
+        },
+        {
+          "target": "native-budget-view-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-budget-keyboard-native-v1/result.json",
+          "scope": "64 MiB KVM: same physical emulated key sequence, exactly one Ctrl-Y with modifier, two surviving rows and bank balance 70, Escape View return, exact original/independent DolDoc and mask 31, rendered fresh 42. Clean filesystem, 1738 files preserved, unchanged inputs. Not navigation-selected initial row, popup entry, persisted deletion, pixel equality or full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -6233,6 +6257,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-views-installed-native-v1/result.json",
           "scope": "64 MiB KVM: three exact original/independent DolDoc reports, cursor/colors/balances and transaction IDs across account changes/deletion, same mask 31; clean filesystem, 1738 files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not View/physical input, rendered pixels, popup entry, templates or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-view-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-budget-keyboard-reference-v2/result.json",
+          "scope": "QEMU Ctrl-Y through real View/DocGetKey with delegating observer, actual BgtPutKey deletion, Escape exit, exact independent documents/cursor/surviving IDs and mask 31; unchanged inputs."
+        },
+        {
+          "target": "native-budget-view-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-budget-keyboard-native-v1/result.json",
+          "scope": "64 MiB KVM: same physical emulated key sequence, exactly one Ctrl-Y with modifier, two surviving rows and bank balance 70, Escape View return, exact original/independent DolDoc and mask 31, rendered fresh 42. Clean filesystem, 1738 files preserved, unchanged inputs. Not navigation-selected initial row, popup entry, persisted deletion, pixel equality or full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -6335,6 +6371,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-views-installed-native-v1/result.json",
           "scope": "64 MiB KVM: three exact original/independent DolDoc reports, cursor/colors/balances and transaction IDs across account changes/deletion, same mask 31; clean filesystem, 1738 files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not View/physical input, rendered pixels, popup entry, templates or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-view-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-budget-keyboard-reference-v2/result.json",
+          "scope": "QEMU Ctrl-Y through real View/DocGetKey with delegating observer, actual BgtPutKey deletion, Escape exit, exact independent documents/cursor/surviving IDs and mask 31; unchanged inputs."
+        },
+        {
+          "target": "native-budget-view-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-budget-keyboard-native-v1/result.json",
+          "scope": "64 MiB KVM: same physical emulated key sequence, exactly one Ctrl-Y with modifier, two surviving rows and bank balance 70, Escape View return, exact original/independent DolDoc and mask 31, rendered fresh 42. Clean filesystem, 1738 files preserved, unchanged inputs. Not navigation-selected initial row, popup entry, persisted deletion, pixel equality or full Budget/C1-C5 qualification."
         }
       ]
     },

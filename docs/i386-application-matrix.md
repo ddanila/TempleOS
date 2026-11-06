@@ -343,3 +343,38 @@ through View, popup transaction entry, rendered-pixel equivalence, scheduled
 templates or complete Budget qualification. Those acceptance checks and C1-C5
 remain open. The next interaction test must drive View/key dispatch rather
 than treating direct BgtPutKey invocation as physical keyboard evidence.
+
+## Budget View with emulated keyboard input (2026-11-06)
+
+The new keyboard comparison advances the prior direct callback case through
+actual View/DocGetKey and QEMU keyboard input. The pinned-original run in
+build/i386-budget-keyboard-reference-v2 and native run in
+build/i386-budget-keyboard-native-v1 both pass mask 31 and exact before/after
+DolDoc checks. The host sends Ctrl down, Y down/up, Ctrl up, then Escape; the
+key events and their log offsets are retained in each guest/keys.jsonl.
+
+The fixture constructs the same three transactions and selects the grocery row
+before entering View. An observer installed as user_put_key delegates every
+received key to the unchanged BgtPutKey and records the Ctrl-Y result/modifier;
+it does not inject a message or invoke the callback outside keyboard dispatch.
+After deletion BgtRegen installs its normal callback on the replacement document.
+Escape then exits View successfully. The checker requires exactly one Ctrl-Y
+callback, two remaining transactions, the surviving rent row selected, bank
+balance 70, original colors and exact cursor markers. Transaction addresses alone
+are normalized, with distinct/stable/surviving identities checked separately.
+
+The native run returns to the console and independently finds the rendered 42
+from a fresh arithmetic command. Its filesystem audit passes, 1738 existing
+files are preserved and inputs remain unchanged. Captured before/deleted/final
+screens provide inspection evidence; full pixel equality is not asserted because
+the original and native window geometries differ. The original v1 control stopped
+on an invalid-opcode exception at the fixture's repeated-port logging call before
+readiness. Its source and final screen are preserved; v2 uses the established
+byte-at-a-time OutU8 logger on both architectures.
+
+This covers emulated keyboard deletion and Escape through View. It does not
+cover choosing the initial row by navigation, popup transaction entry, mouse,
+saving the deletion, the complete Budget() startup/settings lifetime, physical
+hardware or whole application qualification. Those workflows and C1-C5 remain
+open; the separate storage/cold-reboot result must not be treated as proof of an
+interactive save/delete/reopen workflow.
