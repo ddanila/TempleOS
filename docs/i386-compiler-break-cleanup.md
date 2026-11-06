@@ -42,3 +42,21 @@ Validation passed both x64 rebuild generations and the full native kernel suite:
 six boot/worker cleanup cases, 137 console commands, exact VGA, startup recovery
 and 17 module rejection cases. Sizes and timings are in
 [port progress](port-progress.md). The normal preview contains this behavior.
+
+## Full minimal-gate terminal mismatch (2026-11-06)
+
+The historical full gate in
+build/i386-public-break-frontier-v1/build/i386-public-break-minimal-gate-v1
+is stopped, not still running. It timed out in source-syntax-error at the first
+post-startup command, `BootCount;`. Its saved frame shows `39` and the prompt;
+the expected rows instead require `Error: Undefined identifier at `. Debug
+output records COMMAND OK. The preceding source deliberately declares
+`I64 BootCount=39;` before `Unknown bad;`, so the mismatch concerns whether a
+completed declaration survives the later source error. It must be resolved
+against the original compiler behavior before changing the runtime or oracle.
+
+The terminal audit in build/i386-public-break-minimal-terminal-audit.json
+checks all 3719 pinned files with no differences. The captured actual frame
+was decoded to build/source-syntax-error-observed.png for inspection. This is
+a failed full gate; preceding component passes do not qualify the minimum
+profile or C1-C5.

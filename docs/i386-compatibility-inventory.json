@@ -6113,6 +6113,12 @@
           "result": "fail",
           "evidence": "build/i386-settings-lifecycle-v1/build/i386-budget-settings-load-v1/result.json",
           "scope": "Current full-content runtime verifies all unchanged original bundled Budget files and adds no app fixture. Real autocomplete/settings libraries load in Adam, and app compilation passes SettingsPush/AutoComplete but rejects unbound MenuPush at BgtMain.HC line 187. Inputs unchanged. Installation, account views and application workflows do not run."
+        },
+        {
+          "target": "native-budget-menu-load",
+          "result": "fail",
+          "evidence": "build/i386-budget-menu-load-v2/result.json",
+          "scope": "Unchanged bundled sources, actual autocomplete/settings libraries loaded in Adam, Console 212 gets past MenuPush; next rejection is PutExcept in BgtMain.HC. Inputs unchanged; Install and app workflow not reached."
         }
       ]
     },
@@ -6242,6 +6248,12 @@
           "result": "fail",
           "evidence": "build/i386-settings-lifecycle-v1/build/i386-budget-settings-load-v1/result.json",
           "scope": "Current full-content runtime verifies all unchanged original bundled Budget files and adds no app fixture. Real autocomplete/settings libraries load in Adam, and app compilation passes SettingsPush/AutoComplete but rejects unbound MenuPush at BgtMain.HC line 187. Inputs unchanged. Installation, account views and application workflows do not run."
+        },
+        {
+          "target": "native-budget-menu-load",
+          "result": "fail",
+          "evidence": "build/i386-budget-menu-load-v2/result.json",
+          "scope": "Unchanged bundled sources, actual autocomplete/settings libraries loaded in Adam, Console 212 gets past MenuPush; next rejection is PutExcept in BgtMain.HC. Inputs unchanged; Install and app workflow not reached."
         }
       ]
     },

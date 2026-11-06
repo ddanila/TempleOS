@@ -128,3 +128,17 @@ compiles past SettingsPush and AutoComplete, then rejects MenuPush at
 BgtMain.HC line 187 (`build/i386-budget-settings-load-v1/result.json`, inputs
 unchanged). No app fixture is added; installation and application execution do
 not run after that rejection. Menu stack bindings are the next dependency.
+
+## Budget after menu-stack bindings (2026-11-06)
+
+With Console 212, build/i386-budget-menu-load-v2 loads the actual autocomplete
+and settings libraries into Adam, then compiles the unchanged bundled Budget
+source past MenuPush. It next rejects PutExcept in BgtMain.HC (reported at
+line 218, immediately after the call). Inputs remain unchanged. Installation
+and application workflows are not reached. The earlier v1 run saw the same
+rejection but its input audit failed because the inventory was edited during
+execution; v2 is the unchanged-input evidence.
+
+PutExcept is a real exception-reporting service, including caller diagnostics
+and the catch flag; providing a dummy declaration would not satisfy this
+dependency. Full Budget and C1-C5 qualification remain open.

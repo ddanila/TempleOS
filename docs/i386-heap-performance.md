@@ -813,3 +813,21 @@ independent public symbol/storage/literal pointer oracle and source-module help
 publication/build checks. Startup is 89.032848 seconds; this concurrent run is
 not an isolated performance comparison and does not qualify the 60-second
 budget. It used CPU `486`, separately from the explicit no-FPU smoke above.
+
+## Nine-module native build terminal result (2026-11-06)
+
+The retained nine-module run in
+build/i386-parser-heap-reuse-v1/build/i386-parser-heap-native-nine-v1 is terminal
+and failed in the first module, ConsoleRuntime. Its 64 MiB KVM 486,-fpu guest
+rejects inline `DEC ECX` in NativeCallArgs at
+Kernel/I386/CallExtStrRuntime.HC:15. No later module was reached. The terminal
+source audit in build/i386-parser-heap-native-nine-terminal-audit.json confirms
+all 2129 pinned source/tool inputs and the source disk are unchanged.
+
+The native frontend has separate top-level and inline assembly paths. The
+former supports DEC; the inline dispatch in FrontendStatements.HC does not.
+NativeCallArgs also needs memory PUSH, scaled indexed addressing and indirect
+register CALL, so merely replacing DEC in the source would not establish native
+self-hosting. The inline compiler must implement and independently exercise
+those actual instruction forms before rerunning the full nine-module build.
+This failure supplies a compiler frontier, not C5 completion or a timing result.
