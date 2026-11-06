@@ -17993,6 +17993,18 @@
           "result": "fail",
           "evidence": "build/i386-word-bitmap-native-v1/result.json",
           "scope": "Candidate byte-table image still rejects absent char_bmp_word before fixture execution; unchanged inputs. No whole-header/runtime qualification."
+        },
+        {
+          "target": "original-public-file-links",
+          "result": "pass",
+          "evidence": "build/i386-file-links-original-v1/result.json",
+          "scope": "Null plus seven file/plain/line/sprite/default-path cases match independent exact 254-byte DolDoc; unchanged inputs. See docs/i386-file-links.md."
+        },
+        {
+          "target": "native-public-file-links",
+          "result": "fail",
+          "evidence": "build/i386-file-links-native-v1/result.json",
+          "scope": "Clamp candidate rejects first PutFileLink call before fixture execution; unchanged inputs. No raw-screen/navigation or complete provider qualification."
         }
       ]
     },
