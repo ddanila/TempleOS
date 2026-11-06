@@ -26529,3 +26529,13 @@ heap has 73,304 free bytes in total but a largest free block of 43,136 bytes,
 below the 65,676-byte request. Input hashes are unchanged. This is an existing
 8 MiB full-diagnostic gap, not introduced by the bitmap/GR provider change.
 See `docs/i386-frame-capture.md`; no milestone closes.
+
+## Second native generation: eight exact modules, one mismatch (2026-11-06)
+
+The frozen interface-213 generation-two run finished all nine builds but failed
+exact comparison for ConsoleRuntime. Exhaustive extraction finds eight exact
+matches and only two differing bytes in ConsoleRuntime, both in immediate
+addresses in TermRightClickLink. Its implicit lastclass arguments are the
+leading suspect. The run's 22 other inputs and preloaded reader audit pass,
+with the documented builder-path mismatch retained. See docs/i386-inline-asm.md.
+A focused relocation regression and compiler fix are required; C5 stays open.

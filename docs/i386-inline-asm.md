@@ -131,3 +131,26 @@ full C1–C5 release qualification remain open.
 python3 tools/test-i386-inline-call.py build/i386-inline-call-cross-v1/kernel.img --out OUT_TEST
 python3 tools/test-i386-retained-build.py --disk build/i386-inline-call-cross-v1/kernel.img --out OUT_BUILD --reference-exports build/i386-inline-call-cross-v1/exports --accel kvm --cpu 486,-fpu --ram-mib 64 --welcome --qmp-stdio --keyboard --command-timeout 7200
 ```
+
+## Second native generation terminal result (2026-11-06)
+
+`build/i386-inline-call-native-generation2-v1/result.json` fails exact installed
+module comparison after all nine modules were built at 64 MiB KVM, CPU
+486,-fpu, with live WinMgr and one build-provider load. This is frozen
+interface-213 evidence, not qualification of the current interface.
+
+The exhaustive comparison under its `comparison/` directory finds eight
+byte-identical modules. ConsoleRuntime has the same 2,258,426-byte size but
+differs at offsets 1,780,505 and 1,780,838. Both are bytes in immediate addresses
+inside TermRightClickLink: 0x014091b8 in generation one and 0x0140dbb8 in
+generation two. Its two DocForm calls use implicit lastclass arguments. The
+parser emits a copied string for these defaults only under CCF_AOT_COMPILE,
+while native command compilation clears that flag and retains CCF_MODULE_SOURCE.
+This is the leading explanation; a focused module relocation regression and
+fix are still required. The exact-comparison gate remains failed.
+
+`terminal-provenance-audit.json` verifies 22 unchanged input paths and the
+original preloaded build-helper snapshot and reader AST. The on-disk builder
+hash differs, as recorded throughout the run; the original input manifest is
+preserved. Do not describe all original path hashes as unchanged. No C5
+completion is claimed.
