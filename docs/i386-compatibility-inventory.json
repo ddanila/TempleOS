@@ -6119,6 +6119,12 @@
           "result": "fail",
           "evidence": "build/i386-budget-menu-load-v2/result.json",
           "scope": "Unchanged bundled sources, actual autocomplete/settings libraries loaded in Adam, Console 212 gets past MenuPush; next rejection is PutExcept in BgtMain.HC. Inputs unchanged; Install and app workflow not reached."
+        },
+        {
+          "target": "native-budget-put-except-load",
+          "result": "fail",
+          "evidence": "build/i386-budget-put-except-load-v1/result.json",
+          "scope": "All Load/Install console commands return and inputs unchanged. Offline audit finds /Budget but no accounts file: original installer requests Accts.DD.Z while native bundle delivers Accts.DD. Full installation/application remains unqualified."
         }
       ]
     },
@@ -6209,6 +6215,12 @@
           "result": "pass",
           "evidence": "build/i386-c1-budget-storage-current-v1/result.json",
           "scope": "Original Load/Install and constructed BANK-to-RENT transaction; exact data/string table and same-session reopen, unchanged inputs. Not interactive, cold reboot, native behavior or whole application."
+        },
+        {
+          "target": "native-budget-put-except-load",
+          "result": "fail",
+          "evidence": "build/i386-budget-put-except-load-v1/result.json",
+          "scope": "All Load/Install console commands return and inputs unchanged. Offline audit finds /Budget but no accounts file: original installer requests Accts.DD.Z while native bundle delivers Accts.DD. Full installation/application remains unqualified."
         }
       ]
     },
@@ -6254,6 +6266,12 @@
           "result": "fail",
           "evidence": "build/i386-budget-menu-load-v2/result.json",
           "scope": "Unchanged bundled sources, actual autocomplete/settings libraries loaded in Adam, Console 212 gets past MenuPush; next rejection is PutExcept in BgtMain.HC. Inputs unchanged; Install and app workflow not reached."
+        },
+        {
+          "target": "native-budget-put-except-load",
+          "result": "fail",
+          "evidence": "build/i386-budget-put-except-load-v1/result.json",
+          "scope": "All Load/Install console commands return and inputs unchanged. Offline audit finds /Budget but no accounts file: original installer requests Accts.DD.Z while native bundle delivers Accts.DD. Full installation/application remains unqualified."
         }
       ]
     },
@@ -16148,9 +16166,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "PutExcept reports controlled caller addresses, accepts default catch and propagates FALSE through actual nested throws.",
+      "oracle": "Independent 521-byte DolDoc report plus mask 31, same fixture on pinned original and native; full shared original PutExcept body byte-checked.",
+      "tests": [
+        {
+          "target": "original-put-except",
+          "result": "pass",
+          "evidence": "build/i386-put-except-reference-v2/result.json",
+          "scope": "Default and false catch flags, handled and propagated exceptions, exact controlled caller links; unchanged inputs."
+        },
+        {
+          "target": "native-put-except",
+          "result": "pass",
+          "evidence": "build/i386-put-except-native-v1/result.json",
+          "scope": "64 MiB KVM, exact original/independent output and state mask; unchanged inputs. Not arbitrary symbolized stacks or whole exception subsystem qualification."
+        }
+      ]
     },
     {
       "path": "Kernel/KExts.HC",

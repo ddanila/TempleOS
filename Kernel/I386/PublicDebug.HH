@@ -21,4 +21,5 @@ public _extern _DEBUG_GO_CLEAR U0 G2(U8 *ip=U32_MAX,CTask *task=0);
 public _extern _SRC_LINE_NUM I64 SrcLineNum(U8 *addr,I64 cnt=1);
 public _extern _SRC_FILE_NAME U8 *SrcFileName(U8 *addr,I64 cnt=1,CTask *mem_task=NULL);
 public _extern _SRC_ED_LINK U8 *SrcEdLink(U8 *addr,I64 cnt=1,CTask *mem_task=NULL);
+public _extern _PUT_EXCEPT U0 PutExcept(Bool catch_it=TRUE);
 #endif

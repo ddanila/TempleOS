@@ -142,3 +142,41 @@ execution; v2 is the unchanged-input evidence.
 PutExcept is a real exception-reporting service, including caller diagnostics
 and the catch flag; providing a dummy declaration would not satisfy this
 dependency. Full Budget and C1-C5 qualification remain open.
+
+## Original PutExcept service (2026-11-06)
+
+Console 213 exposes the complete original PutExcept body through
+Kernel/PutExceptCore.HC, shared with Kernel/KExcept.HC. Its default TRUE
+argument sets the current task's catch flag after reporting; FALSE preserves
+propagation. The original format passes eight caller values to six %P fields;
+the extraction preserves that behavior exactly. Existing export indices remain
+unchanged, with the new service appended.
+
+The pinned original in build/i386-put-except-reference-v2 and native 64 MiB KVM
+comparison in build/i386-put-except-native-v1 both pass mask 31 with unchanged
+inputs. The fixture checks default acceptance, explicit rejection, an actual
+handled throw and a nested throw propagated to an outer handler. Four actual
+reports match the independently constructed 521-byte DolDoc record, including
+six clickable AD links per report and the terminating document byte. Caller
+addresses are controlled (1 through 8); arbitrary symbolized stacks, every
+formatting case and whole application workflows are not claimed.
+
+Both original bootstrap generations pass in build/rebuild-test/result.json.
+The full-content cross build in build/i386-put-except-cross-v1 passes its
+386 audit (96 BIOS and 332 protected-mode instructions); all 1368 delivered
+source/doc files match the candidate in
+build/i386-put-except-source-audit-v1.json. These checks do not close C1-C5.
+
+The 16 MiB diagnostic boot also passes through DONE native kernel startup
+and matches all 307200 welcome pixels in
+build/i386-put-except-diagnostic-v1/screen-oracle.json.
+
+Budget now compiles its complete Load.HC and returns from Install.HC in
+build/i386-budget-put-except-load-v1, with unchanged inputs and an adjacent
+fresh arithmetic command. The installation checker fails because /Budget
+exists but its accounts file does not. Install.HC requests Accts.DD.Z while
+the full native image delivers /Apps/Budget/Accts.DD; the resulting working
+image still has only the original eleven application files and no accounts
+copy under /Budget. Compression-name resolution/packaging is the next issue
+to investigate; a successful include is not a successful installation or
+Budget workflow. No application qualification is claimed.

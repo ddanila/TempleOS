@@ -42,14 +42,7 @@ _extern _TEST_EXCEPT U0 TestExcept();
 _extern _TAKE_EXCEPT U0 TakeExcept();
 _extern _SAVE_EXCEPT_REGS U0 SaveExceptRegs(CExcept *t);
 
-U0 PutExcept(Bool catch_it=TRUE)
-{//Print exception msg and catch exception.
-  "Except:%c:",Fs->except_ch;
-  "%P:%P:%P:%P:%P:%P\n",Fs->except_callers[0],Fs->except_callers[1],
-	Fs->except_callers[2],Fs->except_callers[3],Fs->except_callers[4],
-	Fs->except_callers[5],Fs->except_callers[6],Fs->except_callers[7];
-  Fs->catch_except=catch_it;
-}
+#include "/Kernel/PutExceptCore.HC"
 
 #exe {Option(OPTf_NO_REG_VAR,ON);};
 
