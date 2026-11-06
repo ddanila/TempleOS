@@ -34,3 +34,22 @@ sources; the implementation change follows its terminal input audit.
 
 This checks public table values, not table reassignment, all consumers, the full
 God provider or Psalmody workflow. C1–C5 remain incomplete.
+
+## Candidate validation
+
+The isolated source candidate in `build/i386-public-tables-candidate-v1/source`
+now passes both original bootstrap generations and the cross-build/386 audit
+(`build/public-tables-cross-v3` inside that snapshot). The complete 512-byte
+native table oracle and fresh rendered arithmetic pass against that image in
+`build/i386-bit-tables-candidate-v2/result.json`, with unchanged execution inputs.
+The preceding candidate run also passed, but its enclosing build failed on an
+output-directory metadata check; use the v3 cross-build as the build evidence.
+The cross compiler needed a 300-second harness allowance after the first
+90-second run timed out. This does not change any runtime startup budget.
+
+These candidate changes are not yet applied to main because the active C5 build
+still pins its core sources. God provider loading now advances to the separate
+[public word-bitmap gap](i386-word-bitmap.md). The corrected startup checker
+passes the custom and syntax-error cases, but the missing-file case reports
+`Undefined Extern` instead of the expected compilation failure; that failure
+remains open rather than changing the expected diagnostic to match it.

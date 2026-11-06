@@ -17944,6 +17944,18 @@
           "result": "fail",
           "evidence": "build/i386-bit-tables-native-v1/result.json",
           "scope": "Fixture rejects absent rev_bits_table before executing; unchanged inputs. See docs/i386-bit-tables.md."
+        },
+        {
+          "target": "original-public-word-bitmap",
+          "result": "pass",
+          "evidence": "build/i386-word-bitmap-original-v1/result.json",
+          "scope": "All 512 bits match independent character-membership oracle; unchanged inputs. See docs/i386-word-bitmap.md."
+        },
+        {
+          "target": "native-public-word-bitmap",
+          "result": "fail",
+          "evidence": "build/i386-word-bitmap-native-v1/result.json",
+          "scope": "Candidate byte-table image still rejects absent char_bmp_word before fixture execution; unchanged inputs. No whole-header/runtime qualification."
         }
       ]
     },
