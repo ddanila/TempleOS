@@ -5,7 +5,8 @@ U0 NativeConsoleRecord(U8 *text)
   CDoc *doc=NativeTerminalDocument;
   I64 flags;
   Bool unlock;
-  if(!doc || !text) return;
+  //Debugger answers belong to its temporary terminal, not the interrupted doc.
+  if(I386TaskSelf->debug_session_active || !doc || !text) return;
   unlock=DocLock(doc); flags=doc->flags;
   try {
     doc->flags|=DOCF_PLAIN_TEXT;
@@ -27,6 +28,7 @@ U0 NativeConsolePut(I64 ch)
 {
   CDoc *doc=NativeTerminalDocument;
   Bool unlock,bottom,plain;
+  if(I386TaskSelf->debug_session_active)doc=NULL;
   if(doc) {
     unlock=DocLock(doc); bottom=doc->cur_entry==doc;
     plain=(doc->flags&DOCF_PLAIN_TEXT)!=0;

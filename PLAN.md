@@ -26423,3 +26423,19 @@ still report the changed on-disk builder path separately.
 
 The current transcript/display image is under two-cycle CPU TaskCaller and
 forced-exit welcome-session checks; no runtime completion is claimed yet.
+
+## Debugger welcome display and forced-exit recovery (2026-11-06)
+
+The debugger now acquires a temporary raw-display scope above its cleanup
+callback and excludes debugger answers from the interrupted console transcript.
+Both bootstrap generations and cross-v4 pass with unchanged source/helper hashes.
+The 8 MiB KVM forced-exit fixture passes: real INT3 child kill, survivor debugger
+entry/evaluation/resume, parent exact document and public heap restoration,
+cleared debugger mode and fresh arithmetic. See `docs/i386-task-caller.md` and
+build/i386-debugger-display-kill-v3/result.json.
+
+The two-cycle caller run reaches both expected masks, resumes with registers
+intact and restores the document, but its heap comparison includes transcript
+growth between shell invocations. The scoped before/after trap measurement is
+running, as is the 8 MiB TCG welcome regression. These pending checks and broader
+private-resource/task-context coverage remain open; C1–C5 are not complete.

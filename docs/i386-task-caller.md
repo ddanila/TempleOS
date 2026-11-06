@@ -33,25 +33,36 @@ The follow-up bootstrap reached the kernel build but timed out under the
 180 as its default; both generations pass with 600 in the follow-up run.
 This is a bootstrap observation limit, not a relaxed native startup gate.
 
-CPU debugger-context validation found a display ownership gap: the debugger
-writes a raw terminal, but the welcome document retained the screen. The v4
-8 MiB and v5 16 MiB runs both reached INT3 without exposing the debugger.
-The candidate now opens the existing legacy-view scope above its task cleanup
-callback and closes it on normal/error return; forced exit unwinds that scope
-before the debugger callback. Both bootstrap generations and cross-v2 pass,
-with all 1,715 source pins unchanged (`build/i386-debugger-display-cross-v2`).
+CPU debugger-context validation found two welcome-session integration gaps.
+The debugger wrote a raw terminal while the welcome document retained display
+ownership (v4 at 8 MiB and v5 at 16 MiB). Opening the existing legacy-view scope
+above the debugger cleanup callback exposes the debugger and supports forced
+exit. The v7 run then reached caller mask 31 and resumed with G, but exact
+restoration failed because debugger answers were appended to the interrupted
+document. Console answer recording now excludes the active debugger session.
 
-The first v6 trap displays the expected debugger and yields caller mask 31,
-but that run fails after a duplicated fixture command: the base fixture repeats
-the same interaction dictionary, and deepcopy of the whole list preserves those
-aliases. The corrected harness copies each cycle separately. The v7 run reaches mask 31 and resumes with G, then its exact restore raster
-fails: debugger answers were appended to the interrupted welcome document.
-The follow-up candidate suppresses transcript recording during a debugger
-session; its bootstrap is in progress. No complete CPU debugger-context pass
-is claimed yet.
-Forced-exit validation is also pending in debugger-display-kill-v2. Its v1
-attempt expected the older plain startup screen and never entered the fixture;
-the harness now supports an explicit --welcome option.
+Both revised bootstrap generations and cross-v4 pass, with all 1,715 source
+hashes and build-helper hashes unchanged. Cross-v3 was terminated by the old
+90-second observation limit; cross-v4 uses the explicit 600-second compiler
+window without changing native timing or memory acceptance.
+
+`build/i386-debugger-display-kill-v3/result.json` passes at 8 MiB KVM 486,-fpu
+with unchanged inputs. The fixture kills a child stopped at INT3, enters and
+resumes the survivor's debugger, and recovers the parent's exact welcome
+document, public heap, cleared debugger mode and fresh arithmetic. Setup comes
+from a source file; actual trap, focus, kill and survivor keyboard events remain
+the existing CPU-kill contract. Private-resource and all-exit qualification remain
+open. The earlier v1 kill harness expected a plain startup screen and did not
+enter its fixture; its --welcome adaptation and packed setup preserve that
+failed evidence.
+
+The v6 caller harness had aliased interaction dictionaries across cycles; each
+cycle now gets its own copy. The v8 run checks both caller masks, continuation,
+registers and exact document restoration, then fails a cross-invocation heap
+comparison that also counts the shell's retained transcript. The v9 fixture
+instead measures each trap's before/after heap total, requiring zero growth
+after warm-up. That run and the 8 MiB TCG welcome regression are pending; no
+complete CPU-context or broader debugger qualification is claimed yet.
 
 The full original-byte Psalmody workflow now loads past TaskCaller and stops at
 missing scrncast in JukePuppet line 84

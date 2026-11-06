@@ -17065,6 +17065,12 @@
           "result": "pass",
           "evidence": "build/i386-task-caller-native-v3/result.json",
           "scope": "Final interface-221 walker matches original seven-check current/suspended task contract, including bounded exhaustion and child cleanup; unchanged inputs. CPU-debugger context remains pending."
+        },
+        {
+          "command": "python3 tools/test-i386-debugger-welcome-kill.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-debugger-display-kill-v3/result.json",
+          "scope": "8 MiB KVM 486,-fpu welcome session: child INT3 kill, survivor debugger/resume, parent exact document/public heap recovery, mode clear and fresh arithmetic; unchanged inputs. Not all private resources, task contexts or original UI equivalence."
         }
       ]
     },

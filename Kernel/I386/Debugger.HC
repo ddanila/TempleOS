@@ -292,6 +292,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
   CI386Text saved;
   CTask *focus=sys_focus_task;
   CI386KeyEvent event;
+  CNativeLegacyViewScope *legacy_view=NULL;
   U8 *backup,*p=&saved,*q=&console_text,line[256];
   I64 i,length=0,decoded,ch,failure=0;
   Bool raised=FALSE;
@@ -307,6 +308,9 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
     task->debug_backup=backup; task->debug_cleanup=task->cleanup;
     task->cleanup=&ConsoleDebugTaskCleanup;
     task->debug_session_active=TRUE; task->debug_go=FALSE; sys_focus_task=task;
+    //The welcome document must yield the screen to this raw debugger terminal.
+    //Open above the debugger cleanup callback so forced exit unwinds both.
+    legacy_view=NativeLegacyViewOpen;
     I386TextInit(&console_text,console_planes,sys_font_std);
     I386TextWrite(&console_text,"TempleOS i386\nHolyC debugger\n\n");
     if(is_exception) {
@@ -351,6 +355,7 @@ U0 ConsoleDebugSession(U8 *msg,I64 msg_num,CHashFun *fun,I64 exception=0,
   } catch {
     failure=task->except_ch; raised=TRUE; task->catch_except=TRUE;
   }
+  NativeLegacyViewClose(legacy_view);
   if(backup) {
     for(i=0;i<153600;i++) console_planes[i]=backup[i];
     for(i=0;i<sizeof(CI386Text);i++) q[i]=p[i];
