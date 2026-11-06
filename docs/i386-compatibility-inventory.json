@@ -17389,6 +17389,12 @@
           "result": "fail",
           "evidence": "build/i386-screencast-native-v1/result.json",
           "scope": "Interface 221 rejects CSndData at fixture line 4; unchanged inputs, no native state/queue checks execute"
+        },
+        {
+          "command": "python3 tools/test-i386-screencast.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-screencast-original-v3/result.json",
+          "scope": "Twenty original queue/state checks, now including mute/debug recording gates, stuck sound-semaphore recovery, speaker-off and IF preservation. Inputs unchanged; native capture, video and audible output remain unqualified."
         }
       ]
     },

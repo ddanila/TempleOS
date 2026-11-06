@@ -26449,3 +26449,13 @@ and zero public heap growth on the warmed trap. The original disk and checker
 remain unchanged. The independent 8 MiB TCG welcome/clear/input regression also
 passes with unchanged inputs. See `docs/i386-task-caller.md`. Broader task-state,
 private-resource and complete C1–C5 qualification remain open.
+
+## Screencast capture gates and recovery oracle (2026-11-06)
+
+The original screencast oracle now passes twenty independent checks with
+unchanged inputs in build/i386-screencast-original-v3. Added coverage observes
+mute/debug recording gates, live pitch changes while debugging, recovery from
+a deliberately stuck sound semaphore, speaker-off state and IF preservation.
+The native queue/state implementation is in progress using the exact original
+shared bodies and types. Frame capture, audible output and full Psalmody
+workflows remain unqualified; no C1–C5 completion is implied.

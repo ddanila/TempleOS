@@ -17,7 +17,7 @@ def main():
     fixture=ROOT/'tests/guest/i386-screencast/Contract.HC'
     paths=[Path(__file__).resolve(),fixture,ROOT/'Kernel/FontStd.HC']+[ROOT/('tools/'+n) for n in ['test-i386-timeclock-reference.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','build-iso.py','package-i386-native-image.py','build-i386-kernel.py']]
     if args.disk:paths.append(args.disk.resolve())
-    out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Real audio queue including duplicate notes, timestamps, initial rest, repeated-enable behavior and stop/restart. No video-frame or audible-output qualification.');g=None
+    out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Real audio queue including duplicate notes, timestamps, initial rest, repeated-enable behavior and stop/restart. Mute/debug capture gates, stuck sound-semaphore recovery and IF preservation. No video-frame or audible-output qualification.');g=None
     (out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     try:
         if args.disk:
@@ -33,7 +33,7 @@ def main():
             g.wait('DONE native kernel startup\n')
             g.command('#include "C:/Probe/ScrnCast.HC"');g.command('SCCheck();')
         g.wait('SCREENCAST DONE\n')
-        expected={'screencast.bin':struct.pack('<12q',*([1]*12))}
+        expected={'screencast.bin':struct.pack('<20q',*([1]*20))}
         for name,want in expected.items():
             actual=(g.out/name).read_bytes();(out/name).write_bytes(actual)
             if actual!=want:raise ValueError(name+' differs from independent byte oracle')
