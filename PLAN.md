@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Native default-string generation one (2026-11-07)
+
+All nine retained modules build successfully on the frozen interface-224 image
+at 64 MiB KVM `486,-fpu`. Persisted hashes, export sets and frozen input provenance
+are audited, including the disclosed preloaded builder helper. Installation is
+running; actual generation-two equality and the required memory profiles remain
+open. This does not qualify newer interface-226 sources. See
+[default-string generation evidence](docs/i386-module-default-strings.md).
+
 ### Share diagnostic symbol deletion (2026-11-07)
 
 CompilerProbe now binds the existing kernel symbol-deletion implementation,

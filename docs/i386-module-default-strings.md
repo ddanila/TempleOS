@@ -26,7 +26,20 @@ loader or complete provider-generation equivalence.
 
 Both bootstrap generations and cross-v1 pass; its source/helper audit is
 unchanged. The 8 MiB TCG welcome/clear/input regression passes with unchanged
-inputs in `build/i386-module-default-strings-welcome-v1`. A fresh full nine-module
-native build is running in `build/i386-default-strings-native-nine-v1`, using
-a frozen full-content candidate. Installation, second-generation comparison,
-the required memory profiles and C5 remain open.
+inputs in `build/i386-module-default-strings-welcome-v1`. The full nine-module
+native generation passes in `build/i386-default-strings-native-nine-v1`, using
+the frozen full-content interface-224 candidate at 64 MiB KVM `486,-fpu` with
+paced keyboard commands and live WinMgr. The build provider loads once, all nine
+persisted modules have the expected export sets, and the concluding arithmetic
+interaction passes. This qualifies generation one, not two-generation equality.
+
+`terminal-audit.json` verifies the persisted module hashes and every original
+input pin except the explicitly disclosed on-disk builder helper. Its preloaded
+helper snapshot matches the original pin, its disk-reader AST matches the
+current helper, and its runner snapshot matches the pinned runner. Extracted
+modules are retained under `exports/`. The generation predates the later public
+control and probe-size changes; it does not qualify those newer sources.
+
+Installation is running in `build/i386-default-strings-native-install-v1`, using
+a fresh copy and preserving the generation-one source image. Installation,
+second-generation comparison, required memory profiles and C5 remain open.
