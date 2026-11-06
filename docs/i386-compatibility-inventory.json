@@ -6097,6 +6097,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-keyboard-native-v1/result.json",
           "scope": "64 MiB KVM: same physical emulated key sequence, exactly one Ctrl-Y with modifier, two surviving rows and bank balance 70, Escape View return, exact original/independent DolDoc and mask 31, rendered fresh 42. Clean filesystem, 1738 files preserved, unchanged inputs. Not navigation-selected initial row, popup entry, persisted deletion, pixel equality or full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-reference-v2/result.json",
+          "scope": "Full Budget() with three preseeded transactions; QEMU Home/Down selects the middle row, Ctrl-Y deletes it, Escape saves. Exact independent documents and saved data/strings/accounts, mask 63 covering observer completion, documents/menu/settings/window/autocomplete restoration and same-session readback; unchanged inputs."
+        },
+        {
+          "target": "native-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-native-v1/result.json",
+          "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -6195,6 +6207,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-storage-installed-native-v2/result.json",
           "scope": "Reviewed BgtStrs I64 temporary-sort-slot port, all other Budget files reference-exact. Same-session plus cold-boot reopen exactly match original records, strings and account colors. Saved Budget bytes/attributes/timestamps unchanged across reboot; 1738 files preserved; filesystem and input audits pass. Not UI entry, views, templates or full C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-reference-v2/result.json",
+          "scope": "Full Budget() with three preseeded transactions; QEMU Home/Down selects the middle row, Ctrl-Y deletes it, Escape saves. Exact independent documents and saved data/strings/accounts, mask 63 covering observer completion, documents/menu/settings/window/autocomplete restoration and same-session readback; unchanged inputs."
+        },
+        {
+          "target": "native-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-native-v1/result.json",
+          "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -6269,6 +6293,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-keyboard-native-v1/result.json",
           "scope": "64 MiB KVM: same physical emulated key sequence, exactly one Ctrl-Y with modifier, two surviving rows and bank balance 70, Escape View return, exact original/independent DolDoc and mask 31, rendered fresh 42. Clean filesystem, 1738 files preserved, unchanged inputs. Not navigation-selected initial row, popup entry, persisted deletion, pixel equality or full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-reference-v2/result.json",
+          "scope": "Full Budget() with three preseeded transactions; QEMU Home/Down selects the middle row, Ctrl-Y deletes it, Escape saves. Exact independent documents and saved data/strings/accounts, mask 63 covering observer completion, documents/menu/settings/window/autocomplete restoration and same-session readback; unchanged inputs."
+        },
+        {
+          "target": "native-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-native-v1/result.json",
+          "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -6312,6 +6348,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-storage-installed-native-v2/result.json",
           "scope": "Reviewed BgtStrs I64 temporary-sort-slot port, all other Budget files reference-exact. Same-session plus cold-boot reopen exactly match original records, strings and account colors. Saved Budget bytes/attributes/timestamps unchanged across reboot; 1738 files preserved; filesystem and input audits pass. Not UI entry, views, templates or full C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-reference-v2/result.json",
+          "scope": "Full Budget() with three preseeded transactions; QEMU Home/Down selects the middle row, Ctrl-Y deletes it, Escape saves. Exact independent documents and saved data/strings/accounts, mask 63 covering observer completion, documents/menu/settings/window/autocomplete restoration and same-session readback; unchanged inputs."
+        },
+        {
+          "target": "native-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-native-v1/result.json",
+          "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -6383,6 +6431,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-keyboard-native-v1/result.json",
           "scope": "64 MiB KVM: same physical emulated key sequence, exactly one Ctrl-Y with modifier, two surviving rows and bank balance 70, Escape View return, exact original/independent DolDoc and mask 31, rendered fresh 42. Clean filesystem, 1738 files preserved, unchanged inputs. Not navigation-selected initial row, popup entry, persisted deletion, pixel equality or full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-reference-v2/result.json",
+          "scope": "Full Budget() with three preseeded transactions; QEMU Home/Down selects the middle row, Ctrl-Y deletes it, Escape saves. Exact independent documents and saved data/strings/accounts, mask 63 covering observer completion, documents/menu/settings/window/autocomplete restoration and same-session readback; unchanged inputs."
+        },
+        {
+          "target": "native-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-native-v1/result.json",
+          "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -6426,6 +6486,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-template-native-v1/result.json",
           "scope": "64 MiB KVM, real settings/autocomplete libraries, complete original Budget source load, repeated Install, exact archive bytes/attributes/date and guest-expanded original template. 1738 files preserved, clean filesystem, unchanged inputs. Not interactive/reboot/application or C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-reference-v2/result.json",
+          "scope": "Full Budget() with three preseeded transactions; QEMU Home/Down selects the middle row, Ctrl-Y deletes it, Escape saves. Exact independent documents and saved data/strings/accounts, mask 63 covering observer completion, documents/menu/settings/window/autocomplete restoration and same-session readback; unchanged inputs."
+        },
+        {
+          "target": "native-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-native-v1/result.json",
+          "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -6489,6 +6561,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-template-native-v1/result.json",
           "scope": "64 MiB KVM, real settings/autocomplete libraries, complete original Budget source load, repeated Install, exact archive bytes/attributes/date and guest-expanded original template. 1738 files preserved, clean filesystem, unchanged inputs. Not interactive/reboot/application or C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-reference-v2/result.json",
+          "scope": "Full Budget() with three preseeded transactions; QEMU Home/Down selects the middle row, Ctrl-Y deletes it, Escape saves. Exact independent documents and saved data/strings/accounts, mask 63 covering observer completion, documents/menu/settings/window/autocomplete restoration and same-session readback; unchanged inputs."
+        },
+        {
+          "target": "native-budget-full-session",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-native-v1/result.json",
+          "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
         }
       ]
     },

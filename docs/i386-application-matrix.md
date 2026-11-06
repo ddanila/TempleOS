@@ -378,3 +378,44 @@ saving the deletion, the complete Budget() startup/settings lifetime, physical
 hardware or whole application qualification. Those workflows and C1-C5 remain
 open; the separate storage/cold-reboot result must not be treated as proof of an
 interactive save/delete/reopen workflow.
+
+
+## Budget full keyboard session and save (2026-11-06)
+
+The unchanged Budget() entry point now has a full session comparison:
+build/i386-budget-session-reference-v2 and
+build/i386-budget-session-native-v1 both pass mask 63. The fixture seeds three
+transactions through the real storage functions, then opens Budget. A read-only
+child observer captures the documents and waits for keyboard-selected state;
+it neither moves the cursor nor replaces the application's key handler. QEMU
+Home/Down selects the middle grocery row, Ctrl-Y deletes it, and Escape saves
+and closes the application. The observer's captures use the parent task heap
+so they survive its exit.
+
+Independent checks require exact chronological documents, colors, cursor markers,
+running balance 70 and surviving transaction identities, normalizing only
+addresses. The saved 80-byte transaction data, 125-byte string table and 108-byte
+account file match the original. Six mask bits check observer completion,
+restored put/display documents, menu/settings pointers, window bounds,
+autocomplete activity and two-record same-session readback. The native run also
+renders 42 after returning to the console. Its filesystem audit passes, all
+1738 existing files are preserved and both runs retain unchanged inputs.
+
+The initial original reference-v1 reached the restored console but timed out
+waiting for fixture completion after TaskWait on the retired observer. The
+corrected fixture waits for that task identity using TaskValidate and task_num,
+so reuse of its address cannot make it wait for a different task. The failed
+run and frozen inputs remain available; this does not establish a runtime fix.
+
+Reproduce the reference with:
+
+```
+python3 tools/test-i386-budget-session.py --archive build/i386-budget-sort-slot-cross-v1/exports/BudgetAccts.DD.Z --out OUT_REFERENCE
+python3 tools/test-i386-budget-session.py build/i386-budget-sort-slot-cross-v1/kernel.img --reference OUT_REFERENCE --out OUT_NATIVE
+```
+
+This advances navigation, saving and the actual application's settings lifetime.
+It does not cover popup transaction entry, cold reopening of this interactive
+save, Shift-Escape cancellation, mouse input or pixel equality. The independent
+constructed-transaction cold-storage test above does not fill that gap. Complete
+Budget acceptance and C1-C5 remain open.
