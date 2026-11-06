@@ -31,3 +31,12 @@ applied to main because the concurrent C5 build pins its inputs.
 
 Raw-screen output, following links, directory links, Find replacement/dialog
 workflows and whole Psalmody/C1–C5 qualification remain open.
+
+The first candidate cross-build failed because ConsoleInit takes the function's
+address before its later shared-body include. Its compiler log is retained in
+`build/i386-public-tables-candidate-v4/source/build/public-tables-cross-v1/exports/compiler-log.DD`.
+The candidate now adds a matching forward declaration before the initializer;
+the function body remains unchanged. This is a compile failure, not a timeout
+or runtime pass. The original body comes from `Kernel/BlkDev/DskDirA.HC`.
+The dependent [FileOcc comparison](i386-file-occ.md) now records the original
+counting and caller-state behavior that this public link binding must enable.

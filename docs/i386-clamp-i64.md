@@ -56,3 +56,9 @@ GodExt, GodBible, HolySpirit and GodSong sources successfully. The unchanged
 Psalmody loader now rejects `FileOcc` at JukeBox line 135. That function belongs
 to `Adam/Opt/Utils/Find.HC`; the next prerequisite is the full original find
 utility and its public dependencies. No Psalmody UI execution is claimed.
+
+The longer diagnostic observation run
+`build/i386-public-tables-clamp-minimal-v2/screen-oracle.json` passes the complete
+307,200-pixel welcome frame at 16 MiB. Its harness allowance was 600 seconds.
+This completes that diagnostic observation, not the minimal interactive
+60-second startup gate or the whole minimal regression suite.

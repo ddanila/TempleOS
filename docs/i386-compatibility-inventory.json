@@ -5203,9 +5203,22 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "tools/test-i386-file-occ.py",
+      "oracle": "Nine independent count expectations, silent output and caller restoration mask 4095; see docs/i386-file-occ.md.",
+      "tests": [
+        {
+          "target": "original-file-occ",
+          "result": "pass",
+          "evidence": "build/i386-file-occ-original-v1/result.json",
+          "scope": "Nine case/label/overlap/no-match counts plus silent-state, no-output and directory checks; mask 4095, unchanged inputs. Not replacement/wizard/error/recursive coverage."
+        },
+        {
+          "target": "native-file-occ-before-links",
+          "result": "fail",
+          "evidence": "build/i386-file-occ-native-v1/result.json",
+          "scope": "Complete original Find source verified; include rejects missing PutFileLink at line 60 before fixture execution; inputs unchanged."
+        }
+      ]
     },
     {
       "path": "Adam/Opt/Utils/HeapLog.HC",
@@ -15692,6 +15705,18 @@
           "result": "pass",
           "evidence": "docs/i386-mount-file.md",
           "scope": "Rebuilt-original MountFile reference v7 and FAT path reference v4; final-image native v4 counterparts, independent filesystem/FAT and 1252 delivered-source checks. Complete mounted RedSea/FAT32 path bodies; hardware, broad filename/volume, repeated heap recovery and whole-file qualification remain open."
+        },
+        {
+          "target": "original-public-file-links",
+          "result": "pass",
+          "evidence": "build/i386-file-links-original-v1/result.json",
+          "scope": "Null plus seven file/plain/line/sprite/default-path cases match independent exact 254-byte DolDoc; unchanged inputs. See docs/i386-file-links.md."
+        },
+        {
+          "target": "native-public-file-links",
+          "result": "fail",
+          "evidence": "build/i386-file-links-native-v1/result.json",
+          "scope": "Clamp candidate rejects first PutFileLink call before fixture execution; unchanged inputs. No raw-screen/navigation or complete provider qualification."
         }
       ]
     },
