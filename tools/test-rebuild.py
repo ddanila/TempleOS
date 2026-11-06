@@ -24,12 +24,16 @@ def sha(path):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--qmp-stdio',action='store_true')
+    parser.add_argument('--guest-timeout',type=int,default=180,
+                        help='Observation timeout per bootstrap guest (default: 180 seconds)')
     args=parser.parse_args()
+    if not 1 <= args.guest_timeout <= 3600:
+        parser.error('--guest-timeout must be between 1 and 3600 seconds')
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT/'result.json').unlink(missing_ok=True)
     manifest = {'revision': subprocess.check_output(['git','rev-parse','HEAD'],
                 cwd=ROOT, text=True).strip(), 'source_sha256': {}, 'generations': [],
-                'qmp_stdio': args.qmp_stdio}
+                'qmp_stdio': args.qmp_stdio, 'guest_timeout': args.guest_timeout}
     names = subprocess.check_output(['git','ls-tree','-r','--name-only',OS_SNAPSHOT],
                                     cwd=ROOT,text=True).splitlines()
     os_dirs = {name.split('/')[0] for name in names if '/' in name}
@@ -49,6 +53,7 @@ def main():
             cmd += ['--overlay', str(overlay)]
         run(*cmd)
         run(sys.executable, 'tools/guest-run.py', str(iso), '--out', str(exports),
+            '--timeout', str(args.guest_timeout),
             *(['--qmp-stdio'] if args.qmp_stdio else []))
         manifest['generations'].append({name: sha(exports/name)
                                        for name in ('Compiler.BIN','Kernel.BIN')})

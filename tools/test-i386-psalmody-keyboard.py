@@ -46,7 +46,19 @@ def main():
         Guest=runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest'];g=Guest(image,out/'guest',bool(args.disk))
         if args.disk:
             g.wait('DONE native kernel startup\n')
-            for command in ['AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);','AdamFile("C:/Adam/TaskSettings.HC",FALSE);','#include "C:/Apps/Psalmody/Load.HC"','#include "C:/Probe/PsalmodyKeyboard.HC"']:g.command(command)
+            providers = [
+                'AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);',
+                'AdamFile("C:/Adam/TaskSettings.HC",FALSE);',
+                '#include "C:/Adam/Opt/Utils/Find.HC"',
+                '#include "C:/Adam/God/GodExt.HC"',
+                '#include "C:/Adam/God/GodBible.HC"',
+                '#include "C:/Adam/God/HolySpirit.HC"',
+                '#include "C:/Adam/God/GodSong.HC"',
+                '#include "C:/Apps/Psalmody/Load.HC"',
+                '#include "C:/Probe/PsalmodyKeyboard.HC"',
+            ]
+            report['native_provider_commands'] = providers
+            for command in providers:g.command(command)
             g.type('PsalmodyKeyboard;');g.press('ret')
         g.wait('PS ready\n');time.sleep(2);g.screenshot('ready');g.press('z');g.wait('PS recording\n',30)
         for i,key in enumerate(['h','j','k'],1):

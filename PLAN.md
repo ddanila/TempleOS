@@ -26354,3 +26354,29 @@ still rejects the missing service. Native task inspection must use the actual
 private scheduler context or captured debugger registers, not stale public
 register shadows. See `docs/i386-task-caller.md`. TaskCaller, broader mapping,
 module debug interchange, Psalmody and all C1–C5 release gates remain open.
+
+## Native TaskCaller and the next Psalmody dependency (2026-11-06)
+
+Console interface 221 exports TaskCaller. Current unsaved queries use the
+existing Caller depth convention. Suspended tasks use the real private switch
+frame; CPU-stop queries select captured public registers. Reads validate task
+identity, stack bounds and parent transitions under interrupt exclusion. The
+final walker passes all seven original/native current/suspended-task checks,
+child cleanup and fresh arithmetic, plus exact welcome/clear/input at 8 MiB
+TCG 486,-fpu. Both bootstrap generations, the clean cross-build and all 1,715
+source pins pass. See `docs/i386-task-caller.md`. The CPU-breakpoint oracle is
+still running; its earlier setup failures do not qualify that path.
+
+The full original-byte Psalmody workflow, after loading Find and all four God
+providers, now passes TaskCaller compilation and stops at missing scrncast in
+JukePuppet line 84. Recording/deletion/abort remain unexecuted on native. The
+screencast dependency requires real state and capture behavior, not a placeholder.
+
+The host warning-identity checker pending in the previous checkpoint is now
+updated and passes against the accepted debug diagnostic log. The live native
+generation-two runner loaded its disk reader before starting QEMU; the original
+helper is preserved at its launch SHA256 and its reader AST is unchanged.
+See build/i386-inline-call-native-generation2-v1/preloaded-helper-provenance.json.
+Keep the launch manifest intact and report the changed on-disk builder pin
+separately from that preserved loaded snapshot and the other unchanged inputs.
+The native build continues; no second-generation pass is claimed. C1–C5 remain open.

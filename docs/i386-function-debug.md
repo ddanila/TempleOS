@@ -55,13 +55,18 @@ KVM 486,-fpu (`build/i386-function-debug-partial-v1/result.json`), with unchange
 inputs, across both ExePutS modes and all eight recovery cases. Cross-v2 changes
 only CompilerProbe.t32m relative to cross-v1; all other retained modules are
 byte-identical, and all 1,714 source pins match.
-The equivalent host warning-identity expectation in tools/build-i386-kernel.py
-still needs the same update. That file is pinned by the live second-generation
-native build, so it remains unchanged until that run terminates. The exact edit
-is saved in `build/i386-function-debug-minimal-v2/pending-host-checker.patch`;
-apply it and verify the checker after the terminal input audit. Until then,
-the builder's full --test checker will reject the new warning identities even
-though the independent diagnostic audit above passes.
+The host warning-identity checker has now been updated and executed against
+both accepted diagnostic phases (`host-warning-checker.json` under the same
+output). This still does not qualify the complete --test suite.
+
+The live native generation-two runner had loaded the disk-reader helper before
+starting QEMU. Its original builder file was preserved at the launch manifest's
+exact SHA256 in `build/i386-inline-call-native-generation2-v1/preloaded-build-helper.py`.
+`preloaded-helper-provenance.json` records the load order and unchanged reader
+AST. The unrelated host version/warning checks can therefore change without
+changing that already-loaded reader. The launch manifest remains intact; its
+original builder path pin will differ at termination and must be reported as
+such, alongside the preserved loaded snapshot and all remaining input pins.
 
 Complete source mapping (including optimized branches and assembly), metadata
 failure injection, TaskCaller, Psalmody and C1–C5 remain unqualified.

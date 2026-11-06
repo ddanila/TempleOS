@@ -7470,6 +7470,12 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-symbol-types-probe-v1/result.json",
           "scope": "Including full existing SymbolTypes.HH resolves dbg_info visibility and reaches missing TaskCaller at line 17; unchanged inputs. No stack/debug metadata or application qualification."
+        },
+        {
+          "target": "native-psalmody-task-caller",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-task-caller-v1/result.json",
+          "scope": "Complete original-byte app loads after actual Find/God providers and new TaskCaller; stops at missing scrncast in JukePuppet line 84. Keyboard workflow not reached; inputs unchanged."
         }
       ]
     },
@@ -7508,6 +7514,12 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
           "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        },
+        {
+          "target": "native-psalmody-task-caller",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-task-caller-v1/result.json",
+          "scope": "Complete original-byte app loads after actual Find/God providers and new TaskCaller; stops at missing scrncast in JukePuppet line 84. Keyboard workflow not reached; inputs unchanged."
         }
       ]
     },
@@ -17041,6 +17053,18 @@
           "result": "fail",
           "evidence": "build/i386-task-caller-native-v1/result.json",
           "scope": "Service not exposed: first TaskCaller call fails compilation at fixture line 3. Inputs unchanged."
+        },
+        {
+          "target": "native-task-caller-initial",
+          "result": "pass",
+          "evidence": "build/i386-task-caller-native-v2/result.json",
+          "scope": "Interface-221 candidate matches seven original current/suspended-task caller and cleanup checks. Inputs unchanged. Debugger and broader task states remain under test."
+        },
+        {
+          "target": "native-task-caller",
+          "result": "pass",
+          "evidence": "build/i386-task-caller-native-v3/result.json",
+          "scope": "Final interface-221 walker matches original seven-check current/suspended task contract, including bounded exhaustion and child cleanup; unchanged inputs. CPU-debugger context remains pending."
         }
       ]
     },

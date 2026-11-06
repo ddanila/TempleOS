@@ -10,6 +10,7 @@ U8 *NativeCaller(I64 num=1)
   }
   return I386TaskFrameReturn(task,frame);
 }
+#include "/Kernel/I386/TaskCallerRuntime.HC"
 #include "/Kernel/I386/PublicDebugTypes.HH"
 extern U0 NativeBptOwnTask(CTask *task);
 CBpt *BptFind(U8 *needle_addr,CTask *haystack_task=NULL,Bool rem=FALSE)
