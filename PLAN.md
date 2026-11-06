@@ -26476,3 +26476,18 @@ passes while native rejects DCCopy. The shared Snd uses the original PIT divisor
 formula; audible waveform/frequency requalification remains open. Beep and the
 full original-byte Psalmody keyboard workflow are still running. No complete
 screencast, application or C1–C5 qualification is claimed.
+
+## Frame dependencies and the next Psalmody gap (2026-11-06)
+
+The original frame-dependency oracle passes twelve bitmap-copy/difference,
+compressed round-trip and actual GR file checks, including independently
+constructed header/pixel bytes. Native interface 222 rejects DCCopy before any
+behavior assertions. See `docs/i386-frame-capture.md`; compositor frame capture
+and all failure cleanup remain open.
+
+After verifying the full-content package and all original Psalmody bytes, the
+keyboard workflow now loads beyond scrncast and stops at Ona2Octave in
+PsalmodyDraw line 163. No recording/deletion/abort assertion runs. Evidence is
+build/i386-psalmody-screencast-v3/result.json, with unchanged inputs. The earlier
+minimal-image attempt lacked examples, and the first repack was rejected for
+stale directory padding; those failures remain preserved. C1–C5 remain open.

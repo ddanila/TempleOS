@@ -4067,7 +4067,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-frame-capture.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-frame-capture-original-v1/result.json",
+          "scope": "Twelve original bitmap copy/difference and GR save/load/file checks, independent raw bytes; unchanged inputs. Not actual frame scheduling or all failure cleanup."
+        },
+        {
+          "command": "python3 tools/test-i386-frame-capture.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-frame-capture-native-v1/result.json",
+          "scope": "Interface 222 rejects first DCCopy invocation at fixture line 10; no behavior checks execute, inputs unchanged."
+        }
+      ]
     },
     {
       "path": "Adam/Gr/GrComposites.HC",
@@ -4185,6 +4198,18 @@
           "result": "pass",
           "evidence": "build/i386-c2-gr-read-native/result.json",
           "scope": "Eight ExtDft cases, four raw/7-bit/8-bit GR records, distinct parent/default task ownership, default extension and nested compression, packed document bitmap bytes, explicit/default DocGR and missing-file NULL; fourteen checks; unchanged inputs; diagnostic text, rendering and whole-file qualification remain open"
+        },
+        {
+          "command": "python3 tools/test-i386-frame-capture.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-frame-capture-original-v1/result.json",
+          "scope": "Twelve original bitmap copy/difference and GR save/load/file checks, independent raw bytes; unchanged inputs. Not actual frame scheduling or all failure cleanup."
+        },
+        {
+          "command": "python3 tools/test-i386-frame-capture.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-frame-capture-native-v1/result.json",
+          "scope": "Interface 222 rejects first DCCopy invocation at fixture line 10; no behavior checks execute, inputs unchanged."
         }
       ]
     },
@@ -7520,6 +7545,12 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-task-caller-v1/result.json",
           "scope": "Complete original-byte app loads after actual Find/God providers and new TaskCaller; stops at missing scrncast in JukePuppet line 84. Keyboard workflow not reached; inputs unchanged."
+        },
+        {
+          "command": "python3 tools/test-i386-psalmody-keyboard.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-screencast-v3/result.json",
+          "scope": "Full original-byte application loads past scrncast and stops at missing Ona2Octave in PsalmodyDraw line 163. Recording/deletion/abort unexecuted; inputs unchanged."
         }
       ]
     },
@@ -7610,6 +7641,12 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
           "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        },
+        {
+          "command": "python3 tools/test-i386-psalmody-keyboard.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-screencast-v3/result.json",
+          "scope": "Full original-byte application loads past scrncast and stops at missing Ona2Octave in PsalmodyDraw line 163. Recording/deletion/abort unexecuted; inputs unchanged."
         }
       ]
     },
@@ -17395,6 +17432,12 @@
           "result": "pass",
           "evidence": "build/i386-screencast-original-v3/result.json",
           "scope": "Twenty original queue/state checks, now including mute/debug recording gates, stuck sound-semaphore recovery, speaker-off and IF preservation. Inputs unchanged; native capture, video and audible output remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-screencast.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-screencast-native-v2/result.json",
+          "scope": "Twenty native state/real sound-queue, mute/debug gate, semaphore recovery and IF checks match original; fresh arithmetic and unchanged inputs. Video/audio waveform and whole-file qualification open."
         }
       ]
     },
