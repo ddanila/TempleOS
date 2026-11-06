@@ -60,3 +60,44 @@ checks all 3719 pinned files with no differences. The captured actual frame
 was decoded to build/source-syntax-error-observed.png for inspection. This is
 a failed full gate; preceding component passes do not qualify the minimum
 profile or C1-C5.
+
+
+## Original error semantics and native startup comparison (2026-11-06)
+
+The original compiler preserves completed declarations across the later error.
+The shared fixture in tests/guest/i386-source-error executes the exact malformed
+source from the full gate: BOOT_SEEN=7, BootCount=39, then Unknown bad. The pinned
+original control in build/i386-source-error-original-v3 and native comparison in
+build/i386-source-error-native-v3 both pass mask 15: BootCount remains published
+and evaluates to 39, bad is absent, BOOT_SEEN evaluates to 7, and a subsequent
+assignment to 41 followed by increment leaves BootCount at 42. Checks use
+HashFind and ExePutS, with no direct symbol-storage access. The native run also
+renders fresh 42 after returning to the console. Both retain unchanged inputs.
+
+A separate normal-startup test in build/i386-source-error-startup-v1 uses an
+8 MiB KVM 486,-fpu guest and replaces only the reserved StartOS.HC source bytes.
+It requires the passing original control and the same malformed-source hash,
+observes STARTUP source error, then checks BootCount=39, absent bad, the later
+42 value, preserved macro, Fs->gs==Gs and rendered arithmetic. All pass. The
+working disk remains byte-identical to the intentionally prepared candidate;
+only StartOS.HC differed from the original image. No runtime change was needed.
+
+Therefore verify_source_startup's expected undefined BootCount is incorrect.
+Its syntax-error case should require 39 and then assign BootCount=41, retaining
+the increment, macro and Gs checks. The old checker has not yet been edited or
+the full gate rerun: tools/build-i386-kernel.py is pinned by the still-running
+nine-module native build in build/i386-inline-call-native-nine-v2. This evidence
+resolves the semantic question, not the full minimal gate or C1-C5 completion.
+
+The initial native probe attempt stopped at a packaging collision with an
+existing /Probe/Bad.HC; the replacement uses /Probe/SourceErrorBad.HC. A second
+attempt rejected the fixture's unexposed CHashGlblVar type before execution.
+The final fixture uses public expression evaluation instead. Earlier original
+controls also observed preservation; their frozen sources and failure attempts
+remain retained. The public type exposure gap is not claimed fixed.
+
+```
+python3 tools/test-i386-source-error.py --out OUT_ORIGINAL
+python3 tools/test-i386-source-error.py build/i386-inline-call-cross-v1/kernel.img --out OUT_NATIVE
+python3 tools/test-i386-source-error-startup.py build/i386-inline-call-cross-v1/kernel.img --reference OUT_ORIGINAL --out OUT_STARTUP
+```
