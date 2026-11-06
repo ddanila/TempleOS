@@ -6054,6 +6054,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-native-v2/result.json",
           "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-popup-cancel-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-reference-v1/result.json",
+          "scope": "Fully typed five-field popup cancelled with Shift-Escape leaves empty doc/list and no data/strings files. Second popup accepted/saved; exact records exclude cancelled names. Same-boot actual Budget reopening/restoration; masks 127/63, unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-cancel-cold-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
+          "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
         }
       ]
     },
@@ -6157,6 +6169,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-native-v2/result.json",
           "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-popup-cancel-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-reference-v1/result.json",
+          "scope": "Fully typed five-field popup cancelled with Shift-Escape leaves empty doc/list and no data/strings files. Second popup accepted/saved; exact records exclude cancelled names. Same-boot actual Budget reopening/restoration; masks 127/63, unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-cancel-cold-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
+          "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
         }
       ]
     },
@@ -6236,6 +6260,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-native-v2/result.json",
           "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-popup-cancel-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-reference-v1/result.json",
+          "scope": "Fully typed five-field popup cancelled with Shift-Escape leaves empty doc/list and no data/strings files. Second popup accepted/saved; exact records exclude cancelled names. Same-boot actual Budget reopening/restoration; masks 127/63, unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-cancel-cold-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
+          "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
         }
       ]
     },
@@ -6315,6 +6351,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-native-v2/result.json",
           "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-popup-cancel-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-reference-v1/result.json",
+          "scope": "Fully typed five-field popup cancelled with Shift-Escape leaves empty doc/list and no data/strings files. Second popup accepted/saved; exact records exclude cancelled names. Same-boot actual Budget reopening/restoration; masks 127/63, unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-cancel-cold-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
+          "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
         }
       ]
     },
@@ -6431,6 +6479,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-native-v2/result.json",
           "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-popup-cancel-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-reference-v1/result.json",
+          "scope": "Fully typed five-field popup cancelled with Shift-Escape leaves empty doc/list and no data/strings files. Second popup accepted/saved; exact records exclude cancelled names. Same-boot actual Budget reopening/restoration; masks 127/63, unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-cancel-cold-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
+          "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
         }
       ]
     },
@@ -6516,6 +6576,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-native-v2/result.json",
           "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-popup-cancel-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-reference-v1/result.json",
+          "scope": "Fully typed five-field popup cancelled with Shift-Escape leaves empty doc/list and no data/strings files. Second popup accepted/saved; exact records exclude cancelled names. Same-boot actual Budget reopening/restoration; masks 127/63, unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-cancel-cold-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
+          "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
         }
       ]
     },
@@ -6629,6 +6701,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-native-v2/result.json",
           "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-popup-cancel-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-reference-v1/result.json",
+          "scope": "Fully typed five-field popup cancelled with Shift-Escape leaves empty doc/list and no data/strings files. Second popup accepted/saved; exact records exclude cancelled names. Same-boot actual Budget reopening/restoration; masks 127/63, unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-cancel-cold-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
+          "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
         }
       ]
     },
@@ -6801,6 +6885,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-native-v2/result.json",
           "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-popup-cancel-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-reference-v1/result.json",
+          "scope": "Fully typed five-field popup cancelled with Shift-Escape leaves empty doc/list and no data/strings files. Second popup accepted/saved; exact records exclude cancelled names. Same-boot actual Budget reopening/restoration; masks 127/63, unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-cancel-cold-reopen",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
+          "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
         }
       ]
     },

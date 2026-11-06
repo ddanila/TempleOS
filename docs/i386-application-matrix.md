@@ -514,3 +514,34 @@ copying existing entries, account-picker choices, templates, cold reopening of
 this newly entered record, mouse input, complete hex editing or whole Budget
 qualification. The separate cold-save workflow remains independent evidence.
 C1-C5 remain open.
+
+
+## Budget popup cancellation and cold reopening of UI-entered data (2026-11-06)
+
+The popup-entry runner now first fills all five fields with a deliberately
+unwanted transaction: 01/01/2001, 999.99, GHOST, VOID and `discard me`. Shift-Escape
+cancels it. The read-only observer checks that the same empty Budget document and
+empty transaction list remain, and neither data nor string-table file exists.
+A second `n` interaction enters and saves the previously specified 125.50
+BANK-to-RENT record. The exact twelve-entry string table and installed account
+file exclude the cancelled account names and description.
+
+The original control in build/i386-budget-entry-cancel-reference-v1 passes
+mask 127 for cancellation plus the existing full-session checks, then mask 63
+for same-boot reopening/restoration. The native comparison in
+build/i386-budget-entry-cancel-native-v1 passes both masks, with a full QEMU
+shutdown and restart before reopening. It loads Budget and the observer without
+installation or data seeding, checks the actual reopened report and single
+nonzero transaction identity, then exits with Shift-Escape. The reopened data,
+strings and accounts match both the initial saved exports and the original
+control. Every native file's bytes, attributes and timestamps remain unchanged
+across cold reopening/abort. Both console returns render fresh 42, the filesystem
+audit passes, 1738 original files are preserved and inputs remain unchanged.
+
+The existing popup-entry reproduction commands now perform this whole sequence;
+use fresh output directories and the matching current reference. No application
+or runtime code changed for this extension. This joins UI entry, cancellation,
+save and native cold reopening in one workflow, rather than inferring persistence
+from the independent preseeded-transaction test. The original reopen is same-boot,
+not original cold-boot evidence. Editing/copying entries, account-picker choices,
+templates, mouse and complete Budget/C1-C5 qualification remain open.

@@ -12,6 +12,7 @@ import time
 
 ROOT=Path(__file__).resolve().parents[1]
 NAMES=('before.DD','after.DD','mask.bin','data.bin','strings.DD','accounts.DD')
+REOPEN_NAMES=tuple('reopen-'+n for n in NAMES)
 POINTER=re.compile(rb',U=0x([0-9A-F]+)\$')
 
 
@@ -20,7 +21,7 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 
 def verify(records):
     before,after,mask,data,strings,accounts=records
-    if mask!=struct.pack('<q',63):raise ValueError('Entry/restoration mask differs: '+repr(mask))
+    if mask!=struct.pack('<q',127):raise ValueError('Entry/restoration mask differs: '+repr(mask))
     ids=POINTER.findall(after)
     if len(ids)!=1 or not int(ids[0],16):raise ValueError('Missing transaction identity')
     normalized=[POINTER.sub(b',U=<entry>$',v) for v in (before,after)]
@@ -48,10 +49,10 @@ def main():
     if args.disk:
         gold=args.reference.resolve();info=json.loads((gold/'result.json').read_text())
         if info.get('result')!='pass' or not info.get('inputs_unchanged') or info.get('fixture_sha256')!=sha(fixture):raise ValueError('Matching original reference required')
-        paths += [args.disk.resolve(),gold/'result.json']+[gold/n for n in NAMES]
+        paths += [args.disk.resolve(),gold/'result.json']+[gold/n for n in NAMES+REOPEN_NAMES]
     else:paths.append(args.archive.resolve())
     out.mkdir(parents=True);pins={str(p):sha(p) for p in paths}
-    report=dict(result='running',fixture_sha256=sha(fixture),input_sha256=pins,scope='Full Budget() new transaction through real popup form and emulated keyboard: fixed date, amount, accounts and description, Escape accept/save, exact records and caller restoration. Not full application qualification.')
+    report=dict(result='running',fixture_sha256=sha(fixture),input_sha256=pins,scope='Full Budget() new transaction through real popup form and emulated keyboard: fixed date, amount, accounts and description, Escape accept/save, exact records and caller restoration. First cancels a fully typed popup; native cold reboot then read-only Budget reopen/abort, original same-boot reopen. Not full application qualification.')
     (out/'fixture.HC').write_bytes(fixture.read_bytes())
     (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     guest=None
@@ -78,6 +79,13 @@ def main():
             for command in commands:guest.command(command)
             guest.type('BudgetEntry;');guest.press('ret')
         guest.wait('BP ready\n');time.sleep(2);guest.screenshot('before')
+        guest.press('n');guest.wait('BP cancel form\n',30);time.sleep(2)
+        for i,value in enumerate(['01/01/2001','999.99','GHOST','VOID','discard me']):
+            guest.type(value)
+            if i<4:guest.press('tab')
+        guest.screenshot('cancel-filled')
+        guest.key('shift',True);guest.press('esc');guest.key('shift',False)
+        guest.wait('BP cancelled\n',30);guest.screenshot('cancelled')
         guest.press('n');guest.wait('BP form\n',30);time.sleep(2);guest.screenshot('form')
         for i,value in enumerate(['09/04/1998','125.50','BANK','RENT','popup entry']):
             guest.type(value)
@@ -89,7 +97,38 @@ def main():
         if args.disk:
             guest.wait('COMMAND OK\n',start=guest.collect().index('INPUT LINE BudgetEntry;'))
             guest.command('6*7;');guest.result_pixels()
+        if args.disk:
+            guest.close();guest=None
+            persisted=pack['snapshot'](image.read_bytes())[1]
+            guest=Guest(image,out/'guest-reopen',True)
+            guest.wait('DONE native kernel startup\n');time.sleep(3)
+            for command in commands:
+                if '/Install.HC' not in command:guest.command(command)
+        guest.type('BudgetEntry(TRUE);');guest.press('ret');guest.wait('BR ready\n',30)
+        time.sleep(2);guest.screenshot('reopened')
+        guest.key('shift',True);guest.press('esc');guest.key('shift',False)
+        guest.wait('BR done\n',30)
+        reopened=[(guest.out/n).read_bytes() for n in REOPEN_NAMES]
+        if args.disk:
+            guest.wait('COMMAND OK\n',start=guest.collect().index('INPUT LINE BudgetEntry(TRUE);'))
+            guest.command('6*7;');guest.result_pixels()
         guest.close();guest=None
+        for name,value in zip(REOPEN_NAMES,reopened):(out/name).write_bytes(value)
+        if reopened[2]!=struct.pack('<q',63) or reopened[3:]!=records[3:]:
+            raise ValueError('Reopened records/restoration differ')
+        if reopened[0]!=reopened[1]:raise ValueError('Read-only reopened document changed')
+        for doc in reopened[:2]:
+            ids=POINTER.findall(doc)
+            if len(ids)!=1 or not int(ids[0],16) or POINTER.sub(b',U=<entry>$',doc)!=POINTER.sub(b',U=<entry>$',records[1]):
+                raise ValueError('Reopened account view differs')
+        if args.disk:
+            if pack['snapshot'](image.read_bytes())[1]!=persisted:
+                raise ValueError('Cold reopen/abort changed file bytes/metadata')
+            for name,actual in zip(REOPEN_NAMES,reopened):
+                if POINTER.sub(b',U=<entry>$',actual)!=POINTER.sub(b',U=<entry>$',(gold/name).read_bytes()):
+                    raise ValueError('Original reopen comparison differs: '+name)
+            report['cold_reopen_files_unchanged']=True
+        report['reopen_mask']=63
         if args.disk:
             files=pack['snapshot'](image.read_bytes())[1]
             allowed={'/Probe/BudgetEntry.HC','/Budget/Accts.DD.Z','/Budget/Strs.DD.Z','/Budget/Bgt.DATA.Z'}

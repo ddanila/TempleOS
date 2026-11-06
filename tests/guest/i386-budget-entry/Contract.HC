@@ -1,3 +1,4 @@
+Bool bp_reopen;
 CTask *bp_parent;
 CDoc *bp_old_put;
 U8 *bp_before,*bp_after;
@@ -10,23 +11,36 @@ U8 *BPCapture(CDoc *doc,I64 *size)
   if(unlock)DocUnlock(doc);
   return copy;
 }
-U0 BPWatch(U8 *)
+U0 BPFormWait()
 {
-  CDoc *doc;
-  while(!(doc=bp_parent->put_doc) || doc==bp_old_put || !(doc->flags&DOCF_FORM) ||
-      doc->user_put_key!=&BgtPutKey)Sleep(1);
-  bp_before=BPCapture(doc,&bp_before_size);bp_stage=1;BPLog("BP ready\n");
   CTask *popup;CDoc *form;CDocEntry *e;I64 fields;
   while(TRUE) {
     popup=bp_parent->popup_task;
     if(popup && TaskValidate(popup) && (form=popup->display_doc) && form->desc=='Form') {
       fields=0;
       for(e=form->head.next;e!=form;e=e->next)if(e->type_u8==DOCT_DATA)fields++;
-      if(fields==5)break;
+      if(fields==5)return;
     }
     Sleep(1);
   }
-  bp_stage=2;BPLog("BP form\n");
+}
+U0 BPWatch(U8 *)
+{
+  CDoc *doc;I64 size;U8 *data;
+  while(!(doc=bp_parent->put_doc) || doc==bp_old_put || !(doc->flags&DOCF_FORM) ||
+      doc->user_put_key!=&BgtPutKey)Sleep(1);
+  bp_before=BPCapture(doc,&bp_before_size);bp_stage=1;
+  if(bp_reopen) {
+    bp_after=BPCapture(doc,&bp_after_size);bp_stage=3;BPLog("BR ready\n");return;
+  }
+  BPLog("BP ready\n");
+  BPFormWait;BPLog("BP cancel form\n");
+  while(bp_parent->popup_task)Sleep(1);
+  data=BPCapture(bp_parent->put_doc,&size);
+  if(bp_parent->put_doc==doc && b_head.next==&b_head && !size &&
+      !FileFind(bgt_data_file) && !FileFind(bgt_string_file))bp_mask|=64;
+  Free(data);BPLog("BP cancelled\n");
+  BPFormWait;bp_stage=2;BPLog("BP form\n");
   while(bp_parent->popup_task || bp_parent->put_doc==doc || b_head.next==&b_head)Sleep(1);
   bp_after=BPCapture(bp_parent->put_doc,&bp_after_size);
   bp_stage=3;BPLog("BP entered\n");
@@ -38,14 +52,17 @@ U0 BPPaths()
   bgt_accts_file=FileNameAbs("Accts.DD.Z");bgt_data_file=FileNameAbs("Bgt.DATA.Z");
 }
 U0 BPExport(U8 *name,U8 *data,I64 size)
-{BPLog(MStrPrint("EXPORT %s %X %X\n",name,data,size));}
+{
+  if(bp_reopen)BPLog(MStrPrint("EXPORT reopen-%s %X %X\n",name,data,size));
+  else BPLog(MStrPrint("EXPORT %s %X %X\n",name,data,size));
+}
 U0 BPFile(U8 *path,U8 *name)
 {
   I64 size;U8 *data=FileRead(path,&size);
   if(!data)throw('BPFile',TRUE);
   BPExport(name,data,size);
 }
-U0 BudgetEntry()
+U0 BudgetEntry(Bool reopen=FALSE)
 {
   CTask *watcher;
   I64 watch_num;
@@ -54,7 +71,7 @@ U0 BudgetEntry()
   CTaskSettings *old_settings=Fs->next_settings;
   I64 left=Fs->win_left,right=Fs->win_right,top=Fs->win_top,bottom=Fs->win_bottom;
   Bool old_ac=TaskValidate(ac.task);
-  bp_mask=bp_stage=0;bp_parent=Fs;bp_old_put=Fs->put_doc;
+  bp_reopen=reopen;bp_mask=bp_stage=0;bp_parent=Fs;bp_old_put=Fs->put_doc;
   BPPaths;
   watcher=Spawn(&BPWatch,NULL,"Budget session observer");
   if(!watcher)throw('BPWatch',TRUE);
@@ -75,5 +92,5 @@ U0 BudgetEntry()
   BPExport("before.DD",bp_before,bp_before_size);BPExport("after.DD",bp_after,bp_after_size);
   BPExport("mask.bin",&bp_mask,8);
   BPFile(bgt_data_file,"data.bin");BPFile(bgt_string_file,"strings.DD");BPFile(bgt_accts_file,"accounts.DD");
-  BPLog("BP done\n");
+  if(bp_reopen)BPLog("BR done\n");else BPLog("BP done\n");
 }
