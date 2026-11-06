@@ -40,7 +40,13 @@ Candidate v5 shares the exact original PopUpPickDir body through
 its default argument through a public binding (console interface 217). This
 plain source snapshot is under `build/i386-public-tables-candidate-v5/source`;
 it is not yet applied to main while the concurrent native build pins inputs.
-Validation is in progress. It does not provide or replace FileMgr and cannot
+Its two bootstrap generations and cross-build pass; all 1,369 delivered
+source/document files match the snapshot
+(`build/i386-public-tables-chooser-source-audit-v1.json`). Runtime validation
+is in progress. It does not provide or replace FileMgr and cannot
 by itself qualify the directory picker. File selection, navigation, editing,
 copy/move/delete operations, exceptional cleanup and full FileMgr/C1–C5
 qualification remain open.
+
+The [CopyTree regression](i386-copy-tree.md) now records the original recursive
+copy and overlap-rejection behavior required by FileMgr.

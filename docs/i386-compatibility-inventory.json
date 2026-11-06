@@ -78,6 +78,18 @@
             "build/i386-copy-move-native-v1/result.json"
           ],
           "scope": "Real original Copy/Move/CopySingle bodies on RedSea: >128-block chunking, wildcard directory destination, empty, default destination, size/date, compressed conversion, self/missing source, copy-delete move, repeated missing-source heap recovery and native disk/source audits"
+        },
+        {
+          "target": "original-copy-tree",
+          "result": "pass",
+          "evidence": "build/i386-copy-tree-original-v2/result.json",
+          "scope": "Nested text/binary and empty directories, exact four file captures and vector 5,0,0,1,0,1,1 including overlap rejection; unchanged inputs. See docs/i386-copy-tree.md."
+        },
+        {
+          "target": "native-copy-tree",
+          "result": "fail",
+          "evidence": "build/i386-copy-tree-native-v1/result.json",
+          "scope": "Link candidate rejects missing CopyTree before workflow; unchanged inputs. Whole provider remains unqualified."
         }
       ]
     },
