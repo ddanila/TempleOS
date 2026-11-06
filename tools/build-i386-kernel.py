@@ -146,8 +146,8 @@ def verify_source_startup(disk, volume, out, console):
              ('BootNext;', ['41']), ('BootNext;', ['42']), ('BOOT_VALUE;', ['39'])]}),
         ('syntax-error',b'#define BOOT_SEEN 7\nI64 BootCount=39;\nUnknown bad;\n',
          {'status':'error','answers':['Error: Undefined identifier at '],'commands':[
-             ('BootCount;', ['Error: Undefined identifier at ']),
-             ('I64 BootCount=41;', []), ('++BootCount;', ['42']), ('BOOT_SEEN;', ['7']), ('Fs->gs==Gs;', ['1'])]}),
+             ('BootCount;', ['39']),
+             ('BootCount=41;', ['41']), ('++BootCount;', ['42']), ('BOOT_SEEN;', ['7']), ('Fs->gs==Gs;', ['1'])]}),
         ('missing',None,{'status':'error','answers':['Compilation failed'],'commands':[
             ('6*7;', ['42']), ('I64 recovered=9;', []), ('recovered;', ['9']), ('sizeof(CTask);', ['992'])]}),
     ]
@@ -156,7 +156,17 @@ def verify_source_startup(disk, volume, out, console):
         work=out/f'source-{label}'; work.mkdir(parents=True,exist_ok=True)
         changed=bytearray(original)
         if source is None:
-            changed[original.index(record)+2]=ord('X')
+            # FileRead searches parents, including the original /StartOS.HC
+            # shipped by the full profile. Hide every fallback, not just the
+            # native startup entry, to exercise an actually missing include.
+            for directory in ('/Kernel/I386/', '/Kernel/', '/'):
+                for basename in ('StartOS.HC', 'StartOS.HC.Z'):
+                    missing=volume['files'].get(directory+basename)
+                    if missing is None:continue
+                    needle=struct.pack('<38sqq',basename.encode(),missing['block'],missing['size'])
+                    if original.count(needle)!=1:
+                        raise ValueError('Ambiguous missing-startup directory entry')
+                    changed[original.index(needle)]=ord('X')
         else:
             if len(source)>entry['size']: raise ValueError('Startup fixture exceeds reserved source bytes')
             changed[offset:offset+entry['size']]=source.ljust(entry['size'],b' ')
@@ -236,7 +246,7 @@ def console_runtime_layout(module):
     if exports.get('console_version', (0, 0))[0] != 3:
         raise ValueError('Missing console version')
     version_offset = 32+exports['console_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 213:
+    if struct.unpack_from('<I', module, version_offset)[0] != 220:
         raise ValueError('Unexpected console version')
     entry_names=('ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug', 'ConsoleRootHeaders', 'NativeWinMgrEnsure')
     return dict(image_bytes=size+8, version_offset=version_offset, import_offset=imports['KernelLog'],
@@ -3320,7 +3330,7 @@ def main():
             raise ValueError('Console interface/image accounting mismatch')
         if log.count('INPUT CANCEL READY\n')!=1 or log.count('WAIT CANCEL READY\n')!=1:
             raise ValueError('Missing retained keyboard cancellation callback probe')
-        result['console_runtime']=dict(version=213,image_bytes=csize,retained_heap_bytes=cspan,
+        result['console_runtime']=dict(version=220,image_bytes=csize,retained_heap_bytes=cspan,
             service_addresses=dict(zip(console_layout['entry_names'],entries)),
             rejected=verify_console_rejection(normal_disk,volume,out,console_layout))
         # Both header attempts complete exactly these unused forward classes.

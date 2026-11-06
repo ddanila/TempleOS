@@ -39,11 +39,11 @@ Candidate v5 shares the exact original PopUpPickDir body through
 `Adam/DolDoc/DocPickDirCore.HC`, includes it in the native console, and declares
 its default argument through a public binding (console interface 217). This
 plain source snapshot is under `build/i386-public-tables-candidate-v5/source`;
-it is not yet applied to main while the concurrent native build pins inputs.
+its implementation is now applied to main as part of cumulative candidate v8.
 Its two bootstrap generations and cross-build pass; all 1,369 delivered
 source/document files match the snapshot
 (`build/i386-public-tables-chooser-source-audit-v1.json`). Runtime validation
-is in progress. It does not provide or replace FileMgr and cannot
+continues through the missing FileMgr dependencies. It does not provide or replace FileMgr and cannot
 by itself qualify the directory picker. File selection, navigation, editing,
 copy/move/delete operations, exceptional cleanup and full FileMgr/C1–C5
 qualification remain open.
@@ -59,3 +59,7 @@ v6 candidate gets past CopyTree and rejects DelTree at FileMgr line 270
 
 The [DelTree comparison](i386-del-tree.md) now records original whole-tree
 and recursive wildcard deletion, return counts and surviving file bytes.
+
+Candidate v8 gets past DelTree and rejects the missing Fmt at FileMgr line 387
+(`build/i386-pick-dir-candidate-v2/result.json`, inputs unchanged). The chooser
+workflow is still unqualified.

@@ -26284,3 +26284,25 @@ native build is live in the parser-heap-reuse checkout's
 Its terminal export/module audit, installation and two native generations are
 not yet established. The normal no-FPU smoke remains above the unchanged
 60-second startup budget; bootstrap generations are not native C5 generations.
+
+## Nine-module native build checkpoint (2026-11-06)
+
+`build/i386-inline-call-native-nine-v2/result.json` passes all nine retained
+module builds at 64 MiB KVM 486,-fpu with live WinMgr and paced keyboard input.
+The provider loads once; persisted module/export and console allocation-wrapper
+audits plus fresh rendered arithmetic pass. Both processes terminated normally,
+and the terminal audit verifies all 1,272 frozen inputs unchanged. See
+`docs/i386-inline-asm.md`. Installation, boot of generated modules, successive
+native generations, reproducibility and full C1–C5 qualification remain open.
+
+## Public services integrated after the terminal native audit (2026-11-06)
+
+Console interface 220 integrates shared public bit tables, scan codes, word
+bitmap, signed clamp, file links, directory chooser, recursive copy/delete and
+music reset. All 15 applied source files match candidate v8, all 1,371 delivered
+source/document files match main, eight component regressions pass with unchanged
+inputs, all three 8 MiB source-startup cases pass, and the 16 MiB diagnostic
+startup matches the complete welcome raster. See
+`docs/i386-public-services-integration.md` for precise scope and evidence.
+Full FileMgr stops at missing Fmt; Psalmody's next gaps are function-type
+visibility and TaskCaller. All C1–C5 qualification requirements remain open.

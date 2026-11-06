@@ -23,14 +23,10 @@ python3 tools/test-i386-bit-tables.py build/IMAGE/kernel.img \
   --out build/bit-tables-native
 ```
 
-The existing native `RawOutputRuntime.HC` owns a 256-byte reversal array initialized
-by `NativeRawInit`, but only exposes it through a compile-time macro to the raw
-renderer. It does not provide the original public pointer variable. Integration
-must preserve that shared backing and add the population-count table, expose
-pointer storage with the correct data-export metadata, and declare the original
-public pointer types. Exporting the byte-array address as though it were pointer
-storage would be an ABI error. The active nine-module build pins these core
-sources; the implementation change follows its terminal input audit.
+`RawOutputRuntime.HC` now exposes the original public pointer variables for
+the reversal and population-count tables. NativeRawInit initializes both shared
+256-byte arrays and their pointers; the renderer uses the same reversal pointer.
+The data exports address pointer storage, preserving the public pointer ABI.
 
 This checks public table values, not table reassignment, all consumers, the full
 God provider or Psalmody workflow. C1–C5 remain incomplete.
@@ -47,8 +43,8 @@ output-directory metadata check; use the v3 cross-build as the build evidence.
 The cross compiler needed a 300-second harness allowance after the first
 90-second run timed out. This does not change any runtime startup budget.
 
-These candidate changes are not yet applied to main because the active C5 build
-still pins its core sources. God provider loading now advances to the separate
+These changes are now applied to main after the C5 build's terminal input audit.
+The early God provider loading probe advanced to the separate
 [public word-bitmap gap](i386-word-bitmap.md). The corrected startup checker now passes all three cases after its missing-file
 fixture also hides the original parent `/StartOS.HC` fallback. The earlier
 `Undefined Extern` came from loading that fallback, not an actually missing

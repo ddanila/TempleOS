@@ -102,11 +102,20 @@ build/i386-inline-call-native-nine-v1, which left the first build command at the
 prompt without an INPUT LINE execution marker. That attempt was explicitly
 stopped; its screenshot and terminal unchanged-input audit are retained.
 
-A fresh full nine-module run in build/i386-inline-call-native-nine-v2 is running
-with the paced harness at this checkpoint. ConsoleRuntime compilation has begun;
-no successful module or complete native build is claimed yet. Its result.json and
-qemu/debug.log are authoritative for subsequent progress. C5 and C1-C4 remain
-open.
+The full nine-module run `build/i386-inline-call-native-nine-v2/result.json`
+now passes at 64 MiB KVM `486,-fpu` with live WinMgr and paced keyboard commands.
+It builds and persists ConsoleRuntime, CompilerRuntime, CompilerProbe,
+FileRuntime, MemoryRuntime, BuildRuntime, EditorRuntime, DocDiagnosticRuntime
+and Startup. The build provider loads exactly once after startup. Persisted
+module parsing, export-set comparisons (with the existing compiler division
+helper allowance), console allocation-wrapper checks and fresh rendered
+arithmetic pass. The terminal audit confirms all 1,272 source/tool/image pins
+unchanged (`terminal-audit.json`).
+
+This establishes native compilation and persisted module/export checks for
+that frozen input image. Installation, booting the generated modules, two
+successive native generations, byte reproducibility and full C1–C5 release
+qualification remain open.
 
 ```
 python3 tools/test-i386-inline-call.py build/i386-inline-call-cross-v1/kernel.img --out OUT_TEST

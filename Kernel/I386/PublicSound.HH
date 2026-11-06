@@ -9,4 +9,5 @@ public _extern _MUSIC_GLOBALS CMusicGlbls music;
 public _extern _BEEP U0 Beep(I8 ona=62,Bool busy=FALSE);
 public _extern _SND U0 Snd(I8 ona=0);
 public _extern _SND_RST U0 SndRst();
+public _extern _MUSIC_SETTINGS_RST U0 MusicSettingsRst();
 #endif

@@ -24,7 +24,9 @@ first oracle but stopped before executing any behavior or comparing results.
 Native success additionally requires exactly the fixture and surviving binary
 as new files, every preexisting file's bytes/attributes/timestamps unchanged,
 a structurally valid filesystem and fresh rendered arithmetic. Those checks
-have not yet passed.
+pass in `build/i386-del-tree-candidate-v1/result.json`: all 1,741 preexisting
+files remain unchanged; exact surviving files, filesystem structure, arithmetic
+and input pins pass.
 
 ```
 python3 tools/test-i386-del-tree.py --out build/del-tree-original
@@ -35,8 +37,9 @@ Candidate v8 shares the exact original DelTreeDirs, DelTreeFiles and DelTree
 bodies through `Adam/ABlkDev/DelTreeCore.HC`, included before native media-path
 aliases. It exports the original public signature and default flags through
 console interface 220. The candidate remains under
-`build/i386-public-tables-candidate-v8/source`; validation is pending while the
-ongoing native build pins main's core inputs. Other flags, fault cleanup,
+`build/i386-public-tables-candidate-v8/source`; both bootstrap generations,
+cross-build and all 1,371 delivered source/document comparisons pass. The
+implementation is now applied to main after the native build's terminal audit. Other flags, fault cleanup,
 mounted-media variants and complete FileMgr/C1–C5 qualification remain open.
 
 The native runner now initializes the pre-run filesystem snapshot used by its

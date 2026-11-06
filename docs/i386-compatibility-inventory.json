@@ -108,6 +108,18 @@
           "result": "fail",
           "evidence": "build/i386-del-tree-native-v1/result.json",
           "scope": "V6 rejects missing DelTree before fixture mutations; unchanged inputs. No runtime qualification."
+        },
+        {
+          "target": "candidate-copy-tree-corrected",
+          "result": "pass",
+          "evidence": "build/i386-copy-tree-candidate-v3/result.json",
+          "scope": "Correct dispatch include order: exact original counts and four byte captures, fresh arithmetic, 1740 preexisting files unchanged, exact added files, strict filesystem and unchanged inputs."
+        },
+        {
+          "target": "candidate-del-tree",
+          "result": "pass",
+          "evidence": "build/i386-del-tree-candidate-v1/result.json",
+          "scope": "V8: exact original whole-tree/wildcard counts, survivor bytes and directory state; fresh arithmetic, 1741 preexisting files unchanged, exact surviving files, strict filesystem and unchanged inputs."
         }
       ]
     },
@@ -247,6 +259,12 @@
           "result": "fail",
           "evidence": "build/i386-pick-dir-candidate-v1/result.json",
           "scope": "Full delivered original include advances past CopyTree and rejects DelTree at line 270 before chooser workflow; unchanged inputs."
+        },
+        {
+          "target": "candidate-filemgr-after-del-tree",
+          "result": "fail",
+          "evidence": "build/i386-pick-dir-candidate-v2/result.json",
+          "scope": "Full original FileMgr gets past DelTree and rejects missing Fmt at line 387, before chooser workflow; unchanged inputs."
         }
       ]
     },
@@ -7440,6 +7458,18 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
           "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        },
+        {
+          "target": "candidate-jukepuppet-type-visibility",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-find-probe-v3/result.json",
+          "scope": "V7 full original loader gets past JukeBox and rejects CHashFun dbg_info member at line 11; unchanged inputs."
+        },
+        {
+          "target": "candidate-jukepuppet-shared-types",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-symbol-types-probe-v1/result.json",
+          "scope": "Including full existing SymbolTypes.HH resolves dbg_info visibility and reaches missing TaskCaller at line 17; unchanged inputs. No stack/debug metadata or application qualification."
         }
       ]
     },

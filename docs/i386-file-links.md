@@ -28,8 +28,8 @@ its exact four-argument public declaration, including defaults. Console
 interface 216 separates this binding set from previous images. The function
 body is unchanged. The corrected cross-build passes its 386 instruction audit (96 BIOS and 332
 protected-mode instructions). All 1,368 delivered source/document files match
-the candidate snapshot. These core changes are not yet applied to main because
-the concurrent C5 build pins its inputs.
+the candidate snapshot. These core changes are now applied to main after the
+concurrent native build completed with unchanged inputs.
 
 Raw-screen output, following links, directory links, Find replacement/dialog
 workflows and whole Psalmody/C1–C5 qualification remain open.

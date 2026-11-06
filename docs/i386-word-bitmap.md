@@ -25,8 +25,8 @@ python3 tools/test-i386-word-bitmap.py build/IMAGE/kernel.img \
 
 The implementation candidate in `build/i386-public-tables-candidate-v2/source`
 adds a data export pointing at the existing kernel array and an exact public
-array declaration. It is under validation and has not been applied to main:
-the concurrent C5 native build pins the main checkout's core sources. This
+array declaration. This implementation is now applied to main after the native
+build's terminal input audit. This
 regression does not qualify the other character bitmaps, God provider, Psalmody
 or C1–C5.
 
@@ -35,4 +35,5 @@ audit (`build/i386-public-tables-candidate-v2/source/build/public-tables-cross-v
 `build/i386-word-bitmap-candidate-v1/result.json` passes all 512 bits and fresh
 rendered arithmetic with unchanged inputs. The delivered-source audit passes
 all 1,368 files (`build/i386-public-tables-word-source-audit-v1.json`). These
-results validate the candidate, not the still-pinned main checkout.
+results establish that earlier candidate; the cumulative main-source audit is
+`build/i386-public-tables-main-source-audit-v1.json`.

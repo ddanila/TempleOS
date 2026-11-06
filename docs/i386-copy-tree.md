@@ -36,9 +36,9 @@ Candidate v6 extracts both functions byte-for-byte into
 `Adam/ABlkDev/CopyTreeCore.HC`, includes that same body from original ADskA and
 the native console, and exposes the original signature/default through console
 interface 218. It includes the preceding chooser candidate changes. The source
-snapshot is `build/i386-public-tables-candidate-v6/source`; validation is in
-progress, and core changes are not yet applied to main while the existing
-native build pins its inputs.
+snapshot is `build/i386-public-tables-candidate-v6/source`. The corrected
+cumulative v8 implementation is now applied to main after the native build's
+terminal input audit.
 
 Wildcard/no-mask variants, fault cleanup, metadata policy, existing destination
 merges and complete FileMgr/C1–C5 qualification remain open.
@@ -52,7 +52,8 @@ but original-provider directory creation produced non-retained directory
 records, also rejected by the filesystem verifier. The CopyTree include was
 after MediaPathRuntime aliases and therefore bypassed normal DirMk dispatch.
 Candidate v7 moves the unchanged shared body before those aliases. This fix
-is pending validation; neither the runtime oracle nor verifier was relaxed.
+passes the fresh v3 runtime run below; neither the runtime oracle nor verifier
+was relaxed.
 
 V7 run `build/i386-copy-tree-candidate-v2/result.json` passes the guest byte/
 count comparisons and fresh arithmetic, then fails in the host runner because
@@ -61,4 +62,6 @@ related DelTree driver now capture that snapshot before packaging. An
 independent post-run check passes against the immutable source image and
 working disk (`supplemental-filesystem-audit.json` beside that failed result),
 including unchanged preexisting files, exact new files and strict filesystem
-structure. The failed result is not rewritten; a fresh complete run is pending.
+structure. The failed result is not rewritten. Fresh complete run
+`build/i386-copy-tree-candidate-v3/result.json` passes, including all 1,740
+preexisting files unchanged and exact added files, with unchanged inputs.

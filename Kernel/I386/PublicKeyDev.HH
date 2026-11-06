@@ -5,6 +5,7 @@
 #include "/Kernel/KeyDevTypes.HH"
 #include "/Kernel/KeyboardStateTypes.HH"
 #include "/Kernel/ScanFlags.HH"
+#include "/Kernel/ScanCodes.HH"
 #include "/Kernel/GetStrFlags.HH"
 public _extern _CHAR_2_SCAN_CODE I64 Char2ScanCode(I64 ch,I64 sc_flags=0);
 public _extern _SCAN_CODE_2_CHAR U8 ScanCode2Char(I64 sc);

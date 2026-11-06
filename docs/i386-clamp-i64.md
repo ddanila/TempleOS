@@ -29,8 +29,8 @@ The plain source snapshot `build/i386-public-tables-candidate-v3/source` adds
 `_CLAMP_I64` as a function export for the existing `NativeSourceClampI64` helper,
 whose signed lower-then-upper behavior already matches the original assembly.
 It adds the exact public declaration and advances the console interface to 215.
-It remains under validation and is not yet applied to main, whose core inputs
-are pinned by the running C5 native build. Unsigned clamping, other math APIs,
+The implementation is now applied to main as part of console interface 220,
+after the native build's terminal input audit. Unsigned clamping, other math APIs,
 full God/Psalmody workflows and C1–C5 remain unqualified.
 
 ## Candidate execution
