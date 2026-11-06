@@ -26403,3 +26403,23 @@ interrupted transcript. The follow-up candidate prevents that recording and
 is rebuilding. Forced-exit testing is also pending. See
 `docs/i386-task-caller.md`; these failures do not qualify CPU debugger contexts
 or any C1–C5 milestone.
+
+## Configurable cross-compiler observation window (2026-11-06)
+
+The debugger transcript candidate's cross-v3 guest was terminated by the fixed
+90-second cross-compiler timeout after exporting ConsoleRuntime and MemoryRuntime.
+The terminal run is preserved. `--compiler-timeout` now accepts 1–3600 seconds,
+defaults to the existing 90, and records the selected value in the result.
+Cross-v4 passes with 600, including both boot instruction audits and unchanged
+1,715 source hashes and build-helper hashes. This affects the cross-compiler
+observation window only; native startup timing and memory gates are unchanged.
+
+The native generation-two job still uses its previously loaded disk reader.
+Its preserved helper snapshot remains byte-identical to the launch hash, and
+the current reader AST remains unchanged. The additional unrelated main-helper
+edit is recorded in preloaded-helper-timeout-update.json alongside the earlier
+provenance record; the launch manifest is untouched. The eventual audit must
+still report the changed on-disk builder path separately.
+
+The current transcript/display image is under two-cycle CPU TaskCaller and
+forced-exit welcome-session checks; no runtime completion is claimed yet.

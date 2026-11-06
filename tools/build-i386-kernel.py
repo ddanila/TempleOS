@@ -2461,7 +2461,11 @@ def main():
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-kernel',help='Isolated build output directory')
     parser.add_argument('--compiler-qmp-stdio',action='store_true',
                         help='Use QMP stdio for the original cross-compiler guest only')
+    parser.add_argument('--compiler-timeout',type=int,default=90,
+                        help='Cross-compiler guest observation timeout in seconds (default: 90)')
     args=parser.parse_args()
+    if not 1 <= args.compiler_timeout <= 3600:
+        parser.error('--compiler-timeout must be between 1 and 3600 seconds')
     if args.content_profile == 'full' and args.disk_mib < 64:
         parser.error('--content-profile full requires --disk-mib 64')
     out=args.out.resolve()
@@ -2484,7 +2488,7 @@ def main():
     run(sys.executable,'tools/build-iso.py','--overlay','build/rebuild-test/overlay',
         '--overlay','tools/guest/i386-kernel','--output',str(iso))
     exports=out/'exports'
-    run(sys.executable,'tools/guest-run.py',str(iso),'--out',str(exports),'--timeout','90',
+    run(sys.executable,'tools/guest-run.py',str(iso),'--out',str(exports),'--timeout',str(args.compiler_timeout),
         *(['--qmp-stdio'] if args.compiler_qmp_stdio else []))
     image=audit(exports,out)
     runtime_layout=compiler_runtime_layout((exports/'CompilerRuntime.t32m').read_bytes())
@@ -2516,6 +2520,7 @@ def main():
     diagnostic_image,diagnostics=diagnostic_disk(normal_disk,exports)
     diagnostics['ram_mib']=args.diagnostic_ram_mib
     result={'revision':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+            'compiler_timeout':args.compiler_timeout,
             'source_sha256':bootstrap['source_sha256'],
             'bootstrap':bootstrap['generations'][-1],
             'worktree_dirty':bool(subprocess.check_output(['git','status','--porcelain'],cwd=ROOT)),
