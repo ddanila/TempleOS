@@ -193,7 +193,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-directory-picker",
+          "result": "pass",
+          "evidence": "build/i386-pick-dir-original-v3/result.json",
+          "scope": "Actual FileMgr: default and explicit directory accepted with Escape, Shift-Escape returns allocated empty string; exact names, caller restoration masks 127, screenshots and unchanged inputs. See docs/i386-pick-dir.md."
+        },
+        {
+          "target": "native-directory-picker",
+          "result": "fail",
+          "evidence": "build/i386-pick-dir-native-v3/result.json",
+          "scope": "Link candidate rejects missing PopUpPickDir before workflow; unchanged inputs. Full chooser remains open."
+        },
+        {
+          "target": "native-complete-filemgr-load",
+          "result": "fail",
+          "evidence": "build/i386-filemgr-load-probe-v1/result.json",
+          "scope": "Complete delivered original FileMgr include rejects missing CopyTree at line 269; unchanged inputs. No program workflow qualification."
+        }
+      ]
     },
     {
       "path": "Adam/ABlkDev/MakeABlkDev.HC",
@@ -2804,6 +2823,18 @@
           "result": "pass",
           "evidence": "build/i386-backing-split-popup-8m-v2/result.json",
           "scope": "8 MiB asynchronous PopUpFile default/explicit source execution, task retirement and caller popup ownership; inputs unchanged; not synchronous, arbitrary capacity or timing qualification."
+        },
+        {
+          "target": "original-directory-picker",
+          "result": "pass",
+          "evidence": "build/i386-pick-dir-original-v3/result.json",
+          "scope": "Actual FileMgr: default and explicit directory accepted with Escape, Shift-Escape returns allocated empty string; exact names, caller restoration masks 127, screenshots and unchanged inputs. See docs/i386-pick-dir.md."
+        },
+        {
+          "target": "native-directory-picker",
+          "result": "fail",
+          "evidence": "build/i386-pick-dir-native-v3/result.json",
+          "scope": "Link candidate rejects missing PopUpPickDir before workflow; unchanged inputs. Full chooser remains open."
         }
       ]
     },

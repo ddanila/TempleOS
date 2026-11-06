@@ -36,3 +36,8 @@ The counting fixture still does not execute. The original chooser provider is
 the caller to PopUp, and returns the selected allocated name. Porting must
 preserve that real popup workflow rather than substituting a result to permit
 the Find include.
+
+The [directory-picker regression](i386-pick-dir.md) now records the original
+real popup accept/cancel behavior and the native missing binding. The full
+FileMgr dependency separately stops at CopyTree; a chooser declaration alone
+does not qualify that workflow.
