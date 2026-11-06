@@ -58,3 +58,10 @@ Both diagnostics preserve the authoritative source-image hash. They retain
 scripts, logs and screenshots but are dependency probes, not new application
 passes. The full nine-module C5 build is concurrently consuming pinned core
 sources, so these probes use disposable images and do not change those inputs.
+
+With the public-table, word-bitmap and signed-clamp candidate, the v4 God-provider
+diagnostic loads all four original God files and verifies normal-startup scan
+codes without a supplemental ScanCodes include. The full Psalmody loader then
+stops at `FileOcc` in JukeBox line 135. See [signed-clamp evidence](i386-clamp-i64.md).
+The app remains unqualified; the original keyboard control is still the target
+workflow after these dependencies are restored.

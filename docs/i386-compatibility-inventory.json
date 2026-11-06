@@ -17314,6 +17314,12 @@
           "result": "fail",
           "evidence": "build/i386-clamp-i64-native-v1/result.json",
           "scope": "Word-bitmap candidate still rejects missing ClampI64 before fixture execution; inputs unchanged. Not full kernel/math qualification."
+        },
+        {
+          "target": "native-candidate-clamp-i64",
+          "result": "pass",
+          "evidence": "build/i386-clamp-i64-candidate-v1/result.json",
+          "scope": "Isolated candidate image, console interface 215: 22 exact signed clamp results and rendered 42 pass; inputs unchanged. Candidate core patch not yet applied to main; no whole math/God/Psalmody or C1-C5 qualification."
         }
       ]
     },
@@ -17534,6 +17540,12 @@
           "result": "fail",
           "evidence": "build/i386-clamp-i64-native-v1/result.json",
           "scope": "Word-bitmap candidate still rejects missing ClampI64 before fixture execution; inputs unchanged. Not full kernel/math qualification."
+        },
+        {
+          "target": "native-candidate-clamp-i64",
+          "result": "pass",
+          "evidence": "build/i386-clamp-i64-candidate-v1/result.json",
+          "scope": "Isolated candidate image, console interface 215: 22 exact signed clamp results and rendered 42 pass; inputs unchanged. Candidate core patch not yet applied to main; no whole math/God/Psalmody or C1-C5 qualification."
         }
       ]
     },
