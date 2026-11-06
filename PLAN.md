@@ -26549,3 +26549,10 @@ fails at the embedded Sprite call in PsalmodyDraw line 381. No application
 interaction assertions execute. See docs/i386-note-conversion.md. C1–C5 remain
 open, including the known full-diagnostic memory and native module default-string
 gaps being addressed separately.
+
+## Sprite output baseline (2026-11-06)
+
+The original command-line Sprite oracle passes six output-document and binary
+ownership checks. Native interface 224 rejects Sprite before any behavior
+assertions. Both input audits pass; see docs/i386-sprite-output.md. This isolates
+Psalmody's next missing service without claiming rendering or app qualification.
