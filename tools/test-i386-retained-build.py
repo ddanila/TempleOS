@@ -79,6 +79,8 @@ def main():
                         help='Use QMP stdio where Unix sockets are blocked')
     parser.add_argument('--module', choices=MODULES, action='append', dest='modules')
     parser.add_argument('--command-timeout', type=int, default=3600)
+    parser.add_argument('--keyboard', action='store_true',
+                        help='Use paced KVM keyboard command harness with live WinMgr')
     parser.add_argument('--resume', action='store_true',
                         help='Build selected modules on an existing output source.img')
     parser.add_argument('--audit-only', action='store_true',
@@ -86,6 +88,8 @@ def main():
     parser.add_argument('--compare-installed', type=Path,
                         help='Require guest output to match installed T32Ms on this disk')
     args = parser.parse_args()
+    if args.keyboard and (args.accel!='kvm' or args.cpu!='486,-fpu' or not args.qmp_stdio):
+        parser.error('--keyboard requires --accel kvm --cpu 486,-fpu --qmp-stdio')
     if (not args.audit_only and not args.modules and args.disk.is_file() and
             args.disk.stat().st_size < 32 * 1024 * 1024):
         parser.error('A full nine-module retained build needs a 32 MiB or larger disk; '
@@ -120,15 +124,29 @@ def main():
         run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         pending = {'result': 'running', 'cpu': args.cpu, 'ram_mib': args.ram_mib, 'welcome': args.welcome,
                    'module_order': list(selected), 'input_disk_sha256': sha256(source),
-                   'scope': 'Selected retained module native builds and persisted export audit'}
+                   'scope': 'Selected retained module native builds and persisted export audit',
+                   'keyboard_harness': args.keyboard}
         (out / 'result.json').write_text(json.dumps(pending, indent=2) + '\n')
         try:
-            run_input(source, out / 'qemu', snapshot=False, ram_mib=args.ram_mib, accel=args.accel,
-                      cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome,
-                      startup_timeout=180, startup_check={
-                          'status': 'ok', 'answers': [],
-                          'command_timeout': args.command_timeout, 'commands': commands,
-                          'rejection_prefixes': ('BUILD MODULE REJECT ',), 'rejected_answers': ['0']})
+            if args.keyboard:
+                Guest=runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest']
+                guest=None
+                try:
+                    guest=Guest(source,out/'qemu',True,ram_mib=args.ram_mib)
+                    guest.wait('DONE native kernel startup\n',timeout=180)
+                    for command,_ in commands:
+                        expression=command[:-1]
+                        guest.command("if(!("+expression+"))throw('NatBuild',TRUE);",timeout=args.command_timeout)
+                    guest.command('6*7;');guest.result_pixels()
+                finally:
+                    if guest is not None:guest.close()
+            else:
+                run_input(source, out / 'qemu', snapshot=False, ram_mib=args.ram_mib, accel=args.accel,
+                          cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome,
+                          startup_timeout=180, startup_check={
+                              'status': 'ok', 'answers': [],
+                              'command_timeout': args.command_timeout, 'commands': commands,
+                              'rejection_prefixes': ('BUILD MODULE REJECT ',), 'rejected_answers': ['0']})
         except Exception as error:
             pending.update(result='fail', error=str(error),
                            source_disk_sha256=sha256(source))
@@ -145,7 +163,7 @@ def main():
               'module_order': list(selected),
               'modules': {}}
     if not args.audit_only:
-        result.update(cpu=args.cpu, ram_mib=args.ram_mib)
+        result.update(cpu=args.cpu, ram_mib=args.ram_mib, keyboard_harness=args.keyboard)
     try:
         if not args.audit_only and (args.reference_exports/'BuildRuntime.t32m').is_file():
             log = (out/'qemu/debug.log').read_text()

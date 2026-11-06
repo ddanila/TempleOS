@@ -126,7 +126,7 @@ CCodeCtrl *I386FrontendPopSaved(U8 *context,CCmpCtrl *cc)
 }
 extern U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags);
 class CI386AsmOperand {
-  I64 kind,size,register_code,base,index,disp,value;
+  I64 kind,size,register_code,base,index,scale,disp,value;
 };
 class CI386AsmLabel {
   I64 offset;
@@ -214,7 +214,7 @@ U0 I386FrontendAsmOperand(CI386Frontend *state,CCmpCtrl *cc,CI386AsmOperand *arg
   I64 register_code,offset;
   U8 *name;
   arg->kind=arg->size=arg->register_code=arg->base=arg->disp=arg->value=0;
-  arg->index=-1;
+  arg->index=-1; arg->scale=0;
   if(cc->token==TK_I64 || cc->token==TK_CHAR_CONST || cc->token=='(' ||
       cc->token=='+' || cc->token=='-' || cc->token=='~') {
     arg->kind=3; arg->value=I386FrontendAsmConstant(state,cc); return;
@@ -265,6 +265,16 @@ U0 I386FrontendAsmOperand(CI386Frontend *state,CCmpCtrl *cc,CI386AsmOperand *arg
         (arg->index=I386FrontendAsmReg(cc->cur_str))<0 || arg->index==4)
       I386FrontendUnavailable(state);
     I386FrontendLex(state,cc);
+    if(cc->token=='*') {
+      I386FrontendLex(state,cc);
+      if(cc->token!=TK_I64) I386FrontendUnavailable(state);
+      if(cc->cur_i64==1) arg->scale=0;
+      else if(cc->cur_i64==2) arg->scale=1;
+      else if(cc->cur_i64==4) arg->scale=2;
+      else if(cc->cur_i64==8) arg->scale=3;
+      else I386FrontendUnavailable(state);
+      I386FrontendLex(state,cc);
+    }
   }
   if(cc->token!=']') I386FrontendUnavailable(state);
   I386FrontendLex(state,cc);
@@ -284,7 +294,7 @@ U0 I386FrontendAsmModRM(CI386Frontend *state,U8 *bytes,I64 *count,
     if(arg->index>=0 || arg->base==4) {
       I386FrontendAsmByte(state,bytes,count,mode<<6|register_code<<3|4);
       if(arg->index>=0)
-        I386FrontendAsmByte(state,bytes,count,arg->index<<3|arg->base);
+        I386FrontendAsmByte(state,bytes,count,arg->scale<<6|arg->index<<3|arg->base);
       else I386FrontendAsmByte(state,bytes,count,0x24);
     } else I386FrontendAsmByte(state,bytes,count,mode<<6|register_code<<3|arg->base);
     if(mode==1) I386FrontendAsmByte(state,bytes,count,disp);
@@ -357,6 +367,8 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
       else if(!StrCmp(cc->cur_str,"PUSH")) opcode=14;
       else if(!StrCmp(cc->cur_str,"POP")) opcode=15;
       else if(!StrCmp(cc->cur_str,"INC")) opcode=17;
+      else if(!StrCmp(cc->cur_str,"DEC")) opcode=19;
+      else if(!StrCmp(cc->cur_str,"CALL")) opcode=20;
       else if(!StrCmp(cc->cur_str,"LGDT")) opcode=7;
       else if(!StrCmp(cc->cur_str,"SGDT")) opcode=8;
       else if(!StrCmp(cc->cur_str,"LIDT")) opcode=9;
@@ -396,13 +408,20 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
         else if(op==8) I386FrontendAsmModRM(state,bytes,&count,0,&dst);
         else if(op==9) I386FrontendAsmModRM(state,bytes,&count,3,&dst);
         else I386FrontendAsmModRM(state,bytes,&count,1,&dst);
-      } else if(opcode==14 || opcode==15 || opcode==17) {
+      } else if(opcode==14 || opcode==15 || opcode==17 || opcode==19 || opcode==20) {
         op=opcode;
         I386FrontendLex(state,cc);
         I386FrontendAsmOperand(state,cc,&dst);
-        if(dst.kind!=1 || dst.size!=4) I386FrontendUnavailable(state);
-        if(op==14) I386FrontendAsmByte(state,bytes,&count,0x50+dst.register_code);
+        if(dst.size!=4 || dst.kind!=1 && dst.kind!=2 ||
+            dst.kind==2 && (op==15 || op==17)) I386FrontendUnavailable(state);
+        if(op==20 || dst.kind==2) {
+          I386FrontendAsmByte(state,bytes,&count,0xFF);
+          if(op==14) I386FrontendAsmModRM(state,bytes,&count,6,&dst);
+          else if(op==19) I386FrontendAsmModRM(state,bytes,&count,1,&dst);
+          else I386FrontendAsmModRM(state,bytes,&count,2,&dst);
+        } else if(op==14) I386FrontendAsmByte(state,bytes,&count,0x50+dst.register_code);
         else if(op==15) I386FrontendAsmByte(state,bytes,&count,0x58+dst.register_code);
+        else if(op==19) I386FrontendAsmByte(state,bytes,&count,0x48+dst.register_code);
         else I386FrontendAsmByte(state,bytes,&count,0x40+dst.register_code);
       } else if(opcode<=6 || opcode>=11 && opcode<=13 || opcode==16 || opcode==18) {
         I386FrontendLex(state,cc);

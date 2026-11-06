@@ -831,3 +831,12 @@ register CALL, so merely replacing DEC in the source would not establish native
 self-hosting. The inline compiler must implement and independently exercise
 those actual instruction forms before rerunning the full nine-module build.
 This failure supplies a compiler frontier, not C5 completion or a timing result.
+
+
+The subsequent inline-assembler change now implements the actual DEC, indexed
+memory PUSH and indirect CALL forms used by NativeCallArgs. The unchanged helper
+passes native execution and opcode checks in build/i386-inline-call-native-v1;
+the prior image reproduces DEC rejection. See docs/i386-inline-asm.md. A fresh
+nine-module attempt is running in build/i386-inline-call-native-nine-v2 with
+paced keyboard input after the older harness left its command unsubmitted.
+This is a new build attempt, not qualification or a performance result.

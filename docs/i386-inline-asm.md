@@ -61,3 +61,54 @@ and full native compiler self-hosting still need migration and verification.
 invoke, resume and registration primitives as a relocation-free module. The
 runner embeds the HolyC-generated code and resolves entry offsets from its
 exports, so register/flag and task-switch checks exercise those exact bytes.
+
+
+## Native argument-forwarding instructions (2026-11-06)
+
+The inline frontend now accepts DEC on 32-bit registers/memory, PUSH from
+32-bit memory, indirect CALL through a 32-bit register/memory operand, and
+explicit SIB index scales 1, 2, 4 and 8. These are the actual forms used by
+Kernel/I386/CallExtStrRuntime.HC's NativeCallArgs, rather than source changes to
+avoid unsupported instructions. Existing register PUSH/POP/INC encodings remain
+unchanged. Indexed operands still require a base register and reject ESP as the
+index. Invalid scales and byte-sized PUSH/CALL/DEC remain rejected.
+
+The focused driver tools/test-i386-inline-call.py packages the complete
+NativeCallArgs helper verbatim from its runtime source, excluding only the
+runtime-dependent CallExtStr wrapper. The previous image fails at DEC ECX in
+build/i386-inline-call-before-v1. The candidate in
+build/i386-inline-call-native-v1 passes mask 63: zero/one/three-argument calls,
+64-bit return values and argument order, all four scales, DEC preservation of
+carry while setting zero, and indirect memory CALL. It exports guest-compiled
+function bytes and checks explicit x86 encodings for DEC, scaled memory PUSH,
+register CALL and scaled MOV/ADD. Seven invalid-operand definitions are rejected,
+each followed by successful arithmetic and rendered 42. Filesystem and unchanged
+input checks pass. This is native compiler execution, not a cross-build substitute.
+
+Both original bootstrap generations pass. The candidate cross-build in
+build/i386-inline-call-cross-v1 passes the 96 BIOS/332 protected-mode 386 audit;
+its source audit matches 1368 delivered files. The prior inline corpus also
+passes unchanged through the KVM keyboard harness in
+build/i386-inline-call-legacy-v1, including unscaled operands, character immediates
+and a 270-NOP forward-jump span. The 16 MiB diagnostic boot in
+build/i386-inline-call-minimal-v1 passes all 307200 welcome pixels; concurrent
+execution does not establish the startup timing budget or full minimal suite.
+
+The retained-build tool now offers --keyboard for paced KVM keyboard submission
+with live WinMgr, while retaining its native build calls and persisted module
+export/allocation-wrapper audits. It requires explicit --accel kvm --cpu 486,-fpu
+--qmp-stdio. This avoids the observed older harness attempt in
+build/i386-inline-call-native-nine-v1, which left the first build command at the
+prompt without an INPUT LINE execution marker. That attempt was explicitly
+stopped; its screenshot and terminal unchanged-input audit are retained.
+
+A fresh full nine-module run in build/i386-inline-call-native-nine-v2 is running
+with the paced harness at this checkpoint. ConsoleRuntime compilation has begun;
+no successful module or complete native build is claimed yet. Its result.json and
+qemu/debug.log are authoritative for subsequent progress. C5 and C1-C4 remain
+open.
+
+```
+python3 tools/test-i386-inline-call.py build/i386-inline-call-cross-v1/kernel.img --out OUT_TEST
+python3 tools/test-i386-retained-build.py --disk build/i386-inline-call-cross-v1/kernel.img --out OUT_BUILD --reference-exports build/i386-inline-call-cross-v1/exports --accel kvm --cpu 486,-fpu --ram-mib 64 --welcome --qmp-stdio --keyboard --command-timeout 7200
+```
