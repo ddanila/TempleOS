@@ -37,3 +37,24 @@ fresh rendered arithmetic. Those native checks have not yet passed. Audio,
 playback, saving/reopening, other editing operations and full application/C1–C5
 qualification remain open. Included JukeBox and JukePuppet functions are not
 claimed as exercised merely because the original loader compiled them.
+
+## Provider diagnosis
+
+Two disposable-image diagnostics isolate the next dependencies without altering
+the application or the active native-build inputs:
+
+* `build/i386-psalmody-header-probe-v1/result.json`: explicitly including the
+  delivered shared `Kernel/ScanCodes.HH` succeeds, and `SC_DELETE==0x53` passes.
+  The unchanged full Psalmody loader then rejects `GodWordStr` at JukeBox line
+  91. `PublicKeyDev.HH` includes scan flags but omits scan codes; adding the
+  shared scan-code include there is the pending normal-startup correction.
+* `build/i386-psalmody-god-probe-v1/result.json`: the same setup plus original
+  `Adam/God/GodExt.HC` loads successfully. Original `HolySpirit.HC` rejects
+  `rev_bits_table` at line 58, before defining the required `GodWordStr` provider.
+  The original kernel initializes this 256-byte bit-reversal lookup table;
+  its public exposure and lifetime need integration before retrying that provider.
+
+Both diagnostics preserve the authoritative source-image hash. They retain
+scripts, logs and screenshots but are dependency probes, not new application
+passes. The full nine-module C5 build is concurrently consuming pinned core
+sources, so these probes use disposable images and do not change those inputs.
