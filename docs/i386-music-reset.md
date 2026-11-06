@@ -30,7 +30,14 @@ python3 tools/test-i386-music-reset.py build/IMAGE/kernel.img --out build/music-
 
 Candidate v7 exposes the existing `Adam/MusicResetCore.HC` function through
 console interface 219 and PublicSound.HH. It does not change that implementation
-or its existing native clock-lock adaptation. Bootstrap/runtime validation is
-pending; it remains in a plain source snapshot while the ongoing native build
-pins main's inputs. Speaker output, exact clock timing, concurrent locking,
+or its existing native clock-lock adaptation. Both bootstrap generations and the 386 cross-build pass (96 BIOS / 332
+protected-mode instructions). All 1,370 delivered source/document files match
+the snapshot (`build/i386-public-tables-music-reset-source-audit-v1.json`). It
+remains in a plain source snapshot while the ongoing native build pins main's
+inputs. Speaker output, exact clock timing, concurrent locking,
 playback and complete Psalmody/C1–C5 qualification remain open.
+
+`build/i386-music-reset-candidate-v1/result.json` passes on candidate v7:
+exact integer/binary64 defaults, mask 63, fresh rendered arithmetic and
+unchanged execution inputs. The complete Psalmody loader is being retested;
+this component result alone does not qualify the application.

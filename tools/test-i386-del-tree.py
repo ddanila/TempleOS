@@ -22,6 +22,7 @@ def main():
     try:
         if args.disk:
             pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));image=out/'working.img'
+            before=pack['snapshot'](args.disk.read_bytes())[1]
             report['packaging']=pack['package'](args.disk.resolve(),image,additions={'/Probe/DelTree.HC':fixture.read_bytes()})
         else:
             overlay=out/'overlay';overlay.mkdir();report['reference_sha256']=runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))['restore_reference'](overlay)

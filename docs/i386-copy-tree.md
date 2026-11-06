@@ -53,3 +53,12 @@ records, also rejected by the filesystem verifier. The CopyTree include was
 after MediaPathRuntime aliases and therefore bypassed normal DirMk dispatch.
 Candidate v7 moves the unchanged shared body before those aliases. This fix
 is pending validation; neither the runtime oracle nor verifier was relaxed.
+
+V7 run `build/i386-copy-tree-candidate-v2/result.json` passes the guest byte/
+count comparisons and fresh arithmetic, then fails in the host runner because
+its pre-run filesystem snapshot variable was not initialized. The runner and
+related DelTree driver now capture that snapshot before packaging. An
+independent post-run check passes against the immutable source image and
+working disk (`supplemental-filesystem-audit.json` beside that failed result),
+including unchanged preexisting files, exact new files and strict filesystem
+structure. The failed result is not rewritten; a fresh complete run is pending.

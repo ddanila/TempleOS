@@ -38,3 +38,7 @@ console interface 220. The candidate remains under
 `build/i386-public-tables-candidate-v8/source`; validation is pending while the
 ongoing native build pins main's core inputs. Other flags, fault cleanup,
 mounted-media variants and complete FileMgr/C1–C5 qualification remain open.
+
+The native runner now initializes the pre-run filesystem snapshot used by its
+postconditions. This host-only correction was found by the CopyTree candidate
+run; the original guest fixture and expected deletion behavior are unchanged.

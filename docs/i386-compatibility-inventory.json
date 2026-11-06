@@ -5654,6 +5654,12 @@
           "result": "fail",
           "evidence": "build/i386-music-reset-native-v1/result.json",
           "scope": "Candidate v6 rejects missing public MusicSettingsRst before state comparison; unchanged inputs."
+        },
+        {
+          "target": "candidate-music-settings-reset",
+          "result": "pass",
+          "evidence": "build/i386-music-reset-candidate-v1/result.json",
+          "scope": "V7 console 219: exact integer/binary64 defaults and preserved caller fields, mask 63, nonnegative clock reset, fresh rendered arithmetic and unchanged inputs. Audio, concurrent clock and whole provider remain open."
         }
       ]
     },
