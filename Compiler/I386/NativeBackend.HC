@@ -80,7 +80,7 @@ U0 I386NativeBackendListFree(CI386NativeBackend *state,U8 *head)
   U8 *next;
   while(head) { next=head(U8 **)[0]; I386NativeBackendFree(state,head); head=next; }
 }
-Bool I386BackendCompileWithBreak(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386Out *out,CI386BackendStatus *status,U0 (*poll)())
+Bool I386BackendCompileWithBreak(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386Out *out,CI386BackendStatus *status,U0 (*poll)(),CDbgInfo *debug=0)
 {
   CI386NativeBackend state;
   CI386Backend *backend=&state.backend;
@@ -95,6 +95,7 @@ Bool I386BackendCompileWithBreak(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types
   state.heap=heap;
   if(status) { status->node=0; status->depth=0; status->pass=-2; status->reason=0; }
   backend->status=status; backend->break_poll=poll;
+  backend->debug=debug;
   backend->break_flags_offset=offset(CI386Task.task_flags);
   #assert TASKf_PENDING_BREAK==11
   backend->cc=cc; backend->out=out; backend->types=types; backend->context=&state;

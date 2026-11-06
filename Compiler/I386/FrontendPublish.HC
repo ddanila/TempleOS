@@ -699,7 +699,8 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
             fun->exe_addr!=&I386FrontendUndefined))goto done;
         if(I386HeapSize(heap,fun)!=sizeof(CHashFun)*(PTR_STARS_NUM+1) ||
             fun->ext_lst || fun->type&HTF_IMPORT ||
-            !I386ProgramTypeReady(fun->return_class)) goto done;
+            !I386ProgramTypeReady(fun->return_class) ||
+            !I386FunctionDebugValid(frontend,fun)) goto done;
         found=FALSE;
         for(code=frontend->codes;code;code=code->next) if(code->code==fun->exe_addr) found=TRUE;
         if(Bt(&fun->flags,Ff_INTERNAL)) {

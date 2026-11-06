@@ -50,6 +50,26 @@ Bool I386FunctionUsageMatches(CI386Frontend *state,CI386TaskExternUsage *usage,C
   }
   return TRUE;
 }
+Bool I386FunctionDebugValid(CI386Frontend *state,CHashFun *function)
+{//Only parser-owned line records for this output may enter a published symbol.
+  CDbgInfo *debug=function->dbg_info;
+  CI386FrontendCode *code;
+  I64 lines,i,start,end;
+  if(!debug)return TRUE;
+  if(!I386ParserRecord(state->cc,debug) ||
+      I386HeapSize(state->heap,debug)<offset(CDbgInfo.body)+2*sizeof(U32) ||
+      debug->max_line<debug->min_line)return FALSE;
+  lines=debug->max_line-debug->min_line+1;
+  if(lines>(0x7FFFFFFF-offset(CDbgInfo.body))/sizeof(U32)-1 ||
+      I386HeapSize(state->heap,debug)!=offset(CDbgInfo.body)+(lines+1)*sizeof(U32))return FALSE;
+  for(code=state->codes;code && code->code!=function->exe_addr;code=code->next);
+  if(!code || code->bytes<1)return FALSE;
+  start=(code->code+0)(U64);end=start+code->bytes;
+  if(end>0xFFFFFFFF || debug->body[0]!=start || debug->body[lines]!=end)return FALSE;
+  for(i=0;i<lines;i++)
+    if(debug->body[i] && !(start<=debug->body[i]<=end))return FALSE;
+  return TRUE;
+}
 Bool I386FunctionCompletionValid(CI386Frontend *state,CI386FrontendCompletion *completion)
 {
   CHashFun *staged=completion->staged,*published=completion->published;
@@ -60,7 +80,7 @@ Bool I386FunctionCompletionValid(CI386Frontend *state,CI386FrontendCompletion *c
       !I386FunctionCompletionTargetValid(state,published) ||
       !I386ParserRecord(state->cc,staged) ||
       I386HeapSize(state->heap,staged)!=sizeof(CHashFun)*(PTR_STARS_NUM+1) ||
-      staged->str!=published->str || staged->import_name || staged->dbg_info ||
+      staged->str!=published->str || staged->import_name || !I386FunctionDebugValid(state,staged) ||
       !declaration || !declaration->complete ||
       I386FrontendSingleFind(state,staged->str,state->table,HTT_FUN)!=staged)return FALSE;
   for(usage=published->ext_lst;usage;usage=usage->next)
@@ -150,6 +170,7 @@ U0 I386FunctionCompletionCommit(CI386Frontend *state,CI386FrontendCompletion *co
     completion->retired_scope->storage=storage;completion->retired_storage=0;
   }
   published->src_link=staged->src_link;published->idx=staged->idx;
+  published->dbg_info=staged->dbg_info;
   published->type=staged->type;published->use_cnt=staged->use_cnt;
   for(i=offset(CHashClass.size);i<sizeof(CHashFun)*(PTR_STARS_NUM+1);i++)destination[i]=source[i];
   if(published->last_in_member_lst==&staged->member_lst_and_root)

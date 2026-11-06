@@ -47,6 +47,7 @@ class CI386Backend {
   I64 depth,pass;
   U0 (*break_poll)();
   I64 break_flags_offset;
+  CDbgInfo *debug; //Borrowed line offsets plus one; zero means no emitted node.
 };
 //Valid target IR, initialized output and borrowed AOT/type/symbol context.
 //Allocations are zeroed or throw. The caller owns success/failure cleanup.

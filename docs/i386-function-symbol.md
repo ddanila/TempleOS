@@ -60,10 +60,10 @@ without extra includes and reaches the same missing-metadata vector, with
 unchanged inputs. The source-only 8 MiB diagnostic also passes. The duplicate
 forward declaration is removed; atomic publication checks remain unchanged.
 
-`I386FrontendFunctionCode` currently returns a null debug pointer explicitly.
-Restoring debug metadata requires actual emitter source-line offsets and proper
-allocation ownership, publication, extern completion and failure cleanup. The
-full regression remains red until real generated records exist; placeholder
-ranges or omitting the metadata assertion would not qualify it. Complete line
-mapping, task stack inspection, module debug interchange and Psalmody/C1–C5
-qualification remain open.
+`I386FrontendFunctionCode` originally returned a null debug pointer explicitly.
+The generated-record implementation now passes this original vector and a
+stronger actual-call-site/extern-completion oracle. See
+`docs/i386-function-debug.md` for emitter offsets, ownership and validation.
+Complete line mapping, task stack inspection, module debug interchange and
+Psalmody/C1–C5 qualification remain open. The next TaskCaller reference and
+native failure are recorded in `docs/i386-task-caller.md`.

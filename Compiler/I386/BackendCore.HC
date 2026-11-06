@@ -357,7 +357,7 @@ U0 I386BackendCore(CI386Backend *backend)
   CAOTImportExport *import_rec;
   CMemberLst *arg;
   I64 arg_index,arg_offset,pool_start,switch_base,switch_index;
-  I64 depth,pass,stack_size=0,args=0;
+  I64 depth,pass,stack_size=0,args=0,debug_line;
   CHashClass *c;
   CHashFun *addr_fun;
   if (!(cc->flags&CCF_AOT_COMPILE) || cc->flags&CCF_EXE_BLK)
@@ -418,6 +418,12 @@ U0 I386BackendCore(CI386Backend *backend)
       out->count=0;
       depth=0;
       for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next) {
+        if(pass && backend->debug &&
+            backend->debug->min_line<=ic->ic_line<=backend->debug->max_line) {
+          debug_line=ic->ic_line-backend->debug->min_line;
+          if(!backend->debug->body[debug_line])
+            backend->debug->body[debug_line]=out->count+1;
+        }
         backend->current=ic; backend->depth=depth; backend->pass=pass;
         if(backend->status) {
           backend->status->node=ic; backend->status->depth=depth; backend->status->pass=pass;

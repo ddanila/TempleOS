@@ -26330,3 +26330,27 @@ suspended clear/input pass at 8 MiB TCG 486,-fpu. The function-symbol oracle now
 compiles through public headers and passes all six symbol-field checks, then
 correctly fails on absent debug metadata. See `docs/i386-function-symbol.md`.
 Debug line mapping, TaskCaller and C1–C5 qualification remain open.
+
+## Generated native function debug records (2026-11-06)
+
+The frontend now retains real final-pass source-line addresses in parser-owned
+CDbgInfo records, publishes them with functions and transfers them through
+stable extern completion. Original/native tests agree on two actual caller PCs
+and distinct source-line ranges, extern identity/debug publication and return
+42. The public symbol/debug-range oracle also passes. Both bootstrap generations,
+clean cross-build, all 1,714 source pins, eight partial-declaration recovery
+cases and 8 MiB normal welcome/clear/input pass. The corrected diagnostic probe
+passes 22 publication, 28 program and 28 completion cases, both header rollback
+and code-heap lifetime phases, exact warning identities and the complete raster
+at 16 MiB TCG. See `docs/i386-function-debug.md` for scope and evidence.
+
+The host builder warning-identity expectation remains pending because its file
+is pinned by the live second-generation native build. Preserve that run; after
+its terminal audit, apply the exact pending-host-checker.patch saved under the
+diagnostic output and verify it. The complete --test suite remains unqualified.
+
+The next real TaskCaller oracle passes seven original checks; native compilation
+still rejects the missing service. Native task inspection must use the actual
+private scheduler context or captured debugger registers, not stale public
+register shadows. See `docs/i386-task-caller.md`. TaskCaller, broader mapping,
+module debug interchange, Psalmody and all C1–C5 release gates remain open.

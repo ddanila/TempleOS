@@ -130,11 +130,21 @@ U0 ProbePublicHeaders(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   accepted=probe->compiler->input(&input);
   KernelLog("PUBLIC HEADER PUBLISHED "); KernelHex(accepted); KernelLog(" ");
   KernelHex(input.warnings); KernelLog(" "); KernelHex(forward->size); KernelLog("\n");
-  //CCPU and the completed CBpt retain count-only unused-forward warnings. Assertions
-  //must produce no diagnostic, and no additional warning is accepted.
-  if(!accepted || input.warnings!=2*(1-probe->phase) || answer.diagnostics ||
+  //CHashClass, CHashFun, CCPU and CBpt retain count-only unused-forward warnings.
+  //Assertions must produce no diagnostic, and no additional warning is accepted.
+  if(!accepted || input.warnings!=4*(1-probe->phase) || answer.diagnostics ||
       ProbeHeaderFind("CTask",table,HTT_CLASS)!=forward ||
       Bt(&forward->flags,Cf_EXTERN) || forward->size!=sizeof(CTask)) KernelStop;
+  document_type=ProbeHeaderFind("CHashFun",table,HTT_CLASS);
+  if(!document_type || !(document_type->type&HTF_PUBLIC) ||
+      Bt(&document_type->flags,Cf_EXTERN) || document_type->size!=sizeof(CHashFun)) KernelStop;
+  document_type=ProbeHeaderFind("CHashSrcSym",table,HTT_CLASS);
+  if(!document_type) KernelStop;
+  for(document_member=document_type->member_lst_and_root;document_member;
+      document_member=document_member->next)
+    if(!StrCmp(document_member->str,"dbg_info"))break;
+  if(!document_member || document_member->offset!=offset(CHashFun.dbg_info) ||
+      document_member->member_class->ptr_stars_cnt!=1) KernelStop;
   before_used=heap->used; before_allocations=heap->allocations;
   if(!probe->compiler->input(&input) || input.warnings || heap->used!=before_used ||
       heap->allocations!=before_allocations) KernelStop;

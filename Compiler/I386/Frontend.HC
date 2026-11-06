@@ -790,7 +790,7 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
     record=next;
   }
 }
-CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashClass *type,I64 prior_misc)
+CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashClass *type,I64 prior_misc,CDbgInfo **debug=0)
 {
   Bool has_helpers=I386FrontendNeedsHelpers(cc,type,state->expression.types);
   I64 bound_bytes=offset(CI386FrontendBound.helpers);
@@ -800,6 +800,8 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   bound->has_helpers=has_helpers;
   CI386FrontendCode *result;
   CI386Out *out;
+  CDbgInfo *debug_info=0;
+  I64 debug_lines=0;
   CPrsStk *old_ps=cc->ps;
   CAOT *old_aot=cc->aot;
   CAOTCtrl *old_aotc=cc->aotc;
@@ -815,13 +817,24 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT CALLS DONE\n");
   out=I386OutNew(state->heap,cc);
   if(!out) throw('OutMem',TRUE);
+  if(debug) {
+    *debug=0;
+    if(cc->min_line<0 || cc->max_line<cc->min_line || cc->max_line>0xFFFFFFFF)
+      I386FrontendUnavailable(state);
+    debug_lines=cc->max_line-cc->min_line+1;
+    if(debug_lines>(0x7FFFFFFF-offset(CDbgInfo.body))/sizeof(U32)-1)
+      I386FrontendUnavailable(state);
+    debug_info=I386FrontendAlloc(state,offset(CDbgInfo.body)+sizeof(U32)*(debug_lines+1),TRUE,FALSE);
+    debug_info->min_line=cc->min_line; debug_info->max_line=cc->max_line;
+    debug_info->body[0]=1;
+  }
   if(bound->has_helpers) {
     I386FrontendHelpers(bound,state->expression.types); cc->htc.hash_table_lst=&bound->helpers;
   }
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND START\n");
   if(cc->flags&CCF_BOOT_MODULE) {
-    if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,0)) I386FrontendUnavailable(state);
-  } else if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,&I386ExecutionBreakPoll))
+    if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,0,debug_info)) I386FrontendUnavailable(state);
+  } else if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,&I386ExecutionBreakPoll,debug_info))
     I386FrontendUnavailable(state);
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND DONE\n");
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next)
@@ -842,6 +855,12 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   for(i=0;i<out->count;i++) result->code[i]=out->data[i];
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT LINK START\n");
   I386FrontendLink(state,bound,result);
+  if(debug_info) {
+    for(i=0;i<debug_lines;i++)
+      if(debug_info->body[i])debug_info->body[i]=(result->code+debug_info->body[i]-1)(U64);
+    debug_info->body[debug_lines]=(result->code+result->bytes)(U64);
+    *debug=debug_info;
+  }
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT LINK DONE\n");
   result->next=state->codes; state->codes=result;
   if(!I386OutDel(state->heap,cc,out) || !I386COCDiscard(state->heap,cc)) I386FrontendUnavailable(state);

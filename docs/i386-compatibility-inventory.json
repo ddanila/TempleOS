@@ -9451,6 +9451,18 @@
           "result": "fail",
           "evidence": "build/i386-function-symbol-shared-types-v1/result.json",
           "scope": "Explicit complete shared types give symbol-field mask 63 but no debug record: 63,0,0,0,0,4. Unchanged inputs; full test remains failing."
+        },
+        {
+          "target": "original-function-debug-lines",
+          "result": "pass",
+          "evidence": "build/i386-function-debug-original-v4/result.json",
+          "scope": "Two actual caller PCs map to distinct source-line ranges; extern completion preserves identity and debug start; execution 42. Eight ones, unchanged inputs. See docs/i386-function-debug.md."
+        },
+        {
+          "target": "native-function-debug-lines",
+          "result": "pass",
+          "evidence": "build/i386-function-debug-native-v3/result.json",
+          "scope": "Two actual caller PCs map to distinct source-line ranges; extern identity and debug pointer publication; eight ones, unchanged inputs. Full mapping and module debug interchange remain open."
         }
       ]
     },
@@ -17017,7 +17029,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-task-caller",
+          "result": "pass",
+          "evidence": "build/i386-task-caller-original-v1/result.json",
+          "scope": "Real current helper and suspended child stack, two known function frames, saved/current equivalence, depth exhaustion and child cleanup; seven ones, unchanged inputs. See docs/i386-task-caller.md."
+        },
+        {
+          "target": "native-task-caller",
+          "result": "fail",
+          "evidence": "build/i386-task-caller-native-v1/result.json",
+          "scope": "Service not exposed: first TaskCaller call fails compilation at fixture line 3. Inputs unchanged."
+        }
+      ]
     },
     {
       "path": "Kernel/KDefine.HC",

@@ -37,10 +37,9 @@ U8 *I386FrontendFunctionCode(U8 *context,CCmpCtrl *cc,I64 *bytes,CDbgInfo **debu
   if(!cc->htc.fun || !(type=OptClassFwd(cc->htc.fun->return_class))) I386FrontendUnavailable(state);
   for(label=cc->coc.coc_next_misc;label!=&cc->coc.coc_next_misc;label=label->next)
     if(label->type==CMT_GOTO_LABEL && !(label->flags&CMF_DEFINED)) I386FrontendUnavailable(state);
-  result=I386FrontendOutput(state,cc,type,cc->flags&CCF_HAS_MISC_DATA);
+  result=I386FrontendOutput(state,cc,type,cc->flags&CCF_HAS_MISC_DATA,debug);
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE FUNCTION OUTPUT DONE\n");
   if(bytes) *bytes=result->bytes;
-  if(debug) *debug=0;
   if(raw_type) *raw_type=result->raw_type;
   return result->code;
 }
