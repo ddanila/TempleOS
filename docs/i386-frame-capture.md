@@ -51,8 +51,17 @@ welcome pixels, suspended clear and input at 8 MiB TCG with unchanged inputs.
 The full diagnostic failure is preserved in `build/frame-capture-cross-v3.log`
 and `build/i386-frame-capture-cross-v3/boot/debug.log`. The rejected allocation
 is 0x1008c bytes. Module-symbol resolution identifies callers I386ArcCtrlNew
-and I386ExpandBuf. A previous-interface baseline and stopped-heap capture are
-running to distinguish a new regression from an existing memory limit.
+and I386ExpandBuf. The previous interface-222 diagnostic image fails at the same allocation and
+step, with its image hash unchanged. See
+`build/i386-frame-capture-diagnostic-comparison-v1.json`.
+
+The stopped-heap capture in
+`build/i386-frame-capture-diagnostic-heap-v1/result.json` confirms the failure
+with unchanged inputs: capacity 6,791,680 bytes, used 6,718,376 bytes, and largest
+free block 43,136 bytes. Although 73,304 bytes remain free in total, no block
+can satisfy the 65,676-byte request. Fragmentation and limited remaining
+capacity therefore both constrain this diagnostic. This does not qualify the
+complete 8 MiB suite; a memory-lifetime/allocation fix remains open.
 
 The separately launched TimeClock test in
 `build/i386-frame-capture-welcome-v1/result.json` fails before application

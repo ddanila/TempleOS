@@ -26520,3 +26520,12 @@ The full 8 MiB diagnostic suite fails after phase-one DISK READ on a 0x1008c
 allocation in I386ArcCtrlNew via I386ExpandBuf. Previous-interface baseline
 and heap capture are running; full diagnostics are not qualified. Actual
 compositor recording, complete applications and C1–C5 remain open.
+
+## Diagnostic baseline and heap evidence (2026-11-06)
+
+Interface 222 reproduces interface 223's phase-one decompression allocation
+failure; its diagnostic image hash is unchanged. The stopped interface-223
+heap has 73,304 free bytes in total but a largest free block of 43,136 bytes,
+below the 65,676-byte request. Input hashes are unchanged. This is an existing
+8 MiB full-diagnostic gap, not introduced by the bitmap/GR provider change.
+See `docs/i386-frame-capture.md`; no milestone closes.
