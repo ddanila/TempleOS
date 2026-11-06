@@ -26,8 +26,28 @@ the interrupt-enable flag.
 
 This is a state/audio-queue contract, not audible-output, frame-capture,
 playback, allocation-failure or whole Psalmody qualification.
-The native implementation still needs the real public screencast state and
-capture behavior; a placeholder global would not satisfy these checks.
+Console interface 222 now publishes the actual screencast state, ScrnCast,
+Mute and IsMute. The original Snd/ScrnCast/SndRst bodies and state types are
+shared with the x64 system, byte-for-byte at extraction. Native initialization
+creates the real queue sentinel and timestamps; capture nodes and the format
+string use scheduler-root allocation. Mute maps the original interrupt-save
+region to native save/restore primitives. The original PIT divisor expression
+replaces the prior native approximation; audible frequency/waveform qualification
+remains open.
+
+Both bootstrap generations and cross-v2 pass. The source audit verifies all
+1,717 source hashes and build-helper hashes unchanged. All twenty native checks
+and fresh arithmetic pass with unchanged inputs in
+`build/i386-screencast-native-v2/result.json`. Exact welcome/clear/input also
+passes at 8 MiB TCG 486,-fpu in `build/i386-screencast-welcome-v1`.
+
+Video frame recording is not yet connected to the native compositor. The
+original bitmap/GR dependency oracle passes, while the native image rejects
+its first DCCopy invocation. This remains required work before complete
+screencast or Psalmody qualification. The expanded full-content image is
+verified in `build/i386-screencast-full-v2`; the first repack attempt incorrectly
+reused nonzero filesystem padding and was rejected by the directory verifier.
+Both artifacts are preserved.
 
 ```
 python3 tools/test-i386-screencast.py --out OUT_ORIGINAL

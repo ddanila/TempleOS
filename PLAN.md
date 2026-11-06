@@ -26459,3 +26459,20 @@ a deliberately stuck sound semaphore, speaker-off state and IF preservation.
 The native queue/state implementation is in progress using the exact original
 shared bodies and types. Frame capture, audible output and full Psalmody
 workflows remain unqualified; no C1–C5 completion is implied.
+
+## Native screencast queue/state checkpoint (2026-11-06)
+
+Console interface 222 shares the original Snd/ScrnCast/SndRst code and public
+state types with the x64 build. It initializes real timestamps/queue state,
+uses root-owned capture allocations, and exports ScrnCast/Mute/IsMute and the
+actual scrncast global. The native replacement for Mute's assembly saves and
+restores interrupt flags. Both bootstrap generations and cross-v2 pass; all
+1,717 source and build-helper hashes are unchanged. All twenty original/native
+queue, capture-gate and recovery checks match, and exact welcome/clear/input
+passes at 8 MiB TCG. See `docs/i386-screencast.md`.
+
+Video compositor capture is still missing. Its new original bitmap/GR oracle
+passes while native rejects DCCopy. The shared Snd uses the original PIT divisor
+formula; audible waveform/frequency requalification remains open. Beep and the
+full original-byte Psalmody keyboard workflow are still running. No complete
+screencast, application or C1–C5 qualification is claimed.

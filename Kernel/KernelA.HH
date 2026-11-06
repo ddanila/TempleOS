@@ -703,29 +703,7 @@ public class CSysFixedArea
 
 #help_index "Snd"
 #help_index "ScrnCast;Snd/AU Files"
-public class CAUData
-{//Fmt of AU files
-  CDate	cdt;
-  I8	ona;
-};
-
-class CSndData
-{//Fmt recorded in mem
-  CSndData *next,*last;
-  F64	tS;
-  I8	ona;
-};
-
-public class CScrnCastGlbls
-{
-  CSndData snd_head;
-  CDate	t0_now;
-  F64	t0_tS;
-  U8	*print_fmt;
-  CDC	*dc,*dc2_alias;
-  Bool	record,just_audio;
-  I8	ona;
-};
+#include "/Kernel/SoundCaptureTypes.HH"
 
 #help_index "Debugging/FunSeg"
 #include "/Kernel/FunSegTypes.HH"
