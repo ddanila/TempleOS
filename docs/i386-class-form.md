@@ -150,3 +150,18 @@ delta zero. The diagnostic-only run
 [63,63,63,63,63,60,62], final numeric 12 throughout, and no edited tag in either
 numeric case. All caller heap deltas are zero and inputs remain unchanged.
 Cancellation now fails correctly when typing never edited the field. Full PopUpForm workflow and original DocPutKey integration remain open.
+
+
+## Data-field key dispatch regression (2026-11-06)
+
+Budget's actual popup entry exposed native DocPutKey falling through to ordinary
+text editing for DOCT_DATA. Printable data/hex-field keys now use the original
+EdCharIns already present in Console. The unchanged seven-case fixture passes
+via the KVM keyboard harness in
+build/i386-budget-entry-class-form-kvm-v1/result.json, with unchanged inputs and
+fresh rendered 42. Its FPCheck assertions include numeric 12-to-42 acceptance,
+cancellation, field bindings, guards, caller state and heap recovery. The older
+TCG driver attempt timed out before any test command; it is preserved in
+build/i386-budget-entry-class-form-v1. See the application matrix's Budget popup
+entry section for the real keyboard regression, build and minimal boot evidence.
+This does not qualify all form operations or C1-C5.

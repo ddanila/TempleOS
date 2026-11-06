@@ -186,6 +186,7 @@ Bool NativeDocUsesWindowLayout(CDoc *doc)
   return doc->flags&DOCF_FORM || task && TaskValidate(task) &&
     task->display_doc==doc && !NativeLegacyViewActive(task);
 }
+extern U0 EdCharIns(I64 ch,I64 sc,CDoc *doc);
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   Bool unlock,printable;
@@ -238,6 +239,9 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
         DocDollarInputCore(doc,ch,printable)) {}
     else if(printable && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
         DocCharActionCore(doc,ch,sc)) {}
+    else if(printable && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
+        (doc->cur_entry->type_u8==DOCT_DATA || doc->cur_entry->type_u8==DOCT_HEX_ED))
+      EdCharIns(ch,sc,doc);
     else if(printable && ch=='\t' && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
         (doc->flags&DOCF_OVERSTRIKE || doc->flags&DOCF_FORM &&
          (Bt(doldoc.type_flags_form,doc->cur_entry->type_u8) ||

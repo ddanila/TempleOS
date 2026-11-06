@@ -451,3 +451,66 @@ directories. This covers cold reopening and Shift-Escape for the preseeded
 interactive-save workflow. Popup transaction entry, scheduled templates, mouse,
 complete Budget behavior and C1-C5 remain open. The original control does not
 establish original cold-boot behavior.
+
+
+## Budget popup transaction entry and native data-field dispatch (2026-11-06)
+
+Budget now passes entry through its actual `n` command and PopUpForm. The fixture
+starts with the installed account template and no seeded transactions. A
+read-only observer waits for Budget's document and a five-field popup; the host
+then types date 09/04/1998, amount 125.50, BANK, RENT and description `popup entry`,
+using Tab between fields. Escape accepts the popup and a second Escape saves
+Budget. It neither writes the form object nor injects guest messages.
+
+The original control build/i386-budget-entry-reference-v2 and native comparison
+build/i386-budget-entry-native-v2 both pass mask 63. Independent checks require
+an empty initial document, exact resulting BANK report, one nonzero transaction
+identity, the complete 48-byte data record, 105-byte twelve-entry string table
+and unchanged 97-byte installed account list. Only document pointer addresses
+are normalized. The mask checks observer completion, caller documents,
+menu/settings, window bounds, autocomplete activity and same-session readback.
+Native arithmetic renders 42 afterward, the filesystem audit passes, 1738
+existing files are preserved, and all pinned inputs remain unchanged.
+
+The native-v1 run against the prior image failed after popup acceptance. Its
+screens show typed text inserted before data fields, leaving credit/debit empty
+and opening the account picker. A separate parser probe in
+build/i386-budget-entry-prefix-probe-v3 confirms StrMatch finds the colon and
+PrsDollarCmd retains min_col=5 for `Date:%s`. The fault was dispatch: native
+DocPutKey sent printable data-field keys to DocBasicEditCore, which handles
+ordinary text and inserts a new text record for non-text entries. The original
+EdCharIns was already compiled into Console but was not selected here.
+
+The four-line DocumentRuntime change declares that existing function and routes
+printable data/hex-field keys to it. Original field overstrike, insertion,
+allocation, terminators and update-data behavior are retained. The native-v2
+comparison uses build/i386-budget-entry-char-cross-v2/kernel.img. Both original
+bootstrap generations pass; the cross-build passes its 96 BIOS/332 protected-mode
+386 instruction audit. The candidate source audit matches 1368 files. The
+16 MiB diagnostic boot in build/i386-budget-entry-minimal-v1 passes all 307200
+welcome pixels; this does not qualify the complete minimal suite or timing gate.
+
+The existing seven-case class-form fixture also passes unchanged through the KVM
+keyboard harness in build/i386-budget-entry-class-form-kvm-v1, including numeric
+accept/cancel and caller heap recovery. The older TCG runner in
+build/i386-budget-entry-class-form-v1 timed out before its first test command;
+that failed attempt is retained, not counted as a class-form pass.
+
+Original reference-v1 exposed two oracle assumptions: an empty document saves
+zero bytes, and the two-digit year 98 parses as 2098. Reference-v2 explicitly
+types 1998 and checks the empty byte string. An initial unnecessary extraction of
+EdCharIns failed cross-compilation; it was removed after finding the existing
+original implementation. No extraction or replacement function remains.
+
+Reproduce with fresh output directories:
+
+```
+python3 tools/test-i386-budget-entry.py --archive build/i386-budget-entry-char-cross-v2/exports/BudgetAccts.DD.Z --out OUT_REFERENCE
+python3 tools/test-i386-budget-entry.py build/i386-budget-entry-char-cross-v2/kernel.img --reference OUT_REFERENCE --out OUT_NATIVE
+```
+
+This covers accepted popup entry and saving, not popup cancellation, editing or
+copying existing entries, account-picker choices, templates, cold reopening of
+this newly entered record, mouse input, complete hex editing or whole Budget
+qualification. The separate cold-save workflow remains independent evidence.
+C1-C5 remain open.

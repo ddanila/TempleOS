@@ -6036,6 +6036,24 @@
           "result": "pass",
           "evidence": "build/i386-budget-views-installed-native-v1/result.json",
           "scope": "64 MiB KVM: three exact original/independent DolDoc reports, cursor/colors/balances and transaction IDs across account changes/deletion, same mask 31; clean filesystem, 1738 files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not View/physical input, rendered pixels, popup entry, templates or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-reference-v2/result.json",
+          "scope": "Actual Budget n command, five-field PopUpForm, QEMU date/amount/accounts/description and Escape accept/save. Mask 63; exact empty/result documents, 48-byte transaction, 105-byte strings and 97-byte accounts; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry-before-dispatch",
+          "result": "fail",
+          "evidence": "build/i386-budget-entry-native-v1/result.json",
+          "scope": "Popup appears but printable data-field input becomes separate text, leaving accounts empty and opening account picker. BP entered timeout; screenshots and keys preserved; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-native-v2/result.json",
+          "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
         }
       ]
     },
@@ -6121,6 +6139,24 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-abort-native-v1/result.json",
           "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "original-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-reference-v2/result.json",
+          "scope": "Actual Budget n command, five-field PopUpForm, QEMU date/amount/accounts/description and Escape accept/save. Mask 63; exact empty/result documents, 48-byte transaction, 105-byte strings and 97-byte accounts; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry-before-dispatch",
+          "result": "fail",
+          "evidence": "build/i386-budget-entry-native-v1/result.json",
+          "scope": "Popup appears but printable data-field input becomes separate text, leaving accounts empty and opening account picker. BP entered timeout; screenshots and keys preserved; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-native-v2/result.json",
+          "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
         }
       ]
     },
@@ -6182,6 +6218,24 @@
           "result": "pass",
           "evidence": "build/i386-budget-keyboard-native-v1/result.json",
           "scope": "64 MiB KVM: same physical emulated key sequence, exactly one Ctrl-Y with modifier, two surviving rows and bank balance 70, Escape View return, exact original/independent DolDoc and mask 31, rendered fresh 42. Clean filesystem, 1738 files preserved, unchanged inputs. Not navigation-selected initial row, popup entry, persisted deletion, pixel equality or full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-reference-v2/result.json",
+          "scope": "Actual Budget n command, five-field PopUpForm, QEMU date/amount/accounts/description and Escape accept/save. Mask 63; exact empty/result documents, 48-byte transaction, 105-byte strings and 97-byte accounts; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry-before-dispatch",
+          "result": "fail",
+          "evidence": "build/i386-budget-entry-native-v1/result.json",
+          "scope": "Popup appears but printable data-field input becomes separate text, leaving accounts empty and opening account picker. BP entered timeout; screenshots and keys preserved; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-native-v2/result.json",
+          "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
         }
       ]
     },
@@ -6243,6 +6297,24 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-abort-native-v1/result.json",
           "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "original-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-reference-v2/result.json",
+          "scope": "Actual Budget n command, five-field PopUpForm, QEMU date/amount/accounts/description and Escape accept/save. Mask 63; exact empty/result documents, 48-byte transaction, 105-byte strings and 97-byte accounts; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry-before-dispatch",
+          "result": "fail",
+          "evidence": "build/i386-budget-entry-native-v1/result.json",
+          "scope": "Popup appears but printable data-field input becomes separate text, leaving accounts empty and opening account picker. BP entered timeout; screenshots and keys preserved; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-native-v2/result.json",
+          "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
         }
       ]
     },
@@ -6341,6 +6413,24 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-abort-native-v1/result.json",
           "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "original-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-reference-v2/result.json",
+          "scope": "Actual Budget n command, five-field PopUpForm, QEMU date/amount/accounts/description and Escape accept/save. Mask 63; exact empty/result documents, 48-byte transaction, 105-byte strings and 97-byte accounts; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry-before-dispatch",
+          "result": "fail",
+          "evidence": "build/i386-budget-entry-native-v1/result.json",
+          "scope": "Popup appears but printable data-field input becomes separate text, leaving accounts empty and opening account picker. BP entered timeout; screenshots and keys preserved; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-native-v2/result.json",
+          "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
         }
       ]
     },
@@ -6408,6 +6498,24 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-abort-native-v1/result.json",
           "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "original-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-reference-v2/result.json",
+          "scope": "Actual Budget n command, five-field PopUpForm, QEMU date/amount/accounts/description and Escape accept/save. Mask 63; exact empty/result documents, 48-byte transaction, 105-byte strings and 97-byte accounts; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry-before-dispatch",
+          "result": "fail",
+          "evidence": "build/i386-budget-entry-native-v1/result.json",
+          "scope": "Popup appears but printable data-field input becomes separate text, leaving accounts empty and opening account picker. BP entered timeout; screenshots and keys preserved; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-native-v2/result.json",
+          "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
         }
       ]
     },
@@ -6503,6 +6611,24 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-abort-native-v1/result.json",
           "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "original-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-reference-v2/result.json",
+          "scope": "Actual Budget n command, five-field PopUpForm, QEMU date/amount/accounts/description and Escape accept/save. Mask 63; exact empty/result documents, 48-byte transaction, 105-byte strings and 97-byte accounts; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry-before-dispatch",
+          "result": "fail",
+          "evidence": "build/i386-budget-entry-native-v1/result.json",
+          "scope": "Popup appears but printable data-field input becomes separate text, leaving accounts empty and opening account picker. BP entered timeout; screenshots and keys preserved; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-native-v2/result.json",
+          "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
         }
       ]
     },
@@ -6657,6 +6783,24 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-abort-native-v1/result.json",
           "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "original-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-reference-v2/result.json",
+          "scope": "Actual Budget n command, five-field PopUpForm, QEMU date/amount/accounts/description and Escape accept/save. Mask 63; exact empty/result documents, 48-byte transaction, 105-byte strings and 97-byte accounts; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry-before-dispatch",
+          "result": "fail",
+          "evidence": "build/i386-budget-entry-native-v1/result.json",
+          "scope": "Popup appears but printable data-field input becomes separate text, leaving accounts empty and opening account picker. BP entered timeout; screenshots and keys preserved; unchanged inputs."
+        },
+        {
+          "target": "native-budget-popup-entry",
+          "result": "pass",
+          "evidence": "build/i386-budget-entry-native-v2/result.json",
+          "scope": "Native DocPutKey routes data/hex-field printable keys to existing original EdCharIns. Actual Budget popup entry/save matches original and independent documents/records, mask 63, 1738 files preserved, clean filesystem, rendered fresh 42 and unchanged inputs. Not popup cancellation/edit/copy, picker choices, templates, cold reopen of this entry, full hex editing or C1-C5 qualification."
         }
       ]
     },
