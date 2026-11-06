@@ -1,6 +1,7 @@
 #ifndef I386_PUBLIC_DOCUMENT_INCLUDED
 #define I386_PUBLIC_DOCUMENT_INCLUDED
 #include "/Kernel/NumericLimits.HH"
+#include "/Kernel/CompilerTypes.HH"
 #include "/Kernel/DocGlobals.HH"
 #include "/Kernel/RawTypes.HH"
 #include "/Adam/DolDoc/EdLinkTypes.HH"
@@ -150,4 +151,7 @@ public _extern _DOC_DUMP U0 DocDump(CDoc *doc,I64 uS_delay=0);
 public _extern _DOC_TYPE Bool DocType(CDoc *doc=NULL,U8 *filename,I64 trailing_new_lines=1);
 public _extern _TYPE Bool Type(U8 *filename,I64 trailing_new_lines=1);
 public _extern _DOC_TERM_NEW U0 DocTermNew();
+public _extern _CMP_CTRL_NEW CCmpCtrl *CmpCtrlNew(U8 *buf=NULL,I64 flags=0,U8 *filename=NULL);
+public _extern _CMP_CTRL_DEL U0 CmpCtrlDel(CCmpCtrl *cc);
+public _extern _CMP_CTRL_SIZE I64 CmpCtrlSize(CCmpCtrl *cc);
 #endif

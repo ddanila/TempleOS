@@ -26599,3 +26599,20 @@ heap restoration. Native interface 225 still rejects CmpCtrlNew before these
 assertions. See docs/i386-public-lexer.md for the preserved initial fixture
 length error and corrected full rerun. Public compiler-control implementation
 and complete Psalmody interaction remain open.
+
+## Public compiler-control ownership implementation (2026-11-07)
+
+Interface 226 exports original CmpCtrlNew/CmpCtrlDel/CmpCtrlSize through a shared
+source core, exposes the complete public compiler types, and initializes the
+public temporary filename from the existing file service. All twelve original
+and native constructor/ownership/size checks pass, including heap restoration;
+fresh native arithmetic also passes. Both bootstrap generations, cross-build,
+instruction audit and source/helper audit pass. See docs/i386-public-control.md
+for the preserved header-visibility and filename initialization failures.
+
+The lexer oracle now advances to the missing Lex call. Lex/LexExtStr, complete
+Psalmody workflows, the full 8 MiB diagnostic, required generation/memory
+profiles and C1–C5 remain open. The frozen nine-module build continues separately.
+
+The final public-control candidate also passes exact welcome/clear/input at
+8 MiB TCG with unchanged inputs (`i386-public-control-welcome-v3`).
