@@ -155,6 +155,8 @@ def native_assembly_args(exports, out, module, prefix, names, cleanup, macro, im
 def main():
     global OUT
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--out', type=Path,
+                        help='Fresh isolated output directory for a single corpus run')
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument('--functions', action='store_true',
                         help='Test normal function compilation using test-rebuild.py output')
@@ -254,6 +256,8 @@ def main():
     if args.heap and not any((args.heap_core,args.heap_public,args.heap_cache,
             args.heap_high,args.heap_window_reserve,args.heap_backing_reserve,
             args.heap_backing_accounting)):
+        if args.out:
+            parser.error('--out requires a single heap corpus, such as --heap-core')
         #Keep the complete default coverage while each runner fits the boot transfer.
         aggregate = ROOT/('build/i386-heap-source-test' if args.heap_source else 'build/i386-heap-test')
         aggregate.mkdir(parents=True,exist_ok=True)
@@ -384,6 +388,10 @@ def main():
     if args.redsea_alloc_core:
         core_path = args.redsea_alloc_core.resolve()
         redsea_owned_inputs[str(core_path)] = hashlib.sha256(core_path.read_bytes()).hexdigest()
+    if args.out:
+        OUT = args.out.resolve()
+        if OUT.exists():
+            parser.error('--out must name a fresh directory')
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT/'result.json').unlink(missing_ok=True)
     overlay = OUT / 'overlay/Compiler/I386'
