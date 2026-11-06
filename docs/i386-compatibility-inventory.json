@@ -7277,9 +7277,22 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "tools/test-i386-psalmody-keyboard.py",
+      "oracle": "Exact typed note vectors and caller restoration from original Psalmody; see docs/i386-psalmody-keyboard.md. Audio and persistence remain open.",
+      "tests": [
+        {
+          "target": "original-psalmody-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-keyboard-reference-v1/result.json",
+          "scope": "Full Load and Psalmody invocation: record C5/D5/E5, Backspace last note, Shift-Escape; exact notes/durations/survivors, restoration mask 63, unchanged inputs. Does not exercise all included functions, audio or persistence."
+        },
+        {
+          "target": "native-psalmody-keyboard",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
+          "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        }
+      ]
     },
     {
       "path": "Apps/Psalmody/JukePuppet.HC",
@@ -7296,9 +7309,22 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "tools/test-i386-psalmody-keyboard.py",
+      "oracle": "Exact typed note vectors and caller restoration from original Psalmody; see docs/i386-psalmody-keyboard.md. Audio and persistence remain open.",
+      "tests": [
+        {
+          "target": "original-psalmody-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-keyboard-reference-v1/result.json",
+          "scope": "Full Load and Psalmody invocation: record C5/D5/E5, Backspace last note, Shift-Escape; exact notes/durations/survivors, restoration mask 63, unchanged inputs. Does not exercise all included functions, audio or persistence."
+        },
+        {
+          "target": "native-psalmody-keyboard",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
+          "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        }
+      ]
     },
     {
       "path": "Apps/Psalmody/Load.HC",
@@ -7321,9 +7347,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "tools/test-i386-psalmody-keyboard.py",
+      "oracle": "Exact typed note vectors and caller restoration from original Psalmody; see docs/i386-psalmody-keyboard.md. Audio and persistence remain open.",
+      "tests": [
+        {
+          "target": "original-psalmody-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-keyboard-reference-v1/result.json",
+          "scope": "Full Load and Psalmody invocation: record C5/D5/E5, Backspace last note, Shift-Escape; exact notes/durations/survivors, restoration mask 63, unchanged inputs. Does not exercise all included functions, audio or persistence."
+        },
+        {
+          "target": "native-psalmody-keyboard",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
+          "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        }
+      ]
     },
     {
       "path": "Apps/Psalmody/Psalmody.HC",
@@ -7338,9 +7377,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "tools/test-i386-psalmody-keyboard.py",
+      "oracle": "Exact typed note vectors and caller restoration from original Psalmody; see docs/i386-psalmody-keyboard.md. Audio and persistence remain open.",
+      "tests": [
+        {
+          "target": "original-psalmody-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-keyboard-reference-v1/result.json",
+          "scope": "Full Load and Psalmody invocation: record C5/D5/E5, Backspace last note, Shift-Escape; exact notes/durations/survivors, restoration mask 63, unchanged inputs. Does not exercise all included functions, audio or persistence."
+        },
+        {
+          "target": "native-psalmody-keyboard",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
+          "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        }
+      ]
     },
     {
       "path": "Apps/Psalmody/PsalmodyCtrls.HC",
@@ -7355,9 +7407,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "tools/test-i386-psalmody-keyboard.py",
+      "oracle": "Exact typed note vectors and caller restoration from original Psalmody; see docs/i386-psalmody-keyboard.md. Audio and persistence remain open.",
+      "tests": [
+        {
+          "target": "original-psalmody-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-keyboard-reference-v1/result.json",
+          "scope": "Full Load and Psalmody invocation: record C5/D5/E5, Backspace last note, Shift-Escape; exact notes/durations/survivors, restoration mask 63, unchanged inputs. Does not exercise all included functions, audio or persistence."
+        },
+        {
+          "target": "native-psalmody-keyboard",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
+          "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        }
+      ]
     },
     {
       "path": "Apps/Psalmody/PsalmodyDraw.HC",
@@ -7372,9 +7437,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "tools/test-i386-psalmody-keyboard.py",
+      "oracle": "Exact typed note vectors and caller restoration from original Psalmody; see docs/i386-psalmody-keyboard.md. Audio and persistence remain open.",
+      "tests": [
+        {
+          "target": "original-psalmody-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-keyboard-reference-v1/result.json",
+          "scope": "Full Load and Psalmody invocation: record C5/D5/E5, Backspace last note, Shift-Escape; exact notes/durations/survivors, restoration mask 63, unchanged inputs. Does not exercise all included functions, audio or persistence."
+        },
+        {
+          "target": "native-psalmody-keyboard",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
+          "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        }
+      ]
     },
     {
       "path": "Apps/Psalmody/PsalmodyFile.HC",
@@ -7389,9 +7467,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "tools/test-i386-psalmody-keyboard.py",
+      "oracle": "Exact typed note vectors and caller restoration from original Psalmody; see docs/i386-psalmody-keyboard.md. Audio and persistence remain open.",
+      "tests": [
+        {
+          "target": "original-psalmody-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-keyboard-reference-v1/result.json",
+          "scope": "Full Load and Psalmody invocation: record C5/D5/E5, Backspace last note, Shift-Escape; exact notes/durations/survivors, restoration mask 63, unchanged inputs. Does not exercise all included functions, audio or persistence."
+        },
+        {
+          "target": "native-psalmody-keyboard",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
+          "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        }
+      ]
     },
     {
       "path": "Apps/Psalmody/PsalmodyMain.HC",
@@ -7406,9 +7497,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "tools/test-i386-psalmody-keyboard.py",
+      "oracle": "Exact typed note vectors and caller restoration from original Psalmody; see docs/i386-psalmody-keyboard.md. Audio and persistence remain open.",
+      "tests": [
+        {
+          "target": "original-psalmody-keyboard",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-keyboard-reference-v1/result.json",
+          "scope": "Full Load and Psalmody invocation: record C5/D5/E5, Backspace last note, Shift-Escape; exact notes/durations/survivors, restoration mask 63, unchanged inputs. Does not exercise all included functions, audio or persistence."
+        },
+        {
+          "target": "native-psalmody-keyboard",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
+          "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        }
+      ]
     },
     {
       "path": "Apps/Psalmody/Run.HC",
