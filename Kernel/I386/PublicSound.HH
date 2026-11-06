@@ -3,6 +3,9 @@
 #include "/Adam/MusicTypes.HH"
 #include "/Kernel/SoundCaptureTypes.HH"
 #help_index "Snd"
+public _extern _NOTE_2_ONA I8 Note2Ona(I64 note,I64 octave=4);
+public _extern _ONA_2_NOTE I8 Ona2Note(I8 ona);
+public _extern _ONA_2_OCTAVE I8 Ona2Octave(I8 ona);
 public _extern _ONA_2_FREQ F64 Ona2Freq(I8 ona);
 public _extern _NOISE CTask *Noise(I64 mS,F64 min_ona,F64 max_ona);
 public _extern _SWEEP CTask *Sweep(I64 mS,F64 ona1,F64 ona2);

@@ -1,3 +1,4 @@
+#include "/Adam/Snd/NoteConversionCore.HC"
 //Share the original recording queue, repeat-enable and semaphore behavior.
 #define IsDbgMode NativeIsDebugMode
 #include "/Kernel/SoundCaptureCore.HC"

@@ -26539,3 +26539,13 @@ addresses in TermRightClickLink. Its implicit lastclass arguments are the
 leading suspect. The run's 22 other inputs and preloaded reader audit pass,
 with the documented builder-path mismatch retained. See docs/i386-inline-asm.md.
 A focused relocation regression and compiler fix are required; C5 stays open.
+
+## Native note conversion and Psalmody sprite frontier (2026-11-06)
+
+Interface 224 shares and exports Note2Ona/Ona2Note/Ona2Octave. Both bootstrap
+generations, full-content packaging, the 1,482-byte original/native oracle and
+8 MiB exact welcome/clear/input pass. Psalmody advances past Ona2Octave and now
+fails at the embedded Sprite call in PsalmodyDraw line 381. No application
+interaction assertions execute. See docs/i386-note-conversion.md. C1–C5 remain
+open, including the known full-diagnostic memory and native module default-string
+gaps being addressed separately.

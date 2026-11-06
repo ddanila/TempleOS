@@ -21,3 +21,25 @@ it does not qualify frequencies, playback or the complete application.
 python3 tools/test-i386-note-conversion.py --out ORIGINAL_OUT
 python3 tools/test-i386-note-conversion.py IMAGE --out NATIVE_OUT
 ```
+
+## Native conversion family (2026-11-06)
+
+Interface 224 shares the byte-identical original three-function body through
+`Adam/Snd/NoteConversionCore.HC`, used by both original sound sources and the
+native sound provider. All three public bindings are exported; the 611-symbol
+export bitmap now has twenty words. The initial cross-build rejected the new
+export entries before their definitions; explicit forward declarations fix
+that ordering without changing the function bodies.
+
+Both bootstrap generations pass in
+`build/rebuild-note-conversion-v2-verified/result.json`. The full-content
+cross-v2 image packages successfully with a 1,722-source unchanged audit and
+passing boot instruction audit. `build/i386-note-conversion-native-v3/result.json`
+passes all 1,482 oracle bytes and fresh arithmetic. The welcome-screen v1
+regression passes exact welcome, clear and input at 8 MiB TCG. Both input audits
+are unchanged. This does not qualify the full diagnostic suite.
+
+`build/i386-psalmody-note-conversion-v1/result.json` verifies the original app
+bytes, advances beyond Ona2Octave, then fails at the embedded Sprite call in
+PsalmodyDraw line 381. Inputs are unchanged. Recording, deletion and abort
+assertions still do not execute; the application remains unqualified.
