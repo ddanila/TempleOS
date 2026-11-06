@@ -5217,6 +5217,12 @@
           "result": "fail",
           "evidence": "build/i386-file-occ-native-v1/result.json",
           "scope": "Complete original Find source verified; include rejects missing PutFileLink at line 60 before fixture execution; inputs unchanged."
+        },
+        {
+          "target": "candidate-file-occ-provider",
+          "result": "fail",
+          "evidence": "build/i386-file-occ-candidate-v1/result.json",
+          "scope": "Complete original include gets past PutFileLink and rejects missing PopUpPickDir at line 234 before counting fixture; unchanged inputs."
         }
       ]
     },
@@ -15717,6 +15723,12 @@
           "result": "fail",
           "evidence": "build/i386-file-links-native-v1/result.json",
           "scope": "Clamp candidate rejects first PutFileLink call before fixture execution; unchanged inputs. No raw-screen/navigation or complete provider qualification."
+        },
+        {
+          "target": "candidate-public-file-links",
+          "result": "pass",
+          "evidence": "build/i386-file-links-candidate-v1/result.json",
+          "scope": "Console 216 candidate: exact 254-byte null/file/plain/line/sprite/default-path document, fresh rendered arithmetic and unchanged inputs; 1368 delivered sources match snapshot. Core candidate not yet on main; full provider qualification remains open."
         }
       ]
     },
@@ -18030,6 +18042,12 @@
           "result": "fail",
           "evidence": "build/i386-file-links-native-v1/result.json",
           "scope": "Clamp candidate rejects first PutFileLink call before fixture execution; unchanged inputs. No raw-screen/navigation or complete provider qualification."
+        },
+        {
+          "target": "candidate-public-file-links",
+          "result": "pass",
+          "evidence": "build/i386-file-links-candidate-v1/result.json",
+          "scope": "Console 216 candidate: exact 254-byte null/file/plain/line/sprite/default-path document, fresh rendered arithmetic and unchanged inputs; 1368 delivered sources match snapshot. Core candidate not yet on main; full provider qualification remains open."
         }
       ]
     },

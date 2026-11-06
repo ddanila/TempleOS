@@ -26,8 +26,10 @@ The plain source candidate `build/i386-public-tables-candidate-v4/source` export
 the existing shared `Kernel/BlkDev/DirectoryLinksCore.HC` implementation and adds
 its exact four-argument public declaration, including defaults. Console
 interface 216 separates this binding set from previous images. The function
-body is unchanged. Validation is in progress; these core changes are not yet
-applied to main because the concurrent C5 build pins its inputs.
+body is unchanged. The corrected cross-build passes its 386 instruction audit (96 BIOS and 332
+protected-mode instructions). All 1,368 delivered source/document files match
+the candidate snapshot. These core changes are not yet applied to main because
+the concurrent C5 build pins its inputs.
 
 Raw-screen output, following links, directory links, Find replacement/dialog
 workflows and whole Psalmody/C1–C5 qualification remain open.
@@ -40,3 +42,11 @@ the function body remains unchanged. This is a compile failure, not a timeout
 or runtime pass. The original body comes from `Kernel/BlkDev/DskDirA.HC`.
 The dependent [FileOcc comparison](i386-file-occ.md) now records the original
 counting and caller-state behavior that this public link binding must enable.
+
+`build/i386-file-links-candidate-v1/result.json` passes the exact 254-byte
+DolDoc comparison and fresh rendered arithmetic with unchanged execution
+inputs. The source audit is
+`build/i386-public-tables-links-source-audit-v1.json`; the successful image is
+`build/i386-public-tables-candidate-v4/source/build/public-tables-cross-v2/kernel.img`.
+The complete original Find include now passes its PutFileLink dependency and
+reaches the missing PopUpPickDir at line 234; FileOcc remains unqualified.
