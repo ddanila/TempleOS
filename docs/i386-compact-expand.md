@@ -109,8 +109,12 @@ Both bootstrap generations pass in `build/rebuild-probe-shared-release-v3-verifi
 `build/i386-probe-shared-release-cross-v4/source-audit.json` verifies 1,725 source
 hashes and 26 helpers after export. Its 16 MiB boot completes both compiler
 probe phases, worker cleanup and `DONE native kernel startup`; the enclosing
-`--test` run also includes later rejection, persistence and filesystem tests,
-whose completion must be checked separately. Normal 8 MiB exact welcome,
+`--test` run subsequently failed its normal 8 MiB keyboard speaker-on check.
+The command completed and the captured screen shows `0` instead of the required
+`1`; the screen matcher then timed out. `full-test-failure.json` records the
+terminal failure. Later rejection, persistence and filesystem tests were not
+reached. This is not a full-suite pass, and the failing sound condition is under
+separate register-level investigation. Normal 8 MiB exact welcome,
 suspended clear and input pass with unchanged inputs in
 `build/i386-probe-shared-release-welcome-v1`.
 

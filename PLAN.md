@@ -15,9 +15,10 @@ the foundation, but does not establish desktop or application parity.
 
 All nine retained modules build successfully on the frozen interface-224 image
 at 64 MiB KVM `486,-fpu`. Persisted hashes, export sets and frozen input provenance
-are audited, including the disclosed preloaded builder helper. Installation is
-running; actual generation-two equality and the required memory profiles remain
-open. This does not qualify newer interface-226 sources. See
+are audited, including the disclosed preloaded builder helper. All nine modules
+install and fresh-boot at 8 MiB with arithmetic and document-allocation checks.
+Generation two is running with exact comparison to the installed modules;
+actual equality and required memory profiles remain open. This does not qualify newer interface-226 sources. See
 [default-string generation evidence](docs/i386-module-default-strings.md).
 
 ### Share diagnostic symbol deletion (2026-11-07)
@@ -25,7 +26,8 @@ open. This does not qualify newer interface-226 sources. See
 CompilerProbe now binds the existing kernel symbol-deletion implementation,
 removing 14,808 duplicate module bytes without changing assertions. Both
 bootstrap generations, normal 8 MiB welcome/clear/input, and both compiler phases
-of the 16 MiB diagnostic boot pass. The broader test runner remains separate.
+of the 16 MiB diagnostic boot pass. The broader runner later fails its speaker-on
+screen check (actual result 0); subsequent suite stages are not reached.
 The full 8 MiB diagnostic still fails while allocating the complete probe file,
 even though its logical loaded image would fit the largest free block. See
 [runtime memory evidence](docs/i386-compact-expand.md). C1–C5 remain open.

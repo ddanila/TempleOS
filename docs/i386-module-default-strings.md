@@ -40,6 +40,16 @@ current helper, and its runner snapshot matches the pinned runner. Extracted
 modules are retained under `exports/`. The generation predates the later public
 control and probe-size changes; it does not qualify those newer sources.
 
-Installation is running in `build/i386-default-strings-native-install-v1`, using
-a fresh copy and preserving the generation-one source image. Installation,
-second-generation comparison, required memory profiles and C5 remain open.
+Installation passes in `build/i386-default-strings-native-install-v1`. All nine
+modules are installed byte-for-byte in a fresh copy, and the preserved candidate
+boots at 8 MiB with arithmetic, `DocAllocationCheck` (13), dollar growth recovery,
+and diagnostic unload checks. The source and candidate images are preserved.
+Its terminal audit verifies the input pins and explicitly records the later
+on-disk helper change; the preloaded snapshot matches its original pin and its
+disk-reader AST is unchanged.
+
+`build/i386-default-strings-native-generation2-v1` is now running at 64 MiB KVM
+`486,-fpu` from that installed candidate, with `--compare-installed` requiring
+exact module-byte equality to generation one. The original input pins and helper
+snapshots are preserved. Generation-two equality, required memory profiles and
+C5 remain open.
