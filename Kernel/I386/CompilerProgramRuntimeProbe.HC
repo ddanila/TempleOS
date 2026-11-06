@@ -1,4 +1,5 @@
 //All program/self-hosting vectors, in a separately reclaimable diagnostic image.
+#define I386_PROBE_MODULE_LOADER 1
 #include "/Kernel/I386/CompilerProbeImports.HC"
 #include "/Compiler/SymbolInit.HC"
 #include "/Kernel/I386/TaskStorage.HC"

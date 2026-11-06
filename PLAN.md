@@ -11,6 +11,16 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Remove unused runtime implementations (2026-11-07)
+
+The primary diagnostic probe omits its unused module-loader implementation;
+the program probe retains it and is byte-identical. FileRuntime omits unused
+streaming and resident-file implementations. Both bootstrap generations and
+normal 8 MiB welcome/clear/input pass. CompilerProbe shrinks by 33,492 bytes,
+FileRuntime by 11,552, and retained diagnostic heap usage by 12,288. The full
+8 MiB diagnostic still cannot reload CompilerProbe; C1–C5 remain open. See
+[archive and runtime memory evidence](docs/i386-compact-expand.md).
+
 ### Form Tab input (2026-11-01)
 
 The original form-advance transition is shared with native `DocPutKey`. Eight

@@ -68,7 +68,29 @@ output directory and a 1,200-second observation limit. Both records are preserve
 The completed cross-v2 packaging run preserves a normal build manifest after
 cross-v1's full-test failure, without overwriting its logs or images.
 
-A follow-up can remove the no-longer-used streaming decoder inclusion from
-FileRuntime (the public ConsoleRuntime implementation is separate), then address
-the compiler-probe/root-header peak. The same diagnostic assertions must remain
-in scope; this compact workspace change alone is not a full-suite fix.
+## Remove unused runtime inclusions
+
+FileRuntime no longer includes the unused streaming decoder or resident-file
+implementation. The public streaming implementation remains in ConsoleRuntime.
+CompilerProbe now includes loader declarations without compiling the unused
+loader implementation; CompilerProgramRuntimeProbe explicitly retains it.
+No probe body or assertion changes, and interface 226 is unchanged.
+
+Both bootstrap generations pass in
+`build/rebuild-runtime-unused-includes-v1-verified`. The full-content candidate
+in `build/i386-runtime-unused-includes-cross-v1` completes exports, packaging and
+the instruction audit, but its full diagnostic fails. Its separate
+`source-audit.json` verifies 1,725 bootstrap source hashes and 26 unchanged build
+helpers; it is not a full diagnostic pass. `module-comparison.json` records
+CompilerProbe shrinking from 575,322 to 541,830 bytes and FileRuntime from 270,098
+to 258,546 bytes. All other common exported modules are byte-identical, including
+CompilerProgramRuntimeProbe, ConsoleRuntime and CompilerRuntime.
+
+`build/i386-runtime-unused-includes-welcome-v1` passes exact normal welcome,
+suspended clear and subsequent input at 8 MiB TCG, with unchanged inputs.
+The full diagnostic still fails at the reclaimed CompilerProbe load: request
+541,830, main capacity 6,791,680, used 6,272,224, largest free block 487,408.
+The retained footprint is 12,288 bytes below the preceding compact candidate
+and 4,096 below the precompact interface-226 baseline. Total free space is only
+519,456 bytes, so fragmentation alone does not explain the remaining failure.
+The earlier archive-expansion gate is still not reached. C1–C5 remain open.
