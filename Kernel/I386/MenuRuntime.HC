@@ -28,3 +28,5 @@ CMenu *NativeMenuNew(U8 *source,I64 flags=0,CTask *task=NULL)
   NativeDocParserClose(&parser);
   return menu;
 }
+
+#include "/Adam/MenuStackCore.HC"

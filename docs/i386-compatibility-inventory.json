@@ -4888,9 +4888,22 @@
       ],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Nested MenuPush/MenuPop, actual MenuFilePush, empty pop and malformed parse preserving the active menu; see docs/i386-menu-integration.md.",
+      "oracle": "Original complete stack bodies are byte-checked; independent masks check links, message/64-bit args, ownership and heap accounting. Original malformed parse leaks 824 bytes; native must recover exactly.",
+      "tests": [
+        {
+          "target": "pinned-original-menu-stack",
+          "result": "pass",
+          "evidence": "build/i386-menu-stack-reference-v4/result.json",
+          "scope": "Mask 511; ordinary heap recovery and malformed parse preserving previous menu; original leak recorded separately; unchanged inputs."
+        },
+        {
+          "target": "native-menu-stack",
+          "result": "pass",
+          "evidence": "build/i386-menu-stack-native-v1/result.json",
+          "scope": "64 MiB KVM, mask 1023 including exact failure heap recovery, actual file loading and filesystem audit; unchanged inputs. Not drawing, mouse activation, allocation injection or whole-file/C1-C5 qualification."
+        }
+      ]
     },
     {
       "path": "Adam/Opt/Boot/BootDVD.HC",

@@ -390,3 +390,41 @@ lock policy, command reset and exact heap recovery. This advances the original
 menu dependency graph without substituting a reduced chooser. See
 [entry-action integration and boundaries](i386-entry-actions.md). Actual chooser
 input remains a separate acceptance gate, as does full original DocPutKey.
+
+## Public menu stack bindings (2026-11-06)
+
+Console interface 212 exports MenuPush, MenuFilePush and MenuPop through the
+complete original bodies in Adam/MenuStackCore.HC. Adam/Menu.HC and the native
+menu runtime include that same core; native MenuNew continues to use the real
+shared parser. The three appended exports preserve earlier symbol positions.
+
+The pinned-original comparison in build/i386-menu-stack-reference-v4 passes
+mask 511. The native comparison in build/i386-menu-stack-native-v1 passes
+mask 1023 at 64 MiB with KVM. Both preserve their pinned inputs. The first eight
+bits check stack links, parsed message and 64-bit arguments, caller ownership,
+file-backed loading, exact ordinary heap recovery and empty pop. Bit 256 checks
+that malformed input throws while preserving the previous menu. Native alone
+must also set bit 512 for exact heap recovery after the throw.
+
+The original has no exception cleanup around its parser allocations: its
+recorded observations increase from 318024 to 318848 bytes during malformed
+MenuPush, with no change from either Raw toggle. The earlier v2/v3 mask 63
+failures incorrectly required the pinned original to recover that heap and
+measured subsequent normal pops against its pre-leak baseline. The corrected
+fixture runs ordinary recovery first, then records the exception separately;
+it retains the stricter native cleanup requirement. This does not introduce a
+new native cleanup path: the existing shared parser already provides it.
+
+The candidate image is
+build/i386-settings-lifecycle-v1/build/i386-menu-stack-cross-v1/kernel.img
+(SHA-256 a5874d9478391a7c6b447b86d6b5a0484e58376b3fa3e88ce94e4c014a1f532a).
+All 1367 delivered source hashes were rechecked against main before the native
+run. The same source passes two original bootstrap generations in that
+historical worktree's build/rebuild-test/result.json. Its diagnostic startup
+reaches completion and passes all 307200 welcome-frame pixels in
+build/i386-menu-stack-diagnostic-v1/screen-oracle.json under that worktree.
+New development and tests now run in main in the primary checkout.
+
+These are direct public-service contracts, not mouse/menu drawing, injected
+allocation failures, full Budget execution, minimum-memory qualification or
+C1-C5 completion. Adam/Menu.HC remains unqualified.
