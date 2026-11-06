@@ -309,3 +309,37 @@ See [the sort-width diagnosis and evidence](i386-qsort-i64.md).
 This is progress toward the Budget workflow above, not a substitute for its
 interactive transaction entry, account-view and cancellation tests. C1-C5 and
 whole-application qualification remain open.
+
+## Budget account views and deletion callback (2026-11-06)
+
+The installed-template reference in
+build/i386-budget-views-installed-reference-v2 and native comparison in
+build/i386-budget-views-installed-native-v1 both pass mask 31 and three exact
+DolDoc comparisons. Three deliberately unsorted transactions are inserted
+through BgtIns, then BgtRegen produces chronological BANK and RENT views.
+Independent expected documents check dates, amounts, running balances, the
+installed BANK foreground color and cursor markers. Only transaction addresses
+are normalized; the checker separately requires three distinct nonzero IDs,
+identical IDs across account changes, and the exact two surviving IDs after
+removing the grocery transaction.
+
+The fixture selects the middle transaction before changing accounts and checks
+that the regenerated document keeps that selection. It invokes the real
+BgtPutKey Ctrl-Y branch, verifies the two-entry list and resulting BANK balance
+70, then checks that an unhandled key returns FALSE without replacing the doc.
+The caller's documents are restored and subsequent console arithmetic succeeds.
+The source gate accepts only the already reviewed BgtStrs I64 sort-slot port;
+all other Budget files are reference-exact. Both runs preserve their inputs.
+The native filesystem audit passes and 1738 existing files are preserved.
+
+The initial original v1 run exposed an uninitialized fixture mask; its driver,
+fixture and documents remain frozen beside that failed result. The corrected
+fixture explicitly starts the mask at zero and checks the selected-row cursor
+markers instead of assuming an end-of-document cursor. No runtime behavior was
+changed for this comparison.
+
+These are actual account-document and callback operations, not physical input
+through View, popup transaction entry, rendered-pixel equivalence, scheduled
+templates or complete Budget qualification. Those acceptance checks and C1-C5
+remain open. The next interaction test must drive View/key dispatch rather
+than treating direct BgtPutKey invocation as physical keyboard evidence.

@@ -6024,6 +6024,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-storage-installed-native-v2/result.json",
           "scope": "Reviewed BgtStrs I64 temporary-sort-slot port, all other Budget files reference-exact. Same-session plus cold-boot reopen exactly match original records, strings and account colors. Saved Budget bytes/attributes/timestamps unchanged across reboot; 1738 files preserved; filesystem and input audits pass. Not UI entry, views, templates or full C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-installed-account-views",
+          "result": "pass",
+          "evidence": "build/i386-budget-views-installed-reference-v2/result.json",
+          "scope": "Installed account colors, three unsorted transactions, chronological BANK/RENT documents, preserved selection, direct Ctrl-Y callback and unhandled key; independent exact documents and mask 31, unchanged inputs."
+        },
+        {
+          "target": "native-budget-installed-account-views",
+          "result": "pass",
+          "evidence": "build/i386-budget-views-installed-native-v1/result.json",
+          "scope": "64 MiB KVM: three exact original/independent DolDoc reports, cursor/colors/balances and transaction IDs across account changes/deletion, same mask 31; clean filesystem, 1738 files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not View/physical input, rendered pixels, popup entry, templates or whole C1-C5 qualification."
         }
       ]
     },
@@ -6061,6 +6073,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-storage-installed-native-v2/result.json",
           "scope": "Reviewed BgtStrs I64 temporary-sort-slot port, all other Budget files reference-exact. Same-session plus cold-boot reopen exactly match original records, strings and account colors. Saved Budget bytes/attributes/timestamps unchanged across reboot; 1738 files preserved; filesystem and input audits pass. Not UI entry, views, templates or full C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-installed-account-views",
+          "result": "pass",
+          "evidence": "build/i386-budget-views-installed-reference-v2/result.json",
+          "scope": "Installed account colors, three unsorted transactions, chronological BANK/RENT documents, preserved selection, direct Ctrl-Y callback and unhandled key; independent exact documents and mask 31, unchanged inputs."
+        },
+        {
+          "target": "native-budget-installed-account-views",
+          "result": "pass",
+          "evidence": "build/i386-budget-views-installed-native-v1/result.json",
+          "scope": "64 MiB KVM: three exact original/independent DolDoc reports, cursor/colors/balances and transaction IDs across account changes/deletion, same mask 31; clean filesystem, 1738 files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not View/physical input, rendered pixels, popup entry, templates or whole C1-C5 qualification."
         }
       ]
     },
@@ -6098,6 +6122,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-storage-installed-native-v2/result.json",
           "scope": "Reviewed BgtStrs I64 temporary-sort-slot port, all other Budget files reference-exact. Same-session plus cold-boot reopen exactly match original records, strings and account colors. Saved Budget bytes/attributes/timestamps unchanged across reboot; 1738 files preserved; filesystem and input audits pass. Not UI entry, views, templates or full C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-installed-account-views",
+          "result": "pass",
+          "evidence": "build/i386-budget-views-installed-reference-v2/result.json",
+          "scope": "Installed account colors, three unsorted transactions, chronological BANK/RENT documents, preserved selection, direct Ctrl-Y callback and unhandled key; independent exact documents and mask 31, unchanged inputs."
+        },
+        {
+          "target": "native-budget-installed-account-views",
+          "result": "pass",
+          "evidence": "build/i386-budget-views-installed-native-v1/result.json",
+          "scope": "64 MiB KVM: three exact original/independent DolDoc reports, cursor/colors/balances and transaction IDs across account changes/deletion, same mask 31; clean filesystem, 1738 files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not View/physical input, rendered pixels, popup entry, templates or whole C1-C5 qualification."
         }
       ]
     },
@@ -6185,6 +6221,18 @@
           "result": "fail",
           "evidence": "build/i386-budget-put-except-load-v1/result.json",
           "scope": "All Load/Install console commands return and inputs unchanged. Offline audit finds /Budget but no accounts file: original installer requests Accts.DD.Z while native bundle delivers Accts.DD. Full installation/application remains unqualified."
+        },
+        {
+          "target": "original-budget-installed-account-views",
+          "result": "pass",
+          "evidence": "build/i386-budget-views-installed-reference-v2/result.json",
+          "scope": "Installed account colors, three unsorted transactions, chronological BANK/RENT documents, preserved selection, direct Ctrl-Y callback and unhandled key; independent exact documents and mask 31, unchanged inputs."
+        },
+        {
+          "target": "native-budget-installed-account-views",
+          "result": "pass",
+          "evidence": "build/i386-budget-views-installed-native-v1/result.json",
+          "scope": "64 MiB KVM: three exact original/independent DolDoc reports, cursor/colors/balances and transaction IDs across account changes/deletion, same mask 31; clean filesystem, 1738 files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not View/physical input, rendered pixels, popup entry, templates or whole C1-C5 qualification."
         }
       ]
     },
@@ -6275,6 +6323,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-storage-installed-native-v2/result.json",
           "scope": "Reviewed BgtStrs I64 temporary-sort-slot port, all other Budget files reference-exact. Same-session plus cold-boot reopen exactly match original records, strings and account colors. Saved Budget bytes/attributes/timestamps unchanged across reboot; 1738 files preserved; filesystem and input audits pass. Not UI entry, views, templates or full C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-installed-account-views",
+          "result": "pass",
+          "evidence": "build/i386-budget-views-installed-reference-v2/result.json",
+          "scope": "Installed account colors, three unsorted transactions, chronological BANK/RENT documents, preserved selection, direct Ctrl-Y callback and unhandled key; independent exact documents and mask 31, unchanged inputs."
+        },
+        {
+          "target": "native-budget-installed-account-views",
+          "result": "pass",
+          "evidence": "build/i386-budget-views-installed-native-v1/result.json",
+          "scope": "64 MiB KVM: three exact original/independent DolDoc reports, cursor/colors/balances and transaction IDs across account changes/deletion, same mask 31; clean filesystem, 1738 files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not View/physical input, rendered pixels, popup entry, templates or whole C1-C5 qualification."
         }
       ]
     },
