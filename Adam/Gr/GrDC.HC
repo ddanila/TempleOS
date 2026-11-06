@@ -1,18 +1,6 @@
 #include "/Adam/Gr/GrDCCore.HC"
 
-public CDC *DCCopy(CDC *dc,CTask *task=NULL)
-{//Alloc copy of dc, including image body, rot mat and depth buf.
-  CDC *res;
-  if (!dc) return NULL;
-  if (dc->dc_signature!=DCS_SIGNATURE_VAL)
-    throw('Graphics');
-  res=MAllocIdent(dc,task);
-  DCMat4x4Set(res,Mat4x4New(dc->r,task));
-  res->mem_task=task;
-  res->body=MAllocIdent(dc->body,task);
-  res->depth_buf=MAllocIdent(dc->depth_buf,task);
-  return res;
-}
+#include "/Adam/Gr/DCCopyCore.HC"
 
 public U0 DCMono(CDC *dc,
   I64 quest=TRANSPARENT,I64 true_color=0,I64 false_color=COLOR_MONO)
@@ -43,57 +31,7 @@ public I64 DCColorChg(CDC *dc,I64 src_color,I64 dst_color=TRANSPARENT)
   return res;
 }
 
-public U8 *DCSave(CDC *dc,I64 *_size=NULL,I64 dcsf_flags=DCSF_COMPRESSED)
-{//Stores device context to mem, perhaps, with compression.
-  U8 *res,*ptr,*body;
-  CArcCompress *arc;
-  I64 body_size=dc->width_internal*dc->height,total_size,flags;
-  CBGR48 palette[COLORS_NUM];
-
-  if (dcsf_flags&DCSF_COMPRESSED) {
-    arc=CompressBuf(dc->body,body_size);
-    body_size=arc->compressed_size;
-    body=arc;
-  } else {
-    arc=NULL;
-    body=dc->body;
-  }
-
-  total_size=offset(CDC.end)-offset(CDC.start)+body_size;
-  if (dcsf_flags&DCSF_COMPRESSED)
-    flags=DCF_COMPRESSED;
-  else
-    flags=0;
-
-  if (dcsf_flags&DCSF_PALETTE_GET)
-    GrPaletteGet(palette);
-  else
-    MemCpy(palette,&dc->palette,COLORS_NUM*sizeof(CBGR48));
-  if (MemCmp(palette,gr_palette_std,COLORS_NUM*sizeof(CBGR48))) {
-    flags|=DCF_PALETTE;
-    total_size+=COLORS_NUM*sizeof(CBGR48);
-  }
-
-  ptr=res=MAlloc(total_size);
-
-#assert !offset(CDC.start)
-  MemCpy(ptr,&dc->start,offset(CDC.end)-offset(CDC.start));
-  ptr(CDC *)->flags=flags;
-  ptr+=offset(CDC.end)-offset(CDC.start);
-
-#assert offset(CDC.end)==offset(CDC.palette)
-  if (flags&DCF_PALETTE) {
-    MemCpy(ptr,palette,COLORS_NUM*sizeof(CBGR48));
-    ptr+=COLORS_NUM*sizeof(CBGR48);
-  }
-
-  MemCpy(ptr,body,body_size);
-  ptr+=body_size;
-
-  Free(arc);
-  if (_size) *_size=total_size;
-  return res;
-}
+#include "/Adam/Gr/DCSaveCore.HC"
 
 #include "/Adam/Gr/DCLoadCore.HC"
 
@@ -104,16 +42,7 @@ public U8 *DCSave(CDC *dc,I64 *_size=NULL,I64 dcsf_flags=DCSF_COMPRESSED)
 #define GR_FILE_MAX	(offset(CDC.end)-offset(CDC.start)+\
 	COLORS_NUM*sizeof(CBGR48)+sizeof(CArcCtrl)+GR_WIDTH*GR_HEIGHT)
 
-public I64 GRWrite(U8 *filename,CDC *dc,I64 dcsf_flags=DCSF_COMPRESSED)
-{//TempleOS GR File.
-  I64	size;
-  U8	*st=ExtDft(filename,"GR.Z"),
-	*src=DCSave(dc,&size,dcsf_flags);
-  FileWrite(st,src,size);
-  Free(st);
-  Free(src);
-  return size;
-}
+#include "/Adam/Gr/GRWriteCore.HC"
 
 #include "/Adam/Gr/GRReadCore.HC"
 

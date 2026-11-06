@@ -26507,3 +26507,16 @@ Interface 222 stops at the first Ona2Note call, before behavior assertions;
 both v2 input audits pass. This establishes the missing three-function family
 needed by Psalmody. See docs/i386-note-conversion.md. Playback, application
 workflows and C1–C5 remain open.
+
+## Native bitmap/GR dependencies and diagnostic memory failure (2026-11-06)
+
+Interface 223 shares the original DCCopy, DCSave, GRWrite, DCExt and DCDiff
+bodies. Both bootstrap generations pass. The native oracle passes all twelve
+checks and exact raw/serialized bytes; exact welcome, clear and input also
+pass at 8 MiB TCG. Both input audits are unchanged. See
+`docs/i386-frame-capture.md` for scope and preserved build failures.
+
+The full 8 MiB diagnostic suite fails after phase-one DISK READ on a 0x1008c
+allocation in I386ArcCtrlNew via I386ExpandBuf. Previous-interface baseline
+and heap capture are running; full diagnostics are not qualified. Actual
+compositor recording, complete applications and C1–C5 remain open.

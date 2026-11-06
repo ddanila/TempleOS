@@ -29,6 +29,11 @@ public extern CBGR48 gr_palette_std[COLORS_NUM];
 public _extern _GRAPHICS_START Bool NativeGraphicsStart();
 public _extern _GRAPHICS_PRESENT Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE);
 public _extern _DC_2_SPRITE U8 *DC2Sprite(CDC *dc);
+public _extern _DC_COPY CDC *DCCopy(CDC *dc,CTask *task=NULL);
+public _extern _DC_SAVE U8 *DCSave(CDC *dc,I64 *_size=NULL,I64 dcsf_flags=DCSF_COMPRESSED);
+public _extern _GR_WRITE I64 GRWrite(U8 *filename,CDC *dc,I64 dcsf_flags=DCSF_COMPRESSED);
+public _extern _DC_EXT CDC *DCExt(CDC *dc=gr.dc,I64 x1,I64 y1,I64 x2,I64 y2,CTask *task=NULL);
+public _extern _DC_DIFF CDC *DCDiff(CDC *base,CDC *update);
 public _extern _DC_LOAD CDC *DCLoad(U8 *src,I64 *_size=NULL,CTask *task=NULL);
 public _extern _GR_READ CDC *GRRead(U8 *filename,CTask *task=NULL);
 
