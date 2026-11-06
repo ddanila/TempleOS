@@ -90,6 +90,12 @@
           "result": "fail",
           "evidence": "build/i386-copy-tree-native-v1/result.json",
           "scope": "Link candidate rejects missing CopyTree before workflow; unchanged inputs. Whole provider remains unqualified."
+        },
+        {
+          "target": "candidate-copy-tree",
+          "result": "fail",
+          "evidence": "build/i386-copy-tree-candidate-v1/result.json",
+          "scope": "V6 shared include bypasses directory dispatch because of preceding aliases; copied nested bytes exist but retained reader/verifier reject directory layout. Unchanged inputs; v7 include-order correction pending."
         }
       ]
     },
@@ -223,6 +229,12 @@
           "result": "fail",
           "evidence": "build/i386-filemgr-load-probe-v1/result.json",
           "scope": "Complete delivered original FileMgr include rejects missing CopyTree at line 269; unchanged inputs. No program workflow qualification."
+        },
+        {
+          "target": "candidate-complete-filemgr-load",
+          "result": "fail",
+          "evidence": "build/i386-pick-dir-candidate-v1/result.json",
+          "scope": "Full delivered original include advances past CopyTree and rejects DelTree at line 270 before chooser workflow; unchanged inputs."
         }
       ]
     },
@@ -5618,7 +5630,20 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-music-settings-reset",
+          "result": "pass",
+          "evidence": "build/i386-music-reset-original-v1/result.json",
+          "scope": "Exact integer/binary64 defaults and preserved caller fields, nonnegative clock reset, mask 63, unchanged inputs. No audio/concurrent clock or whole provider qualification."
+        },
+        {
+          "target": "native-music-settings-reset",
+          "result": "fail",
+          "evidence": "build/i386-music-reset-native-v1/result.json",
+          "scope": "Candidate v6 rejects missing public MusicSettingsRst before state comparison; unchanged inputs."
+        }
+      ]
     },
     {
       "path": "Adam/TaskRep.HC",
@@ -7359,6 +7384,12 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
           "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        },
+        {
+          "target": "candidate-find-god-provider-chain",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-find-probe-v2/result.json",
+          "scope": "Original Find and four God providers load; JukeBox rejects MusicSettingsRst before SingleSong call. Exact prefix/SingleSong publication separately passes; see docs/i386-music-reset.md. Full application remains open."
         }
       ]
     },

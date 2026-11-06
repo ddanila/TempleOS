@@ -50,3 +50,9 @@ qualification remain open.
 
 The [CopyTree regression](i386-copy-tree.md) now records the original recursive
 copy and overlap-rejection behavior required by FileMgr.
+
+The driver now verifies delivered FileMgr against the pinned original and
+loads the complete file before invoking the chooser. The updated original
+control (`build/i386-pick-dir-original-v4/result.json`) passes unchanged. The
+v6 candidate gets past CopyTree and rejects DelTree at FileMgr line 270
+(`build/i386-pick-dir-candidate-v1/result.json`), before any chooser workflow.

@@ -42,3 +42,14 @@ native build pins its inputs.
 
 Wildcard/no-mask variants, fault cleanup, metadata policy, existing destination
 merges and complete FileMgr/C1–C5 qualification remain open.
+
+Candidate v6 passes both bootstrap generations, the 386 instruction audit
+(96 BIOS / 332 protected-mode instructions), and all 1,370 delivered source/
+document comparisons (`build/i386-public-tables-copy-tree-source-audit-v1.json`).
+Its runtime test `build/i386-copy-tree-candidate-v1/result.json` fails while
+reading the copied nested binary file. Disk inspection finds the copied bytes,
+but original-provider directory creation produced non-retained directory
+records, also rejected by the filesystem verifier. The CopyTree include was
+after MediaPathRuntime aliases and therefore bypassed normal DirMk dispatch.
+Candidate v7 moves the unchanged shared body before those aliases. This fix
+is pending validation; neither the runtime oracle nor verifier was relaxed.
