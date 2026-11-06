@@ -13,6 +13,10 @@ ScrnCast(TRUE) while already recording returns TRUE but clears recording;
 subsequent Snd calls do not append until a new start. The oracle preserves this
 observed original behavior rather than assuming an idempotent enable operation.
 
+`build/i386-screencast-native-v1/result.json` fails with unchanged inputs:
+the interface-221 image rejects the CSndData declaration at fixture line 4.
+None of the native state/queue assertions execute.
+
 This is a state/audio-queue contract, not audible-output, frame-capture,
 playback, mute/debug-mode, allocation-failure or whole Psalmody qualification.
 The native implementation still needs the real public screencast state and
