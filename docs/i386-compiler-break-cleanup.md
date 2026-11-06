@@ -101,3 +101,34 @@ python3 tools/test-i386-source-error.py --out OUT_ORIGINAL
 python3 tools/test-i386-source-error.py build/i386-inline-call-cross-v1/kernel.img --out OUT_NATIVE
 python3 tools/test-i386-source-error-startup.py build/i386-inline-call-cross-v1/kernel.img --reference OUT_ORIGINAL --out OUT_STARTUP
 ```
+
+## Full-profile startup oracle correction
+
+`build/i386-source-startup-corrected-v4/result.json` passes all three cases of
+`verify_source_startup` against the full inline-call image at 8 MiB, KVM
+486,-fpu: custom source (three commands), syntax error (five commands), and
+missing source (four commands). Every screen checkpoint matches exactly and
+all execution inputs remain unchanged. The runnable script and frozen corrected
+builder are retained in that directory.
+
+The corrected syntax-error oracle requires the prior declaration's value 39,
+then assigns 41 and expects its printed result 41, increments to 42, checks the
+surviving macro 7 and verifies Fs/Gs. It no longer redeclares the surviving name.
+The original declaration-survival control above establishes those semantics.
+
+The full image also contains original `/StartOS.HC`. FileRead searches parent
+directories, so renaming only `/Kernel/I386/StartOS.HC` does not create a missing
+include: the loader can find the original root startup, whose first Option call
+is unresolved in the native environment. That explained the v3 `Undefined
+Extern` failure. The v4 fixture hides both native and ancestor fallback names,
+including compressed variants if present in the manifest. It then observes the
+expected compilation failure and successful subsequent commands. The normal
+parent-search behavior remains unchanged. The earlier v1 run used the wrong
+welcome-frame oracle; v2 omitted the assignment result. Those failures remain
+preserved, not counted as passes.
+
+The corrected builder is staged in the plain candidate source snapshot
+`build/i386-public-tables-candidate-v2/source`; main's builder remains pinned by
+the concurrent C5 native build. Applying that verified patch after the terminal
+input audit remains necessary. This focused startup result does not qualify the
+complete minimal suite or C1–C5.

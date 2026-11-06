@@ -49,7 +49,7 @@ The cross compiler needed a 300-second harness allowance after the first
 
 These candidate changes are not yet applied to main because the active C5 build
 still pins its core sources. God provider loading now advances to the separate
-[public word-bitmap gap](i386-word-bitmap.md). The corrected startup checker
-passes the custom and syntax-error cases, but the missing-file case reports
-`Undefined Extern` instead of the expected compilation failure; that failure
-remains open rather than changing the expected diagnostic to match it.
+[public word-bitmap gap](i386-word-bitmap.md). The corrected startup checker now passes all three cases after its missing-file
+fixture also hides the original parent `/StartOS.HC` fallback. The earlier
+`Undefined Extern` came from loading that fallback, not an actually missing
+source. See [startup evidence](i386-compiler-break-cleanup.md).

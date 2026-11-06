@@ -29,3 +29,10 @@ array declaration. It is under validation and has not been applied to main:
 the concurrent C5 native build pins the main checkout's core sources. This
 regression does not qualify the other character bitmaps, God provider, Psalmody
 or C1–C5.
+
+The candidate now passes both bootstrap generations and the cross-build/386
+audit (`build/i386-public-tables-candidate-v2/source/build/public-tables-cross-v1`).
+`build/i386-word-bitmap-candidate-v1/result.json` passes all 512 bits and fresh
+rendered arithmetic with unchanged inputs. The delivered-source audit passes
+all 1,368 files (`build/i386-public-tables-word-source-audit-v1.json`). These
+results validate the candidate, not the still-pinned main checkout.
