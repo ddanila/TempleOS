@@ -17041,6 +17041,18 @@
           "result": "pass",
           "evidence": "build/i386-reboot-native-v2/result.json",
           "scope": "Native guest command causes QMP guest-reset event; not physical hardware or SMP"
+        },
+        {
+          "target": "original-public-bit-tables",
+          "result": "pass",
+          "evidence": "build/i386-bit-tables-original-v1/result.json",
+          "scope": "All 256 values of public byte-reversal and population-count tables match independent host oracles; unchanged inputs. Not complete kernel/header qualification."
+        },
+        {
+          "target": "native-public-bit-tables",
+          "result": "fail",
+          "evidence": "build/i386-bit-tables-native-v1/result.json",
+          "scope": "Fixture rejects absent rev_bits_table before executing; unchanged inputs. See docs/i386-bit-tables.md."
         }
       ]
     },
@@ -17920,6 +17932,18 @@
           "result": "pass",
           "evidence": "build/i386-public-task-default-wait-v1/result.json",
           "scope": "DeathWait omitted false default and explicit exit behavior; standalone public header also passes both 16 MiB diagnostic phases; not whole-file qualification"
+        },
+        {
+          "target": "original-public-bit-tables",
+          "result": "pass",
+          "evidence": "build/i386-bit-tables-original-v1/result.json",
+          "scope": "All 256 values of public byte-reversal and population-count tables match independent host oracles; unchanged inputs. Not complete kernel/header qualification."
+        },
+        {
+          "target": "native-public-bit-tables",
+          "result": "fail",
+          "evidence": "build/i386-bit-tables-native-v1/result.json",
+          "scope": "Fixture rejects absent rev_bits_table before executing; unchanged inputs. See docs/i386-bit-tables.md."
         }
       ]
     },
