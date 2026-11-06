@@ -4650,6 +4650,12 @@
           "result": "fail",
           "evidence": "build/i386-sprite-output-native-v1/result.json",
           "scope": "Six Sprite wrapper output-document/deep-copy/ownership/tag/no-document checks. Original passes; native baseline rejects Sprite before behavior. Inputs unchanged; rendering and complete app/file qualification remain open."
+        },
+        {
+          "command": "python3 tools/test-i386-sprite-output.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-sprite-output-native-v2/result.json",
+          "scope": "Six Sprite wrapper output-document/deep-copy/ownership/tag/no-document checks and fresh arithmetic; unchanged inputs. Rendering and complete app/file qualification remain open."
         }
       ]
     },
@@ -7607,6 +7613,12 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-note-conversion-v1/result.json",
           "scope": "Original app bytes verified. Load advances beyond Ona2Octave and rejects the embedded Sprite call in PsalmodyDraw line 381. Inputs unchanged; recording/deletion/abort unexecuted."
+        },
+        {
+          "command": "python3 tools/test-i386-psalmody-keyboard.py IMAGE --out OUT --reference ORIGINAL",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-sprite-output-v1/result.json",
+          "scope": "Original app bytes verified. Load advances past Sprite and rejects CmpCtrlNew in PsalmodyFile line 203. Inputs unchanged; recording/deletion/abort unexecuted."
         }
       ]
     },
@@ -7709,6 +7721,12 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-note-conversion-v1/result.json",
           "scope": "Original app bytes verified. Load advances beyond Ona2Octave and rejects the embedded Sprite call in PsalmodyDraw line 381. Inputs unchanged; recording/deletion/abort unexecuted."
+        },
+        {
+          "command": "python3 tools/test-i386-psalmody-keyboard.py IMAGE --out OUT --reference ORIGINAL",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-sprite-output-v1/result.json",
+          "scope": "Original app bytes verified. Load advances past Sprite and rejects CmpCtrlNew in PsalmodyFile line 203. Inputs unchanged; recording/deletion/abort unexecuted."
         }
       ]
     },
@@ -7739,6 +7757,12 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
           "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        },
+        {
+          "command": "python3 tools/test-i386-psalmody-keyboard.py IMAGE --out OUT --reference ORIGINAL",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-sprite-output-v1/result.json",
+          "scope": "Original app bytes verified. Load advances past Sprite and rejects CmpCtrlNew in PsalmodyFile line 203. Inputs unchanged; recording/deletion/abort unexecuted."
         }
       ]
     },

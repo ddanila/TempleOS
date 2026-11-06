@@ -26569,3 +26569,12 @@ docs/i386-module-default-strings.md for evidence and the preserved checker issue
 
 A fresh nine-module native generation is running from the frozen fixed image.
 Full provider reproduction, required memory profiles and C5 remain unqualified.
+
+## Native Sprite wrapper and Psalmody compiler-control gap (2026-11-07)
+
+Interface 225 shares and exports the original Sprite wrapper. Both bootstrap
+generations, full-content packaging, all six original/native ownership checks,
+and 8 MiB exact welcome/clear/input pass. Psalmody advances past Sprite and now
+rejects CmpCtrlNew in PsalmodyFile line 203; interaction assertions remain
+unexecuted. See docs/i386-sprite-output.md. Full diagnostics, applications,
+required generation/memory profiles and C1–C5 remain open.
