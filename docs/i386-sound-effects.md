@@ -53,3 +53,30 @@ decoding overhead has not been profiled.
 With shared low-memory backing, the full asynchronous sound-effects fixture now
 passes at 8 MiB with unchanged inputs (`build/i386-backing-fallback-effects-8m-v1`).
 Its concurrent startup was 74.80 seconds and does not qualify the timing gate.
+
+## Original timer divisor in the speaker regression
+
+The shared original `Snd` uses `SYS_TIMER_FREQ=(18333*65536/1000)` and
+`Ona2Freq(60)==440.0`, producing a divisor of 2,730. Both the formula and constant
+match pinned revision `c26482bb6ad3f80106d28504ec5db3c6a360732c`. The older native
+speaker-on check assumed a divisor near 2,711, so it rejected the faithful
+original implementation. The check now derives the divisor from the public
+original constant, keeping the same sampling allowance and speaker-enable/IF
+checks. No sound implementation or timer constant changes.
+
+`build/i386-speaker-register-diagnostic-v4/result.json` captures maximum count
+2,730, enabled speaker bits 3, IF 512 before and after, exact 440.0 frequency bits
+and note 60, with unchanged inputs. It uses TCG `486` and a file-exported register
+record. Earlier v1 exceeded the input harness's command limit; v2/v3 stopped on
+strict typing-screen checks before collecting the record. These are preserved
+fixture failures, not additional sound results.
+
+`build/i386-speaker-original-divisor-v2/result.json` passes the candidate sound
+checks and emitted-waveform oracle: nominal 440/880 Hz tone bands and no emitted
+bytes after off/reset. The source disk is unchanged. The terminal audit pins the
+actual copied runner and verifies it differs from the applied repository runner
+only in its explicit ROOT path. The copied checker's older input-runner hash
+field refers to the repository path; the audit records the actual tested runner
+hash separately. V1 was explicitly stopped after identifying a wrong ROOT in
+the copied harness. This focused pass fixes the stale assertion; it does not
+claim a complete broad-suite or C1–C5 pass.

@@ -11,6 +11,15 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Original-clock speaker regression (2026-11-07)
+
+The speaker test now derives its expected divisor from the original public
+timer constant. The prior 2,712 upper bound rejected the original `Snd` divisor
+of 2,730. Register capture verifies frequency, speaker enable and preserved IF;
+the corrected sound checks and independent emitted-waveform/silence oracle pass
+on the frozen image. No sound implementation changes. See
+[sound evidence](docs/i386-sound-effects.md). Broader qualification remains open.
+
 ### Compact diagnostic loading with restored worker scratch (2026-11-07)
 
 The worker stages the probe file in its existing private heap and retains only
