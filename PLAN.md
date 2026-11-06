@@ -26380,3 +26380,12 @@ See build/i386-inline-call-native-generation2-v1/preloaded-helper-provenance.jso
 Keep the launch manifest intact and report the changed on-disk builder pin
 separately from that preserved loaded snapshot and the other unchanged inputs.
 The native build continues; no second-generation pass is claimed. C1–C5 remain open.
+
+## Original screencast queue contract (2026-11-06)
+
+The original-only screencast fixture passes twelve independent state/queue
+checks with unchanged inputs in build/i386-screencast-original-v2. It observes
+real Snd nodes, duplicate notes, timestamps, start/stop/restart and the original
+repeated-enable behavior (TRUE while recording clears recording). See
+`docs/i386-screencast.md`. This establishes the next Psalmody dependency's
+contract; native capture, video, audible output and all C1–C5 gates remain open.

@@ -17365,6 +17365,12 @@
           "result": "pass",
           "evidence": "build/i386-c2-doc-type-native/result.json",
           "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
+        },
+        {
+          "command": "python3 tools/test-i386-screencast.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-screencast-original-v2/result.json",
+          "scope": "Twelve original ScrnCast/Snd state and real audio-queue checks, including repeated enable and duplicate notes; native capture, video, audible output and whole-file qualification remain open"
         }
       ]
     },
