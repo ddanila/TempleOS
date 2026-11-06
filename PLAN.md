@@ -26499,3 +26499,11 @@ build/i386-screencast-beep-v2: speaker on/off, delay, busy cleanup and fresh
 arithmetic. The older harness omitted the fixture's unused-parameter warning
 and stopped before executing Beep; only that exact expectation changed.
 Waveform/frequency and complete screencast qualification remain open.
+
+## Note conversion baseline (2026-11-06)
+
+The independent 1,482-byte note/octave oracle passes on original TempleOS.
+Interface 222 stops at the first Ona2Note call, before behavior assertions;
+both v2 input audits pass. This establishes the missing three-function family
+needed by Psalmody. See docs/i386-note-conversion.md. Playback, application
+workflows and C1–C5 remain open.
