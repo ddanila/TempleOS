@@ -80,12 +80,13 @@ public U0 StrFileWrite(U8 *name,CHashTable *table,Bool no_nums=FALSE)
 {
   I64 i,j,cnt,color=BLACK;
   CDoc *doc=DocNew(name);
-  CHashGeneric *tmph,**a;
+  CHashGeneric *tmph;
+  I64 *a; //QSortI64 sorts eight-byte values, also on 32-bit targets.
   if (table) {
     cnt=0;	//Count Strings
     for (i=0;i<=table->mask;i++)
       cnt+=LinkedLstCnt(table->body[i]);
-    a=MAlloc(cnt*sizeof(CHashGeneric *));
+    a=MAlloc(cnt*sizeof(I64));
     j=0;	//Load Strings
     for (i=0;i<=table->mask;i++) {
       tmph=table->body[i];

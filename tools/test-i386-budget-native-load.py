@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-"""Package and load the unchanged original Budget source on the native port."""
+"""Load Budget with its reviewed pointer-width port and verify installation."""
 import argparse
 import hashlib
 import json
 from pathlib import Path
 import runpy
-import subprocess
 
 ROOT=Path(__file__).resolve().parents[1]
-REPAIRS='ce055f205fc38536443289fb1cfc73632f6624f4'
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True);ap.add_argument('--load-settings',action='store_true',help='Load the real autocomplete and settings libraries into Adam before the app');ap.add_argument('--require-bundled',action='store_true');ap.add_argument('--accel',choices=('tcg','kvm'),default='tcg');args=ap.parse_args()
@@ -17,16 +15,17 @@ def main():
     out.mkdir(parents=True);image=out/'working.img'
     helper=ROOT/'tools/test-i386-timeclock-welcome.py';packager=ROOT/'tools/package-i386-native-image.py';inventory=ROOT/'docs/i386-compatibility-inventory.json'
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
-    paths=[source,Path(__file__).resolve(),helper,packager,inventory,ROOT/'tools/build-i386-kernel.py',ROOT/'Kernel/FontStd.HC']
+    paths=[ROOT/'tools/i386-budget-source.py',source,Path(__file__).resolve(),helper,packager,inventory,ROOT/'tools/build-i386-kernel.py',ROOT/'Kernel/FontStd.HC']
     pins={str(p):sha(p) for p in paths}
-    report=dict(result='running',input_sha256=pins,scope='Original Budget source load, repeated Install, physical archive and guest-expanded template on native 64 MiB; not application workflow qualification')
+    report=dict(result='running',input_sha256=pins,scope='Budget with reviewed I64 sort slots: source load, repeated Install, physical archive and guest-expanded template on native 64 MiB; not application workflow qualification')
     try:
         entries=[e for e in json.loads(inventory.read_text())['entries'] if e['path'].startswith('Apps/Budget/')]
         pack=runpy.run_path(str(packager));initial_files=pack['snapshot'](source.read_bytes())[1]
         additions={};expected={}
+        budget_source=runpy.run_path(str(ROOT/'tools/i386-budget-source.py'))['budget_source']
+        report['source_ports']=['Apps/Budget/BgtStrs.HC: explicit I64 sort slots']
         for e in entries:
-            data=subprocess.check_output(['git','show',REPAIRS+':'+e['path']],cwd=ROOT)
-            if hashlib.sha256(data).hexdigest()!=e['reference_sha256']:raise ValueError('Reference mismatch: '+e['path'])
+            data=budget_source(e)
             name='/'+e['path'];expected[name]=data
             if name in initial_files:
                 if initial_files[name][2]!=data:raise ValueError('Bundled Budget differs: '+name)

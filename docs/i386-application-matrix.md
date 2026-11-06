@@ -294,3 +294,18 @@ workflow with multiline text and Shift+Escape cancellation; independently
 decoded records survive cold reboot byte-for-byte
 (`build/i386-cmp-byte-full-timeclock-keyboard-kvm/result.json`). Physical
 input, full visual behavior and the complete application remain unqualified.
+
+## Budget installed-template storage and cold reopening (2026-11-06)
+
+Budget now passes a constructed transaction write, same-session reopen and
+native cold-boot reopen with the actual installed account template. The new
+oracle checks the complete 48-byte transaction and 106-byte twelve-entry string
+table, account colors, and unchanged saved-file bytes/metadata across reboot.
+This exposed and fixed an application pointer-width assumption: StrFileWrite
+now allocates I64 sort slots for QSortI64. The source gate permits exactly that
+reviewed change; the other ten Budget source/asset files remain reference-exact.
+See [the sort-width diagnosis and evidence](i386-qsort-i64.md).
+
+This is progress toward the Budget workflow above, not a substitute for its
+interactive transaction entry, account-view and cancellation tests. C1-C5 and
+whole-application qualification remain open.
