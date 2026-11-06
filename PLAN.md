@@ -26578,3 +26578,15 @@ and 8 MiB exact welcome/clear/input pass. Psalmody advances past Sprite and now
 rejects CmpCtrlNew in PsalmodyFile line 203; interaction assertions remain
 unexecuted. See docs/i386-sprite-output.md. Full diagnostics, applications,
 required generation/memory profiles and C1–C5 remain open.
+
+## Public lexer oracle and rejected heap placement (2026-11-07)
+
+All sixteen public compiler-control/lexer checks pass on original TempleOS.
+Native interface 225 rejects CmpCtrlNew before assertions. The preserved oracle
+covers public allocation ownership and token behavior; includes and Psalmody
+song loading remain untested. See docs/i386-public-lexer.md.
+
+High-end archive workspace placement leaves the full 8 MiB diagnostic failure
+and heap totals unchanged. The experiment was reverted after its narrow archive
+and welcome tests passed. See docs/i386-frame-capture.md. The native nine-module
+build remains live; no generation or milestone qualification is inferred.

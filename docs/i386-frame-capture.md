@@ -68,3 +68,19 @@ The separately launched TimeClock test in
 execution: this minimal image contains neither `/Apps/TimeClock/Load.HC` nor
 its compressed counterpart. Its input audit passes. That result does not
 qualify TimeClock or the welcome pixels.
+
+## Rejected archive-placement experiment (2026-11-07)
+
+Moving archive dictionary and stack allocation to the arena high end did not
+improve the full 8 MiB diagnostic. The unchanged interface-225 baseline and
+candidate both fail after phase-one DISK READ on the 65,676-byte request. Both
+stopped heaps report capacity 6,791,680, used 6,722,320, largest free block
+39,040 bytes and 14,547 allocations, with unchanged execution inputs.
+
+The archive ownership and expansion corpora, both bootstrap generations and
+8 MiB welcome check pass for the candidate, but those narrower checks do not
+resolve the diagnostic failure. All five production files were restored and
+verified against their pre-experiment hashes. The hypothesis, source snapshots
+and comparison are preserved in `build/arc-placement-experiment-v1/manifest.json`;
+heap captures are `build/i386-arc-placement-{baseline,candidate}-heap-v1`.
+The diagnostic memory-lifetime/fragmentation problem remains open.
