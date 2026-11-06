@@ -6109,6 +6109,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-native-v1/result.json",
           "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-session-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-reference-v2/result.json",
+          "scope": "Same-boot reopening of actual keyboard-saved data; Home/Ctrl-Y temporary deletion, Shift-Escape abort; exact documents and unchanged saved records, both masks 63, unchanged inputs. No original cold-boot claim."
+        },
+        {
+          "target": "native-budget-session-cold-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-native-v1/result.json",
+          "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -6219,6 +6231,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-native-v1/result.json",
           "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-session-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-reference-v2/result.json",
+          "scope": "Same-boot reopening of actual keyboard-saved data; Home/Ctrl-Y temporary deletion, Shift-Escape abort; exact documents and unchanged saved records, both masks 63, unchanged inputs. No original cold-boot claim."
+        },
+        {
+          "target": "native-budget-session-cold-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-native-v1/result.json",
+          "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -6305,6 +6329,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-native-v1/result.json",
           "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-session-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-reference-v2/result.json",
+          "scope": "Same-boot reopening of actual keyboard-saved data; Home/Ctrl-Y temporary deletion, Shift-Escape abort; exact documents and unchanged saved records, both masks 63, unchanged inputs. No original cold-boot claim."
+        },
+        {
+          "target": "native-budget-session-cold-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-native-v1/result.json",
+          "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -6360,6 +6396,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-native-v1/result.json",
           "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-session-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-reference-v2/result.json",
+          "scope": "Same-boot reopening of actual keyboard-saved data; Home/Ctrl-Y temporary deletion, Shift-Escape abort; exact documents and unchanged saved records, both masks 63, unchanged inputs. No original cold-boot claim."
+        },
+        {
+          "target": "native-budget-session-cold-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-native-v1/result.json",
+          "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -6443,6 +6491,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-native-v1/result.json",
           "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-session-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-reference-v2/result.json",
+          "scope": "Same-boot reopening of actual keyboard-saved data; Home/Ctrl-Y temporary deletion, Shift-Escape abort; exact documents and unchanged saved records, both masks 63, unchanged inputs. No original cold-boot claim."
+        },
+        {
+          "target": "native-budget-session-cold-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-native-v1/result.json",
+          "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -6498,6 +6558,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-native-v1/result.json",
           "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-session-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-reference-v2/result.json",
+          "scope": "Same-boot reopening of actual keyboard-saved data; Home/Ctrl-Y temporary deletion, Shift-Escape abort; exact documents and unchanged saved records, both masks 63, unchanged inputs. No original cold-boot claim."
+        },
+        {
+          "target": "native-budget-session-cold-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-native-v1/result.json",
+          "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
         }
       ]
     },
@@ -6573,6 +6645,18 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-native-v1/result.json",
           "scope": "64 MiB KVM: same full Budget() keyboard lifecycle and mask 63; exact original/independent documents and 80-byte data, 125-byte strings, 108-byte accounts. Rendered fresh 42, clean filesystem, 1738 existing files preserved, unchanged inputs. Only reviewed BgtStrs sort-slot port accepted. Not popup entry, cold reboot of this session, cancellation, mouse or full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-session-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-reference-v2/result.json",
+          "scope": "Same-boot reopening of actual keyboard-saved data; Home/Ctrl-Y temporary deletion, Shift-Escape abort; exact documents and unchanged saved records, both masks 63, unchanged inputs. No original cold-boot claim."
+        },
+        {
+          "target": "native-budget-session-cold-abort",
+          "result": "pass",
+          "evidence": "build/i386-budget-session-abort-native-v1/result.json",
+          "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
         }
       ]
     },

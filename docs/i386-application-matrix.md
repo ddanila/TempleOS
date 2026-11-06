@@ -419,3 +419,35 @@ It does not cover popup transaction entry, cold reopening of this interactive
 save, Shift-Escape cancellation, mouse input or pixel equality. The independent
 constructed-transaction cold-storage test above does not fill that gap. Complete
 Budget acceptance and C1-C5 remain open.
+
+
+## Budget cold reopening and keyboard abort (2026-11-06)
+
+The full-session runner now covers reopening and cancellation. The original
+control in build/i386-budget-session-abort-reference-v2 reopens in the same boot.
+The native comparison in build/i386-budget-session-abort-native-v1 terminates
+QEMU after saving and starts a fresh guest from that actual working image,
+without installation or reseeding. Both phases pass mask 63 with unchanged inputs.
+
+The reopened BANK view contains salary and rent with balance 70. Home selects
+salary, Ctrl-Y temporarily removes it, and the captured view contains only rent
+with balance -30. Shift-Escape aborts through the unchanged application's View
+branch. Exact data, string-table and account exports remain identical to the
+saved phase, and readback still finds both transactions. Independent documents
+check colors, cursor positions and surviving IDs; only addresses are normalized.
+Every file's bytes, attributes and timestamps remain unchanged across native cold
+reopening and abort. The filesystem audit passes, 1738 original files are
+preserved, and fresh arithmetic renders 42 after both native phases. Inspected
+original/native screens agree on the remaining rent row; full pixel equality
+is not asserted.
+
+Reference-v1 stopped before application execution because the fixture used
+conditional expressions rejected by the original HolyC parser. Its frozen
+fixture, driver and failure screen remain preserved. Reference-v2 uses ordinary
+if statements; no application or runtime behavior changed for this test.
+
+The preceding reproduction commands now run both phases; use fresh output
+directories. This covers cold reopening and Shift-Escape for the preseeded
+interactive-save workflow. Popup transaction entry, scheduled templates, mouse,
+complete Budget behavior and C1-C5 remain open. The original control does not
+establish original cold-boot behavior.
