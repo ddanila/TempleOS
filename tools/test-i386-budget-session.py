@@ -12,6 +12,7 @@ import time
 
 ROOT=Path(__file__).resolve().parents[1]
 NAMES=('before.DD','after.DD','mask.bin','data.bin','strings.DD','accounts.DD')
+REOPEN_NAMES=tuple('reopen-'+n for n in NAMES)
 POINTER=re.compile(rb',U=0x([0-9A-F]+)\$')
 
 
@@ -45,6 +46,21 @@ def verify(records):
     return normalized+[data,strings,accounts]
 
 
+def verify_reopen(records, saved):
+    before,after,mask,data,strings,accounts=records
+    if mask!=struct.pack('<q',63):raise ValueError('Reopen/restoration mask differs')
+    ids=[POINTER.findall(doc) for doc in (before,after)]
+    if len(ids[0])!=2 or len(set(ids[0]))!=2 or ids[1]!=[ids[0][1]] or any(int(v,16)==0 for v in ids[0]):
+        raise ValueError('Reopened deletion identities differ')
+    # A fresh View starts at the end, rather than the saved session's selected row.
+    expected_before=POINTER.sub(b',U=<entry>$',saved[1]).replace(b'\x05',b'')+b'\x05'
+    expected_after=b'$FG,1$\x05$MU-UL,"09/06/98     BANK     RENT:  -30.00    30.00:rent",U=<entry>$\n'
+    normalized=[POINTER.sub(b',U=<entry>$',v) for v in (before,after)]
+    if normalized!=[expected_before,expected_after]:raise ValueError('Reopened documents differ: '+repr(normalized))
+    if records[3:]!=saved[3:]:raise ValueError('Abort changed saved records')
+    return normalized+[data,strings,accounts]
+
+
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--archive',type=Path);ap.add_argument('--reference',type=Path);ap.add_argument('--out',type=Path,required=True);args=ap.parse_args()
     out=args.out.resolve();fixture=ROOT/'tests/guest/i386-budget-session/Contract.HC'
@@ -55,10 +71,12 @@ def main():
     if args.disk:
         gold=args.reference.resolve();info=json.loads((gold/'result.json').read_text())
         if info.get('result')!='pass' or not info.get('inputs_unchanged') or info.get('fixture_sha256')!=sha(fixture):raise ValueError('Matching original reference required')
-        paths += [args.disk.resolve(),gold/'result.json']+[gold/n for n in NAMES]
+        paths += [args.disk.resolve(),gold/'result.json']+[gold/n for n in NAMES+REOPEN_NAMES]
     else:paths.append(args.archive.resolve())
     out.mkdir(parents=True);pins={str(p):sha(p) for p in paths}
-    report=dict(result='running',fixture_sha256=sha(fixture),input_sha256=pins,scope='Full Budget() lifecycle with preseeded transactions: Home/Down selection, Ctrl-Y deletion, Escape save, same-session readback, document/menu/settings/window/autocomplete restoration. Not popup entry or full application qualification.')
+    report=dict(result='running',fixture_sha256=sha(fixture),input_sha256=pins,scope='Full Budget() lifecycle with preseeded transactions: Home/Down selection, Ctrl-Y deletion, Escape save, same-session readback, document/menu/settings/window/autocomplete restoration. Cold native reboot then Home/Ctrl-Y/Shift-Escape abort and unchanged saved files. Original control reopens in the same boot. Not popup entry or full application qualification.')
+    for source,name in [(fixture,'fixture.HC'),(Path(__file__).resolve(),'runner-source.py')]:
+        (out/name).write_bytes(source.read_bytes())
     guest=None
     try:
         if not args.disk:
@@ -92,7 +110,36 @@ def main():
         if args.disk:
             guest.wait('COMMAND OK\n',start=guest.collect().index('INPUT LINE BudgetSession;'))
             guest.command('6*7;');guest.result_pixels()
+        if args.disk:
+            guest.close();guest=None
+            persisted=pack['snapshot'](image.read_bytes())[1]
+            guest=Guest(image,out/'guest-reopen',True)
+            guest.wait('DONE native kernel startup\n');time.sleep(3)
+            # No installation or writes: reopen the actual image saved in phase one.
+            for command in commands:
+                if '/Install.HC' not in command:guest.command(command)
+        guest.type('BudgetSession(TRUE);');guest.press('ret')
+        guest.wait('BR ready\n');time.sleep(2);guest.screenshot('reopen-before')
+        guest.press('home');guest.wait('BR selected\n',30)
+        guest.key('ctrl',True);guest.press('y');guest.key('ctrl',False)
+        guest.wait('BR deleted\n',30);time.sleep(1);guest.screenshot('reopen-deleted')
+        guest.key('shift',True);guest.press('esc');guest.key('shift',False)
+        guest.wait('BR done\n',30)
+        reopened=[(guest.out/n).read_bytes() for n in REOPEN_NAMES]
+        if args.disk:
+            guest.wait('COMMAND OK\n',start=guest.collect().index('INPUT LINE BudgetSession(TRUE);'))
+            guest.command('6*7;');guest.result_pixels()
         guest.close();guest=None
+        for name,value in zip(REOPEN_NAMES,reopened):(out/name).write_bytes(value)
+        reopened_normalized=verify_reopen(reopened,records)
+        if args.disk:
+            if reopened_normalized!=verify_reopen([(gold/n).read_bytes() for n in REOPEN_NAMES],[(gold/n).read_bytes() for n in NAMES]):
+                raise ValueError('Original reopen comparison differs')
+            after_abort=pack['snapshot'](image.read_bytes())[1]
+            if after_abort!=persisted:raise ValueError('Cold reopen/abort changed file bytes or metadata')
+            report['cold_reopen_abort_files_unchanged']=True
+        report['reopen_mask']=struct.unpack('<q',reopened[2])[0]
+        report['reopen_normalized_documents']=[v.decode('latin1') for v in reopened_normalized]
         if args.disk:
             files=pack['snapshot'](image.read_bytes())[1]
             allowed={'/Probe/BudgetSession.HC','/Budget/Accts.DD.Z','/Budget/Strs.DD.Z','/Budget/Bgt.DATA.Z'}
