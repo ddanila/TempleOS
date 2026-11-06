@@ -1,45 +1,10 @@
 #include "/Kernel/I386/Expand.HH"
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/ArcExpand.HH"
-class CI386ArcCheck
-{
-  U8 valid[512];
-  I64 previous;
-  Bool first;
-};
-I64 I386ArcChain(CI386ArcCheck *check,CArcCtrl *c,I64 code,I64 forbidden)
-{
-  I64 length=1;
-  while(code>=c->min_table_entry) {
-    if(code>=4096 || code==forbidden || !(check->valid[code>>3]&(1<<(code&7))) || length>=4096) return -1;
-    length++; code=c->compress[code].basecode;
-  }
-  return length;
-}
-I64 I386ArcCheckedRead(U8 *context,CArcCtrl *c)
-{
-  CI386ArcCheck *check=context;
-  I64 code=I386ArcReadCode(c),current,length;
-  if(code<0) return -1;
-  if(check->first) {
-    if(code>=c->min_table_entry) return -1;
-    check->first=FALSE; check->previous=code;
-    return code;
-  }
-  current=c->cur_entry-c->compress;
-  if(current<c->min_table_entry || current>=4096 ||
-      I386ArcChain(check,c,check->previous,current)<0) return -1;
-  if(code==current) length=I386ArcChain(check,c,check->previous,-1)+1;
-  else length=I386ArcChain(check,c,code,-1);
-  if(length<1 || length>4096) return -1;
-  check->valid[current>>3]|=1<<(current&7);
-  check->previous=code;
-  return code;
-}
+#include "/Kernel/I386/CompactExpand.HC"
 U8 *I386ExpandBuf(CI386Heap *heap,CArcCompress *arc,I64 archive_size,I64 *size=0)
 {
-  CArcCtrl *c=0;
-  CI386ArcCheck check;
+  CI386CompactArc *c=0;
   U8 *output=0,*body;
   I64 i,expanded,packed,type;
   U32 flags;
@@ -59,16 +24,14 @@ U8 *I386ExpandBuf(CI386Heap *heap,CArcCompress *arc,I64 archive_size,I64 *size=0
     ok=TRUE;
   } else if(!expanded) ok=packed==17;
   else {
-    c=I386ArcCtrlNew(heap,TRUE,type);
+    flags=I386IrqSave;
+    c=I386HeapAlloc(heap,sizeof(CI386CompactArc),TRUE);
+    I386IrqRestore(flags);
     if(c) {
-      for(i=0;i<512;i++) check.valid[i]=0;
-      check.previous=0; check.first=TRUE;
-      c->src_buf=arc; c->src_pos=17<<3; c->src_size=packed<<3;
-      c->dst_buf=output; c->dst_size=expanded;
-      ok=ArcExpandStep(c,&I386ArcCheckedRead,&I386ArcEntryGet,&check) &&
-        c->dst_pos==expanded && c->stk_ptr==c->stk_base &&
-        c->src_size-c->src_pos<8;
-      if(!I386ArcCtrlDel(heap,c)) ok=FALSE;
+      ok=I386CompactArcExpand(c,arc,output);
+      flags=I386IrqSave;
+      if(!I386HeapFree(heap,c))ok=FALSE;
+      I386IrqRestore(flags);
     }
   }
   if(!ok) {

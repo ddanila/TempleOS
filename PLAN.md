@@ -26616,3 +26616,19 @@ profiles and C1–C5 remain open. The frozen nine-module build continues separat
 
 The final public-control candidate also passes exact welcome/clear/input at
 8 MiB TCG with unchanged inputs (`i386-public-control-welcome-v3`).
+
+## Compact private archive workspace (2026-11-07)
+
+I386ExpandBuf now uses a 33,328-byte index dictionary workspace instead of the
+pointer-based control and separate stack. This saves 36,464 arena bytes per
+expansion without changing public layouts or the archive format. The existing
+corpus plus 390 comparisons against the frozen old decoder pass; both bootstrap
+generations, cross-build/source audit and 8 MiB welcome/clear/input also pass.
+See docs/i386-compact-expand.md for preserved fixture failures and timeout details.
+
+Full diagnostics still fail loading the 575,322-byte CompilerProbe after public
+headers. The unchanged interface-226 image fails at the same point, before the
+earlier interface-225 archive allocation gap. The compact candidate retains
+8,192 more bytes there, despite its lower transient workspace requirement.
+Reducing this peak and completing all diagnostic/application/generation gates
+remain required. No C1–C5 milestone closes.

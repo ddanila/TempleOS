@@ -1,4 +1,5 @@
-I64 expand_arenas[8]={24,32784,32792,32816,98480,98488,102592,102600};
+#include "T:/Reference.HC"
+I64 expand_arenas[8]={24,32784,32792,32816,65536,66096,66128,66136};
 Bool ExpandReject(CI386Heap *heap,CArcCompress *arc,I64 bytes)
 {
   I64 size=-77,used=heap->used,count=heap->allocations;
@@ -111,6 +112,37 @@ I64 OwnedExpandTest()
           !I386HeapFree(&heap,p)) return 49;
     }
     if(heap.used || heap.allocations || !I386HeapValid(&heap)) return 50;
+  }
+  return 0;
+}
+
+I64 CompactDifferentialTest()
+{
+  CI386Heap heap;
+  CArcCompress *arc;
+  U8 *copy,*old,*compact;
+  I64 offset=8,v,j,k,packed,a,b,index;
+  if(!I386HeapInit(&heap,0x60000,131072))return 61;
+  for(v=0;v<6;v++) {
+    packed=(archive_vectors+offset)(I64 *)[1];
+    copy=archive_vectors+offset+16;
+    arc=copy;
+    for(j=-1;j<64;j++) {
+      index=17+(j*127+127)%(packed-17);
+      if(j>=0)copy[index]^=1<<(j&7);
+      a=-77;b=-77;
+      old=ReferenceExpandBuf(&heap,arc,packed,&a);
+      compact=I386ExpandBuf(&heap,arc,packed,&b);
+      if((old!=0)!=(compact!=0) || a!=b)return 63;
+      if(old) {
+        for(k=0;k<=a;k++)if(old[k]!=compact[k])return 64;
+        if(!I386HeapFree(&heap,old) || !I386HeapFree(&heap,compact))return 65;
+      }
+      if(heap.used || heap.allocations || !I386HeapValid(&heap))return 66;
+      if(j>=0)copy[index]^=1<<(j&7);
+    }
+    if(heap.used || heap.allocations)return 67;
+    offset+=16+packed;
   }
   return 0;
 }

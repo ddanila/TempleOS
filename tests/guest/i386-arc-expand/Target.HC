@@ -6,7 +6,8 @@
 #include "/Kernel/I386/Ports.HH"
 public extern I64 ExpansionTest();
 public extern I64 OwnedExpandTest();
-I64 Main(I64 a,I64 b) { I64 result=ExpansionTest; if(result) return result; return OwnedExpandTest; }
+public extern I64 CompactDifferentialTest();
+I64 Main(I64 a,I64 b) { I64 result=ExpansionTest; if(result) return result; result=OwnedExpandTest; if(result)return result;return CompactDifferentialTest; }
 U8 archive_vectors[131072];
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Cpu.HC"

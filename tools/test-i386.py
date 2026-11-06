@@ -155,6 +155,8 @@ def native_assembly_args(exports, out, module, prefix, names, cleanup, macro, im
 def main():
     global OUT
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--runner-timeout', type=int,
+                        help='Protected-mode runner timeout (1..3600 seconds; default: 180 for arc-expand, 20 otherwise)')
     parser.add_argument('--out', type=Path,
                         help='Fresh isolated output directory for a single corpus run')
     modes = parser.add_mutually_exclusive_group()
@@ -229,6 +231,10 @@ def main():
     parser.add_argument('--heap-cache', action='store_true', help='With --heap, test larger cached-span reuse without page growth')
     parser.add_argument('--qmp-stdio', action='store_true', help='Control compiler and keyboard QEMU over stdio')
     args = parser.parse_args()
+    if args.runner_timeout is None:
+        args.runner_timeout = 180 if args.arc_expand else 20
+    if not 1 <= args.runner_timeout <= 3600:
+        parser.error("--runner-timeout must be between 1 and 3600")
     if args.loader_low_memory and not args.redsea_load:
         parser.error('--loader-low-memory requires --redsea-load')
     if args.heap_backing_accounting and (not args.heap or args.heap_high or args.heap_window_reserve or args.heap_backing_reserve):
@@ -1009,7 +1015,7 @@ def main():
     if args.input or args.messages:
         run(sys.executable, 'tools/i386-input-run.py', str(disk), '--out', str(OUT), *(['--qmp-stdio'] if args.qmp_stdio else []))
     else:
-        result = subprocess.run(cmd, timeout=20)
+        result = subprocess.run(cmd, timeout=args.runner_timeout)
     runner_kind = 'functions' if functions else 'expressions'
     runner_text=log.read_text()
     publication_worker_turns=None
