@@ -135,3 +135,37 @@ updated. None is reported as an integration pass. The active native nine-module
 run retains its frozen helper; `preloaded-helper-probe-release-update.json`
 records the on-disk builder change and verifies its disk-reader AST is unchanged.
 C1–C5 remain open.
+
+## Worker scratch file and compact diagnostic image
+
+The worker now reads the temporary probe file into its existing private heap and
+uses `I386LoadBoundAlloc` to validate and load only the logical image into the
+main heap. It frees the source file and requires exact scratch-heap used-byte
+and allocation-count restoration before any compiler probe runs. The root uses
+the existing in-place compact loader with shrinking enabled. Both phases retain
+478,088 image bytes instead of 527,022 file bytes. The 1 MiB private arena,
+16 KiB worker stack, physical memory, module format and all probe assertions
+remain unchanged. Validation and relocation reuse the existing shared loader.
+
+The builder requires the compact capacity in both phases and exactly one
+scratch-restoration marker between worker memory completion and the second
+probe load. Kernel.t32m grows by 2,056 bytes; all other common exported modules
+are byte-identical. Both bootstrap generations pass in
+`build/rebuild-probe-scratch-loader-v1-verified`. Cross-v1 exports and instruction
+audit pass; `source-audit.json` verifies 1,725 sources and 26 helpers, without
+claiming the failed full 8 MiB test passed.
+
+`build/i386-probe-scratch-loader-diag16-v1` passes the full 16 MiB diagnostic boot
+and exact welcome frame with unchanged input, including both compiler phases.
+The builder's worker lifetime/scratch assertions also pass on that log.
+`build/i386-probe-scratch-loader-welcome-v1` passes normal 8 MiB exact welcome,
+suspended clear and input with unchanged inputs.
+
+At 8 MiB the previous reload failure is resolved. The worker scratch heap is
+restored to 5,408 used bytes and five allocations, the compact provider loads,
+and token, define, conditional and include probes pass. The diagnostic then
+fails after phase-one `DISK READ`, requesting a 33,328-byte compact decoder
+workspace: main capacity 6,789,120, used 6,750,344, largest free block 9,304.
+`build/i386-probe-scratch-loader-cross-v1/failure.json` records the terminal
+failure. The remaining 38,776 total free bytes are fragmented; archive workspace
+placement is the next investigation. No full 8 MiB or C1–C5 pass is claimed.

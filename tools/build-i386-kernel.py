@@ -504,7 +504,7 @@ def compiler_probe_layout(module, program=False):
     version_offset = 32+exports['compiler_probe_version'][1]
     if version_offset+4 > 32+size or struct.unpack_from('<I', module, version_offset)[0] != 20:
         raise ValueError('Unexpected compiler-probe version')
-    return dict(image_bytes=size+8 if program else len(module), logical_image_bytes=size+8, version_offset=version_offset,
+    return dict(image_bytes=size+8, logical_image_bytes=size+8, version_offset=version_offset,
                 import_offset=next(offset for name, offset in imports if name == 'KernelLog'))
 
 
@@ -2809,6 +2809,14 @@ def main():
                      log.rindex('PROBE LOAD ') < log.index('PROBE MODULE 0000000000000001 '))):
             raise ValueError('Worker compiler provider overlapped its independent memory probe')
         result['compiler_probe']['worker_load']='after independent worker memory probe; volume transaction with IRQ restoration'
+        scratch_rows=[line.split()[3:] for line in log.splitlines()
+                      if line.startswith('PROBE SCRATCH restored ')]
+        if (len(scratch_rows)!=1 or len(scratch_rows[0])!=2 or
+                not (log.index('MEMORY PROBE 0000000000000001\n') <
+                     log.index('PROBE SCRATCH restored ') < log.rindex('PROBE LOAD '))):
+            raise ValueError('Missing restored worker scratch heap before probe execution')
+        result['compiler_probe']['scratch_restored']={
+            'used':int(scratch_rows[0][0],16),'allocations':int(scratch_rows[0][1],16)}
         branch_recovery = [line.split() for line in log.splitlines() if line.startswith('BRANCH RECOVERY ')]
         if [int(row[2], 16) for row in branch_recovery] != [0, 1]:
             raise ValueError('Native branch optimizer allocation recovery failed')

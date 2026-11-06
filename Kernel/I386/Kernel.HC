@@ -742,8 +742,30 @@ U0 KernelCompilerProbeLoad()
   bindings[sizeof(kernel_probe_bindings)].address=(&I386HashDel+0)(U64);
   CI386RedSeaEntry file;
   if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/CompilerProbe.t32m",&file)!=1)KernelStop;
-  //Retain the validated file capacity for this provider's complete probe phase.
-  kernel_probe_image=I386RedSeaLoadBoundCapacity(&kernel_volume,&file,&kernel_heap,"Main",bindings,sizeof(bindings)/sizeof(CI386ModuleBinding),FALSE);
+  CI386Heap *scratch=I386TaskSelf->memory;
+  U8 *source;
+  I64 source_size=file.size,scratch_used,scratch_allocations;
+  if(scratch && scratch!=&kernel_heap) {
+    //The worker's private arena is idle between memory and compiler probes.
+    //Keep the file there only while the shared loader validates and relocates.
+    if(!I386HeapValid(scratch) || (file.attr&0x710) || !(file.attr&0x800) ||
+        source_size<32 || source_size>0xFFFFFFFF ||
+        !I386RedSeaExtent(&kernel_volume,file.block,source_size))KernelStop;
+    scratch_used=scratch->used;scratch_allocations=scratch->allocations;
+    source=I386HeapAlloc(scratch,source_size);
+    if(source) {
+      if(I386RedSeaRead(&kernel_volume,&file,0,source,source_size)==source_size)
+        kernel_probe_image=I386LoadBoundAlloc(&kernel_heap,&source,&source_size,1,
+          "Main",bindings,sizeof(bindings)/sizeof(CI386ModuleBinding));
+      if(!I386HeapFree(scratch,source))KernelStop;
+    }
+    if(!I386HeapValid(scratch) || scratch->used!=scratch_used ||
+        scratch->allocations!=scratch_allocations)KernelStop;
+    KernelLog("PROBE SCRATCH restored ");KernelHex(scratch_used);KernelLog(" ");
+    KernelHex(scratch_allocations);KernelLog("\n");
+  } else
+    kernel_probe_image=I386RedSeaLoadBoundCapacity(&kernel_volume,&file,&kernel_heap,
+      "Main",bindings,sizeof(bindings)/sizeof(CI386ModuleBinding),TRUE);
   if(!kernel_probe_image) {
     KernelHeapCheck(used,allocations);
     KernelLog("PROBE REJECT load reclaimed\n"); KernelStop;

@@ -11,6 +11,16 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Compact diagnostic loading with restored worker scratch (2026-11-07)
+
+The worker stages the probe file in its existing private heap and retains only
+the checked logical image in the main heap. Exact private-heap restoration is
+required before executing probes. Both bootstrap generations, normal 8 MiB
+welcome/clear/input, and the full 16 MiB diagnostic boot pass. At 8 MiB the probe
+reload now succeeds; disk include expansion subsequently fails to allocate its
+33,328-byte workspace in a heap whose largest free block is 9,304 bytes.
+See [runtime memory evidence](docs/i386-compact-expand.md). C1–C5 remain open.
+
 ### Native default-string generation one (2026-11-07)
 
 All nine retained modules build successfully on the frozen interface-224 image
