@@ -2,7 +2,7 @@
 #define KERNEL_SYMBOL_TYPES_INCLUDED
 #include "/Kernel/HashTypes.HH"
 extern class CAOTHeapGlbl;
-extern class CAOTImportExport;
+// Declared by DefineTypes.HH.
 extern class CHashClass;
 #ifndef CHashFun
 extern class CHashFun;

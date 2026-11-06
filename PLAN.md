@@ -26318,3 +26318,15 @@ The terminal audit confirms all seven input pins unchanged. This qualifies the
 frozen interface-213 image only, not current interface-220 sources. Successive
 native generations, reproducibility, TCG/resource/timing and C1–C5 release gates
 remain open. See `docs/i386-inline-asm.md`.
+
+## Public function type visibility restored (2026-11-06)
+
+PublicKernel now includes the existing complete SymbolTypes before task types.
+Removing its redundant CAOTImportExport forward (already declared by
+DefineTypes) permits atomic root publication without relaxing duplicate-name
+checks. Both bootstrap generations and the clean native cross-v3 build pass;
+all 1,714 recorded inputs match before further edits. Exact welcome and
+suspended clear/input pass at 8 MiB TCG 486,-fpu. The function-symbol oracle now
+compiles through public headers and passes all six symbol-field checks, then
+correctly fails on absent debug metadata. See `docs/i386-function-symbol.md`.
+Debug line mapping, TaskCaller and C1–C5 qualification remain open.

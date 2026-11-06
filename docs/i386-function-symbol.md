@@ -50,9 +50,15 @@ Normal 64 MiB KVM startup now succeeds and the fixture compiles without the
 explicit shared-types workaround. `build/i386-function-symbol-dedup-v1/result.json`
 reaches the expected remaining failure: `63,0,0,0,0,4`, with unchanged inputs.
 All six symbol-field checks pass; generated debug metadata remains absent.
-The 8 MiB welcome/clear/input check and clean bootstrap rebuild are in progress.
-The diagnostic uses unchanged cross-v2 compiled providers and one source-header
-edit; it is not yet clean-rebuild qualification of the header fix.
+The follow-up clean rebuild qualifies public type visibility: both bootstrap
+generations pass, cross-v3 passes its 96 BIOS/332 protected-mode instruction
+audit, and `main-source-audit.json` verifies all 1,714 recorded inputs before
+subsequent edits. `build/i386-function-symbol-welcome-v3/result.json` passes
+exact initial welcome pixels and suspended clear/input at 8 MiB TCG 486,-fpu.
+`build/i386-function-symbol-public-v3/result.json` compiles the public fixture
+without extra includes and reaches the same missing-metadata vector, with
+unchanged inputs. The source-only 8 MiB diagnostic also passes. The duplicate
+forward declaration is removed; atomic publication checks remain unchanged.
 
 `I386FrontendFunctionCode` currently returns a null debug pointer explicitly.
 Restoring debug metadata requires actual emitter source-line offsets and proper

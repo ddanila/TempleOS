@@ -16,6 +16,7 @@
 #define OFF 0
 #endif
 //Load with I386_INPUT_ATOMIC_DEFINES so failed headers remain retryable.
+#include "/Kernel/SymbolTypes.HH"
 #include "/Kernel/I386/PublicTaskTypes.HH"
 #include "/Kernel/CharCodes.HH"
 #include "/Kernel/I386/PublicMemory.HH"
