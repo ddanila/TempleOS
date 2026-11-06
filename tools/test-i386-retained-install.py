@@ -24,11 +24,15 @@ def main():
     parser.add_argument('--welcome', action='store_true',
                         help='Expect the original welcome document at each prompt')
     parser.add_argument('--qmp-stdio', action='store_true', help='Use QMP stdio where Unix sockets are blocked')
+    parser.add_argument('--keyboard', action='store_true',
+                        help='Use paced KVM keyboard commands with live WinMgr')
     parser.add_argument('--module', choices=MODULES, action='append',
                         help='Install selected guest-built providers; default: all retained')
     parser.add_argument('--module-file', action='append', default=[], metavar='MODULE=/PATH',
                         help='Override a selected module guest-build path inside the source disk')
     args = parser.parse_args()
+    if args.keyboard and (args.accel!='kvm' or args.cpu!='486,-fpu' or not args.qmp_stdio):
+        parser.error('--keyboard requires --accel kvm --cpu 486,-fpu --qmp-stdio')
     modules = tuple(dict.fromkeys(args.module or MODULES))
     module_paths = {name: f'/Probe/Retained{name}.t32m' for name in modules}
     seen = set()
@@ -59,14 +63,31 @@ def main():
     if set(built) != source_paths:
         raise ValueError(f'Missing guest-built retained modules: {source_paths - set(built)}')
     run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
+    def keyboard_input(image, directory, commands, ram_mib):
+        Guest=runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest']
+        guest=None
+        try:
+            guest=Guest(image,directory,True,ram_mib=ram_mib)
+            guest.wait('DONE native kernel startup\n',timeout=180)
+            for command,answers in commands:
+                if len(answers)!=1 or not answers[0].isdigit() or not command.endswith(';'):
+                    raise ValueError('Keyboard installer needs one exact integer result')
+                guest.command('if(('+command[:-1]+')!='+answers[0]+")throw('Install',TRUE);",timeout=240)
+            guest.command('6*7;');guest.result_pixels()
+        finally:
+            if guest is not None:guest.close()
+
     commands = [(f'FileDel("C:/Modules/I386/{name}.t32m")&&'
                  f'FileMove("C:{module_paths[name]}",'
                  f'"C:/Modules/I386/{name}.t32m");', ['1'])
                 for name in modules]
-    run_input(candidate, out / 'replace', snapshot=False, ram_mib=16,
-              accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, startup_timeout=180, startup_check={
-                  'status': 'ok', 'answers': [], 'command_timeout': 240,
-                  'commands': commands})
+    if args.keyboard:
+        keyboard_input(candidate,out/'replace',commands,16)
+    else:
+        run_input(candidate, out / 'replace', snapshot=False, ram_mib=16,
+                  accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, startup_timeout=180, startup_check={
+                      'status': 'ok', 'answers': [], 'command_timeout': 240,
+                      'commands': commands})
     installed_paths = {f'/Modules/I386/{name}.t32m' for name in modules}
     installed = files(candidate, installed_paths | source_paths)
     if source_paths & set(installed) or set(installed) != installed_paths:
@@ -77,11 +98,14 @@ def main():
             raise ValueError(f'{name} changed while installing')
     candidate_hash = sha(candidate)
     shutil.copyfile(candidate, boot_disk)
-    run_input(boot_disk, out / 'boot', snapshot=False, ram_mib=8,
-              accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, startup_timeout=180, startup_check={
-                  'status': 'ok', 'answers': [],
-                  'commands': [('6*7;', ['42']),
-                               ('DocAllocationCheck;', ['13'])]})
+    if args.keyboard:
+        keyboard_input(boot_disk,out/'boot',[('6*7;', ['42']),('DocAllocationCheck;', ['13'])],8)
+    else:
+        run_input(boot_disk, out / 'boot', snapshot=False, ram_mib=8,
+                  accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, startup_timeout=180, startup_check={
+                      'status': 'ok', 'answers': [],
+                      'commands': [('6*7;', ['42']),
+                                   ('DocAllocationCheck;', ['13'])]})
     if sha(candidate) != candidate_hash or sha(args.source) != source_hash:
         raise ValueError('Installation test changed a preserved source/candidate image')
     growth_recovery = None
@@ -96,6 +120,7 @@ def main():
               'source_disk_sha256': source_hash, 'disk_sha256': candidate_hash,
               'module_source_paths': module_paths,
               'cpu': args.cpu, 'accel': args.accel, 'welcome': args.welcome,
+              'keyboard_harness': args.keyboard,
               'diagnostic_growth_recovery': growth_recovery,
               'module_sha256': {name: hashlib.sha256(built[module_paths[name]]).hexdigest() for name in modules},
               'module_bytes': {name: len(built[module_paths[name]])

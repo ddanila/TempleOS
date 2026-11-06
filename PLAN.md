@@ -26306,3 +26306,15 @@ startup matches the complete welcome raster. See
 `docs/i386-public-services-integration.md` for precise scope and evidence.
 Full FileMgr stops at missing Fmt; Psalmody's next gaps are function-type
 visibility and TaskCaller. All C1–C5 qualification requirements remain open.
+
+## Nine guest-built providers installed and cold-booted (2026-11-06)
+
+`build/i386-inline-call-native-install-v1/result.json` passes replacement of
+all nine providers from the completed native-nine-v2 build. Installed bytes
+match guest-built bytes exactly. Replacement runs at 16 MiB KVM 486,-fpu;
+an independent 8 MiB cold boot passes arithmetic 42, DocAllocationCheck 13,
+diagnostic growth recovery, one diagnostic load/unload and rendered arithmetic.
+The terminal audit confirms all seven input pins unchanged. This qualifies the
+frozen interface-213 image only, not current interface-220 sources. Successive
+native generations, reproducibility, TCG/resource/timing and C1–C5 release gates
+remain open. See `docs/i386-inline-asm.md`.

@@ -112,10 +112,20 @@ helper allowance), console allocation-wrapper checks and fresh rendered
 arithmetic pass. The terminal audit confirms all 1,272 source/tool/image pins
 unchanged (`terminal-audit.json`).
 
-This establishes native compilation and persisted module/export checks for
-that frozen input image. Installation, booting the generated modules, two
-successive native generations, byte reproducibility and full C1–C5 release
-qualification remain open.
+The follow-up `build/i386-inline-call-native-install-v1/result.json` passes
+replacement of all nine installed providers with these exact guest-built bytes.
+Replacement runs at 16 MiB; an independent writable copy cold-boots at 8 MiB
+KVM `486,-fpu` with live WinMgr. Arithmetic returns 42, DocAllocationCheck
+returns 13, and diagnostic growth recovery and one load/unload cycle pass.
+Fresh rendered arithmetic also passes. The preserved source and candidate
+images remain unchanged; `terminal-audit.json` verifies all seven pinned inputs.
+The installer now supports the same explicit paced `--keyboard` mode.
+
+This establishes native compilation, persisted module/export checks and
+installation/functional boot for that frozen interface-213 input image. It
+does not qualify the newer interface-220 sources. Two successive native
+generations, byte reproducibility, the required TCG/resource/timing gates and
+full C1–C5 release qualification remain open.
 
 ```
 python3 tools/test-i386-inline-call.py build/i386-inline-call-cross-v1/kernel.img --out OUT_TEST
