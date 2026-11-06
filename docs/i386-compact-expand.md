@@ -94,3 +94,40 @@ The retained footprint is 12,288 bytes below the preceding compact candidate
 and 4,096 below the precompact interface-226 baseline. Total free space is only
 519,456 bytes, so fragmentation alone does not explain the remaining failure.
 The earlier archive-expansion gate is still not reached. C1–C5 remain open.
+
+## Share kernel symbol deletion with the primary probe
+
+CompilerProbe imports `I386HashDel` through one private binding to the existing
+kernel implementation. It retains TaskStorage locally, and the program probe
+keeps its original implementations. No probe body or assertion changes.
+The builder's exact import contract adds only `I386HashDel` for the primary
+probe. CompilerProbe shrinks by another 14,808 bytes to 527,022; its logical
+loaded image is 478,088. Kernel.t32m grows by 224 bytes, and every other common
+exported module is byte-identical to the previous candidate.
+
+Both bootstrap generations pass in `build/rebuild-probe-shared-release-v3-verified`.
+`build/i386-probe-shared-release-cross-v4/source-audit.json` verifies 1,725 source
+hashes and 26 helpers after export. Its 16 MiB boot completes both compiler
+probe phases, worker cleanup and `DONE native kernel startup`; the enclosing
+`--test` run also includes later rejection, persistence and filesystem tests,
+whose completion must be checked separately. Normal 8 MiB exact welcome,
+suspended clear and input pass with unchanged inputs in
+`build/i386-probe-shared-release-welcome-v1`.
+
+`build/i386-probe-shared-release-diag8-v2` still fails the full 8 MiB diagnostic
+at the worker reload: request 527,022; capacity 6,791,168; used 6,271,712; largest
+free block 487,408. The copied input image is unchanged. V1 never booted because
+QEMU rejected concurrent write access to the 16 MiB run's image; V2 uses a copy.
+The logical image fits the measured free block, but the loader first allocates
+the whole file. A following change can use the worker's existing private heap
+for temporary file bytes and the existing checked loader for the main-heap
+image, restoring the private heap before executing any compiler probes.
+
+Earlier development runs are preserved: cross-v1 was explicitly stopped after
+review caught the exact-count binding guard; cross-v2 failed because task-storage
+release is in CompilerRuntime, not the kernel; cross-v3 exported successfully
+but its builder rejected the newly added import until its exact contract was
+updated. None is reported as an integration pass. The active native nine-module
+run retains its frozen helper; `preloaded-helper-probe-release-update.json`
+records the on-disk builder change and verifies its disk-reader AST is unchanged.
+C1–C5 remain open.

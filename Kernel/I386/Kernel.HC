@@ -733,14 +733,17 @@ U0 KernelCompilerLoad()
 }
 U0 KernelCompilerProbeLoad()
 {//Keep load-time temporary buffers ahead of resident console allocations.
-  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)];
+  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)+1];
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
   if(kernel_probe_image) KernelStop;
-  KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
+  KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding)-1);
+  bindings[sizeof(kernel_probe_bindings)].name="I386HashDel";
+  bindings[sizeof(kernel_probe_bindings)].kind=I386_MODULE_EXPORT;
+  bindings[sizeof(kernel_probe_bindings)].address=(&I386HashDel+0)(U64);
   CI386RedSeaEntry file;
   if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/CompilerProbe.t32m",&file)!=1)KernelStop;
   //Retain the validated file capacity for this provider's complete probe phase.
-  kernel_probe_image=I386RedSeaLoadBoundCapacity(&kernel_volume,&file,&kernel_heap,"Main",bindings,sizeof(kernel_probe_bindings),FALSE);
+  kernel_probe_image=I386RedSeaLoadBoundCapacity(&kernel_volume,&file,&kernel_heap,"Main",bindings,sizeof(bindings)/sizeof(CI386ModuleBinding),FALSE);
   if(!kernel_probe_image) {
     KernelHeapCheck(used,allocations);
     KernelLog("PROBE REJECT load reclaimed\n"); KernelStop;

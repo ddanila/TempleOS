@@ -11,6 +11,16 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Share diagnostic symbol deletion (2026-11-07)
+
+CompilerProbe now binds the existing kernel symbol-deletion implementation,
+removing 14,808 duplicate module bytes without changing assertions. Both
+bootstrap generations, normal 8 MiB welcome/clear/input, and both compiler phases
+of the 16 MiB diagnostic boot pass. The broader test runner remains separate.
+The full 8 MiB diagnostic still fails while allocating the complete probe file,
+even though its logical loaded image would fit the largest free block. See
+[runtime memory evidence](docs/i386-compact-expand.md). C1–C5 remain open.
+
 ### Remove unused runtime implementations (2026-11-07)
 
 The primary diagnostic probe omits its unused module-loader implementation;

@@ -1,6 +1,7 @@
+//Use the kernel's lifetime-stable symbol deletion instead of duplicate code.
 #include "/Kernel/I386/TaskStorage.HC"
+import Bool I386HashDel(CI386Heap *heap,CHashSrcSym *symbol);
 //Publication must outlive the originating control and roll back failed validation.
-#include "/Compiler/I386/SymbolDelete.HC"
 #include "/Kernel/I386/CompilerProbeRemoveCore.HC"
 
 U0 ProbePublish(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)

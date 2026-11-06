@@ -492,6 +492,7 @@ def compiler_probe_layout(module, program=False):
             'I386LexSnapshotsPin','I386SchedYield','I386TaskDestroy','I386TaskSpawn','char_bmp_alpha_numeric'}
     else:
         expected.remove('I386RedSeaResolve')
+        expected.add('I386HashDel')
     if {name for name, _ in imports} != expected:
         raise ValueError('Unexpected compiler-probe import contract')
     required = ('Main','ProbePrograms','ProbeProgramNativeBundle','ProbeProgramNativeLoader','ProbeProgramNativeCreate') if program else ('Main', 'ProbeStorage', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine', 'ProbeConditional', 'ProbeIncludes', 'ProbeIncludePush', 'ProbeDiskIncludes', 'ProbeCompilerUnwind', 'ProbeBranches', 'ProbeOptimize', 'ProbeEmit', 'ProbeBackend')
