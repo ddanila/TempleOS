@@ -33,12 +33,25 @@ The follow-up bootstrap reached the kernel build but timed out under the
 180 as its default; both generations pass with 600 in the follow-up run.
 This is a bootstrap observation limit, not a relaxed native startup gate.
 
-CPU debugger-context validation is still in progress. The initial harness
-attempt had an oversized setup command and was explicitly stopped. Its split
-setup then timed out while typing the assembly fixture, before entering the
-CPU debugger. The current v4 harness loads the same declarations from a guest
-source file and retains the actual breakpoint/caller/continuation/raster
-assertions. No debugger-context pass is claimed yet.
+CPU debugger-context validation found a display ownership gap: the debugger
+writes a raw terminal, but the welcome document retained the screen. The v4
+8 MiB and v5 16 MiB runs both reached INT3 without exposing the debugger.
+The candidate now opens the existing legacy-view scope above its task cleanup
+callback and closes it on normal/error return; forced exit unwinds that scope
+before the debugger callback. Both bootstrap generations and cross-v2 pass,
+with all 1,715 source pins unchanged (`build/i386-debugger-display-cross-v2`).
+
+The first v6 trap displays the expected debugger and yields caller mask 31,
+but that run fails after a duplicated fixture command: the base fixture repeats
+the same interaction dictionary, and deepcopy of the whole list preserves those
+aliases. The corrected harness copies each cycle separately. The v7 run reaches mask 31 and resumes with G, then its exact restore raster
+fails: debugger answers were appended to the interrupted welcome document.
+The follow-up candidate suppresses transcript recording during a debugger
+session; its bootstrap is in progress. No complete CPU debugger-context pass
+is claimed yet.
+Forced-exit validation is also pending in debugger-display-kill-v2. Its v1
+attempt expected the older plain startup screen and never entered the fixture;
+the harness now supports an explicit --welcome option.
 
 The full original-byte Psalmody workflow now loads past TaskCaller and stops at
 missing scrncast in JukePuppet line 84

@@ -26389,3 +26389,17 @@ real Snd nodes, duplicate notes, timestamps, start/stop/restart and the original
 repeated-enable behavior (TRUE while recording clears recording). See
 `docs/i386-screencast.md`. This establishes the next Psalmody dependency's
 contract; native capture, video, audible output and all C1–C5 gates remain open.
+
+## Debugger display and transcript regression (2026-11-06)
+
+The new CPU TaskCaller fixture exposes two welcome-session integration gaps.
+The existing debugger never acquired a raw display scope, leaving the welcome
+document visible after INT3 at both 8 and 16 MiB. The first candidate's two
+bootstrap generations and cross-build pass with 1,715 unchanged source hashes;
+its real breakpoint displays the debugger and returns the expected mask 31.
+After correcting aliased per-cycle fixture dictionaries, v7 resumes with G but
+fails exact document restoration because debugger answers leaked into the
+interrupted transcript. The follow-up candidate prevents that recording and
+is rebuilding. Forced-exit testing is also pending. See
+`docs/i386-task-caller.md`; these failures do not qualify CPU debugger contexts
+or any C1–C5 milestone.

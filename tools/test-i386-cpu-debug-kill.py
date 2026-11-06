@@ -64,6 +64,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--welcome', action='store_true',
+                        help='Expect the welcome document at the initial prompt')
+    parser.add_argument('--accel', choices=('tcg', 'kvm'), default='tcg')
     parser.add_argument('--single-step', action='store_true', help='Kill after S hardware-step reentry')
     args = parser.parse_args()
     out = args.out.resolve()
@@ -71,11 +74,13 @@ def main():
     sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     checker, disk = sha(Path(__file__)), sha(args.disk)
     report = dict(checker_sha256=checker, disk_sha256=disk, single_step=args.single_step,
+                  welcome=args.welcome, accel=args.accel,
                   scope=('Kill a terminal after hardware single-step reentry' if args.single_step else 'Kill a terminal at real INT3') + ', then enter Dbg in a survivor, evaluate and G back, exit and recover parent public heap; not all private resources or complete register/step coverage')
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         report['behavior'] = runner(args.disk, out / 'behavior', cpu='486,-fpu',
-            qmp_stdio=True, startup_check={'status': 'ok', 'answers': [],
+            qmp_stdio=True, welcome=args.welcome, accel=args.accel,
+            startup_check={'status': 'ok', 'answers': [],
                                          'commands': commands(args.single_step)})
         if sha(Path(__file__)) != checker:
             raise ValueError('Debugger checker changed during execution')
