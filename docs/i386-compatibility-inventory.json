@@ -5266,6 +5266,12 @@
           "result": "fail",
           "evidence": "build/i386-file-occ-candidate-v1/result.json",
           "scope": "Complete original include gets past PutFileLink and rejects missing PopUpPickDir at line 234 before counting fixture; unchanged inputs."
+        },
+        {
+          "target": "candidate-file-occ-counting",
+          "result": "pass",
+          "evidence": "build/i386-file-occ-candidate-v2/result.json",
+          "scope": "Complete original Find loads on console 217; nine counts and mask 4095 match, fresh 42 rendered, 1739 preexisting files unchanged, only three fixture additions, clean filesystem and unchanged inputs. Wizard/replacement/full provider remain unqualified."
         }
       ]
     },

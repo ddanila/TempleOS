@@ -26,7 +26,7 @@ python3 tools/test-i386-file-occ.py build/IMAGE/kernel.img --out build/file-occ-
 The native successful path additionally requires fresh rendered arithmetic,
 unchanged preexisting file bytes/attributes/timestamps, only the three declared
 fixture additions, and a structurally valid filesystem. Those native behavior
-checks have not yet passed. Find replacement, popup wizard, exceptional cleanup,
+checks pass on the chooser candidate as recorded below. Find replacement, popup wizard, exceptional cleanup,
 recursive multi-file matching and full Psalmody/C1–C5 qualification remain open.
 
 The link candidate advances the full original include to `PopUpPickDir` at
@@ -41,3 +41,12 @@ The [directory-picker regression](i386-pick-dir.md) now records the original
 real popup accept/cancel behavior and the native missing binding. The full
 FileMgr dependency separately stops at CopyTree; a chooser declaration alone
 does not qualify that workflow.
+
+`build/i386-file-occ-candidate-v2/result.json` passes on console interface 217:
+the complete original Find source loads, all nine counts and mask 4095 match,
+fresh arithmetic is rendered, and all 1,739 preexisting files retain their
+bytes/attributes/timestamps. Only the three declared fixture additions appear;
+the filesystem is valid and execution inputs are unchanged. The image is
+`build/i386-public-tables-candidate-v5/source/build/public-tables-cross-v1/kernel.img`.
+This qualifies the stated counting/caller-state comparison, not FindWiz or the
+real directory picker (whose FileMgr dependencies remain incomplete).
