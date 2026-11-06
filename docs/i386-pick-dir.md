@@ -56,3 +56,6 @@ loads the complete file before invoking the chooser. The updated original
 control (`build/i386-pick-dir-original-v4/result.json`) passes unchanged. The
 v6 candidate gets past CopyTree and rejects DelTree at FileMgr line 270
 (`build/i386-pick-dir-candidate-v1/result.json`), before any chooser workflow.
+
+The [DelTree comparison](i386-del-tree.md) now records original whole-tree
+and recursive wildcard deletion, return counts and surviving file bytes.

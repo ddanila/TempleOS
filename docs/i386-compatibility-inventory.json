@@ -96,6 +96,18 @@
           "result": "fail",
           "evidence": "build/i386-copy-tree-candidate-v1/result.json",
           "scope": "V6 shared include bypasses directory dispatch because of preceding aliases; copied nested bytes exist but retained reader/verifier reject directory layout. Unchanged inputs; v7 include-order correction pending."
+        },
+        {
+          "target": "original-del-tree",
+          "result": "pass",
+          "evidence": "build/i386-del-tree-original-v2/result.json",
+          "scope": "Whole-tree and recursive wildcard deletion, exact count/existence vector, preserved binary bytes and caller directory; unchanged inputs. See docs/i386-del-tree.md."
+        },
+        {
+          "target": "native-del-tree",
+          "result": "fail",
+          "evidence": "build/i386-del-tree-native-v1/result.json",
+          "scope": "V6 rejects missing DelTree before fixture mutations; unchanged inputs. No runtime qualification."
         }
       ]
     },
