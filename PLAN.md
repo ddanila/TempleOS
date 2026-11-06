@@ -26439,3 +26439,13 @@ intact and restores the document, but its heap comparison includes transcript
 growth between shell invocations. The scoped before/after trap measurement is
 running, as is the 8 MiB TCG welcome regression. These pending checks and broader
 private-resource/task-context coverage remain open; C1–C5 are not complete.
+
+## CPU-stop caller and welcome regression checkpoint (2026-11-06)
+
+The scoped per-trap heap fixture passes two real INT3/resume cycles at 8 MiB
+KVM 486,-fpu in build/i386-task-caller-debugger-v9: both caller masks 31,
+EAX continuation, mode/IF/TF restoration, exact welcome document recovery,
+and zero public heap growth on the warmed trap. The original disk and checker
+remain unchanged. The independent 8 MiB TCG welcome/clear/input regression also
+passes with unchanged inputs. See `docs/i386-task-caller.md`. Broader task-state,
+private-resource and complete C1–C5 qualification remain open.

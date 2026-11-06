@@ -61,8 +61,14 @@ cycle now gets its own copy. The v8 run checks both caller masks, continuation,
 registers and exact document restoration, then fails a cross-invocation heap
 comparison that also counts the shell's retained transcript. The v9 fixture
 instead measures each trap's before/after heap total, requiring zero growth
-after warm-up. That run and the 8 MiB TCG welcome regression are pending; no
-complete CPU-context or broader debugger qualification is claimed yet.
+after warm-up. `build/i386-task-caller-debugger-v9/result.json` passes both cycles at 8 MiB
+KVM 486,-fpu with an unchanged source disk and frozen checker/dependency.
+Both masks are 31, EAX survives continuation, debugger mode/IF/TF recover,
+the exact welcome document returns and the warmed trap heap delta is zero.
+The 8 MiB TCG exact welcome/clear/input regression also passes with unchanged
+inputs in `build/i386-debugger-display-welcome-v1`. This qualifies the stated
+CPU-stop cases; invalid/corrupt tasks, all private resources and broader debugger
+behavior remain open.
 
 The full original-byte Psalmody workflow now loads past TaskCaller and stops at
 missing scrncast in JukePuppet line 84

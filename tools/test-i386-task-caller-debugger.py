@@ -15,13 +15,21 @@ def commands(cycles=1):
     #cycle needs its own copy before inserting the caller inspection commands.
     checks = [deepcopy(check) for check in
               runpy.run_path(str(ROOT / 'tools/test-i386-debug-cpu-trap.py'))['commands'](cycles)]
+    checks[0] = (checks[0][0].replace('CpuTrapClean=1;', 'CpuTrapClean=1,CpuTrapDelta=0;'), [])
+    #The welcome document intentionally retains commands between cycles. Measure
+    #the trap itself, not the unrelated transcript growth between invocations.
+    checks[8] = ('U0 CpuTrapProbe(){I64 before=Fs->data_heap->used_u8s;CpuTrapStage=1;'
+                 'CpuTrapLog("CPU TRAP enter\\n");CpuTrapResult=CpuTrapInstruction;'
+                 'CpuTrapDelta=Fs->data_heap->used_u8s-before;'
+                 'if(CpuTrapHeap&&CpuTrapDelta)CpuTrapClean=0;CpuTrapHeap=1;'
+                 'CpuTrapStage=2;CpuTrapLog("CPU TRAP resumed\\n");}', [])
     helpers = [
         'Bool TCCpuRange(U8 *n,U8 *p){CHashFun *f=HashFind(n,Fs->hash_table,HTT_FUN);if(!f||!f->dbg_info)return FALSE;CDbgInfo *d=f->dbg_info;return d->body[0]<=(p+0)(U64)<d->body[d->max_line+1-d->min_line];}',
         'I64 TCCpuSaved(){return (TaskCaller(Fs,0,TRUE)==Fs->rip)+2*(TaskCaller(NULL,0,TRUE)==CpuTrapBytes+CpuTrapOffset+1)+4*TCCpuRange("CpuTrapProbe",TaskCaller(Fs,1,TRUE));}',
         'I64 TCCpuCheck(){return TCCpuSaved+8*(TaskCaller(Fs,128,TRUE)==NULL)+16*TCCpuRange("TCCpuCheck",TaskCaller(NULL,0,FALSE));}',
     ]
     checks[9:9] = [(helper, []) for helper in helpers]
-    if any(len(check[0]) > 255 for check in checks):
+    if any(len(check[0]) > 255 for check in checks[12:]):
         raise ValueError('Debugger fixture exceeds the native command limit')
     for index, check in enumerate(checks):
         if len(check) != 3:
@@ -36,6 +44,8 @@ def commands(cycles=1):
         ]
         interaction['final_rows'] = edited[:-1] + ['dbg> G;']
         checks[index] = (source, answers, interaction)
+    if cycles > 1:
+        checks.append(('CpuTrapDelta;', ['0']))
     return checks
 
 

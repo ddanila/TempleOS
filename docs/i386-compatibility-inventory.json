@@ -17071,6 +17071,12 @@
           "result": "pass",
           "evidence": "build/i386-debugger-display-kill-v3/result.json",
           "scope": "8 MiB KVM 486,-fpu welcome session: child INT3 kill, survivor debugger/resume, parent exact document/public heap recovery, mode clear and fresh arithmetic; unchanged inputs. Not all private resources, task contexts or original UI equivalence."
+        },
+        {
+          "command": "python3 tools/test-i386-task-caller-debugger.py IMAGE --out OUT --cycles 2",
+          "result": "pass",
+          "evidence": "build/i386-task-caller-debugger-v9/result.json",
+          "scope": "8 MiB KVM 486,-fpu: two real INT3 caller masks 31, saved PC/frame and current debug-stack callers, bounded exhaustion, EAX/mode/IF/TF recovery, exact welcome restoration and warmed per-trap public heap delta zero. Source image unchanged; not all task states or private resources."
         }
       ]
     },
