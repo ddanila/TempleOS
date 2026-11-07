@@ -113,9 +113,9 @@ shared i386 backend. BackendAdapter.HC is a test-only public-allocation adapter;
 it retains temporary call descriptors, patches target call relocations after code
 allocation, and uses actual kernel software-F64 helpers. TypeContract.HC covers
 pointer variants, evaluated multidimensional bounds, an incomplete array, a raw
-cast, F64 conversion and continued arithmetic. The probe source-loads the exact
-original LinkedLstDel body for dimension-list cleanup; normal public delivery of
-that helper remains open. Class/function-header joins and the stream service
+cast, F64 conversion and continued arithmetic. That initial probe source-loaded the exact
+original LinkedLstDel body for dimension-list cleanup. Normal public copy/deletion
+is now restored; see docs/i386-linked-list.md. Class/function-header joins and the stream service
 remain explicit unresolved externs, with no replacement bodies.
 
 All 24 token checks, graph mask 63, nine basic executable cases, six type checks
@@ -133,3 +133,13 @@ syntax for plain kernel helper exports; v12 adds an unnecessary extern declarati
 that shadows the already defined LexExpressionI64; v13 passes basic execution but
 its fixture lacks LinkedLstDel. The formal runner uses normal extern resolution,
 keeps the existing expression definition and loads the real list-deletion body.
+
+
+After restoring normal linked-list services, the current integration runner no
+longer supplies LinkedLstDel. build/i386-linked-list-expression-native-v1 passes
+all nineteen stages, 24 token checks, graph mask 63, nine basic executions, six
+type checks and eleven runtime cases with exact original executable records.
+Its terminal-integration-audit.json verifies all 1027 current pins, exact volume/
+boot preservation and use of the delivered deletion binding without a test body.
+This remains a source-loaded expression probe; normal Lex/compiler delivery and
+full C1–C5 qualification are open.

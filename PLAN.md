@@ -27478,3 +27478,17 @@ Class/function-header joins, stream service, retained external binding, debug/
 error/unwind/break handling, all operators and normal startup delivery remain
 open. All 686 inventory entries remain unqualified. See
 docs/i386-public-expression.md and build/i386-public-expression-source-native-v1.
+
+## Public linked-list copy and deletion (2026-11-07)
+
+The original LinkedLstCopy/LinkedLstDel bodies are shared by both targets and
+published during normal native startup. Console 245 appends two function bindings.
+Actual original-v2 and normal native-v1 pass all ten ownership/payload/null/list
+shape/mutation/release checks (mask 1023); the old image rejects the first missing
+copy call. Both x86-64 bootstrap generations and the source-pinned full native
+build pass. The expression integration uses the normal deletion binding and passes
+all nineteen stages, 24 token cases, graph mask 63, nine basic executions, six type
+checks and eleven runtime cases; its independent 1027-input audit rejects a test
+deletion body. Both 8/16 MiB profiles match all 307200 welcome pixels; both diagnostic program,
+ownership and file-cleanup phases pass. Full KDataTypes/compiler/C1–C5 qualification
+remains open. See docs/i386-linked-list.md.

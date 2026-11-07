@@ -77,8 +77,7 @@ U0 ProbePublicCompilerTypes()
 }
 ProbePublicCompilerTypes;
 '''
-list_source=(root/'Kernel/KDataTypes.HC').read_bytes()
-type_parser=list_source[:list_source.index(b'U8 *LinkedLstCopy(')]+b'public extern CHashClass *PrsClass(CCmpCtrl *cc,I64 keyword,I64 flags,Bool is_extern);\npublic extern CHashFun *PrsFunJoin(CCmpCtrl *cc,CHashClass *type,U8 *name,I64 flags);\n'
+type_parser=b'public extern CHashClass *PrsClass(CCmpCtrl *cc,I64 keyword,I64 flags,Bool is_extern);\npublic extern CHashFun *PrsFunJoin(CCmpCtrl *cc,CHashClass *type,U8 *name,I64 flags);\n'
 code=(root/'Compiler/LexLib.HC').read_bytes()
 type_parser+=code[:code.index(b'#include "/Kernel/SymbolDelete.HH"')].replace(b'#include "/Compiler/MemberLookup.HC"',b'//Member lookup is already published.')
 code=(root/'Compiler/PrsVar.HC').read_bytes()

@@ -18217,6 +18217,24 @@
           "result": "pass",
           "evidence": "build/i386-public-expression-source-native-v1/result.json",
           "scope": "Only the exact original LinkedLstDel body is source-loaded to free public-parser dimension lists; type checks and repeated-call data/code heap recovery pass. Normal public helper delivery, other data-type APIs and whole-file qualification remain open."
+        },
+        {
+          "command": "python3 tools/test-i386-linked-list.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-linked-list-original-v2/result.json",
+          "scope": "Actual original copy/delete APIs: ten null/chain/payload/size/independent-mutation/default/explicit-current-task/singleton/heap-recovery checks, mask 1023. Full data-type APIs and error/other-task paths remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-linked-list.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-linked-list-baseline-v2/result.json",
+          "scope": "Expected normal pre-change image rejection at the first LinkedLstCopy call, line 9; global test sizes avoid the initial fixture local-initializer failure. Whole-file qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-linked-list.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-linked-list-native-v1/result.json",
+          "scope": "Normal delivered copy/delete bindings share exact original bodies; all ten checks pass mask 1023, with independent current-input/exact-fixture/fixture-only-volume/boot audit. Other-task/heap selection, allocation failure and complete data-type APIs remain unqualified. Both 8/16 MiB welcome profiles, both diagnostic cleanup phases and all source-loaded expression integration checks pass; no test deletion body is supplied."
         }
       ]
     },
