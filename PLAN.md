@@ -27123,3 +27123,17 @@ hashes pass. Normal8 and full16 startup diagnostics reach DONE and match all
 307,200 welcome pixels; full16 completes both program/ownership/cleanup phases.
 Isolated startup timing, full interactive suites, remaining FileMgr workflows
 and all C1–C5 milestones remain open. See docs/i386-pick-file.md.
+
+## Printable DocPutKey metadata mutation baseline (2026-11-07)
+
+A new nine-case original/native comparison isolates printable SCF_KEY_DESC
+queries from scheduling with DOCF_DONT_SWAP_OUT. Original passes exact
+descriptions and unchanged selected text/cursor/selection with masks 127.
+Native images before and after yield restoration have identical masks
+[112,112,112,112,112,114,114,115,127]: general printable metadata reaches text
+editing, while the copy-description control passes. Heap, lock and caller
+roles recover. This is a preexisting public-document gap, separate from the
+console-level metadata filter and from yield scheduling. V1's unescaped-dollar
+fixture compile rejection is preserved; corrected v2 is the executable
+reference. See docs/i386-doc-key-description.md. Full DocPutKey and C1–C5 remain
+open; no production metadata change is included in this baseline.
