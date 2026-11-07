@@ -13,8 +13,8 @@ API tests do not qualify an application workflow. FileMgr remains unqualified.
 | Workflow | Required observation | Current evidence |
 | --- | --- | --- |
 | Directory chooser: default, explicit directory, cancellation | Exact allocated result, caller documents/popup/cwd restored, normal console usable | Original reference and native three-case tests pass; docs/i386-pick-dir.md and build/i386-pick-dir-border-v2/terminal-audit.json |
-| Directory chooser: selected file | Escape returns its parent directory; exact restoration | Source-defined branch; no interactive reference yet |
-| File chooser: file, directory, cancellation | Exact filename or allocated empty result, restoration | Source-defined modes; no interactive reference yet |
+| Directory chooser: selected file | Escape returns its parent directory; exact restoration | Original and native PopUpPickDir on a selected file return its parent with exact caller ownership/restoration; docs/i386-pick-file.md |
+| File chooser: file, directory, cancellation | Exact filename or allocated empty result, restoration | Original and native five-case chooser test passes: default/explicit filenames, allocated empty directory/cancel results and caller ownership/restoration; docs/i386-pick-file.md |
 | Normal mode: create directory and cancel another creation | Real filename form, created/absent paths, surviving bytes, restoration, persisted native result | Original and native workflow plus corrected native reboot probe pass; docs/i386-filemgr-mkdir.md |
 | Normal mode: file navigation and rename | Down selects Alpha.TXT; rename preserves bytes; rebuild selects Keep.TXT; Up selects renamed Bravo.TXT | Original and native pass eleven total edit-workflow checks, exact renamed bytes and native reboot; docs/i386-filemgr-edit.md |
 | Normal mode: file deletion cancellation/confirmation | Cancellation preserves bytes; confirmed deletion removes only the target; neighbor selection, restoration and native reboot | Original and native complete drivers pass; docs/i386-filemgr-edit.md |

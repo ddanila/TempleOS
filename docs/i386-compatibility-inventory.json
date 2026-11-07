@@ -349,6 +349,24 @@
           "result": "pass",
           "evidence": "build/i386-filemgr-clipboard-tree-native-v2/result.json",
           "scope": "Complete unchanged hardware-key driver: selection/copy/paste, original-equivalent thirteen rows and all four exports, caller/clipboard restoration, arithmetic, exact filesystem and reboot. Independent terminal audit rechecks all pins and exact post-reboot preservation. Not complete clipboard/FileMgr qualification."
+        },
+        {
+          "target": "original-file-picker-and-directory-from-file",
+          "result": "pass",
+          "evidence": "build/i386-pick-file-original-v1/result.json",
+          "scope": "Five real popup sessions: default/explicit file selection, directory accepted in file mode, file cancellation, directory mode on a file. Exact names/allocated-empty results, caller heap ownership, three document roles, popup and cwd; five masks 255. See docs/i386-pick-file.md."
+        },
+        {
+          "target": "native-file-picker-missing-wrapper",
+          "result": "fail",
+          "evidence": "build/i386-pick-file-baseline-v1/result.json",
+          "scope": "Fixture compilation fails at missing PopUpPickFile before any session. Input hashes independently reverified before implementation/build-helper changes."
+        },
+        {
+          "target": "native-file-picker-interface234",
+          "result": "pass",
+          "evidence": "build/i386-pick-file-native-v1/result.json",
+          "scope": "Five real popup sessions and masks 255: default/explicit filename, directory accepted in file mode, file cancellation and directory mode on a file; exact returned names, caller heap ownership and restoration. Arithmetic and filesystem pass; terminal audit verifies exact added fixture bytes and existing files/directories. Stronger final host guard replayed after the guest run; see host-guard-replay.json and docs/i386-pick-file.md. Full FileMgr remains unqualified."
         }
       ]
     },
@@ -2928,8 +2946,8 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": "docs/i386-pick-dir.md, docs/i386-pick-file.md and existing popup/job fixtures cover selected original popup workflows; remaining entry points and failure paths need references.",
+      "oracle": "Partial popup oracles: exact results and ownership, caller document/popup/directory restoration, task retirement where tested, actual key input and file preservation. Not full popup behavior.",
       "tests": [
         {
           "target": "original-adamfile",
@@ -3017,6 +3035,24 @@
           "result": "pass",
           "evidence": "build/i386-pick-dir-border-v2/terminal-audit.json",
           "scope": "All three chooser results, restoration masks 127, arithmetic, filesystem and unchanged inputs pass after synchronous border fix. Ordinary/forced frames have zero matching-blink interior raster differences and no interior cell differences; title, controls, transitions and whole FileMgr remain unqualified."
+        },
+        {
+          "target": "original-file-picker-and-directory-from-file",
+          "result": "pass",
+          "evidence": "build/i386-pick-file-original-v1/result.json",
+          "scope": "Five real popup sessions: default/explicit file selection, directory accepted in file mode, file cancellation, directory mode on a file. Exact names/allocated-empty results, caller heap ownership, three document roles, popup and cwd; five masks 255. See docs/i386-pick-file.md."
+        },
+        {
+          "target": "native-file-picker-missing-wrapper",
+          "result": "fail",
+          "evidence": "build/i386-pick-file-baseline-v1/result.json",
+          "scope": "Fixture compilation fails at missing PopUpPickFile before any session. Input hashes independently reverified before implementation/build-helper changes."
+        },
+        {
+          "target": "native-file-picker-interface234",
+          "result": "pass",
+          "evidence": "build/i386-pick-file-native-v1/result.json",
+          "scope": "Five real popup sessions and masks 255: default/explicit filename, directory accepted in file mode, file cancellation and directory mode on a file; exact returned names, caller heap ownership and restoration. Arithmetic and filesystem pass; terminal audit verifies exact added fixture bytes and existing files/directories. Stronger final host guard replayed after the guest run; see host-guard-replay.json and docs/i386-pick-file.md. Full FileMgr remains unqualified."
         }
       ]
     },
@@ -3327,6 +3363,18 @@
           "result": "pass",
           "evidence": "build/i386-clipboard-keys-native-v2/result.json",
           "scope": "Nineteen synchronous DocPutKey cases: copy/cut/paste, modifier guards, descriptions, callbacks, nested locks, empty selection; exact text and heap deltas. One CPU, interrupts preserved/disabled during resource checks, DOCF_DONT_SWAP_OUT prevents original Yield. See docs/i386-clipboard-keys.md. Normal UI tested separately; full dispatch/scheduling remains open."
+        },
+        {
+          "target": "original-key-cooperative-yield",
+          "result": "pass",
+          "evidence": "build/i386-doc-key-yield-original-v1/result.json",
+          "scope": "Five ready-child scheduling checks with one CPU and local preemption excluded across the call: normal, no-swap, consuming/nonconsuming callbacks, incoming lock. Original samples [1,0,0,1,1], native [0,0,0,0,0]; other state checks pass. See docs/i386-doc-key-yield.md. Production fix pending."
+        },
+        {
+          "target": "native-key-cooperative-yield-baseline",
+          "result": "fail",
+          "evidence": "build/i386-doc-key-yield-native-baseline-v1/result.json",
+          "scope": "Five ready-child scheduling checks with one CPU and local preemption excluded across the call: normal, no-swap, consuming/nonconsuming callbacks, incoming lock. Original samples [1,0,0,1,1], native [0,0,0,0,0]; other state checks pass. See docs/i386-doc-key-yield.md. Production fix pending."
         }
       ]
     },

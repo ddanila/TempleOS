@@ -146,6 +146,7 @@ public _extern _DVD_IMAGE_WRITE U0 DVDImageWrite(U8 drv_let,U8 *in_name=NULL,I64
 #endif
 
 public _extern _POP_UP_PICK_DIR U8 *PopUpPickDir(U8 *dir=NULL);
+public _extern _POP_UP_PICK_FILE U8 *PopUpPickFile(U8 *dir=NULL);
 
 public _extern _COPY_TREE I64 CopyTree(U8 *src_files_find_mask,U8 *dst_files_find_mask,Bool no_mask=TRUE);
 

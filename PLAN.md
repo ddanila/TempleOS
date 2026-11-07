@@ -27101,3 +27101,25 @@ callback counts, caller roles and worker retirement pass. Input hashes are
 independently reverified. This records the known missing trailing Yield before
 a production scheduling change; no assertion is relaxed. See
 docs/i386-doc-key-yield.md. C1–C5 remain open.
+
+## Original file-picker public API and chooser workflows (2026-11-07)
+
+PopUpPickFile now shares its byte-identical original wrapper between original
+and native builds. Console 234 appends export 628 and the public optional-dir
+signature. The old native image fails fixture compilation at the unavailable
+wrapper. Original and corrected native sessions pass five masks of 255 and
+exact names: default/explicit file selection, accepting a directory in file
+mode, cancelling a selected file, and directory mode returning a file's parent.
+Each checks caller heap ownership and put/display/border/popup/cwd restoration.
+
+Native arithmetic and filesystem allocation checks pass. Independent audits
+reverify inputs, original file/directory preservation and exact fixture bytes.
+The final driver tightens the host file-byte guard; that guard was replayed on
+the terminal image with a corrupt-fixture negative control, rather than
+claiming a single guest run of the final driver. Frozen inputs are preserved.
+
+Both bootstrap generations, the full64 cross-build and 1,737 production source
+hashes pass. Normal8 and full16 startup diagnostics reach DONE and match all
+307,200 welcome pixels; full16 completes both program/ownership/cleanup phases.
+Isolated startup timing, full interactive suites, remaining FileMgr workflows
+and all C1–C5 milestones remain open. See docs/i386-pick-file.md.
