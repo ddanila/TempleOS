@@ -23,7 +23,7 @@ raw records remain in v1–v3. These failures are not native regressions.
 
 A direct native run accepts a disk image as its positional argument. The current
 normal native API baseline fails at the missing public `Lex` entry point
-(`build/i386-public-statement-compile-native-baseline-v1`). Separately, loading
+(`build/i386-public-statement-compile-api-baseline-v1`). Separately, loading
 the complete actual `LexStmt2Bin` body after the existing 23 source stages stops
 at its `QueDel` call: the native public queue header does not declare that API
 (`build/i386-statement-compile-source-baseline-v1`). That diagnostic precedes
