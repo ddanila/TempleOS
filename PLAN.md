@@ -27413,3 +27413,18 @@ Both bootstrap generations and source-pinned native build pass. Both memory prof
 program/ownership/file-cleanup phases. Full parser publication passes this
 binding and reaches missing Call in PrsExp line 173. Full expression
 backend/type/stream services and C1–C5 remain open. See docs/i386-hash-add-after.md.
+
+
+## Native raw Call and full parser publication (2026-11-07)
+
+Console version 244 delivers the original null/zero-argument Call API through
+the existing native return/argument bridge. Original and normal native tests
+pass mask 255, including exception propagation, matching-context stack
+restoration and continued calls. An initial raw-SP comparison mixed evaluation
+contexts; diagnostic controls confirm matching captures and the expected
+eight-byte native temporary. Both bootstrap generations, source-pinned build,
+8/16 MiB welcome and both diagnostic cleanup phases pass. Complete unchanged
+PrsExp publication and all 24 token checks now pass (loader-v5). The complete
+optimizer prototype publishes, but canonical type setup fails before graph
+execution (v6); split tracing is running as v7. Real type/backend/stream
+integration and C1–C5 remain open. See docs/i386-call.md.

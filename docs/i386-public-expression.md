@@ -25,11 +25,16 @@ their declarations. The current change makes it include the existing canonical
 Bits header. On the revised normal image, v3 passes the scan call and reaches
 missing HashAddAfter in PrsHostHashAfter (PrsExp line 29). The insertion
 contract passes mask 255 on the original and revised normal native image. V4
-passes HashAddAfter and reaches missing Call at PrsExp line 173; see
-docs/i386-hash-add-after.md.
+passes HashAddAfter and reaches missing Call at PrsExp line 173. The public Call contract now passes mask 255 on original and
+normal native images; v5 publishes the complete unchanged PrsExp source and
+passes all 24 token checks. See docs/i386-hash-add-after.md and
+docs/i386-call.md.
 
 These publication probes are diagnostics, not delivered expression compilation.
-OptPass012, PrsType, COCCompile and PrsStreamBlk still require real integration.
+PrsType, COCCompile and PrsStreamBlk still require real integration. The v6
+prototype additionally publishes the complete optimizer and diagnostic printers,
+then fails in the canonical type-record stage before graph execution. V7 splits
+and traces that stage; optimizer execution remains unqualified.
 Do not replace them with no-ops or a scalar-only constant evaluator. The nine
 executable reference cases are a starting oracle; they do not qualify function
 calls, globals, pointers, all operators, error/unwind behavior or C1–C5.
@@ -39,4 +44,7 @@ and build/i386-public-expression-baseline-v1. The three publication attempts
 are build/i386-public-expression-loader-v1,
 build/i386-public-expression-loader-v2 and
 build/i386-public-expression-loader-v3 and
-build/i386-public-expression-loader-v4.
+build/i386-public-expression-loader-v4. Successful publication is retained as
+build/i386-public-expression-loader-v5; optimizer/type controls use
+build/i386-public-expression-loader-v6 and
+build/i386-public-expression-loader-v7.

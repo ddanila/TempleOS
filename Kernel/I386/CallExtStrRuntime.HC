@@ -27,6 +27,11 @@ I64 NativeCallArgs(U8 *address,I64 count,I64 *arguments)
   }
   return result;
 }
+I64 Call(U8 *machine_code)
+{//Original zero-argument Call policy, using the native EDX:EAX return ABI.
+  if(!machine_code)return 0;
+  return NativeCallArgs(machine_code,0,NULL);
+}
 I64 CallExtStr(U8 *name,...)
 {
   CHash *hook;

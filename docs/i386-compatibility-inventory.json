@@ -18820,6 +18820,27 @@
           "result": "pass",
           "evidence": "build/i386-clamp-i64-candidate-v1/result.json",
           "scope": "Isolated candidate image, console interface 215: 22 exact signed clamp results and rendered 42 pass; inputs unchanged. Candidate core patch not yet applied to main; no whole math/God/Psalmody or C1-C5 qualification."
+        },
+        {
+          "target": "original-public-call",
+          "command": "python3 tools/test-i386-call.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-call-original-v2/result.json",
+          "scope": "Actual original _CALL API mask 255: null/full-width/negative/F64 returns, side effects, nesting, exception, matching-context stack restoration and continued calls. Independent original-source/fixture/input audit."
+        },
+        {
+          "target": "native-call-baseline",
+          "command": "python3 tools/test-i386-call.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-call-baseline-v1/result.json",
+          "scope": "Normal pre-change image rejects Call at line 6; independent recorded-input/fixture-only-volume/boot-byte audit. Frozen first fixture precedes the later stack-measurement correction."
+        },
+        {
+          "target": "native-public-call",
+          "command": "python3 tools/test-i386-call.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-call-native-v2/result.json",
+          "scope": "Normal delivered Call matches original mask 255 with independent current-input/fixture/volume/boot audit. Both 8/16 MiB profiles and diagnostic cleanup phases pass. Valid no-argument targets only; other KUtils services remain unqualified."
         }
       ]
     },
