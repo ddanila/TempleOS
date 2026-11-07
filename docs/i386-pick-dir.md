@@ -73,3 +73,8 @@ workflow has yet run successfully on the native image.
 The [RedSea ISO reference](i386-redsea-iso.md) now covers original explicit and
 default stage2 calls, generated descriptors/catalog and mounted exact file
 round trips. Native RedSeaISO and its 386 boot-loader adaptation remain missing.
+
+Interface 230 now passes the original/native RedSeaISO creation checks for
+explicit and omitted stage2. Complete FileMgr loading moves to missing
+DVDImageWrite at line 425 (`build/i386-pick-dir-redsea-iso-v1/result.json`,
+unchanged inputs). The complete chooser remains unqualified.

@@ -176,3 +176,15 @@ offscreen-result timeout. The private-heap observer captured only its before
 state, since its after hook follows the failed screen assertion. Exact-counter
 diagnosis is running with the assertion unchanged; ownership leakage versus
 retained document/compiler state is not yet determined.
+
+
+The matching long public-file-read run (`build/i386-scroll-public-read-v1`)
+finished with a different failure while typing command 44, ResidentHeaps. Earlier
+ordinary, packed, owned, empty, missing and resident read/write checks passed
+their screen assertions. The final recovery command was not submitted, so its
+heap assertion has no result. Comparing the terminal framebuffer to its oracle
+gives 38,507 differing pixels at the expected position, but only 64 after an
+eight-pixel horizontal alignment. This points to a one-character horizontal
+viewport shift; its cause and the remaining pixels are not yet resolved.
+The source image is unchanged and terminal-failure-audit.json preserves the
+checkpoint and comparison. No complete public-read pass is claimed.

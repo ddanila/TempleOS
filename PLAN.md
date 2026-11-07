@@ -26859,3 +26859,20 @@ x86-64 CPUID requirement that needs a real 386 boot-loader adaptation. No
 synthetic stage2 execution or native generation is claimed. See
 docs/i386-redsea-iso.md. Interface 229 full 16 MiB diagnostics and exact welcome
 also pass; enclosing interactive checks remain live. C1–C5 remain open.
+
+
+## Native RedSea ISO creation and 386 DVD stage1 (2026-11-07)
+
+Interface 230 shares the complete original ISO creation implementation and
+supplies a 386 DVD stage1 template. Twelve real BIOS boot cases verify its
+register handoff, all leading-block alignments, small/maximum payload bytes and
+parameter/read failures. Both bootstrap generations and 1,732 production source
+hashes pass. Native ISO creation matches all ten original guest checks, both
+independent ISO structure/file parses and the exact patched loader template;
+concluding arithmetic pixels pass. See docs/i386-redsea-iso.md and
+docs/i386-dvd-stage.md for scope and the corrected host import allowlist failure.
+FileMgr now rejects DVDImageWrite at line 425. Complete native OS optical boot,
+optical writing, full workflows and C1–C5 remain open. Full enclosing regressions
+continue. The long public-file-read run separately fails during command44
+typing with a one-character horizontal viewport displacement; its final heap
+check was not reached (docs/i386-file-read.md).

@@ -35,3 +35,9 @@ require separate evidence.
 python3 tools/build-i386-dvd-loader.py --check
 python3 tools/test-i386-dvd-stage.py --out build/dvd-stage
 ```
+
+Interface 230 integrates this template with the unchanged original RedSeaISO
+implementation. The native ISO-generation test verifies the full patched
+2,048-byte loader against the template and the emitted stage2 file location.
+Original/native ISO structure and file round trips pass; see
+[i386-redsea-iso.md](i386-redsea-iso.md). Complete native OS CD boot remains open.

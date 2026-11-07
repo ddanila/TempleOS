@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import re
 import subprocess
 import struct
 import time
@@ -32,7 +33,7 @@ def verify_iso(data):
     drive_offset,sectors,root,bitmap,unique=struct.unpack_from('<5q',data,offset+8)
     if drive_offset!=88 or (sectors+88)*512!=len(data):raise ValueError('RedSea geometry')
     if struct.unpack_from('<I',pri,152)[0]!=root or struct.unpack_from('>I',pri,156)[0]!=root:raise ValueError('Root palindrome')
-    found={};dirs=set();seen=set()
+    found={};locations={};dirs=set();seen=set()
     def walk(block,size,path):
         if (block,size) in seen or block*512+size>len(data) or block<88 or size<64:raise ValueError('Directory bounds/cycle')
         seen.add((block,size))
@@ -50,11 +51,11 @@ def verify_iso(data):
             if attr&16:dirs.add(full);walk(child,length,full)
             else:
                 if child<88 or length<0 or child*512+length>len(data):raise ValueError('File bounds')
-                found[full]=data[child*512:child*512+length]
+                found[full]=data[child*512:child*512+length];locations[full]=[child,length]
     root_size=struct.unpack_from('<q',data,root*512+48)[0];walk(root,root_size,'')
     expected={'/Nested/Small.DATA':b'iso','/Large.DATA':bytes(i*7%256 for i in range(4097)),'/Stage2.BIN':bytes((i*11+3)%256 for i in range(1537))}
     if found!=expected or dirs!={'/Nested','/Empty'}:raise ValueError('Generated tree differs')
-    return dict(result='pass',bytes=len(data),files={n:hashlib.sha256(v).hexdigest() for n,v in found.items()},directories=sorted(dirs),scope='Original RedSea ISO descriptors, catalog and recursive file bytes; synthetic stage2 is not booted')
+    return dict(result='pass',bytes=len(data),locations=locations,files={n:hashlib.sha256(v).hexdigest() for n,v in found.items()},directories=sorted(dirs),scope='Original RedSea ISO descriptors, catalog and recursive file bytes; synthetic stage2 is not booted')
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);args=ap.parse_args();out=args.out.resolve()
@@ -62,7 +63,7 @@ def main():
     fixture=ROOT/'tests/guest/i386-redsea-iso/Contract.HC'
     includes=[]
     paths=includes+[Path(__file__).resolve(),fixture,ROOT/'Kernel/FontStd.HC']+[ROOT/('tools/'+n) for n in ['test-i386-timeclock-reference.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','build-iso.py','package-i386-native-image.py','build-i386-kernel.py']]
-    if args.disk:paths.append(args.disk.resolve())
+    if args.disk:paths.extend([args.disk.resolve(),ROOT/"Kernel/I386/DVDStageBytes.HC"])
     out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Original RedSeaISO generates a nested tree with empty directory, multi-block file and stage2 payload; mounted byte round trips and independent host descriptor/tree validation. This does not boot the synthetic stage2.');g=None
     (out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     try:
@@ -97,7 +98,18 @@ def main():
         report['default_iso_structure']=verify_iso(plain)
         if any(plain[21*2048:22*2048]):raise ValueError('Default image unexpectedly contains stage1 bytes')
         if not any(iso[21*2048:22*2048]):raise ValueError('Explicit stage2 did not install stage1')
-        if args.disk:g.command('6*7;');g.result_pixels()
+        if args.disk:
+            loader=iso[21*2048:22*2048]
+            if loader[16:20]!=b'I3CD':raise ValueError('Native 386 stage1 marker missing')
+            block,length=report['iso_structure']['locations']['/Stage2.BIN']
+            expected_patch=(block//4,(length+2047)//2048+bool(block&3),block&3)
+            if struct.unpack_from('<IHH',loader,20)!=expected_patch:raise ValueError('Native stage1 patch does not match stage2 location')
+            template=bytes(int(v,16) for v in re.findall(rb'0x([0-9A-F]{2})',(ROOT/'Kernel/I386/DVDStageBytes.HC').read_bytes()))
+            if len(template)!=2048:raise ValueError('Invalid native stage1 template')
+            patched=bytearray(template);struct.pack_into('<IHH',patched,20,*expected_patch)
+            if loader!=patched:raise ValueError('Generated loader differs from audited native template')
+            report['native_loader_patch']=dict(result='pass',dvd_lba=expected_patch[0],dvd_blocks=expected_patch[1],leading_blocks=expected_patch[2])
+            g.command('6*7;');g.result_pixels()
         report.update(result='pass',cases_checked=1,
                       table_sha256={n:hashlib.sha256(v).hexdigest() for n,v in expected.items()})
     except Exception as exc:
