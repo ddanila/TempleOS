@@ -10542,6 +10542,24 @@
           "result": "pass",
           "evidence": "build/i386-public-expression-loader-v9/result.json",
           "scope": "Source-loaded diagnostic: complete shared parser/optimizer, canonical type setup, 17 published stages, 24 token cases and integer/F64 graph mask 63; independent exact-input/fixture-only-volume/boot audit. Not normal delivered expression execution or full compiler qualification."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-runtime.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-expression-runtime-original-v2/result.json",
+          "scope": "Actual original public APIs: eleven direct/nested-call, mutable I64/F64, array/string, cast/shift cases and repeated-call data/code heap recovery; fixed initial F64 bits, exact fixture/current-input audit. Full compiler/API qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-runtime.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-public-expression-runtime-baseline-v1/result.json",
+          "scope": "Expected missing Lex at line 13 after normal startup; independent exact-fixture/current-input/fixture-only-volume/boot audit. Normal native runtime expressions remain undelivered."
+        },
+        {
+          "command": "python3 build/probe-public-expression-loader-v10.py",
+          "result": "pass",
+          "evidence": "build/i386-public-expression-loader-v10/result.json",
+          "scope": "Source-loaded complete shared parser/optimizer/backend with public-allocation adapter: nine executable records exactly match actual original; 24 token cases and graph mask 63 pass. Independent input/volume/boot audit. Not normal delivery or full compiler/API qualification."
         }
       ]
     },

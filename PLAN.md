@@ -27450,3 +27450,15 @@ This source-loaded diagnostic does not deliver the executable public expression
 API; real type parsing and a public-ownership backend adapter remain required.
 Standalone unresolved cross-input globals and C1–C5 remain open. See
 docs/i386-global-alias.md.
+
+
+## Executable public expression prototype (2026-11-07)
+
+The source-loaded complete parser/optimizer now feeds the complete shared i386
+backend through a public-allocation adapter. V10 passes all nine executable
+original records exactly, plus 24 token checks and graph mask 63; an independent
+input/volume/boot audit passes. This is not normal startup delivery. A new actual
+original runtime oracle passes eleven call/storage/pointer/cast/shift cases and
+both heaps recover after repeated calls. The normal native image still rejects
+Lex at line 13. Real type/class joins, call relocations, error/unwind behavior,
+full operators and C1–C5 qualification remain open. See docs/i386-public-expression.md.

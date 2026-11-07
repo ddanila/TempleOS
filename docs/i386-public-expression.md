@@ -69,3 +69,33 @@ Native expression compilation must also avoid the x86-64 host constant evaluator
 used for cross-compilation. Calls, data relocations, full operator coverage and
 error/unwind/cleanup behavior remain required; folded arithmetic alone is not
 sufficient.
+
+
+The source-loaded v10 probe adds an adapter from public allocations and controls
+to the complete shared i386 backend. It supplies a temporary target function
+frame, emits real target code into the public code heap, restores the caller
+context and retires its IR/workspace. All nine executable records match the
+actual original-v2 export byte for byte; 24 token cases and graph mask 63 also
+pass. The terminal execution audit verifies exact packaged inputs, fixture-only
+volume changes, boot bytes and volume consistency. Evidence:
+build/i386-public-expression-loader-v10/result.json and terminal-execution-audit.json.
+This remains a source-loaded prototype: normal startup still lacks the public
+Lex/expression API. Class/type integration, calls, all operators, error paths,
+cleanup and memory profiles require further work.
+
+The expanded public runtime oracle is Runtime.HC in the same guest test directory,
+run with tools/test-i386-public-expression-runtime.py. The actual original-v2
+passes eleven cases: direct/nested calls, mutable I64/F64 reads and updates,
+array indexing, a string argument, a raw cast and a wide shift. Sixteen repeated
+calls recover both ordinary data and code heap usage. The normal native baseline
+rejects missing Lex at line 13 after normal startup; an independent audit checks
+current inputs, the exact fixture, fixture-only volume changes and boot bytes.
+Neither result qualifies normal native runtime expression support.
+
+The first expanded reference prototype assumed direct string-literal indexing
+would consume the subscript; the original leaves the subscript as the next token.
+Its decimal-initialized F64 update also differs by one low bit from the assumed
+result. That failed oracle is preserved as runtime-original-v1. The final contract
+uses ordinary array indexing and a string argument separately, and explicitly
+initializes the F64 bit pattern before testing runtime arithmetic. It does not
+qualify decimal initialization or direct string-literal indexing.
