@@ -34,7 +34,10 @@ These publication probes are diagnostics, not delivered expression compilation.
 PrsType, COCCompile and PrsStreamBlk still require real integration. The v6
 prototype additionally publishes the complete optimizer and diagnostic printers,
 then fails in the canonical type-record stage before graph execution. V7 splits
-and traces that stage; optimizer execution remains unqualified.
+that stage and proves the data declaration is rejected before its constructor.
+A minimized extern/aggregate reproducer identifies completed-alias publication
+as the cause. The patched graph retry is loader-v8; see
+docs/i386-global-alias.md. Optimizer execution remains unqualified.
 Do not replace them with no-ops or a scalar-only constant evaluator. The nine
 executable reference cases are a starting oracle; they do not qualify function
 calls, globals, pointers, all operators, error/unwind behavior or C1–C5.

@@ -27428,3 +27428,21 @@ PrsExp publication and all 24 token checks now pass (loader-v5). The complete
 optimizer prototype publishes, but canonical type setup fails before graph
 execution (v6); split tracing is running as v7. Real type/backend/stream
 integration and C1–C5 remain open. See docs/i386-call.md.
+
+
+## Completed extern-global publication (2026-11-07)
+
+Split type-table probing localizes the zero-error failure to declaration
+publication, before constructor execution. The parser preserves old extern
+descriptors as non-owning aliases of same-input definitions; publication had
+rejected their retained unresolved flag. A narrow ownership-backed alias check
+now accepts that valid graph. The original aggregate/scalar/incomplete-array
+reference passes initialized values, alias metadata and fresh-input persistence/
+mutation checks. The old image executes its first export but rejects publication.
+Both bootstrap generations and full source-pinned build pass. The patched native
+contract passes all three cases. Both 8/16 MiB profiles match all 307200 welcome
+pixels; both diagnostic ownership/file-cleanup phases pass. The source-loaded
+parser/optimizer retry publishes all 17 stages and passes 24 token checks; its
+graph fixture is being corrected after an unsupported ternary expression.
+Standalone unresolved cross-input globals and C1–C5 remain open. See
+docs/i386-global-alias.md.

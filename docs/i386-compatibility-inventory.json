@@ -10586,7 +10586,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-global-alias.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-global-alias-original-v2/result.json",
+          "scope": "Actual original: three same-input extern/definition cases, alias metadata, initialized data, reads after declaration-input release and mutations. Unspecified trailing string bytes excluded; full compiler qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-global-alias.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-global-alias-baseline-v2/result.json",
+          "scope": "Expected pre-fix publication rejection after initial data execution, with zero compiler errors or exception. Full compiler qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-global-alias.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-global-alias-native-v1/result.json",
+          "scope": "Normal patched image matches original in all three cases after declaration-input release and mutation; exact fixture/input/volume audit, both 8/16 MiB welcome profiles and diagnostic cleanup phases pass. Only backed same-input aliases are admitted; full compiler qualification remains open."
+        }
+      ]
     },
     {
       "path": "Compiler/PrsVar.HC",

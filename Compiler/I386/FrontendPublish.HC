@@ -648,6 +648,27 @@ Bool I386SourceMacroPrepare(CI386Heap *heap,CI386CmpCtrl *owned,
   if(!allocation || I386ParserRecord(owned,allocation))return TRUE;
   return I386ParentMacroPrepare(heap,owned,records,allocation);
 }
+Bool I386FrontendResolvedGlobalAlias(CI386Frontend *frontend,CHashGlblVar *alias)
+{//The shared parser keeps a completed local extern as a non-owning alias.
+  CHashTable *table=frontend->table;
+  CHash *entry;
+  CHashGlblVar *definition;
+  I64 i;
+  if((alias->flags&(GVF_ALIAS|GVF_EXTERN))!=(GVF_ALIAS|GVF_EXTERN) ||
+      !alias->data_addr)return FALSE;
+  for(i=0;i<=table->mask;i++)
+    for(entry=table->body[i];entry;entry=entry->next)
+      if(entry!=alias && entry->type&HTT_GLBL_VAR &&
+          !(entry->type&(HTF_IMPORT|HTF_UNRESOLVED)) &&
+          entry->str && !StrCmp(entry->str,alias->str)) {
+        definition=entry;
+        if(!(definition->flags&(GVF_ALIAS|GVF_EXTERN|GVF_IMPORT)) &&
+            definition->data_addr==alias->data_addr &&
+            I386ParserRecord(frontend->cc,definition) &&
+            I386ParserRecord(frontend->cc,definition->data_addr))return TRUE;
+      }
+  return FALSE;
+}
 Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
   CI386ClassTransfer *transfer,Bool terminal)
 {//Validate and visit the same graph for counting and the ownership journal.
@@ -711,7 +732,8 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
             !I386ProgramClassReady(entry)) goto done;
       } else if(entry->type&HTT_GLBL_VAR) {
         global=entry;
-        if(I386HeapSize(heap,global)!=sizeof(CHashGlblVar) || global->type&(HTF_IMPORT|HTF_UNRESOLVED) ||
+        if(I386HeapSize(heap,global)!=sizeof(CHashGlblVar) || global->type&HTF_IMPORT ||
+            global->type&HTF_UNRESOLVED && !I386FrontendResolvedGlobalAlias(frontend,global) ||
             !I386ProgramTypeReady(global->var_class) ||
             global->size<0 || !(global->flags&GVF_ALIAS) &&
             (!global->data_addr || I386HeapSize(heap,global->data_addr)<global->size)) goto done;
