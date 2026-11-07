@@ -5,7 +5,10 @@ import argparse,hashlib,json,runpy,struct,re
 root=Path(__file__).resolve().parents[1]
 ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True)
 ap.add_argument('--classes',action='store_true',help='Also source-load actual class/function-header services; unresolved dependencies remain visible')
-args=ap.parse_args();out=args.out.resolve()
+ap.add_argument('--statements',action='store_true',help='Also source-load complete shared global/function/statement bodies; implies --classes')
+args=ap.parse_args()
+if args.statements:args.classes=True
+out=args.out.resolve()
 if out.exists():ap.error('Use a fresh output directory')
 out.mkdir()
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
@@ -101,6 +104,19 @@ if args.classes:
  code=(root/'Compiler/CExcept.HC').read_bytes();classes+=code[code.index(b'U0 UndefinedExtern('):code.index(b'U0 ParenWarning(')]
  code=(root/'Compiler/PrsStmt.HC').read_bytes();classes+=code[:code.index(b'extern U0 PrsFun(')]
  parts.append(classes)
+if args.statements:
+  statements=b'''#include "/Compiler/PrsCompileFlags.HH"
+ public extern Bool PrsStmt(CCmpCtrl *cc,I64 try_count=0,CCodeMisc *break_label=NULL,I64 flags=CMPF_PRS_SEMICOLON);
+ public extern U0 SysSymImportsResolve(U8 *name,I64 flags=0);
+ public extern I64 Un(U8 *rip,I64 count=0x80,I64 seg_size=64);
+ public extern U0 PrsAsmBlk(CCmpCtrl *cc,I64 flags);
+ public extern CAOT *CmpJoin(CCmpCtrl *cc,I64 flags,U8 *map_name=NULL,U8 map_drive=0);
+ public extern U0 CmpFixUpJITAsm(CCmpCtrl *cc,CAOT *aot);
+ public extern I64 ExeCmdLine(CCmpCtrl *cc);
+ '''
+  code=(root/'Compiler/PrsStmt.HC').read_bytes()
+  statements+=code[code.index(b'extern U0 PrsFun('):]
+  parts.append(statements)
 candidate=b'\n'.join(parts)
 (out/'candidate.HC').write_bytes(candidate)
 for i,part in enumerate(parts):(out/f'part-{i}.HC').write_bytes(part)
@@ -122,6 +138,8 @@ for directory in ('Compiler','Kernel','tests/guest/i386-public-lexer','tests/gue
 pins={str(p):sha(p) for p in pin_paths};r['input_sha256']=pins
 (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
 r['classes_requested']=args.classes
+r['statements_requested']=args.statements
+if args.statements:r['statement_scope']='Full global/function/statement bodies are published; ordinary function execution and assembly/stream/AOT services remain unqualified.'
 g=None
 try:
  before=pack['snapshot'](source.read_bytes())[1]

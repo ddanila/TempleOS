@@ -27558,3 +27558,13 @@ symbol deletion are recorded separately and do not relax native cleanup.
 Normal public compiler delivery, function bodies, full declaration/statement/
 stream/AOT integration and full C1–C5 remain open. See
 docs/i386-public-class-parser.md.
+
+
+## Complete statement-source publication (2026-11-07)
+
+The reproducible --statements mode implies --classes and publishes the complete
+remaining global/function/statement bodies as stage twenty-two. The earlier
+expression, token, type, runtime, retained-code and class/header regressions pass.
+Required assembly, join, import-resolution, disassembly and line-execution
+services stay explicit externs. Ordinary function execution, normal public
+compiler delivery and full C1–C5 remain open. See docs/i386-public-class-parser.md.

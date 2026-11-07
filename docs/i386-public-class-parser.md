@@ -40,3 +40,12 @@ terminal-integration-audit.json; build/i386-public-classes-original-v4/result.js
 The native audit checks all 1029 inputs at terminal completion and retains the
 reference-only fixture before its later resource-record extension. Native
 packaged fixtures, compiler bodies and image remain unchanged.
+
+The --statements mode implies --classes and appends the complete remaining
+PrsStmt.HC bodies, including shared global declarations, function construction,
+control flow and stream parsing. Twenty-two source stages publish and all earlier
+regressions, including class/header execution, pass. Forward declarations for
+assembly, joining, disassembly, import resolution and line execution remain
+explicit. This establishes source integration, not ordinary function execution
+or normal public delivery. Evidence: build/i386-public-statements-formal-v1 and
+build/i386-public-statements-source-v1/terminal-integration-audit.json.

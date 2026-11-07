@@ -10707,6 +10707,12 @@
           "result": "pass",
           "evidence": "build/i386-public-classes-original-v4/result.json",
           "scope": "Actual original normal compilation: seven metadata/lifetime checks agree with shared native execution; successful removal and absence of both symbols checked independently. Raw retained bytes are exactly 6488 in the original shared data/code heap; native requires zero. Earlier exact-recovery reference attempts remain failed. Not full compiler qualification."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --statements --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-statements-formal-v1/result.json",
+          "scope": "Twenty-two full source stages include complete global/function/statement bodies; earlier token/graph/expression/type/runtime/lifetime and eight class/header checks pass. Required assembly/join/import-resolution/disassembly/line-execution externs remain visible. Ordinary function execution, normal public compiler delivery and full C1\u2013C5 remain unqualified."
         }
       ]
     },
