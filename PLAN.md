@@ -26997,3 +26997,26 @@ See docs/i386-filemgr-mkdir.md and docs/i386-window-border-context.md.
 The inventory now links these partial workflows and the cursor/border evidence;
 all 686 entries remain unqualified. Rename/delete, clipboard, drag/drop,
 editor/execution/help integration, full visual behavior and C1–C5 remain open.
+
+## FileMgr file/tree rename and deletion workflows (2026-11-07)
+
+Two new hardware-key workflows exercise unchanged normal FileMgr. The file case
+covers Down navigation, rename, original next-file selection, Up navigation,
+delete cancellation and confirmation, neighbor selection and exit. The tree case
+exercises CopyTree/DelTree through FileMgr with a nested binary payload and empty
+directory. Original/native drivers pass eleven and twelve exact assertions,
+respectively, plus actual renamed bytes. Both native final drivers complete in
+one session including filesystem checks and a second boot. Independent terminal
+audits reverify inputs and exact post-reboot preservation of original content.
+
+The first original file fixture incorrectly expected selection to remain on the
+renamed entry. Its cancelled run and screenshot establish selection of the next
+file instead; the corrected fixture tests that behavior and sends Up to return
+to the renamed file. No production program was changed for this expectation.
+
+The new docs/i386-filemgr-workflows.md maps all FileMgr branches to observed or
+still-needed end-to-end references and oracles. The compatibility inventory links
+that map and the new exact evidence while retaining unqualified status for all
+686 items. Clipboard, drag/drop, broader navigation, editor/execution/help,
+media, failure cleanup, complete visuals and C1–C5 remain open. See
+ docs/i386-filemgr-edit.md for the concrete fixtures and evidence.

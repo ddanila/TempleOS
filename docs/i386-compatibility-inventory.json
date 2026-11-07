@@ -233,8 +233,8 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": "docs/i386-filemgr-workflows.md distinguishes executable original references from source-defined workflows still awaiting reference runs.",
+      "oracle": "Partial workflow oracles: exact returned names, selected-entry state, file bytes, directory membership, caller restoration and captured frames; tools/test-i386-pick-dir.py, tools/test-i386-filemgr-mkdir.py, tools/test-i386-filemgr-edit.py and tools/test-i386-filemgr-tree-edit.py. Full application oracle remains incomplete.",
       "tests": [
         {
           "target": "original-directory-picker",
@@ -289,6 +289,30 @@
           "result": "pass",
           "evidence": "build/i386-filemgr-mkdir-native-v1/combined-audit.json",
           "scope": "Composed verification: hardware-key create/cancel/exit, all nine original-equivalent rows, serialized paths and preserved files/directories, then corrected reboot probe on same disk contents. Initial reboot expression failed; final driver differs only in that expression and was not rerun as one session. Other FileMgr workflows remain unqualified."
+        },
+        {
+          "target": "original-filemgr-file-rename-delete",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-edit-original-v2/terminal-audit.json",
+          "scope": "Hardware Down/Up, rename with next-file selection, delete cancellation and confirmation, exact payload, eleven state checks and caller restoration; native comparison recorded separately."
+        },
+        {
+          "target": "original-filemgr-directory-rename-delete",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-tree-edit-original-v1/terminal-audit.json",
+          "scope": "Recursive rename, binary descendant and empty directory, delete cancellation/confirmation, twelve state checks and restoration; native comparison recorded separately."
+        },
+        {
+          "target": "native-filemgr-file-rename-delete-reboot",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-edit-native-v1/terminal-audit.json",
+          "scope": "Complete driver: hardware Down/Up, rename with original next-file selection, deletion cancellation/confirmation, eleven original-equivalent rows and renamed bytes, preserved neighbors and original files/directories, exact remaining fixture files and second-boot presence/absence. Unchanged inputs; full FileMgr remains unqualified."
+        },
+        {
+          "target": "native-filemgr-directory-rename-delete-reboot",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-tree-edit-native-v1/terminal-audit.json",
+          "scope": "Complete driver: recursive rename of nested binary file/empty directory, original next-file selection and Up navigation, deletion cancellation/confirmation, twelve original-equivalent rows and exact payload, original file/directory preservation, exact remaining fixture state and second boot. Unchanged inputs; full FileMgr remains unqualified."
         }
       ]
     },
