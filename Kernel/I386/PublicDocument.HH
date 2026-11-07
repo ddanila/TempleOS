@@ -154,7 +154,6 @@ public _extern _DOC_TERM_NEW U0 DocTermNew();
 public _extern _LEX_GET_CHAR I64 LexGetChar(CCmpCtrl *cc);
 public _extern _CMP_GLOBALS CCmpGlbls cmp;
 public _extern _LEX_ZEROS U32 lex_zeros;
-public _extern _CHAR_BMP_PRINTABLE U32 char_bmp_printable[16];
 public _extern _CMP_CTRL_NEW CCmpCtrl *CmpCtrlNew(U8 *buf=NULL,I64 flags=0,U8 *filename=NULL);
 public _extern _CMP_CTRL_DEL U0 CmpCtrlDel(CCmpCtrl *cc);
 public _extern _CMP_CTRL_SIZE I64 CmpCtrlSize(CCmpCtrl *cc);

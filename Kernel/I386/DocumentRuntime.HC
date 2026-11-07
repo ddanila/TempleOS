@@ -160,7 +160,7 @@ public I64 DocSize(CDoc *doc)
 #include "/Adam/DolDoc/DocBasicEditCore.HC"
 extern CDocEntry *DocPrint(CDoc *doc=NULL,U8 *fmt,...);
 #include "/Kernel/PrintableBitmap.HH"
-U32 native_doc_printable[16]=CHAR_BMP_PRINTABLE_DATA;
+import U32 native_doc_printable[16];
 #include "/Adam/DolDoc/DocDollarInputCore.HC"
 #include "/Adam/DolDoc/DocCharActionCore.HC"
 #include "/Adam/DolDoc/DocCharFormAdvanceCore.HC"

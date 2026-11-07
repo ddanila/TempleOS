@@ -34,17 +34,20 @@ U0 I386FrontendResidentBind(CI386Frontend *state,CHashSrcSym *declaration,I64 ad
   CI386FrontendResident *binding=I386FrontendResidentFind(state,declaration);
   CHashTable *table;
   CHash *entry;
-  I64 i;
+  I64 i,pass;
   if(address<0 || address>U32_MAX || !I386ParserRecord(state->cc,declaration))
     I386FrontendUnavailable(state);
   if(binding) {
     if(!I386FrontendResidentValid(state,binding)) I386FrontendUnavailable(state);
     return;
   }
+  //Prefer the named export when compatibility aliases share its address.
+  for(pass=0;pass<2;pass++)
   for(table=state->parent;table;table=table->next)
     for(i=0;i<=table->mask;i++)
       for(entry=table->body[i];entry;entry=entry->next)
-        if(entry->type&HTT_EXPORT_SYS_SYM && entry(CHashExport *)->val==address) {
+        if(entry->type&HTT_EXPORT_SYS_SYM && entry(CHashExport *)->val==address &&
+            (pass || !StrCmp(entry->str,declaration->str))) {
           binding=I386FrontendAlloc(state,sizeof(CI386FrontendResident),TRUE,FALSE);
           binding->declaration=declaration; binding->export=entry; binding->address=address;
           binding->next=state->residents; state->residents=binding;

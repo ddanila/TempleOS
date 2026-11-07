@@ -201,3 +201,35 @@ The export control (`build/probe-public-token-bitmap-export-control.py`,
 same array shape and syntax; only the former has a kernel export. The source
 image is unchanged. This supports adding the missing resident bitmap exports
 before testing the complete shared header again.
+
+The bitmap integration exports all seventeen original kernel bitmap arrays.
+`PublicKernel.HH` includes the original guarded `Kernel/CharBitmaps.HH`; individual
+word, whitespace and printable declarations have been removed. The document
+runtime imports the canonical kernel printable array as `native_doc_printable`.
+`_CHAR_BMP_PRINTABLE` remains a compatibility alias to that storage. Console
+module version 237 records the changed import contract.
+
+Resident binding now prefers an export matching the declaration's name before
+falling back to address matching for differently named aliases. This prevents
+an arbitrary same-address alias from triggering the publication collision check.
+The rejected startup images remain in `build/i386-public-bitmaps-cross-v2` and
+`build/i386-public-bitmaps-cross-v4`. Declaration probes v10–v13 further exposed
+repeated extern declarations; the original shared header guard avoids these
+redundant declarations in normal startup and token loading.
+
+The final image is `build/i386-public-bitmaps-cross-v6`. Both bootstrap generations
+pass with stable inputs, and the source audit checks all 1,749 production files
+and all seventeen canonical bitmap exports. The public lexer echo/line-statistics
+regression passes with mask 63 and current inputs in
+`build/i386-public-bitmaps-lex-state-v3`. The 8 MiB welcome check compares all
+307,200 pixels in `build/i386-public-bitmaps-welcome8-v4`.
+
+`build/i386-public-token-loader-v14` publishes all thirteen stages using the real
+shared bitmap header, verifies printable alias pointer identity, and passes all
+24 original token cases. The independent terminal contract audit checks the
+exact original fixture and output, unchanged source image, and exact complete
+Lex/LexExtStr bodies. This remains a diagnostic source-loaded lexer: diagnostic,
+expression and executable-directive services remain unresolved and normal
+startup does not yet deliver the token API. Final-image 16 MiB diagnostics pass both program/ownership/cleanup phases and
+the complete 307,200-pixel welcome frame in
+`build/i386-public-bitmaps-diagnostic16-v4`, with an independent terminal audit. No C1–C5 milestone is qualified by these results.

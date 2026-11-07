@@ -10255,6 +10255,13 @@
           "result": "pass",
           "evidence": "build/i386-public-token-loader-v4/result.json",
           "scope": "Diagnostic full original Lex/LexExtStr bodies pass 24 reference checks with exact source/fixture/export/volume audit. Shared bitmap header suppressed and required existing bindings declared; diagnostic/expression/stream externs unresolved. Not delivered normal-image lexer or full qualification; see docs/i386-public-lexer.md."
+        },
+        {
+          "target": "native-source-loaded-token-shared-bitmap-header",
+          "command": "python3 build/probe-public-token-shared-bitmap-header.py",
+          "result": "pass",
+          "evidence": "build/i386-public-token-loader-v14/result.json",
+          "scope": "All 13 stages publish with the original shared bitmap header; printable compatibility alias has identical storage; all 24 original token cases and exact original Lex/LexExtStr bodies pass independent contract audit. Diagnostic/expression/stream services remain unresolved; token API not delivered by normal startup. No inventory qualification."
         }
       ]
     },

@@ -27274,3 +27274,19 @@ Diagnostic, expression and executable-directive externs also remain unresolved.
 No such workaround or stub is added to production. Restore the real public bitmap
 contract and remaining services before normal shared-startup qualification.
 All C1–C5 milestones and inventory qualification gaps remain open.
+
+
+## Shared public bitmap integration (2026-11-07)
+
+The native kernel exports all seventeen original bitmap arrays. PublicKernel
+uses the original guarded header, and document/character readers share the
+kernel printable array. Resident binding prefers a matching export name when
+compatibility aliases share an address; console version is 237.
+
+The v6 image passes stable-input bootstrap rebuilds, the production source/export
+audit, mask-63 public lexer echo regression and full 8 MiB welcome raster. The
+v14 source-loaded original token probe passes all 24 reference cases with the
+real bitmap header and printable alias identity. Final-image diagnostic16 passes both program/ownership/cleanup phases and
+all 307,200 welcome pixels. See docs/i386-public-lexer.md for evidence and retained failures.
+The token API is not yet delivered by normal startup; compiler diagnostics,
+expression/stream services and C1–C5 qualification remain open.
