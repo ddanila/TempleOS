@@ -48,8 +48,18 @@ Its terminal audit verifies the input pins and explicitly records the later
 on-disk helper change; the preloaded snapshot matches its original pin and its
 disk-reader AST is unchanged.
 
-`build/i386-default-strings-native-generation2-v1` is now running at 64 MiB KVM
-`486,-fpu` from that installed candidate, with `--compare-installed` requiring
-exact module-byte equality to generation one. The original input pins and helper
-snapshots are preserved. Generation-two equality, required memory profiles and
-C5 remain open.
+`build/i386-default-strings-native-generation2-v1` passes at 64 MiB KVM
+`486,-fpu`, running the installed generation-one modules. All nine persisted
+outputs are byte-identical to the installed generation one, and concluding
+arithmetic passes. Its terminal audit independently extracts and compares all
+nine outputs, checks their recorded hashes, and preserves them in `exports/`.
+The original runner and both preloaded helpers match their input pins. The only
+changed on-disk input paths are the previously disclosed builder verifier and
+input helper; the disk-reader AST is unchanged. All other input pins match.
+
+This is nine-provider reproducibility for the frozen interface-224 image. It
+does not qualify later public-control, archive, file-read, scrolling or diagnostic
+changes. Generation-two installation/fresh boot is running in
+`build/i386-default-strings-native-generation2-install-v1`. Full compatibility
+suites on both generations and the required memory/startup/resource profiles
+remain open, so C5 is not complete.

@@ -26734,7 +26734,9 @@ The diagnostic provider now includes only the unchanged break-request functions
 it calls; the runtime retains the complete original implementation. Both
 bootstrap generations and native export/source audits pass. CompilerProbe is
 3,265 bytes smaller, and all fifteen other emitted modules are byte-identical.
-The complete 8/16 MiB diagnostic runs are still pending. See
+The 8 MiB run passes worker probe loading and child checks but still fails
+later in the native allocation case. The full 16 MiB diagnostic and exact welcome
+pass with unchanged inputs. See
 docs/i386-compact-expand.md for the exact source-parity and module evidence.
 
 The earlier stopped ModuleLoad compiler failure requests 11,070 executable bytes.
@@ -26742,3 +26744,15 @@ Its private arena has a 576,936-byte free block, but the shared public pool has
 only 2,560 unused bytes; main and fallback backing arenas have largest free
 blocks of 4,536 and 6,056 bytes. Validated heap/region walks preserve this evidence
 for the next allocation investigation. No C1–C5 milestone closes.
+
+
+## Frozen native generation-two equality (2026-11-07)
+
+The installed interface-224 generation one rebuilt all nine providers at 64 MiB
+KVM 486,-fpu. Every persisted output is byte-identical to its installed counterpart;
+final arithmetic and the source/helper provenance audit pass. Extracted outputs
+and the exact audit are preserved in
+build/i386-default-strings-native-generation2-v1. Generation-two installation
+and fresh boot are running separately. See docs/i386-module-default-strings.md.
+This frozen result does not qualify current sources, full application suites,
+required resource profiles or C5 completion.

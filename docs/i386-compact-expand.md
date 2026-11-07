@@ -273,8 +273,16 @@ Both bootstrap generations pass in
 instruction audit and the 1,726-source audit pass in
 `build/i386-break-request-split-cross-v1`. CompilerProbe shrinks from 529,894 to
 526,629 bytes. All fifteen other emitted modules, including ConsoleRuntime,
-are byte-identical to the scrolling candidate. Full 8 MiB and 16 MiB diagnostic
-runs are pending; source and export evidence alone does not qualify them.
+are byte-identical to the scrolling candidate. The 8 MiB diagnostic now loads
+the worker provider and passes both lifetime and file-break ownership/cleanup
+checks. It still fails compiling ModuleLoad in the subsequent native-allocation
+program case, after the successful NATIVE LOADER marker, as the earlier
+child-probe candidate did. Its terminal failure and exact markers are preserved
+in `failure.json`. The full 16 MiB TCG diagnostic passes in
+`build/i386-break-request-split-diag16-v1`, including both program phases,
+native-allocation cases, child ownership/cleanup, and the exact 307,200-pixel
+welcome frame. Inputs remain unchanged and the tested disk still matches its
+source. This is diagnostic qualification, not the full compatibility suite.
 
 The stopped earlier program-loader failure is preserved in
 `build/i386-program-loader-heap8-v1`. Its source/tool hashes are unchanged and
