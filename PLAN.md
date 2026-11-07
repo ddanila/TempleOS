@@ -27137,3 +27137,22 @@ console-level metadata filter and from yield scheduling. V1's unescaped-dollar
 fixture compile rejection is preserved; corrected v2 is the executable
 reference. See docs/i386-doc-key-description.md. Full DocPutKey and C1–C5 remain
 open; no production metadata change is included in this baseline.
+
+## Original DocPutKey cooperative Yield restored (2026-11-07)
+
+Native DocPutKey now retains the original final conditional Yield using the
+existing managed provider. The declaration precedes the document include;
+callback early return and incoming lock ownership are preserved. No ABI bump.
+The five-case native driver passes original masks [63,63,63,63,63] and samples
+[1,0,0,1,1], arithmetic and filesystem checks, with independent input/export
+audit. The nineteen clipboard key/resource cases pass unchanged with zero heap
+deltas. Actual FileMgr file/tree copy-paste, restoration and reboot also pass
+with exact post-reboot preservation audits.
+
+Both corrected bootstrap generations, full64 cross-build and all 1,737 source
+hashes pass. The provisional bootstrap cancelled for declaration order is
+preserved and is not qualification evidence. Normal8 and full16 startup/
+welcome pass; full16 finishes both program/ownership/cleanup phases. The final
+five-session file-picker regression remains live at this commit. Isolated
+timing, full enclosing suites, printable metadata queries and all C1–C5 gates
+remain open. See docs/i386-doc-key-yield.md.

@@ -367,6 +367,18 @@
           "result": "pass",
           "evidence": "build/i386-pick-file-native-v1/result.json",
           "scope": "Five real popup sessions and masks 255: default/explicit filename, directory accepted in file mode, file cancellation and directory mode on a file; exact returned names, caller heap ownership and restoration. Arithmetic and filesystem pass; terminal audit verifies exact added fixture bytes and existing files/directories. Stronger final host guard replayed after the guest run; see host-guard-replay.json and docs/i386-pick-file.md. Full FileMgr remains unqualified."
+        },
+        {
+          "target": "native-file-clipboard-with-yield",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-clipboard-file-yield-v1/result.json",
+          "scope": "Complete actual hardware-key copy/paste, thirteen original-equivalent rows and payloads, caller restoration and reboot after restoring DocPutKey cooperative Yield. Independent post-reboot original/fixture preservation and input audit. Full FileMgr remains unqualified."
+        },
+        {
+          "target": "native-tree-clipboard-with-yield",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-clipboard-tree-yield-v1/result.json",
+          "scope": "Complete actual hardware-key copy/paste, thirteen original-equivalent rows and payloads, caller restoration and reboot after restoring DocPutKey cooperative Yield. Independent post-reboot original/fixture preservation and input audit. Full FileMgr remains unqualified."
         }
       ]
     },
@@ -3375,6 +3387,30 @@
           "result": "fail",
           "evidence": "build/i386-doc-key-yield-native-baseline-v1/result.json",
           "scope": "Five ready-child scheduling checks with one CPU and local preemption excluded across the call: normal, no-swap, consuming/nonconsuming callbacks, incoming lock. Original samples [1,0,0,1,1], native [0,0,0,0,0]; other state checks pass. See docs/i386-doc-key-yield.md. Production fix pending."
+        },
+        {
+          "target": "native-key-cooperative-yield",
+          "result": "pass",
+          "evidence": "build/i386-doc-key-yield-native-v1/result.json",
+          "scope": "Exact original masks [63,63,63,63,63] and ready-child samples [1,0,0,1,1], interrupts/locks/callbacks/roles/retirement; arithmetic/filesystem pass and terminal input/export audit. Clipboard key/resource and real file/tree UI regressions also pass. See docs/i386-doc-key-yield.md."
+        },
+        {
+          "target": "original-printable-key-descriptions",
+          "result": "pass",
+          "evidence": "build/i386-doc-key-description-original-v2/result.json",
+          "scope": "Nine metadata queries; original preserves selected text/cursor and returns exact descriptions. Both native images identically fail printable cases while copy control and resource/role/lock checks pass. Source-dollar escaping corrected after invalid v1 fixture. See docs/i386-doc-key-description.md."
+        },
+        {
+          "target": "native-printable-key-descriptions-before-yield",
+          "result": "fail",
+          "evidence": "build/i386-doc-key-description-before-yield-v1/result.json",
+          "scope": "Nine metadata queries; original preserves selected text/cursor and returns exact descriptions. Both native images identically fail printable cases while copy control and resource/role/lock checks pass. Source-dollar escaping corrected after invalid v1 fixture. See docs/i386-doc-key-description.md."
+        },
+        {
+          "target": "native-printable-key-descriptions-after-yield",
+          "result": "fail",
+          "evidence": "build/i386-doc-key-description-native-baseline-v2/result.json",
+          "scope": "Nine metadata queries; original preserves selected text/cursor and returns exact descriptions. Both native images identically fail printable cases while copy control and resource/role/lock checks pass. Source-dollar escaping corrected after invalid v1 fixture. See docs/i386-doc-key-description.md."
         }
       ]
     },

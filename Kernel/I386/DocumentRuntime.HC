@@ -281,6 +281,7 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
     } else DocBasicEditCore(doc,ch,sc);
   } catch { if(unlock) DocUnlock(doc); }
   if(unlock) DocUnlock(doc);
+  if(!(doc->flags&DOCF_DONT_SWAP_OUT)) Yield;
 }
 #include "/Adam/DolDoc/DocScanLineCore.HC"
 #include "/Adam/DolDoc/DocBasicSaveCore.HC"

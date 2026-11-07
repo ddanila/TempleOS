@@ -81,3 +81,9 @@ bootstrap, normal8 welcome and full16 startup diagnostics also pass; see
 i386-clipboard-keys.md. Broader navigation, collisions, interruption/failure
 cleanup, drag/drop, editor/help/execution, media and full visual behavior remain
 open. Automatic settings startup and C1–C5 completion remain unqualified.
+
+After DocPutKey yield restoration, both file-yield-v1 and tree-yield-v1
+regressions pass the complete driver, original-equivalent exports and reboot.
+Their independent terminal audits verify exact post-reboot preservation and
+all pins on build/i386-doc-key-yield-cross-v1/kernel.img. This extends the
+workflow evidence to the restored cooperative scheduling path.

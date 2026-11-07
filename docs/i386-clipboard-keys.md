@@ -58,10 +58,10 @@ Terminal audits independently reverify every pinned input and compare exported
 rows directly to original-v5. Earlier native-v1 already passes with normal
 document flags, but the final paired comparison uses the identical final fixture.
 
-The retained native DocPutKey does not yet implement the original trailing
-cooperative Yield. This change restores clipboard dispatch, not scheduling
-parity for the complete key routine. Normal scheduled FileMgr workflows are
-verified separately. Data-field paste, failure injection, concurrent clipboard
+The original trailing cooperative Yield is now restored and covered by a
+five-case differential test; see i386-doc-key-yield.md. The nineteen clipboard
+cases also pass unchanged on that image. Normal scheduled FileMgr workflows
+are verified separately. Data-field paste, failure injection, concurrent clipboard
 use and broader input behavior remain open as described in i386-clipboard.md.
 
 Normal 8 MiB startup reaches DONE and passes all 307,200 welcome pixels in

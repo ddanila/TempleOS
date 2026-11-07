@@ -242,6 +242,7 @@ U0 BFieldOrU32(U8 *bit_field,I64 bit,U32 pattern)
   *word|=pattern(U64)<<(bit&7);
 }
 #include "/Kernel/I386/MediaPathDispatch.HH"
+extern U0 Yield();
 #include "/Kernel/I386/DocumentRuntime.HC"
 #include "/Kernel/I386/InstallTree.HC"
 #include "/Kernel/I386/BuildModuleDispatch.HC"
@@ -331,7 +332,6 @@ Bool NativeRawBitEqu(U8 *bit_field,I64 bit,Bool val)
 #include "/Kernel/I386/MouseStateRuntime.HC"
 #include "/Kernel/VGAFlushCore.HC"
 #include "/Kernel/RawCore.HC"
-extern U0 Yield();
 #include "/Adam/DolDoc/DocPrintPartialCore.HC"
 extern Bool DocRecalc(CDoc *doc,I64 recalc_flags=RECALCt_NORMAL);
 #include "/Kernel/EndianCore.HC"
