@@ -78,3 +78,9 @@ Interface 230 now passes the original/native RedSeaISO creation checks for
 explicit and omitted stage2. Complete FileMgr loading moves to missing
 DVDImageWrite at line 425 (`build/i386-pick-dir-redsea-iso-v1/result.json`,
 unchanged inputs). The complete chooser remains unqualified.
+
+Interface 231 provides the original DVD image services. Actual ATAPI reads to
+FAT32 and non-optical write rejection match the reference (see
+[DVD image evidence](i386-dvd-image.md)); successful burning remains unqualified.
+Complete FileMgr loading advances to missing SettingsPush at line 588
+(`build/i386-pick-dir-dvd-image-v1/result.json`, unchanged inputs).

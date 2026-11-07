@@ -140,6 +140,9 @@ public _extern _SIZE I64 Size(U8 *files_find_mask="/*",U8 *fu_flags=NULL,I64 rou
 public _extern _PUT_FILE_LINK U0 PutFileLink(U8 *filename,U8 *full_name=NULL,I64 line=0,Bool plain_text=FALSE);
 public _extern _FMT U0 Fmt(U8 drv_let,Bool quick=TRUE,Bool confirm=TRUE,I64 type=FSt_FAT32);
 public _extern _REDSEA_ISO I64 RedSeaISO(U8 *iso_filename=NULL,U8 *src_dir,U8 *stage2_filename=NULL);
+#include "/Kernel/BlkDev/OpticalMediaTypes.HH"
+public _extern _DVD_IMAGE_READ U0 DVDImageRead(U8 drv_let,U8 *out_name);
+public _extern _DVD_IMAGE_WRITE U0 DVDImageWrite(U8 drv_let,U8 *in_name=NULL,I64 media_type=MT_DVD);
 #endif
 
 public _extern _POP_UP_PICK_DIR U8 *PopUpPickDir(U8 *dir=NULL);

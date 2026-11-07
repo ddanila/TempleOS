@@ -1,0 +1,5 @@
+#ifndef OPTICAL_MEDIA_TYPES_INCLUDED
+#define OPTICAL_MEDIA_TYPES_INCLUDED
+#define MT_CD		1
+#define MT_DVD		2
+#endif

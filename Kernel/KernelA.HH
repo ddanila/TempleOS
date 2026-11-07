@@ -470,8 +470,7 @@ public class CATARep
 
 #help_index "File/CD DVD"
 //Media types for $LK,"DVDImageWrite",A="MN:DVDImageWrite"$()
-#define MT_CD		1
-#define MT_DVD		2
+#include "/Kernel/BlkDev/OpticalMediaTypes.HH"
 
 #help_index "File/Low Level;File/Program Routines"
 //CDirEntry flags (Used by $LK,"FileMgr",A="MN:FileMgr"$())

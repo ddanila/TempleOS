@@ -26876,3 +26876,17 @@ optical writing, full workflows and C1–C5 remain open. Full enclosing regressi
 continue. The long public-file-read run separately fails during command44
 typing with a one-character horizontal viewport displacement; its final heap
 check was not reached (docs/i386-file-read.md).
+
+
+## Original DVD image services (2026-11-07)
+
+Interface 231 shares complete DVDImageRead, DVDImageWriteTask and DVDImageWrite
+bodies and media-type constants. Both full bootstrap generations and all 1,734
+post-export production source hashes pass. Original/native tests perform actual
+ATAPI reads of 133,120 patterned bytes across three copy batches into FAT32 RAM,
+then reject a non-optical writer target. Eight checks, both exact streams and
+final native arithmetic pixels pass. The original RedSea streaming-destination
+failure and capture-lifetime correction are preserved in docs/i386-dvd-image.md.
+Successful burning, discovery and exceptional heap cleanup are not qualified.
+FileMgr now reaches missing SettingsPush at line 588. Enclosing full regressions
+remain live; complete chooser workflows and C1–C5 remain open.
