@@ -26810,3 +26810,15 @@ restoration. Both frozen interface-224 generation-one startup captures pass at
 64/128 MiB and match generation two's 5,333,344-byte main-arena high-water mark.
 See docs/i386-public-lexer.md and docs/i386-module-default-strings.md for scope.
 Application-workload profiles, full suites and C1–C5 remain open.
+
+
+## Original public character and confirmation input (2026-11-07)
+
+Interface 228 exports GetChar, YorN, AreYouSure and PressAKey using their
+unchanged original bodies shared with the original kernel. Both bootstrap
+generations and all 1,729 post-export production source hashes pass. Original
+and native tests match twelve queued input/text/heap checks and actual QEMU
+F1/a input, including scan code and idle-state recovery; the native test also
+passes concluding arithmetic pixels. See docs/i386-character-prompts.md.
+The enclosing full diagnostic/interactive cross-build remains running. Fmt,
+complete FileMgr, public lexer prompts and all C1–C5 gates remain open.

@@ -31,4 +31,8 @@ public _extern _DOC_GET_STR2 U8 *DocGetStr2(I64 flags=0);
 public _extern _FP_GETSTR2 U8 *(*fp_getstr2)(I64 flags=0);
 public _extern _KBD_MS_EVT_TIME I64 KbdMsEvtTime();
 public _extern _KBD_GLOBALS CKbdStateGlbls kbd;
+public _extern _GET_CHAR I64 GetChar(I64 *sc=NULL,Bool echo=TRUE,Bool raw_cursor=FALSE);
+public _extern _Y_OR_N Bool YorN();
+public _extern _ARE_YOU_SURE Bool AreYouSure();
+public _extern _PRESS_A_KEY I64 PressAKey();
 #endif
