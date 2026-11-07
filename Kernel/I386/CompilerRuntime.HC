@@ -1,5 +1,9 @@
 //Disk-loaded lexer/numerical runtime. This image remains owned by the boot kernel.
 #include "/Kernel/Types.HH"
+import U8 SYS_VAR_INIT_FLAG;
+import U8 SYS_VAR_INIT_VAL;
+#define sys_var_init_flag SYS_VAR_INIT_FLAG
+#define sys_var_init_val SYS_VAR_INIT_VAL
 #define TRUE 1
 #define FALSE 0
 #include "/Kernel/I386/CompilerRuntime.HH"

@@ -48,6 +48,8 @@ class CI386Backend {
   U0 (*break_poll)();
   I64 break_flags_offset;
   CDbgInfo *debug; //Borrowed line offsets plus one; zero means no emitted node.
+  Bool initialize_variables;
+  U8 variable_init_value;
 };
 //Valid target IR, initialized output and borrowed AOT/type/symbol context.
 //Allocations are zeroed or throw. The caller owns success/failure cleanup.

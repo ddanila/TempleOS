@@ -53,4 +53,6 @@ public _extern _LINKED_LST_DEL U0 LinkedLstDel(U8 **_lst);
 
 public _extern _QSORT_I64 U0 QSortI64(I64 *base,I64 num,I64 (*fp_compare)(I64 e1,I64 e2));
 public _extern _LINKED_LST_SIZE I64 LinkedLstSize(U8 **list);
+public _extern SYS_VAR_INIT_FLAG U8 sys_var_init_flag;
+public _extern SYS_VAR_INIT_VAL U8 sys_var_init_val;
 #endif

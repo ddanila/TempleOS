@@ -98,6 +98,7 @@ Bool I386BackendCompileWithBreak(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types
   backend->debug=debug;
   backend->break_flags_offset=offset(CI386Task.task_flags);
   #assert TASKf_PENDING_BREAK==11
+  backend->initialize_variables=sys_var_init_flag;backend->variable_init_value=sys_var_init_val;
   backend->cc=cc; backend->out=out; backend->types=types; backend->context=&state;
   backend->allocate=&I386NativeBackendAlloc; backend->release=&I386NativeBackendFree;
   backend->fold=&I386NativeBackendFold; backend->assembly=&I386NativeBackendAsm;

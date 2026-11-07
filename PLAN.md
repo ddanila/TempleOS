@@ -27505,3 +27505,18 @@ and every preceding token/graph/basic/type/runtime regression. The independent
 1027-input/volume/boot audit passes; normal public expression delivery remains
 open.
 See docs/i386-public-expression-lifetime.md. Full C1–C5 remains open.
+
+## Original variable-initialization policy (2026-11-07)
+
+Normal native startup exposes shared sys_var_init_flag/value data with the
+original zero defaults. Runtime 85 imports them; the unchanged interface layout
+uses kernel data slots 93/94. Global/static allocation callbacks honor the flag,
+and the shared target backend captures the pattern for ordinary local frames.
+Original-v2 and normal native-v1 pass all eight checks (mask 255) with exact full
+records, including globals, explicit initialization, static/noreg/array locals,
+compile-time pattern capture and restored controls. Both x86-64 bootstrap
+rebuilds, full source-pinned native build, 8/16 MiB welcome profiles and both
+cleanup phases pass. Complete declaration/initializer bodies now publish as
+stage twenty and pass all earlier source compiler regressions; class/header and
+AOT-store integration remain open. Full C1–C5 is unqualified. See
+docs/i386-variable-init.md.

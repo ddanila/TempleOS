@@ -139,6 +139,7 @@ U8 *COCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_type)
   MemSet(&aot,0,sizeof(aot));MemSet(&aotc,0,sizeof(aotc));I386OutInit(&out);
   aot.next_ie=aot.last_ie=&aot.next_ie;
   if(_code_size)*_code_size=0;if(_dbg)*_dbg=NULL;
+  backend->initialize_variables=sys_var_init_flag;backend->variable_init_value=sys_var_init_val;
   backend->cc=cc;backend->out=&out;backend->types=cmp.internal_types;
   backend->context=&state;backend->allocate=&PBAlloc;backend->release=&PBFree;
   backend->fold=&PBFold;backend->assembly=&PBAssembly;backend->report=&PBReport;

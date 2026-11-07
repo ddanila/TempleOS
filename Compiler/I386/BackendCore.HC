@@ -858,6 +858,14 @@ U0 I386BackendCore(CI386Backend *backend)
             I386Bytes(out,"\x55\x89\xE5\x81\xEC",5);
             I386Dword(out,stack_size);
             I386Bytes(out,"\x53\x56\x57",3);
+            if(backend->initialize_variables && stack_size &&
+                !Bt(&cc->htc.fun->flags,Ff_INTERRUPT)) {
+              //Fill only this frame's local region, after saving callee registers.
+              I386EbpMemory(out,0x8D,7,-stack_size);
+              I386Byte(out,0xB9);I386Dword(out,stack_size);
+              I386Byte(out,0xB0);I386Byte(out,backend->variable_init_value);
+              I386Bytes(out,"\xFC\xF3\xAA",3);
+            }
             break;
           case IC_IMM_I64:
           case IC_IMM_F64:

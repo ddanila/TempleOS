@@ -98,6 +98,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   }
   I386OutInit(&out);
   MemSet(&backend,0,sizeof(backend));
+  backend.initialize_variables=sys_var_init_flag;backend.variable_init_value=sys_var_init_val;
   backend.cc=cc; backend.out=&out; backend.types=cmp.internal_types; backend.context=&backend;
   backend.allocate=&I386HostBackendAlloc; backend.release=&I386HostBackendFree;
   backend.fold=&I386HostBackendFold; backend.assembly=&I386HostBackendAsm; backend.report=&I386HostBackendReport;

@@ -1206,7 +1206,8 @@ U0 I386FrontendInitialize(U8 *context,U8 *data,I64 bytes)
 {
   I64 i;
   if(bytes<0 || !data && bytes) I386FrontendUnavailable(context);
-  for(i=0;i<bytes;i++) data[i]=0;
+  if(sys_var_init_flag)
+    for(i=0;i<bytes;i++) data[i]=sys_var_init_val;
 }
 U0 I386FrontendStatic(U8 *context,CCmpCtrl *cc,CMemberLst *member,I64 pass)
 {

@@ -154,3 +154,12 @@ See docs/i386-public-expression-lifetime.md and
 build/i386-public-expression-lifetime-source-native-v1/terminal-lifetime-audit.json.
 This covers that completion/lifetime path, while normal public compiler delivery
 and the remaining class/header/stream/debug/error/operator work remain open.
+
+
+The next shared declaration/initializer stage initially fails at missing
+sys_var_init_flag (build/i386-public-declarations-source-v1). After restoring the
+original shared controls and initialization policy, v2 publishes that complete
+stage and passes all earlier token, graph, executable, type and lifetime checks.
+The real class/function-header bodies and AOT store services remain to be
+integrated; declaration publication alone is not full compiler delivery. See
+docs/i386-variable-init.md.

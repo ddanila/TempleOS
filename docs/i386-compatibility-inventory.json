@@ -10504,6 +10504,24 @@
           "result": "pass",
           "evidence": "build/i386-function-debug-native-v3/result.json",
           "scope": "Two actual caller PCs map to distinct source-line ranges; extern identity and debug pointer publication; eight ones, unchanged inputs. Full mapping and module debug interchange remain open."
+        },
+        {
+          "command": "python3 tools/test-i386-variable-init.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-variable-init-original-v2/result.json",
+          "scope": "Actual original variable-init controls/defaults, global/static/noreg/array locals, captured patterns and restoration pass eight checks (mask 255). Full file/API qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-variable-init.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-variable-init-baseline-v2/result.json",
+          "scope": "Expected missing sys_var_init_flag at line 18 on normal old image; exact fixture/current-at-run input audit. Whole-file qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-variable-init.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-variable-init-native-v1/result.json",
+          "scope": "Normal shared kernel controls and target initialization paths match the complete original record, mask 255. Independent current-input/volume/boot audit, 8/16 MiB welcome profiles and both cleanup phases pass. Register/interrupt/error paths and whole-file qualification remain open."
         }
       ]
     },
@@ -10707,6 +10725,24 @@
           "result": "pass",
           "evidence": "build/i386-public-expression-source-native-v1/result.json",
           "scope": "Source-loaded complete shared PrsType body with actual member/snapshot helpers: pointer variants, evaluated multidimensional bounds, incomplete arrays, raw cast, conversion and continued arithmetic checks pass. Executable subset also matches original runtime oracle. Class/function-header joins remain explicit unresolved externs; normal delivery and full qualification remain open."
+        },
+        {
+          "command": "python3 tools/test-i386-variable-init.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-variable-init-original-v2/result.json",
+          "scope": "Actual original variable-init controls/defaults, global/static/noreg/array locals, captured patterns and restoration pass eight checks (mask 255). Full file/API qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-variable-init.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-variable-init-baseline-v2/result.json",
+          "scope": "Expected missing sys_var_init_flag at line 18 on normal old image; exact fixture/current-at-run input audit. Whole-file qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-variable-init.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-variable-init-native-v1/result.json",
+          "scope": "Normal shared kernel controls and target initialization paths match the complete original record, mask 255. Independent current-input/volume/boot audit, 8/16 MiB welcome profiles and both cleanup phases pass. Register/interrupt/error paths and whole-file qualification remain open."
         }
       ]
     },
@@ -18755,7 +18791,26 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-variable-init.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-variable-init-original-v2/result.json",
+          "scope": "Actual original variable-init controls/defaults, global/static/noreg/array locals, captured patterns and restoration pass eight checks (mask 255). Full file/API qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-variable-init.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-variable-init-baseline-v2/result.json",
+          "scope": "Expected missing sys_var_init_flag at line 18 on normal old image; exact fixture/current-at-run input audit. Whole-file qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-variable-init.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-variable-init-native-v1/result.json",
+          "scope": "Normal shared kernel controls and target initialization paths match the complete original record, mask 255. Independent current-input/volume/boot audit, 8/16 MiB welcome profiles and both cleanup phases pass. Register/interrupt/error paths and whole-file qualification remain open."
+        }
+      ]
     },
     {
       "path": "Kernel/KStart64.HC",
