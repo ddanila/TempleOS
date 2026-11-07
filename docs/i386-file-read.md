@@ -37,3 +37,27 @@ unchanged failure outputs, binary and empty file contents, optional size output,
 interrupts enabled. The whole disk must remain unchanged. It uses a 128 KiB runner
 and a separate 64 KiB heap; this is component evidence on QEMU/486, not strict 386
 hardware qualification or a complete interactive-memory measurement.
+
+## Extended-image recovery observer (2026-11-07)
+
+The heap observer now validates the extended boot metadata and derives the
+kernel payload base from it, rather than assuming the historical `0x11000`
+address. Export bounds, runtime heap signature, arena bounds, exact used bytes
+and allocation-count comparisons remain enforced. The resident-include layout
+guard now matches the staged file-state record; its typed guest view checks
+`busy` at offset 28 and `drive` at offset 32. Both file-read runners accept
+`--welcome` for the current desktop startup.
+
+`build/i386-file-observer-extended-v1/result.json` passes on the frozen private-read
+candidate at 8 MiB TCG `486,-fpu`: all VGA checkpoints match, inputs remain
+unchanged, and the observed heap retains exactly 5,419,624 used bytes and 17,197
+allocations across the warmed arithmetic command. The observer's address is
+1,058,136, derived from the 1,048,576-byte payload base and the bounded kernel
+export. Current-image layout preflight and Python syntax checks pass.
+
+This validates the observer, not the complete file-recovery workflow. The longer
+public-read and resident-include recovery runs remain pending. The earlier
+`i386-private-read-staging-public-v1` run was explicitly stopped because its
+preloaded observer still assumed the obsolete address; its original oracle and
+partial guest evidence are preserved. Runtime private-read allocation changes
+are separate, unfinished work and are not qualified by this observer check.

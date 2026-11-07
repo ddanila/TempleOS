@@ -26,8 +26,16 @@ def observed_input(disk, report, private=True, boundary=None):
         if kind==4:ranges.append((offset,name))
     if len(offsets)!=1 or offsets[0]+24>size or not any(a<=offsets[0] and offsets[0]+24<=a+n for a,n in ranges):
         raise ValueError('Kernel heap is not one bounded data export')
-    address=0x11000+8+offsets[0]
-    evidence=dict(address=address,kernel_module_sha256=hashlib.sha256(module).hexdigest())
+    with Path(disk).open('rb') as stream:
+        stream.seek(528)
+        header=stream.read(16)
+    if len(header)!=16:raise ValueError('Missing extended boot metadata')
+    magic,version,length,base=struct.unpack('<4I',header)
+    if magic!=0x42323345 or version!=1 or base!=0x100000 or not 8+size<=length<=2039*512:
+        raise ValueError('Invalid extended boot metadata for private heap observation')
+    address=base+8+offsets[0]
+    evidence=dict(address=address,payload_base=base,payload_bytes=length,
+                  kernel_module_sha256=hashlib.sha256(module).hexdigest())
     report['private_heap_observation']=evidence
 
     def observe(phase,source,command,out):

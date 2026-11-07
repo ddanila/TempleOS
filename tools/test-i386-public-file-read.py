@@ -42,6 +42,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--welcome',action='store_true',help='Expect the original welcome document on current native images')
     parser.add_argument('--builder',type=Path,default=ROOT/'tools/build-i386-kernel.py',
                         help='Independent image auditor matching the candidate file ABI')
     parser.add_argument('--parents',action='store_true',help='Require original parent search for absolute child paths')
@@ -121,7 +122,7 @@ def main():
             runner=runpy.run_path(str(ROOT/'tools/i386-file-find-heap-observer.py'))['observed_input'](candidate,report)
         else:
             runner=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
-        report['behavior']=runner(candidate,out/'behavior',snapshot=False,cpu='486,-fpu',qmp_stdio=True,
+        report['behavior']=runner(candidate,out/'behavior',snapshot=False,cpu='486,-fpu',qmp_stdio=True,welcome=args.welcome,
             startup_check={'status':'ok','answers':[],'commands':commands})
         build=runpy.run_path(str(args.builder.resolve()))
         report['filesystem']=build['verify_mutated_volume'](candidate)

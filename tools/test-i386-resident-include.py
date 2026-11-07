@@ -45,7 +45,8 @@ def failure_layout(auditor, disk):
                 'Bool (*file_clone)(CI386Task *source,CI386Task *target,CI386Heap *heap);'
                 'Bool (*file_destroy)(CI386Task *task);U32 lifetime_refs;')
     files = ('class CI386TaskFiles{CI386Heap *heap;CI386Task *task;CFilePathContext *environment;'
-             'CI386FileVolumes *volumes;U32 signature,bytes,busy;U8 drive;};')
+             'CI386FileVolumes *volumes;CI386TaskFileStage *stage;U32 signature;'
+             'CI386TaskHeaps *directory_owner;U32 busy;U8 drive;};')
     if (clean(expected.encode()) not in clean(sources.get('/Kernel/I386/Scheduler.HH', b'')) or
             'classCI386Context{U32esp;};' not in clean(sources.get('/Kernel/I386/Context.HH', b'')) or
             clean(files.encode()) not in clean(sources.get('/Kernel/I386/TaskFiles.HH', b''))):
@@ -57,6 +58,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--welcome',action='store_true',help='Expect the original welcome document on current native images')
     parser.add_argument('--builder', type=Path, default=ROOT/'tools/build-i386-kernel.py',
                         help='Independent image auditor matching the candidate file ABI')
     parser.add_argument('--document', action='store_true', help='Also require DocRead to see the edited cache')
@@ -203,7 +205,9 @@ def main():
             commands += [
                 ('Bool CodeSize(I64 n){CHashGeneric *e=HashFind("C:/Probe/CacheInclude.HC",adam_task->hash_table,HTT_FILE);if(!e)return FALSE;e->user_data1=n;return TRUE;}', []),
                 ('class CacheFailTask:CTask{U32 private_prefix[15];U8 *file_state,*file_clone,*file_destroy;U32 lifetime_refs;};', []),
-                ('Bool CacheBorrowClear(){CacheFailTask *t=Fs;U32 *b=t->file_state;if(!b)return FALSE;b+=6;return b[0]==0;}', []),
+                ('class CacheFileState{U32 heap,task,environment,volumes,stage,signature,directory_owner,busy;U8 drive;};', []),
+                ('Bool CacheBorrowClear(){CacheFailTask *t=Fs;CacheFileState *b=t->file_state;return b&&b->busy==0;}', []),
+                ('offset(CacheFileState.busy)==28&&offset(CacheFileState.drive)==32;', ['1']),
                 ('U32 CacheFailRefs;', []),
                 ('U0 CacheRefsBefore(){CacheFailTask *t=Fs;CacheFailRefs=t->lifetime_refs;}', []),
                 ('Bool CacheRefsSame(){CacheFailTask *t=Fs;return t->lifetime_refs==CacheFailRefs;}', []),
@@ -235,7 +239,7 @@ def main():
             runner = runpy.run_path(str(ROOT/'tools/i386-file-find-heap-observer.py'))['observed_input'](
                 candidate, report, boundary=('CacheRefsBefore;', 'CacheHeapsSame;' if args.failure_public_recovery else 'RootCacheValue==49;'))
         report['behavior'] = runner(candidate, out/'behavior', snapshot=False, cpu='486,-fpu',
-                                   qmp_stdio=True, startup_check={'status': 'ok', 'answers': [], 'commands': commands})
+                                   qmp_stdio=True, welcome=args.welcome, startup_check={'status': 'ok', 'answers': [], 'commands': commands})
         report['result'] = 'pass'
     except Exception as error:
         report['error'] = str(error)
