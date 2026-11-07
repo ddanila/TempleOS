@@ -49,8 +49,9 @@ build/i386-window-border-cross-v1/welcome8. Concurrent execution does not qualif
 an isolated startup-time budget. The first chooser and 16 MiB diagnostic runs
 were terminated by signal 15; the source of the signal is not established.
 Their processes are absent and terminal-audit.json records the incomplete scope.
-Fresh runs are recorded in the cross-build's restarted-checks.json. Neither
-incomplete run is counted as a complete workflow/diagnostic pass.
+Fresh runs are recorded in the cross-build's restarted-checks.json. Both now
+complete successfully, as detailed below. Neither interrupted run is counted
+as a complete workflow/diagnostic pass.
 
 The interrupted chooser run did complete its first return and all three frame
 captures. Its settled ordinary/forced popup interiors have zero differences
@@ -62,3 +63,18 @@ interior cells. See build/i386-pick-dir-border-v1/layer-analysis.json,
 settled-interior-audit.json and residual-cells.json. These captures establish the
 specific border improvement, not complete FileMgr visual qualification or all
 three post-fix chooser returns.
+
+The fresh 16 MiB diagnostic run completes both program, ownership and cleanup
+phases and all 307,200 welcome pixels; see
+build/i386-window-border-cross-v1/diagnostic16-v2-audit.json. The reusable layer
+analyzer now reports popup-interior differences separately. Both the historical
+control and corrected ordinary/forced frames already have zero interior
+differences in the matching blink state. The measured border improvement is
+outside that interior; it does not establish a new interior-rendering fix.
+
+The fresh chooser run build/i386-pick-dir-border-v2 passes all three cases with
+exact default/explicit/empty returns and restoration masks [127,127,127].
+Arithmetic pixels, filesystem validation and independently reverified inputs
+pass. Its ordinary/forced text cells differ only in fifteen title cells, with
+zero interior differences. terminal-audit.json records the full functional
+result; this still does not qualify every FileMgr visual or normal-mode workflow.

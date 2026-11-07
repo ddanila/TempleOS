@@ -79,3 +79,12 @@ A focused original/native comparison now reproduces a separate border-coordinate
 defect when synchronous frames run on an offset caller. See
 [i386-window-border-context.md](i386-window-border-context.md) for the exact
 4,800-cell contract and native baseline failure.
+
+After the border-coordinate fix, build/i386-pick-dir-border-v2 passes all three
+chooser cases. The analyzer now records popup_interior_differences for both
+blink states and validates complete pixel-layer sizes and window bounds. The
+historical ordinary/forced control and corrected frames both have zero interior
+differences in their matching blink state; the border improvement is outside
+that region. The old analysis is preserved as
+layer-analysis-before-interior-metric.json, and all its preexisting metrics are unchanged. The initial frame
+remains transitional. See the border-context document for completed rerun gates.

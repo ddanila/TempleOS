@@ -41,14 +41,19 @@ def render(cells,blink):
 report={}
 for phase in phases:
  cells=struct.unpack('<4800I',(out/f'render-{phase}-cells.bin').read_bytes());state=struct.unpack('<16q',(out/f'render-{phase}-state.bin').read_bytes());actual=(out/f'render-{phase}-pixels.bin').read_bytes();overlay=(out/f'render-{phase}-overlay.bin').read_bytes();assert state[13:15]==(0,0)
+ if len(actual)!=307200 or len(overlay)!=307200:raise ValueError('Incomplete pixel layer')
+ left,right,top,bottom=state[7:11]
+ if not (0<=left<=right<80 and 0<=top<=bottom<60):raise ValueError('Invalid popup bounds')
  save(f'captured-{phase}.png',actual)
  candidate=render(cells,False);save(f'cells-{phase}.png',candidate)
  (out/f'cells-{phase}.txt').write_text('\n'.join(''.join(chr(c&255) if 32<=c&255<127 else '.' for c in cells[row*80:(row+1)*80]) for row in range(60))+'\n')
- diffs=[]
+ diffs=[];interior_diffs=[]
  for blink in (False,True):
   candidate=render(cells,blink)
   composed=bytes(o if o!=255 else c for o,c in zip(overlay,candidate))
   diffs.append(sum(a!=b for a,b in zip(composed,actual)))
- report[phase]=dict(state=state,shifted_cells=sum(bool((c>>16)&1023) for c in cells),overlay_values=dict(collections.Counter(overlay)),rendered_values=dict(collections.Counter(actual)),text_plus_overlay_differences=diffs)
+  interior_diffs.append(sum(composed[y*640+x]!=actual[y*640+x]
+    for y in range(top*8,(bottom+1)*8) for x in range(left*8,(right+1)*8)))
+ report[phase]=dict(state=state,shifted_cells=sum(bool((c>>16)&1023) for c in cells),overlay_values=dict(collections.Counter(overlay)),rendered_values=dict(collections.Counter(actual)),text_plus_overlay_differences=diffs,popup_interior_differences=interior_diffs)
 report['changed_cells']=sum(a!=b for a,b in zip(struct.unpack('<4800I',(out/'render-0-cells.bin').read_bytes()),struct.unpack('<4800I',(out/f'render-{phases[-1]}-cells.bin').read_bytes())))
 (out/'layer-analysis.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))

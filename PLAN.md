@@ -26974,3 +26974,26 @@ first chooser/16 MiB diagnostic runs exited by signal 15 before completion;
 fresh runs remain pending. No full post-fix chooser/diagnostic pass is claimed.
 See docs/i386-window-border-context.md. Full visual workflows and C1–C5 remain
 open.
+
+## FileMgr creation/cancellation and completed border reruns (2026-11-07)
+
+The post-fix chooser rerun now passes all three exact returns, restoration masks
+127, arithmetic, filesystem and input checks. The 16 MiB diagnostic completes
+both phases and exact welcome; the previous signal-15 interruptions remain
+preserved. The reusable frame analyzer confirms zero settled interior pixel
+differences in both the historical control and corrected image. Border artifacts
+were outside that interior; no new interior-rendering fix is claimed.
+
+A new normal FileMgr workflow drives actual hardware keys through make-directory,
+accept, a second make-directory/cancel and exit. The pinned original and native
+produce identical nine-value success records. Native preserves all original
+files/directories and creates only the expected fixture directories. Its first
+reboot probe used rejected conditional syntax. A corrected independent reboot
+probe on the same saved disk passes, with no literal answer in typed source and
+unchanged persisted contents. The final driver differs only in that expression;
+the combined audit does not claim a single-session rerun of the final driver.
+See docs/i386-filemgr-mkdir.md and docs/i386-window-border-context.md.
+
+The inventory now links these partial workflows and the cursor/border evidence;
+all 686 entries remain unqualified. Rename/delete, clipboard, drag/drop,
+editor/execution/help integration, full visual behavior and C1–C5 remain open.

@@ -265,6 +265,30 @@
           "result": "fail",
           "evidence": "build/i386-pick-dir-candidate-v2/result.json",
           "scope": "Full original FileMgr gets past DelTree and rejects missing Fmt at line 387, before chooser workflow; unchanged inputs."
+        },
+        {
+          "target": "native-directory-picker-interface233",
+          "result": "pass",
+          "evidence": "build/i386-pick-dir-win-cursor-v1/result.json",
+          "scope": "Complete unchanged FileMgr with real settings libraries explicitly loaded: default/explicit paths, Shift-Escape allocated empty result, three restoration masks 127, arithmetic pixels, filesystem and unchanged inputs. Historical pre-border-fix image; full visual/normal FileMgr workflows unqualified."
+        },
+        {
+          "target": "original-filemgr-directory-create-cancel",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-mkdir-original-v1/result.json",
+          "scope": "Actual normal FileMgr using hardware keys: d/form/Made/Escape, d/form/Cancelled/Shift-Escape, exit; exact nine success values, survivor bytes and caller restoration. Native comparison recorded separately; other FileMgr workflows unqualified."
+        },
+        {
+          "target": "native-directory-picker-screen-border-fix",
+          "result": "pass",
+          "evidence": "build/i386-pick-dir-border-v2/terminal-audit.json",
+          "scope": "All three chooser results, restoration masks 127, arithmetic, filesystem and unchanged inputs pass after synchronous border fix. Ordinary/forced frames have zero matching-blink interior raster differences and no interior cell differences; title, controls, transitions and whole FileMgr remain unqualified."
+        },
+        {
+          "target": "native-filemgr-directory-create-cancel-reboot",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-mkdir-native-v1/combined-audit.json",
+          "scope": "Composed verification: hardware-key create/cancel/exit, all nine original-equivalent rows, serialized paths and preserved files/directories, then corrected reboot probe on same disk contents. Initial reboot expression failed; final driver differs only in that expression and was not rerun as one session. Other FileMgr workflows remain unqualified."
         }
       ]
     },
@@ -2902,6 +2926,18 @@
           "result": "fail",
           "evidence": "build/i386-pick-dir-native-v3/result.json",
           "scope": "Link candidate rejects missing PopUpPickDir before workflow; unchanged inputs. Full chooser remains open."
+        },
+        {
+          "target": "native-directory-picker-interface233",
+          "result": "pass",
+          "evidence": "build/i386-pick-dir-win-cursor-v1/result.json",
+          "scope": "Complete unchanged FileMgr with real settings libraries explicitly loaded: default/explicit paths, Shift-Escape allocated empty result, three restoration masks 127, arithmetic pixels, filesystem and unchanged inputs. Historical pre-border-fix image; full visual/normal FileMgr workflows unqualified."
+        },
+        {
+          "target": "native-directory-picker-screen-border-fix",
+          "result": "pass",
+          "evidence": "build/i386-pick-dir-border-v2/terminal-audit.json",
+          "scope": "All three chooser results, restoration masks 127, arithmetic, filesystem and unchanged inputs pass after synchronous border fix. Ordinary/forced frames have zero matching-blink interior raster differences and no interior cell differences; title, controls, transitions and whole FileMgr remain unqualified."
         }
       ]
     },
@@ -4578,6 +4614,12 @@
           "result": "pass",
           "evidence": "build/i386-c2-persistent-window-green/result.json",
           "scope": "Console-89 twelve-command normal-manager session: plain default put/display doc, direct persistent body write, final-hook overlay/removal, transparent clear, exact full frames and continued input; unchanged pins; complete desktop/raw/cursor and whole-file qualification remain open"
+        },
+        {
+          "target": "native-synchronous-border-context",
+          "result": "pass",
+          "evidence": "build/i386-window-border-context-native-v1/terminal-audit.json",
+          "scope": "All 4800 screen-coordinate border/interior cells match original with an offset synchronous caller; baseline exactly reproduces the double-origin/clipping defect. Full-frame controls, transitions and application visual qualification remain open."
         }
       ]
     },
@@ -6185,6 +6227,12 @@
           "result": "pass",
           "evidence": "build/i386-desktop-layout-reference-v1/result.json",
           "scope": "Original startup has two focusable bordered task rectangles and sampled frame pixels; not full pixel parity or native desktop qualification"
+        },
+        {
+          "target": "native-window-cursor-interface233",
+          "result": "pass",
+          "evidence": "build/i386-win-cursor-pos-native-v1/terminal-audit.json",
+          "scope": "Sixteen direct WinCursorPosSet checks and exact coordinate record match the original, including viewport, lock and boundary behavior. Not complete cross-task mouse/window workflow qualification."
         }
       ]
     },
