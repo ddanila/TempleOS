@@ -385,6 +385,34 @@
           "result": "pass",
           "evidence": "build/i386-pick-file-yield-v1/result.json",
           "scope": "All five actual popup sessions and strict host fixture-byte guard pass in one final-driver run on the yield-corrected image; masks 255, names, caller ownership/restoration, arithmetic and filesystem. Independent terminal audit rechecks pins, original file tuples, directory attributes and exact fixture contents. Not full FileMgr qualification."
+        },
+        {
+          "target": "original-picker-key-dispatch",
+          "command": "python3 tools/test-i386-doc-picker-keys.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-keys-original-v1/result.json",
+          "scope": "Six metadata cases and five real picker sessions through public F4/Shift-F4: exact insertion/cancellation, cursor, unlocked caller during popup and incoming lock/role/cwd restoration. Old native opens no picker; new native matches original after fixture drive-prefix normalization. No physical F4, visual, heap or failure-recovery qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "native-picker-key-baseline",
+          "command": "python3 tools/test-i386-doc-picker-keys.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-picker-keys-native-baseline-v1/result.json",
+          "scope": "Six metadata cases and five real picker sessions through public F4/Shift-F4: exact insertion/cancellation, cursor, unlocked caller during popup and incoming lock/role/cwd restoration. Old native opens no picker; new native matches original after fixture drive-prefix normalization. No physical F4, visual, heap or failure-recovery qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "native-picker-key-dispatch",
+          "command": "python3 tools/test-i386-doc-picker-keys.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-keys-native-v1/result.json",
+          "scope": "Six metadata cases and five real picker sessions through public F4/Shift-F4: exact insertion/cancellation, cursor, unlocked caller during popup and incoming lock/role/cwd restoration. Old native opens no picker; new native matches original after fixture drive-prefix normalization. No physical F4, visual, heap or failure-recovery qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "original-physical-picker-keys",
+          "command": "python3 tools/test-i386-doc-picker-editor.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-editor-original-v3/result.json",
+          "scope": "Same six metadata and five action assertions through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), focused caller, real popup navigation/cancellation and editor return. Original passes; native physical run remains pending separately. No default-editor, heap or visual qualification. See docs/i386-doc-picker-keys.md."
         }
       ]
     },
@@ -2234,6 +2262,34 @@
           "result": "pass",
           "evidence": "build/i386-doc-save-editor-native-v1/result.json",
           "scope": "Physical Z, Ctrl-S, two Shift-Ctrl-S and Escape through DocEd(DOF_DONT_HOME): mask63, exact seven saved text/cursor bytes and caller restoration. Native additionally reopens exact bytes after cold boot. No default-editor migration, timed autosave, heap or visual qualification. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "original-picker-key-dispatch",
+          "command": "python3 tools/test-i386-doc-picker-keys.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-keys-original-v1/result.json",
+          "scope": "Six metadata cases and five real picker sessions through public F4/Shift-F4: exact insertion/cancellation, cursor, unlocked caller during popup and incoming lock/role/cwd restoration. Old native opens no picker; new native matches original after fixture drive-prefix normalization. No physical F4, visual, heap or failure-recovery qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "native-picker-key-baseline",
+          "command": "python3 tools/test-i386-doc-picker-keys.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-picker-keys-native-baseline-v1/result.json",
+          "scope": "Six metadata cases and five real picker sessions through public F4/Shift-F4: exact insertion/cancellation, cursor, unlocked caller during popup and incoming lock/role/cwd restoration. Old native opens no picker; new native matches original after fixture drive-prefix normalization. No physical F4, visual, heap or failure-recovery qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "native-picker-key-dispatch",
+          "command": "python3 tools/test-i386-doc-picker-keys.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-keys-native-v1/result.json",
+          "scope": "Six metadata cases and five real picker sessions through public F4/Shift-F4: exact insertion/cancellation, cursor, unlocked caller during popup and incoming lock/role/cwd restoration. Old native opens no picker; new native matches original after fixture drive-prefix normalization. No physical F4, visual, heap or failure-recovery qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "original-physical-picker-keys",
+          "command": "python3 tools/test-i386-doc-picker-editor.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-editor-original-v3/result.json",
+          "scope": "Same six metadata and five action assertions through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), focused caller, real popup navigation/cancellation and editor return. Original passes; native physical run remains pending separately. No default-editor, heap or visual qualification. See docs/i386-doc-picker-keys.md."
         }
       ]
     },
@@ -3605,6 +3661,34 @@
           "result": "pass",
           "evidence": "build/i386-doc-save-editor-native-v1/result.json",
           "scope": "Physical Z, Ctrl-S, two Shift-Ctrl-S and Escape through DocEd(DOF_DONT_HOME): mask63, exact seven saved text/cursor bytes and caller restoration. Native additionally reopens exact bytes after cold boot. No default-editor migration, timed autosave, heap or visual qualification. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "original-picker-key-dispatch",
+          "command": "python3 tools/test-i386-doc-picker-keys.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-keys-original-v1/result.json",
+          "scope": "Six metadata cases and five real picker sessions through public F4/Shift-F4: exact insertion/cancellation, cursor, unlocked caller during popup and incoming lock/role/cwd restoration. Old native opens no picker; new native matches original after fixture drive-prefix normalization. No physical F4, visual, heap or failure-recovery qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "native-picker-key-baseline",
+          "command": "python3 tools/test-i386-doc-picker-keys.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-picker-keys-native-baseline-v1/result.json",
+          "scope": "Six metadata cases and five real picker sessions through public F4/Shift-F4: exact insertion/cancellation, cursor, unlocked caller during popup and incoming lock/role/cwd restoration. Old native opens no picker; new native matches original after fixture drive-prefix normalization. No physical F4, visual, heap or failure-recovery qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "native-picker-key-dispatch",
+          "command": "python3 tools/test-i386-doc-picker-keys.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-keys-native-v1/result.json",
+          "scope": "Six metadata cases and five real picker sessions through public F4/Shift-F4: exact insertion/cancellation, cursor, unlocked caller during popup and incoming lock/role/cwd restoration. Old native opens no picker; new native matches original after fixture drive-prefix normalization. No physical F4, visual, heap or failure-recovery qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "original-physical-picker-keys",
+          "command": "python3 tools/test-i386-doc-picker-editor.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-editor-original-v3/result.json",
+          "scope": "Same six metadata and five action assertions through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), focused caller, real popup navigation/cancellation and editor return. Original passes; native physical run remains pending separately. No default-editor, heap or visual qualification. See docs/i386-doc-picker-keys.md."
         }
       ]
     },

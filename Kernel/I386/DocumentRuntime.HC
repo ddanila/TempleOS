@@ -188,6 +188,9 @@ Bool NativeDocUsesWindowLayout(CDoc *doc)
 }
 extern U0 EdCharIns(I64 ch,I64 sc,CDoc *doc);
 extern Bool DocWrite(CDoc *doc,Bool prompt=FALSE);
+extern U8 *PopUpPickDir(U8 *dir=NULL);
+extern U8 *PopUpPickFile(U8 *dir=NULL);
+extern U0 DocPrintPartial(CDoc *doc=NULL,U8 *fmt,...);
 I64 NativeDocClipboardKey(I64 ch,I64 sc)
 {//Original DocPutKey clipboard dispatch: -1 unrelated, 0 consumed, 1/2/3 copy/cut/paste.
   if(sc&SCF_ALT) return -1;
@@ -212,7 +215,7 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   Bool unlock,printable;
   I64 clipboard_action;
-  U8 *key_name;
+  U8 *key_name,*picker_path=NULL;
   if(!doc && !(doc=DocPut) || doc->doc_signature!=DOC_SIGNATURE_VAL) return;
   //The original callback runs before locking and can consume the key.
   if(doc->user_put_key && (*doc->user_put_key)(doc,doc->user_put_data,ch,sc)) return;
@@ -235,6 +238,18 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
       } else {
         if(sc&SCF_KEY_DESC)KeyDescSet("Edit/Save");
         else DocWrite(doc);
+      }
+    } else if(!ch && sc.u8[0]==SC_F4 && !(sc&(SCF_CTRL|SCF_ALT))) {
+      if(sc&SCF_KEY_DESC) {
+        if(sc&SCF_SHIFT)KeyDescSet("Cmd /Insert Directory Name");
+        else KeyDescSet("Cmd /Insert FileName");
+      } else {
+        DocUnlock(doc);
+        if(sc&SCF_SHIFT)picker_path=PopUpPickDir;
+        else picker_path=PopUpPickFile;
+        DocLock(doc);
+        if(picker_path)DocPrintPartial(doc,"%s",picker_path);
+        Free(picker_path);picker_path=NULL;
       }
     } else if(clipboard_action>=0) {
       if(sc&SCF_KEY_DESC) {
@@ -282,7 +297,7 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
     else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
         sc.u8[0]==SC_CURSOR_DOWN) EdLineDown(doc,sc);
     else DocBasicEditCore(doc,ch,sc);
-  } catch { if(unlock) DocUnlock(doc); }
+  } catch { Free(picker_path);if(unlock) DocUnlock(doc); }
   if(unlock) DocUnlock(doc);
   if(!(doc->flags&DOCF_DONT_SWAP_OUT)) Yield;
 }
