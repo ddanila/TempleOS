@@ -27340,3 +27340,13 @@ preservation hypothesis, not a proven root cause or API qualification. Native
 full-body source-loaded testing remains unverified. Preserve the null-message
 requirement; do not replace it with the passing explicit-message case. See
 docs/i386-lex-diagnostics.md for commands/artifacts and control scopes.
+
+
+### Correction to lexer reference investigation
+
+The earlier export fixture freed document buffers before host capture was
+guaranteed; overwritten reference bytes were observed. Retaining exports until
+guest shutdown allows the actual original default-null API to pass mask 31 and
+exact documents (original-v3, independently audited). The register-preservation
+hypothesis is withdrawn; earlier controls do not establish an API/compiler defect.
+Native retained-buffer comparison remains pending. See docs/i386-lex-diagnostics.md.

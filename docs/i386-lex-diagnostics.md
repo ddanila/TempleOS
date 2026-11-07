@@ -1,39 +1,26 @@
 # Lexer diagnostic integration evidence
 
-The real public dependencies DocPutLine, FixSet, dbg, AdamErr, IsSingleUser,
-PutFileLink, PrintErr/PrintWarn and FlushMsgs are available on native i386.
-The complete original diagnostic bodies in Compiler/CExcept.HC have not yet
-been delivered through native startup.
+The corrected original public-API reference passes the default-null LexExcept
+path in `build/i386-lex-diagnostics-original-v3` (mask 31). Its independent audit
+checks the restored original source tree, fixture and exact warning/exception
+documents. It uses real CCmpCtrl, waits for actual Adam-server readiness, and
+checks counters, Compiler exception, FixSet location and unchanged input position.
+Exported document allocations remain alive until guest shutdown.
 
-The original reference probe uses a real CCmpCtrl with a filename, identifier
-and input line. It checks warning/error counters, catching the Compiler exception,
-the saved FixSet location, unchanged input position and output documents. It
-waits for actual RLf_ADAM_SERVER readiness and temporarily enables single-user
-mode to suppress duplicate Adam output.
+Earlier fixtures freed exported buffers after a delay. This did not guarantee
+that the host had copied them: the no-register-locals control's exception export
+was visibly overwritten. The timeouts, trace passes and no-register control
+remain preserved under the earlier original/copy/trace/minimal/after-position
+artifacts. They do not establish a public API defect or register-allocation bug.
+The earlier register-preservation hypothesis is withdrawn pending valid evidence.
+An explicit-message original API control also passed mask 31.
 
-The shipped original default-null LexExcept call fails to complete within the
-observation window in `build/i386-lex-diagnostics-original-v2`. An uninstrumented
-source copy also times out in `build/i386-lex-diagnostics-copy-v1`. Both reach
-the before-exception marker after producing a valid warning document.
+The native source-loaded v1 probe completed all state checks but failed output
+comparison against that overwritten reference allocation. V2 in
+`build/i386-lex-diagnostics-native-loader-v2` uses retained export allocations and
+the corrected original public API reference; its result remains pending.
 
-The explicit-message original API control passes mask 31 in
-`build/i386-lex-diagnostics-message-v1`, with an independent reference audit.
-An instrumented source copy passes all stages in
-`build/i386-lex-diagnostics-trace-v1`. A single marker after LexPutPos also passes
-mask 31 (`build/i386-lex-diagnostics-after-position-v1`); markers after AdamErr
-or immediately before throw do not resolve the default-null failure.
-
-An uninstrumented, renamed original body compiled with OPTf_NO_REG_VAR enabled
-passes mask 31 and both documents in `build/i386-lex-diagnostics-no-reg-v1`.
-Its audit verifies the exact body apart from the diagnostic name, absence of
-trace calls, restored reference tree and exact fixture. This supports a register
-preservation/code-generation hypothesis; it does not prove the root cause or
-qualify the shipped original default-null API. The null-message path remains
-an explicit compatibility gap rather than being replaced by the passing
-explicit-message test.
-
-A native source-loaded probe of all five unchanged diagnostic bodies is retained
-under `build/i386-lex-diagnostics-native-loader-v1`. It requires the mask and both
-default-null documents to match the no-register-locals source control exactly.
-Its native result is not yet verified in this record. No instrumentation,
-substitute error handler or production change is supplied by that probe. Full compiler diagnostics and C1–C5 qualification remain open.
+All real public dependencies are now delivered, but the complete unchanged
+Compiler/CExcept.HC diagnostic bodies are not yet delivered through native
+startup. No instrumentation or substitute handler has been added to production.
+Full compiler diagnostics and C1–C5 qualification remain open.
