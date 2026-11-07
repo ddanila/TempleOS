@@ -10515,7 +10515,22 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-public-expression",
+          "command": "python3 tools/test-i386-public-expression.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-expression-original-v2/result.json",
+          "scope": "Actual original public LexExpression/I64/F64 calls execute nine arithmetic/comparison/conversion cases, checking values, final semicolon and zero counters. Independent exact fixture/restored source/current-input audit; not all expression workflows."
+        },
+        {
+          "target": "native-public-expression-baseline",
+          "command": "python3 tools/test-i386-public-expression.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-public-expression-baseline-v1/result.json",
+          "scope": "Normal pre-change image rejects Lex at helper line 6 before expression execution; independent inputs/fixture-only-volume/boot audit. Full public lexer and expression services remain open."
+        }
+      ]
     },
     {
       "path": "Compiler/PrsLib.HC",
@@ -19021,6 +19036,27 @@
           "result": "pass",
           "evidence": "build/i386-clamp-i64-candidate-v1/result.json",
           "scope": "Isolated candidate image, console interface 215: 22 exact signed clamp results and rendered 42 pass; inputs unchanged. Candidate core patch not yet applied to main; no whole math/God/Psalmody or C1-C5 qualification."
+        },
+        {
+          "target": "original-public-bit-scans",
+          "command": "python3 tools/test-i386-public-bit-scans.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-bit-scans-original-v1/result.json",
+          "scope": "Actual original public Bsf/Bsr: zero, all 64 single-bit and 512 mixed I64 values, independent host oracle, retained output and independent restored-source/input/fixture audit."
+        },
+        {
+          "target": "native-public-bit-scans-baseline",
+          "command": "python3 tools/test-i386-public-bit-scans.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-public-bit-scans-baseline-v1/result.json",
+          "scope": "Normal pre-change image rejects first Bsf at line 4; independent source pins, fixture-only volume and boot-byte audit."
+        },
+        {
+          "target": "native-public-bit-scans",
+          "command": "python3 tools/test-i386-public-bit-scans.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-bit-scans-native-v1/result.json",
+          "scope": "All 577 vectors and exact original output through normal-startup declarations, without test prototypes. Independently audited inputs/volume/boot bytes; 8/16 MiB welcome and both diagnostic phases pass. Other KernelB interfaces remain unqualified."
         }
       ]
     },

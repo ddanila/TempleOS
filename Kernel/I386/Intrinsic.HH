@@ -2,13 +2,7 @@
 #define I386_INTRINSICS_INCLUDED
 //Canonical declarations for intrinsics implemented by the native i386 backend.
 //Opcode values and signatures match CompilerA.HH and the original KernelB.HH.
-public _intern 0x77 Bool Bt( U8 *bit_field,I64 bit);
-public _intern 0x7A Bool Btc( U8 *bit_field,I64 bit);
-public _intern 0x79 Bool Btr( U8 *bit_field,I64 bit);
-public _intern 0x78 Bool Bts( U8 *bit_field,I64 bit);
-public _intern 0x7D Bool LBtc( U8 *bit_field,I64 bit);
-public _intern 0x7C Bool LBtr( U8 *bit_field,I64 bit);
-public _intern 0x7B Bool LBts( U8 *bit_field,I64 bit);
+#include "/Kernel/I386/Bits.HH"
 public _intern 0x1E I64 ToUpper(U8 ch);
 public _intern 0x84 I64 StrLen(U8 *st);
 public _intern 0x67 U16 InU16(I64 port);

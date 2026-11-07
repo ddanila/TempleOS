@@ -27384,3 +27384,19 @@ phases complete, and all 24 original token regression cases pass. These are grap
 prerequisites; LexExpression, PrsStreamBlk, full token delivery and C1–C5 remain
 open. See docs/i386-public-code.md for reference visibility and pointer-width
 corrections.
+
+
+## Public expression compiler prerequisites (2026-11-07)
+
+The reusable actual-original public expression contract passes nine executable
+state/value cases, including F64 conversions; normal native delivery still
+rejects Lex before execution. Full unchanged parser publication first required
+the original ICInfo table, then exposed missing Bsf/Bsr startup declarations.
+The normal intrinsic header now includes canonical Bits.HH. A 577-vector
+original bit-scan oracle passes and the native baseline rejects first Bsf.
+Both bootstrap generations pass refreshed source pins. Normal native scans
+match all 577 vectors and exact original bytes; both memory profiles match all
+welcome pixels and both diagnostic phases complete. Full parser publication
+passes Bsf and now reaches missing HashAddAfter. Real optimizer/type/backend/
+stream services and C1–C5 qualification remain open. See
+docs/i386-public-expression.md and docs/i386-bit-intrinsics.md.

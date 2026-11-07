@@ -55,3 +55,22 @@ memory forms, without allowing arbitrary LOCK-prefixed instructions. QEMU/486
 execution is development evidence; strict 386SX/DX hardware/profile validation,
 multiprocessor contention, full lexer tokenization and the native compiler/JIT
 remain outside these tests.
+
+
+## Normal startup declaration delivery
+
+The full expression-parser publication probe exposed a gap in the normal user
+header: Intrinsic.HH duplicated seven memory-bit declarations and omitted Bsf
+and Bsr. It now includes the canonical Kernel/I386/Bits.HH instead. The backend
+and intrinsic IDs are unchanged. A new normal-public contract supplies no
+prototypes and checks 577 values against an independent host bit-position
+oracle: zero, every single-bit I64 value, and 512 mixed values. The actual
+original passes; the pre-change normal native image rejects the first Bsf call
+at fixture line 4. The final normal native image passes all 577 values and
+byte-for-byte original output (build/i386-public-bit-scans-native-v1), with an
+independent input/fixture-only-volume/boot audit. Both bootstrap generations
+pass refreshed pins. The 8/16 MiB profiles match all 307,200 welcome pixels and
+both diagnostic program/ownership/cleanup phases complete; see
+build/i386-public-bit-scans-memory-audit.json. Full unchanged expression-parser
+publication now passes the scan call and reaches missing HashAddAfter, tracked
+in docs/i386-public-expression.md.
