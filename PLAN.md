@@ -27087,3 +27087,17 @@ The original and failed native baselines remain recorded; inventory entries
 retain unqualified status. Full interactive suites, isolated startup timing,
 DocPutKey scheduling parity, remaining FileMgr branches and all C1–C5 milestones
 remain open. See docs/i386-filemgr-clipboard.md and docs/i386-clipboard-keys.md.
+
+## DocPutKey cooperative scheduling baseline (2026-11-07)
+
+A new paired five-case test confirms the original final Yield contract.
+With one CPU and local timer preemption disabled only across the observed call,
+a ready child progresses during normal DocPutKey, a non-consuming callback
+and an incoming document lock. DOCF_DONT_SWAP_OUT and a consuming callback
+suppress progress. Original masks are five 63s with samples [1,0,0,1,1].
+Native on the picker cross-v1 image fails only the three progress bits, with
+masks [62,63,63,62,62] and all-zero samples. Interrupt/lock preservation,
+callback counts, caller roles and worker retirement pass. Input hashes are
+independently reverified. This records the known missing trailing Yield before
+a production scheduling change; no assertion is relaxed. See
+docs/i386-doc-key-yield.md. C1–C5 remain open.
