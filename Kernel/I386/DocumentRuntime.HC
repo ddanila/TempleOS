@@ -239,6 +239,14 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
         if(sc&SCF_KEY_DESC)KeyDescSet("Edit/Save");
         else DocWrite(doc);
       }
+    } else if(!ch && sc.u8[0]==SC_F3 && !(sc&(SCF_CTRL|SCF_ALT))) {
+      if(sc&SCF_KEY_DESC) {
+        if(sc&SCF_SHIFT)KeyDescSet("Edit/Find Last");
+        else KeyDescSet("Edit/Find Next");
+      } else {
+        doc->find_replace->scan_fwd=!(sc&SCF_SHIFT);
+        EdFindNext(doc);
+      }
     } else if(!ch && sc.u8[0]==SC_F4 && !(sc&(SCF_CTRL|SCF_ALT))) {
       if(sc&SCF_KEY_DESC) {
         if(sc&SCF_SHIFT)KeyDescSet("Cmd /Insert Directory Name");

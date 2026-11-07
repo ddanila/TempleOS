@@ -2304,6 +2304,41 @@
           "result": "pass",
           "evidence": "build/i386-doc-picker-editor-native-v1/result.json",
           "scope": "Six metadata masks15 and five action masks127 through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), real picker navigation/cancellation, insertion and incoming lock/role/cwd restoration. Exact original exports after only T:/C: fixture prefix normalization, fresh arithmetic and filesystem audit. No full visual, heap, failure or default-editor qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "original-find-key-dispatch",
+          "command": "python3 tools/test-i386-doc-find-keys.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-keys-original-v1/result.json",
+          "scope": "Ten action and six metadata cases: F3/Shift-F3 direction, search options, selected/filtered entries, no match, incoming lock, Alt API suppression and Ctrl autocomplete metadata. Exact search record, cursor/text tags, descriptions, roles/locks and caller heap. Baseline misses find dispatch; new native matches original. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "native-find-key-baseline",
+          "command": "python3 tools/test-i386-doc-find-keys.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-find-keys-native-baseline-v1/result.json",
+          "scope": "Ten action and six metadata cases: F3/Shift-F3 direction, search options, selected/filtered entries, no match, incoming lock, Alt API suppression and Ctrl autocomplete metadata. Exact search record, cursor/text tags, descriptions, roles/locks and caller heap. Baseline misses find dispatch; new native matches original. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "native-find-key-dispatch",
+          "command": "python3 tools/test-i386-doc-find-keys.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-keys-native-v1/result.json",
+          "scope": "Ten action and six metadata cases: F3/Shift-F3 direction, search options, selected/filtered entries, no match, incoming lock, Alt API suppression and Ctrl autocomplete metadata. Exact search record, cursor/text tags, descriptions, roles/locks and caller heap. Baseline misses find dispatch; new native matches original. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "original-physical-find-keys",
+          "command": "python3 tools/test-i386-doc-find-editor.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-editor-original-v2/result.json",
+          "scope": "Eight physical F3/Shift-F3 sessions through focused DocEd(DOF_DONT_HOME), plus two direct Alt guards and six direct metadata cases; all sixteen masks127 and thirty cursor/direction values match original, including exact caller heap. Default Home Alt-F3 colour insertion is a separate open workflow. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "native-physical-find-keys",
+          "command": "python3 tools/test-i386-doc-find-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-editor-native-v1/result.json",
+          "scope": "Eight physical F3/Shift-F3 sessions through focused DocEd(DOF_DONT_HOME), plus two direct Alt guards and six direct metadata cases; all sixteen masks127 and thirty cursor/direction values match original, including exact caller heap. Default Home Alt-F3 colour insertion is a separate open workflow. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
         }
       ]
     },
@@ -2506,6 +2541,41 @@
           "result": "pass",
           "evidence": "build/i386-doc-search-public-native-v1/result.json",
           "scope": "Public line, search and anchor contract; bounded cases, not full editor or desktop"
+        },
+        {
+          "target": "original-find-key-dispatch",
+          "command": "python3 tools/test-i386-doc-find-keys.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-keys-original-v1/result.json",
+          "scope": "Ten action and six metadata cases: F3/Shift-F3 direction, search options, selected/filtered entries, no match, incoming lock, Alt API suppression and Ctrl autocomplete metadata. Exact search record, cursor/text tags, descriptions, roles/locks and caller heap. Baseline misses find dispatch; new native matches original. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "native-find-key-baseline",
+          "command": "python3 tools/test-i386-doc-find-keys.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-find-keys-native-baseline-v1/result.json",
+          "scope": "Ten action and six metadata cases: F3/Shift-F3 direction, search options, selected/filtered entries, no match, incoming lock, Alt API suppression and Ctrl autocomplete metadata. Exact search record, cursor/text tags, descriptions, roles/locks and caller heap. Baseline misses find dispatch; new native matches original. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "native-find-key-dispatch",
+          "command": "python3 tools/test-i386-doc-find-keys.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-keys-native-v1/result.json",
+          "scope": "Ten action and six metadata cases: F3/Shift-F3 direction, search options, selected/filtered entries, no match, incoming lock, Alt API suppression and Ctrl autocomplete metadata. Exact search record, cursor/text tags, descriptions, roles/locks and caller heap. Baseline misses find dispatch; new native matches original. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "original-physical-find-keys",
+          "command": "python3 tools/test-i386-doc-find-editor.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-editor-original-v2/result.json",
+          "scope": "Eight physical F3/Shift-F3 sessions through focused DocEd(DOF_DONT_HOME), plus two direct Alt guards and six direct metadata cases; all sixteen masks127 and thirty cursor/direction values match original, including exact caller heap. Default Home Alt-F3 colour insertion is a separate open workflow. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "native-physical-find-keys",
+          "command": "python3 tools/test-i386-doc-find-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-editor-native-v1/result.json",
+          "scope": "Eight physical F3/Shift-F3 sessions through focused DocEd(DOF_DONT_HOME), plus two direct Alt guards and six direct metadata cases; all sixteen masks127 and thirty cursor/direction values match original, including exact caller heap. Default Home Alt-F3 colour insertion is a separate open workflow. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
         }
       ]
     },
@@ -3710,6 +3780,41 @@
           "result": "pass",
           "evidence": "build/i386-doc-picker-editor-native-v1/result.json",
           "scope": "Six metadata masks15 and five action masks127 through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), real picker navigation/cancellation, insertion and incoming lock/role/cwd restoration. Exact original exports after only T:/C: fixture prefix normalization, fresh arithmetic and filesystem audit. No full visual, heap, failure or default-editor qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "original-find-key-dispatch",
+          "command": "python3 tools/test-i386-doc-find-keys.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-keys-original-v1/result.json",
+          "scope": "Ten action and six metadata cases: F3/Shift-F3 direction, search options, selected/filtered entries, no match, incoming lock, Alt API suppression and Ctrl autocomplete metadata. Exact search record, cursor/text tags, descriptions, roles/locks and caller heap. Baseline misses find dispatch; new native matches original. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "native-find-key-baseline",
+          "command": "python3 tools/test-i386-doc-find-keys.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-find-keys-native-baseline-v1/result.json",
+          "scope": "Ten action and six metadata cases: F3/Shift-F3 direction, search options, selected/filtered entries, no match, incoming lock, Alt API suppression and Ctrl autocomplete metadata. Exact search record, cursor/text tags, descriptions, roles/locks and caller heap. Baseline misses find dispatch; new native matches original. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "native-find-key-dispatch",
+          "command": "python3 tools/test-i386-doc-find-keys.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-keys-native-v1/result.json",
+          "scope": "Ten action and six metadata cases: F3/Shift-F3 direction, search options, selected/filtered entries, no match, incoming lock, Alt API suppression and Ctrl autocomplete metadata. Exact search record, cursor/text tags, descriptions, roles/locks and caller heap. Baseline misses find dispatch; new native matches original. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "original-physical-find-keys",
+          "command": "python3 tools/test-i386-doc-find-editor.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-editor-original-v2/result.json",
+          "scope": "Eight physical F3/Shift-F3 sessions through focused DocEd(DOF_DONT_HOME), plus two direct Alt guards and six direct metadata cases; all sixteen masks127 and thirty cursor/direction values match original, including exact caller heap. Default Home Alt-F3 colour insertion is a separate open workflow. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "native-physical-find-keys",
+          "command": "python3 tools/test-i386-doc-find-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-find-editor-native-v1/result.json",
+          "scope": "Eight physical F3/Shift-F3 sessions through focused DocEd(DOF_DONT_HOME), plus two direct Alt guards and six direct metadata cases; all sixteen masks127 and thirty cursor/direction values match original, including exact caller heap. Default Home Alt-F3 colour insertion is a separate open workflow. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
         }
       ]
     },
@@ -15966,9 +16071,23 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "source-mapped-with-partial-observation",
+        "description": "Default MyPutKey/MyPutS chain precedes DocPutKey. Colour/time/indent/glyph insertion, autocomplete, tiling/maximize and clipboard line/anchor links are mapped in docs/i386-home-key-workflows.md; action/metadata, guards, cleanup and default installation remain unqualified."
+      },
+      "oracle": {
+        "status": "incomplete",
+        "description": "Require exact DolDoc/clipboard structures, cursor/state, foreground/window raster and handler consumption/fallthrough for every mapped input. Clock/random values need bounded or relational oracles. Only original physical Alt-F3 interception with visible green text has been observed; no native comparison."
+      },
+      "tests": [
+        {
+          "target": "original-alt-f3-routing-observation",
+          "command": "python3 tools/test-i386-doc-find-editor.py --out build/i386-doc-find-editor-original-v1",
+          "result": "incomplete",
+          "evidence": "build/i386-doc-find-editor-original-v1/terminal-audit.json",
+          "scope": "Historical frozen runner/combined fixture expected physical Alt-F3 to reach document callback. After eight find receipts, Alt-F3 was consumed by MyPutKey; terminal screenshot shows green text. Interrupted after concrete routing mismatch; not a passing colour workflow or native verdict. Corrected current search runner keeps Alt API guards separate. See docs/i386-home-key-workflows.md."
+        }
+      ]
     },
     {
       "path": "HomeLocalize.HC",
