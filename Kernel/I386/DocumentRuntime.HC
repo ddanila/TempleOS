@@ -211,6 +211,7 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   Bool unlock,printable;
   I64 clipboard_action;
+  U8 *key_name;
   if(!doc && !(doc=DocPut) || doc->doc_signature!=DOC_SIGNATURE_VAL) return;
   //The original callback runs before locking and can consume the key.
   if(doc->user_put_key && (*doc->user_put_key)(doc,doc->user_put_data,ch,sc)) return;
@@ -220,7 +221,11 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
     DocCaptureUndo(doc);
     printable=0<=ch<512 && Bt(native_doc_printable,ch);
     clipboard_action=NativeDocClipboardKey(ch,sc);
-    if(clipboard_action>=0) {
+    if(printable && !(sc&(SCF_CTRL|SCF_ALT)) && sc&SCF_KEY_DESC) {
+      key_name=Char2KeyName(ch,FALSE);
+      KeyDescSet("Char  /'%s'",key_name);
+      Free(key_name);
+    } else if(clipboard_action>=0) {
       if(sc&SCF_KEY_DESC) {
         if(clipboard_action==1)KeyDescSet("Edit/Copy to Clip");
         else if(clipboard_action==2)KeyDescSet("Edit/Cut To Clip");

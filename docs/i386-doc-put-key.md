@@ -340,3 +340,68 @@ reference observation used provisional zero expectations and therefore reports
 a fixture failure after recording the actual values
 (`build/i386-menu-large-page-reference-probe-v1`). The existing 8 MiB startup
 60-second gate and C1–C5 remain open.
+
+## Dispatch coverage audit (2026-11-07)
+
+The table below is a source-derived workflow inventory of the original
+DocPutKey dispatch, not a claim that each workflow has an executable original
+oracle. It compares `Adam/DolDoc/DocPutKey.HC` with the current native wrapper
+in `Kernel/I386/DocumentRuntime.HC`. A shared callee or a passing direct API
+test does not establish that a keyboard shortcut reaches it. Every row needs
+both action and SCF_KEY_DESC coverage, modifier guards, caller state and
+resource recovery before the dispatcher can be qualified as a whole.
+
+| Original input family | Required workflow and output | Native dispatch status / remaining gate |
+| --- | --- | --- |
+| Printable characters, including Space, Tab, Enter and Shift-Space | Original EdCharIns behavior, entry actions, form transitions, dollar parsing, overstrike and exact document text/structure | Routes selected cases through original helpers and falls back to DocBasicEditCore. Printable metadata is tracked in [description queries](i386-doc-key-description.md). The [selected-text insertion comparison](i386-doc-selected-typing.md) now records exact original text/cursor/selection and a failing native baseline. |
+| Alt-Backspace | Restore undo; Shift/Ctrl suppress it | Action branch exists; complete metadata and modifier matrix remains open. |
+| Up/Down, Home/End, Ctrl-Up/Down | Original line and boundary movement with Shift selection | Form paths use original helpers; non-form fallback still differs. Default geometry and selection must be checked, beyond the matched-window chooser cases above. |
+| Page Up/Down | Original page movement, selection and Ctrl suppression | Original helper used for window-layout documents. Retained VGA editor still has separate layout/movement. |
+| Left/Right, Ctrl-Left/Right | Character movement or line boundary; selection and metadata | Form paths use original movers; complete non-form/layout coverage remains open. |
+| Delete, Shift-Delete | Delete character or cut; Ctrl suppresses | Clipboard dispatch exists; original deletion and all description guards remain open. |
+| Insert, Shift-Insert, Ctrl-Insert | Toggle overstrike, paste or copy; combined Shift/Ctrl suppresses | Explicit branches exist; clipboard bindings have [paired API and resource evidence](i386-clipboard-keys.md). |
+| Ctrl-F1 through Ctrl-F10, with/without Shift | Symbol autocomplete or source navigation | Explicit original-core routing exists. Full key/selection/task workflow coverage remains required. |
+| F1, Shift-F1 | Open HelpIndex or AboutTempleOS in Ed | No explicit native DocPutKey branch. Require actual opened document, navigation and return. |
+| F2, Shift-F2 | Macro editor or stop recorder/strip triggering key/play macro | No explicit native DocPutKey branch. Macro service tests do not qualify this dispatch or lock transitions. |
+| F3, Shift-F3 | Set forward/backward scan and find next/last | No explicit native DocPutKey branch. Require search state and exact cursor/selection results. |
+| F4, Shift-F4 | File/directory chooser, insert returned path, free returned allocation | Public [file picker](i386-pick-file.md) is tested separately; keyboard invocation and insertion remain absent from the wrapper. |
+| F5, Shift-F5 | Resolve entry link or save document; resolve directory Run.HC.Z; PopUpFile or AdamFile | No explicit native DocPutKey branch. Require persisted source, execution effect, completion/error and caller restoration. |
+| F6, Shift-F6 | GodSong or GodDoodle | No explicit native DocPutKey branch. Require actual tool workflow, audio/graphics and return. |
+| F7, Shift-F7 | Flush FIFO, add event-time bits, generate word or Bible passage | No explicit native DocPutKey branch. Require actual service effects with nondeterminism explicitly accounted for. |
+| Ctrl-A | Save As then replace directory context on success | No explicit native DocPutKey branch; native DocWrite still rejects prompt=TRUE. Require accept/cancel/error, exact filename/context and reboot/reopen. |
+| Ctrl-B | Toggle owning task window border | No explicit native DocPutKey branch. Direct WinBorder/rendering evidence does not qualify this shortcut. |
+| Ctrl-C/X/V | Copy/cut/paste, Shift guards and descriptions | Explicit dispatch; bounded [clipboard contracts](i386-clipboard-keys.md) and [FileMgr workflows](i386-filemgr-clipboard.md) pass on their recorded images. |
+| Ctrl-D | Unlock, run FileMgr, relock | No explicit native DocPutKey branch. Standalone FileMgr evidence does not establish shortcut integration. |
+| Ctrl-F, Shift-Ctrl-F | Find/replace or FindWiz file search | No explicit native DocPutKey branch. Require real prompts, edits/results, cancellation and restoration. |
+| Ctrl-G | Prompt for and go to line | No explicit native DocPutKey branch. Direct navigation APIs do not qualify the prompt workflow. |
+| Backspace | Respect entry/prompt/soft-newline boundaries and delete through original EdCharDel | Native fallback; original boundary and metadata matrix remain open. |
+| Ctrl-I, shifted variant | Insert indentation command unless scan is Tab | No explicit native DocPutKey branch. Require exact command entries and resulting layout. |
+| Modified newline | Original Return/Page Break metadata and EdCharIns action | No matching explicit native branch for the original non-printable/modifier dispatch. Require entry types and modifier matrix. |
+| Ctrl-K/U/W/Z, shifted variants | Enable/disable blink, underline, word wrap, inversion | No explicit native DocPutKey branches. Require serialized DolDoc entries and rendered effects. |
+| Ctrl-L, Shift-Ctrl-L | Widget wizard or code tools, with unlock/relock | No explicit native DocPutKey branch. Require full insertion/tool actions and cancellation/recovery. |
+| Ctrl-M, Shift-Ctrl-M | Personal menu or notes | No explicit native DocPutKey branch. Require actual document/menu actions, close and ownership recovery. |
+| Ctrl-O, Shift-Ctrl-O | Expand/collapse document | No explicit native DocPutKey branch. Shared transformation bodies do not qualify keyboard routing. |
+| Ctrl-P, Shift-Ctrl-P | Toggle super/subscript based on current mode | No explicit native DocPutKey branch. Require mode flags, inserted commands and visual placement. |
+| Ctrl-Q | No action | Require explicit no-mutation/control-state observation, including metadata mode. |
+| Ctrl-R | Edit existing sprite or insert one; suppress in form/plain text | No explicit native DocPutKey branch. Require both sprite paths and all guards. |
+| Ctrl-S, Shift-Ctrl-S | Save or toggle autosave | No explicit native DocPutKey branch. Require persistence/reboot and autosave state/timing. |
+| Ctrl-T, Shift-Ctrl-T | Toggle document or entry plain text outside forms | No explicit native DocPutKey branch. Require round trips, form suppression and exact layout/entries. |
+| Ctrl-Y | Delete line, suppressed with Shift | No explicit native DocPutKey branch. Require first/middle/last line, cursor and ownership behavior. |
+| Ctrl-0 through Ctrl-9, with/without Shift | Word completion or definition | Explicit original-core routing exists; full dictionary and interaction qualification remains open. |
+| Ctrl-[ and Ctrl-], with/without Shift | Find matching bracket or brace in the corresponding direction | No explicit native DocPutKey branch. Require exact match/no-match positions and description strings. |
+
+The common entry/exit contract also includes null-document resolution, signature
+validation, callback consumption, undo-dirty marking/capture, incoming lock
+ownership and cooperative scheduling. [The yield comparison](i386-doc-key-yield.md)
+records the five scheduling cases and restored native yield. Invalid documents,
+exceptional callbacks, all shortcut lock transitions and complete desktop
+integration remain separate gates. F8–F10 without Ctrl and unhandled input also
+need no-action observations; the function-key range itself does not imply an
+action for these keys.
+
+Complete integration must preserve the original dispatch and its real service
+workflows. The retained VGA editor's layout dependency is an unresolved migration
+constraint, not an intentional compatibility exception. Source-derived gaps in
+this table do not by themselves provide the executable original baseline needed
+before each implementation change. No inventory item is promoted to qualified
+by this audit.

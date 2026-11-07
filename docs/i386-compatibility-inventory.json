@@ -3423,6 +3423,30 @@
           "result": "fail",
           "evidence": "build/i386-doc-key-description-native-baseline-v2/result.json",
           "scope": "Nine metadata queries; original preserves selected text/cursor and returns exact descriptions. Both native images identically fail printable cases while copy control and resource/role/lock checks pass. Source-dollar escaping corrected after invalid v1 fixture. See docs/i386-doc-key-description.md."
+        },
+        {
+          "target": "original-printable-key-descriptions-edit-controls",
+          "result": "pass",
+          "evidence": "build/i386-doc-key-description-original-v4/result.json",
+          "scope": "Nine metadata masks127 plus two ordinary unselected insertion controls127 with exact AKeep/zKeep bytes. Earlier selected-text replacement assumption failed on original; that observed compatibility gap remains open. See docs/i386-doc-key-description.md."
+        },
+        {
+          "target": "native-printable-key-descriptions",
+          "result": "pass",
+          "evidence": "build/i386-doc-key-description-native-v1/result.json",
+          "scope": "Restored original printable metadata branch. Nine masks127 and two typing controls127; all three exported buffers identical to original-v4. Exact heap, roles, locks, arithmetic, filesystem and terminal input audit pass. Clipboard19 and scheduling5 regressions also pass on the same image. Complete dispatcher remains unqualified; source-derived workflow audit in docs/i386-doc-put-key.md."
+        },
+        {
+          "target": "selected-typing-original-v1",
+          "result": "pass",
+          "evidence": "build/i386-doc-selected-typing-original-v1/result.json",
+          "scope": "Four direct insertion cases: original masks127x4, native [127,127,120,120]. Original retains selected Keep text and selection while inserting; native deletes it. Exact exported text/cursor/selection, description/locks/roles/heap and terminal input/volume audits. Production fix pending; see docs/i386-doc-selected-typing.md."
+        },
+        {
+          "target": "selected-typing-native-baseline-v1",
+          "result": "fail",
+          "evidence": "build/i386-doc-selected-typing-native-baseline-v1/result.json",
+          "scope": "Four direct insertion cases: original masks127x4, native [127,127,120,120]. Original retains selected Keep text and selection while inserting; native deletes it. Exact exported text/cursor/selection, description/locks/roles/heap and terminal input/volume audits. Production fix pending; see docs/i386-doc-selected-typing.md."
         }
       ]
     },

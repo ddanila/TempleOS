@@ -60,6 +60,11 @@ def main():
         data = (g.out/'description-masks.bin').read_bytes()
         (out/'description-masks.bin').write_bytes(data)
         report['rows'] = list(struct.unpack('<9q',data))
+        data=(g.out/'description-controls.bin').read_bytes();(out/'description-controls.bin').write_bytes(data)
+        report['editing_controls']=list(struct.unpack('<2q',data))
+        data=(g.out/'description-edits.bin').read_bytes();(out/'description-edits.bin').write_bytes(data)
+        if report['editing_controls'] != [127]*2 or data != b'AKeep\0zKeep\0':
+            raise ValueError('Ordinary editing controls differ: '+repr(report['editing_controls'])+' '+repr(data))
         if report['rows'] != [127]*9:
             raise ValueError('Description masks differ: '+repr(report['rows']))
         if args.disk:

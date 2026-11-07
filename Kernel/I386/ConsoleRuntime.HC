@@ -243,6 +243,7 @@ U0 BFieldOrU32(U8 *bit_field,I64 bit,U32 pattern)
 }
 #include "/Kernel/I386/MediaPathDispatch.HH"
 extern U0 Yield();
+extern U8 *Char2KeyName(I64 ch,Bool include_ctrl=TRUE);
 #include "/Kernel/I386/DocumentRuntime.HC"
 #include "/Kernel/I386/InstallTree.HC"
 #include "/Kernel/I386/BuildModuleDispatch.HC"
@@ -505,7 +506,6 @@ extern U0 Reboot();
 extern U0 KeyMapFamily(CTask *task,I64 scf,Bool no_shift,Bool shift);
 extern U0 KeyMapCtrlAltFamily(Bool no_shift,Bool shift);
 extern U0 KeyMap(CTask *task=NULL);
-extern U8 *Char2KeyName(I64 ch,Bool include_ctrl=TRUE);
 extern I64 Char2ScanCode(I64 ch,I64 sc_flags=0);
 extern U8 ScanCode2Char(I64 sc);
 extern U8 *ScanCode2KeyName(I64 sc);
