@@ -32,7 +32,7 @@ fixtures failed compilation because original HolyC does not accept `continue`;
 the guarded-body correction preserves the intended selection filter. Those
 failed references and their frozen inputs remain preserved.
 
-## Native gap
+## Native failing baseline
 
 The first native file/tree runs use separate copies of the full-content image
 from build/i386-window-border-cross-v1 and explicitly load real autocomplete
@@ -56,3 +56,28 @@ audits verify every pinned input, the exact completed stages and unchanged
 source/neighbor bytes. No post-copy assertions, native paste, restoration,
 arithmetic or reboot qualification is claimed. These are failing baselines
 for restoring the original clipboard key dispatch, not passing native tests.
+
+## Corrected native workflows
+
+After restoring original clipboard dispatch in native DocPutKey,
+build/i386-filemgr-clipboard-file-native-v2 and
+build/i386-filemgr-clipboard-tree-native-v2 pass the complete unchanged driver.
+Each completes all keyboard stages, thirteen assertions, exact clipboard mask
+and payload exports, arithmetic output, exact serialized file/directory checks
+and a second boot. All four exported files match original-v2 byte for byte.
+The file reboot answer appears at column 0, row 12; the longer tree command
+wraps and its answer appears at column 0, row 13.
+
+Independent terminal audits reverify every pinned input and snapshot the disk
+after reboot. Every preexisting file tuple and directory attribute is preserved;
+only the fixture and exact expected source/copied tree or file paths exist.
+The tree case preserves both Empty directories and the binary nested payload
+without duplicate descendants. These are single complete runs of the final
+driver, using normal scheduling and the real shared clipboard.
+
+The production image is build/i386-clipboard-keys-cross-v1/kernel.img. The
+paired nineteen-case clipboard key/API comparison, fresh two-generation
+bootstrap, normal8 welcome and full16 startup diagnostics also pass; see
+i386-clipboard-keys.md. Broader navigation, collisions, interruption/failure
+cleanup, drag/drop, editor/help/execution, media and full visual behavior remain
+open. Automatic settings startup and C1–C5 completion remain unqualified.

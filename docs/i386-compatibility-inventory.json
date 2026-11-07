@@ -337,6 +337,18 @@
           "result": "fail",
           "evidence": "build/i386-filemgr-clipboard-tree-native-v1/result.json",
           "scope": "Hardware selection reaches copy key, then times out awaiting clipboard contents. Native DocPutKey lacks copy-key dispatch. Source and survivor bytes preserved; paste and reboot not reached."
+        },
+        {
+          "target": "native-file-clipboard",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-clipboard-file-native-v2/result.json",
+          "scope": "Complete unchanged hardware-key driver: selection/copy/paste, original-equivalent thirteen rows and all four exports, caller/clipboard restoration, arithmetic, exact filesystem and reboot. Independent terminal audit rechecks all pins and exact post-reboot preservation. Not complete clipboard/FileMgr qualification."
+        },
+        {
+          "target": "native-tree-clipboard",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-clipboard-tree-native-v2/result.json",
+          "scope": "Complete unchanged hardware-key driver: selection/copy/paste, original-equivalent thirteen rows and all four exports, caller/clipboard restoration, arithmetic, exact filesystem and reboot. Independent terminal audit rechecks all pins and exact post-reboot preservation. Not complete clipboard/FileMgr qualification."
         }
       ]
     },

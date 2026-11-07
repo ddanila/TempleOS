@@ -46,8 +46,7 @@ Both original bootstrap generations pass in
 build/rebuild-clipboard-keys-v1-verified. The full-content cross-build
 build/i386-clipboard-keys-cross-v1 passes the 386 instruction audit (96 BIOS,
 332 protected-mode instructions). Its post-export audit matches all 1,736
-production source hashes to the bootstrap. Runtime results are recorded below
-as the bounded verification runs complete. These are partial C2/C4 checks,
+production source hashes to the bootstrap. Runtime results are recorded below. These are partial C2/C4 checks,
 not complete DocPutKey, clipboard, FileMgr or C1–C5 qualification.
 
 The final original-v5 and native-v2 runs have byte-identical nineteen masks
@@ -67,6 +66,9 @@ use and broader input behavior remain open as described in i386-clipboard.md.
 
 Normal 8 MiB startup reaches DONE and passes all 307,200 welcome pixels in
 build/i386-clipboard-keys-cross-v1/welcome8. This concurrent run establishes
-functional startup, not the isolated 60-second timing gate. The 16 MiB
-diagnostic and the two FileMgr copy/paste/reboot sessions are still running
-at this implementation commit; their results must be recorded independently.
+functional startup, not the isolated 60-second timing gate. The 16 MiB startup diagnostic also passes both program, code-heap ownership
+and file-break cleanup phases, reaches DONE, and matches all 307,200 welcome
+pixels; see diagnostic16-audit.json. Both FileMgr copy/paste/reboot sessions
+pass their complete drivers and independent post-reboot audits; see
+i386-filemgr-clipboard.md. The larger enclosing interactive suite and isolated
+startup timing remain separate gates.

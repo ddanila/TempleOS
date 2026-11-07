@@ -27070,3 +27070,20 @@ production hashes matched after export. Normal8 startup and all 307,200 welcome
 pixels pass. Full16 diagnostics and FileMgr file/tree paste/reboot sessions
 remain live at this commit. See docs/i386-clipboard-keys.md. This is partial
 C2/C4 progress; all C1–C5 milestones remain unqualified.
+
+## FileMgr clipboard durability and startup checks complete (2026-11-07)
+
+The corrected FileMgr file/tree native-v2 runs both pass the complete unchanged
+driver, including all thirteen original-equivalent rows, clipboard masks 1/15,
+actual source/copied bytes, arithmetic, serialized filesystem and a second boot.
+Independent post-reboot audits compare every preexisting file and directory,
+require the exact new paths/bytes, and reverify inputs. The tree case preserves
+empty directories and nested binary bytes without duplicate descendants.
+
+Full16 startup diagnostics finish both program, code-heap ownership and
+file-break cleanup phases, reach DONE and match all 307,200 welcome pixels.
+Normal8 welcome and the paired nineteen-case API/resource comparison also pass.
+The original and failed native baselines remain recorded; inventory entries
+retain unqualified status. Full interactive suites, isolated startup timing,
+DocPutKey scheduling parity, remaining FileMgr branches and all C1–C5 milestones
+remain open. See docs/i386-filemgr-clipboard.md and docs/i386-clipboard-keys.md.
