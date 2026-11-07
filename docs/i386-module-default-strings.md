@@ -82,5 +82,11 @@ These are allocator totals after startup, including allocation overhead and
 reserved backing blocks inside the main arena. They exclude low-memory backing
 and do not represent total physical RAM use, application peaks, or a measured
 minimum RAM requirement. Capturing stops the VM, so this does not qualify startup
-timing. Matching generation-one captures are running separately. Full compatibility suites on both generations and the required
+timing. Matching generation-one captures also pass in
+`build/i386-generation1-startup-memory64-v1` and
+`build/i386-generation1-startup-memory128-v1`, with unchanged inputs and validated
+physical snapshot hashes. Both record 5,313,112 used main-arena bytes and the
+same 5,333,344-byte high-water mark. Capacities match the corresponding rows
+above. This establishes startup heap observations for both frozen generations,
+not their application-workload or timing qualification. Full compatibility suites on both generations and the required
 memory/startup/resource profiles remain open, so C5 is not complete.

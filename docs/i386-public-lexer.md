@@ -124,7 +124,11 @@ The cross-build, packaging, instruction audit and source audit pass in
 `build/i386-public-attachment-cross-v1`. ConsoleRuntime grows from 2,056,210 to
 2,059,029 bytes; Kernel changes for the interface version, with unchanged size.
 The other fourteen emitted modules are byte-identical. Source-block parity is
-recorded in `build/i386-public-attachment-source-parity.json`. Full diagnostics
-and the fresh 8 MiB scrolling regression are still running. This qualifies the
+recorded in `build/i386-public-attachment-source-parity.json`. The full 16 MiB
+diagnostic and exact welcome pass (`diagnostic16-audit.json`); the outer builder
+interactive/rejection checks remain running. The fresh suspended 8 MiB KVM
+scrolling regression passes all four exact typing/result pixel checkpoints and
+restores the refresh flag in `build/i386-public-attachment-scroll-v1`, with
+unchanged inputs. This qualifies the
 attachment API, not LexGetChar, Lex/LexExtStr, prompt/error handling, complete
 Psalmody, or C1–C5.

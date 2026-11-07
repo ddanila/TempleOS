@@ -26799,3 +26799,14 @@ native export/source audits and exact original block parity pass. See
 docs/i386-public-lexer.md for preserved fixture errors and scope. Full diagnostics
 and fresh scrolling checks remain pending; public character/token/prompt support,
 Psalmody and all C1–C5 gates remain open.
+
+
+## Attachment regressions and generation-one memory captures (2026-11-07)
+
+The interface-227 full 16 MiB diagnostic and exact welcome pass; the enclosing
+builder's remaining interactive/rejection checks are still running. Its fresh
+suspended 8 MiB scrolling regression also passes exact pixels and refresh-flag
+restoration. Both frozen interface-224 generation-one startup captures pass at
+64/128 MiB and match generation two's 5,333,344-byte main-arena high-water mark.
+See docs/i386-public-lexer.md and docs/i386-module-default-strings.md for scope.
+Application-workload profiles, full suites and C1–C5 remain open.
