@@ -26767,3 +26767,13 @@ The preserved initial fixture error called internal LexIncludeStr; the public
 replacement is verified against the original system. See
 docs/i386-public-lexer.md. Public character/token implementation, error/prompt
 coverage, Psalmody and C1–C5 remain open.
+
+
+## Frozen generation-two installation (2026-11-07)
+
+All nine generated interface-224 modules install byte-for-byte into a fresh copy.
+Fresh 8 MiB boot passes arithmetic, document allocation, dollar-growth recovery
+and diagnostic unload checks. The terminal audit preserves source/candidate
+hashes and discloses the later host verifier change with an unchanged disk-reader
+AST. See docs/i386-module-default-strings.md. Startup memory capture at 64/128 MiB,
+complete application suites, current-source generations and C5 remain open.
