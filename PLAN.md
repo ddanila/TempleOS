@@ -27020,3 +27020,15 @@ that map and the new exact evidence while retaining unqualified status for all
 686 items. Clipboard, drag/drop, broader navigation, editor/execution/help,
 media, failure cleanup, complete visuals and C1–C5 remain open. See
  docs/i386-filemgr-edit.md for the concrete fixtures and evidence.
+
+## Resident include public heap mismatch measured (2026-11-07)
+
+The terminal heaps-v2 diagnostic reaches the unchanged exact recovery assertion
+and records a 5,176-byte caller heap increase (55,136 to 60,312), unchanged root
+heap (797,760) and successful queue quiescence. Its original oracle passes,
+source/persisted fixture remain unchanged, and filesystem allocation audit
+passes. The test remains fail; allocation ownership versus console transcript
+growth still requires attribution. The driver now offers nonallocating counter
+logging, explicit accelerator selection and command-length preflight, with all
+47 submitted commands recorded. See docs/i386-file-read.md and the terminal
+audit in build/i386-scroll-resident-include-heaps-v2. No C1–C5 gate closes.

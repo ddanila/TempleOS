@@ -72,7 +72,11 @@ def main():
     parser.add_argument('--failed-write-compressed', action='store_true', help='Use a rejected .Z filename and require the cached serialized bytes to expand correctly')
     parser.add_argument('--failed-write-lifecycle', action='store_true', help='Also compare cache removal after an ordinary rejected write')
     parser.add_argument('--parent-write', action='store_true', help='Require original FileWrite creation of missing nested parent directories')
+    parser.add_argument('--accel', choices=('tcg','kvm'), default='tcg')
+    parser.add_argument('--observe-public-heaps', action='store_true', help='Log exact public heap counters at the unchanged recovery assertion')
     args = parser.parse_args()
+    if args.observe_public_heaps and not args.failure_public_recovery:
+        parser.error('--observe-public-heaps requires --failure-public-recovery')
     rejected_name = REJECTED_NAME+('.Z' if args.failed_write_compressed else '')
     if args.failure_recovery and not args.allocation_failure:
         parser.error('--failure-recovery requires --allocation-failure')
@@ -95,6 +99,8 @@ def main():
     candidate.write_bytes(original)
     report = dict(result='fail', source_disk_sha256=hashlib.sha256(original).hexdigest(),
                   scope='Public cache source mutation must affect compiler #include; persisted source stays original')
+    report['accel'] = args.accel
+    report['observe_public_heaps'] = args.observe_public_heaps
     report['document'] = args.document
     report['removal'] = args.removal
     report['default_extension'] = args.default_extension
@@ -227,6 +233,10 @@ def main():
                     ('I64 CacheCallerUsed,CacheRootUsed;', []),
                     ('Bool CacheQuiet(){CJob *h=&Fs->srv_ctrl.next_waiting,*j=h->next;while(j!=h){if(j->job_code!=JOBT_MSG||j->msg_code!=MSG_KEY_UP||MHeapCtrl(j)!=adam_task->data_heap)return FALSE;j=j->next;}FlushMsgs;return h->next==h;}', []),
                     ('Bool CacheHeapsSame(){if(!CacheQuiet)return FALSE;return Fs->data_heap->used_u8s==CacheCallerUsed&&adam_task->data_heap->used_u8s==CacheRootUsed;}', [])]
+                if args.observe_public_heaps:
+                    definitions.insert(1, ('U0 CacheHex(I64 n){U8 *s="0123456789ABCDEF";I64 i;for(i=60;i>=0;i-=4)OutU8(0xE9,s[(n>>i)&15]);OutU8(0xE9,32);}', []))
+                    definitions.insert(-1, ('U0 CacheHeapLog(Bool q,I64 c,I64 r){U8 *s="CACHE PUBLIC HEAPS ";while(*s)OutU8(0xE9,*s++);CacheHex(q);CacheHex(CacheCallerUsed);CacheHex(c);CacheHex(CacheRootUsed);CacheHex(r);OutU8(0xE9,10);}', []))
+                    definitions[-1] = ('Bool CacheHeapsSame(){Bool q=CacheQuiet;I64 c=Fs->data_heap->used_u8s,r=adam_task->data_heap->used_u8s;CacheHeapLog(q,c,r);return q&&c==CacheCallerUsed&&r==CacheRootUsed;}', [])
                 index = next(i for i, (source, _) in enumerate(commands) if source.startswith('U32 CacheFailRefs'))
                 commands[index:index] = definitions
                 commands = [(('Bool CacheRefsBefore(){CacheFailTask *t=Fs;if(!CacheQuiet)return FALSE;CacheFailRefs=t->lifetime_refs;CacheCallerUsed=Fs->data_heap->used_u8s;CacheRootUsed=adam_task->data_heap->used_u8s;return TRUE;}', answers)
@@ -238,8 +248,12 @@ def main():
             report['failure_heap_scope'] = 'Private used bytes/allocation count/signature across allocation rejection, metadata restoration and successful include'
             runner = runpy.run_path(str(ROOT/'tools/i386-file-find-heap-observer.py'))['observed_input'](
                 candidate, report, boundary=('CacheRefsBefore;', 'CacheHeapsSame;' if args.failure_public_recovery else 'RootCacheValue==49;'))
+        (out/'commands.json').write_text(json.dumps(commands,indent=2)+'\n')
+        too_long=[(i,len(source)) for i,(source,_) in enumerate(commands) if len(source)>255]
+        if too_long:
+            raise ValueError('Commands exceed native input buffer: '+repr(too_long))
         report['behavior'] = runner(candidate, out/'behavior', snapshot=False, cpu='486,-fpu',
-                                   qmp_stdio=True, welcome=args.welcome, startup_check={'status': 'ok', 'answers': [], 'commands': commands})
+                                   qmp_stdio=True, accel=args.accel, welcome=args.welcome, startup_check={'status': 'ok', 'answers': [], 'commands': commands})
         report['result'] = 'pass'
     except Exception as error:
         report['error'] = str(error)

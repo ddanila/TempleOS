@@ -188,3 +188,32 @@ eight-pixel horizontal alignment. This points to a one-character horizontal
 viewport shift; its cause and the remaining pixels are not yet resolved.
 The source image is unchanged and terminal-failure-audit.json preserves the
 checkpoint and comparison. No complete public-read pass is claimed.
+
+## Public heap counter diagnosis (2026-11-07)
+
+The resident-include driver now supports `--observe-public-heaps` with
+`--failure-public-recovery`, emitting allocation-free hexadecimal counters at
+the existing exact equality assertion. It also records submitted commands,
+rejects commands exceeding the native 255-character input limit, and accepts
+an explicit TCG/KVM accelerator (TCG remains the default). The observer does
+not relax heap equality or classify unexpected queued jobs as harmless.
+
+`build/i386-scroll-resident-include-heaps-v2` is terminal **fail**. Its original
+oracle passes, and all 47 native commands fit the input limit (maximum 229).
+The final guest log records quiescence true, caller used bytes 55,136 before
+and 60,312 after, and root used bytes 797,760 both times. Thus the caller grew
+by 5,176 bytes while the root did not. The host subsequently times out waiting
+for the expected true result; this is not a missing observation of the assertion.
+The source image and persisted fixture remain unchanged and the filesystem
+allocation audit passes. `terminal-audit.json` records these values and hashes
+the log, command list, result and frozen runner.
+
+The previous heaps-v1 diagnostic failed before this assertion because its
+logging function exceeded the input limit; its frozen runner and failure audit
+remain preserved. Splitting the logging helpers made v2 executable.
+
+This isolates the observed growth to the caller heap, but does not yet identify
+its owner or establish a leak. The next control must distinguish retained
+console/document/history allocations across separate commands from allocations
+retained by failed or recovered include. The exact restoration gate remains
+failing; no production fix or full resource qualification is claimed.
