@@ -9,7 +9,7 @@ import runpy
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"tests/guest/i386-doc-key-action-reference/PutKey.HC"
 COMMANDS = [('#include "/Kernel/ScanCodes.HH"',[]),
-            ('#include "C:/PutKey.HC"',[])]+[(f'PKCheck({i});',['127']) for i in range(7)]+[('6*7;',['42'])]
+            ('#include "C:/PutKey.HC"',['Warning: Unused var']*2)]+[(f'PKCheck({i});',['127']) for i in range(7)]+[('6*7;',['42'])]
 
 if any(len(c[0])>255 for c in COMMANDS):
     raise ValueError("Document input fixture exceeds native input limit")

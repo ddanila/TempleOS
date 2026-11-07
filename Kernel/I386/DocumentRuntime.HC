@@ -221,10 +221,12 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
     DocCaptureUndo(doc);
     printable=0<=ch<512 && Bt(native_doc_printable,ch);
     clipboard_action=NativeDocClipboardKey(ch,sc);
-    if(printable && !(sc&(SCF_CTRL|SCF_ALT)) && sc&SCF_KEY_DESC) {
-      key_name=Char2KeyName(ch,FALSE);
-      KeyDescSet("Char  /'%s'",key_name);
-      Free(key_name);
+    if(printable && !(sc&(SCF_CTRL|SCF_ALT))) {
+      if(sc&SCF_KEY_DESC) {
+        key_name=Char2KeyName(ch,FALSE);
+        KeyDescSet("Char  /'%s'",key_name);
+        Free(key_name);
+      } else EdCharIns(ch,sc,doc);
     } else if(clipboard_action>=0) {
       if(sc&SCF_KEY_DESC) {
         if(clipboard_action==1)KeyDescSet("Edit/Copy to Clip");
@@ -270,20 +272,7 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
         sc.u8[0]==SC_CURSOR_UP) EdLineUp(doc,sc);
     else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
         sc.u8[0]==SC_CURSOR_DOWN) EdLineDown(doc,sc);
-    else if(printable && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
-        DocDollarInputCore(doc,ch,printable)) {}
-    else if(printable && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
-        DocCharActionCore(doc,ch,sc)) {}
-    else if(printable && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
-        (doc->cur_entry->type_u8==DOCT_DATA || doc->cur_entry->type_u8==DOCT_HEX_ED))
-      EdCharIns(ch,sc,doc);
-    else if(printable && ch=='\t' && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
-        (doc->flags&DOCF_OVERSTRIKE || doc->flags&DOCF_FORM &&
-         (Bt(doldoc.type_flags_form,doc->cur_entry->type_u8) ||
-          doc->cur_entry->de_flags&DOCEF_LINK) &&
-         !(doc->cur_entry->de_flags&DOCEF_SKIP_IN_FORM))) {
-      if(doc->flags&DOCF_FORM) DocCharFormAdvanceCore(doc);
-    } else DocBasicEditCore(doc,ch,sc);
+    else DocBasicEditCore(doc,ch,sc);
   } catch { if(unlock) DocUnlock(doc); }
   if(unlock) DocUnlock(doc);
   if(!(doc->flags&DOCF_DONT_SWAP_OUT)) Yield;

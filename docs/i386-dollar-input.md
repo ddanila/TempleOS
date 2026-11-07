@@ -125,3 +125,27 @@ candidate (`build/i386-c2-dollar-growth-module-comparison.json`). No new normal
 resident test code is added. These checks qualify the injected native growth
 case and its retry/cleanup; original-host allocation failure, parser failure,
 forced cancellation and complete two-generation release coverage remain open.
+
+## Paired public-key state comparison (2026-11-07)
+
+`tests/guest/i386-doc-dollar-typing/Contract.HC` packages six existing typed-input
+state checks into one fixture run by `tools/test-i386-doc-dollar-typing.py` on
+both the pinned original and native image. It feeds public DocPutKey directly:
+partial command buffering, completed RED foreground with literal cash-dollar,
+FG command-name macro suppression, doubled-dollar literals, plain-text bypass
+and growth past the initial dollar buffer. It exports six Boolean results and
+six fixed-width actual line buffers. DONT_SWAP_OUT isolates this state check
+from scheduling; it does not qualify heap balance or interactive UI behavior.
+
+`build/i386-doc-dollar-typing-original-v1` and
+`build/i386-doc-dollar-typing-native-v1` both pass all six checks and export
+identical bytes. Native uses the original EdCharIns route introduced by the
+[selected insertion change](i386-doc-selected-typing.md). Input hashes, fresh
+arithmetic and the native filesystem audit pass; independent terminal audits
+recheck the two export buffers against the original. Dollar characters are
+escaped in HolyC source, and the output buffer is explicitly initialized.
+
+The older `test-i386-doc-dollar-input.py` remains a separate keyboard/VGA
+regression. Its driver now selects the current welcome-screen oracle; its
+22 commands and state assertions are unchanged. The packaged comparison does
+not stand in for that driver's per-character screen observations.

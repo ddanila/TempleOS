@@ -141,3 +141,19 @@ the compiler, followed by an OutMem rejection of the terminal cleanup command
 and a timeout. At the first recorded failure, request 0x2233 exceeds largest free
 block 0x1618, with heap usage 0x6523C8 / 0x656000. Source disk preservation passes;
 child completion and parent heap recovery do not. The regression remains enabled.
+
+## Original printable insertion supersedes the fallback path (2026-11-07)
+
+The [selected-text comparison](i386-doc-selected-typing.md) found that the
+retained basic editor deletes selected text where original DocPutKey inserts
+into it and keeps selection. Printable input now reaches the complete original
+EdCharIns handler. Its ordinary text insertion allocates a new tag before
+freeing the old one; the basic fallback's owned-capacity optimization is no
+longer the public printable-input path.
+
+The append/middle pointer-reuse assertions in `test-i386-doc-capacity.py` describe
+that historical fallback optimization, not the pinned original insertion
+contract. They have not been requalified for the new route and must not be
+reported as passing original compatibility checks. The broader 8 MiB pressure
+and resource qualification remains required; the selected-text pass does not
+establish it. Allocation-failure recovery remains an independent gate.

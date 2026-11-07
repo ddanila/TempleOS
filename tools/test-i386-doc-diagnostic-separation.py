@@ -40,7 +40,7 @@ def main():
         pins[str(diagnostic)]=sha(diagnostic)
         work=out/'working.img';shutil.copyfile(image,work)
         report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](
-            work,out/'qemu',snapshot=False,ram_mib=64,cpu='486,-fpu',qmp_stdio=True,
+            work,out/'qemu',snapshot=False,ram_mib=64,cpu='486,-fpu',qmp_stdio=True,welcome=True,
             startup_check={'status':'ok','answers':[],
                            'commands':[('6*7;',['42']),('DocAllocationCheck;',['13']),
                                        ('DocAllocationCheck;',['13']),('6*7;',['42'])],

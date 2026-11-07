@@ -52,7 +52,7 @@ def main():
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=64,
-            cpu='486,-fpu', accel='tcg', qmp_stdio=True,
+            cpu='486,-fpu', accel='tcg', qmp_stdio=True, welcome=True,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'rejection_prefixes':('INPUT REJECT ',), 'rejected_answers':['0'],
                            'command_timeout':120})

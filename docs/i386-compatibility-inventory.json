@@ -3447,6 +3447,30 @@
           "result": "fail",
           "evidence": "build/i386-doc-selected-typing-native-baseline-v1/result.json",
           "scope": "Four direct insertion cases: original masks127x4, native [127,127,120,120]. Original retains selected Keep text and selection while inserting; native deletes it. Exact exported text/cursor/selection, description/locks/roles/heap and terminal input/volume audits. Production fix pending; see docs/i386-doc-selected-typing.md."
+        },
+        {
+          "target": "native-original-printable-insertion",
+          "result": "pass",
+          "evidence": "build/i386-doc-selected-typing-native-v1/result.json",
+          "scope": "Complete EdCharIns routing for printable input without Ctrl/Alt replaces duplicate wrapper branches. Four selected/unselected insertion cases exactly match original text/cursor/selection; metadata11, clipboard19 and scheduling5 regressions match original exports. Heap/roles/locks/arithmetic/filesystem and terminal input hashes pass. Full dispatcher remains unqualified; see docs/i386-doc-selected-typing.md."
+        },
+        {
+          "target": "original-typed-dollar-state",
+          "result": "pass",
+          "evidence": "build/i386-doc-dollar-typing-original-v1/result.json",
+          "scope": "Six public-key dollar-state checks and exact line exports: partial/completed commands, macro suppression, escapes, plain text and buffer growth. Original/native buffers identical; no heap or interactive UI qualification. See docs/i386-dollar-input.md."
+        },
+        {
+          "target": "native-original-handler-typed-dollar-state",
+          "result": "pass",
+          "evidence": "build/i386-doc-dollar-typing-native-v1/result.json",
+          "scope": "Six public-key dollar-state checks and exact line exports: partial/completed commands, macro suppression, escapes, plain text and buffer growth. Original/native buffers identical; no heap or interactive UI qualification. See docs/i386-dollar-input.md."
+        },
+        {
+          "target": "native-original-printable-handler-integration",
+          "result": "pass",
+          "evidence": "build/i386-doc-typing-actions-8m-v2/result.json",
+          "scope": "Seven original entry-action cases at8MiB, unchanged fixture with exact two warning rows accounted for. Also passing: tabs8, core6, physical multiline editing/serialization and repeated13-check allocation recovery, plus normal8/full16 startup. Earlier64MiB form runs incomplete at startup; old22-command dollar keyboard run still pending. See docs/i386-doc-selected-typing.md."
         }
       ]
     },
