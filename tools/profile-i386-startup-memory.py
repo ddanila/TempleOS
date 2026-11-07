@@ -94,7 +94,7 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--timeout', type=float, default=180)
-    parser.add_argument('--ram-mib',type=int,choices=(8,16),default=8)
+    parser.add_argument('--ram-mib',type=int,choices=(8,16,64,128),default=8)
     args = parser.parse_args()
     disk, out = args.disk.resolve(), args.out.resolve()
     if out.exists():

@@ -67,7 +67,20 @@ is preserved. Its terminal audit discloses only the later interface-227 builder
 verifier change; the saved helper matches its original pin and the disk-reader
 AST is unchanged. All other input pins match.
 
-Startup heap captures at 64 and 128 MiB are running on that installed generation
-two. These are memory observations, not timing or complete application-workload
-profiles. Full compatibility suites on both generations and the required
+Startup heap captures pass on installed generation two at 64 and 128 MiB,
+in `build/i386-generation2-startup-memory64-v1` and
+`build/i386-generation2-startup-memory128-v1`. Both boot successfully, retain
+matching input hashes, and validate every main-arena block against its heap
+control. The saved physical snapshots match their recorded hashes.
+
+| RAM | Main arena capacity | Used at capture | Main arena high-water mark |
+| --- | ---: | ---: | ---: |
+| 64 MiB | 50,200,576 bytes | 5,312,984 bytes | 5,333,344 bytes |
+| 128 MiB | 117,309,440 bytes | 5,313,112 bytes | 5,333,344 bytes |
+
+These are allocator totals after startup, including allocation overhead and
+reserved backing blocks inside the main arena. They exclude low-memory backing
+and do not represent total physical RAM use, application peaks, or a measured
+minimum RAM requirement. Capturing stops the VM, so this does not qualify startup
+timing. Matching generation-one captures are running separately. Full compatibility suites on both generations and the required
 memory/startup/resource profiles remain open, so C5 is not complete.

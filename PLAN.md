@@ -26777,3 +26777,13 @@ and diagnostic unload checks. The terminal audit preserves source/candidate
 hashes and discloses the later host verifier change with an unchanged disk-reader
 AST. See docs/i386-module-default-strings.md. Startup memory capture at 64/128 MiB,
 complete application suites, current-source generations and C5 remain open.
+
+
+## Frozen generation-two startup memory (2026-11-07)
+
+Installed interface-224 generation two boots successfully in both 64 and 128 MiB
+TCG captures. The main-arena high-water mark is 5,333,344 bytes in each; capture
+and input hashes plus exact heap-block totals validate. This excludes low-memory
+backing and application workloads and is not timing or minimum-RAM qualification.
+See docs/i386-module-default-strings.md. Corresponding generation-one captures
+are running; full suites, resource profiles and current-source C5 remain open.
