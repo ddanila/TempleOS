@@ -100,8 +100,9 @@ matches the pinned original's earlier passing seven-case run. Only the host
 warning-row expectation changed. The terminal audit rechecks all input hashes.
 
 The older 22-command dollar keyboard/VGA run (`i386-doc-typing-dollar-v1`)
-remains live at this checkpoint, beyond startup and through its first typed
-command-state assertions. It is not counted as a full pass here. The paired
-six-case packaged dollar oracle is terminal and passing on both systems.
+is now terminal and passes every command and exact VGA checkpoint, including
+final arithmetic. Its independent terminal audit rechecks input hashes and
+all preexisting file tuples; filesystem allocation integrity passes. The paired
+six-case packaged dollar oracle also passes on both systems.
 Full dispatcher/desktop behavior, the historical capacity-reuse expectations,
 broader memory pressure and C1–C5 release qualification remain open.

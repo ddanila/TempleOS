@@ -149,3 +149,9 @@ The older `test-i386-doc-dollar-input.py` remains a separate keyboard/VGA
 regression. Its driver now selects the current welcome-screen oracle; its
 22 commands and state assertions are unchanged. The packaged comparison does
 not stand in for that driver's per-character screen observations.
+
+The complete older run `build/i386-doc-typing-dollar-v1` subsequently passes
+all 22 commands and exact VGA checkpoints, including final arithmetic. The
+terminal audit independently rechecks all input hashes, unchanged file tuples
+and allocation integrity. Its concurrent 64 MiB startup took177.031 seconds;
+this is functional keyboard coverage, not the isolated startup timing gate.
