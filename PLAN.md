@@ -26834,3 +26834,16 @@ round trips; final native arithmetic pixels pass. The enclosing full cross-build
 remains running. Complete FileMgr loading now passes Fmt and stops at missing
 RedSeaISO line 407. See docs/i386-format.md and docs/i386-pick-dir.md. ATA
 formatting, complete chooser workflows and C1–C5 remain open.
+
+
+## Diagnostic progress and resident recovery failure (2026-11-07)
+
+Interface 228 passes the full 16 MiB diagnostic and exact welcome; enclosing
+interactive checks are still live. The frozen scrolling image's long resident
+include run passes its old viewport boundary and forced allocation rejection,
+metadata restoration, borrow/lifetime recovery and successful retry. It fails
+the final public-heap equality check with visible result 0. The unchanged source
+image and screenshot are preserved in build/i386-scroll-resident-include-v1.
+The after private-heap observation was not reached. Exact-counter diagnosis
+retains the equality assertion; see docs/i386-file-read.md. This workflow and
+all C1–C5 milestones remain unqualified.

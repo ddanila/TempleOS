@@ -41,3 +41,8 @@ and runner; those earlier frozen versions predate the hardware extension.
 Raw/debug cursor input, interrupt/recovery combinations, complete FileMgr and
 C1–C5 remain unqualified. Full diagnostic and interactive cross-build checks
 are tracked separately from this direct API comparison.
+
+The full 16 MiB diagnostic now reaches both program-probe phases and passes
+the exact welcome frame (`build/i386-character-prompts-cross-v1/diagnostic16-audit.json`).
+The enclosing interactive/rejection checks remain running; this does not claim
+a complete cross-build suite pass.

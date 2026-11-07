@@ -164,3 +164,15 @@ and restoration of the initially clear full-refresh flag, with unchanged inputs.
 including preservation of that flag and unchanged input hashes. Fresh longer
 file-read/include workflows are running separately. These checks do not qualify the full desktop, application
 suite, isolated startup timing, or C1–C5 completion.
+
+
+The fresh full resident-include run on that frozen scrolling image
+(`build/i386-scroll-resident-include-v1`) now passes the former offscreen
+boundary, document/child/removal/default-extension workflows, intentional
+OutMem rejection, borrow/lifetime recovery and successful include of 49. It
+fails at command 44: CacheHeapsSame visibly returns 0 instead of 1. The source
+image remains unchanged. This is a public-heap restoration failure, not another
+offscreen-result timeout. The private-heap observer captured only its before
+state, since its after hook follows the failed screen assertion. Exact-counter
+diagnosis is running with the assertion unchanged; ownership leakage versus
+retained document/compiler state is not yet determined.
