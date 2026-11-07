@@ -10614,6 +10614,12 @@
           "result": "pass",
           "evidence": "build/i386-public-expression-lifetime-source-native-v1/result.json",
           "scope": "Source-loaded complete shared bodies and corrected public-allocation adapter: retained code survives CmpCtrlDel, catches UndefExt, executes after real completion and continues (mask 15 versus pre-fix 11, exact original export). All preceding token/graph/basic/type/runtime regressions and independent 1027-input/volume/boot audit pass. Not normal expression API delivery or full C1-C5 qualification."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --functions --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-functions-formal-native-v1/result.json",
+          "scope": "Twenty-three actual source stages and seven ordinary function cases after public controller release, exact original return records, then generated-code/metadata deletion and exact native heap recovery. Function frame/argument/local/return metadata is retained; actual shared parser/optimizer/backend used. All earlier expression/token/type/runtime/lifetime/class regressions pass. Source-loaded diagnostic only; normal public Lex, complete compiler and full C1\u2013C5 remain unqualified."
         }
       ]
     },
@@ -10653,6 +10659,12 @@
           "result": "pass",
           "evidence": "build/i386-code-control-native-v2/result.json",
           "scope": "Normal delivered public graph services match nine original-source-copy checks (mask 511), including pointer-width invalid marker; independent input/fixture-only-volume/boot audit. Full expression compiler and other payload/error paths remain unqualified. Both 8/16 MiB welcome profiles, diagnostic cleanup phases and all 24 original token regression cases pass."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --functions --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-functions-formal-native-v1/result.json",
+          "scope": "Twenty-three actual source stages and seven ordinary function cases after public controller release, exact original return records, then generated-code/metadata deletion and exact native heap recovery. Function frame/argument/local/return metadata is retained; actual shared parser/optimizer/backend used. All earlier expression/token/type/runtime/lifetime/class regressions pass. Source-loaded diagnostic only; normal public Lex, complete compiler and full C1\u2013C5 remain unqualified."
         }
       ]
     },
@@ -10713,6 +10725,12 @@
           "result": "pass",
           "evidence": "build/i386-public-statements-formal-v1/result.json",
           "scope": "Twenty-two full source stages include complete global/function/statement bodies; earlier token/graph/expression/type/runtime/lifetime and eight class/header checks pass. Required assembly/join/import-resolution/disassembly/line-execution externs remain visible. Ordinary function execution, normal public compiler delivery and full C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --functions --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-functions-formal-native-v1/result.json",
+          "scope": "Twenty-three actual source stages and seven ordinary function cases after public controller release, exact original return records, then generated-code/metadata deletion and exact native heap recovery. Function frame/argument/local/return metadata is retained; actual shared parser/optimizer/backend used. All earlier expression/token/type/runtime/lifetime/class regressions pass. Source-loaded diagnostic only; normal public Lex, complete compiler and full C1\u2013C5 remain unqualified."
         }
       ]
     },
@@ -10785,6 +10803,12 @@
           "result": "pass",
           "evidence": "build/i386-public-classes-source-native-v3/result.json",
           "scope": "Twenty-one actual shared source stages, eight class/function-header observations including evaluated array bound/default argument, pointer-width frame offsets, metadata lifetime and exact native heap recovery; all earlier token/graph/executable/type/runtime/lifetime regressions. Original normal-compilation metadata agrees but retains 6488 bytes in its shared heap after symbol deletion; recorded separately, never allowed for native. Full compiler, normal API delivery and C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --functions --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-functions-formal-native-v1/result.json",
+          "scope": "Twenty-three actual source stages and seven ordinary function cases after public controller release, exact original return records, then generated-code/metadata deletion and exact native heap recovery. Function frame/argument/local/return metadata is retained; actual shared parser/optimizer/backend used. All earlier expression/token/type/runtime/lifetime/class regressions pass. Source-loaded diagnostic only; normal public Lex, complete compiler and full C1\u2013C5 remain unqualified."
         }
       ]
     },
@@ -18663,7 +18687,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --functions --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-functions-formal-native-v1/result.json",
+          "scope": "Actual LoadOneImport and SysSymImportsResolve bodies source-loaded; resolver invoked during ordinary function completion with no pending imports. Import patching and complete loader behavior remain unqualified. All earlier expression/token/type/runtime/lifetime/class regressions pass. Source-loaded diagnostic only; normal public Lex, complete compiler and full C1\u2013C5 remain unqualified."
+        }
+      ]
     },
     {
       "path": "Kernel/KMain.HC",

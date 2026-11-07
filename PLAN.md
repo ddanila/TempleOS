@@ -27568,3 +27568,19 @@ expression, token, type, runtime, retained-code and class/header regressions pas
 Required assembly, join, import-resolution, disassembly and line-execution
 services stay explicit externs. Ordinary function execution, normal public
 compiler delivery and full C1–C5 remain open. See docs/i386-public-class-parser.md.
+
+
+## Ordinary shared-compiler function execution (2026-11-07)
+
+The source adapter now preserves real function frames, argument counts, local
+storage and return classes while retaining temporary frames for expressions.
+The old expression-only adapter passes source publication and prior regressions,
+then faults on ordinary-function execution. The reproducible --functions mode
+loads twenty-three stages and executes seven differential function cases,
+including loops/goto/break, nested/default calls, local arrays, ordinary locals
+and software-F64 function arguments/returns. Native code and metadata deletion
+must recover both heaps exactly. The original normal compiler supplies matching
+execution records. The normal native fixture still rejects missing public Lex
+before behavior. Assembly/stream/AOT closure, normal public compiler delivery,
+full API/workflow coverage and full C1–C5 remain open. See
+docs/i386-public-function-parser.md.

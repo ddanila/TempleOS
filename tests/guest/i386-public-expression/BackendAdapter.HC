@@ -134,7 +134,7 @@ U8 *COCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_type)
   CHashClass *type;PBAllocation *allocation;
   I64 flags=cc->flags,pass=cc->pass,exception=0;U8 *result=NULL;
   CHashTable *old_hash=cc->htc.hash_table_lst;
-  Bool failed=FALSE;
+  Bool failed=FALSE,is_function=old_fun && cc->coc.coc_head.next->ic_code==IC_ENTER;
   MemSet(&state,0,sizeof(state));MemSet(&fun,0,sizeof(fun));
   MemSet(&aot,0,sizeof(aot));MemSet(&aotc,0,sizeof(aotc));I386OutInit(&out);
   aot.next_ie=aot.last_ie=&aot.next_ie;
@@ -144,20 +144,24 @@ U8 *COCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_type)
   backend->context=&state;backend->allocate=&PBAlloc;backend->release=&PBFree;
   backend->fold=&PBFold;backend->assembly=&PBAssembly;backend->report=&PBReport;
   try {
-    //The public expression wrapper supplies RETURN_VAL/RET, without a function.
-    //Use a temporary target function context; never cast to a private control.
-    enter=ICAdd(cc,IC_ENTER,0,NULL);ICDetach(enter);
-    enter->last=&cc->coc.coc_head;enter->next=cc->coc.coc_head.next;
-    enter->next->last=enter;cc->coc.coc_head.next=enter;
+    if(is_function)enter=cc->coc.coc_head.next;
+    else {
+      //Expressions need a temporary frame; ordinary functions retain theirs.
+      enter=ICAdd(cc,IC_ENTER,0,NULL);ICDetach(enter);
+      enter->last=&cc->coc.coc_head;enter->next=cc->coc.coc_head.next;
+      enter->next->last=enter;cc->coc.coc_head.next=enter;
+    }
     for(node=enter->next;node!=&cc->coc.coc_head;node=node->next) {
       if(node->ic_code==IC_RETURN_VAL)ret=node;
-      if(node->ic_code==IC_RET)node->ic_code=IC_LEAVE;
+      if(!is_function && node->ic_code==IC_RET)node->ic_code=IC_LEAVE;
     }
-    if(!ret)throw('Compiler');
     cc->pass=0;OptPass012(cc);OptPass012(cc);
-    if(!ret->t.arg1_tree || !(type=I386ValueClass(backend,ret->t.arg1_tree)))throw('Compiler');
-    fun.return_class=ret->ic_class=type;
-    cc->htc.fun=&fun;cc->aot=&aot;cc->aotc=&aotc;
+    if(is_function)type=old_fun->return_class;
+    else {
+      if(!ret || !ret->t.arg1_tree || !(type=I386ValueClass(backend,ret->t.arg1_tree)))throw('Compiler');
+      fun.return_class=ret->ic_class=type;
+    }
+    if(is_function)cc->htc.fun=old_fun;else cc->htc.fun=&fun;cc->aot=&aot;cc->aotc=&aotc;
     cc->flags=flags&~(CCF_EXE_BLK|CCF_TARGET_HOST_CONST)|CCF_TARGET_I386|CCF_AOT_COMPILE;
     PBPrepareCalls(&state,cc);PBHelpers(&state,cc);
     I386BackendCore(backend);

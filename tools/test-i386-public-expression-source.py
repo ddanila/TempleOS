@@ -6,7 +6,9 @@ root=Path(__file__).resolve().parents[1]
 ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True)
 ap.add_argument('--classes',action='store_true',help='Also source-load actual class/function-header services; unresolved dependencies remain visible')
 ap.add_argument('--statements',action='store_true',help='Also source-load complete shared global/function/statement bodies; implies --classes')
+ap.add_argument('--functions',action='store_true',help='Execute ordinary function bodies through the shared compiler; implies --statements')
 args=ap.parse_args()
+if args.functions:args.statements=True
 if args.statements:args.classes=True
 out=args.out.resolve()
 if out.exists():ap.error('Use a fresh output directory')
@@ -117,6 +119,10 @@ if args.statements:
   code=(root/'Compiler/PrsStmt.HC').read_bytes()
   statements+=code[code.index(b'extern U0 PrsFun('):]
   parts.append(statements)
+if args.functions:
+ support=(root/'Kernel/KLoad.HC').read_bytes()
+ load_flags=b'\n'.join(line for line in (root/'Kernel/KernelA.HH').read_bytes().splitlines() if line.startswith(b'#define LDF_'))+b'\n'
+ parts.append(load_flags+support[:support.index(b'U0 LoadPass1(')])
 candidate=b'\n'.join(parts)
 (out/'candidate.HC').write_bytes(candidate)
 for i,part in enumerate(parts):(out/f'part-{i}.HC').write_bytes(part)
@@ -130,6 +136,7 @@ additions['/Probe/PublicTypes.HC']=(root/'tests/guest/i386-public-expression/Typ
 additions['/Probe/PublicExpressionRuntime.HC']=(root/'tests/guest/i386-public-expression/Runtime.HC').read_bytes()
 additions['/Probe/PublicExpressionLifetime.HC']=(root/'tests/guest/i386-public-expression/Lifetime.HC').read_bytes()
 if args.classes:additions['/Probe/PublicClasses.HC']=(root/'tests/guest/i386-public-expression/ClassContract.HC').read_bytes()
+if args.functions:additions['/Probe/PublicFunctions.HC']=(root/'tests/guest/i386-public-expression/FunctionsContract.HC').read_bytes()
 pack=runpy.run_path(str(root/'tools/package-i386-native-image.py'))
 r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers, optimizer and i386 backend on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Complete declaration/initializer bodies are source-loaded; AOT store callbacks and stream service remain unresolved explicit externs. Class/function-header joins remain unresolved unless --classes is requested; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
 pin_paths=[Path(__file__).resolve(),source]+[root/('tools/'+n) for n in ('test-i386-autocomplete-interaction.py','test-i386-timeclock-reference.py','test-i386-timeclock-welcome.py','package-i386-native-image.py','build-i386-kernel.py')]
@@ -139,6 +146,8 @@ pins={str(p):sha(p) for p in pin_paths};r['input_sha256']=pins
 (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
 r['classes_requested']=args.classes
 r['statements_requested']=args.statements
+r['functions_requested']=args.functions
+if args.functions:r['function_scope']='Seven ordinary function bodies compiled by shared PrsFun/PrsStmt/optimizer/backend, called after controller release, then code/metadata deletion and exact heap recovery; not normal native public compiler delivery.'
 if args.statements:r['statement_scope']='Full global/function/statement bodies are published; ordinary function execution and assembly/stream/AOT services remain unqualified.'
 g=None
 try:
@@ -176,6 +185,10 @@ try:
   g.command('#include \"C:/Probe/PublicClasses.HC\"');g.wait('PUBLIC CLASSES DONE\n')
   data=(g.out/'public-classes.bin').read_bytes();(out/'public-classes.bin').write_bytes(data)
   r['class_records']=list(struct.unpack('<8q',data));assert r['class_records']==[1]*8,r['class_records']
+ if args.functions:
+  g.command('#include "C:/Probe/PublicFunctions.HC"');g.wait('PUBLIC FUNCTIONS DONE\n')
+  data=(g.out/'public-functions.bin').read_bytes();(out/'public-functions.bin').write_bytes(data)
+  r['function_records']=list(struct.unpack('<16q',data));assert r['function_records']==[1]*7+[26,25,26,20,9,12,4615063718147915776,1,1],r['function_records']
  g.command('6*7;');r['arithmetic_pixels']=g.result_pixels()
  g.close();g=None
  after=pack['snapshot']((out/'working.img').read_bytes())[1]
