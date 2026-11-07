@@ -1,5 +1,7 @@
 #ifndef I386_PUBLIC_KERNEL_INCLUDED
 #define I386_PUBLIC_KERNEL_INCLUDED
+#include "/Kernel/NumericLimits.HH"
+#define INVALID_PTR U32_MAX
 #ifndef NULL
 #define NULL 0
 #endif
@@ -30,7 +32,7 @@ public _extern _SET_BITS_TABLE U8 *set_bits_table;
 #include "/Kernel/CharBitmaps.HH"
 public _extern _BIT_FIELD_EXT_U32 U32 BFieldExtU32(U8 *bit_field,I64 bit,I64 size);
 public _extern _BIT_FIELD_OR_U32 U0 BFieldOrU32(U8 *bit_field,I64 bit,U32 pattern);
-#include "/Kernel/I386/Queue.HH"
+#include "/Kernel/I386/PublicQueue.HH"
 #include "/Kernel/DocTypes.HH"
 #include "/Kernel/TimeTypes.HH"
 public extern CCntsGlbls cnts;

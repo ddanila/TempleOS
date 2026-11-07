@@ -3,6 +3,7 @@
 #include "/Compiler/I386/Asm.HC"
 #include "/Compiler/I386/Divide.HC"
 #include "/Compiler/I386/BackendCore.HC"
+#include "/Compiler/I386/CompileFrame.HC"
 #include "/Compiler/I386/AsmCore.HC"
 U8 *I386HostBackendAlloc(U8 *context,I64 bytes) { return CAlloc(bytes); }
 U0 I386HostBackendFree(U8 *context,U8 *allocation) { Free(allocation); }
@@ -87,6 +88,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
 {
   CI386Out out;
   CI386Backend backend;
+  CI386CompileFrame frame;
   CIntermediateCode *ic;
   U8 *result;
   if(_dbg) *_dbg=0;
@@ -102,14 +104,20 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
   backend.cc=cc; backend.out=&out; backend.types=cmp.internal_types; backend.context=&backend;
   backend.allocate=&I386HostBackendAlloc; backend.release=&I386HostBackendFree;
   backend.fold=&I386HostBackendFold; backend.assembly=&I386HostBackendAsm; backend.report=&I386HostBackendReport;
-  try { I386BackendCore(&backend); }
+  try {
+    I386CompileFrameOpen(&backend,&frame);
+    I386BackendCore(&backend);
+    if(_type)*_type=frame.type->raw_type;
+  }
   catch {
     if(Fs->except_ch=='Compiler' && backend.current)
       PrintErr("i386 COC failure at opcode %X, depth %d, pass %d\n",
         backend.current->ic_code,backend.depth,backend.pass);
+    I386CompileFrameClose(&backend,&frame);
     LinkedLstDel(backend.calls); LinkedLstDel(backend.logics); LinkedLstDel(backend.chains);
     Free(out.data);
   }
+  I386CompileFrameClose(&backend,&frame);
   LinkedLstDel(backend.logics); LinkedLstDel(backend.chains);
   result=CAlloc((out.count+7)&~7);
   MemCpy(result,out.data,out.count);

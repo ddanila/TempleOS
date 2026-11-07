@@ -14,6 +14,7 @@ public extern I64 I386F64Compare(U64 a,U64 b);
 #define I386_DIV_SOURCE_BUILD 1
 #include "/Compiler/I386/DivideTemplate.HC"
 #include "/Compiler/I386/BackendCore.HC"
+#include "/Compiler/I386/CompileFrame.HC"
 #include "/Compiler/I386/AsmCore.HC"
 class PBAllocation { PBAllocation *next; U8 data[0]; };
 class PBReference { PBReference *next; CHashFun *original; CHashFun function; U8 *target; };
@@ -128,14 +129,13 @@ U0 PBReport(U8 *context,I64 reason,CIntermediateCode *node,U8 *name)
 U8 *COCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_type)
 {
   PBState state;CI386Backend *backend=&state.backend;CI386Out out;
-  CHashFun fun,*old_fun=cc->htc.fun;
+  CI386CompileFrame frame;
   CAOT aot,*old_aot=cc->aot;CAOTCtrl aotc,*old_aotc=cc->aotc;
-  CIntermediateCode *node,*enter,*ret=NULL;
-  CHashClass *type;PBAllocation *allocation;
+  PBAllocation *allocation;
   I64 flags=cc->flags,pass=cc->pass,exception=0;U8 *result=NULL;
   CHashTable *old_hash=cc->htc.hash_table_lst;
-  Bool failed=FALSE,is_function=old_fun && cc->coc.coc_head.next->ic_code==IC_ENTER;
-  MemSet(&state,0,sizeof(state));MemSet(&fun,0,sizeof(fun));
+  Bool failed=FALSE;
+  MemSet(&state,0,sizeof(state));MemSet(&frame,0,sizeof(frame));
   MemSet(&aot,0,sizeof(aot));MemSet(&aotc,0,sizeof(aotc));I386OutInit(&out);
   aot.next_ie=aot.last_ie=&aot.next_ie;
   if(_code_size)*_code_size=0;if(_dbg)*_dbg=NULL;
@@ -144,37 +144,22 @@ U8 *COCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_type)
   backend->context=&state;backend->allocate=&PBAlloc;backend->release=&PBFree;
   backend->fold=&PBFold;backend->assembly=&PBAssembly;backend->report=&PBReport;
   try {
-    if(is_function)enter=cc->coc.coc_head.next;
-    else {
-      //Expressions need a temporary frame; ordinary functions retain theirs.
-      enter=ICAdd(cc,IC_ENTER,0,NULL);ICDetach(enter);
-      enter->last=&cc->coc.coc_head;enter->next=cc->coc.coc_head.next;
-      enter->next->last=enter;cc->coc.coc_head.next=enter;
-    }
-    for(node=enter->next;node!=&cc->coc.coc_head;node=node->next) {
-      if(node->ic_code==IC_RETURN_VAL)ret=node;
-      if(!is_function && node->ic_code==IC_RET)node->ic_code=IC_LEAVE;
-    }
-    cc->pass=0;OptPass012(cc);OptPass012(cc);
-    if(is_function)type=old_fun->return_class;
-    else {
-      if(!ret || !ret->t.arg1_tree || !(type=I386ValueClass(backend,ret->t.arg1_tree)))throw('Compiler');
-      fun.return_class=ret->ic_class=type;
-    }
-    if(is_function)cc->htc.fun=old_fun;else cc->htc.fun=&fun;cc->aot=&aot;cc->aotc=&aotc;
+    I386CompileFrameOpen(backend,&frame);
+    cc->aot=&aot;cc->aotc=&aotc;
     cc->flags=flags&~(CCF_EXE_BLK|CCF_TARGET_HOST_CONST)|CCF_TARGET_I386|CCF_AOT_COMPILE;
     PBPrepareCalls(&state,cc);PBHelpers(&state,cc);
     I386BackendCore(backend);
     result=MAlloc(out.count,Fs->code_heap);MemCpy(result,out.data,out.count);
     PBLink(&state,result,out.count);
-    if(_type)*_type=type->raw_type;if(_code_size)*_code_size=out.count;
+    if(_type)*_type=frame.type->raw_type;if(_code_size)*_code_size=out.count;
   }catch{
     failed=TRUE;exception=Fs->except_ch;Fs->catch_except=TRUE;
     U8 *message=MStrPrint("PUBLIC BACKEND exception %X pass %d depth %d opcode %X\n",
       exception,backend->pass,backend->depth,backend->current),*cursor=message;
     while(*cursor)OutU8(0xE9,*cursor++);Free(message);
   }
-  cc->htc.fun=old_fun;cc->aot=old_aot;cc->aotc=old_aotc;
+  I386CompileFrameClose(backend,&frame);
+  cc->aot=old_aot;cc->aotc=old_aotc;
   cc->flags=flags;cc->pass=pass;cc->htc.hash_table_lst=old_hash;
   while(state.allocations){allocation=state.allocations;state.allocations=allocation->next;Free(allocation);}
   Free(out.data);COCDel(cc,&cc->coc);

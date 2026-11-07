@@ -27656,3 +27656,33 @@ pairs, member/hash/savepoint regressions and 8/16 MiB gates pass on the final
 candidate. Failed/cancelled candidates remain visible. This is C4 progress;
 other CPU flags, pointer arithmetic, full public compiler delivery and full
 C1-C5 qualification remain open. See docs/i386-carry-arithmetic.md.
+
+### Shared top-level statement frames and public queue deletion (2026-11-07)
+
+The production i386 cross-compiler and source-loaded diagnostic backend now use
+one temporary-frame implementation for top-level code. It recognizes RETURN_VAL2
+as well as explicit returns, derives effective result types, and restores the
+previous function/temporary node on cleanup. Ordinary functions retain their
+existing frames. Native public INVALID_PTR is pointer-width U32_MAX while I64
+remains 64 bits. QueDel shares its unchanged original body between x64/native,
+with an appended public console export and separate public queue header.
+
+Runtime88/console248 full candidate build/i386-statement-frame-cross-v3 passes
+both x64 bootstrap generations and all 1,762 source pins. Six actual production
+CmpI386Buf/LexStmt2Bin statement outputs execute independently as ELF32 with exact
+integer/F64 results; an unsupported CLFlush is rejected before subsequent valid
+compilation/execution. All 24 shared source stages and every earlier contract
+pass. The 22 statement words match all 176 original bytes, including controller
+release/code lifetime, both valid-case heap recoveries, empty sentinel and syntax
+rejection. Independent terminal audits cover all 1,036 source-suite inputs.
+Public queue deletion matches all 64 original bytes and recovers the heap across
+512 repeated cycles. Carry/ClassMeta whole workflows regress with exact original
+documents and retained callbacks. Both 8 MiB normal and 16 MiB diagnostic welcome
+rasters match; the latter passes both program/ownership/file-break phases after
+an explicitly retained timeout and unchanged-image longer-window recheck.
+
+See docs/i386-public-statement-compile.md and docs/i386-queue-delete.md. This is
+C4 compiler/API progress. Normal public native Lex/LexStmt2Bin delivery,
+stream/assembly/AOT closure, 684 inventory items and complete C1–C5 release gates
+remain open. Neither x64 bootstraps nor these startup checks substitute for C5's
+two native generations, full suite, reproducibility and resource budgets.

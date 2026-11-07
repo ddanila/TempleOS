@@ -11531,7 +11531,7 @@
       "source_at_discovery": "identical",
       "compatibility": "qualified",
       "reference_workflow": "Run complete unchanged Demo/Carry.HC through normal ExeFile: verify all 1024 BigCnt rows, 128 BigShift rows and 64 Branch bits, then invoke the real retained functions after declaration input release and 32 KiB data/code heap churn. Both complete DolDoc captures must match the independent mathematical oracle and original byte-for-byte.",
-      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime87 arithmetic-v3 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
+      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime88 statement-frame-v3 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
       "tests": [
         {
           "command": "python3 tools/test-i386-carry-demo.py [IMAGE] --out OUT",
@@ -11568,6 +11568,12 @@
           "result": "pass",
           "evidence": "build/i386-carry-arithmetic-demo-v3/result.json",
           "scope": "Runtime87 arithmetic checkpoint: unchanged full counter/shift/branch demo, mask7 and both exact original 39258-byte documents, actual retained functions after input release/churn, later normal arithmetic and terminal input pins."
+        },
+        {
+          "command": "python3 tools/test-i386-carry-demo.py build/i386-statement-frame-cross-v3/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-statement-frame-carry-v3/result.json",
+          "scope": "Runtime88/console248 shared statement-frame checkpoint: unchanged whole demo, mask7, complete original documents, retained real callbacks after input release/churn, later normal arithmetic and independently verified terminal pins."
         }
       ]
     },
@@ -11616,6 +11622,12 @@
           "result": "pass",
           "evidence": "build/i386-carry-arithmetic-class-meta-v3/result.json",
           "scope": "Runtime87 arithmetic checkpoint: unchanged full metadata demo, mask511, three exact original documents, retained callbacks, changed data, later normal arithmetic and terminal input pins."
+        },
+        {
+          "command": "python3 tools/test-i386-class-meta.py build/i386-statement-frame-cross-v3/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-statement-frame-classmeta-v3/result.json",
+          "scope": "Runtime88/console248 shared statement-frame checkpoint: unchanged whole demo, mask511, complete original documents, retained real callbacks after input release/churn, later normal arithmetic and independently verified terminal pins."
         }
       ]
     },
