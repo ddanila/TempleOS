@@ -68,7 +68,8 @@ architecture differences and verification boundaries.
 
 The public compiler control already has its own allocation/ownership path in
 `Compiler/PublicControlCore.HC`; it must not be replaced with the private arena
-constructor. Public `LexGetChar`/`Lex` and interactive input remain missing.
+constructor. Public `LexGetChar` now shares its original body with the native console.
+Public `Lex` and terminal execution integration remain missing.
 The private `I386LexRawChar` explicitly rejects `CCF_PMT`, so adding a symbol
 alone would not restore the original interactive execution path. The next
 integration must connect the restored prompt to public lexer ownership and
@@ -80,6 +81,6 @@ presentation, exceptions, exact heap recovery and full lexer/terminal behavior
 remain open. No C1–C5 milestone is closed by these six cases.
 
 The next public-input baseline is recorded in
-[public lexer character input](i386-public-lex-char.md): the original passes
-character replay, document return and real prompt refill, while native startup
-still lacks `LexGetChar`.
+[public lexer character input](i386-public-lex-char.md): both original and native pass
+character replay, document return and real prompt refill. Echo, shared public
+line statistics and exact caller heap recovery also pass their bounded contracts.

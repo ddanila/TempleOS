@@ -132,3 +132,14 @@ restores the refresh flag in `build/i386-public-attachment-scroll-v1`, with
 unchanged inputs. This qualifies the
 attachment API, not LexGetChar, Lex/LexExtStr, prompt/error handling, complete
 Psalmody, or C1–C5.
+
+
+## Shared public character reader (2026-11-07)
+
+The full original LexGetChar/LexDollar bodies are now shared with console 235.
+On the fresh public-lex-cross-v3 image, `i386-public-characters-native-v4` passes
+all sixteen original character/include/borrowed-buffer/heap checks. The public
+control regression also passes all twelve checks. Separate prompt/refill and
+echo/statistics contracts pass; see docs/i386-public-lex-char.md for source
+identity, exact outputs and independent volume audits. Public Lex/LexExtStr,
+full song loading and terminal execution remain open.

@@ -10191,7 +10191,7 @@
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
       "reference_workflow": "Call actual public LexGetChar with public compiler controls over a buffer, attached document and queued prompt input; inspect exact characters and control/task/document state.",
-      "oracle": "docs/i386-public-lex-char.md: 26 exact character values and eight state words for four input groups. Native public symbol absent; rich documents, echo, tokenization, exceptions and full terminal ownership/lifecycle remain open.",
+      "oracle": "docs/i386-public-lex-char.md: exact public character/prompt stream and state, sixteen include/buffer/heap checks, twelve control checks, and echo/global-counter mutation. Shared native reader passes; tokenization, rich-document branches, exceptions and full terminal integration remain open.",
       "tests": [
         {
           "target": "original-public-lex-char",
@@ -10206,6 +10206,48 @@
           "result": "fail",
           "evidence": "build/i386-public-lex-char-native-baseline-v2/result.json",
           "scope": "Four public LexGetChar groups: 26 exact characters and eight state words for normalization/replay/EOF, document return and prompt help/refill. Original passes; native public symbol absent. See docs/i386-public-lex-char.md; no full lexer qualification."
+        },
+        {
+          "target": "native-public-lex-char",
+          "command": "python3 tools/test-i386-public-lex-char.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-lex-char-native-v1/result.json",
+          "scope": "Four public character/prompt groups; exact original 26-character and eight-state-word exports, arithmetic and independent input/volume audit."
+        },
+        {
+          "target": "native-public-characters",
+          "command": "python3 tools/test-i386-public-lexer.py --characters IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-characters-native-v4/result.json",
+          "scope": "Sixteen exact original character/include/buffer ownership checks with exact caller heap recovery; arithmetic and independent volume audit."
+        },
+        {
+          "target": "native-public-control-lex",
+          "command": "python3 tools/test-i386-public-control.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-control-lex-v1/result.json",
+          "scope": "Twelve public control ownership/size/flags/filename/heap checks after adding the reader; exact original table and independent volume audit."
+        },
+        {
+          "target": "original-public-lex-state",
+          "command": "python3 tools/test-i386-public-lex-state.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-lex-state-original-v3/result.json",
+          "scope": "Six echo, printable-bitmap mutation, line-statistic and restoration checks. Exact echo bytes A, newline, cursor. Original v1/v2 omitted cursor from expected bytes."
+        },
+        {
+          "target": "native-public-lex-state",
+          "command": "python3 tools/test-i386-public-lex-state.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-lex-state-native-v1/result.json",
+          "scope": "Same six checks and exact original echo bytes; validates public globals refer to the actual reader objects. Not all compiler globals or concurrent statistics."
+        },
+        {
+          "target": "native-public-token-lex-baseline",
+          "command": "python3 tools/test-i386-public-lexer.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-public-token-lex-baseline-v1/result.json",
+          "scope": "Final reader image rejects Lex at fixture line 12 before 24-token behavioral assertions. Independent audit confirms normal startup, unchanged inputs and exact fixture additions."
         }
       ]
     },

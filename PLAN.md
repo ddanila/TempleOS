@@ -27210,3 +27210,29 @@ No production lexer or terminal change is claimed. Public ownership, rich docume
 transitions, echo, tokenization, execution/unwind and full terminal behavior still
 need integration; the private reader rejects prompt mode. All C1–C5 milestones
 and 686 inventory entries remain unqualified.
+
+
+## Original public character lexer restored (2026-11-07)
+
+Console 235 now includes the unchanged original LexGetChar/LexDollar bodies,
+shared with the original compiler. Public compiler controls keep their original
+allocator and destructor; prompt refill invokes the actual shared CmdLinePmt in
+Adam. The public compiled-line counter, zero sentinel and printable bitmap refer
+to the reader's live objects. Other compiler-global tables and private frontend
+statistics are not integrated by this step.
+
+The fresh public-lex-cross-v3 image passes the 26-character/eight-state prompt
+contract, six echo/statistics checks with exact saved cursor bytes, sixteen
+character/include/borrowed-buffer/heap checks, and twelve public-control checks.
+Independent audits verify execution inputs, exact exports, original volume
+preservation and fixture additions. Both bootstrap generations, all 1,748
+production-source hashes and sixteen module hashes pass. Normal8 and diagnostic16
+pass complete welcome pixels; both diagnostic ownership/cleanup phases finish.
+The two failed preliminary cross-builds are retained as declaration-order and
+unsupported-directive failures, not runtime evidence.
+
+The broad token fixture now rejects Lex at line 12 on the final image, before
+behavioral assertions. Public Lex/LexExtStr, remaining compiler-global setup,
+ExeCmdLine and UserTaskCont integration, rich-document/error paths, isolated
+startup timing and C5 native generations remain open. All 686 inventory entries
+remain unqualified. See docs/i386-public-lex-char.md for evidence and boundaries.

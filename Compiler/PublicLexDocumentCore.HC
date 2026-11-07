@@ -1,4 +1,4 @@
-U32 lex_zeros=0;
+#include "/Compiler/LexZeroCore.HC"
 
 CDoc *LexDocRead(U8 *abs_filename,I64 flags)
 {

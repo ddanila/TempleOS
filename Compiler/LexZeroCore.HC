@@ -1,0 +1,4 @@
+#ifndef COMPILER_LEX_ZERO_INCLUDED
+#define COMPILER_LEX_ZERO_INCLUDED
+U32 lex_zeros=0;
+#endif
