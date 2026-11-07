@@ -6,9 +6,13 @@ root=Path(__file__).resolve().parents[1]
 ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True)
 ap.add_argument('--classes',action='store_true',help='Also source-load actual class/function-header services; unresolved dependencies remain visible')
 ap.add_argument('--statements',action='store_true',help='Also source-load complete shared global/function/statement bodies; implies --classes')
+ap.add_argument('--compiler-stream',action='store_true',help='Load complete DirFile/StreamPrint/StreamDir and test shared #exe injection; implies --execute-line')
+ap.add_argument('--execute-line',action='store_true',help='Execute actual ExeCmdLine against the shared compiler; implies --statement-code')
 ap.add_argument('--statement-code',action='store_true',help='Compile actual top-level statements with LexStmt2Bin; implies --functions')
 ap.add_argument('--functions',action='store_true',help='Execute ordinary function bodies through the shared compiler; implies --statements')
 args=ap.parse_args()
+if args.compiler_stream:args.execute_line=True
+if args.execute_line:args.statement_code=True
 if args.statement_code:args.functions=True
 if args.functions:args.statements=True
 if args.statements:args.classes=True
@@ -130,6 +134,13 @@ if args.functions:
 if args.statement_code:
  main=(root/'Compiler/CMain.HC').read_bytes()
  parts.append(main[:main.index(b'CAOT *CmpJoin(')])
+if args.execute_line:
+ task=(root/'Kernel/KTask.HC').read_bytes()
+ parts.append(b'#include "/Kernel/I386/PublicDate.HH"\n'+task[task.index(b'I64 ExeCmdLine('):task.index(b'#include "/Kernel/SrvTaskContCore.HC"')])
+if args.compiler_stream:
+ path=(root/'Kernel/BlkDev/DskStrA.HC').read_bytes()
+ misc=(root/'Compiler/CMisc.HC').read_bytes()
+ parts.append(path[path.index(b'U8 *DirFile('):]+misc[misc.index(b'U0 StreamPrint('):misc.index(b'CD2I32 *LexD2I32(')])
 candidate=b'\n'.join(parts)
 (out/'candidate.HC').write_bytes(candidate)
 for i,part in enumerate(parts):(out/f'part-{i}.HC').write_bytes(part)
@@ -145,10 +156,12 @@ additions['/Probe/PublicExpressionLifetime.HC']=(root/'tests/guest/i386-public-e
 if args.classes:additions['/Probe/PublicClasses.HC']=(root/'tests/guest/i386-public-expression/ClassContract.HC').read_bytes()
 if args.functions:additions['/Probe/PublicFunctions.HC']=(root/'tests/guest/i386-public-expression/FunctionsContract.HC').read_bytes()
 if args.statement_code:additions['/Probe/PublicStatementCompile.HC']=(root/'tests/guest/i386-public-expression/StatementCompileContract.HC').read_bytes()
+if args.execute_line:additions['/Probe/PublicExecuteLine.HC']=(root/'tests/guest/i386-public-expression/ExecuteLineContract.HC').read_bytes()
+if args.compiler_stream:additions['/Probe/PublicCompilerStream.HC']=(root/'tests/guest/i386-public-compiler-stream/Contract.HC').read_bytes()
 pack=runpy.run_path(str(root/'tools/package-i386-native-image.py'))
 r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers, optimizer and i386 backend on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Complete declaration/initializer bodies are source-loaded; AOT store callbacks and stream service remain unresolved explicit externs. Class/function-header joins remain unresolved unless --classes is requested; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
 pin_paths=[Path(__file__).resolve(),source]+[root/('tools/'+n) for n in ('test-i386-autocomplete-interaction.py','test-i386-timeclock-reference.py','test-i386-timeclock-welcome.py','package-i386-native-image.py','build-i386-kernel.py')]
-for directory in ('Compiler','Kernel','tests/guest/i386-public-lexer','tests/guest/i386-public-expression'):
+for directory in ('Compiler','Kernel','tests/guest/i386-public-lexer','tests/guest/i386-public-expression','tests/guest/i386-public-compiler-stream'):
  pin_paths += sorted(p for p in (root/directory).rglob('*') if p.is_file() and p.suffix in ('.HC','.HH'))
 pins={str(p):sha(p) for p in pin_paths};r['input_sha256']=pins
 (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
@@ -156,6 +169,10 @@ r['classes_requested']=args.classes
 r['statements_requested']=args.statements
 r['functions_requested']=args.functions
 r['statement_code_requested']=args.statement_code
+r['execute_line_requested']=args.execute_line
+r['compiler_stream_requested']=args.compiler_stream
+if args.compiler_stream:r['compiler_stream_scope']='Complete original DirFile/StreamPrint/StreamDir bodies with actual shared ExeCmdLine/PrsStreamBlk and lexer reinjection; original differential valid nested/expression/directory cases. Normal delivery and stream error/ownership qualification remain open.'
+if args.execute_line:r['execute_line_scope']='Actual complete ExeCmdLine body from KTask.HC, using the actual source-loaded LexStmt2Bin and shared compiler; multi-statement answer/title/mode/unwind contracts. Normal public delivery and stream body ownership remain open.'
 if args.statement_code:r['statement_code_scope']='Actual complete LexStmt2Bin, scalar/block/comma/if/F64 top-level statements and retained code, with source-loaded shared parser/backend; normal API delivery, assembly/stream/AOT closure remain open.'
 if args.functions:r['function_scope']='Seven ordinary function bodies compiled by shared PrsFun/PrsStmt/optimizer/backend, called after controller release, then code/metadata deletion and exact heap recovery; not normal native public compiler delivery.'
 if args.statements:r['statement_scope']='Full global/function/statement bodies are published; ordinary function execution and assembly/stream/AOT services remain unqualified.'
@@ -170,6 +187,9 @@ try:
  g.wait('DONE native kernel startup\n');r['published_parts']=[]
  for i in range(len(parts)):
   r['attempted_part']=i;g.command(f'#include "C:/Probe/Part{i}.HC"',timeout=240);r['published_parts'].append(i)
+  if args.statement_code and i==23:
+   g.command('U0 ProbeStatementDefault(){CHashFun *f=HashFind("LexStmt2Bin",Fs->hash_table,HTT_FUN);CMemberLst *m=f->member_lst_and_root;m=m->next->next;if(!(m->flags&MLF_DFT_AVAILABLE) || m->dft_val!=CMPF_PRS_SEMICOLON)throw;}ProbeStatementDefault;')
+   r['statement_default_semicolon']='pass'
   if i==0:
    g.command('if ((probe_printable+0)!=(char_bmp_printable+0)) throw;')
    r['printable_alias_identity']='pass'
@@ -204,6 +224,14 @@ try:
   data=(g.out/'public-statement-compile.bin').read_bytes();(out/'public-statement-compile.bin').write_bytes(data)
   r['statement_compile_records']=list(struct.unpack('<22q',data))
   assert r['statement_compile_records']==[1]*10+[42,0x123456789ABCDEF,42,42,42,42,4615626668101337088,4615626668101337088]+[1]*4,r['statement_compile_records']
+ if args.execute_line:
+  g.command('#include "C:/Probe/PublicExecuteLine.HC"');g.wait('PUBLIC EXECUTE LINE DONE\n')
+  data=(g.out/'public-execute-line.bin').read_bytes();(out/'public-execute-line.bin').write_bytes(data)
+  r['execute_line_records']=list(struct.unpack('<16q',data));assert r['execute_line_records']==[1]*16,r['execute_line_records']
+ if args.compiler_stream:
+  g.command('#include "C:/Probe/PublicCompilerStream.HC"');g.wait('PUBLIC COMPILER STREAM DONE\n')
+  data=(g.out/'public-compiler-stream.bin').read_bytes();(out/'public-compiler-stream.bin').write_bytes(data)
+  r['compiler_stream_records']=list(struct.unpack('<9q',data));assert r['compiler_stream_records']==[1]*9,r['compiler_stream_records']
  g.command('6*7;');r['arithmetic_pixels']=g.result_pixels()
  g.close();g=None
  after=pack['snapshot']((out/'working.img').read_bytes())[1]

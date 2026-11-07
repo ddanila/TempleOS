@@ -27686,3 +27686,30 @@ C4 compiler/API progress. Normal public native Lex/LexStmt2Bin delivery,
 stream/assembly/AOT closure, 684 inventory items and complete C1–C5 release gates
 remain open. Neither x64 bootstraps nor these startup checks substitute for C5's
 two native generations, full suite, reproducibility and resource budgets.
+
+### Shared executor defaults and compile-time streams (2026-11-07)
+
+CMain.HC now defines LexStmt2Bin's omitted cmp_flags as CMPF_PRS_SEMICOLON,
+matching its canonical public declaration. Its old zero definition made the
+source-loaded ExeCmdLine repeat an unconsumed semicolon. The initial source25
+run and exact pinned-input audit retain that failure. The new runner checks
+published default metadata before execution instead of masking it with explicit
+arguments or replacing source bodies.
+
+The final source26 run loads complete actual ExeCmdLine, DirFile, StreamPrint and
+StreamDir bodies. All earlier contracts pass, together with sixteen executor
+observations and nine original-vs-native stream observations (all 72 bytes).
+Cases cover multiple statements, answer types/state, load-only and block-stop
+modes, valid-case heap recovery, title state/unwind, subsequent execution,
+exactly-once effects, appended/expression/nested injection and source directory.
+The original leaves the title changed on syntax unwind; native requires its
+existing stronger restoration. Independent audits check all 1,038 suite inputs.
+
+Both x64 bootstrap generations and the 1,762-source full build pass, as do the
+production independent ELF32 statements and target rejection/recovery. All
+native runtime modules and Kernel32.BIN are byte-identical to the prior verified
+runtime88/console248 candidate. Fresh 8/16 MiB startup/welcome gates pass, with
+both diagnostic ownership/file-break phases. See docs/i386-public-execute-line.md
+and docs/i386-public-compiler-stream.md. Normal public compiler delivery,
+stream error/ownership/AOT closure, 684 inventory items and full C1–C5 gates
+remain open; no additional application workflow is qualified by these tests.

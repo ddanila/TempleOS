@@ -1,4 +1,4 @@
-U8 *LexStmt2Bin(CCmpCtrl *cc,I64 *_type,I64 cmp_flags=0)
+U8 *LexStmt2Bin(CCmpCtrl *cc,I64 *_type,I64 cmp_flags=CMPF_PRS_SEMICOLON)
 {//Compile one cc stmt to bin code.
   I64 size,i,j,k,*res=INVALID_PTR;
   CCodeCtrl *tmpcbh,*native_asm;
