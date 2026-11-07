@@ -86,6 +86,8 @@ interaction, the border raster, save/reboot/reopen, all shortcuts, selection,
 mouse editing, undo, resource recovery or heap balance. The remaining dispatcher
 workflows are enumerated in [DocPutKey](i386-doc-put-key.md). Migrating zero-flag
 DocEd to the original body must integrate those real service paths: the retained
-editor currently intercepts save, help, execution and other commands absent from
-the public DocPutKey dispatcher. Passing this small session alone cannot justify
+editor currently intercepts help, execution and other commands absent from
+the public DocPutKey dispatcher. The [save-key dispatch](i386-doc-save-keys.md)
+now has a separate original comparison and integration test. Passing this small
+session alone cannot justify
 removing those working paths or declaring the full editor compatible.

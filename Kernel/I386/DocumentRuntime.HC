@@ -187,6 +187,7 @@ Bool NativeDocUsesWindowLayout(CDoc *doc)
     task->display_doc==doc && !NativeLegacyViewActive(task);
 }
 extern U0 EdCharIns(I64 ch,I64 sc,CDoc *doc);
+extern Bool DocWrite(CDoc *doc,Bool prompt=FALSE);
 I64 NativeDocClipboardKey(I64 ch,I64 sc)
 {//Original DocPutKey clipboard dispatch: -1 unrelated, 0 consumed, 1/2/3 copy/cut/paste.
   if(sc&SCF_ALT) return -1;
@@ -227,6 +228,14 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
         KeyDescSet("Char  /'%s'",key_name);
         Free(key_name);
       } else EdCharIns(ch,sc,doc);
+    } else if(ch==CH_CTRLS && !(sc&SCF_ALT)) {
+      if(sc&SCF_SHIFT) {
+        if(sc&SCF_KEY_DESC)KeyDescSet("Edit/Toggle AutoSave");
+        else LBtc(&doc->flags,DOCf_AUTO_SAVE);
+      } else {
+        if(sc&SCF_KEY_DESC)KeyDescSet("Edit/Save");
+        else DocWrite(doc);
+      }
     } else if(clipboard_action>=0) {
       if(sc&SCF_KEY_DESC) {
         if(clipboard_action==1)KeyDescSet("Edit/Copy to Clip");

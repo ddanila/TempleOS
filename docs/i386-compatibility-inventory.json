@@ -2199,6 +2199,41 @@
           "result": "pass",
           "evidence": "build/i386-doced-normal-native-dont-home-v1/result.json",
           "scope": "Two real Z typing and Escape/Shift-Escape sessions at fixed focused geometry with autocomplete disabled/restored. Original independent pixel audit passes; native default masks113/95 and client524/609 differences, flagged control127/127 and zero differences. Exact text passes both native routes. Border rendering, save/reboot, full shortcuts and heap remain open. See docs/i386-doced-normal.md."
+        },
+        {
+          "target": "original-save-key-dispatch",
+          "command": "python3 tools/test-i386-doc-save-keys.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-keys-original-v1/result.json",
+          "scope": "Fourteen save-key API cases: metadata, Alt suppression, autosave toggles, create/overwrite, callbacks, incoming locks, null document, missing Ctrl bit and invalid signature. Original and corrected native pass255; old native fails descriptions/toggles/five saves. Corrected native also passes fourteen cold-boot FileRead checks. No physical-input, timed-autosave, visual, heap or full-editor claim. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "native-save-key-baseline",
+          "command": "python3 tools/test-i386-doc-save-keys.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-save-keys-native-baseline-v1/result.json",
+          "scope": "Fourteen save-key API cases: metadata, Alt suppression, autosave toggles, create/overwrite, callbacks, incoming locks, null document, missing Ctrl bit and invalid signature. Original and corrected native pass255; old native fails descriptions/toggles/five saves. Corrected native also passes fourteen cold-boot FileRead checks. No physical-input, timed-autosave, visual, heap or full-editor claim. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "native-save-key-dispatch",
+          "command": "python3 tools/test-i386-doc-save-keys.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-keys-native-v1/result.json",
+          "scope": "Fourteen save-key API cases: metadata, Alt suppression, autosave toggles, create/overwrite, callbacks, incoming locks, null document, missing Ctrl bit and invalid signature. Original and corrected native pass255; old native fails descriptions/toggles/five saves. Corrected native also passes fourteen cold-boot FileRead checks. No physical-input, timed-autosave, visual, heap or full-editor claim. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "original-physical-editor-save",
+          "command": "python3 tools/test-i386-doc-save-editor.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-editor-original-v1/result.json",
+          "scope": "Physical Z, Ctrl-S, two Shift-Ctrl-S and Escape through DocEd(DOF_DONT_HOME): mask63, exact seven saved text/cursor bytes and caller restoration. Native additionally reopens exact bytes after cold boot. No default-editor migration, timed autosave, heap or visual qualification. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "native-physical-editor-save",
+          "command": "python3 tools/test-i386-doc-save-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-editor-native-v1/result.json",
+          "scope": "Physical Z, Ctrl-S, two Shift-Ctrl-S and Escape through DocEd(DOF_DONT_HOME): mask63, exact seven saved text/cursor bytes and caller restoration. Native additionally reopens exact bytes after cold boot. No default-editor migration, timed autosave, heap or visual qualification. See docs/i386-doc-save-keys.md."
         }
       ]
     },
@@ -2270,6 +2305,41 @@
           "result": "pass",
           "evidence": "build/i386-doc-read-missing-native-v1/result.json",
           "scope": "Missing boot-drive file returns empty document with flags, absolute filename, lock and caller-role checks; not all DocRead paths"
+        },
+        {
+          "target": "original-save-key-dispatch",
+          "command": "python3 tools/test-i386-doc-save-keys.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-keys-original-v1/result.json",
+          "scope": "Fourteen save-key API cases: metadata, Alt suppression, autosave toggles, create/overwrite, callbacks, incoming locks, null document, missing Ctrl bit and invalid signature. Original and corrected native pass255; old native fails descriptions/toggles/five saves. Corrected native also passes fourteen cold-boot FileRead checks. No physical-input, timed-autosave, visual, heap or full-editor claim. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "native-save-key-baseline",
+          "command": "python3 tools/test-i386-doc-save-keys.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-save-keys-native-baseline-v1/result.json",
+          "scope": "Fourteen save-key API cases: metadata, Alt suppression, autosave toggles, create/overwrite, callbacks, incoming locks, null document, missing Ctrl bit and invalid signature. Original and corrected native pass255; old native fails descriptions/toggles/five saves. Corrected native also passes fourteen cold-boot FileRead checks. No physical-input, timed-autosave, visual, heap or full-editor claim. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "native-save-key-dispatch",
+          "command": "python3 tools/test-i386-doc-save-keys.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-keys-native-v1/result.json",
+          "scope": "Fourteen save-key API cases: metadata, Alt suppression, autosave toggles, create/overwrite, callbacks, incoming locks, null document, missing Ctrl bit and invalid signature. Original and corrected native pass255; old native fails descriptions/toggles/five saves. Corrected native also passes fourteen cold-boot FileRead checks. No physical-input, timed-autosave, visual, heap or full-editor claim. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "original-physical-editor-save",
+          "command": "python3 tools/test-i386-doc-save-editor.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-editor-original-v1/result.json",
+          "scope": "Physical Z, Ctrl-S, two Shift-Ctrl-S and Escape through DocEd(DOF_DONT_HOME): mask63, exact seven saved text/cursor bytes and caller restoration. Native additionally reopens exact bytes after cold boot. No default-editor migration, timed autosave, heap or visual qualification. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "native-physical-editor-save",
+          "command": "python3 tools/test-i386-doc-save-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-editor-native-v1/result.json",
+          "scope": "Physical Z, Ctrl-S, two Shift-Ctrl-S and Escape through DocEd(DOF_DONT_HOME): mask63, exact seven saved text/cursor bytes and caller restoration. Native additionally reopens exact bytes after cold boot. No default-editor migration, timed autosave, heap or visual qualification. See docs/i386-doc-save-keys.md."
         }
       ]
     },
@@ -3500,6 +3570,41 @@
           "result": "pass",
           "evidence": "build/i386-doc-typing-actions-8m-v2/result.json",
           "scope": "Seven original entry-action cases at8MiB, unchanged fixture with exact two warning rows accounted for. Also passing: tabs8, core6, physical multiline editing/serialization and repeated13-check allocation recovery, plus normal8/full16 startup. Earlier64MiB form runs incomplete at startup; old22-command dollar keyboard run still pending. See docs/i386-doc-selected-typing.md."
+        },
+        {
+          "target": "original-save-key-dispatch",
+          "command": "python3 tools/test-i386-doc-save-keys.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-keys-original-v1/result.json",
+          "scope": "Fourteen save-key API cases: metadata, Alt suppression, autosave toggles, create/overwrite, callbacks, incoming locks, null document, missing Ctrl bit and invalid signature. Original and corrected native pass255; old native fails descriptions/toggles/five saves. Corrected native also passes fourteen cold-boot FileRead checks. No physical-input, timed-autosave, visual, heap or full-editor claim. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "native-save-key-baseline",
+          "command": "python3 tools/test-i386-doc-save-keys.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-save-keys-native-baseline-v1/result.json",
+          "scope": "Fourteen save-key API cases: metadata, Alt suppression, autosave toggles, create/overwrite, callbacks, incoming locks, null document, missing Ctrl bit and invalid signature. Original and corrected native pass255; old native fails descriptions/toggles/five saves. Corrected native also passes fourteen cold-boot FileRead checks. No physical-input, timed-autosave, visual, heap or full-editor claim. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "native-save-key-dispatch",
+          "command": "python3 tools/test-i386-doc-save-keys.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-keys-native-v1/result.json",
+          "scope": "Fourteen save-key API cases: metadata, Alt suppression, autosave toggles, create/overwrite, callbacks, incoming locks, null document, missing Ctrl bit and invalid signature. Original and corrected native pass255; old native fails descriptions/toggles/five saves. Corrected native also passes fourteen cold-boot FileRead checks. No physical-input, timed-autosave, visual, heap or full-editor claim. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "original-physical-editor-save",
+          "command": "python3 tools/test-i386-doc-save-editor.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-editor-original-v1/result.json",
+          "scope": "Physical Z, Ctrl-S, two Shift-Ctrl-S and Escape through DocEd(DOF_DONT_HOME): mask63, exact seven saved text/cursor bytes and caller restoration. Native additionally reopens exact bytes after cold boot. No default-editor migration, timed autosave, heap or visual qualification. See docs/i386-doc-save-keys.md."
+        },
+        {
+          "target": "native-physical-editor-save",
+          "command": "python3 tools/test-i386-doc-save-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-save-editor-native-v1/result.json",
+          "scope": "Physical Z, Ctrl-S, two Shift-Ctrl-S and Escape through DocEd(DOF_DONT_HOME): mask63, exact seven saved text/cursor bytes and caller restoration. Native additionally reopens exact bytes after cold boot. No default-editor migration, timed autosave, heap or visual qualification. See docs/i386-doc-save-keys.md."
         }
       ]
     },

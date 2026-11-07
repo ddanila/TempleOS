@@ -384,7 +384,7 @@ resource recovery before the dispatcher can be qualified as a whole.
 | Ctrl-P, Shift-Ctrl-P | Toggle super/subscript based on current mode | No explicit native DocPutKey branch. Require mode flags, inserted commands and visual placement. |
 | Ctrl-Q | No action | Require explicit no-mutation/control-state observation, including metadata mode. |
 | Ctrl-R | Edit existing sprite or insert one; suppress in form/plain text | No explicit native DocPutKey branch. Require both sprite paths and all guards. |
-| Ctrl-S, Shift-Ctrl-S | Save or toggle autosave | No explicit native DocPutKey branch. Require persistence/reboot and autosave state/timing. |
+| Ctrl-S, Shift-Ctrl-S | Save or toggle autosave | Original dispatch added; [save-key comparisons](i386-doc-save-keys.md) cover metadata, modifier guards, state, physical input and persistence/reboot. Timed autosave and failure/recovery remain open. |
 | Ctrl-T, Shift-Ctrl-T | Toggle document or entry plain text outside forms | No explicit native DocPutKey branch. Require round trips, form suppression and exact layout/entries. |
 | Ctrl-Y | Delete line, suppressed with Shift | No explicit native DocPutKey branch. Require first/middle/last line, cursor and ownership behavior. |
 | Ctrl-0 through Ctrl-9, with/without Shift | Word completion or definition | Explicit original-core routing exists; full dictionary and interaction qualification remains open. |
