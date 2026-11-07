@@ -27363,6 +27363,11 @@ bootstrap generations pass stable inputs. Normal-image diagnostics pass mask 31
 and exact original documents with an independent input/volume/startup audit.
 All 24 source-loaded original token cases pass using delivered diagnostics.
 The 8/16 MiB profiles match all welcome pixels; both diagnostic ownership/cleanup
-phases complete. Original real-token error reference passes mask 15; native
-token-error integration remains open. See docs/i386-lex-diagnostics.md
+phases complete. Original and source-loaded native real-token error checks pass mask 15,
+with independent native audit. Full diagnostic output equivalence remains open:
+the fourth PrintErr caller name differs between execution contexts. See docs/i386-lex-diagnostics.md
 for reference corrections and remaining branch/qualification gaps.
+
+Public LexPutToken formatting now has a reusable eight-branch differential
+contract; original and normal native documents match exactly with independent
+audits. See tools/test-i386-lex-token-format.py and docs/i386-lex-diagnostics.md.

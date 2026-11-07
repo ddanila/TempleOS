@@ -45,12 +45,28 @@ the diagnostic run completes both program/ownership/file-cleanup phases. See
 An original real-token error reference also passes mask 15 in
 `build/i386-lex-token-error-original-v1`: an overlong character constant reaches
 the Compiler exception, error counter, saved location and expected message.
-Native token-error integration remains to be checked.
+Native source-loaded original Lex also passes mask 15 in
+`build/i386-lex-token-error-native-v1`, independently audited against the
+original fixture, unchanged token stages, volume and boot bytes. This checks
+exception identity, counters, saved location and the error-message substring.
+The complete documents differ in the fourth PrintErr caller name: original
+`&LELog`, native `&LexSystemToken`; the first three caller names and diagnostic
+payload match. Different top-level execution contexts may affect this prefix,
+but its cause and full diagnostic equivalence remain unqualified.
 
 The contract covers an identifier token, normal document output, counters,
 saved source location, preserved input and the default-null Compiler exception.
 It does not qualify raw output, boot debugger interaction, function-context
-warnings, document-backed input, non-identifier token formatting or allocation
+warnings, document-backed input or allocation
 failure. Test export buffers are deliberately retained until guest shutdown;
 this is not a production allocation-recovery test. Full compiler diagnostics,
 normal-startup token delivery and C1–C5 qualification remain open.
+
+The reusable `tools/test-i386-lex-token-format.py` contract passes against both
+the original (`build/i386-lex-token-format-original-v3`) and normal native image
+(`build/i386-lex-token-format-native-v2`). All eight LexPutToken branches match
+exactly: identifier, string, integer, character constant, float, newline,
+displayable and non-displayable token. Independent audits verify the original
+source tree, fixtures, recorded inputs, native volume and boot bytes. Export
+allocations remain alive until shutdown. This exercises token formatting only;
+it does not deliver the complete lexer during normal startup.

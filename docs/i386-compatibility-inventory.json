@@ -9859,6 +9859,13 @@
           "result": "pass",
           "evidence": "build/i386-lex-diagnostics-native-v1/result.json",
           "scope": "Mask 31 and exact original identifier warning/default-null exception documents; independently audited inputs, startup, fixture-only volume and boot bytes. Original token regression passes 24 cases; 8/16 MiB welcome and diagnostic cleanup checks pass. Other diagnostic branches and full compiler qualification remain open."
+        },
+        {
+          "target": "public-lex-token-format",
+          "command": "python3 tools/test-i386-lex-token-format.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-lex-token-format-native-v2/result.json",
+          "scope": "Exact eight-branch LexPutToken output matches original-v3; independent source/fixture/input/native-volume/boot audit. Full lexer delivery and caller-prefix equivalence remain open."
         }
       ]
     },
