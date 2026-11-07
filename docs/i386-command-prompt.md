@@ -41,29 +41,38 @@ input is blocked.
   and volume integrity. The original terminal audit also verifies restored
   reference files, the exact Once fixture and exported state bytes.
 
+- `build/i386-command-prompt-native-v4/result.json`: the final normal cross-v6
+  image passes all six cases, exact returned bytes and the original state table.
+  `terminal-audit.json` independently verifies current inputs, unchanged boot
+  bytes, preserved file tuples, sole fixture addition and successful startup.
+  The shared bitmap mutation regression also passes all six original checks.
+  See [shared debugger evidence](i386-unassemble.md#final-verified-image) for
+  the final source audit, supporting contracts and 8/16 MiB memory gates.
+
 Run into new output directories:
 
 ```sh
 python3 tools/test-i386-command-prompt.py --out build/command-prompt-original-new
-python3 tools/test-i386-command-prompt.py build/i386-terminal-handoff-cross-v2/kernel.img --out build/command-prompt-native-new
+python3 tools/test-i386-command-prompt.py build/i386-command-prompt-cross-v6/kernel.img --out build/command-prompt-native-new
 ```
 
 ## Implementation boundary
 
-The full original body is in `Compiler/CMisc.HC`. Its normal path depends on
+The full original body is shared through `Compiler/CommandPromptCore.HC`,
+included by `Compiler/CMisc.HC` and the native shared library. Its normal path depends on
 existing public task answer fields, formatting, `DirCur`, allocation, `GetStr`,
-and the character whitespace bitmap. Its debug/raw path calls `RawDr`, which
-is not currently published by the native debugger. Original `RawDr` also
-requires register presentation, raw cursor placement and `Ui` disassembly;
-a no-op replacement would lose debugger behavior.
+and the character whitespace bitmap. Its debug/raw path calls the shared
+`RawDr` body with native register settings and original `Ui` decoding. See
+[disassembly and raw registers](i386-unassemble.md) for catalog provenance,
+architecture differences and verification boundaries.
 
 The public compiler control already has its own allocation/ownership path in
 `Compiler/PublicControlCore.HC`; it must not be replaced with the private arena
 constructor. Public `LexGetChar`/`Lex` and interactive input remain missing.
 The private `I386LexRawChar` explicitly rejects `CCF_PMT`, so adding a symbol
 alone would not restore the original interactive execution path. The next
-integration must preserve the complete prompt body, its debugger dependency,
-public lexer ownership, and `UserTaskCont` execution/error cleanup.
+integration must connect the restored prompt to public lexer ownership and
+`UserTaskCont` execution/error cleanup; the retained input loop still bypasses it.
 
 This is a C1/C2/C4 reference contract and a visible implementation gap, not
 terminal qualification. Physical keyboard input, Shift-Esc task exit, raw/debug

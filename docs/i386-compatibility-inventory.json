@@ -9951,7 +9951,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Call original CmdLinePmt with six real queued GetStr inputs and seeded pending answer states; inspect exact returned strings, saved document prefixes and task/document state.",
-      "oracle": "docs/i386-command-prompt.md: exact signed/unsigned/F64/void answer formatting, current-directory prefix, trailing whitespace and semicolon normalization, 24-word task/document state table. Public native symbol is absent; raw/debug, physical input, exit/unwind, resource recovery and full interactive lexer remain unqualified.",
+      "oracle": "docs/i386-command-prompt.md: exact signed/unsigned/F64/void answer formatting, current-directory prefix, trailing whitespace and semicolon normalization, 24-word task/document state table. The shared original public body passes on the final native image; retained terminal input still bypasses it; raw/debug, physical input, exit/unwind, resource recovery and full interactive lexer remain unqualified.",
       "tests": [
         {
           "target": "original-command-prompt",
@@ -9966,6 +9966,34 @@
           "result": "fail",
           "evidence": "build/i386-command-prompt-native-baseline-v1/result.json",
           "scope": "Normal handoff-v2 image reports missing public CmdLinePmt before behavioral cases. Input hashes, all original file tuples and sole fixture addition independently audited."
+        },
+        {
+          "target": "native-command-prompt",
+          "command": "python3 tools/test-i386-command-prompt.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-command-prompt-native-v4/result.json",
+          "scope": "Six actual public CmdLinePmt/GetStr cases; original exported state/bytes match. Current inputs and sole fixture addition independently audited. Retained public lexer integration remains open."
+        },
+        {
+          "target": "original-whitespace-bitmap",
+          "command": "python3 tools/test-i386-whitespace-bitmap.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-whitespace-bitmap-original-v1/result.json",
+          "scope": "Shared bitmap mutation for Str2I64, Str2F64, StrUtil and CmdLinePmt plus document-role/bitmap restoration. Original and corrected native masks 63; baseline 56. Not every consumer or concurrent mutation."
+        },
+        {
+          "target": "native-whitespace-bitmap-baseline",
+          "command": "python3 tools/test-i386-whitespace-bitmap.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-whitespace-bitmap-native-baseline-v1/result.json",
+          "scope": "Shared bitmap mutation for Str2I64, Str2F64, StrUtil and CmdLinePmt plus document-role/bitmap restoration. Original and corrected native masks 63; baseline 56. Not every consumer or concurrent mutation."
+        },
+        {
+          "target": "native-whitespace-bitmap",
+          "command": "python3 tools/test-i386-whitespace-bitmap.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-whitespace-bitmap-native-v1/result.json",
+          "scope": "Shared bitmap mutation for Str2I64, Str2F64, StrUtil and CmdLinePmt plus document-role/bitmap restoration. Original and corrected native masks 63; baseline 56. Not every consumer or concurrent mutation."
         }
       ]
     },
@@ -10468,9 +10496,24 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Call original Ui on twelve explicit 32-bit instruction buffers; export exact text, lengths, relative destinations and sorted opcode catalog.",
+      "oracle": "docs/i386-unassemble.md: exact twelve-case text/length/destination contract and byte-identical catalog reproduction. Complete opcode, U/Un and source-link workflows remain unqualified.",
+      "tests": [
+        {
+          "target": "original-unassemble",
+          "command": "python3 tools/test-i386-unassemble.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-unassemble-original-v3/result.json",
+          "scope": "Twelve actual Ui cases; exact instruction text, lengths and relative destinations. Original run reproduces catalog. No complete decoder qualification."
+        },
+        {
+          "target": "native-unassemble",
+          "command": "python3 tools/test-i386-unassemble.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-unassemble-native-v4/result.json",
+          "scope": "Twelve actual Ui cases; exact instruction text, lengths and relative destinations. Original run reproduces catalog. No complete decoder qualification."
+        }
+      ]
     },
     {
       "path": "Demo/AcctExample/HomeKeyPlugIns.HC",
@@ -17978,6 +18021,20 @@
           "result": "pass",
           "evidence": "build/i386-task-caller-debugger-v9/result.json",
           "scope": "8 MiB KVM 486,-fpu: two real INT3 caller masks 31, saved PC/frame and current debug-stack callers, bounded exhaustion, EAX/mode/IF/TF recovery, exact welcome restoration and warmed per-trap public heap delta zero. Source image unchanged; not all task states or private resources."
+        },
+        {
+          "target": "original-raw-registers",
+          "command": "python3 tools/test-i386-raw-registers.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-raw-registers-original-v2/result.json",
+          "scope": "Actual RawDr, architecture-specific font-derived register/IP pixels, compiler-off/on instruction row and exact state restoration. Full debugger lifecycle remains open."
+        },
+        {
+          "target": "native-raw-registers",
+          "command": "python3 tools/test-i386-raw-registers.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-raw-registers-native-v4/result.json",
+          "scope": "Actual RawDr, architecture-specific font-derived register/IP pixels, compiler-off/on instruction row and exact state restoration. Full debugger lifecycle remains open."
         }
       ]
     },
@@ -19795,6 +19852,27 @@
           "result": "pass",
           "evidence": "build/files-find-match-public-native-v2/result.json",
           "scope": "Seven groups for filename masks, all six type filters, direct wildcard matching and caller heap recovery; not whole-file qualification"
+        },
+        {
+          "target": "original-whitespace-bitmap",
+          "command": "python3 tools/test-i386-whitespace-bitmap.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-whitespace-bitmap-original-v1/result.json",
+          "scope": "Shared bitmap mutation for Str2I64, Str2F64, StrUtil and CmdLinePmt plus document-role/bitmap restoration. Original and corrected native masks 63; baseline 56. Not every consumer or concurrent mutation."
+        },
+        {
+          "target": "native-whitespace-bitmap-baseline",
+          "command": "python3 tools/test-i386-whitespace-bitmap.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-whitespace-bitmap-native-baseline-v1/result.json",
+          "scope": "Shared bitmap mutation for Str2I64, Str2F64, StrUtil and CmdLinePmt plus document-role/bitmap restoration. Original and corrected native masks 63; baseline 56. Not every consumer or concurrent mutation."
+        },
+        {
+          "target": "native-whitespace-bitmap",
+          "command": "python3 tools/test-i386-whitespace-bitmap.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-whitespace-bitmap-native-v1/result.json",
+          "scope": "Shared bitmap mutation for Str2I64, Str2F64, StrUtil and CmdLinePmt plus document-role/bitmap restoration. Original and corrected native masks 63; baseline 56. Not every consumer or concurrent mutation."
         }
       ]
     },
@@ -19886,7 +19964,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-whitespace-bitmap",
+          "command": "python3 tools/test-i386-whitespace-bitmap.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-whitespace-bitmap-original-v1/result.json",
+          "scope": "Shared bitmap mutation for Str2I64, Str2F64, StrUtil and CmdLinePmt plus document-role/bitmap restoration. Original and corrected native masks 63; baseline 56. Not every consumer or concurrent mutation."
+        },
+        {
+          "target": "native-whitespace-bitmap-baseline",
+          "command": "python3 tools/test-i386-whitespace-bitmap.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-whitespace-bitmap-native-baseline-v1/result.json",
+          "scope": "Shared bitmap mutation for Str2I64, Str2F64, StrUtil and CmdLinePmt plus document-role/bitmap restoration. Original and corrected native masks 63; baseline 56. Not every consumer or concurrent mutation."
+        },
+        {
+          "target": "native-whitespace-bitmap",
+          "command": "python3 tools/test-i386-whitespace-bitmap.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-whitespace-bitmap-native-v1/result.json",
+          "scope": "Shared bitmap mutation for Str2I64, Str2F64, StrUtil and CmdLinePmt plus document-role/bitmap restoration. Original and corrected native masks 63; baseline 56. Not every consumer or concurrent mutation."
+        }
+      ]
     },
     {
       "path": "Linux/GodPassage",

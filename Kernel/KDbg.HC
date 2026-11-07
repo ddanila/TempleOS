@@ -286,44 +286,7 @@ I64 *TaskRegAddr(CTask *task,I64 reg_num)
   return NULL;
 }
 
-#define RAWDR_COL	40
-
-U0 RawDr(CTask *task=NULL)
-{
-  I64 i,j,old_col=text.raw_col;
-  Bool old_raw=Raw(ON);
-  U8 buf[200];
-
-  if (!task) task=Fs;
-
-  for (i=0;i<16;i++) {
-    text.raw_col=i*text.cols+RAWDR_COL;
-    "º%3Z:%016X\n",i,"ST_U64_REGS",*TaskRegAddr(task,i);
-  }
-
-  text.raw_col=i++*text.cols+RAWDR_COL;
-  "ºRIP:%016X\n",task->rip;
-
-  text.raw_col=i++*text.cols+RAWDR_COL;
-  "º%-*tp\n",text.cols-(RAWDR_COL+1)-1,Fs->rip;
-
-  text.raw_col=i++*text.cols+RAWDR_COL;
-  'º';
-  if (Bt(&sys_run_level,RLf_COMPILER)) {
-    j=Fs->rip;
-    Ui(buf,&j,,,TRUE);
-    "%s",buf;
-  } else
-    '\n';
-
-  text.raw_col=i*text.cols+RAWDR_COL;
-  'È';
-  for (j=0;j<text.cols-RAWDR_COL-1;j++)
-    'Í';
-
-  text.raw_col=old_col;
-  Raw(old_raw);
-}
+#include "/Kernel/RawRegistersCore.HC"
 
 U0 Dr(CTask *task=NULL)
 {//Dump regs

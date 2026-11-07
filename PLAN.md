@@ -27169,3 +27169,28 @@ composed host-guard audit. All validation launched for the Yield change is
 terminal and passes. Printable metadata queries remain the next reproduced
 DocPutKey gap; full interactive/visual suites, isolated timing and C1–C5 remain
 open. See docs/i386-doc-key-yield.md and docs/i386-pick-file.md.
+
+
+## Shared command prompt and debugger dependencies (2026-11-07)
+
+Native startup now publishes the original CmdLinePmt, Ui and RawDr bodies in
+Adam's shared scope, including original register definitions and source-link
+formatting. The original x86-64 build uses the same extracted bodies. Native
+RawDr selects eight 32-bit registers/EIP; the pinned original sorted opcode
+catalog is reproduced byte-for-byte and included in both disk profiles.
+The prompt and scanner now share the existing kernel whitespace bitmap;
+mutation tests reproduce the old split-object failure and pass after correction.
+
+The final cross-v6 image passes six normal-boot contracts: prompt, disassembly,
+raw registers, bitmap mutation, repeated public file header and retained child
+handoff. All 1,746 production source hashes match. Independent audits preserve
+execution inputs, boot bytes, original file tuples and sole fixture additions.
+Normal8 and diagnostic16 pass exact full welcome pixels; diagnostics finish both
+program/ownership/cleanup phases. Minimal packaging also retains the catalog.
+See docs/i386-unassemble.md and docs/i386-command-prompt.md for exact evidence.
+
+The retained NativeTerminalInput loop still bypasses the restored public prompt.
+Public LexGetChar/Lex ownership and UserTaskCont execution/error cleanup are the
+next integration gap. Complete decoder/debugger workflows, isolated startup
+timing and C5 installed native generations remain unqualified. All 686 inventory
+entries remain unqualified; no C1–C5 milestone is closed by these contracts.

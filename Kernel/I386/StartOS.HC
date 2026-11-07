@@ -50,3 +50,9 @@ if(!NativeWinMgrStart) throw('WinMgr',TRUE);
 AdamFile("::/Adam/SrvStartUpCore.HC",FALSE);
 CHashFun *native_srv_startup=HashFind("SrvStartUp",adam_task->hash_table,HTT_FUN);
 if(!native_srv_startup || !native_srv_startup->exe_addr)throw('SrvStart',TRUE);
+
+//Retain the original prompt, source links and disassembler in shared scope.
+//The 32-bit raw register panel uses the same body with architecture constants.
+AdamFile("::/Compiler/I386/MakeCommandPrompt.HC",FALSE);
+CHashFun *native_command_prompt=HashFind("CmdLinePmt",adam_task->hash_table,HTT_FUN);
+if(!native_command_prompt || !native_command_prompt->exe_addr)throw('CmdPmt',TRUE);

@@ -224,7 +224,7 @@ def console_runtime_layout(module):
             symbol = module[name:name+length].decode('ascii')
             if kind in (1, 3): exports[symbol] = (kind, offset)
             else: imports[symbol] = name
-    if set(imports) != {'CeilI64', 'char_bmp_alpha_numeric_no_at', 'MemCmp', 'I386ArcEntryGet', 'char_bmp_filename', 'cnts', 'I386F64Abs', 'I386F64Sub', 'Arg', 'Ceil', 'CeilU64', 'FloorU64', 'Sin', 'Cos', 'I386F64Add', 'I386F64Compare', 'MSize', 'Round', 'Floor', 'Log10', 'Pow10I64', 'FloorI64', 'RoundI64', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric', 'char_bmp_alpha_numeric', 'i386_idle', 'throw', 'MSize2', 'CAlloc', 'MemCpy', 'I386IrqSave', 'SysTry', 'MAlloc', 'MemSet', 'I386F64Sqrt', 'I386HeapAlloc', 'I386HeapFree', 'StrCmp', 'StrCpy', 'StrNew', 'KernelLog', 'HashFind', 'MAllocIdent', 'Free', 'HashDefineLstAdd', 'I386SchedBlock', 'I386F64ToI64', 'I386KbcQueueGet', 'I386F64Div', 'KernelHex', 'I386F64FromI64', 'SysUntry', 'KernelStop', 'I386SchedYield', 'I386SchedWake', 'HashAdd', 'I386F64Mul', 'DefineLstLoad', 'I386IrqRestore', 'HashTableNew', 'I386TaskFrameParent', 'I386TaskFrameReturn'}:
+    if set(imports) != {'char_bmp_white_space', 'CeilI64', 'char_bmp_alpha_numeric_no_at', 'MemCmp', 'I386ArcEntryGet', 'char_bmp_filename', 'cnts', 'I386F64Abs', 'I386F64Sub', 'Arg', 'Ceil', 'CeilU64', 'FloorU64', 'Sin', 'Cos', 'I386F64Add', 'I386F64Compare', 'MSize', 'Round', 'Floor', 'Log10', 'Pow10I64', 'FloorI64', 'RoundI64', 'char_bmp_hex_numeric', 'char_bmp_dec_numeric', 'char_bmp_alpha_numeric', 'i386_idle', 'throw', 'MSize2', 'CAlloc', 'MemCpy', 'I386IrqSave', 'SysTry', 'MAlloc', 'MemSet', 'I386F64Sqrt', 'I386HeapAlloc', 'I386HeapFree', 'StrCmp', 'StrCpy', 'StrNew', 'KernelLog', 'HashFind', 'MAllocIdent', 'Free', 'HashDefineLstAdd', 'I386SchedBlock', 'I386F64ToI64', 'I386KbcQueueGet', 'I386F64Div', 'KernelHex', 'I386F64FromI64', 'SysUntry', 'KernelStop', 'I386SchedYield', 'I386SchedWake', 'HashAdd', 'I386F64Mul', 'DefineLstLoad', 'I386IrqRestore', 'HashTableNew', 'I386TaskFrameParent', 'I386TaskFrameReturn'}:
         raise ValueError('Unexpected console import contract')
     for name in ('Main', 'ConsoleInit', 'ConsoleDisplay', 'ConsoleKeys', 'ConsoleCancelRead', 'I386TaskCancelWait', 'ConsoleKeyIrq', 'ConsoleCpuCapture', 'ConsoleCpuDebug', 'ConsoleRootHeaders', 'NativeWinMgrEnsure'):
         if exports.get(name, (0, 0))[0] != 1: raise ValueError(f'Missing console entry {name}')
@@ -835,6 +835,8 @@ def package_volume(disk, exports, content_profile="minimal"):
             'source': '/Apps/Budget/Accts.DD',
             'source_sha256': hashlib.sha256(template).hexdigest(),
             'archive_sha256': hashlib.sha256(archive).hexdigest()}
+    # Required by shared prompt/debugger startup in both content profiles.
+    tree['Compiler']['I386']['UAsmTables.DATA'] = (ROOT/'Compiler/I386/UAsmTables.DATA').read_bytes()
     packed = (exports/'IncludeInner.HC.Z').read_bytes()
     inner = (ROOT/'tools/guest/i386-kernel/IncludeInner.HC').read_bytes()
     if len(packed)<17 or struct.unpack_from('<qqB', packed) != (len(packed), len(inner), 2):

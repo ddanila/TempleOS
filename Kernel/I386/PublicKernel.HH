@@ -28,6 +28,7 @@
 public _extern _REV_BITS_TABLE U8 *rev_bits_table;
 public _extern _SET_BITS_TABLE U8 *set_bits_table;
 public extern U32 char_bmp_word[16];
+public extern U32 char_bmp_white_space[16];
 public _extern _BIT_FIELD_EXT_U32 U32 BFieldExtU32(U8 *bit_field,I64 bit,I64 size);
 public _extern _BIT_FIELD_OR_U32 U0 BFieldOrU32(U8 *bit_field,I64 bit,U32 pattern);
 #include "/Kernel/I386/Queue.HH"

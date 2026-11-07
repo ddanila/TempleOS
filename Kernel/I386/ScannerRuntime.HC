@@ -3,7 +3,7 @@ U32 char_bmp_displayable[16]=CHAR_BMP_DISPLAYABLE_DATA;
 //Retain every original scan format, including date conversion.
 #include "/Kernel/StringUtilFlags.HH"
 import U32 char_bmp_dec_numeric[16];
-U32 char_bmp_white_space[16]={0x80002600,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+import U32 char_bmp_white_space[16];
 U32 char_bmp_safe_dollar[16]={
   0x80000000,0xFFFFFFEF,0xFFFFFFFF,0x7FFFFFFF,
   0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,
