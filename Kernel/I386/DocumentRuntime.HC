@@ -231,6 +231,14 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
         KeyDescSet("Char  /'%s'",key_name);
         Free(key_name);
       } else EdCharIns(ch,sc,doc);
+    } else if(ch==CH_CTRLF && !(sc&SCF_ALT)) {
+      if(sc&SCF_SHIFT) {
+        if(sc&SCF_KEY_DESC)KeyDescSet("Cmd /Search Files");
+        else CallExtStr("FindWiz");
+      } else {
+        if(sc&SCF_KEY_DESC)KeyDescSet("Edit/Find & Replace");
+        else EdFindReplace(doc);
+      }
     } else if(ch==CH_CTRLS && !(sc&SCF_ALT)) {
       if(sc&SCF_SHIFT) {
         if(sc&SCF_KEY_DESC)KeyDescSet("Edit/Toggle AutoSave");

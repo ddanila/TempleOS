@@ -372,7 +372,7 @@ resource recovery before the dispatcher can be qualified as a whole.
 | Ctrl-B | Toggle owning task window border | No explicit native DocPutKey branch. Direct WinBorder/rendering evidence does not qualify this shortcut. |
 | Ctrl-C/X/V | Copy/cut/paste, Shift guards and descriptions | Explicit dispatch; bounded [clipboard contracts](i386-clipboard-keys.md) and [FileMgr workflows](i386-filemgr-clipboard.md) pass on their recorded images. |
 | Ctrl-D | Unlock, run FileMgr, relock | No explicit native DocPutKey branch. Standalone FileMgr evidence does not establish shortcut integration. |
-| Ctrl-F, Shift-Ctrl-F | Find/replace or FindWiz file search | No explicit native DocPutKey branch. Require real prompts, edits/results, cancellation and restoration. |
+| Ctrl-F, Shift-Ctrl-F | Find/replace or FindWiz file search | Original routing restored; API and six physical shortcut cases match the original, including distinct forms, accept/cancel, replacement ALL/cancel and caller restoration. See `docs/i386-doc-search-keys.md`. Full file-search results, physical field editing and default startup/editor integration remain open. |
 | Ctrl-G | Prompt for and go to line | No explicit native DocPutKey branch. Direct navigation APIs do not qualify the prompt workflow. |
 | Backspace | Respect entry/prompt/soft-newline boundaries and delete through original EdCharDel | Native fallback; original boundary and metadata matrix remain open. |
 | Ctrl-I, shifted variant | Insert indentation command unless scan is Tab | No explicit native DocPutKey branch. Require exact command entries and resulting layout. |

@@ -2339,6 +2339,13 @@
           "result": "pass",
           "evidence": "build/i386-doc-find-editor-native-v1/result.json",
           "scope": "Eight physical F3/Shift-F3 sessions through focused DocEd(DOF_DONT_HOME), plus two direct Alt guards and six direct metadata cases; all sixteen masks127 and thirty cursor/direction values match original, including exact caller heap. Default Home Alt-F3 colour insertion is a separate open workflow. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "native-physical-search-shortcuts",
+          "command": "python3 tools/test-i386-doc-search-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-editor-native-v3/result.json",
+          "scope": "Six physical Ctrl-F/Shift-Ctrl-F inputs in focused DocEd(DOF_DONT_HOME); exact form identities, edited accept/cancel, replacement ALL/cancel, wizard cancellation and incoming lock. Same thirteen masks and exports as original; files/arithmetic/input hashes independently audited. Full default editor and file-search workflows remain unqualified."
         }
       ]
     },
@@ -3815,6 +3822,40 @@
           "result": "pass",
           "evidence": "build/i386-doc-find-editor-native-v1/result.json",
           "scope": "Eight physical F3/Shift-F3 sessions through focused DocEd(DOF_DONT_HOME), plus two direct Alt guards and six direct metadata cases; all sixteen masks127 and thirty cursor/direction values match original, including exact caller heap. Default Home Alt-F3 colour insertion is a separate open workflow. No find-prompt, screenshot or full default-editor qualification. See docs/i386-doc-find-keys.md."
+        },
+        {
+          "target": "original-search-key-dispatch",
+          "command": "python3 tools/test-i386-doc-search-keys.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-keys-original-v3/result.json",
+          "scope": "Nine Ctrl-F action and four metadata cases through real forms/menu; field formatting and posted Esc, complete search record/text, cursor, lock and caller restoration. Wizard cancellation only; see docs/i386-doc-search-keys.md. Final fixture verifies exact first-field format and data/checkbox counts."
+        },
+        {
+          "target": "native-search-key-missing-dispatch-baseline",
+          "result": "fail",
+          "evidence": "build/i386-doc-search-keys-native-baseline-v2/result.json",
+          "scope": "Unchanged F3 image: no forms/menu, seven action failures and two missing descriptions; Alt guards, fresh arithmetic and filesystem audit pass."
+        },
+        {
+          "target": "original-physical-search-shortcuts",
+          "command": "python3 tools/test-i386-doc-search-editor.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-editor-original-v3/result.json",
+          "scope": "Six actual Ctrl-F/Shift-Ctrl-F inputs in focused DocEd(DOF_DONT_HOME), actual form/menu closure; same exports as API control. No physical field editing or complete file-search workflow. Distinct form identity verified."
+        },
+        {
+          "target": "native-search-key-dispatch",
+          "command": "python3 tools/test-i386-doc-search-keys.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-keys-native-v2/result.json",
+          "scope": "All nine action and four metadata cases match original through actual forms/menu; complete original Find loaded. Exact files and fresh arithmetic audited. Full file-search workflow and default editor remain unqualified. Distinct form identity verified."
+        },
+        {
+          "target": "native-physical-search-shortcuts",
+          "command": "python3 tools/test-i386-doc-search-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-editor-native-v3/result.json",
+          "scope": "Six physical Ctrl-F/Shift-Ctrl-F inputs in focused DocEd(DOF_DONT_HOME); exact form identities, edited accept/cancel, replacement ALL/cancel, wizard cancellation and incoming lock. Same thirteen masks and exports as original; files/arithmetic/input hashes independently audited. Full default editor and file-search workflows remain unqualified."
         }
       ]
     },
@@ -6009,6 +6050,40 @@
           "result": "pass",
           "evidence": "build/i386-file-occ-candidate-v2/result.json",
           "scope": "Complete original Find loads on console 217; nine counts and mask 4095 match, fresh 42 rendered, 1739 preexisting files unchanged, only three fixture additions, clean filesystem and unchanged inputs. Wizard/replacement/full provider remain unqualified."
+        },
+        {
+          "target": "original-search-key-dispatch",
+          "command": "python3 tools/test-i386-doc-search-keys.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-keys-original-v3/result.json",
+          "scope": "Nine Ctrl-F action and four metadata cases through real forms/menu; field formatting and posted Esc, complete search record/text, cursor, lock and caller restoration. Wizard cancellation only; see docs/i386-doc-search-keys.md. Final fixture verifies exact first-field format and data/checkbox counts."
+        },
+        {
+          "target": "native-search-key-missing-dispatch-baseline",
+          "result": "fail",
+          "evidence": "build/i386-doc-search-keys-native-baseline-v2/result.json",
+          "scope": "Unchanged F3 image: no forms/menu, seven action failures and two missing descriptions; Alt guards, fresh arithmetic and filesystem audit pass."
+        },
+        {
+          "target": "original-physical-search-shortcuts",
+          "command": "python3 tools/test-i386-doc-search-editor.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-editor-original-v3/result.json",
+          "scope": "Six actual Ctrl-F/Shift-Ctrl-F inputs in focused DocEd(DOF_DONT_HOME), actual form/menu closure; same exports as API control. No physical field editing or complete file-search workflow. Distinct form identity verified."
+        },
+        {
+          "target": "native-search-key-dispatch",
+          "command": "python3 tools/test-i386-doc-search-keys.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-keys-native-v2/result.json",
+          "scope": "All nine action and four metadata cases match original through actual forms/menu; complete original Find loaded. Exact files and fresh arithmetic audited. Full file-search workflow and default editor remain unqualified. Distinct form identity verified."
+        },
+        {
+          "target": "native-physical-search-shortcuts",
+          "command": "python3 tools/test-i386-doc-search-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-search-editor-native-v3/result.json",
+          "scope": "Six physical Ctrl-F/Shift-Ctrl-F inputs in focused DocEd(DOF_DONT_HOME); exact form identities, edited accept/cancel, replacement ALL/cancel, wizard cancellation and incoming lock. Same thirteen masks and exports as original; files/arithmetic/input hashes independently audited. Full default editor and file-search workflows remain unqualified."
         }
       ]
     },
