@@ -26956,3 +26956,21 @@ the initial capture is transitional at two document updates. No production
 renderer workaround was applied. See docs/i386-picker-render.md for phase counts,
 capture provenance, the cancelled initial probe and exact scope. Full visual
 qualification and C1–C5 remain open.
+
+## Synchronous window border coordinates (2026-11-07)
+
+A focused original/native test establishes that synchronous native rendering
+applied the caller's origin/clipping to absolute window borders. Every one of
+4,800 baseline cells matches that predicted defect; 65 differ from the original.
+The native adapter now selects the full-screen window-manager task solely for
+TextBorder coordinates. Original Fs semantics and native callback identity,
+ownership and cleanup remain unchanged.
+
+Both bootstrap generations, exact 1,736-source cross-build parity, 386 audit,
+4,800 original/native cell comparisons, arithmetic pixels, filesystem/input
+checks and normal 8 MiB welcome pixels pass. Partial real-chooser captures show
+zero settled interior raster differences and removal of the stray border. The
+first chooser/16 MiB diagnostic runs exited by signal 15 before completion;
+fresh runs remain pending. No full post-fix chooser/diagnostic pass is claimed.
+See docs/i386-window-border-context.md. Full visual workflows and C1–C5 remain
+open.

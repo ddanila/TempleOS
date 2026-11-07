@@ -48,6 +48,8 @@ U0 NativeWindowUpdateOpen(CNativeWindowUpdateScope *scope,CTask *task,CDC **dc,
 #define GR_TASK_WIN_SCOPE_LOCAL CNativeWindowUpdateScope native_window_scope
 #define GR_TASK_WIN_SCOPE_OPEN NativeWindowUpdateOpen(&native_window_scope,task,&dc,&saved_scroll,&scroll_saved)
 #define GR_TASK_WIN_SCOPE_CLOSE NativeWindowUpdateRelease(&native_window_scope);NativeRenderScopeClose(&native_window_scope)
+//Synchronous frames keep caller Fs; absolute borders use the full-screen anchor.
+#define GR_TASK_WIN_BORDER_TASK sys_winmgr_task
 #include "/Adam/Ctrls/DrawCtrlsCore.HC"
 #include "/Adam/Gr/GrUpdateTaskWinCore.HC"
 U0 GrUpdateTaskWin(CTask *task)

@@ -9,6 +9,9 @@ U0 GrTaskWinRelease(CTask *task,CDC **dc,CD3I64 *scroll,Bool *saved)
 #define GR_TASK_WIN_SCOPE_OPEN
 #define GR_TASK_WIN_SCOPE_CLOSE
 #endif
+#ifndef GR_TASK_WIN_BORDER_TASK
+#define GR_TASK_WIN_BORDER_TASK Fs
+#endif
 U0 GrUpdateTaskWinCore(CTask *task)
 {
   CDC *dc=NULL;
@@ -18,7 +21,7 @@ U0 GrUpdateTaskWinCore(CTask *task)
   try {
     GR_TASK_WIN_SCOPE_OPEN;
     if (!Bt(&task->display_flags,DISPLAYf_NO_BORDER))
-      TextBorder(Fs,task->win_left,task->win_right,task->win_top,
+      TextBorder(GR_TASK_WIN_BORDER_TASK,task->win_left,task->win_right,task->win_top,
 	    task->win_bottom,task->border_attr,task==sys_focus_task);
     TextRect(task->win_left,task->win_right,
 	  task->win_top,task->win_bottom,task->text_attr<<8);

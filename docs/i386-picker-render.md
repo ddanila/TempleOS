@@ -74,3 +74,8 @@ a transitional frame with only two document updates. The remaining graphics
 need isolation from text-cell composition, including actual window/control
 geometry and drawing/occlusion behavior. Full chooser visual qualification,
 FileMgr and C1–C5 remain open.
+
+A focused original/native comparison now reproduces a separate border-coordinate
+defect when synchronous frames run on an offset caller. See
+[i386-window-border-context.md](i386-window-border-context.md) for the exact
+4,800-cell contract and native baseline failure.
