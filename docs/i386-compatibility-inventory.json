@@ -412,7 +412,14 @@
           "command": "python3 tools/test-i386-doc-picker-editor.py --out OUT",
           "result": "pass",
           "evidence": "build/i386-doc-picker-editor-original-v3/result.json",
-          "scope": "Same six metadata and five action assertions through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), focused caller, real popup navigation/cancellation and editor return. Original passes; native physical run remains pending separately. No default-editor, heap or visual qualification. See docs/i386-doc-picker-keys.md."
+          "scope": "Same six metadata and five action assertions through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), focused caller, real popup navigation/cancellation and editor return. Original and native physical runs pass their recorded comparisons. No default-editor, heap or visual qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "native-physical-picker-keys",
+          "command": "python3 tools/test-i386-doc-picker-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-editor-native-v1/result.json",
+          "scope": "Six metadata masks15 and five action masks127 through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), real picker navigation/cancellation, insertion and incoming lock/role/cwd restoration. Exact original exports after only T:/C: fixture prefix normalization, fresh arithmetic and filesystem audit. No full visual, heap, failure or default-editor qualification. See docs/i386-doc-picker-keys.md."
         }
       ]
     },
@@ -2289,7 +2296,14 @@
           "command": "python3 tools/test-i386-doc-picker-editor.py --out OUT",
           "result": "pass",
           "evidence": "build/i386-doc-picker-editor-original-v3/result.json",
-          "scope": "Same six metadata and five action assertions through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), focused caller, real popup navigation/cancellation and editor return. Original passes; native physical run remains pending separately. No default-editor, heap or visual qualification. See docs/i386-doc-picker-keys.md."
+          "scope": "Same six metadata and five action assertions through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), focused caller, real popup navigation/cancellation and editor return. Original and native physical runs pass their recorded comparisons. No default-editor, heap or visual qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "native-physical-picker-keys",
+          "command": "python3 tools/test-i386-doc-picker-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-editor-native-v1/result.json",
+          "scope": "Six metadata masks15 and five action masks127 through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), real picker navigation/cancellation, insertion and incoming lock/role/cwd restoration. Exact original exports after only T:/C: fixture prefix normalization, fresh arithmetic and filesystem audit. No full visual, heap, failure or default-editor qualification. See docs/i386-doc-picker-keys.md."
         }
       ]
     },
@@ -3688,7 +3702,14 @@
           "command": "python3 tools/test-i386-doc-picker-editor.py --out OUT",
           "result": "pass",
           "evidence": "build/i386-doc-picker-editor-original-v3/result.json",
-          "scope": "Same six metadata and five action assertions through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), focused caller, real popup navigation/cancellation and editor return. Original passes; native physical run remains pending separately. No default-editor, heap or visual qualification. See docs/i386-doc-picker-keys.md."
+          "scope": "Same six metadata and five action assertions through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), focused caller, real popup navigation/cancellation and editor return. Original and native physical runs pass their recorded comparisons. No default-editor, heap or visual qualification. See docs/i386-doc-picker-keys.md."
+        },
+        {
+          "target": "native-physical-picker-keys",
+          "command": "python3 tools/test-i386-doc-picker-editor.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-picker-editor-native-v1/result.json",
+          "scope": "Six metadata masks15 and five action masks127 through physical F4/Shift-F4 in DocEd(DOF_DONT_HOME), real picker navigation/cancellation, insertion and incoming lock/role/cwd restoration. Exact original exports after only T:/C: fixture prefix normalization, fresh arithmetic and filesystem audit. No full visual, heap, failure or default-editor qualification. See docs/i386-doc-picker-keys.md."
         }
       ]
     },

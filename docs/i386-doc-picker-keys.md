@@ -65,7 +65,7 @@ interrupted after the invalid readiness value was observed. The final fixture
 uses explicit call-site substitution, an initialized counter and focus setup.
 Those two incomplete runs are not compatibility verdicts.
 
-## Native integration and remaining physical run
+## Native integration
 
 `build/i386-doc-picker-keys-native-v1` passes all six metadata masks 15 and five
 action masks 127 on `i386-doc-picker-keys-cross-v1/kernel.img`. Its exact exports
@@ -87,10 +87,10 @@ in `i386-doc-save-keys-picker-v1`. Five scheduling cases remain passing in
 `i386-doc-yield-picker-v1`; independent audits match their original exports and
 verify exact filesystem changes and input hashes.
 
-The native physical-key run `i386-doc-picker-editor-native-v1` is still active at
-this checkpoint. Its first completed session has the expected inserted path;
-remaining sessions and terminal state/filesystem checks must finish before that
-runner is counted as passing. The direct API pass does not substitute for this
-physical-key result. Process details are retained in
-`build/doc-picker-verification-processes.json`; observe that process before
-considering a repeat.
+The native physical-key run `i386-doc-picker-editor-native-v1` is now terminal
+and passes all six metadata masks 15 and five action masks 127. All seven binary
+exports match the original physical reference after only the fixture drive-prefix
+normalization. An independent terminal audit verifies the input hashes, exact
+file tuples/additions and allocation bitmap. Fresh arithmetic passes its pixel
+oracle. This completes the five-session physical-key comparison; full desktop,
+visual, failure/resource and default-editor migration gates remain open.
