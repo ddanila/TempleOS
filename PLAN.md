@@ -26907,3 +26907,7 @@ chooser workflow executes, and automatic startup-library loading remains open.
 Both interface 230 and 231 full 16 MiB diagnostic boots now pass both program,
 code-heap ownership and file-break cleanup phases plus all 307,200 welcome
 pixels. Their enclosing interactive regressions remain live. C1–C5 remain open.
+
+The next dependency, Cd2DirEntry, now has twelve passing original lookup
+checks and a matching native missing-function baseline, both with unchanged
+inputs. See docs/i386-cd-dir-entry.md. Its implementation remains open.

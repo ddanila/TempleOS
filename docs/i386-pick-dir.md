@@ -94,3 +94,7 @@ pin audit). This message is also emitted for an unresolved identifier by
 PrsExpressionCore; the native runtime currently has no Cd2DirEntry binding or
 body. Its original recursive directory lookup is the next dependency. No
 chooser workflow executes, and automatic startup-library loading remains open.
+
+The [directory lookup reference](i386-cd-dir-entry.md) now passes twelve
+original checks; the native baseline rejects the missing function before
+executing them.
