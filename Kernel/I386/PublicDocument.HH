@@ -85,6 +85,7 @@ public _extern _DOC_DATA_FMT U0 DocDataFmt(CDoc *doc,CDocEntry *entry,I64 value=
 public _extern _DOC_DATA_SCAN U0 DocDataScan(CDoc *doc,CDocEntry *entry);
 
 public _extern _DOC_PUT_S CDocEntry *DocPutS(CDoc *doc,U8 *source);
+public _extern _DOC_PUT_LINE CDocEntry *DocPutLine(CDoc *doc=NULL,CDocEntry *doc_e);
 public _extern _DOC_PRINT CDocEntry *DocPrint(CDoc *doc=NULL,U8 *fmt,...);
 
 public _extern _DOC_BORDER_NEW CDoc *DocBorderNew(CDoc *pdoc);

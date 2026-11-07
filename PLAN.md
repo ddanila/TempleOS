@@ -27290,3 +27290,15 @@ real bitmap header and printable alias identity. Final-image diagnostic16 passes
 all 307,200 welcome pixels. See docs/i386-public-lexer.md for evidence and retained failures.
 The token API is not yet delivered by normal startup; compiler diagnostics,
 expression/stream services and C1–C5 qualification remain open.
+
+
+## Shared document-line diagnostic output (2026-11-07)
+
+Original DocPutLine is shared unchanged by original/native document output,
+with a public native export in console version 238. The five-check original
+reference and native contract both pass mask 31 and exact dollar/tab/newline/
+cursor output. Stable baseline v2 rejects the missing symbol. Independent audits
+verify original source/body/fixture/output and baseline volume/startup/boot bytes.
+See docs/i386-doc-put-line.md. Final-image 8 MiB welcome and 16 MiB diagnostics pass all 307,200 pixels;
+diagnostics complete both program/ownership/cleanup phases. Full compiler
+diagnostics and C1–C5 qualification remain open.

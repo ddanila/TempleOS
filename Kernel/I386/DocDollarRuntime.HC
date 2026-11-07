@@ -41,3 +41,4 @@ U32 char_bmp_zero_cr_nl_cursor[16]={0x00002421,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     char_bmp_zero_tab_cr_nl_cursor[16]={0x00002621,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
     char_bmp_zero_tab_cr_nl_cursor_dollar[16]={0x00002621,0x10,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 #include "/Adam/DolDoc/DocPutSCore.HC"
+#include "/Adam/DolDoc/DocPutLineCore.HC"

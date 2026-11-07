@@ -3954,6 +3954,27 @@
           "result": "pass",
           "evidence": "build/i386-c2-doc-type-native/result.json",
           "scope": "Complete shared Type/DocType/DocDump and Busy/PortNop: six exact documents, two raw VGA captures and real HPET delay; scoped evidence only, whole-file and original terminal startup unqualified"
+        },
+        {
+          "target": "original-doc-put-line",
+          "command": "python3 tools/test-i386-doc-put-line.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-put-line-original-v2/result.json",
+          "scope": "Five original checks, exact dollar/tab/newline/cursor output and independent restored-reference audit."
+        },
+        {
+          "target": "native-doc-put-line-baseline",
+          "command": "python3 tools/test-i386-doc-put-line.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doc-put-line-baseline-v2/result.json",
+          "scope": "Stable pre-change image rejects missing DocPutLine before behavioral checks; independent fixture-only volume/boot/startup audit."
+        },
+        {
+          "target": "native-doc-put-line",
+          "command": "python3 tools/test-i386-doc-put-line.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doc-put-line-native-v1/result.json",
+          "scope": "Same five checks and exact original saved output through public API; unchanged shared body, input pins, arithmetic and volume validation. Not whole-file compatibility, contention or allocation-failure recovery."
         }
       ]
     },
