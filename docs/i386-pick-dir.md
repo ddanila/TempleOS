@@ -69,3 +69,7 @@ formatting checks pass (see [formatting evidence](i386-format.md)). Loading the
 complete FileMgr on this image gets past Fmt and rejects RedSeaISO at line 407
 (`build/i386-pick-dir-format-v1/result.json`, unchanged inputs). No chooser
 workflow has yet run successfully on the native image.
+
+The [RedSea ISO reference](i386-redsea-iso.md) now covers original explicit and
+default stage2 calls, generated descriptors/catalog and mounted exact file
+round trips. Native RedSeaISO and its 386 boot-loader adaptation remain missing.

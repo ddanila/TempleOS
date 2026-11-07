@@ -26847,3 +26847,15 @@ image and screenshot are preserved in build/i386-scroll-resident-include-v1.
 The after private-heap observation was not reached. Exact-counter diagnosis
 retains the equality assertion; see docs/i386-file-read.md. This workflow and
 all C1–C5 milestones remain unqualified.
+
+
+## RedSea ISO creation reference (2026-11-07)
+
+The original RedSeaISO oracle passes ten guest checks for explicit stage2 and
+FileMgr-default calls, plus independent parsing of both generated ISO descriptor
+sets, boot catalogs and recursive file contents. Mounted reads and unmount pass.
+Native baseline rejects missing RedSeaISO; original stage1 also contains an
+x86-64 CPUID requirement that needs a real 386 boot-loader adaptation. No
+synthetic stage2 execution or native generation is claimed. See
+docs/i386-redsea-iso.md. Interface 229 full 16 MiB diagnostics and exact welcome
+also pass; enclosing interactive checks remain live. C1–C5 remain open.

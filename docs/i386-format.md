@@ -50,3 +50,7 @@ diagnostic/interactive cross-build remains running.
 Loading the complete original FileMgr now passes Fmt and rejects the missing
 RedSeaISO at line 407 (`build/i386-pick-dir-format-v1`, unchanged inputs). The
 chooser itself remains unqualified.
+
+The full 16 MiB diagnostic now reaches both program-probe phases and passes
+the exact welcome frame (`build/i386-format-cross-v1/diagnostic16-audit.json`).
+Enclosing interactive/rejection checks are still running.
