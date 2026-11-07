@@ -27532,3 +27532,15 @@ HashSingleTableFind at Part20.HC line 46. The implementation already exists in
 the native kernel but is not published through the normal public surface. Both
 formal runs have independent input/fixture-volume/boot audits. AOT stores, class/
 header/stream integration, normal compiler delivery and full C1–C5 remain open.
+
+
+## Public single-table lookup (2026-11-07)
+
+HashSingleTableFind now binds the existing kernel implementation through export
+slot 95 and the original public declaration/default argument. Original/native
+contracts both pass mask 1023 for single-bucket collisions, instance/type masks,
+parent exclusion versus HashFind, use-count wrap and heap recovery. The old
+normal image rejects the first call. Both x86-64 bootstrap generations and the
+full 1758-source-pinned native build pass. Shared class/header execution remains
+under investigation; no inventory workflow is qualified by this narrow API
+restoration. See docs/i386-hash-single-table.md. Full C1–C5 remains open.

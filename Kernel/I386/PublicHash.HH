@@ -9,6 +9,7 @@ public _extern _HASH_SRC_FILE_SET U0 HashSrcFileSet(CCmpCtrl *cc,CHashSrcSym *h,
 public extern U0 HashAdd(CHash *entry,CHashTable *table);
 public _extern _HASH_ADD_AFTER U0 HashAddAfter(CHash *entry,CHash *pred,CHashTable *table);
 public extern CHash *HashFind(U8 *name,CHashTable *table,I64 mask,I64 instance=1);
+public _extern _HASH_SINGLE_TABLE_FIND CHash *HashSingleTableFind(U8 *needle_str,CHashTable *haystack_table,I64 mask,I64 instance=1);
 public _extern _HASH_TABLE_NEW CHashTable *HashTableNew(I64 size,CTask *mem_task=0);
 public _extern _HASH_TABLE_DEL U0 HashTableDel(CHashTable *table);
 public _extern _HASH_DEL U0 HashDel(CHashSrcSym *symbol);
