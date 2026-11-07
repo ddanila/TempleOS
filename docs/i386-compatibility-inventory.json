@@ -11531,7 +11531,7 @@
       "source_at_discovery": "identical",
       "compatibility": "qualified",
       "reference_workflow": "Run complete unchanged Demo/Carry.HC through normal ExeFile: verify all 1024 BigCnt rows, 128 BigShift rows and 64 Branch bits, then invoke the real retained functions after declaration input release and 32 KiB data/code heap churn. Both complete DolDoc captures must match the independent mathematical oracle and original byte-for-byte.",
-      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime86-v3 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
+      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime87 arithmetic-v3 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
       "tests": [
         {
           "command": "python3 tools/test-i386-carry-demo.py [IMAGE] --out OUT",
@@ -11562,6 +11562,12 @@
           "result": "pass",
           "evidence": "build/i386-carry-demo-native-v3/result.json",
           "scope": "Final compact runtime86 candidate: complete unchanged demo, both original 39258-byte documents, mask7, retained calls after input release and allocator churn, later arithmetic, sole fixture volume addition and independently checked pins."
+        },
+        {
+          "command": "python3 tools/test-i386-carry-demo.py build/i386-carry-arithmetic-cross-v3/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-carry-arithmetic-demo-v3/result.json",
+          "scope": "Runtime87 arithmetic checkpoint: unchanged full counter/shift/branch demo, mask7 and both exact original 39258-byte documents, actual retained functions after input release/churn, later normal arithmetic and terminal input pins."
         }
       ]
     },
@@ -11604,6 +11610,12 @@
           "result": "pass",
           "evidence": "build/i386-carry-class-meta-native-v3/result.json",
           "scope": "Regression on compact runtime86 Carry candidate: mask511, all three exact original documents, actual retained callbacks and mutated data, sole fixture addition, normal arithmetic and independently checked pins."
+        },
+        {
+          "command": "python3 tools/test-i386-class-meta.py build/i386-carry-arithmetic-cross-v3/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-carry-arithmetic-class-meta-v3/result.json",
+          "scope": "Runtime87 arithmetic checkpoint: unchanged full metadata demo, mask511, three exact original documents, retained callbacks, changed data, later normal arithmetic and terminal input pins."
         }
       ]
     },

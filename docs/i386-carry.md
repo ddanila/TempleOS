@@ -94,3 +94,10 @@ C5 native-generation, full-suite and steady-state gates.
 
 The inventory now has two defined qualified demo workflows and 684 unqualified
 items. Full normal compiler delivery and complete C1-C5 remain open.
+
+Runtime 87 adds differential multiply/square/negate/scalar-increment carry cases
+and preserves pointer result types across shared optimizer folds. Both defined
+Carry and ClassMeta workflows repeat successfully on that current candidate.
+See docs/i386-carry-arithmetic.md for the 216 arithmetic triples, the separate
+128-case runtime-index reference, ISA tests and limits; this demo document's
+original 608-case/whole-demo scope does not imply full CPU-flag qualification.

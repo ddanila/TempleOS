@@ -27635,3 +27635,24 @@ compiler regressions and the prior ClassMeta workflow pass on the final image.
 The inventory now has two defined qualified demos and 684 unqualified items.
 This does not qualify other arithmetic/CPU flags, other applications, full normal
 compiler delivery or complete C1-C5 release gates. See docs/i386-carry.md.
+
+
+## Wide arithmetic carry and stable pointer results (2026-11-07)
+
+Compiler runtime 87 computes signed/unsigned multiplication carry from the full
+128-bit product, corrects whole-value negate carry, and preserves incoming carry
+for scalar pre/post increment/decrement. The target backend restores pointer
+result types from operand trees between shared optimizer folds; arithmetic
+promotion had made a constant-index pointer store clear the preceding carry.
+The actual old/new CANegate code confirms ADD/ADC becomes flag-neutral LEA.
+
+Original and normal native contracts match all 216 result/stored-result/carry
+triples. A separate 128-case runtime-index matrix preserves the original's
+observed zero carry from runtime index arithmetic; the initial incorrect seeded
+oracle is retained and marked invalid. The production multiply chunks also pass
+8,320 mixed-width boundary/random ISA cases. Both x64 bootstraps, the full
+1759-source build, source23 suite, both qualified demos, the prior 608 arithmetic
+pairs, member/hash/savepoint regressions and 8/16 MiB gates pass on the final
+candidate. Failed/cancelled candidates remain visible. This is C4 progress;
+other CPU flags, pointer arithmetic, full public compiler delivery and full
+C1-C5 qualification remain open. See docs/i386-carry-arithmetic.md.

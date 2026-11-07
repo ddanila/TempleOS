@@ -70,7 +70,28 @@ U0 I386Store(CI386Out *out,CHashClass *c)
   }
 }
 
-U0 I386Binary(CI386Out *out,I64 op)
+U0 I386Multiply(CI386Out *out,Bool is_unsigned)
+{//Four 32-bit products form the full 128-bit product, using 20 temporary bytes.
+  //EDX:EAX and EBX:ECX are inputs; the low 64-bit result returns in EDX:EAX.
+  //The original limbs and low result word live below the evaluation stack.
+  I386Bytes(out,"\x83\xEC\x04\x53\x51\x52\x50\x8B\x04\x24\xF7\x64\x24\x08\x89\x44\x24\x10\x89\xD6"
+    "\x8B\x44\x24\x04\xF7\x64\x24\x08\x01\xC6\x83\xD2\x00\x89\xD7\x8B\x04\x24\xF7\x64"
+    "\x24\x0C\x01\xC6\x11\xD7\xBB\x00\x00\x00\x00\x83\xD3\x00\x8B\x44\x24\x04\xF7\x64"
+    "\x24\x0C\x01\xC7\x11\xD3",66);
+  if(!is_unsigned) {
+    //Unsigned product minus B<<64 for negative A, and A<<64 for negative B.
+    I386Bytes(out,"\x83\x7C\x24\x04\x00\x79\x08\x2B\x7C\x24\x08\x1B\x5C\x24\x0C\x83\x7C\x24\x0C\x00"
+    "\x79\x07\x2B\x3C\x24\x1B\x5C\x24\x04",29);
+    //Signed overflow means the upper half is not the low half's sign extension.
+    I386Bytes(out,"\x8B\x44\x24\x10\x89\xF2\x89\xD1\xC1\xF9\x1F\x31\xCF\x31\xCB\x09\xDF\xF7\xDF\x8D"
+    "\x64\x24\x14",23);
+  } else {
+    //Unsigned overflow means any bit of the upper half is nonzero.
+    I386Bytes(out,"\x8B\x44\x24\x10\x89\xF2\x09\xDF\xF7\xDF\x8D\x64\x24\x14",14);
+  }
+}
+
+U0 I386Binary(CI386Out *out,I64 op,Bool is_unsigned=FALSE)
 {//EDX:EAX op EBX:ECX, with ESI/EDI scratch.
   switch (op) {
     case IC_ADD: I386Bytes(out,"\x01\xC8\x11\xDA",4); break;
@@ -79,8 +100,7 @@ U0 I386Binary(CI386Out *out,I64 op)
     case IC_OR: I386Bytes(out,"\x09\xC8\x09\xDA",4); break;
     case IC_XOR: I386Bytes(out,"\x31\xC8\x31\xDA",4); break;
     case IC_MUL:
-      I386Bytes(out,"\x89\xC6\x89\xD7\x0F\xAF\xF9\x0F\xAF\xDE"
-        "\xF7\xE1\x01\xFA\x01\xDA",16); break;
+      I386Multiply(out,is_unsigned); break;
   }
 }
 
@@ -144,6 +164,27 @@ CHashClass *I386ValueClass(CI386Backend *backend,CIntermediateCode *ic)
     return backend->types[RT_I64];
   if(ic->ic_class) return OptClassFwd(ic->ic_class);
   return 0;
+}
+
+U0 I386RestorePointerAdds(CI386Backend *backend)
+{//Keep address arithmetic pointer-valued between shared optimizer folds.
+  //OptFixupBinaryOp1 promotes ic_class for arithmetic; the following fold
+  //copies it over ic_class2. Recover pointer-plus-integer from the operand
+  //trees in IR order, so nested pointer adds also retain their logical type.
+  CIntermediateCode *ic;
+  CHashClass *left,*right,*type;
+  for(ic=backend->cc->coc.coc_head.next;ic!=&backend->cc->coc.coc_head;ic=ic->next)
+    if(ic->ic_code==IC_ADD) {
+      if(!ic->t.arg1_tree || !ic->t.arg2_tree) throw('Compiler');
+      left=I386ValueClass(backend,ic->t.arg1_tree);
+      right=I386ValueClass(backend,ic->t.arg2_tree);
+      type=0;
+      if(left && right && !I386IsF64(left) && !I386IsF64(right)) {
+        if(left->ptr_stars_cnt && !right->ptr_stars_cnt) type=left;
+        else if(right->ptr_stars_cnt && !left->ptr_stars_cnt) type=right;
+      }
+      if(type) ic->ic_class=ic->ic_class2=type;
+    }
 }
 
 U0 I386F64Runtime(CI386Backend *backend,CI386Out *out,I64 op,I64 pass)
@@ -398,8 +439,10 @@ U0 I386BackendCore(CI386Backend *backend)
   if(backend->status) { backend->status->node=cc->coc.coc_head.next; backend->status->pass=-1; }
   cc->pass=0;
   (*backend->fold)(backend->context,cc);
+  I386RestorePointerAdds(backend);
   //Refresh operand links after constant/intrinsic rewrites replace producer nodes.
   (*backend->fold)(backend->context,cc);
+  I386RestorePointerAdds(backend);
   {
     for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
       if (ic->ic_code==IC_PUSH_CMP) {
@@ -664,7 +707,7 @@ U0 I386BackendCore(CI386Backend *backend)
                 "\xC1\xFA\x1F\x09\xD0",15);
             else {
               I386Bytes(out,"\x89\xC1\x89\xD3",4);
-              I386Binary(out,IC_MUL);
+              I386Binary(out,IC_MUL,ic->ic_code==IC_SQR_U64);
             }
             depth=backend->calls->depth;
             backend->calls->called=TRUE;
@@ -1003,7 +1046,8 @@ U0 I386BackendCore(CI386Backend *backend)
             if (ic->ic_code==IC_UNARY_MINUS && I386IsF64(c))
               I386Bytes(out,"\x81\xF2\x00\x00\x00\x80",6);
             else if (ic->ic_code==IC_UNARY_MINUS)
-              I386Bytes(out,"\xF7\xD8\x83\xD2\x00\xF7\xDA",7);
+              I386Bytes(out,"\xF7\xD8\x83\xD2\x00\xF7\xDA"
+                "\x89\xC3\x09\xD3\xF7\xDB",13);
             else if (ic->ic_code==IC_COM)
               I386Bytes(out,"\xF7\xD0\xF7\xD2",4);
             else
@@ -1064,6 +1108,14 @@ U0 I386BackendCore(CI386Backend *backend)
                 I386F64Runtime(backend,out,IC_ADD,pass);
               else I386F64Runtime(backend,out,IC_SUB,pass);
               I386Byte(out,0x59);
+            } else if (!c->ptr_stars_cnt) {
+              //Scalar INC/DEC preserve CF, just as the original x64 instructions.
+              if(ic->ic_code==IC__PP || ic->ic_code==IC_PP_)
+                I386Bytes(out,"\x40\x75\x01\x42",4); //INC low; carry into high on zero.
+              else
+                //Complement, increment and complement implements low-word DEC;
+                //the increment's ZF detects a borrow without touching CF.
+                I386Bytes(out,"\xF7\xD0\x40\x75\x01\x4A\xF7\xD0",8);
             } else if (ic->ic_code==IC__PP || ic->ic_code==IC_PP_) {
               I386Byte(out,0x05);
               if (c->ptr_stars_cnt) I386Dword(out,I386Size(c-1));
@@ -1103,7 +1155,7 @@ U0 I386BackendCore(CI386Backend *backend)
               case IC_MUL_EQU:
                 if (I386IsF64(c) || I386IsF64(I386ValueClass(backend,ic->t.arg2_tree)))
                   I386F64Update(backend,out,IC_MUL,pass,!I386IsF64(c));
-                else I386Binary(out,IC_MUL);
+                else I386Binary(out,IC_MUL,ToBool(c->raw_type&RTF_UNSIGNED));
                 break;
               case IC_AND_EQU: I386Binary(out,IC_AND); break;
               case IC_OR_EQU: I386Binary(out,IC_OR); break;
@@ -1213,7 +1265,7 @@ U0 I386BackendCore(CI386Backend *backend)
               I386F64Runtime(backend,out,ic->ic_code,pass);
             else if(c && c->ptr_stars_cnt && ic->ic_code==IC_ADD)
               I386Bytes(out,"\x8D\x04\x08",3);
-            else I386Binary(out,ic->ic_code);
+            else I386Binary(out,ic->ic_code,ToBool(c && c->raw_type&RTF_UNSIGNED));
             if (c && c->ptr_stars_cnt) I386Normalize(out,c);
             I386Bytes(out,"\x52\x50",2);
             depth--;
