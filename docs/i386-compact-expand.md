@@ -169,3 +169,50 @@ workspace: main capacity 6,789,120, used 6,750,344, largest free block 9,304.
 `build/i386-probe-scratch-loader-cross-v1/failure.json` records the terminal
 failure. The remaining 38,776 total free bytes are fragmented; archive workspace
 placement is the next investigation. No full 8 MiB or C1–C5 pass is claimed.
+
+## Current-task decoder workspace with preserved output ownership
+
+`I386ExpandBufWorkspace` separates temporary decoder ownership from output
+ownership. It prefers the supplied workspace heap and falls back to the output
+heap if that allocation fails. The original four-argument `I386ExpandBuf`
+continues to use its output heap for both. FileRuntime's unchanged four-argument
+service callback now uses `I386FileExpandBuf`, which prefers the current task's
+private heap. The returned buffer always belongs to the requested output heap;
+optional size, terminator, malformed-input cleanup and IF behavior are preserved.
+The original `ExpandBuf` similarly allocates its decoder control in the current
+task while allowing a distinct output task. No public service ABI changes.
+
+The captured old failure in `build/i386-probe-scratch-loader-heap8-v1` has unchanged
+inputs. After failure cleanup its free payload totals 32,424 bytes across 558
+blocks; the largest is 9,304 and the next 2,800. Splitting the 33,328-byte workspace
+into a few large arrays would not solve that state. `free-block-summary.json`
+uses the logged allocation request; the profiler's stopped-register request
+field belongs to the stop frame and is not used as the allocation request.
+
+Both bootstrap generations pass in `build/rebuild-expand-workspace-v1-verified`.
+`build/i386-expand-workspace-corpus-v1` passes emitted-i386 checks with a
+240-second observation limit: all 390 original-decoder differential cases,
+existing streaming/ownership/malformed/boundary cases, and new separate-heap
+cases. All six original vectors verify exact bytes and NUL, output ownership,
+workspace sentinel preservation, exact heap recovery and alternating IF states.
+Additional cases cover both heaps exhausted, preferred heap full with successful
+fallback, output allocation failure, and truncated compressed data after both
+allocations. The original single-heap allocation boundary remains unchanged.
+
+The full-content cross-v1 exports and instruction audit pass. FileRuntime grows
+from 258,546 to 259,345 bytes; every other common exported module is byte-identical.
+Its post-export audit pins 1,725 sources and 26 helpers. The subsequent sound-test
+helper correction is separately recorded and was not used during this candidate's
+failed full 8 MiB diagnostic. `build/i386-expand-workspace-welcome-v1` passes exact
+normal 8 MiB welcome, suspended clear and input with unchanged inputs.
+`build/i386-expand-workspace-diag16-v1` passes the full 16 MiB diagnostic boot
+and exact welcome with an unchanged image.
+
+The 8 MiB diagnostic now passes disk include expansion and progresses through
+phase-one public queue and bit checks. It then fails reading the 7,422-byte
+`CompilerTaskLayoutProbe.HC` source plus NUL: requested 7,423, largest free block
+5,208. `failure.json` records the terminal state. The public file bridge still
+stages stored file bytes in the main heap before copying to the caller's private
+heap. That temporary read allocation is the next memory issue; no assertion,
+workload or physical-memory limit was reduced. Full 8 MiB and C1–C5 qualification
+remain open.

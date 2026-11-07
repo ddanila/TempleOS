@@ -7,7 +7,8 @@
 public extern I64 ExpansionTest();
 public extern I64 OwnedExpandTest();
 public extern I64 CompactDifferentialTest();
-I64 Main(I64 a,I64 b) { I64 result=ExpansionTest; if(result) return result; result=OwnedExpandTest; if(result)return result;return CompactDifferentialTest; }
+public extern I64 WorkspaceExpandTest();
+I64 Main(I64 a,I64 b) { I64 result=ExpansionTest; if(result) return result; result=OwnedExpandTest; if(result)return result;result=CompactDifferentialTest; if(result)return result;return WorkspaceExpandTest; }
 U8 archive_vectors[131072];
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Cpu.HC"

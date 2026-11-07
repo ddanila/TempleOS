@@ -11,6 +11,16 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Current-task archive workspace (2026-11-07)
+
+The file service can allocate its temporary decoder workspace in the current
+task's private heap, with fallback and unchanged output ownership/API. Both
+bootstrap generations, 390 differential cases plus new ownership/failure tests,
+normal 8 MiB welcome/clear/input, and the full 16 MiB diagnostic boot pass. At
+8 MiB archive expansion now passes; the next failure is a 7,423-byte temporary
+source-file read into the fragmented main heap. See
+[archive memory evidence](docs/i386-compact-expand.md). C1–C5 remain open.
+
 ### Original-clock speaker regression (2026-11-07)
 
 The speaker test now derives its expected divisor from the original public

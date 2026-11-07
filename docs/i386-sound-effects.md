@@ -61,7 +61,7 @@ The shared original `Snd` uses `SYS_TIMER_FREQ=(18333*65536/1000)` and
 match pinned revision `c26482bb6ad3f80106d28504ec5db3c6a360732c`. The older native
 speaker-on check assumed a divisor near 2,711, so it rejected the faithful
 original implementation. The check now derives the divisor from the public
-original constant, keeping the same sampling allowance and speaker-enable/IF
+original constant, retaining bounded sampling and speaker-enable/IF
 checks. No sound implementation or timer constant changes.
 
 `build/i386-speaker-register-diagnostic-v4/result.json` captures maximum count

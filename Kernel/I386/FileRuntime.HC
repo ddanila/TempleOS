@@ -11,6 +11,7 @@
 #include "/Kernel/I386/BuildRuntime.HH"
 import CI386BuildServices *I386BuildRuntimeAcquire();
 import Bool (*I386TaskFileBirthHook)(CI386Task *source,CI386Task *target,CI386Heap *heap);
+extern U8 *I386FileExpandBuf(CI386Heap *heap,CArcCompress *arc,I64 archive_size,I64 *size=0);
 extern CI386TaskFiles *I386TaskFilesValid(CI386Task *task);
 extern Bool I386TaskFilesAccess(CI386Task *task);
 extern CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive);
@@ -179,7 +180,7 @@ I64 Main(CI386FileServices *services,I64 bytes)
   if(!services || bytes!=sizeof(CI386FileServices)) return 0;
   services->version=file_runtime_version; services->bytes=sizeof(CI386FileServices);
   services->include=&I386LexTaskFileInclude; services->read=&I386TaskFileRead;
-  services->public_reader=&I386TaskFilePublicReader; services->read_raw=&I386TaskFileReadRaw; services->read_stored=&I386TaskFileReadStored; services->expand=&I386ExpandBuf; services->find_public=&I386TaskFileFind; services->cd=&I386TaskCd;
+  services->public_reader=&I386TaskFilePublicReader; services->read_raw=&I386TaskFileReadRaw; services->read_stored=&I386TaskFileReadStored; services->expand=&I386FileExpandBuf; services->find_public=&I386TaskFileFind; services->cd=&I386TaskCd;
   services->public_document=&I386TaskFilePublicDocument;
   services->install_boot=&I386TaskInstallBoot;
   services->install_image=&I386TaskInstallBootImage;
@@ -209,6 +210,14 @@ I64 Main(CI386FileServices *services,I64 bytes)
 #include "/Kernel/I386/FilePaths.HC"
 #include "/Kernel/I386/Arc.HC"
 #include "/Kernel/I386/Expand.HC"
+U8 *I386FileExpandBuf(CI386Heap *heap,CArcCompress *arc,I64 archive_size,I64 *size=0)
+{//Temporary decoder storage may use the current task's private arena.
+  CI386Task *task=I386TaskSelf;
+  CI386Heap *workspace=0;
+  if(task)workspace=task->memory;
+  return I386ExpandBufWorkspace(heap,workspace,arc,archive_size,size);
+}
+
 #include "/Kernel/I386/FileLoad.HC"
 #include "/Kernel/I386/FileContext.HC"
 #include "/Compiler/I386/LexFileRead.HC"

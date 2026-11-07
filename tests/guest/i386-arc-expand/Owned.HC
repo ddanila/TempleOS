@@ -146,3 +146,65 @@ I64 CompactDifferentialTest()
   }
   return 0;
 }
+
+I64 WorkspaceExpandTest()
+{
+  CI386Heap heap,scratch;
+  CArcCompress *arc,*large=0,*bad;
+  U8 *p,*sentinel,raw[24];
+  I64 offset=8,v,i,packed,pattern,size,expected,used,count;
+  U32 flags,random;
+  for(v=0;v<6;v++) {
+    if(!I386HeapInit(&heap,0x60000,65536) ||
+        !I386HeapInit(&scratch,0x70000,65536))return 71;
+    sentinel=I386HeapAlloc(&scratch,32,TRUE);
+    if(!sentinel)return 72;
+    used=scratch.used;count=scratch.allocations;
+    pattern=(archive_vectors+offset)(I64 *)[0];packed=(archive_vectors+offset)(I64 *)[1];
+    arc=archive_vectors+offset+16;
+    if(arc->expanded_size==32768)large=arc;
+    flags=0;if(v&1)flags=0x200;
+    SetRFlags((GetRFlags&~0x200)|flags);
+    size=-77;p=I386ExpandBufWorkspace(&heap,&scratch,arc,packed,&size);
+    if(!p || size!=arc->expanded_size || I386HeapSize(&heap,p)!=size+1 || p[size] ||
+        heap.allocations!=1 || scratch.used!=used || scratch.allocations!=count ||
+        (GetRFlags&0x200)!=flags || !I386HeapValid(&scratch))return 73;
+    random=0x12345678;
+    for(i=0;i<size;i++) {
+      random=random*1664525+1013904223;expected=random>>24;
+      if(!pattern)expected='Q';
+      if(arc->compression_type==CT_7_BIT)expected&=127;
+      if(p[i]!=expected)return 74;
+    }
+    for(i=0;i<32;i++)if(sentinel[i])return 75;
+    if(!I386HeapFree(&heap,p) || !I386HeapFree(&scratch,sentinel) ||
+        heap.used || heap.allocations || scratch.used || scratch.allocations)return 76;
+    offset+=16+packed;
+  }
+  SetRFlags(GetRFlags&~0x200);
+  if(!large)return 77;
+  //Neither heap can hold the workspace alongside the large output.
+  if(!I386HeapInit(&heap,0x60000,65536) || !I386HeapInit(&scratch,0x70000,24))return 78;
+  size=-77;
+  if(I386ExpandBufWorkspace(&heap,&scratch,large,large->compressed_size,&size) ||
+      size!=-77 || heap.used || heap.allocations || scratch.used || scratch.allocations)return 79;
+  //A full preferred workspace heap must not regress the original heap's success.
+  if(!I386HeapInit(&heap,0x60000,80000) || !I386HeapInit(&scratch,0x7F000,24))return 80;
+  p=I386ExpandBufWorkspace(&heap,&scratch,large,large->compressed_size,&size);
+  if(!p || size!=32768 || scratch.used || scratch.allocations || !I386HeapFree(&heap,p))return 81;
+  //Output allocation failure never consumes workspace storage.
+  if(!I386HeapInit(&heap,0x60000,24) || !I386HeapInit(&scratch,0x70000,65536))return 82;
+  size=-77;
+  if(I386ExpandBufWorkspace(&heap,&scratch,large,large->compressed_size,&size) ||
+      size!=-77 || heap.used || heap.allocations || scratch.used || scratch.allocations)return 83;
+  //Truncated compressed data fails after both allocations and restores both heaps.
+  if(!I386HeapInit(&heap,0x60000,65536))return 84;
+  for(i=0;i<24;i++)raw[i]=0;
+  bad=raw;bad->compressed_size=18;bad->expanded_size=32768;bad->compression_type=CT_8_BIT;
+  size=-77;SetRFlags(GetRFlags|0x200);
+  p=I386ExpandBufWorkspace(&heap,&scratch,bad,18,&size);
+  if(p || size!=-77 || !(GetRFlags&0x200) || heap.used || heap.allocations ||
+      scratch.used || scratch.allocations || !I386HeapValid(&heap) || !I386HeapValid(&scratch))return 85;
+  SetRFlags(GetRFlags&~0x200);
+  return 0;
+}

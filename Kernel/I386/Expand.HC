@@ -2,7 +2,8 @@
 #include "/Kernel/I386/Cpu.HH"
 #include "/Kernel/ArcExpand.HH"
 #include "/Kernel/I386/CompactExpand.HC"
-U8 *I386ExpandBuf(CI386Heap *heap,CArcCompress *arc,I64 archive_size,I64 *size=0)
+U8 *I386ExpandBufWorkspace(CI386Heap *heap,CI386Heap *workspace_heap,
+  CArcCompress *arc,I64 archive_size,I64 *size=0)
 {
   CI386CompactArc *c=0;
   U8 *output=0,*body;
@@ -25,12 +26,17 @@ U8 *I386ExpandBuf(CI386Heap *heap,CArcCompress *arc,I64 archive_size,I64 *size=0
   } else if(!expanded) ok=packed==17;
   else {
     flags=I386IrqSave;
-    c=I386HeapAlloc(heap,sizeof(CI386CompactArc),TRUE);
+    if(!workspace_heap)workspace_heap=heap;
+    c=I386HeapAlloc(workspace_heap,sizeof(CI386CompactArc),TRUE);
+    if(!c && workspace_heap!=heap) {
+      workspace_heap=heap;
+      c=I386HeapAlloc(workspace_heap,sizeof(CI386CompactArc),TRUE);
+    }
     I386IrqRestore(flags);
     if(c) {
       ok=I386CompactArcExpand(c,arc,output);
       flags=I386IrqSave;
-      if(!I386HeapFree(heap,c))ok=FALSE;
+      if(!I386HeapFree(workspace_heap,c))ok=FALSE;
       I386IrqRestore(flags);
     }
   }
@@ -40,4 +46,9 @@ U8 *I386ExpandBuf(CI386Heap *heap,CArcCompress *arc,I64 archive_size,I64 *size=0
   output[expanded]=0;
   if(size) *size=expanded;
   return output;
+}
+
+U8 *I386ExpandBuf(CI386Heap *heap,CArcCompress *arc,I64 archive_size,I64 *size=0)
+{
+  return I386ExpandBufWorkspace(heap,heap,arc,archive_size,size);
 }
