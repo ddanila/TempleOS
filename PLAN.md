@@ -27613,3 +27613,25 @@ generations. The inventory now has one qualified demo workflow and 685 remaining
 unqualified items. Both x86-64 bootstraps and the full 1759-source native build
 pass. Full public compiler delivery and C1–C5 remain open. See
 docs/i386-class-meta.md and docs/i386-member-lookup.md.
+
+
+## Carry intrinsic and complete counter/shift demo (2026-11-07)
+
+Compiler runtime 86 restores the original zero-argument Carry intrinsic, including
+optimized carry branches. Compiler bookkeeping preserves flags, and emulated
+64-bit shifts expose the whole value's last shifted-out bit, including zero,
+32-bit and modulo-64 boundaries. Original and normal native probes match all 608
+value/carry pairs; add/subtract results also survive global storage/reloads.
+The complete unchanged Demo/Carry.HC runs normally: all counter/shift rows and
+branch bits, followed by actual retained function calls after input release and
+allocator churn, match both original 39,258-byte DolDoc documents exactly.
+
+The first candidate's public-header validator omission and the next candidate's
+8 MiB code-size regression are retained. Compact flag-neutral normalization and
+pointer slots restore the 8 MiB startup/welcome gate; both 8/16 MiB final frames
+pass all 307,200 pixels, and 16 MiB ownership/file-break diagnostics pass both
+phases. Both x64 bootstraps, the 1759-source full-content cross-build, source23
+compiler regressions and the prior ClassMeta workflow pass on the final image.
+The inventory now has two defined qualified demos and 684 unqualified items.
+This does not qualify other arithmetic/CPU flags, other applications, full normal
+compiler delivery or complete C1-C5 release gates. See docs/i386-carry.md.

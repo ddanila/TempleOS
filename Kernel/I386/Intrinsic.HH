@@ -29,5 +29,6 @@ public _intern 0x1B I64 ToI64(F64 d);
 public _intern 0x71 U8 *GetRBP();
 public _intern 0x73 U8 *GetRSP();
 public _intern 0x6C I64 GetRFlags();
+public _intern 0x6D I64 Carry();
 public _intern 0x6E U0 SetRFlags(I64 d);
 #endif

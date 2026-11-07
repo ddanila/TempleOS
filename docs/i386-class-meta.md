@@ -47,4 +47,5 @@ build/i386-class-meta-native-v2 and their terminal-integration-audit.json files.
 The inventory's qualified status covers this defined complete demo workflow on
 the current normal candidate. Its requirement-by-requirement record is
 build/i386-class-meta-native-v2/workflow-qualification-audit.json. The inventory
-still has 685 unqualified items, and global C1–C5 completion remains unproven.
+now has 684 unqualified items after Carry workflow qualification. Global C1–C5
+completion remains unproven.

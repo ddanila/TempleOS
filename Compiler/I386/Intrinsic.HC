@@ -52,7 +52,7 @@ Bool I386IntrinsicValid(CHashFun *fun)
   code=(fun->exe_addr+0)(U64);
   switch(code) {
     case IC_FS: case IC_GS: case IC_GET_RBP: case IC_GET_RSP: count=0; result_pointers=-1; break;
-    case IC_GET_RFLAGS: count=0; break;
+    case IC_CARRY: case IC_GET_RFLAGS: count=0; break;
     case IC_SET_RFLAGS: result=RT_U0; break;
     case IC_IN_U8: result=RT_U8; break;
     case IC_IN_U16: result=RT_U16; break;

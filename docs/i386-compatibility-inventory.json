@@ -11529,10 +11529,41 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run complete unchanged Demo/Carry.HC through normal ExeFile: verify all 1024 BigCnt rows, 128 BigShift rows and 64 Branch bits, then invoke the real retained functions after declaration input release and 32 KiB data/code heap churn. Both complete DolDoc captures must match the independent mathematical oracle and original byte-for-byte.",
+      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime86-v3 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-carry-demo.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-carry-demo-original-v1/result.json",
+          "scope": "Complete original workflow, both 39258-byte documents, mask7; all pinned inputs independently verified."
+        },
+        {
+          "command": "python3 tools/test-i386-carry-demo.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-carry-demo-baseline-v1/result.json",
+          "scope": "Expected unchanged-demo rejection at missing Carry, line10; historical predecessor input pins independently verified."
+        },
+        {
+          "command": "python3 tools/test-i386-carry-demo.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-carry-demo-native-v1/result.json",
+          "scope": "First runtime86 candidate rejected during root user header startup; requested workflow never ran. Terminal pins preserved."
+        },
+        {
+          "command": "python3 tools/test-i386-carry-demo.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-carry-demo-native-v2/result.json",
+          "scope": "Complete unchanged demo through normal ExeFile, both original documents and retained calls after input release/churn, mask7; sole fixture volume addition, later arithmetic and terminal pins checked."
+        },
+        {
+          "command": "python3 tools/test-i386-carry-demo.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-carry-demo-native-v3/result.json",
+          "scope": "Final compact runtime86 candidate: complete unchanged demo, both original 39258-byte documents, mask7, retained calls after input release and allocator churn, later arithmetic, sole fixture volume addition and independently checked pins."
+        }
+      ]
     },
     {
       "path": "Demo/ClassMeta.HC",
@@ -11567,6 +11598,12 @@
           "result": "pass",
           "evidence": "build/i386-class-meta-native-v2/result.json",
           "scope": "Complete unchanged demo, mask 511 and all 441 original document bytes, including retained/churn and mutated-data runs. Evaluated defaults, lastclass, F64, string/function metadata and global state checked. Independent source/input/volume audit. Demo declarations intentionally persist; this does not qualify other compiler/member APIs or C5 release generations."
+        },
+        {
+          "command": "python3 tools/test-i386-class-meta.py build/i386-carry-runtime-cross-v3/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-carry-class-meta-native-v3/result.json",
+          "scope": "Regression on compact runtime86 Carry candidate: mask511, all three exact original documents, actual retained callbacks and mutated data, sole fixture addition, normal arithmetic and independently checked pins."
         }
       ]
     },

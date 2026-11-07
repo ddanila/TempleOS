@@ -12,16 +12,16 @@ U0 I386Normalize(CI386Out *out,CHashClass *c)
   if (!c) return;
   c=OptClassFwd(c);
   if (c->ptr_stars_cnt) {
-    I386Bytes(out,"\x31\xD2",2);
+    I386Bytes(out,"\x6A\x00\x5A",3);
     return;
   }
   switch (c->raw_type) {
     case RT_I8: I386Bytes(out,"\x0F\xBE\xC0\x99",4); break;
-    case RT_U8: I386Bytes(out,"\x0F\xB6\xC0\x31\xD2",5); break;
+    case RT_U8: I386Bytes(out,"\x0F\xB6\xC0\x99",4); break;
     case RT_I16: I386Bytes(out,"\x0F\xBF\xC0\x99",4); break;
-    case RT_U16: I386Bytes(out,"\x0F\xB7\xC0\x31\xD2",5); break;
+    case RT_U16: I386Bytes(out,"\x0F\xB7\xC0\x99",4); break;
     case RT_I32: I386Byte(out,0x99); break;
-    case RT_U32: I386Bytes(out,"\x31\xD2",2); break;
+    case RT_U32: I386Bytes(out,"\x6A\x00\x5A",3); break;
     case RT_I64:
     case RT_U64:
     case RT_F64: break;
@@ -43,7 +43,6 @@ U0 I386Load(CI386Out *out,CHashClass *c)
 }
 U0 I386LoadFrame(CI386Out *out,CHashClass *type,U32 displacement)
 {//Same reads, normalization and flags as a normalized frame pointer then DEREF.
-  I386Bytes(out,"\x31\xD2",2);
   switch(I386Size(type)) {
     case 8:
       //The general dereference also reads the high word before the low word.
@@ -86,8 +85,13 @@ U0 I386Binary(CI386Out *out,I64 op)
 }
 
 U0 I386Shift(CI386Out *out,Bool left,Bool is_unsigned)
-{//EDX:EAX shifted by ECX modulo 64, including the 32-bit boundary.
-  I386Bytes(out,"\x83\xE1\x3F\xF6\xC1\x20",6);
+{//EDX:EAX shifted by ECX modulo 64; CF is the last bit out of the whole value.
+  //Remember the input and flags before count masking. A zero count changes neither.
+  I386Bytes(out,"\x9C\x5B\x89\xC6\x89\xD7\x83\xE1\x3F\x74",10);
+  if(left) I386Byte(out,40);
+  else if(is_unsigned) I386Byte(out,36);
+  else I386Byte(out,37);
+  I386Bytes(out,"\xF6\xC1\x20",3);
   if (left)
     I386Bytes(out,"\x74\x08\x89\xC2\x31\xC0\xD3\xE2\xEB\x05"
       "\x0F\xA5\xC2\xD3\xE0",15);
@@ -97,6 +101,11 @@ U0 I386Shift(CI386Out *out,Bool left,Bool is_unsigned)
   else
     I386Bytes(out,"\x74\x09\x89\xD0\xD3\xF8\xC1\xFA\x1F\xEB\x05"
       "\x0F\xAD\xD0\xD3\xFA",16);
+  if(left) I386Bytes(out,"\xBB\x40\x00\x00\x00\x29\xCB",7); //64-count
+  else I386Bytes(out,"\x8D\x59\xFF",3); //count-1
+  //BT uses index modulo 32; select the original high or low word first.
+  I386Bytes(out,"\xF6\xC3\x20\x74\x05\x0F\xA3\xDF\xEB\x03"
+    "\x0F\xA3\xDE\xEB\x02\x53\x9D",17);
 }
 
 U0 I386Compare(CI386Out *out,I64 op,Bool is_unsigned)
@@ -116,7 +125,7 @@ U0 I386Compare(CI386Out *out,I64 op,Bool is_unsigned)
   I386Byte(out,low_cc); I386Byte(out,0xC0);
   I386Bytes(out,"\xEB\x03\x0F",3);
   I386Byte(out,high_cc); I386Byte(out,0xC0);
-  I386Bytes(out,"\x0F\xB6\xC0\x31\xD2",5);
+  I386Bytes(out,"\x0F\xB6\xC0\x99",4);
 }
 
 Bool I386IsF64(CHashClass *c)
@@ -593,7 +602,7 @@ U0 I386BackendCore(CI386Backend *backend)
             else if (ic->ic_code==IC_BTS || ic->ic_code==IC_LBTS) I386Byte(out,0xAB);
             else if (ic->ic_code==IC_BTR || ic->ic_code==IC_LBTR) I386Byte(out,0xB3);
             else I386Byte(out,0xBB);
-            I386Bytes(out,"\x30\x0F\x92\xC0\x0F\xB6\xC0\x31\xD2",9);
+            I386Bytes(out,"\x30\x0F\x92\xC0\x0F\xB6\xC0\x99",8);
             depth=backend->calls->depth;
             backend->calls->called=TRUE;
             break;
@@ -686,7 +695,7 @@ U0 I386BackendCore(CI386Backend *backend)
             if (ic->ic_code==IC_FS) I386Byte(out,0x64);
             else I386Byte(out,0x65);
             I386Byte(out,0xA1); I386Dword(out,0);
-            I386Bytes(out,"\x31\xD2",2);
+            I386Bytes(out,"\x6A\x00\x5A",3);
             backend->calls->called=TRUE;
             break;
           case IC_GET_RBP:
@@ -695,10 +704,25 @@ U0 I386BackendCore(CI386Backend *backend)
                 !Bt(&backend->calls->fun->flags,Ff_INTERNAL) ||
                 backend->calls->fun->exe_addr!=ic->ic_code || backend->calls->fun->arg_cnt ||
                 depth!=backend->calls->depth) throw('Compiler');
-            if(ic->ic_code==IC_GET_RSP) I386Bytes(out,"\x89\xE0\x31\xD2",4);
-            else I386Bytes(out,"\x89\xE8\x31\xD2",4);
+            if(ic->ic_code==IC_GET_RSP) I386Bytes(out,"\x89\xE0\x6A\x00\x5A",5);
+            else I386Bytes(out,"\x89\xE8\x6A\x00\x5A",5);
             backend->calls->called=TRUE;
             break;
+          case IC_BR_CARRY:
+          case IC_BR_NOT_CARRY:
+            if (!backend->calls || backend->calls->called || backend->calls->indirect ||
+                !Bt(&backend->calls->fun->flags,Ff_INTERNAL) ||
+                backend->calls->fun->exe_addr!=IC_CARRY || backend->calls->fun->arg_cnt ||
+                depth!=backend->calls->depth) throw('Compiler');
+            I386BackendBreakPoll(backend,out);
+            label=OptLabelFwd(ic->ic_data);
+            I386Byte(out,0x0F);
+            if(ic->ic_code==IC_BR_CARRY) I386Byte(out,0x82);
+            else I386Byte(out,0x83);
+            I386Dword(out,label->addr-out->count-4);
+            backend->calls->called=TRUE;
+            break;
+          case IC_CARRY:
           case IC_GET_RFLAGS:
           case IC_SET_RFLAGS:
             arg_index=0;
@@ -708,8 +732,10 @@ U0 I386BackendCore(CI386Backend *backend)
                 backend->calls->fun->exe_addr!=ic->ic_code ||
                 backend->calls->fun->arg_cnt!=arg_index ||
                 depth!=backend->calls->depth+arg_index) throw('Compiler');
-            if (!arg_index)
-              I386Bytes(out,"\x9C\x58\x31\xD2",4); //PUSHFD; POP EAX; zero high half.
+            if (ic->ic_code==IC_CARRY)
+              I386Bytes(out,"\x0F\x92\xC0\x0F\xB6\xC0\x99",7);
+            else if (!arg_index)
+              I386Bytes(out,"\x9C\x58\x99",3); //PUSHFD; POP EAX; zero high half.
             else
               I386Bytes(out,"\x58\x59\x50\x9D",4); //Consume I64; POPFD uses low 32 bits.
             depth=backend->calls->depth;
@@ -730,11 +756,11 @@ U0 I386BackendCore(CI386Backend *backend)
                 depth!=backend->calls->depth+arg_index) throw('Compiler');
             //Arguments retain eight-byte slots; hardware consumes DX and AL/AX/EAX.
             if (arg_index==1) {
-              I386Bytes(out,"\x5A\x59\x31\xC0",4);
+              I386Bytes(out,"\x5A\x59\x6A\x00\x58",5);
               if (ic->ic_code==IC_IN_U16) I386Byte(out,0x66);
               if (ic->ic_code==IC_IN_U8) I386Byte(out,0xEC);
               else I386Byte(out,0xED);
-              I386Bytes(out,"\x31\xD2",2);
+              I386Bytes(out,"\x6A\x00\x5A",3);
             } else {
               I386Bytes(out,"\x5A\x59\x58\x59",4);
               if (ic->ic_code==IC_OUT_U16) I386Byte(out,0x66);
@@ -809,9 +835,9 @@ U0 I386BackendCore(CI386Backend *backend)
             }
             //Variadic callees leave fixed slots, argc and all argv values to the caller.
             if (Bt(&backend->calls->fun->flags,Ff_DOT_DOT_DOT)) {
-              I386Bytes(out,"\x81\xC4",2); I386Dword(out,backend->calls->slots*8);
+              I386Bytes(out,"\x8D\xA4\x24",3); I386Dword(out,backend->calls->slots*8);
             }
-            if (backend->calls->indirect) I386Bytes(out,"\x83\xC4\x08",3);
+            if (backend->calls->indirect) I386Bytes(out,"\x8D\x64\x24\x08",4);
             depth=backend->calls->depth;
             backend->calls->called=TRUE;
             break;
@@ -824,12 +850,19 @@ U0 I386BackendCore(CI386Backend *backend)
             } else if (ic->ic_data!=backend->calls->slots*8) throw('Compiler');
             //Argument and saved-target cleanup was handled with the call.
             break;
+          case IC_CALL_END2:
+            //OptBranch consumes a Carry call directly in the conditional jump.
+            if (!backend->calls || !backend->calls->called || backend->calls->fun!=ic->ic_data ||
+                backend->calls->fun->exe_addr!=IC_CARRY || depth!=backend->calls->depth)
+              throw('Compiler');
+            call=backend->calls; backend->calls=call->next; (*backend->release)(backend->context,call);
+            break;
           case IC_CALL_END:
             if (!backend->calls || !backend->calls->called || backend->calls->fun!=ic->ic_data)
               throw('Compiler');
             if (I386Size(backend->calls->fun->return_class))
               I386Normalize(out,backend->calls->fun->return_class);
-            else I386Bytes(out,"\x31\xC0\x31\xD2",4);
+            else I386Bytes(out,"\x6A\x00\x58\x99",4);
             I386Bytes(out,"\x52\x50",2);
             depth++;
             call=backend->calls; backend->calls=call->next; (*backend->release)(backend->context,call);
@@ -879,9 +912,9 @@ U0 I386BackendCore(CI386Backend *backend)
             if(!label) throw('Compiler');
             I386Byte(out,0xE8); I386Dword(out,0);
             arg_offset=out->count;
-            I386Bytes(out,"\x58\x05",2);
+            I386Bytes(out,"\x58\x8D\x80",3);
             I386Dword(out,label->addr-arg_offset);
-            I386Bytes(out,"\x31\xD2\x52\x50",4);
+            I386Bytes(out,"\x6A\x00\x50",3);
             depth++;
             break;
           case IC_STR_CONST:
@@ -890,17 +923,19 @@ U0 I386BackendCore(CI386Backend *backend)
               throw('Compiler');
             I386Byte(out,0xE8); I386Dword(out,0);
             arg_offset=out->count;
-            I386Bytes(out,"\x58\x05",2);
+            I386Bytes(out,"\x58\x8D\x80",3);
             I386Dword(out,label->addr-arg_offset);
-            I386Bytes(out,"\x31\xD2\x52\x50",4);
+            I386Bytes(out,"\x6A\x00\x50",3);
             depth++;
             break;
           case IC_ADDR_IMPORT:
             addr_fun=ic->ic_data;
             if (!(addr_fun->type&HTT_FUN) && !(addr_fun->type&HTF_IMPORT))
               throw('Compiler');
-            //Use the ordinary forward REL32 fixup at ADD's immediate.
-            //The saved PC plus nine equals the end of that immediate.
+            //Keep the module ADDRESS relocation's ADD-immediate wire encoding.
+            //Save flags across both PC adjustments; the saved PC plus nine still
+            //equals the end of the relocated immediate.
+            I386Byte(out,0x9C);
             I386Byte(out,0xE8); I386Dword(out,0);
             I386Bytes(out,"\x58\x83\xC0\x09\x05",5);
             if (pass) {
@@ -918,29 +953,29 @@ U0 I386BackendCore(CI386Backend *backend)
               }
             }
             I386Dword(out,0);
-            I386Bytes(out,"\x31\xD2\x52\x50",4);
+            I386Byte(out,0x9D);
+            I386Bytes(out,"\x6A\x00\x50",3);
             depth++;
             break;
           case IC_ABS_ADDR:
             //Materialize a module-relative address without a load-address fixup.
             I386Byte(out,0xE8); I386Dword(out,0);
             arg_offset=cc->aotc->rip+out->count;
-            I386Bytes(out,"\x58\x05",2);
+            I386Bytes(out,"\x58\x8D\x80",3);
             I386Dword(out,ic->ic_data-arg_offset);
-            I386Bytes(out,"\x31\xD2\x52\x50",4);
+            I386Bytes(out,"\x6A\x00\x50",3);
             depth++;
             break;
           case IC_RBP:
             if(frame_end=I386FrameAddressEnd(ic,backend->logics)) {
-              //The pointer add discards the wide carry. LEA preserves its low
-              //word; the same XOR defines EDX and the final arithmetic flags.
+              //Address formation and loads preserve the preceding arithmetic flags.
               if(frame_load=I386FrameLoadEnd(frame_end,backend->logics)) {
                 I386LoadFrame(out,frame_load->ic_class,ic->next->ic_data);
                 I386Bytes(out,"\x52\x50",2);
                 ic=frame_load;
               } else {
                 I386EbpAddress(out,ic->next->ic_data);
-                I386Bytes(out,"\x31\xD2\x52\x50",4);
+                I386Bytes(out,"\x6A\x00\x50",3);
                 ic=frame_end;
               }
               c=OptClassFwd(ic->ic_class);backend->current=ic;
@@ -1176,6 +1211,8 @@ U0 I386BackendCore(CI386Backend *backend)
             I386Bytes(out,"\x59\x5B\x58\x5A",4);
             if (I386IsF64(c) && (ic->ic_code==IC_ADD || ic->ic_code==IC_SUB || ic->ic_code==IC_MUL))
               I386F64Runtime(backend,out,ic->ic_code,pass);
+            else if(c && c->ptr_stars_cnt && ic->ic_code==IC_ADD)
+              I386Bytes(out,"\x8D\x04\x08",3);
             else I386Binary(out,ic->ic_code);
             if (c && c->ptr_stars_cnt) I386Normalize(out,c);
             I386Bytes(out,"\x52\x50",2);
@@ -1183,7 +1220,7 @@ U0 I386BackendCore(CI386Backend *backend)
             break;
           case IC_END_EXP:
             if (depth!=1) throw('Compiler');
-            if(ic->ic_flags&ICF_RES_NOT_USED) I386Bytes(out,"\x83\xC4\x08",3);
+            if(ic->ic_flags&ICF_RES_NOT_USED) I386Bytes(out,"\x8D\x64\x24\x08",4);
             else I386Bytes(out,"\x58\x5A",2);
             depth--;
             break;
@@ -1277,7 +1314,7 @@ U0 I386BackendCore(CI386Backend *backend)
             if (logic->end->ic_code==IC_AND_AND) I386Byte(out,0x84);
             else I386Byte(out,0x85);
             I386Dword(out,logic->address-out->count-4);
-            I386Bytes(out,"\x83\xC4\x08",3);
+            I386Bytes(out,"\x8D\x64\x24\x08",4);
             depth--;
           }
         }
