@@ -163,3 +163,20 @@ stage and passes all earlier token, graph, executable, type and lifetime checks.
 The real class/function-header bodies and AOT store services remain to be
 integrated; declaration publication alone is not full compiler delivery. See
 docs/i386-variable-init.md.
+
+
+The standard source runner now includes the complete declaration/initializer
+stage by default. The formal twenty-stage run passes every existing token,
+graph, basic/type/runtime and retained-call check, with exact original executable
+records: build/i386-public-declarations-formal-native-v1. AOT byte-store callbacks
+remain explicit unresolved externs and are not claimed as implemented.
+
+Pass --classes to add the actual shared class/function-header bodies, real symbol
+release wrappers, option accessors and diagnostics. The current formal mode
+publishes the preceding twenty stages, then rejects HashSingleTableFind at
+Part20.HC line 46 (build/i386-public-classes-formal-baseline-v1). The native
+implementation exists in Kernel/I386/Hash.HC, but PublicHash.HH and the kernel
+public export index do not publish it. This identifies the next integration
+work, without replacing lookup semantics or class parsing. Independent terminal
+stage audits verify both modes' inputs, packaged files, fixture-only volume
+changes and boot bytes. Neither mode qualifies normal compiler delivery or C1–C5.

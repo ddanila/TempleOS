@@ -27520,3 +27520,15 @@ cleanup phases pass. Complete declaration/initializer bodies now publish as
 stage twenty and pass all earlier source compiler regressions; class/header and
 AOT-store integration remain open. Full C1–C5 is unqualified. See
 docs/i386-variable-init.md.
+
+
+## Reproducible declaration/class integration probes (2026-11-07)
+
+The standard source runner now publishes twenty stages, including complete shared
+declaration/initializer bodies, and passes all earlier executable/type/lifetime
+and token/graph regressions. The new --classes mode uses the real shared class/
+function-header and release/option/diagnostic bodies; it exposes missing public
+HashSingleTableFind at Part20.HC line 46. The implementation already exists in
+the native kernel but is not published through the normal public surface. Both
+formal runs have independent input/fixture-volume/boot audits. AOT stores, class/
+header/stream integration, normal compiler delivery and full C1–C5 remain open.

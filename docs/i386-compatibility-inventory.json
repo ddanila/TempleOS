@@ -10683,6 +10683,12 @@
           "result": "pass",
           "evidence": "build/i386-global-alias-native-v1/result.json",
           "scope": "Normal patched image matches original in all three cases after declaration-input release and mutation; exact fixture/input/volume audit, both 8/16 MiB welcome profiles and diagnostic cleanup phases pass. Only backed same-input aliases are admitted; full compiler qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --classes --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-public-classes-formal-baseline-v1/result.json",
+          "scope": "Expected class integration dependency failure at HashSingleTableFind, Part20.HC line 46, after twenty published stages. Real native implementation exists but public binding is absent; exact-input/fixture-volume/boot audit. Class/header/full compiler qualification remains open."
         }
       ]
     },
@@ -10743,6 +10749,12 @@
           "result": "pass",
           "evidence": "build/i386-variable-init-native-v1/result.json",
           "scope": "Normal shared kernel controls and target initialization paths match the complete original record, mask 255. Independent current-input/volume/boot audit, 8/16 MiB welcome profiles and both cleanup phases pass. Register/interrupt/error paths and whole-file qualification remain open."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-declarations-formal-native-v1/result.json",
+          "scope": "Twenty source-loaded stages include complete shared declaration/initializer bodies; all prior token/graph/basic/type/runtime/lifetime checks pass, exact original executable records and independent input/volume/boot audit. AOT stores remain explicit unresolved externs; normal/full compiler qualification remains open."
         }
       ]
     },

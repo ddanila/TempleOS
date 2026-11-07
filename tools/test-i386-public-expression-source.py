@@ -4,6 +4,7 @@ from pathlib import Path
 import argparse,hashlib,json,runpy,struct,re
 root=Path(__file__).resolve().parents[1]
 ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True)
+ap.add_argument('--classes',action='store_true',help='Also source-load actual class/function-header services; unresolved dependencies remain visible')
 args=ap.parse_args();out=args.out.resolve()
 if out.exists():ap.error('Use a fresh output directory')
 out.mkdir()
@@ -83,6 +84,23 @@ type_parser+=code[:code.index(b'#include "/Kernel/SymbolDelete.HH"')].replace(b'
 code=(root/'Compiler/PrsVar.HC').read_bytes()
 type_parser+=code[code.index(b'#include "/Compiler/PrsTypeCore.HC"'):code.index(b'#include "/Compiler/PrsDeclarationCore.HC"')]
 parts += [optimizer,types,(root/'tests/guest/i386-public-expression/BackendAdapter.HC').read_bytes(),type_parser]
+declarations=b'''public extern U0 PrsStaticInit(CCmpCtrl *cc,CMemberLst *member,I64 pass);
+public extern U0 AOTStoreCodeU8(CCmpCtrl *cc,U8 value);
+public extern U0 AOTStoreCodeU64(CCmpCtrl *cc,U64 value);
+public extern U0 AOTStoreCodeU8At(CCmpCtrl *cc,I64 rip,...);
+public extern U0 PrsI386DataRange(CCmpCtrl *cc,I64 start,I64 size);
+'''
+code=(root/'Compiler/PrsVar.HC').read_bytes()
+declarations+=code[code.index(b'#include "/Compiler/PrsDeclarationCore.HC"'):]
+parts.append(declarations)
+if args.classes:
+ classes=b'#include "/Kernel/SymbolDelete.HC"\n'
+ code=(root/'Compiler/LexLib.HC').read_bytes()
+ classes+=code[code.index(b'#include "/Kernel/SymbolDelete.HH"'):code.index(b'#include "/Compiler/MemberSizeCore.HC"')]
+ code=(root/'Compiler/CMisc.HC').read_bytes();classes+=code[:code.index(b'asm {')]
+ code=(root/'Compiler/CExcept.HC').read_bytes();classes+=code[code.index(b'U0 UndefinedExtern('):code.index(b'U0 ParenWarning(')]
+ code=(root/'Compiler/PrsStmt.HC').read_bytes();classes+=code[:code.index(b'extern U0 PrsFun(')]
+ parts.append(classes)
 candidate=b'\n'.join(parts)
 (out/'candidate.HC').write_bytes(candidate)
 for i,part in enumerate(parts):(out/f'part-{i}.HC').write_bytes(part)
@@ -96,12 +114,13 @@ additions['/Probe/PublicTypes.HC']=(root/'tests/guest/i386-public-expression/Typ
 additions['/Probe/PublicExpressionRuntime.HC']=(root/'tests/guest/i386-public-expression/Runtime.HC').read_bytes()
 additions['/Probe/PublicExpressionLifetime.HC']=(root/'tests/guest/i386-public-expression/Lifetime.HC').read_bytes()
 pack=runpy.run_path(str(root/'tools/package-i386-native-image.py'))
-r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers, optimizer and i386 backend on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Class/function-header joins and stream service remain unresolved explicit externs; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
+r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers, optimizer and i386 backend on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Complete declaration/initializer bodies are source-loaded; AOT store callbacks and stream service remain unresolved explicit externs. Class/function-header joins remain unresolved unless --classes is requested; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
 pin_paths=[Path(__file__).resolve(),source]+[root/('tools/'+n) for n in ('test-i386-autocomplete-interaction.py','test-i386-timeclock-reference.py','test-i386-timeclock-welcome.py','package-i386-native-image.py','build-i386-kernel.py')]
 for directory in ('Compiler','Kernel','tests/guest/i386-public-lexer','tests/guest/i386-public-expression'):
  pin_paths += sorted(p for p in (root/directory).rglob('*') if p.is_file() and p.suffix in ('.HC','.HH'))
 pins={str(p):sha(p) for p in pin_paths};r['input_sha256']=pins
 (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
+r['classes_requested']=args.classes
 g=None
 try:
  before=pack['snapshot'](source.read_bytes())[1]
