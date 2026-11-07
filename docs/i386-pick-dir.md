@@ -84,3 +84,13 @@ FAT32 and non-optical write rejection match the reference (see
 [DVD image evidence](i386-dvd-image.md)); successful burning remains unqualified.
 Complete FileMgr loading advances to missing SettingsPush at line 588
 (`build/i386-pick-dir-dvd-image-v1/result.json`, unchanged inputs).
+
+With `--load-settings`, the chooser driver now loads the complete real
+autocomplete and settings libraries into Adam, verifies their bundled bytes,
+and pins their sources. Both loads return successfully. The unchanged FileMgr
+then rejects `Cd2DirEntry` at line 592 with `Invalid lval`
+(`build/i386-pick-dir-settings-v1`, unchanged inputs and independent terminal
+pin audit). This message is also emitted for an unresolved identifier by
+PrsExpressionCore; the native runtime currently has no Cd2DirEntry binding or
+body. Its original recursive directory lookup is the next dependency. No
+chooser workflow executes, and automatic startup-library loading remains open.

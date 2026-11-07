@@ -13,13 +13,16 @@ ROOT=Path(__file__).resolve().parents[1]
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);args=ap.parse_args();out=args.out.resolve()
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);ap.add_argument('--load-settings',action='store_true',help='Load real autocomplete and settings libraries in Adam before FileMgr');args=ap.parse_args();out=args.out.resolve()
+    if args.load_settings and not args.disk:ap.error('--load-settings requires a native disk')
     if out.exists():ap.error('Use a fresh output directory')
     fixture=ROOT/'tests/guest/i386-pick-dir/Contract.HC'
     filemgr=ROOT/'Adam/ABlkDev/FileMgr.HC'
     original_filemgr=subprocess.check_output(['git','show','c26482bb6ad3f80106d28504ec5db3c6a360732c:Adam/ABlkDev/FileMgr.HC'],cwd=ROOT)
     if filemgr.read_bytes()!=original_filemgr:raise ValueError('FileMgr differs from pinned original')
     paths=[Path(__file__).resolve(),fixture,filemgr,ROOT/'Kernel/FontStd.HC']+[ROOT/('tools/'+n) for n in ['test-i386-timeclock-reference.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','build-iso.py','package-i386-native-image.py','build-i386-kernel.py']]
+    libraries=['Adam/AutoComplete/MakeAC.HC','Adam/AutoComplete/ACFill.HC','Adam/AutoComplete/ACTask.HC','Adam/AutoComplete/ACInit.HC','Adam/TaskSettings.HC','Adam/TaskSettingsCore.HC'] if args.load_settings else []
+    paths += [ROOT/name for name in libraries]
     if args.disk:paths.append(args.disk.resolve())
     out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Actual PopUpPickDir/FileMgr: default and explicit directory selection, Shift-Escape allocated empty result, caller documents/popup/directory restoration; not whole FileMgr qualification.');g=None
     (out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
@@ -28,6 +31,8 @@ def main():
         if args.disk:
             pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));image=out/'working.img';before=pack['snapshot'](args.disk.read_bytes())[1]
             if before['/Adam/ABlkDev/FileMgr.HC'][2]!=original_filemgr:raise ValueError('Delivered FileMgr differs from original')
+            for name in libraries:
+                if before['/'+name][2]!=(ROOT/name).read_bytes():raise ValueError('Delivered library differs: '+name)
             report['packaging']=pack['package'](args.disk.resolve(),image,additions=additions)
         else:
             overlay=out/'overlay';overlay.mkdir();report['reference_sha256']=runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))['restore_reference'](overlay)
@@ -38,7 +43,10 @@ def main():
         Guest=runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest'];g=Guest(image,out/'guest',bool(args.disk))
         drive='C' if args.disk else 'T';root=drive+':/Probe/PickScope'
         if args.disk:
-            g.wait('DONE native kernel startup\n');g.command('#include "C:/Adam/ABlkDev/FileMgr.HC"');g.command('#include "C:/Probe/PickDir.HC"');g.type('PDCheck("'+root+'");');g.press('ret')
+            g.wait('DONE native kernel startup\n')
+            report['library_commands']=['AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);','AdamFile("C:/Adam/TaskSettings.HC",FALSE);'] if args.load_settings else []
+            for command in report['library_commands']:g.command(command)
+            g.command('#include "C:/Adam/ABlkDev/FileMgr.HC"');g.command('#include "C:/Probe/PickDir.HC"');g.type('PDCheck("'+root+'");');g.press('ret')
         for i in range(3):
             g.wait(f'PICK DIR READY {i}\n');time.sleep(1);g.screenshot(f'picker-{i}')
             if i==2:g.key('shift',True)

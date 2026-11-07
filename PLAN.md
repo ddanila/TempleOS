@@ -26890,3 +26890,20 @@ failure and capture-lifetime correction are preserved in docs/i386-dvd-image.md.
 Successful burning, discovery and exceptional heap cleanup are not qualified.
 FileMgr now reaches missing SettingsPush at line 588. Enclosing full regressions
 remain live; complete chooser workflows and C1–C5 remain open.
+
+
+## FileMgr with real settings libraries (2026-11-07)
+
+With `--load-settings`, the chooser driver now loads the complete real
+autocomplete and settings libraries into Adam, verifies their bundled bytes,
+and pins their sources. Both loads return successfully. The unchanged FileMgr
+then rejects `Cd2DirEntry` at line 592 with `Invalid lval`
+(`build/i386-pick-dir-settings-v1`, unchanged inputs and independent terminal
+pin audit). This message is also emitted for an unresolved identifier by
+PrsExpressionCore; the native runtime currently has no Cd2DirEntry binding or
+body. Its original recursive directory lookup is the next dependency. No
+chooser workflow executes, and automatic startup-library loading remains open.
+
+Both interface 230 and 231 full 16 MiB diagnostic boots now pass both program,
+code-heap ownership and file-break cleanup phases plus all 307,200 welcome
+pixels. Their enclosing interactive regressions remain live. C1–C5 remain open.

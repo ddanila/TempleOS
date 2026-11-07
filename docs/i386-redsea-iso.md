@@ -71,3 +71,9 @@ Complete FileMgr loading passes RedSeaISO and now rejects missing DVDImageWrite
 at line 425 (`build/i386-pick-dir-redsea-iso-v1`, unchanged inputs). Optical
 writing and the full chooser/application workflows remain open. The enclosing
 full diagnostic/interactive build is still running.
+
+The full 16 MiB diagnostic boot in `build/i386-redsea-iso-cross-v2` now reaches
+both program-probe phases, both code-heap ownership cases, both file-break
+cleanup cases and `DONE native kernel startup`. All 307,200 welcome pixels
+match the exact oracle (`diagnostic16-audit.json`). The enclosing interactive
+regression remains running; this is not a full-suite or startup-timing result.

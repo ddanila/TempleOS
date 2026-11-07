@@ -56,3 +56,9 @@ the write producer and successful burning path are not qualified by this test.
 Complete original FileMgr loading now passes DVDImageWrite and rejects missing
 SettingsPush at line 588 (`build/i386-pick-dir-dvd-image-v1`, unchanged inputs).
 The chooser workflow and all C1–C5 gates remain open.
+
+The full 16 MiB diagnostic boot in `build/i386-dvd-image-cross-v1` now reaches
+both program-probe phases, both code-heap ownership cases, both file-break
+cleanup cases and `DONE native kernel startup`. All 307,200 welcome pixels
+match the exact oracle (`diagnostic16-audit.json`). The enclosing interactive
+regression remains running; this is not a full-suite or startup-timing result.
