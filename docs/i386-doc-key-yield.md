@@ -55,6 +55,9 @@ Normal8 startup and full16 diagnostics reach DONE and match all 307,200 welcome
 pixels. Full16 completes both program, code-heap ownership and file-break
 cleanup phases. These concurrent runs do not qualify isolated startup timing
 or the larger enclosing interactive suite. The five-session file-picker
-regression remains live at this implementation commit. Printable metadata
+regression now also passes its complete final driver, all masks 255, exact
+original names apart from drive letter, arithmetic and strict file-byte checks.
+Its terminal audit independently verifies directory attributes and all pins;
+see build/i386-pick-file-yield-v1. Printable metadata
 queries remain a separately reproduced preexisting gap; see
 i386-doc-key-description.md. Full DocPutKey and C1–C5 remain unqualified.

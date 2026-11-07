@@ -27156,3 +27156,16 @@ welcome pass; full16 finishes both program/ownership/cleanup phases. The final
 five-session file-picker regression remains live at this commit. Isolated
 timing, full enclosing suites, printable metadata queries and all C1–C5 gates
 remain open. See docs/i386-doc-key-yield.md.
+
+## File-picker regression after cooperative Yield complete (2026-11-07)
+
+The final five-session picker driver passes on the yield-corrected image:
+five masks of 255, exact original results apart from fixture drive, caller
+heap ownership/restoration, arithmetic, allocation integrity and strict
+fixture-byte preservation. The independent terminal audit rechecks every
+input, original file tuple and directory attribute plus exact added contents.
+This is one complete run of the final driver, beyond the earlier picker
+composed host-guard audit. All validation launched for the Yield change is
+terminal and passes. Printable metadata queries remain the next reproduced
+DocPutKey gap; full interactive/visual suites, isolated timing and C1–C5 remain
+open. See docs/i386-doc-key-yield.md and docs/i386-pick-file.md.

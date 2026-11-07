@@ -66,3 +66,13 @@ final driver. The frozen runner preserves the executed version.
 The workflow map and inventory retain unqualified status for the complete
 application. Actual editing, help/execution integration, drag/drop, failure
 cleanup, complete visuals and automatic desktop settings startup remain open.
+
+The later build/i386-pick-file-yield-v1 regression runs the final driver on
+the yield-corrected image and passes in one complete session, including its
+stricter host fixture-byte guard. Five masks of 255 and all returned names
+match the original apart from drive letter. Arithmetic, allocation integrity,
+original files and exact fixture bytes pass; terminal-audit.json independently
+checks directory attributes, names, input hashes and the full file guard. This
+new run supplies single-session final-driver evidence beyond the earlier
+composed native-v1 audit. Full visual, failure and application coverage remain
+open.

@@ -379,6 +379,12 @@
           "result": "pass",
           "evidence": "build/i386-filemgr-clipboard-tree-yield-v1/result.json",
           "scope": "Complete actual hardware-key copy/paste, thirteen original-equivalent rows and payloads, caller restoration and reboot after restoring DocPutKey cooperative Yield. Independent post-reboot original/fixture preservation and input audit. Full FileMgr remains unqualified."
+        },
+        {
+          "target": "native-file-picker-with-yield-final-driver",
+          "result": "pass",
+          "evidence": "build/i386-pick-file-yield-v1/result.json",
+          "scope": "All five actual popup sessions and strict host fixture-byte guard pass in one final-driver run on the yield-corrected image; masks 255, names, caller ownership/restoration, arithmetic and filesystem. Independent terminal audit rechecks pins, original file tuples, directory attributes and exact fixture contents. Not full FileMgr qualification."
         }
       ]
     },
@@ -3065,6 +3071,12 @@
           "result": "pass",
           "evidence": "build/i386-pick-file-native-v1/result.json",
           "scope": "Five real popup sessions and masks 255: default/explicit filename, directory accepted in file mode, file cancellation and directory mode on a file; exact returned names, caller heap ownership and restoration. Arithmetic and filesystem pass; terminal audit verifies exact added fixture bytes and existing files/directories. Stronger final host guard replayed after the guest run; see host-guard-replay.json and docs/i386-pick-file.md. Full FileMgr remains unqualified."
+        },
+        {
+          "target": "native-file-picker-with-yield-final-driver",
+          "result": "pass",
+          "evidence": "build/i386-pick-file-yield-v1/result.json",
+          "scope": "All five actual popup sessions and strict host fixture-byte guard pass in one final-driver run on the yield-corrected image; masks 255, names, caller ownership/restoration, arithmetic and filesystem. Independent terminal audit rechecks pins, original file tuples, directory attributes and exact fixture contents. Not full FileMgr qualification."
         }
       ]
     },
