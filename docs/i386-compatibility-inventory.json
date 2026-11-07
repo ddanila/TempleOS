@@ -10566,6 +10566,30 @@
           "result": "pass",
           "evidence": "build/i386-public-expression-source-native-v1/result.json",
           "scope": "Source-loaded full shared lexer/parser/optimizer/backend: 24 token checks, graph mask 63, nine basic and eleven runtime executable cases exactly match actual original records, six type checks and both heap-recovery flags pass. Independent 1025-input/fixture-only-volume/boot audit; 64 MiB diagnostic, not normal startup delivery or full compiler/API qualification."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-lifetime.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-expression-lifetime-original-v1/result.json",
+          "scope": "Actual original LexExpression2Bin: retained code after CmpCtrlDel, caught UndefExt, real later definition and retained/continued calls all pass mask 15. Full compiler/API qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-lifetime.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-public-expression-lifetime-baseline-v1/result.json",
+          "scope": "Expected normal-image missing Lex at line 7; exact fixture/current-input/startup/volume/boot audit. Normal public expression delivery remains open."
+        },
+        {
+          "command": "python3 build/probe-public-expression-lifetime-source-v1.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-public-expression-lifetime-source-baseline-v1/result.json",
+          "scope": "Pre-fix source-loaded adapter passes preceding token/graph/basic/type/runtime regressions but fails the retained call after later definition (mask 11 versus original 15); froze an undefined target instead of preserving its function slot."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-expression-lifetime-source-native-v1/result.json",
+          "scope": "Source-loaded complete shared bodies and corrected public-allocation adapter: retained code survives CmpCtrlDel, catches UndefExt, executes after real completion and continues (mask 15 versus pre-fix 11, exact original export). All preceding token/graph/basic/type/runtime regressions and independent 1027-input/volume/boot audit pass. Not normal expression API delivery or full C1-C5 qualification."
         }
       ]
     },

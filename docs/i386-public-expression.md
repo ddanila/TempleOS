@@ -143,3 +143,14 @@ Its terminal-integration-audit.json verifies all 1027 current pins, exact volume
 boot preservation and use of the delivered deletion binding without a test body.
 This remains a source-loaded expression probe; normal Lex/compiler delivery and
 full C1–C5 qualification are open.
+
+
+The extended source runner now also checks retained expression code across control
+release, an unresolved-call exception and later real function completion. The
+original passes mask 15; the first source adapter failed mask 11 because it froze
+the undefined target. Preserving the original indirect function slot and its
+absolute relocation restores mask 15 while all earlier checks continue to pass.
+See docs/i386-public-expression-lifetime.md and
+build/i386-public-expression-lifetime-source-native-v1/terminal-lifetime-audit.json.
+This covers that completion/lifetime path, while normal public compiler delivery
+and the remaining class/header/stream/debug/error/operator work remain open.

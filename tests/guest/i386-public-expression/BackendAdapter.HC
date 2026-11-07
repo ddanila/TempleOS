@@ -72,8 +72,13 @@ U0 PBPrepareCalls(PBState *state,CCmpCtrl *cc)
       stack[depth++]=reference;
     } else if(node->ic_code==IC_CALL || node->ic_code==IC_CALL_EXTERN ||
         node->ic_code==IC_CALL_IMPORT || node->ic_code==IC_CALL_INDIRECT2) {
-      if(!depth || !(reference=stack[depth-1]) || !reference->target)throw('Compiler');
-      node->ic_code=IC_CALL_IMPORT;node->ic_data=&reference->function;
+      if(!depth || !(reference=stack[depth-1]))throw('Compiler');
+      if(node->ic_code==IC_CALL_INDIRECT2)
+        node->ic_data=&reference->original->exe_addr;
+      else {
+        if(!reference->target)throw('Compiler');
+        node->ic_code=IC_CALL_IMPORT;node->ic_data=&reference->function;
+      }
     } else if(node->ic_code==IC_CALL_END) {
       if(!depth)throw('Compiler');reference=stack[--depth];
       if(reference)node->ic_data=&reference->function;
@@ -102,8 +107,12 @@ U0 PBLink(PBState *state,U8 *code,I64 bytes)
   for(reference=state->references;reference;reference=reference->next)
     for(record=reference->function.ie_lst;record;record=record->next) {
       offset=record->rip;
-      if(record->type!=IET_REL_I32 || offset<0 || offset>bytes-4)throw('Compiler');
-      (code+offset)(U32 *)[0]=(reference->target+0)(U64)-(code+offset+4)(U64);
+      if(offset<0 || offset>bytes-4)throw('Compiler');
+      if(record->type==IET_REL_I32)
+        (code+offset)(U32 *)[0]=(reference->target+0)(U64)-(code+offset+4)(U64);
+      else if(record->type==IET_IMM_U32)
+        (code+offset)(U32 *)[0]=(&reference->original->exe_addr+0)(U64);
+      else throw('Compiler');
     }
 }
 U0 PBFold(U8 *context,CCmpCtrl *cc){OptPass012(cc);}

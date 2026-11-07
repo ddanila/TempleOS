@@ -94,8 +94,9 @@ additions['/Probe/PublicParserGraph.HC']=graph_fixture.read_bytes()
 additions['/Probe/PublicExpression.HC']=(root/'tests/guest/i386-public-expression/Contract.HC').read_bytes()
 additions['/Probe/PublicTypes.HC']=(root/'tests/guest/i386-public-expression/TypeContract.HC').read_bytes()
 additions['/Probe/PublicExpressionRuntime.HC']=(root/'tests/guest/i386-public-expression/Runtime.HC').read_bytes()
+additions['/Probe/PublicExpressionLifetime.HC']=(root/'tests/guest/i386-public-expression/Lifetime.HC').read_bytes()
 pack=runpy.run_path(str(root/'tools/package-i386-native-image.py'))
-r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers, optimizer and i386 backend on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, token and graph regressions. Class/function-header joins and stream service remain unresolved explicit externs; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
+r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers, optimizer and i386 backend on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Class/function-header joins and stream service remain unresolved explicit externs; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
 pin_paths=[Path(__file__).resolve(),source]+[root/('tools/'+n) for n in ('test-i386-autocomplete-interaction.py','test-i386-timeclock-reference.py','test-i386-timeclock-welcome.py','package-i386-native-image.py','build-i386-kernel.py')]
 for directory in ('Compiler','Kernel','tests/guest/i386-public-lexer','tests/guest/i386-public-expression'):
  pin_paths += sorted(p for p in (root/directory).rglob('*') if p.is_file() and p.suffix in ('.HC','.HH'))
@@ -130,6 +131,9 @@ try:
  g.command('#include \"C:/Probe/PublicExpressionRuntime.HC\"');g.wait('PUBLIC EXPRESSION RUNTIME DONE\n')
  data=(g.out/'public-expression-runtime.bin').read_bytes();(out/'public-expression-runtime.bin').write_bytes(data)
  r['runtime_records']=list(struct.unpack('<24q',data));assert list(struct.unpack('<24q',data))==[1]*11+[7,12,12,12,4615626668101337088,4612811918334230528,4612811918334230528,98,4617878467915022336,1<<40,98,1,1],r['runtime_records']
+ g.command('#include \"C:/Probe/PublicExpressionLifetime.HC\"');g.wait('PUBLIC EXPRESSION LIFETIME DONE\n')
+ data=(g.out/'public-expression-lifetime-mask.bin').read_bytes();(out/'public-expression-lifetime-mask.bin').write_bytes(data)
+ r['lifetime_mask']=struct.unpack('<q',data)[0];assert r['lifetime_mask']==15,r['lifetime_mask']
  g.command('6*7;');r['arithmetic_pixels']=g.result_pixels()
  g.close();g=None
  after=pack['snapshot']((out/'working.img').read_bytes())[1]

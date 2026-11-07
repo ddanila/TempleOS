@@ -27492,3 +27492,16 @@ checks and eleven runtime cases; its independent 1027-input audit rejects a test
 deletion body. Both 8/16 MiB profiles match all 307200 welcome pixels; both diagnostic program,
 ownership and file-cleanup phases pass. Full KDataTypes/compiler/C1–C5 qualification
 remains open. See docs/i386-linked-list.md.
+
+## Retained public expression calls (2026-11-07)
+
+A new actual original contract passes mask 15 for code retained after control
+release, caught UndefExt, later real function completion and continued evaluation.
+The normal native API still lacks Lex. The source-loaded adapter failed only the
+post-completion retained call (mask 11): it froze an undefined target instead of
+preserving the mutable function slot. Indirect slot relocations are now kept
+separate from direct call relocations. Patched source acceptance passes mask 15
+and every preceding token/graph/basic/type/runtime regression. The independent
+1027-input/volume/boot audit passes; normal public expression delivery remains
+open.
+See docs/i386-public-expression-lifetime.md. Full C1–C5 remains open.
