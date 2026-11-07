@@ -65,6 +65,7 @@ public _extern _FAT32_DIR_FILL Bool FAT32DirFill(U8 *fat_entries,CDirEntry *entr
 public _extern _FAT32_CDIR_FILL Bool FAT32CDirFill(CDirEntry *entry,U8 *fat_entry,CDate local_time_offset);
 public _extern _FILE_NAME_ABS U8 *FileNameAbs(U8 *filename,I64 fuf_flags=0);
 public _extern _DIR_NAME_ABS U8 *DirNameAbs(U8 *dirname);
+public _extern _DIR_FILE U8 *DirFile(U8 *dirname,U8 *name=0,U8 *extension=0);
 public _extern _FILE_FIND Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
 public _extern _COPY_SINGLE_Z Bool CopySingleZ(U8 *f1,U8 *f2);
 public _extern _DIR_ENTRY_DEL U0 DirEntryDel(CDirEntry *entry);

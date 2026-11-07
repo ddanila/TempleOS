@@ -11531,7 +11531,7 @@
       "source_at_discovery": "identical",
       "compatibility": "qualified",
       "reference_workflow": "Run complete unchanged Demo/Carry.HC through normal ExeFile: verify all 1024 BigCnt rows, 128 BigShift rows and 64 Branch bits, then invoke the real retained functions after declaration input release and 32 KiB data/code heap churn. Both complete DolDoc captures must match the independent mathematical oracle and original byte-for-byte.",
-      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime88 statement-frame-v3 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
+      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime88/console249 DirFile-v1 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
       "tests": [
         {
           "command": "python3 tools/test-i386-carry-demo.py [IMAGE] --out OUT",
@@ -11574,6 +11574,12 @@
           "result": "pass",
           "evidence": "build/i386-statement-frame-carry-v3/result.json",
           "scope": "Runtime88/console248 shared statement-frame checkpoint: unchanged whole demo, mask7, complete original documents, retained real callbacks after input release/churn, later normal arithmetic and independently verified terminal pins."
+        },
+        {
+          "command": "python3 tools/test-i386-carry-demo.py build/i386-dir-file-cross-v1/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-file-carry-v1/result.json",
+          "scope": "Console249 normal public DirFile checkpoint: unchanged whole demo, mask7, complete original documents, retained real callbacks, later arithmetic and independently verified terminal inputs."
         }
       ]
     },
@@ -11628,6 +11634,12 @@
           "result": "pass",
           "evidence": "build/i386-statement-frame-classmeta-v3/result.json",
           "scope": "Runtime88/console248 shared statement-frame checkpoint: unchanged whole demo, mask511, complete original documents, retained real callbacks after input release/churn, later normal arithmetic and independently verified terminal pins."
+        },
+        {
+          "command": "python3 tools/test-i386-class-meta.py build/i386-dir-file-cross-v1/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-file-classmeta-v1/result.json",
+          "scope": "Console249 normal public DirFile checkpoint: unchanged whole demo, mask511, complete original documents, retained real callbacks, later arithmetic and independently verified terminal inputs."
         }
       ]
     },
@@ -17775,7 +17787,7 @@
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
       "reference_workflow": "Normalize directory paths relative to the current task, preserve drive selection and return caller-owned storage; exercise filename masks and extension helpers.",
-      "oracle": "docs/i386-dir-name-abs.md records eight task-relative directory path checks against original and native; the other tests cover scoped filename helpers. All path edge cases and whole-file qualification remain open.",
+      "oracle": "docs/i386-dir-name-abs.md records eight task-relative directory path checks against original and native; the other tests cover scoped filename helpers. All path edge cases and whole-file qualification remain open. docs/i386-dir-file.md records twenty complete original/normal-native DirFile paths and a 512-search ownership matrix; original rejected-candidate leaks are documented and native requires zero heap deltas. This component does not qualify the whole file.",
       "tests": [
         {
           "target": "original-dir-name-abs",
@@ -17843,6 +17855,24 @@
           "result": "pass",
           "evidence": "build/i386-file-extension-public-native-v1/result.json",
           "scope": "Seven bounded groups: extension scan, removal, change, suffix detection/toggle, return pointers and caller heap recovery; not full file API"
+        },
+        {
+          "command": "python3 tools/test-i386-dir-file.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-file-original-v5/result.json",
+          "scope": "Pinned original: twenty paths, original root/default/name/extension behavior, input/cwd state and intentional positive miss-heap deltas; repeated phase leaks 61440 bytes. Independent terminal audit."
+        },
+        {
+          "command": "python3 tools/test-i386-dir-file.py build/i386-execute-line-default-cross-v1/kernel.img --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-dir-file-api-baseline-v3/result.json",
+          "scope": "Old normal native API rejects first DirFile use before execution; valid fixture and unchanged pinned inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-dir-file.py build/i386-dir-file-cross-v1/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dir-file-native-v2/result.json",
+          "scope": "Normal public console249 DirFile: all 44 observations, all 533 normalized original path bytes, all 21 heap deltas zero including 512 repeated searches, sole fixture-tree additions, later arithmetic and independent terminal input/path audit. Valid stable filesystem only."
         }
       ]
     },

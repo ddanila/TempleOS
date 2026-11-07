@@ -15,7 +15,7 @@ python3 tools/test-i386-public-expression-source.py build/IMAGE/kernel.img --com
 ```
 
 The source runner loads the complete current ExeCmdLine body from KTask.HC,
-then the complete DirFile body from DskStrA.HC and StreamPrint/StreamDir bodies
+then the complete shared DirFileCore.HC body and StreamPrint/StreamDir bodies
 from CMisc.HC. They use the actual shared PrsStreamBlkCore, LexStmt2Bin, lexer
 reinjection and target backend. Bodies are not replaced with adapters or stubs.
 The contract registers its public controller on the task's controller queue,
@@ -23,7 +23,8 @@ so StreamPrint finds the real innermost stream block through Fs->last_cc.
 
 This source-loaded namespace is distinct from the existing private native
 compiler's StreamPrint provider, whose buffers use private parser ownership.
-Normal public compiler/DirFile delivery remains open. The directory observation
+Normal public compiler delivery remains open. Normal public DirFile delivery is
+covered by the follow-up in docs/i386-dir-file.md. The directory observation
 covers one real existing source context, not the full DirFile upward-search API.
 Error/OutMem/cancellation recovery, nested includes and repeated reclamation
 remain unqualified. Literal-bearing statement code is intentionally retained

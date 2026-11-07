@@ -138,9 +138,9 @@ if args.execute_line:
  task=(root/'Kernel/KTask.HC').read_bytes()
  parts.append(b'#include "/Kernel/I386/PublicDate.HH"\n'+task[task.index(b'I64 ExeCmdLine('):task.index(b'#include "/Kernel/SrvTaskContCore.HC"')])
 if args.compiler_stream:
- path=(root/'Kernel/BlkDev/DskStrA.HC').read_bytes()
+ path=(root/'Kernel/BlkDev/DirFileCore.HC').read_bytes()
  misc=(root/'Compiler/CMisc.HC').read_bytes()
- parts.append(path[path.index(b'U8 *DirFile('):]+misc[misc.index(b'U0 StreamPrint('):misc.index(b'CD2I32 *LexD2I32(')])
+ parts.append(path+misc[misc.index(b'U0 StreamPrint('):misc.index(b'CD2I32 *LexD2I32(')])
 candidate=b'\n'.join(parts)
 (out/'candidate.HC').write_bytes(candidate)
 for i,part in enumerate(parts):(out/f'part-{i}.HC').write_bytes(part)

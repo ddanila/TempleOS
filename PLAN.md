@@ -27713,3 +27713,25 @@ both diagnostic ownership/file-break phases. See docs/i386-public-execute-line.m
 and docs/i386-public-compiler-stream.md. Normal public compiler delivery,
 stream error/ownership/AOT closure, 684 inventory items and full C1–C5 gates
 remain open; no additional application workflow is qualified by these tests.
+
+### Normal public DirFile and rejected-candidate cleanup (2026-11-07)
+
+Console249 appends DirFile at slot662 and exposes it through PublicFiles.HH.
+Kernel and native console share DirFileCore.HC, preserving complete original
+upward search/default behavior. A rejected candidate is now freed before moving
+to the parent; the retained default is an independent copy. The pinned original
+leaks 61,440 bytes over 512 repeated searches, whereas native recovers all public
+data-heap bytes. Twenty complete normalized paths match all 533 original bytes;
+all 44 native observations pass. Root spelling, NULL/empty names, dot extensions,
+relative/current inputs, nonexistent suffixes, ancestor hits, input/cwd state and
+caller ownership are explicit cases. Invalid fixtures and the initial stress
+observation timeout remain recorded separately from behavioral qualification.
+
+Both x64 bootstraps, the full 1,763-source build, source26 regressions and both
+qualified demo workflows pass on build/i386-dir-file-cross-v1. All 1,039 source
+suite inputs are independently checked. Fresh 8/16 MiB startup/welcome gates pass
+with both diagnostic ownership/file-break phases. See docs/i386-dir-file.md.
+This closes normal DirFile delivery and its tested miss-path ownership; it does
+not qualify every DskStrA API, allocation failure/concurrency, normal shared
+compiler/stream delivery or full C1–C5. Inventory qualification remains two
+workflows with 684 items unqualified.
