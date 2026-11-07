@@ -44,7 +44,9 @@ LexPunctInit(cmp.dual_U16_tokens1,cmp.dual_U16_tokens2,cmp.dual_U16_tokens3);
 prefix=header[:header.index(b'#include "/Compiler/LexFiles.HC"')]
 cut=lex.index(b'I64 LexSystemToken(')
 helpers=re.split(rb'(?=#include "/Compiler/Lex(?:String|Number|Char|Punct|Ident|Define|Conditional)\.HC")',lex[:cut])
-parts=[prefix,b'#include "/Compiler/LexFiles.HC"\n'+control[a:b]+b'#include "/Compiler/MemberLookup.HC"\n']+helpers+[lex[cut:],lib,init]
+lookup=(root/'Compiler/MemberLookup.HC').read_bytes()
+lookup=b'#include "/Compiler/MemberLookup.HH"\n'+lookup[lookup.index(b'CMemberLst *MemberClassBaseFind('):]
+parts=[prefix,b'#include "/Compiler/LexFiles.HC"\n'+control[a:b]+lookup]+helpers+[lex[cut:],lib,init]
 parser_prefix=b'''#include "/Compiler/CompilerA.HH"
 #include "/Compiler/ICInfo.HC"
 ICInfoInit;

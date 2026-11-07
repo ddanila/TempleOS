@@ -10242,6 +10242,24 @@
           "result": "pass",
           "evidence": "build/i386-lex-savepoints-native-v1/result.json",
           "scope": "Thirteen save-point checks, mask 8191: borrowed payloads/allocation, nested replay/discard, lookahead, line/token state, pending cleanup, caller-owned buffer, include-parent preservation, DolDoc replay and exact data/code heap recovery. Independent input/fixture audit; native volume and boot bytes preserved. Unchanged shared body, Console 246 appended slots 655\u2013657. Failure/concurrency/invalid metadata and full compiler/C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-member-lookup.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-member-lookup-original-v2/result.json",
+          "scope": "Mask 4095 for member-tree misses/branches/inheritance/shadowing, exact use counts/U32 wrap, full-width/zero/missing/string/F64 metadata, duplicate order and exact heap recovery. Console 247 uses unchanged shared bodies. Invalid graphs/concurrency, full compiler and C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-member-lookup.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-member-lookup-baseline-v2/result.json",
+          "scope": "Expected missing MemberFind before behavior. Console 247 uses unchanged shared bodies. Invalid graphs/concurrency, full compiler and C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-member-lookup.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-member-lookup-native-v2/result.json",
+          "scope": "Mask 4095 for member-tree misses/branches/inheritance/shadowing, exact use counts/U32 wrap, full-width/zero/missing/string/F64 metadata, duplicate order and exact heap recovery. Console 247 uses unchanged shared bodies. Invalid graphs/concurrency, full compiler and C1\u2013C5 remain unqualified."
         }
       ]
     },
@@ -10378,6 +10396,30 @@
           "result": "pass",
           "evidence": "build/i386-lex-savepoints-native-v1/result.json",
           "scope": "Thirteen save-point checks, mask 8191: borrowed payloads/allocation, nested replay/discard, lookahead, line/token state, pending cleanup, caller-owned buffer, include-parent preservation, DolDoc replay and exact data/code heap recovery. Independent input/fixture audit; native volume and boot bytes preserved. Unchanged shared body, Console 246 appended slots 655\u2013657. Failure/concurrency/invalid metadata and full compiler/C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-member-lookup.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-member-lookup-original-v2/result.json",
+          "scope": "Mask 4095 for member-tree misses/branches/inheritance/shadowing, exact use counts/U32 wrap, full-width/zero/missing/string/F64 metadata, duplicate order and exact heap recovery. Console 247 uses unchanged shared bodies. Invalid graphs/concurrency, full compiler and C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-member-lookup.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-member-lookup-baseline-v2/result.json",
+          "scope": "Expected missing MemberFind before behavior. Console 247 uses unchanged shared bodies. Invalid graphs/concurrency, full compiler and C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-member-lookup.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-member-lookup-native-v2/result.json",
+          "scope": "Mask 4095 for member-tree misses/branches/inheritance/shadowing, exact use counts/U32 wrap, full-width/zero/missing/string/F64 metadata, duplicate order and exact heap recovery. Console 247 uses unchanged shared bodies. Invalid graphs/concurrency, full compiler and C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --functions --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-member-lookup-functions-native-v2/result.json",
+          "scope": "All twenty-three stages and token/graph/expression/type/runtime/lifetime/class/function regressions pass using the normal public member lookup functions; no injected public lookup bodies. The internal header preserves resolved addresses instead of shadowing with undefined forwards. Exact original function bytes/heap recovery, independent 1032-input/volume/boot audit. Full compiler and C1\u2013C5 remain unqualified."
         }
       ]
     },
@@ -11504,10 +11546,29 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the complete unchanged demo through ExeFile: define both metadata-bearing classes, assign the demonstrated globals, and print both structures using lastclass inference. Verify all six formatted output lines, integer/F64/string/function metadata, then call retained DumpStruct after input release/allocator churn and with mutated globals while defaults stay unchanged.",
+      "oracle": "docs/i386-class-meta.md: normal-image workflow, mask 511, three exact original 147-byte DolDoc documents and unchanged source digest. Individual demo workflow qualification on the recorded current image; C5 release generations/full-suite/resource qualification remains open.",
+      "tests": [
+        {
+          "command": "python3 tools/test-i386-class-meta.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-class-meta-original-v2/result.json",
+          "scope": "Complete unchanged demo, mask 511 and all 441 original document bytes, including retained/churn and mutated-data runs. Evaluated defaults, lastclass, F64, string/function metadata and global state checked. Independent source/input/volume audit. Demo declarations intentionally persist; this does not qualify other compiler/member APIs or C5 release generations."
+        },
+        {
+          "command": "python3 tools/test-i386-class-meta.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-class-meta-baseline-v2/result.json",
+          "scope": "Expected whole-demo rejection at missing MemberMetaData, delivered source line 47. Independent source/input/volume audit. Demo declarations intentionally persist; this does not qualify other compiler/member APIs or C5 release generations."
+        },
+        {
+          "command": "python3 tools/test-i386-class-meta.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-class-meta-native-v2/result.json",
+          "scope": "Complete unchanged demo, mask 511 and all 441 original document bytes, including retained/churn and mutated-data runs. Evaluated defaults, lastclass, F64, string/function metadata and global state checked. Independent source/input/volume audit. Demo declarations intentionally persist; this does not qualify other compiler/member APIs or C5 release generations."
+        }
+      ]
     },
     {
       "path": "Demo/CompileDemo.HC",

@@ -27598,3 +27598,18 @@ the first call. Both x86-64 bootstrap generations and the full 1759-source-pinne
 native build pass. Source compiler integration now uses these delivered APIs;
 full normal compiler delivery and full C1–C5 remain open. See
 docs/i386-lex-savepoints.md.
+
+
+## ClassMeta workflow and delivered member lookup (2026-11-07)
+
+Console 247 appends MemberFind/MemberMetaData/MemberMetaFind at exports 658–660
+using unchanged shared lookup bodies; old slots/data bits stay unchanged.
+Original and normal native contracts match mask 4095. The complete unchanged
+Demo/ClassMeta.HC now runs normally: its original 147-byte output, retained calls
+after controller release/allocator churn, and mutated-data output all match the
+original, with metadata/global-state mask 511. Its defined workflow is qualified
+on this candidate; this does not qualify other compiler APIs or C5 release
+generations. The inventory now has one qualified demo workflow and 685 remaining
+unqualified items. Both x86-64 bootstraps and the full 1759-source native build
+pass. Full public compiler delivery and C1–C5 remain open. See
+docs/i386-class-meta.md and docs/i386-member-lookup.md.
