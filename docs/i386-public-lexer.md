@@ -185,3 +185,11 @@ was rejected with exception zero, zero errors and zero warnings before any
 token cases ran. The source image hash remained unchanged. Thus removing
 that directive alone does not resolve header publication; this result does
 not identify which declaration or binding causes the rejection.
+
+The individual-declaration probe (`build/probe-public-token-bitmap-symbols.py`,
+`build/i386-public-token-loader-v6`) successfully publishes the existing v4
+prefix as part zero, then rejects part one, containing only
+`public extern U32 char_bmp_alpha[16];`, with zero errors and warnings.
+`KernelSymbols` does not export that name. This reproduces a specific missing
+public bitmap binding independently of the combined header and help directive.
+No token cases run in this negative probe.
