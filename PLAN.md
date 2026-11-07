@@ -27443,6 +27443,10 @@ Both bootstrap generations and full source-pinned build pass. The patched native
 contract passes all three cases. Both 8/16 MiB profiles match all 307200 welcome
 pixels; both diagnostic ownership/file-cleanup phases pass. The source-loaded
 parser/optimizer retry publishes all 17 stages and passes 24 token checks; its
-graph fixture is being corrected after an unsupported ternary expression.
+corrected graph fixture passes mask 63 for integer/F64 parsing, three optimizer
+passes and final folded values/types/tokens/counters. The v8 fixture syntax
+failure is retained; v9 has an independent packaged-input/volume/boot audit.
+This source-loaded diagnostic does not deliver the executable public expression
+API; real type parsing and a public-ownership backend adapter remain required.
 Standalone unresolved cross-input globals and C1–C5 remain open. See
 docs/i386-global-alias.md.

@@ -36,8 +36,10 @@ weaken publication or lifetime requirements.
 Both bootstrap generations and the full native build pass stable source pins.
 Both the 8 MiB normal and 16 MiB diagnostic images pass all 307200 welcome
 pixels and normal startup. Both diagnostic program/ownership/file-cleanup phases
-pass; see build/i386-global-alias-memory-audit.json. The full parser/optimizer
-graph retry is separate diagnostic work. Standalone
+pass; see build/i386-global-alias-memory-audit.json. The source-loaded parser/optimizer
+retry now publishes all 17 stages, passes 24 token cases and passes graph mask 63
+for integer/F64 parsing and folding (build/i386-public-expression-loader-v9).
+This diagnostic does not deliver the executable public expression API. Standalone
 unresolved globals across separate inputs, malformed aliases, all type combinations
 and C1–C5 qualification remain open; this change handles completion within one
 input rather than publishing an unresolved header as a completed definition.

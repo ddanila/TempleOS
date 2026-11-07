@@ -36,8 +36,16 @@ prototype additionally publishes the complete optimizer and diagnostic printers,
 then fails in the canonical type-record stage before graph execution. V7 splits
 that stage and proves the data declaration is rejected before its constructor.
 A minimized extern/aggregate reproducer identifies completed-alias publication
-as the cause. The patched graph retry is loader-v8; see
-docs/i386-global-alias.md. Optimizer execution remains unqualified.
+as the cause. The patched loader-v8 publishes all 17 stages and passes the 24 token cases,
+then rejects an unsupported ternary expression in the diagnostic fixture.
+Loader-v9 corrects that fixture and passes mask 63: actual PrsExpression parsing,
+all three OptPass012 passes, folded opcode/value and final token/counter/type
+checks for `6*7;` and `1.25+2.5;`. The complete parser and optimizer bodies are
+used on public system-heap controls. The fixture is retained as
+tests/guest/i386-public-expression/ParserGraph.HC. An independent terminal audit
+checks exact packaged inputs, exported records, fixture-only volume changes,
+boot bytes and volume consistency. See docs/i386-global-alias.md. This is a
+source-loaded graph diagnostic, not a delivered executable expression API.
 Do not replace them with no-ops or a scalar-only constant evaluator. The nine
 executable reference cases are a starting oracle; they do not qualify function
 calls, globals, pointers, all operators, error/unwind behavior or C1–C5.
@@ -50,4 +58,14 @@ build/i386-public-expression-loader-v3 and
 build/i386-public-expression-loader-v4. Successful publication is retained as
 build/i386-public-expression-loader-v5; optimizer/type controls use
 build/i386-public-expression-loader-v6 and
-build/i386-public-expression-loader-v7.
+build/i386-public-expression-loader-v7. The corrected graph result and audit are
+build/i386-public-expression-loader-v9/result.json and
+build/i386-public-expression-loader-v9/terminal-graph-audit.json.
+
+The next integration work must supply the real type parser and an adapter from
+public CCmpCtrl/IR ownership to the shared i386 backend. The private backend
+wrapper requires a private control owner and cannot accept these public controls.
+Native expression compilation must also avoid the x86-64 host constant evaluator
+used for cross-compilation. Calls, data relocations, full operator coverage and
+error/unwind/cleanup behavior remain required; folded arithmetic alone is not
+sufficient.

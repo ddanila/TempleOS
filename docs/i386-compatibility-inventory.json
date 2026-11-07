@@ -10388,7 +10388,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "command": "python3 build/probe-public-expression-loader-v9.py",
+          "result": "pass",
+          "evidence": "build/i386-public-expression-loader-v9/result.json",
+          "scope": "Source-loaded diagnostic: complete shared parser/optimizer, canonical type setup, 17 published stages, 24 token cases and integer/F64 graph mask 63; independent exact-input/fixture-only-volume/boot audit. Not normal delivered expression execution or full compiler qualification."
+        }
+      ]
     },
     {
       "path": "Compiler/OptPass3.HC",
@@ -10529,6 +10536,12 @@
           "result": "fail",
           "evidence": "build/i386-public-expression-baseline-v1/result.json",
           "scope": "Normal pre-change image rejects Lex at helper line 6 before expression execution; independent inputs/fixture-only-volume/boot audit. Full public lexer and expression services remain open."
+        },
+        {
+          "command": "python3 build/probe-public-expression-loader-v9.py",
+          "result": "pass",
+          "evidence": "build/i386-public-expression-loader-v9/result.json",
+          "scope": "Source-loaded diagnostic: complete shared parser/optimizer, canonical type setup, 17 published stages, 24 token cases and integer/F64 graph mask 63; independent exact-input/fixture-only-volume/boot audit. Not normal delivered expression execution or full compiler qualification."
         }
       ]
     },
