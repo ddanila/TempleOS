@@ -18021,6 +18021,27 @@
           "result": "pass",
           "evidence": "build/i386-adamfile-native-8m-v1/result.json",
           "scope": "Same native five-check comparison at 8 MiB; inputs unchanged; concurrent startup is not timing qualification."
+        },
+        {
+          "target": "original-adam-err",
+          "command": "python3 tools/test-i386-adam-err.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-adam-err-original-v4/result.json",
+          "scope": "Five routing/suppression/caller-document checks, exact styled routed and direct Adam output; independent reference/input/fixture audit."
+        },
+        {
+          "target": "native-adam-err-baseline",
+          "command": "python3 tools/test-i386-adam-err.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-adam-err-baseline-v1/result.json",
+          "scope": "Pre-change image rejects fixture at first AdamErr call before behavior; independent normal-startup/input/fixture-only volume and boot-byte audit."
+        },
+        {
+          "target": "native-adam-err",
+          "command": "python3 tools/test-i386-adam-err.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-adam-err-native-v1/result.json",
+          "scope": "Matching mask 31, exact original routed/direct documents through real Adam jobs, exact fixture and current input pins. Not full job-service compatibility or allocation-failure coverage."
         }
       ]
     },

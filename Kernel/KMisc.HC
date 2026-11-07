@@ -159,10 +159,7 @@ Bool SingleUser(Bool val)
   return LBEqu(&sys_semas[SEMA_SINGLE_USER],0,val);
 }
 
-Bool IsSingleUser()
-{//Return single-user mode.
-  return Bt(&sys_semas[SEMA_SINGLE_USER],0);
-}
+#include "/Kernel/IsSingleUserCore.HC"
 
 Bool DbgMode(Bool val)
 {//Set dbg-mode.

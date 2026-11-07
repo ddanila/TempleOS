@@ -347,17 +347,7 @@ U0 AdamLog(U8 *fmt,...)
   Free(buf);
 }
 
-U0 AdamErr(U8 *fmt,...)
-{//Display red blinking Err text in adam_task.
-  U8 *buf=StrPrintJoin(NULL,fmt,argc,argv),
-	*st=MStrPrint(ST_ERR_ST "%s",buf);
-  if (Fs==adam_task)
-    "%s",st;
-  else if (!IsSingleUser)
-    Adam("\"%%s\",%d;",st);
-  Free(st);
-  Free(buf);
-}
+#include "/Kernel/AdamErrCore.HC"
 
 U0 XTalk(CTask *task,U8 *fmt,...)
 {//Sends text to other task. See $LK,"::/Misc/OSTestSuite.HC"$.

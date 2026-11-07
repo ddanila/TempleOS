@@ -39,6 +39,7 @@ public extern F64 sys_os_version;
 public _extern _SYS_RUN_LEVEL U32 sys_run_level;
 public _extern _GET_TSC I64 GetTSC();
 public _extern _ADAM_TASK CTask *adam_task;
+public _extern _IS_SINGLE_USER Bool IsSingleUser();
 public _intern 0x15 CTask *Fs();
 public _intern 0x17 CCPU *Gs();
 public _extern _REP_IN_U8 U0 RepInU8(U8 *buf,I64 cnt,I64 port);

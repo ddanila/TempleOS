@@ -27315,3 +27315,16 @@ Independent body/export/reference/contract audits are retained; see
 docs/i386-fix-set.md. Final-image 8/16 MiB profiles pass all 307,200 welcome
 pixels and both diagnostic program/ownership/cleanup phases. AdamErr, full
 lexer diagnostics, editor Fix and C1–C5 qualification remain open.
+
+
+## Shared Adam error routing (2026-11-07)
+
+Original AdamErr and IsSingleUser are shared unchanged with native code, using
+the existing real Adam job service and semaphore state. Console version 240
+exports both. Original and native contracts pass mask 31 and exact styled
+documents for suppression, child-to-Adam routing, direct Adam-task output,
+caller-document preservation and unchanged output pointers. Body/export,
+reference and native contract audits are retained; both bootstrap generations
+pass stable inputs. Final 8/16 MiB profiles match all 307,200 welcome pixels;
+diagnostics finish both program/ownership/cleanup phases. See
+docs/i386-adam-err.md. Full lexer diagnostics and C1–C5 remain open.
