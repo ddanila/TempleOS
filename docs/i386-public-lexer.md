@@ -176,3 +176,12 @@ The next integration work is the public bitmap-header/export contract, followed
 by real diagnostic, expression and executable-directive services and delivery
 through shared startup. The prototype does not qualify those paths, complete
 public compiler globals, physical terminal execution, or any C1–C5 milestone.
+
+A follow-up diagnostic (`build/probe-public-token-no-bitmap-help.py`, evidence
+`build/i386-public-token-loader-v5`) restored the shared bitmap declarations
+through a staged copy of `Kernel/CharBitmaps.HH` with only its `#help_index`
+directive removed. Normal startup succeeded, but publication of part zero
+was rejected with exception zero, zero errors and zero warnings before any
+token cases ran. The source image hash remained unchanged. Thus removing
+that directive alone does not resolve header publication; this result does
+not identify which declaration or binding causes the rejection.
