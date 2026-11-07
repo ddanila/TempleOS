@@ -26942,3 +26942,17 @@ arithmetic, filesystem validation and input pins pass. Native popup screenshots
 show overlapping text compared with the clean original control, so visual
 qualification remains open. See docs/i386-win-cursor-pos.md and
 docs/i386-pick-dir.md. Full FileMgr, complete desktop and C1–C5 remain open.
+
+
+## Chooser frame-layer control (2026-11-07)
+
+The real chooser now has an optional three-phase frame probe and independent
+text-cell/pixel analyzer. The two-phase diagnostic and ordinary-frame control
+both preserve all three functional picker cases and unchanged inputs. Persistent
+overlay bytes are entirely transparent. After ordinary frames versus forced
+refresh, no popup-interior text cell differs; only fifteen scrolling-title cells
+change. Graphics/border artifacts remain in both working-pixel captures, and
+the initial capture is transitional at two document updates. No production
+renderer workaround was applied. See docs/i386-picker-render.md for phase counts,
+capture provenance, the cancelled initial probe and exact scope. Full visual
+qualification and C1–C5 remain open.

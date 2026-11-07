@@ -133,3 +133,10 @@ not an exact whole-frame differential measurement. The capture and
 visual-observation.txt are preserved beside the result. The cause has not been
 isolated. Selection/restoration success alone does not close the chooser UI,
 full FileMgr, mouse interaction, navigation/file operations or C1–C5.
+
+[Frame-layer diagnosis](i386-picker-render.md) now captures initial, ordinary
+additional-frame and forced-refresh states. The persistent overlay is entirely
+transparent. Ordinary and forced captures have identical popup-interior text
+cells, while graphics/border artifacts remain. The first screenshot is also
+transitional (two document updates). The evidence does not support forcing full
+refresh as the fix; visual qualification and graphics-path isolation remain open.

@@ -13,8 +13,9 @@ ROOT=Path(__file__).resolve().parents[1]
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);ap.add_argument('--load-settings',action='store_true',help='Load real autocomplete and settings libraries in Adam before FileMgr');args=ap.parse_args();out=args.out.resolve()
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);ap.add_argument('--load-settings',action='store_true',help='Load real autocomplete and settings libraries in Adam before FileMgr');ap.add_argument('--observe-render',action='store_true',help='Capture first-popup frame layers before/after forced full refresh; diagnostic only');args=ap.parse_args();out=args.out.resolve()
     if args.load_settings and not args.disk:ap.error('--load-settings requires a native disk')
+    if args.observe_render and not args.disk:ap.error('--observe-render requires a native disk')
     if out.exists():ap.error('Use a fresh output directory')
     fixture=ROOT/'tests/guest/i386-pick-dir/Contract.HC'
     filemgr=ROOT/'Adam/ABlkDev/FileMgr.HC'
@@ -23,11 +24,17 @@ def main():
     paths=[Path(__file__).resolve(),fixture,filemgr,ROOT/'Kernel/FontStd.HC']+[ROOT/('tools/'+n) for n in ['test-i386-timeclock-reference.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','build-iso.py','package-i386-native-image.py','build-i386-kernel.py']]
     libraries=['Adam/AutoComplete/MakeAC.HC','Adam/AutoComplete/ACFill.HC','Adam/AutoComplete/ACTask.HC','Adam/AutoComplete/ACInit.HC','Adam/TaskSettings.HC','Adam/TaskSettingsCore.HC'] if args.load_settings else []
     paths += [ROOT/name for name in libraries]
+    source=fixture.read_bytes()
+    if args.observe_render:
+        probe=ROOT/'tests/guest/i386-pick-dir/RenderProbe.HC';paths.append(probe)
+        marker=b'            s=MStrPrint("PICK DIR READY'
+        if source.count(marker)!=1:raise ValueError('Missing observer insertion point')
+        source=probe.read_bytes()+b'\n'+source.replace(marker,b'            if(!pd_case)PDRenderProbe(doc);\n'+marker)
     if args.disk:paths.append(args.disk.resolve())
     out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Actual PopUpPickDir/FileMgr: default and explicit directory selection, Shift-Escape allocated empty result, caller documents/popup/directory restoration; not whole FileMgr qualification.');g=None
-    (out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
+    (out/'fixture.HC').write_bytes(source);(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     try:
-        additions={'/Probe/PickDir.HC':fixture.read_bytes(),'/Probe/PickScope/Nested/Marker.TXT':b'picker fixture\n'}
+        additions={'/Probe/PickDir.HC':source,'/Probe/PickScope/Nested/Marker.TXT':b'picker fixture\n'}
         if args.disk:
             pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));image=out/'working.img';before=pack['snapshot'](args.disk.read_bytes())[1]
             if before['/Adam/ABlkDev/FileMgr.HC'][2]!=original_filemgr:raise ValueError('Delivered FileMgr differs from original')
@@ -47,6 +54,14 @@ def main():
             report['library_commands']=['AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);','AdamFile("C:/Adam/TaskSettings.HC",FALSE);'] if args.load_settings else []
             for command in report['library_commands']:g.command(command)
             g.command('#include "C:/Adam/ABlkDev/FileMgr.HC"');g.command('#include "C:/Probe/PickDir.HC"');g.type('PDCheck("'+root+'");');g.press('ret')
+        if args.observe_render:
+            report['render_probe']='Final-callback capture initially, after three ordinary frames, then after three forced-refresh frames; diagnostic only'
+            for phase in range(3):
+                g.wait(f'PICK RENDER {phase}\n');g.screenshot(f'render-{phase}')
+                for name,size in [('cells',19200),('pixels',307200),('overlay',307200),('state',128)]:
+                    data=(g.out/f'render-{phase}-{name}.bin').read_bytes()
+                    if len(data)!=size:raise ValueError('Incomplete frame capture')
+                    (out/f'render-{phase}-{name}.bin').write_bytes(data)
         for i in range(3):
             g.wait(f'PICK DIR READY {i}\n');time.sleep(1);g.screenshot(f'picker-{i}')
             if i==2:g.key('shift',True)
@@ -65,9 +80,11 @@ def main():
             if changed!=set(additions):raise ValueError('Unexpected file changes')
             report['preserved_files']=len(before);report['filesystem']=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['verify_mutated_volume'](image)
         report.update(result='pass',capture_sha256={n:hashlib.sha256(b).hexdigest() for n,b in expected.items()})
-    except Exception as exc:report.update(result='fail',error=str(exc));raise
+    except BaseException as exc:report.update(result='fail',error=type(exc).__name__+': '+str(exc));raise
     finally:
-        if g:g.close()
+        if g:
+            try:g.close()
+            except Exception as exc:report.update(result='fail',close_error=str(exc))
         report['inputs_unchanged']=all(p.is_file() and sha(p)==pins[str(p)] for p in paths)
         if not report['inputs_unchanged']:report.update(result='fail',error='Inputs changed')
         (out/'result.json').write_text(json.dumps(report,indent=2)+'\n')
