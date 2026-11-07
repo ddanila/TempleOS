@@ -9838,7 +9838,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-public-lex-diagnostics",
+          "command": "python3 tools/test-i386-lex-diagnostics.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-lex-diagnostics-original-v4/result.json",
+          "scope": "Retained-buffer public original API reference: mask 31, exact identifier warning/default-null exception documents, counters, Compiler exception, saved location and preserved input; independent reference-tree/fixture/output audit."
+        },
+        {
+          "target": "native-public-lex-diagnostics-baseline",
+          "command": "python3 tools/test-i386-lex-diagnostics.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-lex-diagnostics-baseline-v1/result.json",
+          "scope": "Pre-change image reaches normal startup then rejects first LexWarn call; independent recorded-input/fixture-only volume/boot-byte audit."
+        },
+        {
+          "target": "native-public-lex-diagnostics",
+          "command": "python3 tools/test-i386-lex-diagnostics.py build/i386-lex-diagnostics-cross-v2/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-lex-diagnostics-native-v1/result.json",
+          "scope": "Mask 31 and exact original identifier warning/default-null exception documents; independently audited inputs, startup, fixture-only volume and boot bytes. Original token regression passes 24 cases; 8/16 MiB welcome and diagnostic cleanup checks pass. Other diagnostic branches and full compiler qualification remain open."
+        }
+      ]
     },
     {
       "path": "Compiler/CExts.HC",

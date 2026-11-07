@@ -27350,3 +27350,19 @@ guest shutdown allows the actual original default-null API to pass mask 31 and
 exact documents (original-v3, independently audited). The register-preservation
 hypothesis is withdrawn; earlier controls do not establish an API/compiler defect.
 Native retained-buffer comparison remains pending. See docs/i386-lex-diagnostics.md.
+
+
+## Shared public lexer diagnostics (2026-11-07)
+
+All five original CExcept diagnostic bodies are shared unchanged through
+Compiler/LexDiagnosticsCore.HC. Native console version 241 adds public token,
+line, position, warning and exception exports; Dbg maps to the existing real
+NativeDebug implementation. Original retained-buffer reference passes mask 31
+and exact documents; the pre-change native image rejects first LexWarn. Both
+bootstrap generations pass stable inputs. Normal-image diagnostics pass mask 31
+and exact original documents with an independent input/volume/startup audit.
+All 24 source-loaded original token cases pass using delivered diagnostics.
+The 8/16 MiB profiles match all welcome pixels; both diagnostic ownership/cleanup
+phases complete. Original real-token error reference passes mask 15; native
+token-error integration remains open. See docs/i386-lex-diagnostics.md
+for reference corrections and remaining branch/qualification gaps.

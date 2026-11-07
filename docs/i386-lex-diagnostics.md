@@ -18,9 +18,39 @@ An explicit-message original API control also passed mask 31.
 The native source-loaded v1 probe completed all state checks but failed output
 comparison against that overwritten reference allocation. V2 in
 `build/i386-lex-diagnostics-native-loader-v2` uses retained export allocations and
-the corrected original public API reference; its result remains pending.
+the corrected original public API reference. It passes mask 31 and exact
+warning/exception documents. Its independent audit verifies the complete unchanged
+body and both documents. The reusable original v4 contract additionally retains
+its result allocation; it also passes exact output and mask checks.
 
-All real public dependencies are now delivered, but the complete unchanged
-Compiler/CExcept.HC diagnostic bodies are not yet delivered through native
-startup. No instrumentation or substitute handler has been added to production.
-Full compiler diagnostics and C1–C5 qualification remain open.
+The five bodies are now shared unchanged in `Compiler/LexDiagnosticsCore.HC`,
+included by original CExcept and the native console. Console version 241 adds
+public LexPutToken, LexPutLine, LexPutPos, LexWarn and LexExcept exports. The
+native include maps Dbg to NativeDebug, the implementation behind the existing
+public _DBG export. The first cross-build rejected the missing internal Dbg name;
+its compiler log is preserved in `build/i386-lex-diagnostics-cross-v1`.
+
+The pre-change normal image rejects the first LexWarn call in
+`build/i386-lex-diagnostics-baseline-v1`, with independent input/startup/volume
+and boot-byte audit. The revised normal image passes mask 31 and exact original fixture/documents in
+`build/i386-lex-diagnostics-native-v1`. Its independent audit verifies input
+pins, normal startup, fixture-only volume changes and unchanged boot bytes.
+The source-loaded original Lex/LexExtStr regression passes all 24 cases in
+`build/i386-public-token-loader-v15`, using the delivered diagnostic bindings.
+Its independent audit verifies the original fixture, result and token bodies.
+Normal 8 MiB and diagnostic 16 MiB profiles match all 307,200 welcome pixels;
+the diagnostic run completes both program/ownership/file-cleanup phases. See
+`build/i386-lex-diagnostics-memory-audit.json`.
+
+An original real-token error reference also passes mask 15 in
+`build/i386-lex-token-error-original-v1`: an overlong character constant reaches
+the Compiler exception, error counter, saved location and expected message.
+Native token-error integration remains to be checked.
+
+The contract covers an identifier token, normal document output, counters,
+saved source location, preserved input and the default-null Compiler exception.
+It does not qualify raw output, boot debugger interaction, function-context
+warnings, document-backed input, non-identifier token formatting or allocation
+failure. Test export buffers are deliberately retained until guest shutdown;
+this is not a production allocation-recovery test. Full compiler diagnostics,
+normal-startup token delivery and C1–C5 qualification remain open.
