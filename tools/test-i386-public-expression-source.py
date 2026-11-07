@@ -85,7 +85,7 @@ ProbePublicCompilerTypes;
 '''
 type_parser=b'public extern CHashClass *PrsClass(CCmpCtrl *cc,I64 keyword,I64 flags,Bool is_extern);\npublic extern CHashFun *PrsFunJoin(CCmpCtrl *cc,CHashClass *type,U8 *name,I64 flags);\n'
 code=(root/'Compiler/LexLib.HC').read_bytes()
-type_parser+=code[:code.index(b'#include "/Kernel/SymbolDelete.HH"')].replace(b'#include "/Compiler/MemberLookup.HC"',b'//Member lookup is already published.')
+type_parser+=code[code.index(b'#include "/Compiler/MemberLookup.HC"'):code.index(b'#include "/Kernel/SymbolDelete.HH"')].replace(b'#include "/Compiler/MemberLookup.HC"',b'//Member lookup is already published.')
 code=(root/'Compiler/PrsVar.HC').read_bytes()
 type_parser+=code[code.index(b'#include "/Compiler/PrsTypeCore.HC"'):code.index(b'#include "/Compiler/PrsDeclarationCore.HC"')]
 parts += [optimizer,types,(root/'tests/guest/i386-public-expression/BackendAdapter.HC').read_bytes(),type_parser]

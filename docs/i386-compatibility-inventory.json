@@ -10224,6 +10224,24 @@
           "result": "pass",
           "evidence": "build/i386-exefile2-puts-exceptions-v1/result.json",
           "scope": "Ordinary ExePutS retains explicit Compiler/Break absorption and custom exception propagation; unchanged inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-lex-savepoints.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-lex-savepoints-original-v2/result.json",
+          "scope": "Thirteen save-point checks, mask 8191: borrowed payloads/allocation, nested replay/discard, lookahead, line/token state, pending cleanup, caller-owned buffer, include-parent preservation, DolDoc replay and exact data/code heap recovery. Independent input/fixture audit; native volume and boot bytes preserved. Unchanged shared body, Console 246 appended slots 655\u2013657. Failure/concurrency/invalid metadata and full compiler/C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-lex-savepoints.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-lex-savepoints-baseline-v2/result.json",
+          "scope": "Expected first missing LexPush at line 8 before behavior. Independent input/fixture audit; native volume and boot bytes preserved. Unchanged shared body, Console 246 appended slots 655\u2013657. Failure/concurrency/invalid metadata and full compiler/C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-lex-savepoints.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-lex-savepoints-native-v1/result.json",
+          "scope": "Thirteen save-point checks, mask 8191: borrowed payloads/allocation, nested replay/discard, lookahead, line/token state, pending cleanup, caller-owned buffer, include-parent preservation, DolDoc replay and exact data/code heap recovery. Independent input/fixture audit; native volume and boot bytes preserved. Unchanged shared body, Console 246 appended slots 655\u2013657. Failure/concurrency/invalid metadata and full compiler/C1\u2013C5 remain unqualified."
         }
       ]
     },
@@ -10342,6 +10360,24 @@
           "result": "pass",
           "evidence": "build/i386-public-classes-source-native-v3/result.json",
           "scope": "Twenty-one actual shared source stages, eight class/function-header observations including evaluated array bound/default argument, pointer-width frame offsets, metadata lifetime and exact native heap recovery; all earlier token/graph/executable/type/runtime/lifetime regressions. Original normal-compilation metadata agrees but retains 6488 bytes in its shared heap after symbol deletion; recorded separately, never allowed for native. Full compiler, normal API delivery and C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-lex-savepoints.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-lex-savepoints-original-v2/result.json",
+          "scope": "Thirteen save-point checks, mask 8191: borrowed payloads/allocation, nested replay/discard, lookahead, line/token state, pending cleanup, caller-owned buffer, include-parent preservation, DolDoc replay and exact data/code heap recovery. Independent input/fixture audit; native volume and boot bytes preserved. Unchanged shared body, Console 246 appended slots 655\u2013657. Failure/concurrency/invalid metadata and full compiler/C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-lex-savepoints.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-lex-savepoints-baseline-v2/result.json",
+          "scope": "Expected first missing LexPush at line 8 before behavior. Independent input/fixture audit; native volume and boot bytes preserved. Unchanged shared body, Console 246 appended slots 655\u2013657. Failure/concurrency/invalid metadata and full compiler/C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-lex-savepoints.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-lex-savepoints-native-v1/result.json",
+          "scope": "Thirteen save-point checks, mask 8191: borrowed payloads/allocation, nested replay/discard, lookahead, line/token state, pending cleanup, caller-owned buffer, include-parent preservation, DolDoc replay and exact data/code heap recovery. Independent input/fixture audit; native volume and boot bytes preserved. Unchanged shared body, Console 246 appended slots 655\u2013657. Failure/concurrency/invalid metadata and full compiler/C1\u2013C5 remain unqualified."
         }
       ]
     },
@@ -10809,6 +10845,12 @@
           "result": "pass",
           "evidence": "build/i386-public-functions-formal-native-v1/result.json",
           "scope": "Twenty-three actual source stages and seven ordinary function cases after public controller release, exact original return records, then generated-code/metadata deletion and exact native heap recovery. Function frame/argument/local/return metadata is retained; actual shared parser/optimizer/backend used. All earlier expression/token/type/runtime/lifetime/class regressions pass. Source-loaded diagnostic only; normal public Lex, complete compiler and full C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --functions --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-lex-savepoints-functions-native-v1/result.json",
+          "scope": "All twenty-three stages and earlier token/graph/expression/type/runtime/lifetime/class/function checks pass using the delivered public LexPush/LexPopRestore/LexPopNoRestore APIs. Independent 1032-input/volume/boot audit excludes injected save-point bodies. Full declaration/compiler/normal-token API/C1\u2013C5 qualification remains open."
         }
       ]
     },

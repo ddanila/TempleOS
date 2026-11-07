@@ -27584,3 +27584,17 @@ execution records. The normal native fixture still rejects missing public Lex
 before behavior. Assembly/stream/AOT closure, normal public compiler delivery,
 full API/workflow coverage and full C1–C5 remain open. See
 docs/i386-public-function-parser.md.
+
+
+## Delivered public lexer save points (2026-11-07)
+
+Normal Console 246 appends LexPush/LexPopRestore/LexPopNoRestore at slots 655–657
+without changing existing slots or data-export bits. The unchanged shared
+LexLib prefix serves both original and native compilers. Original-v2 and normal
+native-v1 pass mask 8191, covering nested save points, replay/discard, lookahead,
+line/token state, pending release, borrowed buffers, preserved include links,
+DolDoc cursor restoration and exact heap recovery. The old normal image rejects
+the first call. Both x86-64 bootstrap generations and the full 1759-source-pinned
+native build pass. Source compiler integration now uses these delivered APIs;
+full normal compiler delivery and full C1–C5 remain open. See
+docs/i386-lex-savepoints.md.

@@ -153,6 +153,9 @@ public _extern _DOC_TYPE Bool DocType(CDoc *doc=NULL,U8 *filename,I64 trailing_n
 public _extern _TYPE Bool Type(U8 *filename,I64 trailing_new_lines=1);
 public _extern _DOC_TERM_NEW U0 DocTermNew();
 public _extern _LEX_GET_CHAR I64 LexGetChar(CCmpCtrl *cc);
+public _extern _LEX_PUSH U0 LexPush(CCmpCtrl *cc);
+public _extern _LEX_POP_RESTORE U0 LexPopRestore(CCmpCtrl *cc);
+public _extern _LEX_POP_NO_RESTORE U0 LexPopNoRestore(CCmpCtrl *cc);
 public _extern _LEX_PUT_TOKEN U0 LexPutToken(CCmpCtrl *cc);
 public _extern _LEX_PUT_LINE U8 *LexPutLine(CCmpCtrl *cc,U8 *start);
 public _extern _LEX_PUT_POS U0 LexPutPos(CCmpCtrl *cc);
