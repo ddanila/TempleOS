@@ -27371,3 +27371,16 @@ for reference corrections and remaining branch/qualification gaps.
 Public LexPutToken formatting now has a reusable eight-branch differential
 contract; original and normal native documents match exactly with independent
 audits. See tools/test-i386-lex-token-format.py and docs/i386-lex-diagnostics.md.
+
+
+## Public compiler graph prerequisites (2026-11-07)
+
+Shared existing PrsLib allocation/stack/release bodies now back eight native
+services, console version 242 (651 bindings). The old image rejects first
+COCInit. Exact original source-copy and normal native contracts pass nine checks
+(mask 511), independently audited. Both bootstrap generations and the full
+source-pinned cross-build pass; 8 MiB welcome matches all pixels. Both profiles match all welcome pixels, both diagnostic ownership/cleanup
+phases complete, and all 24 original token regression cases pass. These are graph
+prerequisites; LexExpression, PrsStreamBlk, full token delivery and C1–C5 remain
+open. See docs/i386-public-code.md for reference visibility and pointer-width
+corrections.

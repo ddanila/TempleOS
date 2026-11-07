@@ -10532,7 +10532,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-code-control-source-copy",
+          "command": "python3 tools/test-i386-code-control.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-code-control-original-v5/result.json",
+          "scope": "Exact original PrsLib body copies compiled on original system; mask 511 checks nine graph/metadata/nesting/append/release properties. Independently audited restored source, exact prefix and fixture; not a shipped public-API reference."
+        },
+        {
+          "target": "native-code-control-baseline",
+          "command": "python3 tools/test-i386-code-control.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-code-control-baseline-v2/result.json",
+          "scope": "Pre-change image reaches normal startup then rejects first COCInit at line 12; independently checked frozen contract prefix. Later pointer-width assertion correction is after this first rejection."
+        },
+        {
+          "target": "native-public-code-control",
+          "command": "python3 tools/test-i386-code-control.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-code-control-native-v2/result.json",
+          "scope": "Normal delivered public graph services match nine original-source-copy checks (mask 511), including pointer-width invalid marker; independent input/fixture-only-volume/boot audit. Full expression compiler and other payload/error paths remain unqualified. Both 8/16 MiB welcome profiles, diagnostic cleanup phases and all 24 original token regression cases pass."
+        }
+      ]
     },
     {
       "path": "Compiler/PrsStmt.HC",
