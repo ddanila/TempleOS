@@ -43,5 +43,10 @@ if(!NativeGraphicsStart) throw('Graphics',TRUE);
 
 if(!NativeWinMgrStart) throw('WinMgr',TRUE);
 
-//Original default servant startup; SrvCmdLine still resolves overrides by name.
-#include "/Adam/SrvStartUpCore.HC"
+//Detached servants inherit Adam's scope, not the initial console's private
+//definitions. Publish the original default there; SrvCmdLine still resolves
+//caller overrides by name through the normal hash-table chain.
+#include "/Kernel/I386/PublicExecution.HH"
+AdamFile("::/Adam/SrvStartUpCore.HC",FALSE);
+CHashFun *native_srv_startup=HashFind("SrvStartUp",adam_task->hash_table,HTT_FUN);
+if(!native_srv_startup || !native_srv_startup->exe_addr)throw('SrvStart',TRUE);

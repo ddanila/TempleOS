@@ -12,7 +12,7 @@ class CNativeTerminal {
   U0 (*cleanup)(CI386Task *task);
   I64 loss_seen;
   CNativeTextInput *input_head,*input_tail;
-  Bool owns_planes,running,transcript_started,document_view;
+  Bool owns_planes,running,transcript_started,document_view,owns_document;
 };
 CNativeTerminal *native_terminal_head,*native_terminal_root;
 U64 native_terminal_hotkeys_held;
@@ -119,7 +119,7 @@ U0 NativeTerminalRelease(CI386Task *task)
   CNativeTextInput *input;
   if(!terminal) return;
   if(terminal->cleanup) terminal->cleanup(task);
-  if(terminal->document) {
+  if(terminal->document && terminal->owns_document) {
     if(task->put_doc==terminal->document) task->put_doc=NULL;
     if(task->display_doc==terminal->document) task->display_doc=NULL;
     DocDel(terminal->document);
@@ -147,7 +147,7 @@ U0 NativeTerminalRelease(CI386Task *task)
     ConsolePresentText(&focus->surface);
   }
 }
-CNativeTerminal *NativeTerminalCreate(Bool root=FALSE)
+CNativeTerminal *NativeTerminalCreate(Bool root=FALSE,CDoc *document=NULL)
 {
   CI386Task *task=I386TaskSelf;
   CNativeTerminal *terminal=NULL,*last;
@@ -170,11 +170,17 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE)
       terminal->owns_planes=TRUE;
       if(!I386TextInit(&terminal->surface,terminal->planes,sys_font_std)) throw('TermVga');
     }
-    terminal->document=DocNew(NULL,task);
+    terminal->owns_document=document==NULL;
+    if(document) {
+      //UserTaskCont continues the caller's document. Keep its contents,
+      //roles and ownership instead of replacing it with an empty transcript.
+      terminal->document=document;
+      terminal->transcript_started=terminal->document_view=TRUE;
+    } else terminal->document=DocNew(NULL,task);
     if(!terminal->document) throw('OutMem');
   } catch {
     if(terminal) {
-      if(terminal->document) DocDel(terminal->document);
+      if(terminal->document && terminal->owns_document) DocDel(terminal->document);
       if(terminal->owns_planes) I386HeapFree(console_config->heap,terminal->planes);
       I386HeapFree(console_config->heap,terminal);
     }
@@ -189,8 +195,10 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE)
   if(root) native_terminal_root=terminal;
   //Publish one initial palette for retained and original document rendering.
   //Initialize only after allocation succeeds; later caller changes remain intact.
-  task->text_attr=terminal->surface.background<<4|terminal->surface.foreground;
-  task->put_doc=task->display_doc=terminal->document;
+  if(terminal->owns_document) {
+    task->text_attr=terminal->surface.background<<4|terminal->surface.foreground;
+    task->put_doc=task->display_doc=terminal->document;
+  }
   I386IrqRestore(irq);
   return terminal;
 }
@@ -289,7 +297,7 @@ U0 NativeUserTaskCont()
 {
   CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
   Bool retry;
-  if(!terminal) terminal=NativeTerminalCreate;
+  if(!terminal) terminal=NativeTerminalCreate(FALSE,DocPut);
   if(terminal->running) throw('TermBusy');
   terminal->running=TRUE;
   do {

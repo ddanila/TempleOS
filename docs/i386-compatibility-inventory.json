@@ -3856,6 +3856,13 @@
           "result": "pass",
           "evidence": "build/i386-doc-search-editor-native-v3/result.json",
           "scope": "Six physical Ctrl-F/Shift-Ctrl-F inputs in focused DocEd(DOF_DONT_HOME); exact form identities, edited accept/cancel, replacement ALL/cancel, wizard cancellation and incoming lock. Same thirteen masks and exports as original; files/arithmetic/input hashes independently audited. Full default editor and file-search workflows remain unqualified."
+        },
+        {
+          "target": "native-find-wizard-preserved-result-task",
+          "command": "python3 tools/test-i386-find-wizard.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-find-wizard-native-v4/result.json",
+          "scope": "Real wizard accept, picker cancel/accept, two recursive quoted-needle case/label/mask-filtered matches and exact original result body after fixture-drive normalization; interactive result arithmetic and closure. Native omits original elapsed/count line and current-directory prompt. Full transcript, replacement, heap and application qualification remain open; see docs/i386-find-wizard.md."
         }
       ]
     },
@@ -6084,6 +6091,26 @@
           "result": "pass",
           "evidence": "build/i386-doc-search-editor-native-v3/result.json",
           "scope": "Six physical Ctrl-F/Shift-Ctrl-F inputs in focused DocEd(DOF_DONT_HOME); exact form identities, edited accept/cancel, replacement ALL/cancel, wizard cancellation and incoming lock. Same thirteen masks and exports as original; files/arithmetic/input hashes independently audited. Full default editor and file-search workflows remain unqualified."
+        },
+        {
+          "target": "original-find-wizard-search-result-task",
+          "command": "python3 tools/test-i386-find-wizard.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-find-wizard-original-v2/result.json",
+          "scope": "Wizard form accept, actual picker cancel/accept, DocPut versus explicit argument, two recursive case-sensitive whole-label matches with quoted needle and filemask exclusion, exact file/line links, result task arithmetic and Shift-Esc closure; programmatic form fields. See docs/i386-find-wizard.md."
+        },
+        {
+          "target": "native-find-wizard-before-shared-startup",
+          "result": "fail",
+          "evidence": "build/i386-find-wizard-native-v2/result.json",
+          "scope": "Application scopes corrected; both real picker paths and caller masks 63 pass, but no interactive task retains search links. Independent handoff contract exposes absent shared servant startup and document replacement. Complete files and input hashes audited."
+        },
+        {
+          "target": "native-find-wizard-preserved-result-task",
+          "command": "python3 tools/test-i386-find-wizard.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-find-wizard-native-v4/result.json",
+          "scope": "Real wizard accept, picker cancel/accept, two recursive quoted-needle case/label/mask-filtered matches and exact original result body after fixture-drive normalization; interactive result arithmetic and closure. Native omits original elapsed/count line and current-directory prompt. Full transcript, replacement, heap and application qualification remain open; see docs/i386-find-wizard.md."
         }
       ]
     },
@@ -16237,6 +16264,20 @@
           "result": "fail",
           "evidence": "build/i386-default-servant-preloaded-8-v2/result.json",
           "scope": "Normal 8 MiB TCG 486,-fpu boots and executes availability probes, but canonical symbol-header loading records PUBLIC ALLOC EXHAUSTED/OutMem before the fixture and JRContract. No startup/dispatch contract result at this profile; full minimal/resource qualification remains open."
+        },
+        {
+          "target": "original-existing-document-terminal-handoff",
+          "command": "python3 tools/test-i386-terminal-handoff.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-terminal-handoff-original-v3/result.json",
+          "scope": "Actual PopUp to UserTaskCont; put/display/border identity, sentinel and rich link, interactive arithmetic, child closure and caller roles; second case verifies caller-owned document survives child exit. Masks 31,63; see docs/i386-terminal-handoff.md."
+        },
+        {
+          "target": "native-terminal-handoff-and-shared-servant-startup",
+          "command": "python3 tools/test-i386-terminal-handoff.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-terminal-handoff-native-v2/result.json",
+          "scope": "Same two cases and exact masks after normal boot; original default SrvStartUp shared in Adam and existing document borrowed. Source/files/arithmetic independently audited. Full prompt/result formatting, heap and terminal qualification remain open."
         }
       ]
     },
@@ -18398,6 +18439,20 @@
           "result": "pass",
           "evidence": "build/i386-default-servant-frame-8-tcg-v1/result.json",
           "scope": "Final frame-address-cross-v2, physical 8 MiB 486,-fpu with live WinMgr; canonical symbol header and exact preloaded fixture, actual default startup interposed once after inhibit initialization, constructor roles/menu/document properties, ten dispatch/result42/title/idle/ring cases, hook restoration and resumed input, seven pixel checkpoints, exact persisted fixture and filesystem audit. TCG startup 76.912414 seconds: functional service pass, not a 60-second timing pass. Legacy keyboard fixture transfer, exact heap recovery, allocation-failure policy, complete minimal suite and whole-file/C1-C5 qualification remain open. Earlier failed profile attempts are retained."
+        },
+        {
+          "target": "original-existing-document-terminal-handoff",
+          "command": "python3 tools/test-i386-terminal-handoff.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-terminal-handoff-original-v3/result.json",
+          "scope": "Actual PopUp to UserTaskCont; put/display/border identity, sentinel and rich link, interactive arithmetic, child closure and caller roles; second case verifies caller-owned document survives child exit. Masks 31,63; see docs/i386-terminal-handoff.md."
+        },
+        {
+          "target": "native-terminal-handoff-and-shared-servant-startup",
+          "command": "python3 tools/test-i386-terminal-handoff.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-terminal-handoff-native-v2/result.json",
+          "scope": "Same two cases and exact masks after normal boot; original default SrvStartUp shared in Adam and existing document borrowed. Source/files/arithmetic independently audited. Full prompt/result formatting, heap and terminal qualification remain open."
         }
       ]
     },

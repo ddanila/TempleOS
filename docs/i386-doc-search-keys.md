@@ -148,3 +148,11 @@ every preexisting file tuple, fixture additions and fresh rendered arithmetic.
 run. These concurrent functional runs do not establish isolated 60-second
 startup timing or C5's two installed native release generations. All 686
 inventory entries retain their unqualified status.
+
+
+Wizard acceptance, directory cancellation/selection, recursive filtered search
+and the interactive result-task handoff now have a separate bounded comparison
+in `docs/i386-find-wizard.md`. That work fixes shared servant startup and
+existing-document handoff. Replacement, all wizard option combinations,
+physical field entry, complete transcript formatting and full application
+qualification remain open.
