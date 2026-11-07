@@ -3175,7 +3175,11 @@ def main():
                           if line.startswith('FILE BREAK CLEANUP ')]
         if file_break_cases!=[0,1]:
             raise ValueError('Missing queued-file compiler break cleanup')
-        result['file_break_cleanup']={'cases':2,'result':'pass'}
+        file_break_ownership=[[int(x,16) for x in line.split()[3:]] for line in log.splitlines()
+                              if line.startswith('FILE BREAK OWNERSHIP ')]
+        if file_break_ownership!=[[0,0],[1,0]]:
+            raise ValueError('Missing private-backed file-break task restoration')
+        result['file_break_cleanup']={'cases':2,'result':'pass','backing':'worker private; main and private heaps restored exactly'}
         result['input_break_cleanup']={'phases':[0,1],'cases_per_phase':3,'result':'pass'}
         result['compiler_runtime'] = dict(module='CompilerRuntime', version=84, export_at_address=compiler_export_at_address, validator_address=address+runtime_layout['validator_offset'], image_address=address,
             image_bytes=size, retained_heap_bytes=span, string_address=string_address,
@@ -3369,8 +3373,13 @@ def main():
         if lifetimes!=[0,1] or len(released)!=1 or released[0]<1048576+16384 or not (
                 log.index('PROGRAM PROBE RELEASE 0000000000000001 ') < log.index('PROBE TASK RELEASE ') < log.index('CONSOLE TASK SPAWNED')):
             raise ValueError('Missing public code-heap/task reclamation evidence')
+        ownership=[[int(x,16) for x in line.split()[3:]] for line in log.splitlines()
+                   if line.startswith('CODE HEAP OWNERSHIP ')]
+        if ownership!=[[0,1],[1,0]]:
+            raise ValueError('Missing main/private task backing and exact restoration evidence')
         result['code_heap']={'task_phases':lifetimes,'probe_task_reclaimed_bytes':released[0],
-                            'locked_heap_reap':'deferred before symbol teardown'}
+                            'locked_heap_reap':'deferred before symbol teardown',
+                            'backing_arenas':'boot main; worker private; both heaps restored exactly'}
         result['public_headers']={'result':'pass','layout_checks_per_phase':128,
                                  'task_phases':[0,1],'retained_heap_bytes':memory[0]}
         result['boot_test']={'boot_mode':'diagnostic','cpu':'486','ram_mib':args.diagnostic_ram_mib,'arena_base':begin,'arena_size':length,

@@ -46,17 +46,24 @@ U0 ProbeCodeChild(I64 argument)
 U0 ProbeCodeLifetime(CI386CompilerProbe *probe)
 {
   CI386Task *parent=I386TaskSelf;
+  CI386Heap *heap=probe->heap;
   CI386TaskSymbols *scope;
   CI386OwnedTask *child;
   CProbeCodeLifetime state;
   CQue control;
   I64 used=probe->heap->used,allocations=probe->heap->allocations,refs=parent->lifetime_refs;
+  I64 heap_used,heap_allocations;
   U32 flags=GetRFlags;
+  //The worker owns a live private arena. Keep the boot/main-heap case and
+  //exercise private task backing separately, checking both arenas on release.
+  if(probe->phase)heap=parent->memory;
+  if(!heap || (probe->phase && heap==probe->heap))KernelStop;
+  heap_used=heap->used;heap_allocations=heap->allocations;
   state.probe=probe; state.flags=flags; state.answer=0; state.stage=0; state.code=0;
-  child=I386TaskSpawn(parent->owner,probe->heap,8192,&ProbeCodeChild,&state);
-  if(!child) KernelStop;
+  child=I386TaskSpawn(parent->owner,heap,8192,&ProbeCodeChild,&state);
+  if(!child || child->heap!=heap || I386HeapSize(heap,child)!=child->allocation_size) KernelStop;
   KernelLog("CODE CHILD SPAWNED\n");
-  child->task.memory=probe->heap;
+  child->task.memory=heap;
   while(!state.stage) if(!I386SchedYield(parent->owner)) KernelStop;
   scope=child->task.symbol_state;
   if(state.stage!=1 || child->task.finished || (*state.code)()!=42 || I386TaskDestroy(child)) KernelStop;
@@ -73,7 +80,10 @@ U0 ProbeCodeLifetime(CI386CompilerProbe *probe)
   child->task.next_ctrl=child->task.last_ctrl=&child->task.next_ctrl;
   KernelLog("CONTROL CHILD DEFERRED\n");
   if(!I386TaskDestroy(child) || probe->heap->used!=used || probe->heap->allocations!=allocations ||
+      heap->used!=heap_used || heap->allocations!=heap_allocations || !I386HeapValid(heap) ||
       parent->lifetime_refs!=refs || !I386HeapValid(probe->heap) ||
       (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
+  KernelLog("CODE HEAP OWNERSHIP ");KernelHex(probe->phase);KernelLog(" ");
+  KernelHex(heap==probe->heap);KernelLog("\n");
   KernelLog("CODE HEAP LIFETIME "); KernelHex(probe->phase); KernelLog("\n");
 }

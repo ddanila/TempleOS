@@ -11,6 +11,16 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Private backing for diagnostic child tasks (2026-11-07)
+
+The boot code-lifetime case retains main-heap backing; worker lifetime and both
+file-break scenarios use the worker's existing private arena. All prior execution,
+cancellation and deferred-reaping assertions remain, with explicit ownership and
+exact restoration checks on both heaps. Both bootstrap generations and these
+8 MiB diagnostic cases pass. The program provider subsequently fails to allocate
+code while compiling `ModuleLoad.HC`; the complete diagnostic remains failed.
+See [memory evidence](docs/i386-compact-expand.md). C1–C5 remain open.
+
 ### Private file-read result ownership (2026-11-07)
 
 A candidate removes the intermediate public allocation for private native

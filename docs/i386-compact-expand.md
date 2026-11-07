@@ -216,3 +216,39 @@ stages stored file bytes in the main heap before copying to the caller's private
 heap. That temporary read allocation is the next memory issue; no assertion,
 workload or physical-memory limit was reduced. Full 8 MiB and C1–C5 qualification
 remain open.
+
+## Diagnostic child task backing (2026-11-07)
+
+After direct private file results removed the 7,423-byte main-heap copy, the
+worker's code-lifetime test could not allocate its 13,575-byte task/stack block
+in the fragmented main heap. The worker already owns a live private arena.
+The code-lifetime probe now retains the boot/main-heap case and allocates the
+worker's child in that private arena. It checks the child's actual allocation
+owner and size, then requires exact used bytes/allocation counts in both arenas,
+parent reference restoration, and unchanged interrupt state. Executable
+publication, execution across yields, and deferred destruction for locked code
+and attached controls remain required.
+
+The first candidate, `build/i386-code-lifetime-private-cross-v1`, passed both
+lifetime phases and then failed on the file-break probe's 21,767-byte child
+allocation in the main heap. The same explicit private backing now applies to
+both worker-only file-break scenarios. Their real queued ATA cancellation,
+locked-break behavior, unpublished-header cleanup, subsequent file read and
+compiler reuse remain unchanged; both arenas must recover exactly. The builder
+requires the new ownership markers as well as the existing behavioral markers.
+
+`build/rebuild-child-probes-private-v1-verified` passes both bootstrap
+generations. The frozen `build/i386-child-probes-private-cross-v1` passes native
+compilation, packaging and instruction audit. Only `CompilerProbe.t32m` changes
+relative to the direct-read candidate: 527,022 to 529,894 bytes. At 8 MiB,
+ownership markers are exactly `[[0,1],[1,0]]` for boot-main/worker-private
+code lifetime and `[[0,0],[1,0]]` for the two private file-break scenarios;
+all corresponding cleanup markers pass. Source provenance and module comparison
+are preserved with that candidate.
+
+The complete 8 MiB diagnostic still **fails later**, in the program provider:
+`PARSER CODE ALLOCATION REJECT C:/Kernel/I386/ModuleLoad.HC`, followed by `OutMem`.
+No full-suite or memory-profile qualification is claimed. The live native
+generation-two run retains its frozen guest sources and preloaded builder;
+separate disclosure records verify that its disk-reader AST is unchanged despite
+the on-disk verifier additions. C1–C5 remain open.

@@ -66,20 +66,23 @@ U0 ProbeFileBreakChild(I64 argument)
 U0 ProbeFileBreak(CI386CompilerProbe *probe)
 {
   CI386Task *parent=I386TaskSelf,*task;
+  CI386Heap *heap=parent->memory;
   CI386OwnedTask *child;
   CI386TaskFiles *files;
   CI386AtaChannel *channel;
   CProbeFileBreak state;
   I64 scenario,round,used=probe->heap->used,allocations=probe->heap->allocations;
-  I64 refs=parent->lifetime_refs;
+  I64 refs=parent->lifetime_refs,heap_used,heap_allocations;
   U32 flags=GetRFlags;
+  if(!probe->phase || !heap || heap==probe->heap)KernelStop;
+  heap_used=heap->used;heap_allocations=heap->allocations;
   for(scenario=0;scenario<2;scenario++) {
     state.probe=probe; state.flags=scenario*0x200; state.done=0; state.answer=0;
     KernelLog("FILE BREAK START "); KernelHex(scenario); KernelLog("\n");
     if(!I386RedSeaBegin(probe->volume) || parent->io_locks!=1) KernelStop;
-    child=I386TaskSpawn(parent->owner,probe->heap,16384,&ProbeFileBreakChild,&state);
-    if(!child) KernelStop;
-    task=&child->task; task->memory=probe->heap;
+    child=I386TaskSpawn(parent->owner,heap,16384,&ProbeFileBreakChild,&state);
+    if(!child || child->heap!=heap || I386HeapSize(heap,child)!=child->allocation_size) KernelStop;
+    task=&child->task; task->memory=heap;
     files=task->file_state;
     for(round=0;round<64 && !task->blocked && !task->finished;round++)
       if(!I386SchedYield(parent->owner)) KernelStop;
@@ -102,7 +105,10 @@ U0 ProbeFileBreak(CI386CompilerProbe *probe)
     if(!state.done || channel->owner || channel->head || channel->poisoned ||
         !I386TaskDestroy(child) || parent->io_locks || parent->lifetime_refs!=refs ||
         probe->heap->used!=used || probe->heap->allocations!=allocations ||
+        heap->used!=heap_used || heap->allocations!=heap_allocations || !I386HeapValid(heap) ||
         !I386HeapValid(probe->heap) || (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
+    KernelLog("FILE BREAK OWNERSHIP ");KernelHex(scenario);KernelLog(" ");
+    KernelHex(heap==probe->heap);KernelLog("\n");
     KernelLog("FILE BREAK CLEANUP "); KernelHex(scenario); KernelLog("\n");
   }
 }
