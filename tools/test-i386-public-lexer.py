@@ -16,14 +16,16 @@ def expected_bytes(count=24):
     return struct.pack(f"<{count}q",*([1]*count))
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--characters',action='store_true',help='Check raw character, include ownership and document input instead of tokens');ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);args=ap.parse_args();out=args.out.resolve()
+    ap=argparse.ArgumentParser(description=__doc__);mode=ap.add_mutually_exclusive_group();mode.add_argument('--attachment',action='store_true',help='Check public document attachment and ownership without character lexing');mode.add_argument('--characters',action='store_true',help='Check raw character, include ownership and document input instead of tokens');ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);args=ap.parse_args();out=args.out.resolve()
     if out.exists():ap.error('Use a fresh output directory')
-    fixture=ROOT/'tests/guest/i386-public-lexer'/('Characters.HC' if args.characters else 'Contract.HC')
+    fixture=ROOT/'tests/guest/i386-public-lexer'/('Attachment.HC' if args.attachment else 'Characters.HC' if args.characters else 'Contract.HC')
     includes=sorted(fixture.parent.glob('PublicLexer*.HC'))
     paths=includes+[Path(__file__).resolve(),fixture,ROOT/'Kernel/FontStd.HC']+[ROOT/('tools/'+n) for n in ['test-i386-timeclock-reference.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','build-iso.py','package-i386-native-image.py','build-i386-kernel.py']]
     if args.disk:paths.append(args.disk.resolve())
     out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Twenty-four public CmpCtrlNew/CmpCtrlDel/Lex/LexExtStr checks: buffer identity, scalar tokens, adjacent strings, borrowing, prompt allocation, flags and heap cleanup. Nested includes and song tokens are checked; full compiler/Psalmody behavior remains separate.');g=None
     if args.characters:report['scope']='Sixteen public raw-character checks: cursor skipping, newline/putback, normalization, EOF, include resumption and ownership, document input and heap cleanup; prompt and error unwind remain separate.'
+    if args.attachment:report['scope']='Twelve public LexAttachDoc checks: supplied document/file/entry, cursor bounds, root resumption state, owning/borrowed cleanup and original empty-document ownership.'
+    report['attachment_mode']=args.attachment
     report['character_mode']=args.characters
     (out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     try:
@@ -48,7 +50,7 @@ def main():
                 g.wait('PUBLIC LEXER DONE\n',timeout=min(30,remaining));break
             except TimeoutError:
                 g.call('screendump',filename=str(out/'waiting.ppm'))
-        expected={'public-lexer.bin':expected_bytes(16 if args.characters else 24)}
+        expected={'public-lexer.bin':expected_bytes(12 if args.attachment else 16 if args.characters else 24)}
         for name,want in expected.items():
             actual=(g.out/name).read_bytes();(out/name).write_bytes(actual)
             if actual!=want:raise ValueError(name+' differs from independent byte oracle')

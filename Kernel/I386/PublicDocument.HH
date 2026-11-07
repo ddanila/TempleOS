@@ -154,4 +154,6 @@ public _extern _DOC_TERM_NEW U0 DocTermNew();
 public _extern _CMP_CTRL_NEW CCmpCtrl *CmpCtrlNew(U8 *buf=NULL,I64 flags=0,U8 *filename=NULL);
 public _extern _CMP_CTRL_DEL U0 CmpCtrlDel(CCmpCtrl *cc);
 public _extern _CMP_CTRL_SIZE I64 CmpCtrlSize(CCmpCtrl *cc);
+public _extern _LEX_ATTACH_DOC U0 LexAttachDoc(CCmpCtrl *cc,CLexFile *tmpf=NULL,
+  CDoc *doc=NULL,U8 *abs_filename=NULL,CDocEntry *doc_e=NULL,I64 col=0);
 #endif

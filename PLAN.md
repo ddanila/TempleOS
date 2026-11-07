@@ -26787,3 +26787,15 @@ and input hashes plus exact heap-block totals validate. This excludes low-memory
 backing and application workloads and is not timing or minimum-RAM qualification.
 See docs/i386-module-default-strings.md. Corresponding generation-one captures
 are running; full suites, resource profiles and current-source C5 remain open.
+
+
+## Public LexAttachDoc implementation (2026-11-07)
+
+Interface 227 shares the original document-attachment implementation and exposes
+its public signature. All twelve original/native attachment checks pass, including
+buffer/document ownership, file-backed input, column bounds and heap restoration;
+the native run also passes concluding arithmetic. Both bootstrap generations,
+native export/source audits and exact original block parity pass. See
+docs/i386-public-lexer.md for preserved fixture errors and scope. Full diagnostics
+and fresh scrolling checks remain pending; public character/token/prompt support,
+Psalmody and all C1–C5 gates remain open.

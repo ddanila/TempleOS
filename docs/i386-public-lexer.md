@@ -90,3 +90,41 @@ The corrected-fixture rerun in
 unchanged inputs and before behavioral assertions. This is reference coverage, not an
 implementation or compatibility pass. Prompt input, binary document entries,
 error/unwind behavior and complete Psalmody workflows remain open.
+
+
+## Public document attachment (2026-11-07)
+
+Interface 227 exports original LexAttachDoc through
+`Compiler/PublicLexDocumentCore.HC`. LexDocRead, the source-entry bitmap and the
+attachment body are moved byte-for-byte from the original Lex source, which now
+includes that same core. Native file-backed attachments use the public FileRead
+dispatcher; this explicitly restores that alias after the original-media helper
+includes. Public headers retain the original defaults and parameter order.
+
+The independent `--attachment` fixture checks twelve results: supplied documents
+and explicit entries/columns, clamping, copied filenames, parent-buffer resumption
+state, new stack entries, reuse of a supplied record, borrowed root-document
+lifetime, file-backed loading, empty-document state and exact heap recovery.
+For reused records it releases the old filename first. For an empty supplied
+document the original attachment stores a plain empty buffer and leaves document
+cleanup to the caller; the fixture preserves and checks that behavior.
+
+Original v1 had fixture errors: plain-text DocPrint returns no dollar-command
+entry, and a reused lexer-file record's old filename was not released. Original
+v2 selects an actual text entry and releases the old filename, then passes all
+12 checks in `build/i386-public-attachment-original-v2`. Its execution inputs
+were unchanged; the later interface-227 builder verifier update is preserved
+alongside `pre-update-build-helper.py`. The native baseline rejects missing
+LexAttachDoc before execution. The corrected fixture passes all twelve checks
+and concluding arithmetic on interface 227 in
+`build/i386-public-attachment-native-v1`, with unchanged input hashes.
+
+Both bootstrap generations pass in `build/rebuild-public-attachment-v2-verified`.
+The cross-build, packaging, instruction audit and source audit pass in
+`build/i386-public-attachment-cross-v1`. ConsoleRuntime grows from 2,056,210 to
+2,059,029 bytes; Kernel changes for the interface version, with unchanged size.
+The other fourteen emitted modules are byte-identical. Source-block parity is
+recorded in `build/i386-public-attachment-source-parity.json`. Full diagnostics
+and the fresh 8 MiB scrolling regression are still running. This qualifies the
+attachment API, not LexGetChar, Lex/LexExtStr, prompt/error handling, complete
+Psalmody, or C1–C5.
