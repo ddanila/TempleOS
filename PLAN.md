@@ -26756,3 +26756,14 @@ build/i386-default-strings-native-generation2-v1. Generation-two installation
 and fresh boot are running separately. See docs/i386-module-default-strings.md.
 This frozen result does not qualify current sources, full application suites,
 required resource profiles or C5 completion.
+
+
+## Public lexer character baseline (2026-11-07)
+
+Sixteen new original-system checks pass for LexGetChar and LexAttachDoc character
+input, document include-stack resumption, buffer ownership and heap cleanup.
+The corrected native fixture fails at missing LexGetChar before assertions.
+The preserved initial fixture error called internal LexIncludeStr; the public
+replacement is verified against the original system. See
+docs/i386-public-lexer.md. Public character/token implementation, error/prompt
+coverage, Psalmody and C1–C5 remain open.

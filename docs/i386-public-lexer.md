@@ -63,3 +63,30 @@ original oracle; no production change was needed.
 
 `build/i386-public-lexer-native-v2/result.json` still fails at CmpCtrlNew
 before assertions, with unchanged inputs and the nested files packaged.
+
+
+## Public character-stream oracle (2026-11-07)
+
+`--characters` selects a separate sixteen-check public-input fixture while the
+default mode retains the existing 24-token contract. The character fixture uses
+CmpCtrlNew, LexGetChar, LexAttachDoc and CmpCtrlDel. It checks cursor-byte
+skipping, newline/line-start accounting, one-character putback without advancing
+the line, shifted-space normalization, repeated EOF, document include-stack
+resumption, borrowed root-buffer identity/lifetime, ordinary document text,
+tabs/newlines, and exact caller heap recovery.
+
+`build/i386-public-characters-original-v3` passes the independent 128-byte table
+of sixteen 64-bit ones. All recorded input hashes still match. The initial
+fixture incorrectly called internal LexIncludeStr: original v1 ended without a
+completion marker; v2 screenshots identify the compiler rejection at line 22.
+That known-invalid v2 guest was explicitly stopped with its fixture, runner and
+screenshot preserved. The corrected fixture constructs the include through
+public LexAttachDoc instead. The runner now preserves waiting/failure screenshots
+while retaining its overall completion deadline and exact byte oracle.
+
+Native v1 rejects the missing LexGetChar at fixture line 11 before assertions.
+The corrected-fixture rerun in
+`build/i386-public-characters-native-v2` fails at the same missing call, with
+unchanged inputs and before behavioral assertions. This is reference coverage, not an
+implementation or compatibility pass. Prompt input, binary document entries,
+error/unwind behavior and complete Psalmody workflows remain open.
