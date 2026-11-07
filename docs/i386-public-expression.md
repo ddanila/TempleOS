@@ -62,8 +62,9 @@ build/i386-public-expression-loader-v7. The corrected graph result and audit are
 build/i386-public-expression-loader-v9/result.json and
 build/i386-public-expression-loader-v9/terminal-graph-audit.json.
 
-The next integration work must supply the real type parser and an adapter from
-public CCmpCtrl/IR ownership to the shared i386 backend. The private backend
+The next integration work must complete the class/function-header services
+around the real type parser and deliver the public-ownership backend adapter
+through normal startup. The private backend
 wrapper requires a private control owner and cannot accept these public controls.
 Native expression compilation must also avoid the x86-64 host constant evaluator
 used for cross-compilation. Calls, data relocations, full operator coverage and
@@ -99,3 +100,36 @@ result. That failed oracle is preserved as runtime-original-v1. The final contra
 uses ordinary array indexing and a string argument separately, and explicitly
 initializes the F64 bit pattern before testing runtime arithmetic. It does not
 qualify decimal initialization or direct string-literal indexing.
+
+
+The reproducible source-loaded check is now:
+
+    python3 tools/test-i386-public-expression-source.py IMAGE --out OUT
+
+It passes in build/i386-public-expression-source-native-v1 on a 64 MiB native
+486,-fpu guest. Nineteen published stages supply the complete lexer, shared
+expression/type parser bodies, optimizer, canonical type/binary tables and the
+shared i386 backend. BackendAdapter.HC is a test-only public-allocation adapter;
+it retains temporary call descriptors, patches target call relocations after code
+allocation, and uses actual kernel software-F64 helpers. TypeContract.HC covers
+pointer variants, evaluated multidimensional bounds, an incomplete array, a raw
+cast, F64 conversion and continued arithmetic. The probe source-loads the exact
+original LinkedLstDel body for dimension-list cleanup; normal public delivery of
+that helper remains open. Class/function-header joins and the stream service
+remain explicit unresolved externs, with no replacement bodies.
+
+All 24 token checks, graph mask 63, nine basic executable cases, six type checks
+and eleven runtime cases pass. Basic/runtime exports match the actual original
+records exactly, including both heap-recovery flags after sixteen repeated calls.
+An independent terminal-source-audit.json verifies all 1025 current input pins,
+exact packaged source/fixtures, fixture-only volume changes, boot bytes and volume
+consistency. The ordinary native image still fails the separate missing-Lex
+baseline. These source-loaded results do not qualify normal startup delivery,
+class/function headers, retained external binding, debug records, error/unwind/
+break behavior, complete operator coverage or the full compiler API.
+
+Diagnostic failures remain preserved: loader-v11 uses invalid underscore-label
+syntax for plain kernel helper exports; v12 adds an unnecessary extern declaration
+that shadows the already defined LexExpressionI64; v13 passes basic execution but
+its fixture lacks LinkedLstDel. The formal runner uses normal extern resolution,
+keeps the existing expression definition and loads the real list-deletion body.

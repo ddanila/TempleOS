@@ -27462,3 +27462,19 @@ original runtime oracle passes eleven call/storage/pointer/cast/shift cases and
 both heaps recover after repeated calls. The normal native image still rejects
 Lex at line 13. Real type/class joins, call relocations, error/unwind behavior,
 full operators and C1–C5 qualification remain open. See docs/i386-public-expression.md.
+
+
+## Public expression runtime and type source integration (2026-11-07)
+
+The reproducible source-loaded probe now passes nineteen publication stages,
+24 token cases, graph mask 63, nine basic executable cases, six type/array checks
+and eleven call/storage/pointer runtime cases on 486,-fpu at 64 MiB. All executable
+records match the actual original exports exactly; repeated calls recover both
+heaps. The real shared type-parser body, snapshot/member helpers, exact original
+list deletion and complete shared backend run through public allocations and
+controls. The independent terminal audit checks 1025 current input pins and exact
+packaged inputs, fixture-only volume changes, boot bytes and volume consistency.
+Class/function-header joins, stream service, retained external binding, debug/
+error/unwind/break handling, all operators and normal startup delivery remain
+open. All 686 inventory entries remain unqualified. See
+docs/i386-public-expression.md and build/i386-public-expression-source-native-v1.

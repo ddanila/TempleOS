@@ -10560,6 +10560,12 @@
           "result": "pass",
           "evidence": "build/i386-public-expression-loader-v10/result.json",
           "scope": "Source-loaded complete shared parser/optimizer/backend with public-allocation adapter: nine executable records exactly match actual original; 24 token cases and graph mask 63 pass. Independent input/volume/boot audit. Not normal delivery or full compiler/API qualification."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-expression-source-native-v1/result.json",
+          "scope": "Source-loaded full shared lexer/parser/optimizer/backend: 24 token checks, graph mask 63, nine basic and eleven runtime executable cases exactly match actual original records, six type checks and both heap-recovery flags pass. Independent 1025-input/fixture-only-volume/boot audit; 64 MiB diagnostic, not normal startup delivery or full compiler/API qualification."
         }
       ]
     },
@@ -10671,6 +10677,12 @@
           "result": "pass",
           "evidence": "build/i386-c4-array-literal-native/result.json",
           "scope": "Literal and expression array bounds, macros, conversion, multidimensional/local arrays and compile-time call count; whole-file/compiler qualification remains open"
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-expression-source-native-v1/result.json",
+          "scope": "Source-loaded complete shared PrsType body with actual member/snapshot helpers: pointer variants, evaluated multidimensional bounds, incomplete arrays, raw cast, conversion and continued arithmetic checks pass. Executable subset also matches original runtime oracle. Class/function-header joins remain explicit unresolved externs; normal delivery and full qualification remain open."
         }
       ]
     },
@@ -18199,6 +18211,12 @@
           "result": "pass",
           "evidence": "docs/i386-hash-memory.md",
           "scope": "All four original accounting bodies: eighteen owned standard-record allocator-ledger and heap-recovery cases, including member/class/function/global/debug and pointer normalization branches. Borrowed native bootstrap/compiler tables and full memory reports remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-expression-source-native-v1/result.json",
+          "scope": "Only the exact original LinkedLstDel body is source-loaded to free public-parser dimension lists; type checks and repeated-call data/code heap recovery pass. Normal public helper delivery, other data-type APIs and whole-file qualification remain open."
         }
       ]
     },
