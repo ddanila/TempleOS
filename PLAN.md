@@ -27328,3 +27328,15 @@ reference and native contract audits are retained; both bootstrap generations
 pass stable inputs. Final 8/16 MiB profiles match all 307,200 welcome pixels;
 diagnostics finish both program/ownership/cleanup phases. See
 docs/i386-adam-err.md. Full lexer diagnostics and C1–C5 remain open.
+
+
+## Lexer diagnostic reference investigation (2026-11-07)
+
+The original explicit-message LexExcept control passes mask 31; the shipped
+default-null API and an uninstrumented source copy time out. Instrumentation
+after LexPutPos and compiling the unchanged source with register locals disabled
+both permit default-null completion. This supports a code-generation/register
+preservation hypothesis, not a proven root cause or API qualification. Native
+full-body source-loaded testing remains unverified. Preserve the null-message
+requirement; do not replace it with the passing explicit-message case. See
+docs/i386-lex-diagnostics.md for commands/artifacts and control scopes.
