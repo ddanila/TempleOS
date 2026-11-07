@@ -497,5 +497,5 @@ U0 ProbeBranches(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 #include "/Kernel/I386/CompilerCodeLifetimeProbe.HC"
 
 #include "/Kernel/I386/WaitCancel.HC"
-#include "/Kernel/I386/TaskBreak.HC"
+#include "/Kernel/I386/TaskBreakRequestCore.HC"
 #include "/Kernel/I386/CompilerFileBreakProbe.HC"

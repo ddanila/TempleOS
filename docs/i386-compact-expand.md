@@ -252,3 +252,41 @@ No full-suite or memory-profile qualification is claimed. The live native
 generation-two run retains its frozen guest sources and preloaded builder;
 separate disclosure records verify that its disk-reader AST is unchanged despite
 the on-disk verifier additions. C1–C5 remain open.
+
+
+## Break-request source split and stopped code allocation (2026-11-07)
+
+The synchronous scrolling candidate increased the resident console enough that
+worker probe loading failed before its tests: the 480,528-byte request exceeded
+the largest contiguous free block by 1,312 bytes. CompilerProbe included the
+complete task-break implementation even though its file-break tests call only
+lock, request and unlock; neither polling function was called there.
+
+`TaskBreakRequestCore.HC` now holds the unchanged request functions. The normal
+`TaskBreak.HC` includes that core and retains both polling functions, while the
+probe includes only the request core. All diagnostic cases and assertions stay
+in place. The expanded runtime source is byte-identical to its predecessor,
+verified in `build/i386-break-request-split-source-parity.json`.
+
+Both bootstrap generations pass in
+`build/rebuild-break-request-split-v1-verified`. Native exports, packaging,
+instruction audit and the 1,726-source audit pass in
+`build/i386-break-request-split-cross-v1`. CompilerProbe shrinks from 529,894 to
+526,629 bytes. All fifteen other emitted modules, including ConsoleRuntime,
+are byte-identical to the scrolling candidate. Full 8 MiB and 16 MiB diagnostic
+runs are pending; source and export evidence alone does not qualify them.
+
+The stopped earlier program-loader failure is preserved in
+`build/i386-program-loader-heap8-v1`. Its source/tool hashes are unchanged and
+the captured heap block totals match the control records. Decoding the active
+`I386ParserCodeAlloc` argument frame gives an 11,070-byte executable allocation.
+The private compiler arena has 462,536 bytes used out of 1,048,576 and a largest
+free block of 576,936 bytes. The main arena has 6,748,856 used out of 6,789,120
+and a largest free block of only 4,536 bytes. The frame and private-heap walk are
+recorded in `parser-code-failure.json`. The exported public backing pool has
+1,001,472 of 1,004,032 bytes used across 26 regions. Its low-memory fallback
+has only a 6,056-byte largest free block. Both backing heap walks, every region
+allocation, region count and retained/allocated totals validate against the
+capture. Neither backing arena can supply this contiguous code request.
+This evidence directs the remaining investigation toward public code backing,
+rather than increasing the private compiler arena. It closes no C1–C5 gate.
