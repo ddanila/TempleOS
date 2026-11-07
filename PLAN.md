@@ -27236,3 +27236,23 @@ behavioral assertions. Public Lex/LexExtStr, remaining compiler-global setup,
 ExeCmdLine and UserTaskCont integration, rich-document/error paths, isolated
 startup timing and C5 native generations remain open. All 686 inventory entries
 remain unqualified. See docs/i386-public-lex-char.md for evidence and boundaries.
+
+
+## Original symbol source metadata restored (2026-11-07)
+
+HashSrcFileSet now shares its complete original body between KHashB and native
+console 236. The public signature preserves the zero-default line adjustment.
+The original and native pass eight source-link, help-index, private-flag,
+replacement and heap-ownership checks, including 32 replacements without heap
+growth and exact final caller-heap recovery. The pre-change native image lacks
+the symbol. Fixture v1 used a nonexistent mask constant; the corrected v2 uses
+the original bit index, and the invalid/canceled runs are retained separately.
+
+Both bootstrap generations, fresh full cross-build, 1,749 source hashes and
+sixteen module hashes pass. The character/prompt regression matches its original
+exports. Normal8 and diagnostic16 pass full welcome pixels; diagnostics finish
+both program/ownership/cleanup phases. Independent terminal and combined audits
+verify exact fixtures, original volume preservation and unchanged source images.
+See docs/i386-hash-source.md. This supplies a real dependency of token directives;
+Lex token publication, compiler diagnostics, expression/stream compilation and
+terminal execution remain open. All 686 inventory items remain unqualified.

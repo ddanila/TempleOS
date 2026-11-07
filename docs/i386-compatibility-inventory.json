@@ -18232,7 +18232,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-hash-source",
+          "command": "python3 tools/test-i386-hash-source.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-hash-source-original-v2/result.json",
+          "scope": "Eight original source-link/help-index/private-flag/replacement/heap checks; exact mask 255."
+        },
+        {
+          "target": "native-hash-source-baseline",
+          "command": "python3 tools/test-i386-hash-source.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-hash-source-native-baseline-v2/result.json",
+          "scope": "Missing public HashSrcFileSet before behavior; inputs and sole fixture addition independently audited."
+        },
+        {
+          "target": "native-hash-source",
+          "command": "python3 tools/test-i386-hash-source.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-hash-source-native-v1/result.json",
+          "scope": "Shared original body passes mask 255, arithmetic and exact caller heap recovery. Full hash/token publication and failure paths remain open; see docs/i386-hash-source.md."
+        }
+      ]
     },
     {
       "path": "Kernel/KInts.HC",

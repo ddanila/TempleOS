@@ -5,6 +5,7 @@
 #include "/Kernel/DefineTypes.HH"
 #include "/Kernel/HashExportTypes.HH"
 #help_index "Hash"
+public _extern _HASH_SRC_FILE_SET U0 HashSrcFileSet(CCmpCtrl *cc,CHashSrcSym *h,I64 line_num_offset=0);
 public extern U0 HashAdd(CHash *entry,CHashTable *table);
 public extern CHash *HashFind(U8 *name,CHashTable *table,I64 mask,I64 instance=1);
 public _extern _HASH_TABLE_NEW CHashTable *HashTableNew(I64 size,CTask *mem_task=0);
