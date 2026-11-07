@@ -27032,3 +27032,18 @@ growth still requires attribution. The driver now offers nonallocating counter
 logging, explicit accelerator selection and command-length preflight, with all
 47 submitted commands recorded. See docs/i386-file-read.md and the terminal
 audit in build/i386-scroll-resident-include-heaps-v2. No C1–C5 gate closes.
+
+## FileMgr clipboard reference and native dispatch gap (2026-11-07)
+
+Original file and collapsed-tree workflows now pass thirteen exact assertions
+each through real Shift selection, Ctrl-C/Ctrl-Insert and Ctrl-V/Shift-Insert.
+The clipboard masks (1/15), binary/file bytes and restored caller state are
+recorded. Both native baselines reach copy, then terminate at the bounded
+clipboard wait: file READY 4 and tree READY 3. Input traces confirm the chords;
+terminal audits reverify pins and intact source/neighbor bytes with no copies.
+Native DocPutKey lacks the original copy-key dispatch despite including the
+original ClipCopy implementation. Restoring clipboard dispatch is the next
+implementation step; paste, post-copy restoration and reboot remain untested
+on native. The fixtures, driver, workflow map and inventory preserve this
+failure rather than qualifying the application. See
+docs/i386-filemgr-clipboard.md. All C1–C5 milestones remain open.

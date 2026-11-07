@@ -234,7 +234,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "docs/i386-filemgr-workflows.md distinguishes executable original references from source-defined workflows still awaiting reference runs.",
-      "oracle": "Partial workflow oracles: exact returned names, selected-entry state, file bytes, directory membership, caller restoration and captured frames; tools/test-i386-pick-dir.py, tools/test-i386-filemgr-mkdir.py, tools/test-i386-filemgr-edit.py and tools/test-i386-filemgr-tree-edit.py. Full application oracle remains incomplete.",
+      "oracle": "Partial workflow oracles: exact returned names, selected-entry state, file bytes, directory membership, caller restoration and captured frames; tools/test-i386-pick-dir.py, tools/test-i386-filemgr-mkdir.py, tools/test-i386-filemgr-edit.py, tools/test-i386-filemgr-tree-edit.py and tools/test-i386-filemgr-clipboard.py. Full application oracle remains incomplete.",
       "tests": [
         {
           "target": "original-directory-picker",
@@ -313,6 +313,30 @@
           "result": "pass",
           "evidence": "build/i386-filemgr-tree-edit-native-v1/terminal-audit.json",
           "scope": "Complete driver: recursive rename of nested binary file/empty directory, original next-file selection and Up navigation, deletion cancellation/confirmation, twelve original-equivalent rows and exact payload, original file/directory preservation, exact remaining fixture state and second boot. Unchanged inputs; full FileMgr remains unqualified."
+        },
+        {
+          "target": "original-file-clipboard",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-clipboard-file-original-v2/result.json",
+          "scope": "Actual FileMgr hardware selection/copy/paste, exact clipboard mask and payload, thirteen restoration/state assertions; see docs/i386-filemgr-clipboard.md. Native qualification separate."
+        },
+        {
+          "target": "original-tree-clipboard",
+          "result": "pass",
+          "evidence": "build/i386-filemgr-clipboard-tree-original-v2/result.json",
+          "scope": "Actual FileMgr hardware selection/copy/paste, exact clipboard mask and payload, thirteen restoration/state assertions; see docs/i386-filemgr-clipboard.md. Native qualification separate."
+        },
+        {
+          "target": "native-file-clipboard-baseline",
+          "result": "fail",
+          "evidence": "build/i386-filemgr-clipboard-file-native-v1/result.json",
+          "scope": "Hardware selection reaches copy key, then times out awaiting clipboard contents. Native DocPutKey lacks copy-key dispatch. Source and survivor bytes preserved; paste and reboot not reached."
+        },
+        {
+          "target": "native-tree-clipboard-baseline",
+          "result": "fail",
+          "evidence": "build/i386-filemgr-clipboard-tree-native-v1/result.json",
+          "scope": "Hardware selection reaches copy key, then times out awaiting clipboard contents. Native DocPutKey lacks copy-key dispatch. Source and survivor bytes preserved; paste and reboot not reached."
         }
       ]
     },
