@@ -27400,3 +27400,16 @@ welcome pixels and both diagnostic phases complete. Full parser publication
 passes Bsf and now reaches missing HashAddAfter. Real optimizer/type/backend/
 stream services and C1–C5 qualification remain open. See
 docs/i386-public-expression.md and docs/i386-bit-intrinsics.md.
+
+
+## Native hash insertion prerequisite (2026-11-07)
+
+HashAddAfter now implements the original two-link splice under saved/restored
+local IRQ state. Console version 243 adds its original export/signature. Actual
+original and normal native contracts pass mask 255 (insertion positions,
+payloads, lookup order, IF preservation and ordinary heap recovery), with
+independent source/input/volume audits; the old image rejects the first call.
+Both bootstrap generations and source-pinned native build pass. Both memory profiles match all welcome pixels and diagnostics complete both
+program/ownership/file-cleanup phases. Full parser publication passes this
+binding and reaches missing Call in PrsExp line 173. Full expression
+backend/type/stream services and C1–C5 remain open. See docs/i386-hash-add-after.md.

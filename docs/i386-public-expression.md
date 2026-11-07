@@ -23,8 +23,10 @@ the complete original ICInfo table, then rejects Bsf in PrsExpressionCore.
 Although the backend implements Bsf/Bsr, the normal user intrinsic header omitted
 their declarations. The current change makes it include the existing canonical
 Bits header. On the revised normal image, v3 passes the scan call and reaches
-missing HashAddAfter in PrsHostHashAfter (PrsExp line 29). Its dedicated
-reference/baseline insertion contract is now being developed.
+missing HashAddAfter in PrsHostHashAfter (PrsExp line 29). The insertion
+contract passes mask 255 on the original and revised normal native image. V4
+passes HashAddAfter and reaches missing Call at PrsExp line 173; see
+docs/i386-hash-add-after.md.
 
 These publication probes are diagnostics, not delivered expression compilation.
 OptPass012, PrsType, COCCompile and PrsStreamBlk still require real integration.
@@ -36,4 +38,5 @@ Formal evidence is retained under build/i386-public-expression-original-v2
 and build/i386-public-expression-baseline-v1. The three publication attempts
 are build/i386-public-expression-loader-v1,
 build/i386-public-expression-loader-v2 and
-build/i386-public-expression-loader-v3.
+build/i386-public-expression-loader-v3 and
+build/i386-public-expression-loader-v4.

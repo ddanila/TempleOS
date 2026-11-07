@@ -18359,7 +18359,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-public-hash-add-after",
+          "command": "python3 tools/test-i386-hash-add-after.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-hash-add-after-original-v1/result.json",
+          "scope": "Actual original API mask 255: middle/tail/bucket-head insertion, payloads, duplicate lookup order, IF on/off preservation and valid-table ordinary data-heap recovery; independent restored-source/fixture/input audit."
+        },
+        {
+          "target": "native-hash-add-after-baseline",
+          "command": "python3 tools/test-i386-hash-add-after.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-hash-add-after-baseline-v1/result.json",
+          "scope": "Normal pre-change image rejects first HashAddAfter at line 12; independently verified recorded inputs, exact fixture-only volume mutation and unchanged boot bytes."
+        },
+        {
+          "target": "native-public-hash-add-after",
+          "command": "python3 tools/test-i386-hash-add-after.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-hash-add-after-native-v1/result.json",
+          "scope": "Normal delivered API mask 255 matches original, with independent current-input/exact-fixture/volume/boot audit. Valid exclusive chains only; invalid graphs and concurrent mutation remain unqualified. Both 8/16 MiB welcome and diagnostic cleanup phases pass; full parser publication now reaches missing Call."
+        }
+      ]
     },
     {
       "path": "Kernel/KHashB.HC",
