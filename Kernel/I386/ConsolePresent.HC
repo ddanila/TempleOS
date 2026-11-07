@@ -1,3 +1,44 @@
+//Synchronous presentation must finish layout, redraw at the resulting viewport,
+//then compose those cells. WinMgr normally supplies those successive frames.
+class CNativeConsoleDocumentScope:CNativeRenderScope {
+  CDoc *doc;
+  Bool old_full,saved;
+};
+U0 NativeConsoleDocumentRelease(CNativeRenderScope *base)
+{
+  CNativeConsoleDocumentScope *scope=base;
+  if(scope->saved) {
+    scope->saved=FALSE;
+    LBEqu(&scope->doc->flags,DOCf_DO_FULL_REFRESH,scope->old_full);
+  }
+}
+Bool NativeConsolePresentDocument(CTask *task)
+{
+  CNativeConsoleDocumentScope scope;
+  CTask *owner=task;
+  I64 frame;
+  Bool result=TRUE;
+  scope.doc=NULL;scope.saved=FALSE;
+  try {
+    NativeRenderScopeOpen(&scope,&NativeConsoleDocumentRelease);
+    scope.doc=DocDisplay(task);
+    if(scope.doc && scope.doc->doc_signature!=DOC_SIGNATURE_VAL)throw('DocGone',TRUE);
+    if(scope.doc)owner=scope.doc->mem_task;
+    NativeRenderScopeBorrow(&scope,owner,task,scope.doc);
+    if(scope.doc) {
+      scope.old_full=LBts(&scope.doc->flags,DOCf_DO_FULL_REFRESH);
+      scope.saved=TRUE;
+    }
+    for(frame=0;frame<3;frame++)
+      if(!NativeWindowPresent(FALSE)) {result=FALSE;break;}
+    NativeConsoleDocumentRelease(&scope);
+  } catch {
+    NativeConsoleDocumentRelease(&scope);NativeRenderScopeClose(&scope);
+  }
+  NativeRenderScopeClose(&scope);
+  return result;
+}
+
 //Raw terminal uploads share the graphics lease, without retaining stale surfaces.
 U0 NativeConsolePresentRows(CI386Text *surface)
 {
@@ -39,9 +80,8 @@ U0 ConsolePresentText(CI386Text *surface)
   //When the manager is suspended, keep a rich document visible by composing
   //the real window list synchronously instead of replacing it with stale text.
   if(task && NativeWindowNeeded(TRUE)) {
-    //Window drawing updates text cells after the frame's text layer was read.
-    //A second frame displays those newly recalculated document cells.
-    if(!NativeWindowPresent(FALSE) || !NativeWindowPresent(FALSE)) {
+    //Force layout rather than depending on the periodic full-refresh cadence.
+    if(!NativeConsolePresentDocument(task)) {
       KernelLog("SUSPENDED DOCUMENT PRESENT FAILED ");KernelHex(Fs->except_ch);KernelLog("\n");
     }
     return;

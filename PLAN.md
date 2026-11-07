@@ -26713,3 +26713,16 @@ earlier interface-225 archive allocation gap. The compact candidate retains
 8,192 more bytes there, despite its lower transient workspace requirement.
 Reducing this peak and completing all diagnostic/application/generation gates
 remain required. No C1–C5 milestone closes.
+
+
+## Synchronous terminal viewport repair (2026-11-07)
+
+A focused 65-line output regression proves that suspended WinMgr presentation
+left the next command's answer offscreen, while live WinMgr passed. Synchronous
+presentation now forces document layout/redraw/composition across three frames
+and restores the caller's full-refresh flag through the render cleanup scope.
+Both bootstrap generations, cross-build/source audit, and exact live/suspended
+8 MiB KVM framebuffer checks pass, including both initial full-refresh flag
+states. See docs/i386-file-read.md for preserved
+baseline failures and current evidence. The full 8 MiB diagnostic remains failed
+at probe allocation; longer file workflows and all C1–C5 gates remain open.

@@ -120,3 +120,47 @@ compiler rejection remains a separate C4 compatibility gap. The current runner
 uses the existing framebuffer-acknowledged input harness, preserves its pixel
 assertions, and also requires a unique guest completion marker. None of these
 checks alone qualifies complete application compatibility or C1–C5.
+
+
+## Synchronous terminal scrolling (2026-11-07)
+
+The longer private-read-result public-read and resident-include runs are now
+terminal failures, not pending checks. They completed the last submitted guest
+command but failed the exact framebuffer assertion when output crossed the
+60-row viewport. The public run stopped at command 20 (`ReadOwned`); the include
+run stopped at command 22 (`CachedCode`). Source disk preservation passed. Those
+completed command markers do not establish the offscreen result values.
+
+A focused regression isolates this from file ownership: print 65 numbered lines,
+then evaluate `6*7;`. The unchanged live WinMgr passes in
+`build/i386-scroll-live-baseline-v1`. With WinMgr suspended,
+`build/i386-scroll-suspended-baseline-v2` displays the command on the bottom row
+but leaves its completed answer and prompt offscreen. The earlier suspended v1
+used too short a timeout and is not evidence of the viewport bug.
+
+Synchronous console presentation now temporarily forces the displayed document's
+full refresh and runs three frames: finish layout, draw the resulting viewport,
+and compose its cells. Previously two frames relied on periodic full refresh,
+even though document recalculation adjusts the viewport after drawing and frame
+composition precedes the document update. A render scope borrows the document
+and its owner and restores the prior refresh flag during ordinary completion or
+unwind. The scheduled WinMgr presentation path is unchanged.
+
+Both bootstrap generations pass in `build/rebuild-console-scroll-v2-verified`.
+Cross-compilation, packaging, instruction audit and the 1,725-source hash audit
+pass in `build/i386-console-scroll-cross-v2`. Only ConsoleRuntime changes versus
+the child-probe candidate, from 2,054,394 to 2,056,210 bytes. The first candidate
+was rejected by the native parser at a ternary expression; the corrected version
+uses an explicit branch. Full 8 MiB diagnostics still fail, now allocating
+0x75510 bytes during probe loading, with a largest free block of 0x74ff0 bytes;
+this candidate is not a full diagnostic pass.
+
+`tools/test-i386-console-scroll.py` retains the existing all-pixel typing and
+result assertions. At 8 MiB KVM `486,-fpu`, both
+`build/i386-scroll-live-fixed-v1` and
+`build/i386-scroll-suspended-fixed-v1` pass the 65-line tail, subsequent arithmetic,
+and restoration of the initially clear full-refresh flag, with unchanged inputs.
+`build/i386-scroll-forced-fixed-v1` also passes with the flag initially set,
+including preservation of that flag and unchanged input hashes. Fresh longer
+file-read/include workflows are running separately. These checks do not qualify the full desktop, application
+suite, isolated startup timing, or C1–C5 completion.
