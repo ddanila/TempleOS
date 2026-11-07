@@ -143,7 +143,6 @@ public _extern _REDSEA_ISO I64 RedSeaISO(U8 *iso_filename=NULL,U8 *src_dir,U8 *s
 #include "/Kernel/BlkDev/OpticalMediaTypes.HH"
 public _extern _DVD_IMAGE_READ U0 DVDImageRead(U8 drv_let,U8 *out_name);
 public _extern _DVD_IMAGE_WRITE U0 DVDImageWrite(U8 drv_let,U8 *in_name=NULL,I64 media_type=MT_DVD);
-#endif
 
 public _extern _POP_UP_PICK_DIR U8 *PopUpPickDir(U8 *dir=NULL);
 public _extern _POP_UP_PICK_FILE U8 *PopUpPickFile(U8 *dir=NULL);
@@ -153,3 +152,4 @@ public _extern _COPY_TREE I64 CopyTree(U8 *src_files_find_mask,U8 *dst_files_fin
 public _extern _DEL_TREE I64 DelTree(U8 *files_find_mask,U8 *fu_flags=NULL);
 
 public _extern _CD_TO_DIR_ENTRY CDirEntry *Cd2DirEntry(CDirEntry *tmpde,U8 *abs_name);
+#endif
