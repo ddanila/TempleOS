@@ -17815,7 +17815,29 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-fix-set",
+          "command": "python3 tools/test-i386-fix-set.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-fix-set-original-v2/result.json",
+          "scope": "Four single-task file-link, caller-buffer independence, signed replacement and semaphore-release checks; mask 15 with exact fixture/reference-tree audit."
+        },
+        {
+          "target": "native-fix-set-baseline",
+          "command": "python3 tools/test-i386-fix-set.py [IMAGE] --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-fix-set-baseline-v1/result.json",
+          "scope": "Pre-change image reaches normal startup then rejects missing public dbg before FixSet behavior; unchanged inputs during run, historical builder audit."
+        },
+        {
+          "target": "native-fix-set",
+          "command": "python3 tools/test-i386-fix-set.py [IMAGE] --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-fix-set-native-v1/result.json",
+          "scope": "Same four checks with exact original fixture/result and current pins; original FixSet body and debugger types shared. Not contention, allocation failure, editor Fix or all debugger fields."
+        }
+      ]
     },
     {
       "path": "Kernel/FontCyrillic.HC",

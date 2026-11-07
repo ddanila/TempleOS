@@ -27302,3 +27302,16 @@ verify original source/body/fixture/output and baseline volume/startup/boot byte
 See docs/i386-doc-put-line.md. Final-image 8 MiB welcome and 16 MiB diagnostics pass all 307,200 pixels;
 diagnostics complete both program/ownership/cleanup phases. Full compiler
 diagnostics and C1–C5 qualification remain open.
+
+
+## Shared compiler error location (2026-11-07)
+
+Original FixSet and CMPCrash/CDbgGlbls types are shared unchanged with native
+code, replacing the formatter-only debugger state. Console version 239 exports
+FixSet and the real dbg object. Original and native four-check contracts pass
+mask 15 for file-link formatting, independent filename storage, signed replacement
+and semaphore release. The pre-change image rejects missing public dbg.
+Independent body/export/reference/contract audits are retained; see
+docs/i386-fix-set.md. Final-image 8/16 MiB profiles pass all 307,200 welcome
+pixels and both diagnostic program/ownership/cleanup phases. AdamErr, full
+lexer diagnostics, editor Fix and C1–C5 qualification remain open.
