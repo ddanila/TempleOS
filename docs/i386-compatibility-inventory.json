@@ -1847,7 +1847,7 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Observed default servant startup, actual dictionary popup View/navigation/close and scoped job dispatch. Full Home/user startup, remaining document actions, failure cleanup and release coverage remain open."
+        "description": "Observed default servant startup, actual dictionary popup View/navigation/close and scoped job dispatch. Full Home/user startup, remaining document actions, failure cleanup and release coverage remain open. Normal DocEd typing/accept/cancel now has independently rendered original client oracles; the native zero-flag baseline fails state/layout while the DOF_DONT_HOME route passes this bounded control. Full border rendering and editor integration remain open; see docs/i386-doced-normal.md."
       },
       "oracle": {
         "tool": "tools/test-i386-servant.py",
@@ -1855,7 +1855,8 @@
           "Actual default hook/body, inhibit before exactly-once startup interposition",
           "Real terminal/border/menu/right-click/Raw setup and ten TaskExe results42",
           "Completed flags, idle/title/ring/hook restoration and resumed input; source byte equality",
-          "Real definition popup/navigation/close independently checked by tools/test-i386-autocomplete-popup.py"
+          "Real definition popup/navigation/close independently checked by tools/test-i386-autocomplete-popup.py",
+          "tools/test-i386-doced-normal.py plus tools/audit-i386-doced-normal-reference.py: exact typing/cursor, active/restored state, focus and four client rasters; default native fails, flagged control passes; full border raster excluded"
         ]
       },
       "tests": [
@@ -2170,6 +2171,34 @@
           "result": "fail",
           "evidence": "build/i386-default-servant-preloaded-8-v2/result.json",
           "scope": "Normal 8 MiB TCG 486,-fpu boots and executes availability probes, but canonical symbol-header loading records PUBLIC ALLOC EXHAUSTED/OutMem before the fixture and JRContract. No startup/dispatch contract result at this profile; full minimal/resource qualification remains open."
+        },
+        {
+          "target": "original-normal-editor",
+          "command": "python3 tools/test-i386-doced-normal.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doced-normal-original-v5/result.json",
+          "scope": "Two real Z typing and Escape/Shift-Escape sessions at fixed focused geometry with autocomplete disabled/restored. Original independent pixel audit passes; native default masks113/95 and client524/609 differences, flagged control127/127 and zero differences. Exact text passes both native routes. Border rendering, save/reboot, full shortcuts and heap remain open. See docs/i386-doced-normal.md."
+        },
+        {
+          "target": "original-normal-editor-dont-home",
+          "command": "python3 tools/test-i386-doced-normal.py --dont-home --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doced-normal-original-dont-home-v1/result.json",
+          "scope": "Two real Z typing and Escape/Shift-Escape sessions at fixed focused geometry with autocomplete disabled/restored. Original independent pixel audit passes; native default masks113/95 and client524/609 differences, flagged control127/127 and zero differences. Exact text passes both native routes. Border rendering, save/reboot, full shortcuts and heap remain open. See docs/i386-doced-normal.md."
+        },
+        {
+          "target": "native-normal-editor-baseline",
+          "command": "python3 tools/test-i386-doced-normal.py IMAGE --reference REFERENCE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-doced-normal-native-baseline-v2/result.json",
+          "scope": "Two real Z typing and Escape/Shift-Escape sessions at fixed focused geometry with autocomplete disabled/restored. Original independent pixel audit passes; native default masks113/95 and client524/609 differences, flagged control127/127 and zero differences. Exact text passes both native routes. Border rendering, save/reboot, full shortcuts and heap remain open. See docs/i386-doced-normal.md."
+        },
+        {
+          "target": "native-normal-editor-dont-home",
+          "command": "python3 tools/test-i386-doced-normal.py IMAGE --reference REFERENCE --dont-home --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-doced-normal-native-dont-home-v1/result.json",
+          "scope": "Two real Z typing and Escape/Shift-Escape sessions at fixed focused geometry with autocomplete disabled/restored. Original independent pixel audit passes; native default masks113/95 and client524/609 differences, flagged control127/127 and zero differences. Exact text passes both native routes. Border rendering, save/reboot, full shortcuts and heap remain open. See docs/i386-doced-normal.md."
         }
       ]
     },
