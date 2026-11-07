@@ -61,3 +61,62 @@ public-read and resident-include recovery runs remain pending. The earlier
 preloaded observer still assumed the obsolete address; its original oracle and
 partial guest evidence are preserved. Runtime private-read allocation changes
 are separate, unfinished work and are not qualified by this observer check.
+
+## Private result ownership candidate (2026-11-07)
+
+Native disk/cache reads requested through the private file service now stage
+stored bytes and allocate the final result in the caller's explicit heap. They
+no longer allocate an intermediate public result. Public `FileRead` retains its
+existing task-owned result path, and resident entries retain their existing
+owner. The original filesystem backend still reads through its public routine
+and copies to the private caller, as before. Raw disk reads remain separate.
+
+The private bridge commits size/attribute outputs only on success. Ordinary
+private-heap exhaustion returns failure; an impossible cached byte count still
+raises `OutMem`. Compressed private results use the existing checked expansion
+service, with unchanged NUL termination and scratch-workspace cleanup.
+
+The first stored-byte-only candidate (`i386-private-read-staging-cross-v1`)
+passed the former staging failure but then exhausted the public allocator on
+the same 7,423-byte file. The first direct-result candidate
+(`i386-private-read-result-cross-v1`) exposed a failure-output regression in the
+existing malformed-file diagnostic; the bridge's commit-on-success behavior
+was restored before the subsequent candidates.
+
+Current evidence for `i386-private-read-result-cross-v3`:
+
+- Both original bootstrap generations pass, preserved under
+  `build/rebuild-private-read-result-v3-verified`; the post-export audit confirms
+  the guest sources still match their bootstrap hashes.
+- Native cross-compilation, packaging and instruction audit pass. Compared with
+  `i386-expand-workspace-cross-v1`, only `ConsoleRuntime.t32m` changes:
+  2,052,967 to 2,054,394 bytes; all other common modules are byte-identical.
+- Both compiler phases pass at 8 MiB, including worker file reads, the 128 layout
+  assertions, public-header cleanup and disk-include recovery. The complete boot
+  remains **failed**: `ProbeCodeLifetime` next requests a 13,575-byte child task/
+  stack from the main heap, whose largest free block is 5,208 bytes. The recorded
+  caller is `I386TaskCreateWithFilesFallback`; this is a separate later failure,
+  not a complete 8 MiB diagnostic pass.
+- The full 16 MiB TCG `486` diagnostic and exact welcome framebuffer pass in
+  `build/i386-private-read-result-diag16-v3`. Both compiler phases and child
+  code-heap lifetime phases complete; the final disk copy matches its source.
+
+The 30-case focused contract passes at 8 MiB KVM `486,-fpu` in
+`build/i386-private-read-contract-v4`, with unchanged input hashes, all typing
+and result framebuffer checkpoints matched, and a unique guest completion
+marker. It checks binary/NUL and original compressed bytes, empty results,
+malformed archives, independent cached copies, ordinary private-heap exhaustion,
+oversized-cache `OutMem`, unchanged failure outputs and exact restoration of the
+explicit output heap. The contract uses the actual loaded function exports and
+a separate heap; its fixture does not substitute implementations. The fresh
+normal 8 MiB TCG welcome/clear/input check also passes in
+`build/i386-private-read-result-welcome-v3`, with unchanged inputs and exact
+pixels. Longer public-read/resident-include recovery runs on preceding frozen
+candidates remain pending; they do not qualify this final candidate. Early attempts are retained:
+`private-read-contract-v1` and `v3` rejected truncated keyboard commands, while
+`v2` reached the compiler and rejected the helper's local initialized-array
+declaration. Explicit byte assignments let this ownership fixture proceed; that
+compiler rejection remains a separate C4 compatibility gap. The current runner
+uses the existing framebuffer-acknowledged input harness, preserves its pixel
+assertions, and also requires a unique guest completion marker. None of these
+checks alone qualifies complete application compatibility or C1–C5.

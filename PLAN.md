@@ -11,6 +11,17 @@ automatic document refresh now has a runnable baseline. Full
 compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
 the foundation, but does not establish desktop or application parity.
 
+### Private file-read result ownership (2026-11-07)
+
+A candidate removes the intermediate public allocation for private native
+file-service reads while preserving public result/cache ownership and private
+failure-output semantics. Both bootstrap generations and the full 16 MiB
+diagnostic pass. Both compiler phases now complete at 8 MiB; the next failure
+is a 13,575-byte child task/stack allocation in the fragmented main heap.
+Thirty focused ownership/failure checks and fresh normal welcome/clear/input
+checks pass at 8 MiB. Longer recovery runs remain in progress. See
+[private file-read evidence](docs/i386-file-read.md). C1–C5 remain open.
+
 ### Current-task archive workspace (2026-11-07)
 
 The file service can allocate its temporary decoder workspace in the current

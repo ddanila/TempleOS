@@ -50,3 +50,16 @@ U8 *NativeResidentCopy(U8 *raw,I64 bytes,I64 attr,I64 *size)
   if(expanded)I386HeapFree(console_config->heap,expanded);
   *size=count;return result;
 }
+
+//Private file-service callers own their result directly; public FileRead keeps
+//the original task-owned allocation path above. Cache entries stay root-owned.
+U8 *NativeResidentCopyHeap(CI386Heap *heap,U8 *raw,I64 bytes,I64 attr,I64 *size)
+{
+  U8 *result;
+  if(!heap)return NativeResidentCopy(raw,bytes,attr,size);
+  if(attr&0x400)return console_config->files->expand(heap,raw,bytes,size);
+  if(bytes<0 || bytes>0xFFFFFFFF-24)throw('OutMem',TRUE);
+  result=I386HeapAlloc(heap,bytes+1,FALSE);
+  if(!result)return 0;
+  MemCpy(result,raw,bytes);result[bytes]=0;*size=bytes;return result;
+}

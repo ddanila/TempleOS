@@ -2271,13 +2271,24 @@ public I64 FileWrite(U8 *filename,U8 *buffer,I64 size,CDate cdt=0,I64 attr=0)
   if(cache.name)I386HeapFree(cache.heap,cache.name);
   return result;
 }
-public U8 *NativePublicFileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
+U8 *NativePublicFileReadHeap(CI386Heap *result_heap,U8 *filename,I64 *_size=0,I64 *_attr=0)
 {
   U8 *name=0,*alternate=0,*stored=0,*result=0,*chosen;
-  CHashGeneric *entry;I64 bytes=0,attr=0,size=0;
+  CHashGeneric *entry;CI386Heap *stored_heap;I64 bytes=0,attr=0,size=0;
   if(_size)*_size=0;if(_attr)*_attr=0;
-  if(NativeFileUsesOriginal(filename))return NativeOriginalFileRead(filename,_size,_attr);
+  if(NativeFileUsesOriginal(filename)) {
+    stored=NativeOriginalFileRead(filename,&size,&attr);
+    if(!stored)return 0;
+    if(result_heap) {
+      result=I386HeapAlloc(result_heap,size+1,FALSE);
+      if(result)MemCpy(result,stored,size+1);
+      Free(stored);
+    } else result=stored;
+    if(result) {if(_size)*_size=size;if(_attr)*_attr=attr;}
+    return result;
+  }
   if(!console_config || !console_config->files)return 0;
+  stored_heap=result_heap;if(!stored_heap)stored_heap=console_config->heap;
   try {
     name=console_config->files->name_abs(console_config->heap,filename,0);
     if(name) {
@@ -2285,38 +2296,43 @@ public U8 *NativePublicFileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
       if(!entry && alternate)entry=NativeResidentLookup(alternate);
       if(entry) {
         if(NativeResidentZ(entry->str))attr=0x400;
-        result=NativeResidentCopy(entry->user_data0,entry->user_data1,attr,&size);
+        result=NativeResidentCopyHeap(result_heap,entry->user_data0,entry->user_data1,attr,&size);
       } else {
-        stored=console_config->files->read_stored(console_config->heap,filename,&bytes,&attr,0);
+        stored=console_config->files->read_stored(stored_heap,filename,&bytes,&attr,0);
         if(stored) {
           chosen=name;
           if(((attr&0x400)!=0)!=NativeResidentZ(name) && alternate)chosen=alternate;
           if(attr&0x200)NativeResidentPut(chosen,stored,bytes);
-          result=NativeResidentCopy(stored,bytes,attr,&size);
+          result=NativeResidentCopyHeap(result_heap,stored,bytes,attr,&size);
         }
       }
     }
   } catch {
-    if(stored)I386HeapFree(console_config->heap,stored);
+    if(stored)I386HeapFree(stored_heap,stored);
     if(alternate)I386HeapFree(console_config->heap,alternate);
     if(name)I386HeapFree(console_config->heap,name);Fs->catch_except=FALSE;
   }
-  if(stored)I386HeapFree(console_config->heap,stored);
+  if(stored)I386HeapFree(stored_heap,stored);
   if(alternate)I386HeapFree(console_config->heap,alternate);
   if(name)I386HeapFree(console_config->heap,name);
   if(result) {if(_size)*_size=size;if(_attr)*_attr=attr;}
   return result;
 }
 
-//Copy canonical public bytes into the private caller heap; raw disk reads bypass this bridge.
+public U8 *NativePublicFileRead(U8 *filename,I64 *_size=0,I64 *_attr=0)
+{
+  return NativePublicFileReadHeap(0,filename,_size,_attr);
+}
+
+//Private callers stage and receive file bytes in their explicit heap, without
+//an intermediate public allocation. Public reads/cache ownership are unchanged.
+//Raw disk reads bypass this bridge.
 U8 *NativeResidentReadBridge(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr)
 {
-  I64 count=0,attributes=0;U8 *public_bytes,*result=0;
-  public_bytes=NativePublicFileRead(filename,&count,&attributes);
-  if(!public_bytes)return 0;
-  result=I386HeapAlloc(heap,count+1,FALSE);
-  if(result) {MemCpy(result,public_bytes,count+1);if(size)*size=count;if(attr)*attr=attributes;}
-  Free(public_bytes);return result;
+  I64 count=0,attributes=0;
+  U8 *result=NativePublicFileReadHeap(heap,filename,&count,&attributes);
+  if(result) {if(size)*size=count;if(attr)*attr=attributes;}
+  return result;
 }
 
 public Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0)
