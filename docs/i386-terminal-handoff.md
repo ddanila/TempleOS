@@ -113,13 +113,14 @@ exit refocus, child reclamation and exact parent public-heap recovery. Its
 terminal audit rechecks the checker and disk hashes and the passing exact-VGA
 result. This does not qualify the later shared-startup image.
 
-The final-image run remains live at `build/i386-terminals-handoff-v3` (PID
-262365), progressing through keyboard-transferred setup. It is not recorded as
-passing yet. The initial v1 attempt ended before guest execution because another
-boot check held the source disk's write lock. Both actual runs use independently
-verified copies. Process commands are recorded in
-`build/terminal-handoff-verification-processes.json`; poll live handles rather
-than restarting based on a slow screen checkpoint.
+The final shared-startup image also passes at
+`build/i386-terminals-handoff-v3`: eleven commands after setup, all exact-VGA
+checkpoints, independent definitions/history, focus, child exit/reclamation and
+exact parent public-heap recovery. Its terminal audit rechecks the checker and
+disk hashes; the source image is unchanged. Both runs are now terminal. The
+initial v1 attempt ended before guest execution because another boot check held
+the source disk's write lock. Both actual runs used independently verified copies.
+Process commands remain in `build/terminal-handoff-verification-processes.json`.
 
 The missing original answer and directory prompt now has a direct six-case
 reference contract; see [command prompt](i386-command-prompt.md). Restoring the

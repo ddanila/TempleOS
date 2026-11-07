@@ -18474,7 +18474,14 @@
           "command": "python3 tools/test-i386-terminals.py IMAGE --welcome --ram-mib 64 --accel kvm --out OUT",
           "result": "pass",
           "evidence": "build/i386-terminals-handoff-v2/result.json",
-          "scope": "Document-borrowing-only image passes two-terminal definitions/history/focus/exit and exact parent public-heap recovery with exact VGA checkpoints. Checker and image hashes rechecked. Final shared-startup image still pending; full UserTaskCont unqualified."
+          "scope": "Document-borrowing-only image passes two-terminal definitions/history/focus/exit and exact parent public-heap recovery with exact VGA checkpoints. Checker and image hashes rechecked. Final shared-startup image also passes in v3; full UserTaskCont remains unqualified."
+        },
+        {
+          "target": "native-terminal-shared-startup-regression",
+          "command": "python3 tools/test-i386-terminals.py IMAGE --welcome --ram-mib 64 --accel kvm --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-terminals-handoff-v3/result.json",
+          "scope": "Final shared-startup image: eleven commands after setup pass two-terminal definitions/history/focus/exit and exact parent public-heap recovery, with exact VGA. Checker/image hashes independently rechecked, source disk unchanged. Not original public interactive lexer or full UserTaskCont qualification."
         }
       ]
     },
