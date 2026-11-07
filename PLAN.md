@@ -26911,3 +26911,16 @@ pixels. Their enclosing interactive regressions remain live. C1–C5 remain open
 The next dependency, Cd2DirEntry, now has twelve passing original lookup
 checks and a matching native missing-function baseline, both with unchanged
 inputs. See docs/i386-cd-dir-entry.md. Its implementation remains open.
+
+
+## Native original directory-entry lookup (2026-11-07)
+
+Interface 232 shares the full original Cd2DirEntry body and appends its public
+binding. Both bootstrap generations and all 1,735 post-export source hashes
+pass. Twelve native checks match the original 96-byte result; concluding
+arithmetic pixels, filesystem validation, source parity and input-pin audits
+pass. Complete FileMgr with real settings libraries advances to missing
+WinCursorPosSet at line 619. See docs/i386-cd-dir-entry.md for evidence and the
+premature cross-v1 prerequisite rejection. The cross-v2 enclosing diagnostic
+and interactive regressions remain live. Full chooser workflows and C1–C5
+remain open.

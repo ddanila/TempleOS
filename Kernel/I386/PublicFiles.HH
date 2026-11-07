@@ -150,3 +150,5 @@ public _extern _POP_UP_PICK_DIR U8 *PopUpPickDir(U8 *dir=NULL);
 public _extern _COPY_TREE I64 CopyTree(U8 *src_files_find_mask,U8 *dst_files_find_mask,Bool no_mask=TRUE);
 
 public _extern _DEL_TREE I64 DelTree(U8 *files_find_mask,U8 *fu_flags=NULL);
+
+public _extern _CD_TO_DIR_ENTRY CDirEntry *Cd2DirEntry(CDirEntry *tmpde,U8 *abs_name);

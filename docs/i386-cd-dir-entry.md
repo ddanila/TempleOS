@@ -18,3 +18,31 @@ independent pin audit). This matches the full FileMgr rejection at line 592.
 The native binding and shared original implementation remain to be added.
 These synthetic lookup cases do not qualify the complete filesystem tree,
 chooser interaction, FileMgr or C1–C5.
+
+## Native shared implementation (2026-11-07)
+
+Interface 232 exposes the complete original body from
+Kernel/BlkDev/CdDirEntryCore.HC, shared with DskStrA.HC. The new binding is
+appended, preserving all existing export indices. The shared body matches the
+pinned original byte-for-byte after trimming surrounding whitespace.
+
+Both bootstrap generations pass in build/rebuild-cd-dir-entry-v1-verified.
+The cross-build at build/i386-cd-dir-entry-cross-v2 exports and packages the
+new runtime and passes its 386 audit; all 1,735 post-export source hashes match
+the verified bootstrap. The earlier cross-v1 attempt stopped at its prerequisite
+read because bootstrap was still running; it compiled no candidate. Its log and
+terminal-prerequisite-audit.json are preserved separately.
+
+In build/i386-cd-dir-entry-native-v1, all twelve checks pass on 64 MiB KVM
+486,-fpu. The complete 96-byte result equals the original control, the final
+6*7 command has the expected screen pixels, filesystem validation passes, and
+all inputs remain unchanged. terminal-audit.json independently rechecks the
+result, input pins and original/shared body parity. Historical reference inputs
+remain auditable through the frozen builder helper; only its export/version
+checking and main function changed afterward, not its disk readers.
+
+With actual autocomplete/settings libraries loaded in Adam, the complete
+unchanged FileMgr now compiles past Cd2DirEntry and rejects WinCursorPosSet at
+line 619 (build/i386-pick-dir-cd-dir-entry-v1, unchanged inputs). The chooser
+workflow has not executed. The enclosing cross-build diagnostic/interactive
+regression is still running; full FileMgr and C1–C5 remain open.

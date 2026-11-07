@@ -98,3 +98,10 @@ chooser workflow executes, and automatic startup-library loading remains open.
 The [directory lookup reference](i386-cd-dir-entry.md) now passes twelve
 original checks; the native baseline rejects the missing function before
 executing them.
+
+Interface 232 now supplies the unchanged original Cd2DirEntry. Its twelve
+native checks match the reference (see [lookup evidence](i386-cd-dir-entry.md)).
+With the real settings libraries loaded, complete FileMgr compilation next
+rejects WinCursorPosSet at line 619
+(`build/i386-pick-dir-cd-dir-entry-v1`, unchanged inputs). No chooser workflow
+has executed on this candidate.
