@@ -10001,7 +10001,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Call original CmdLinePmt with six real queued GetStr inputs and seeded pending answer states; inspect exact returned strings, saved document prefixes and task/document state.",
-      "oracle": "docs/i386-command-prompt.md: exact signed/unsigned/F64/void answer formatting, current-directory prefix, trailing whitespace and semicolon normalization, 24-word task/document state table. The shared original public body passes on the final native image; retained terminal input still bypasses it; raw/debug, physical input, exit/unwind, resource recovery and full interactive lexer remain unqualified. docs/i386-stream-directory.md records normal ExePutS/ExeFile StreamDir source-context comparisons: fourteen words and fourteen complete paths, including active pending macro/default temporary filenames. Stream error/ownership and whole-file qualification remain open. docs/i386-stream-answers.md records seventeen actual original/normal-native execution-and-prompt cases, including compile-time answer categories, void directory macros and lookahead ordering; full terminal/stream ownership remains open.",
+      "oracle": "docs/i386-command-prompt.md: exact signed/unsigned/F64/void answer formatting, current-directory prefix, trailing whitespace and semicolon normalization, 24-word task/document state table. The shared original public body passes on the final native image; retained terminal input still bypasses it; raw/debug, physical input, exit/unwind, resource recovery and full interactive lexer remain unqualified. docs/i386-stream-directory.md records normal ExePutS/ExeFile StreamDir source-context comparisons: fourteen words and fourteen complete paths, including active pending macro/default temporary filenames. Stream error/ownership and whole-file qualification remain open. docs/i386-stream-answers.md records seventeen actual original/normal-native execution-and-prompt cases, including compile-time answer categories, void directory macros and lookahead ordering; full terminal/stream ownership remains open. docs/i386-stream-literal.md records a compile-time literal escaping through a global and task answer: twelve checks, explicit native parent-controller closure and code-heap reuse. Other stream ownership/failure modes and whole-file qualification remain open.",
       "tests": [
         {
           "target": "original-command-prompt",
@@ -10093,6 +10093,27 @@
           "result": "pass",
           "evidence": "build/i386-stream-answer-interactive-v3/result.json",
           "scope": "23 physical-keyboard commands on TCG 486 without FPU, live WinMgr, exact VGA and persisted fixture bytes: original-derived pending answers, generated function/expression, lookahead ordering, nested include directory values and cwd restoration. Runner/source image pins independently audited; not full stream ownership/failure or terminal qualification."
+        },
+        {
+          "target": "original-stream-literal",
+          "command": "python3 tools/test-i386-stream-literal.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-literal-original-v3/result.json",
+          "scope": "Twelve observations, exact retained 32-byte literal, controller release, 32 later compilations, data/code heap churn, generated access, and 256 multi-size code allocations. Native parent closes before final checks; baseline reused the freed storage. Not task-death/error/cancellation or general stream qualification."
+        },
+        {
+          "target": "native-stream-literal-baseline",
+          "command": "python3 tools/test-i386-stream-literal.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-stream-literal-baseline-v3/result.json",
+          "scope": "Twelve observations, exact retained 32-byte literal, controller release, 32 later compilations, data/code heap churn, generated access, and 256 multi-size code allocations. Native parent closes before final checks; baseline reused the freed storage. Not task-death/error/cancellation or general stream qualification."
+        },
+        {
+          "target": "native-stream-literal",
+          "command": "python3 tools/test-i386-stream-literal.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-literal-native-v1/result.json",
+          "scope": "Twelve observations, exact retained 32-byte literal, controller release, 32 later compilations, data/code heap churn, generated access, and 256 multi-size code allocations. Native parent closes before final checks; baseline reused the freed storage. Not task-death/error/cancellation or general stream qualification."
         }
       ]
     },
@@ -11580,7 +11601,7 @@
       "source_at_discovery": "identical",
       "compatibility": "qualified",
       "reference_workflow": "Run complete unchanged Demo/Carry.HC through normal ExeFile: verify all 1024 BigCnt rows, 128 BigShift rows and 64 Branch bits, then invoke the real retained functions after declaration input release and 32 KiB data/code heap churn. Both complete DolDoc captures must match the independent mathematical oracle and original byte-for-byte.",
-      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime90/console250 stream-answer-v1 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
+      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime91/console250 stream-literal-v1 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
       "tests": [
         {
           "command": "python3 tools/test-i386-carry-demo.py [IMAGE] --out OUT",
@@ -11641,6 +11662,12 @@
           "result": "pass",
           "evidence": "build/i386-stream-answer-carry-v1/result.json",
           "scope": "Compiler90 shared pending-answer recorder: complete unchanged qualified demo workflow, exact original documents, retained real callbacks, arithmetic, additive volume and independently verified terminal inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-carry-demo.py build/i386-stream-literal-cross-v1/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-literal-carry-v1/result.json",
+          "scope": "Compiler91 escaped compile-time literal checkpoint: unchanged whole qualified workflow, exact original documents, retained real callbacks, normal arithmetic, volume integrity and independently checked terminal input pins."
         }
       ]
     },
@@ -11713,6 +11740,12 @@
           "result": "pass",
           "evidence": "build/i386-stream-answer-classmeta-v1/result.json",
           "scope": "Compiler90 shared pending-answer recorder: complete unchanged qualified demo workflow, exact original documents, retained real callbacks, arithmetic, additive volume and independently verified terminal inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-class-meta.py build/i386-stream-literal-cross-v1/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-literal-classmeta-v1/result.json",
+          "scope": "Compiler91 escaped compile-time literal checkpoint: unchanged whole qualified workflow, exact original documents, retained real callbacks, normal arithmetic, volume integrity and independently checked terminal input pins."
         }
       ]
     },

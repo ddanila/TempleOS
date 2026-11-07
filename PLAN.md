@@ -27791,3 +27791,27 @@ with exact VGA and persisted fixture checks. It includes bare typed compile-time
 answers, lookahead ordering, exactly-once effects and nested directory values.
 WinMgr remains live to avoid the retained pause/redraw race; prior stale frame
 and obsolete assignment-answer expectations remain recorded as failed attempts.
+
+### Escaped compile-time literal storage (2026-11-08)
+
+Compiler91 preserves outputs marked CCF_HAS_MISC_DATA in the compile-time
+statement executor, matching ordinary execution. The existing ownership journal
+then retains their code/literal pools across nested and parent controller
+publication. The prior unconditional free left a public global pointing into
+freed code. A multi-size allocation probe replaces its 32-byte payload with
+0xA5 on compiler90; the original and candidate preserve every byte and pass all
+twelve observations. Native closes the parent command before the final reuse
+checks. Earlier passing probes that missed the relevant allocation bucket remain
+recorded and do not establish ownership.
+
+Both bootstrap generations and the full 1,763-source build pass with current
+source/build-input audits. All seventeen pending-answer cases and the complete
+Carry/ClassMeta workflows pass. See docs/i386-stream-literal.md. This closes one
+returned-literal escape case, not arbitrary pointer escape, task-death/repeated
+reclamation, error/OutMem, cancellation, AOT, public compiler delivery or C1–C5.
+The 684 unqualified inventory workflows and full release gates remain open.
+
+The final source26 regression passes all stages and earlier observations with
+1,039 independently verified input pins. Fresh 8 MiB normal and 16 MiB diagnostic
+boots pass complete welcome rasters; both diagnostic ownership/file-break phases
+complete. Inventory guard tests pass; qualification counts remain two of 686.

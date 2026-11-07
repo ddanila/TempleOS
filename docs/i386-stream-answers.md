@@ -96,3 +96,11 @@ drawn, freezing a stale frame before any stream command. The v1 attempt retains
 the obsolete no-answer expectation for the counter assignment; a new original
 capture proves that assignment must present 1 and execute exactly once. No
 runtime change was needed for either harness correction.
+
+
+Compiler91 follows up the literal-pointer gap: compile-time outputs carrying
+CCF_HAS_MISC_DATA now use the same retained-pool ownership as ordinary execution.
+The unchanged seventeen-case pending-answer regression passes. A code-heap reuse
+probe reproduces freed literal corruption on compiler90 and passes on the
+candidate; see [literal evidence](i386-stream-literal.md). Broader ownership,
+failure/cancellation and release gates remain open.

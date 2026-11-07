@@ -555,7 +555,11 @@ U0 I386FrontendExecuteLine(U8 *context,CCmpCtrl *cc)
   CI386Frontend *state=context;
   I64 raw_type;
   U8 *code=I386FrontendCommand(state->heap,cc,&state->symbols,&raw_type);
-  if(code) { I386FrontendExecuteAnswer(state,code,raw_type); I386FrontendFree(state,code); }
+  if(code) {
+    I386FrontendExecuteAnswer(state,code,raw_type);
+    //A returned literal address can escape into task answers or globals.
+    if(!(cc->flags&CCF_HAS_MISC_DATA)) I386FrontendFree(state,code);
+  }
 }
 U0 I386FrontendInclude(U8 *context,CCmpCtrl *cc,U8 *name,U8 *source,Bool file)
 {
