@@ -53,7 +53,7 @@ def main():
     if out.exists():parser.error('Use a fresh output directory')
     if any(len(c[0])>255 for c in COMMANDS):raise ValueError('Input exceeds native buffer')
     reference=json.loads((ref/'result.json').read_text())
-    if reference.get('result')!='pass' or not reference.get('inputs_unchanged') or len(reference.get('records',[]))!=9:raise ValueError('Invalid original reference')
+    if reference.get('result')!='pass' or not reference.get('inputs_unchanged') or len(reference.get('records',[])) not in (9,16,17):raise ValueError('Invalid original reference')
     fixture=ROOT/'tests/guest/i386-answer-prompt-reference'
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     for name in ['Values.HC','VoidEnd.HC']:

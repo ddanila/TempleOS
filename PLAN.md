@@ -27760,3 +27760,34 @@ The final legacy interactive rerun remains failed at nested-include visible
 answers (two expected `1` rows, one captured); submitted/persisted files and all
 input pins match. Later commands did not run and its expectation remains intact.
 This is a retained open interactive stream issue, not a passing regression.
+
+### Pending answers from compile-time execution (2026-11-08)
+
+Original captures explain the legacy nested-include discrepancy: compile-time
+StreamDir leaves a void answer, so neither two expected Cd rows nor the old
+native single Cd row matches the original. Compiler90 shares the ordinary
+pending-answer recorder with the compile-time statement executor, preserving
+value/type, copied pointer depth, elapsed time and new_answer without retaining
+a class descriptor across nested execution.
+
+Seventeen real original/normal-native ExePutS/CmdLinePmt cases pass: all nine
+prior cases plus directory macros, bare integer/F64/pointer blocks, runtime-after-
+lookahead ordering and exactly-once counter assignment. The prior compiler89
+image fails five new cases. Failed assumptions/harness attempts and terminal
+input/source snapshots are retained. Both bootstrap generations and the full
+1,763-source build pass, as do all source26 regressions (1,039 audited inputs),
+directory behavior and Carry/ClassMeta whole workflows. Fresh 8/16 MiB welcome
+oracles match all 307,200 pixels; both diagnostic program/ownership/file-break
+phases complete. See docs/i386-stream-answers.md. Full stream ownership,
+cancellation/failure, AOT, normal public compiler delivery, 684 inventory items
+and the complete C1–C5 release gates remain open.
+
+The complete existing 34-command ordinary console answer regression also passes
+at 8 MiB KVM without FPU, with live WinMgr and exact VGA checks. The expanded
+original capture remains compatible with its reference validation.
+
+The final 23-command stream regression passes on TCG 486 without FPU at 64 MiB,
+with exact VGA and persisted fixture checks. It includes bare typed compile-time
+answers, lookahead ordering, exactly-once effects and nested directory values.
+WinMgr remains live to avoid the retained pause/redraw race; prior stale frame
+and obsolete assignment-answer expectations remain recorded as failed attempts.

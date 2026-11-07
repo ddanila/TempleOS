@@ -43,18 +43,16 @@ Bool I386CommandInput(CI386CommandInput *input)
 {
   CI386Task *task=I386TaskSelf;
   CI386Heap *heap;
-  CI386TaskSymbols *answer_scope;
   CCmpCtrl *boundary,*cc=0;
   CI386Frontend *state=0;
   CPrsSymbolServices *symbols;
   CI386FrontendCode *output;
   U8 *code=0;
   U8 *context_source,*context_dest;
-  I64 raw_type,value,i,saved_rbp,pointer_stars;
+  I64 raw_type,value,i,saved_rbp;
   U8 *saved_callers[TASK_EXCEPT_CALLERS];
   Bool accepted=FALSE,raised=FALSE,interrupted=FALSE,unwound;
   U32 irq;
-  F64 started;
   if(!input) return FALSE;
   input->commands=0; input->answers=0; input->errors=0;
   input->warnings=0; input->exception=0;
@@ -65,7 +63,6 @@ Bool I386CommandInput(CI386CommandInput *input)
       input->files->bytes!=sizeof(CI386FileServices) || !input->files->control_new ||
       input->flags&CCF_AOT_COMPILE ||
       input->document && *input->source) return FALSE;
-  answer_scope=task->symbol_state;
   boundary=task->last_cc;
   try {
     I386CommandInputCheckpoint(task,&interrupted);
@@ -90,6 +87,7 @@ Bool I386CommandInput(CI386CommandInput *input)
         symbols=I386FrontendServices(heap,cc,input->types,input->includes);
         if(!symbols) throw('OutMem',TRUE);
         state=symbols->context; state->files=input->files;
+        state->execution_context=input->context;state->execution_time=input->execution_time;
         state->command_publication=!(input->flags&I386_INPUT_ATOMIC_DEFINES);
         if(input->flags&I386_INPUT_ATOMIC_DEFINES &&
             !I386FrontendPrivateDefines(symbols)) throw('OutMem',TRUE);
@@ -104,18 +102,7 @@ Bool I386CommandInput(CI386CommandInput *input)
           input->commands++;
           if(code) {
             if(!(input->flags&CCF_JUST_LOAD)) {
-              //Capture the category before nested execution can retire metadata.
-              for(output=state->codes;output && output->code!=code;output=output->next);
-              if(!output || !output->value_class) throw('Compiler',TRUE);
-              pointer_stars=output->value_class->ptr_stars_cnt;
-              if(input->execution_time)started=(*input->execution_time)(input->context);
-              value=state->declarations.execute(state,code);
-              if(input->execution_time) {
-                task->answer=value;task->answer_type=raw_type;
-                answer_scope->answer_ptr_stars=pointer_stars;
-                task->answer_time=(*input->execution_time)(input->context)-started;
-                task->new_answer=TRUE;
-              }
+              value=I386FrontendExecuteAnswer(state,code,raw_type);
               I386CommandInputCheckpoint(task,&interrupted);
               for(output=state->codes;output && output->code!=code;output=output->next);
               if(!output || !output->value_class) throw('Compiler',TRUE);

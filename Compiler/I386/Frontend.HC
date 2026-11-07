@@ -82,6 +82,8 @@ class CI386Frontend {
   CI386FrontendResident *residents;
   CI386FrontendCompletion *completions;
   CI386FrontendStatic *saved_vars;
+  U8 *execution_context;
+  F64 (*execution_time)(U8 *context);
   U8 *diagnostic_context;
   U0 (*diagnostic)(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message);
 };
@@ -946,6 +948,27 @@ I64 I386FrontendExecute(U8 *context,U8 *code)
       return value;
     }
   I386FrontendUnavailable(state); return 0;
+}
+I64 I386FrontendExecuteAnswer(CI386Frontend *state,U8 *code,I64 raw_type)
+{//Compile-time execution and ordinary commands update the same pending answer.
+  CI386Task *task=I386TaskSelf;
+  CI386TaskSymbols *scope=task->symbol_state;
+  CI386FrontendCode *output;
+  I64 pointer_stars,value;
+  F64 started;
+  //Nested execution may retire metadata; retain only its scalar category.
+  for(output=state->codes;output && output->code!=code;output=output->next);
+  if(!output || !output->value_class) throw('Compiler',TRUE);
+  pointer_stars=output->value_class->ptr_stars_cnt;
+  if(state->execution_time)started=(*state->execution_time)(state->execution_context);
+  value=I386FrontendExecute(state,code);
+  if(state->execution_time) {
+    task->answer=value;task->answer_type=raw_type;
+    scope->answer_ptr_stars=pointer_stars;
+    task->answer_time=(*state->execution_time)(state->execution_context)-started;
+    task->new_answer=TRUE;
+  }
+  return value;
 }
 I64 I386FrontendInteger(U8 *context,CCmpCtrl *cc)
 {

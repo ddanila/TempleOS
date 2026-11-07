@@ -70,3 +70,14 @@ executed by this runner. Its expectation is retained, not reduced to the observe
 result. Investigation of this interactive answer-count discrepancy remains open;
 the separate normal differential fixture establishes the directory values and
 restoration behavior, not this visible-output contract.
+
+
+## Pending-answer follow-up (2026-11-08)
+
+The original prompt capture identifies the interactive discrepancy: the last
+`__DIR__` executes void StreamDir and replaces the earlier Cd answer. Neither
+two visible scalar rows nor the old native single scalar row matches it.
+Compiler90 now records compile-time answers through the ordinary command path.
+Seventeen original/normal-native prompt cases pass; see
+[pending-answer evidence](i386-stream-answers.md). The historical v3 interactive
+failure remains retained as evidence rather than a passing regression.

@@ -9,13 +9,19 @@ import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [('I64 StreamCount=0;', []),
-            ('#exe {StreamCount=StreamCount+1;}', []),
+            ('#exe {StreamCount=StreamCount+1;}', ['1']),
             ('StreamCount;', ['1']),
             ('#exe {StreamPrint("I64 StreamGenerated(){return 42;}");}', []),
             ('StreamGenerated;', ['42']),
             ('I64 StreamExpression(){return #exe {StreamPrint("6*7");};}', []),
             ('StreamExpression;', ['42']),
-            ('StreamCount;', ['1'])]
+            ('StreamCount;', ['1']),
+            ('#exe{123;}', ['123']),
+            ('#exe{1.5+2.25;}', ['3.75']),
+            ('#exe{0(U8 *);}', ['0x0']),
+            ('7;#exe{123;}', ['7']),
+            ('7;#exe{1.5+2.25;}', ['7']),
+            ('7;#exe{0(U8 *);}', ['7'])]
 
 
 def main():
@@ -35,7 +41,7 @@ def main():
         commands += [('DirMk("C:/Probe/SDir");', ['1'])]
         for path, text in fixtures.items():
             commands.append((f'FileWrite("C:{path}",{json.dumps(text)},{len(text.encode())})>0;', ['1']))
-        commands += [('#include "C:/Probe/SOuter.HC"', ['1','1']),
+        commands += [('#include "C:/Probe/SOuter.HC"', []),
                      ('StrCmp(StreamOuterDir,"C:/Probe")==0;', ['1']),
                      ('StrCmp(StreamInnerDir,"C:/Probe/SDir")==0;', ['1']),
                      ('StrCmp(StreamRestoredDir,"C:/Probe")==0;', ['1']),
@@ -55,8 +61,8 @@ def main():
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=64,
-            cpu='486,-fpu', accel='tcg', qmp_stdio=True, startup_timeout=900, welcome=True,
-            startup_check={'status':'ok', 'answers':[], 'commands':commands,
+            cpu='486,-fpu', accel='tcg', qmp_stdio=True, startup_timeout=900, welcome=True, keep_window_manager=True,
+            startup_check={'status':'ok', 'answers':[], 'commands':commands, 'pause_window_manager':False,
                            'rejected_answers':['0'], 'rejection_prefixes':('INPUT REJECT ',),
                            'command_timeout':120})
         if fixtures:

@@ -98,3 +98,14 @@ temporary filename to macro lexing. Fourteen normal source-context checks and al
 fourteen captured paths match the original, including a pending macro with
 trailing tokens. See [directory evidence](i386-stream-directory.md). Failure,
 ownership and broader compiler/stream qualification remain open.
+
+
+## Compile-time pending answers (2026-11-08)
+
+Compiler90 records task answer state during compile-time statement execution.
+Seventeen real original/normal-native prompt cases and the 23-command TCG stream
+regression pass, including typed answers and the original lookahead ordering.
+The nested directory include leaves a void answer and prints no scalar. This
+supersedes the historical two-Cd-answer expectation above. See
+[pending-answer evidence](i386-stream-answers.md); broader stream and C1–C5 gates
+remain open.

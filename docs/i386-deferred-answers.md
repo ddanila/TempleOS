@@ -172,3 +172,14 @@ errors and breaks on the original, while the normal native public API loses one
 after a caught custom throw. Existing BreakPrivate rollback checks are legacy
 native behavior, not original fidelity. Public Break availability is also open.
 The new failing checks remain strict; full C4/API/OS qualification is not claimed.
+
+
+## Compile-time pending answers (2026-11-08)
+
+The original prompt capture now includes seventeen cases and the same fixture can
+run on a normal native image. Compiler90 shares pending-answer recording with
+compile-time statement execution, including void directory macros and typed
+integer/F64/pointer results. The three lookahead cases preserve the original
+runtime-after-compilation ordering. See [evidence](i386-stream-answers.md).
+The physical console's compact scalar format remains distinct from CmdLinePmt's
+original timing/answer text; full terminal and stream ownership gates stay open.
