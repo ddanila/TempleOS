@@ -78,3 +78,8 @@ This is a C1/C2/C4 reference contract and a visible implementation gap, not
 terminal qualification. Physical keyboard input, Shift-Esc task exit, raw/debug
 presentation, exceptions, exact heap recovery and full lexer/terminal behavior
 remain open. No C1–C5 milestone is closed by these six cases.
+
+The next public-input baseline is recorded in
+[public lexer character input](i386-public-lex-char.md): the original passes
+character replay, document return and real prompt refill, while native startup
+still lacks `LexGetChar`.

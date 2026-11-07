@@ -27194,3 +27194,19 @@ Public LexGetChar/Lex ownership and UserTaskCont execution/error cleanup are the
 next integration gap. Complete decoder/debugger workflows, isolated startup
 timing and C5 installed native generations remain unqualified. All 686 inventory
 entries remain unqualified; no C1–C5 milestone is closed by these contracts.
+
+
+## Public lexer character-input baseline (2026-11-07)
+
+The original public LexGetChar passes four groups with 26 exact character values
+and eight state words: cursor skipping, shifted-space normalization, one-character
+replay, repeated EOF, document-to-root return, and real prompt refill with blank,
+first/subsequent question help and help disabled. The final native cross-v6 image
+fails at the missing public symbol before behavior. Independent audits verify
+reference/input identity and sole fixture addition with volume preservation.
+See docs/i386-public-lex-char.md for final v2 evidence and untested branches.
+
+No production lexer or terminal change is claimed. Public ownership, rich document
+transitions, echo, tokenization, execution/unwind and full terminal behavior still
+need integration; the private reader rejects prompt mode. All C1–C5 milestones
+and 686 inventory entries remain unqualified.
