@@ -27047,3 +27047,26 @@ implementation step; paste, post-copy restoration and reboot remain untested
 on native. The fixtures, driver, workflow map and inventory preserve this
 failure rather than qualifying the application. See
 docs/i386-filemgr-clipboard.md. All C1–C5 milestones remain open.
+
+## Original clipboard key dispatch restored (2026-11-07)
+
+Native DocPutKey now dispatches the original Ctrl-C/X/V, Ctrl-Insert,
+Shift-Insert and Shift-Delete bindings to the complete existing clipboard
+implementations, preserving modifier guards, descriptions, callback order
+and lock handling. No public ABI version changes. The nineteen-case original
+reference and corrected native image match exactly: masks 255 and zero caller/
+clipboard-owner heap deltas. The old native image fails the expected action
+and description cases under the same final fixture.
+
+The resource oracle warms layout state, uses one CPU, preserves/disables local
+interrupts and sets original DOCF_DONT_SWAP_OUT on test documents. Earlier
+reference controls showed that interrupts alone do not suppress the explicit
+original DocPutKey Yield. That source-defined flag isolates the resource
+measurement without relaxing equality. Native trailing-Yield parity remains
+a separate open gap; actual FileMgr UI tests retain normal scheduling.
+
+Both bootstrap generations and the full64 cross-build pass with all 1,736
+production hashes matched after export. Normal8 startup and all 307,200 welcome
+pixels pass. Full16 diagnostics and FileMgr file/tree paste/reboot sessions
+remain live at this commit. See docs/i386-clipboard-keys.md. This is partial
+C2/C4 progress; all C1–C5 milestones remain unqualified.

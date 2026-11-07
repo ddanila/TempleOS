@@ -187,9 +187,30 @@ Bool NativeDocUsesWindowLayout(CDoc *doc)
     task->display_doc==doc && !NativeLegacyViewActive(task);
 }
 extern U0 EdCharIns(I64 ch,I64 sc,CDoc *doc);
+I64 NativeDocClipboardKey(I64 ch,I64 sc)
+{//Original DocPutKey clipboard dispatch: -1 unrelated, 0 consumed, 1/2/3 copy/cut/paste.
+  if(sc&SCF_ALT) return -1;
+  if(ch==CH_CTRLC || ch==CH_CTRLX || ch==CH_CTRLV) {
+    if(sc&SCF_SHIFT) return 0;
+    if(ch==CH_CTRLC) return 1;
+    if(ch==CH_CTRLX) return 2;
+    return 3;
+  }
+  if(!ch && sc.u8[0]==SC_INS && sc&(SCF_SHIFT|SCF_CTRL)) {
+    if(sc&(SCF_SHIFT|SCF_CTRL)==(SCF_SHIFT|SCF_CTRL)) return 0;
+    if(sc&SCF_CTRL) return 1;
+    return 3;
+  }
+  if(!ch && sc.u8[0]==SC_DELETE && sc&SCF_SHIFT) {
+    if(sc&SCF_CTRL) return 0;
+    return 2;
+  }
+  return -1;
+}
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {
   Bool unlock,printable;
+  I64 clipboard_action;
   if(!doc && !(doc=DocPut) || doc->doc_signature!=DOC_SIGNATURE_VAL) return;
   //The original callback runs before locking and can consume the key.
   if(doc->user_put_key && (*doc->user_put_key)(doc,doc->user_put_data,ch,sc)) return;
@@ -198,7 +219,16 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
     if(!Bt(doldoc.clean_scan_codes,sc.u8[0])) doc->flags|=DOCF_UNDO_DIRTY;
     DocCaptureUndo(doc);
     printable=0<=ch<512 && Bt(native_doc_printable,ch);
-    if(NativeDocAutoCompleteKey(ch,sc)) {
+    clipboard_action=NativeDocClipboardKey(ch,sc);
+    if(clipboard_action>=0) {
+      if(sc&SCF_KEY_DESC) {
+        if(clipboard_action==1)KeyDescSet("Edit/Copy to Clip");
+        else if(clipboard_action==2)KeyDescSet("Edit/Cut To Clip");
+        else if(clipboard_action==3)KeyDescSet("Edit/Paste Clip");
+      } else if(clipboard_action==1)ClipCopy(doc);
+      else if(clipboard_action==2)ClipCut(doc);
+      else if(clipboard_action==3)ClipPaste(doc);
+    } else if(NativeDocAutoCompleteKey(ch,sc)) {
       if(sc&SCF_KEY_DESC) {
         if(!ch) {
           if(sc&SCF_SHIFT)KeyDescSet("Cmd /Src Code of Sym");

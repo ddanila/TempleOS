@@ -1714,9 +1714,28 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "docs/i386-clipboard.md and docs/i386-clipboard-keys.md: primitive ownership/insertion and original keyboard dispatch; broader branches remain open.",
+      "oracle": "Exact document text, selection, callback/description behavior, lock/task roles and isolated caller/clipboard-owner heap counters; original/native paired fixtures. Whole clipboard qualification remains incomplete.",
+      "tests": [
+        {
+          "target": "original-clipboard-keys",
+          "result": "pass",
+          "evidence": "build/i386-clipboard-keys-original-v5/result.json",
+          "scope": "Nineteen synchronous DocPutKey cases: copy/cut/paste, modifier guards, descriptions, callbacks, nested locks, empty selection; exact text and heap deltas. One CPU, interrupts preserved/disabled during resource checks, DOCF_DONT_SWAP_OUT prevents original Yield. See docs/i386-clipboard-keys.md. Normal UI tested separately; full dispatch/scheduling remains open."
+        },
+        {
+          "target": "native-clipboard-keys-baseline",
+          "result": "fail",
+          "evidence": "build/i386-clipboard-keys-baseline-v3/result.json",
+          "scope": "Nineteen synchronous DocPutKey cases: copy/cut/paste, modifier guards, descriptions, callbacks, nested locks, empty selection; exact text and heap deltas. One CPU, interrupts preserved/disabled during resource checks, DOCF_DONT_SWAP_OUT prevents original Yield. See docs/i386-clipboard-keys.md. Normal UI tested separately; full dispatch/scheduling remains open."
+        },
+        {
+          "target": "native-clipboard-keys",
+          "result": "pass",
+          "evidence": "build/i386-clipboard-keys-native-v2/result.json",
+          "scope": "Nineteen synchronous DocPutKey cases: copy/cut/paste, modifier guards, descriptions, callbacks, nested locks, empty selection; exact text and heap deltas. One CPU, interrupts preserved/disabled during resource checks, DOCF_DONT_SWAP_OUT prevents original Yield. See docs/i386-clipboard-keys.md. Normal UI tested separately; full dispatch/scheduling remains open."
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocCodeTools.HC",
@@ -3278,6 +3297,24 @@
           "result": "fail",
           "evidence": "build/i386-autocomplete-popup-native-v3/result.json",
           "scope": "Complete popup text, initial/end state, visible static pixels and close/recovery pass, but Page Up goes from row69 to0 through hard-line fallback instead of original row24. Original row traversal was only routed for forms. Superseded by native-v5."
+        },
+        {
+          "target": "original-clipboard-keys",
+          "result": "pass",
+          "evidence": "build/i386-clipboard-keys-original-v5/result.json",
+          "scope": "Nineteen synchronous DocPutKey cases: copy/cut/paste, modifier guards, descriptions, callbacks, nested locks, empty selection; exact text and heap deltas. One CPU, interrupts preserved/disabled during resource checks, DOCF_DONT_SWAP_OUT prevents original Yield. See docs/i386-clipboard-keys.md. Normal UI tested separately; full dispatch/scheduling remains open."
+        },
+        {
+          "target": "native-clipboard-keys-baseline",
+          "result": "fail",
+          "evidence": "build/i386-clipboard-keys-baseline-v3/result.json",
+          "scope": "Nineteen synchronous DocPutKey cases: copy/cut/paste, modifier guards, descriptions, callbacks, nested locks, empty selection; exact text and heap deltas. One CPU, interrupts preserved/disabled during resource checks, DOCF_DONT_SWAP_OUT prevents original Yield. See docs/i386-clipboard-keys.md. Normal UI tested separately; full dispatch/scheduling remains open."
+        },
+        {
+          "target": "native-clipboard-keys",
+          "result": "pass",
+          "evidence": "build/i386-clipboard-keys-native-v2/result.json",
+          "scope": "Nineteen synchronous DocPutKey cases: copy/cut/paste, modifier guards, descriptions, callbacks, nested locks, empty selection; exact text and heap deltas. One CPU, interrupts preserved/disabled during resource checks, DOCF_DONT_SWAP_OUT prevents original Yield. See docs/i386-clipboard-keys.md. Normal UI tested separately; full dispatch/scheduling remains open."
         }
       ]
     },
