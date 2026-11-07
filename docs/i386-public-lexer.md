@@ -193,3 +193,11 @@ prefix as part zero, then rejects part one, containing only
 `KernelSymbols` does not export that name. This reproduces a specific missing
 public bitmap binding independently of the combined header and help directive.
 No token cases run in this negative probe.
+
+The export control (`build/probe-public-token-bitmap-export-control.py`,
+`build/i386-public-token-loader-v7`) publishes the identical prefix and then
+`public extern U32 char_bmp_alpha_numeric[16];` successfully. The next stage,
+`public extern U32 char_bmp_alpha[16];`, is rejected. Both declarations use the
+same array shape and syntax; only the former has a kernel export. The source
+image is unchanged. This supports adding the missing resident bitmap exports
+before testing the complete shared header again.
