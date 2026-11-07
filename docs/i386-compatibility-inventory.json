@@ -10001,7 +10001,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Call original CmdLinePmt with six real queued GetStr inputs and seeded pending answer states; inspect exact returned strings, saved document prefixes and task/document state.",
-      "oracle": "docs/i386-command-prompt.md: exact signed/unsigned/F64/void answer formatting, current-directory prefix, trailing whitespace and semicolon normalization, 24-word task/document state table. The shared original public body passes on the final native image; retained terminal input still bypasses it; raw/debug, physical input, exit/unwind, resource recovery and full interactive lexer remain unqualified.",
+      "oracle": "docs/i386-command-prompt.md: exact signed/unsigned/F64/void answer formatting, current-directory prefix, trailing whitespace and semicolon normalization, 24-word task/document state table. The shared original public body passes on the final native image; retained terminal input still bypasses it; raw/debug, physical input, exit/unwind, resource recovery and full interactive lexer remain unqualified. docs/i386-stream-directory.md records normal ExePutS/ExeFile StreamDir source-context comparisons: fourteen words and fourteen complete paths, including active pending macro/default temporary filenames. Stream error/ownership and whole-file qualification remain open.",
       "tests": [
         {
           "target": "original-command-prompt",
@@ -10044,6 +10044,27 @@
           "result": "pass",
           "evidence": "build/i386-whitespace-bitmap-native-v1/result.json",
           "scope": "Shared bitmap mutation for Str2I64, Str2F64, StrUtil and CmdLinePmt plus document-role/bitmap restoration. Original and corrected native masks 63; baseline 56. Not every consumer or concurrent mutation."
+        },
+        {
+          "target": "original-stream-directory",
+          "command": "python3 tools/test-i386-stream-directory.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-directory-original-v4/result.json",
+          "scope": "Fourteen normal source-context/controller/title/cwd checks and exact drive-normalized captured paths; controlled temporary filename restored; not stream failure/ownership or full compiler qualification."
+        },
+        {
+          "target": "native-stream-directory",
+          "command": "python3 tools/test-i386-stream-directory.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-directory-native-v2/result.json",
+          "scope": "Fourteen normal source-context/controller/title/cwd checks and exact drive-normalized captured paths; controlled temporary filename restored; not stream failure/ownership or full compiler qualification."
+        },
+        {
+          "target": "native-stream-directory-baseline",
+          "command": "python3 tools/test-i386-stream-directory.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-stream-directory-baseline-v4/result.json",
+          "scope": "Controlled original/final fixture on prior console249 image: eight source-directory differences; all input pins unchanged."
         }
       ]
     },
@@ -11531,7 +11552,7 @@
       "source_at_discovery": "identical",
       "compatibility": "qualified",
       "reference_workflow": "Run complete unchanged Demo/Carry.HC through normal ExeFile: verify all 1024 BigCnt rows, 128 BigShift rows and 64 Branch bits, then invoke the real retained functions after declaration input release and 32 KiB data/code heap churn. Both complete DolDoc captures must match the independent mathematical oracle and original byte-for-byte.",
-      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime88/console249 DirFile-v1 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
+      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime89/console250 StreamDir-v2 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
       "tests": [
         {
           "command": "python3 tools/test-i386-carry-demo.py [IMAGE] --out OUT",
@@ -11580,6 +11601,12 @@
           "result": "pass",
           "evidence": "build/i386-dir-file-carry-v1/result.json",
           "scope": "Console249 normal public DirFile checkpoint: unchanged whole demo, mask7, complete original documents, retained real callbacks, later arithmetic and independently verified terminal inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-carry-demo.py build/i386-stream-directory-cross-v2/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-directory-carry-v2/result.json",
+          "scope": "Compiler89/console250 active source-directory checkpoint: unchanged whole demo, complete original documents, retained callbacks, normal arithmetic, volume integrity and independently verified terminal pins."
         }
       ]
     },
@@ -11640,6 +11667,12 @@
           "result": "pass",
           "evidence": "build/i386-dir-file-classmeta-v1/result.json",
           "scope": "Console249 normal public DirFile checkpoint: unchanged whole demo, mask511, complete original documents, retained real callbacks, later arithmetic and independently verified terminal inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-class-meta.py build/i386-stream-directory-cross-v2/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-directory-classmeta-v2/result.json",
+          "scope": "Compiler89/console250 active source-directory checkpoint: unchanged whole demo, complete original documents, retained callbacks, normal arithmetic, volume integrity and independently verified terminal pins."
         }
       ]
     },

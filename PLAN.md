@@ -27735,3 +27735,28 @@ This closes normal DirFile delivery and its tested miss-path ownership; it does
 not qualify every DskStrA API, allocation failure/concurrency, normal shared
 compiler/stream delivery or full C1–C5. Inventory qualification remains two
 workflows with 684 items unqualified.
+
+### Normal StreamDir active-frame and directory fidelity (2026-11-08)
+
+Compiler89/console250 resolves StreamDir through public DirFile and preserves the
+active macro frame when trailing tokens remain. Macro lexing uses the configured
+temporary filename. A controlled normal ExePutS/ExeFile fixture matches fourteen
+original observations and all fourteen captured paths (249 normalized bytes).
+The previous console249 image fails eight cases on the same fixture. Controller,
+title and explicit cwd restoration, relative/default names, existing directories,
+nonexistent ancestor searches, root NULL behavior and nested includes are checked.
+
+Both x64 bootstrap generations and the 1,763-source full build pass, with current
+source/build-input audits. The complete source26 regression, Carry and ClassMeta
+workflows pass with independently verified pins. Fresh 8 MiB normal and 16 MiB
+diagnostic boots match all 307,200 welcome pixels; both diagnostic program,
+code-ownership and file-break phases complete. The old interactive stream runner
+needed current welcome-screen expectations and a longer TCG startup window;
+failed pre-command runs remain recorded. See docs/i386-stream-directory.md.
+This does not qualify additional whole workflows: 684 inventory items and full
+C1–C5 release, native-generation, resource and reproducibility gates remain open.
+
+The final legacy interactive rerun remains failed at nested-include visible
+answers (two expected `1` rows, one captured); submitted/persisted files and all
+input pins match. Later commands did not run and its expectation remains intact.
+This is a retained open interactive stream issue, not a passing regression.

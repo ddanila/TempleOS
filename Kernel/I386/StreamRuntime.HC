@@ -35,12 +35,11 @@ U0 NativeStreamDir()
   U8 *directory=0;
   if(!task || !(cc=task->last_cc) || cc==&task->next_cc) throw('Compiler',TRUE);
   file=cc->lex_include_stk;
-  while(file && file->flags&LFSF_DEFINE && file->next) file=file->next;
+  //The active frame can still be a macro when trailing tokens remain.
   if(!file || !file->full_name) throw('Compiler',TRUE);
   try {
-    directory=NativeDirPathParent(file->full_name);
-    if(!directory) throw('OutMem',TRUE);
-    NativeStreamPrint("\"%s\"",directory);
+    directory=DirFile(file->full_name);
+    if(directory) NativeStreamPrint("\"%s\"",directory);
     Free(directory); directory=0;
   } catch { Free(directory); throw; }
 }

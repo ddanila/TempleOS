@@ -274,7 +274,10 @@ CHashClass *I386FrontendClassView(U8 *context,CHashClass *type)
 I64 I386FrontendLex(U8 *context,CCmpCtrl *cc)
 {
   CI386Frontend *state=context;
-  I64 token=I386ParserToken(state->heap,cc,"Frontend",&state->lines,state->includes);
+  U8 *macro_filename="Frontend";
+  if(state->files && state->files->tmp_filename)
+    macro_filename=state->files->tmp_filename();
+  I64 token=I386ParserToken(state->heap,cc,macro_filename,&state->lines,state->includes);
   cc->hash_entry=I386FrontendClassView(state,cc->hash_entry);
   return token;
 }

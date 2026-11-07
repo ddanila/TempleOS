@@ -37,3 +37,9 @@ observations, including native title restoration, after verifying the published
 LexStmt2Bin default consumes semicolons. All 1,038 pinned inputs are independently
 checked in its terminal audit. This establishes the tested source-loaded shared
 compiler path; it does not replace the normal native compiler provider.
+
+Normal native source-directory behavior now has a separate original differential
+fixture, including nested includes and active pending-macro/default temporary
+filenames. See [StreamDir evidence](i386-stream-directory.md). It preserves the
+private emitter's parser ownership and does not close the shared compiler's
+normal public delivery or stream failure/reclamation gates.

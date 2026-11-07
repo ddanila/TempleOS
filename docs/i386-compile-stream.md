@@ -89,3 +89,12 @@ VGA and persisted fixture-byte checks. Evidence:
 cancellation, reclamation, original differential capture and AOT/native-module
 qualification still require explicit tests. Other source-context macros remain
 future public compiler coverage; no complete stream feature claim is made.
+
+## Active lexer directory fidelity (2026-11-08)
+
+Console250 resolves the active lexer frame with public DirFile, including existing
+directory/ancestor search and NULL emission. Compiler89 supplies the configured
+temporary filename to macro lexing. Fourteen normal source-context checks and all
+fourteen captured paths match the original, including a pending macro with
+trailing tokens. See [directory evidence](i386-stream-directory.md). Failure,
+ownership and broader compiler/stream qualification remain open.
