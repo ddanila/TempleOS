@@ -26822,3 +26822,15 @@ F1/a input, including scan code and idle-state recovery; the native test also
 passes concluding arithmetic pixels. See docs/i386-character-prompts.md.
 The enclosing full diagnostic/interactive cross-build remains running. Fmt,
 complete FileMgr, public lexer prompts and all C1–C5 gates remain open.
+
+
+## Original public formatting command (2026-11-07)
+
+Interface 229 shares the complete original Fmt implementation. Both bootstrap
+generations, native exports and production source hashes pass. Sixteen original
+and native checks cover confirmation cancellation, exact text, RAM filesystem
+fallback, quick/full clearing, error rejection, drive/silent state and real file
+round trips; final native arithmetic pixels pass. The enclosing full cross-build
+remains running. Complete FileMgr loading now passes Fmt and stops at missing
+RedSeaISO line 407. See docs/i386-format.md and docs/i386-pick-dir.md. ATA
+formatting, complete chooser workflows and C1–C5 remain open.

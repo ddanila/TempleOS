@@ -138,6 +138,7 @@ public _extern _MOUNT_FILE U8 MountFile(U8 *filename);
 public _extern _UNMOUNT U0 Unmount(U8 drv_let=0);
 public _extern _SIZE I64 Size(U8 *files_find_mask="/*",U8 *fu_flags=NULL,I64 round_to=0);
 public _extern _PUT_FILE_LINK U0 PutFileLink(U8 *filename,U8 *full_name=NULL,I64 line=0,Bool plain_text=FALSE);
+public _extern _FMT U0 Fmt(U8 drv_let,Bool quick=TRUE,Bool confirm=TRUE,I64 type=FSt_FAT32);
 #endif
 
 public _extern _POP_UP_PICK_DIR U8 *PopUpPickDir(U8 *dir=NULL);

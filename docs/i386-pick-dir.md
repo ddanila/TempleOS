@@ -63,3 +63,9 @@ and recursive wildcard deletion, return counts and surviving file bytes.
 Candidate v8 gets past DelTree and rejects the missing Fmt at FileMgr line 387
 (`build/i386-pick-dir-candidate-v2/result.json`, inputs unchanged). The chooser
 workflow is still unqualified.
+
+Interface 229 now provides the original Fmt; its sixteen original/native RAM
+formatting checks pass (see [formatting evidence](i386-format.md)). Loading the
+complete FileMgr on this image gets past Fmt and rejects RedSeaISO at line 407
+(`build/i386-pick-dir-format-v1/result.json`, unchanged inputs). No chooser
+workflow has yet run successfully on the native image.
