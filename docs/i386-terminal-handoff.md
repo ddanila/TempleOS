@@ -107,13 +107,21 @@ phases complete; `diagnostic16-audit.json` revalidates all source hashes. These
 are concurrent functional checks, not isolated timing or C5 installed native
 generation qualification.
 
-The existing two-terminal definition-isolation/focus/exit/public-heap regression
-is still running on the final image at `build/i386-terminals-handoff-v3` (PID
-262365 when launched). An earlier run on the document-borrowing-only image is
-also live at `build/i386-terminals-handoff-v2` (PID 258826). Both have progressed
-through their keyboard-transferred setup; neither is recorded as passing yet.
-The initial v1 attempt ended before guest execution because another boot check
-held the source disk's write lock. Both actual runs use independently verified
-copies. Process commands are recorded in
+The earlier document-borrowing-only image passes the two-terminal regression
+at `build/i386-terminals-handoff-v2`: independent definitions/history, focus,
+exit refocus, child reclamation and exact parent public-heap recovery. Its
+terminal audit rechecks the checker and disk hashes and the passing exact-VGA
+result. This does not qualify the later shared-startup image.
+
+The final-image run remains live at `build/i386-terminals-handoff-v3` (PID
+262365), progressing through keyboard-transferred setup. It is not recorded as
+passing yet. The initial v1 attempt ended before guest execution because another
+boot check held the source disk's write lock. Both actual runs use independently
+verified copies. Process commands are recorded in
 `build/terminal-handoff-verification-processes.json`; poll live handles rather
 than restarting based on a slow screen checkpoint.
+
+The missing original answer and directory prompt now has a direct six-case
+reference contract; see [command prompt](i386-command-prompt.md). Restoring the
+original prompt and public interactive lexer remains separate from document
+handoff and terminal ownership.

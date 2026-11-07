@@ -9950,9 +9950,24 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Call original CmdLinePmt with six real queued GetStr inputs and seeded pending answer states; inspect exact returned strings, saved document prefixes and task/document state.",
+      "oracle": "docs/i386-command-prompt.md: exact signed/unsigned/F64/void answer formatting, current-directory prefix, trailing whitespace and semicolon normalization, 24-word task/document state table. Public native symbol is absent; raw/debug, physical input, exit/unwind, resource recovery and full interactive lexer remain unqualified.",
+      "tests": [
+        {
+          "target": "original-command-prompt",
+          "command": "python3 tools/test-i386-command-prompt.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-command-prompt-original-v2/result.json",
+          "scope": "Six real CmdLinePmt/GetStr cases; original exports and input/reference hashes independently audited. No whole-terminal qualification."
+        },
+        {
+          "target": "native-command-prompt-baseline",
+          "command": "python3 tools/test-i386-command-prompt.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-command-prompt-native-baseline-v1/result.json",
+          "scope": "Normal handoff-v2 image reports missing public CmdLinePmt before behavioral cases. Input hashes, all original file tuples and sole fixture addition independently audited."
+        }
+      ]
     },
     {
       "path": "Compiler/Compiler.BIN",
@@ -18453,6 +18468,13 @@
           "result": "pass",
           "evidence": "build/i386-terminal-handoff-native-v2/result.json",
           "scope": "Same two cases and exact masks after normal boot; original default SrvStartUp shared in Adam and existing document borrowed. Source/files/arithmetic independently audited. Full prompt/result formatting, heap and terminal qualification remain open."
+        },
+        {
+          "target": "native-terminal-handoff-ownership-regression",
+          "command": "python3 tools/test-i386-terminals.py IMAGE --welcome --ram-mib 64 --accel kvm --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-terminals-handoff-v2/result.json",
+          "scope": "Document-borrowing-only image passes two-terminal definitions/history/focus/exit and exact parent public-heap recovery with exact VGA checkpoints. Checker and image hashes rechecked. Final shared-startup image still pending; full UserTaskCont unqualified."
         }
       ]
     },
