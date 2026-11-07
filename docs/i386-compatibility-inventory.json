@@ -10248,6 +10248,13 @@
           "result": "fail",
           "evidence": "build/i386-public-token-lex-baseline-v1/result.json",
           "scope": "Final reader image rejects Lex at fixture line 12 before 24-token behavioral assertions. Independent audit confirms normal startup, unchanged inputs and exact fixture additions."
+        },
+        {
+          "target": "native-source-loaded-token-diagnostic",
+          "command": "python3 build/probe-public-token-bitmap-isolation.py",
+          "result": "pass",
+          "evidence": "build/i386-public-token-loader-v4/result.json",
+          "scope": "Diagnostic full original Lex/LexExtStr bodies pass 24 reference checks with exact source/fixture/export/volume audit. Shared bitmap header suppressed and required existing bindings declared; diagnostic/expression/stream externs unresolved. Not delivered normal-image lexer or full qualification; see docs/i386-public-lexer.md."
         }
       ]
     },

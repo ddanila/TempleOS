@@ -143,3 +143,36 @@ control regression also passes all twelve checks. Separate prompt/refill and
 echo/statistics contracts pass; see docs/i386-public-lex-char.md for source
 identity, exact outputs and independent volume audits. Public Lex/LexExtStr,
 full song loading and terminal execution remain open.
+
+
+## Source-loaded token integration experiment (2026-11-07)
+
+`build/i386-public-token-loader-v4` loads the complete current original `Lex`
+and `LexExtStr` bodies and their shared helpers into a test task on the metadata
+image (`i386-hash-source-cross-v1`). It passes all 24 original token, string,
+nested-include and ownership checks, including embedded-NUL lyrics and exact
+caller heap recovery, then passes the arithmetic glyph check. Its independent
+terminal audit compares the exact fixture and 24-word export against original
+v3, checks both function bodies byte-for-byte, and verifies unchanged boot bytes,
+all original file tuples, exact added sources and volume allocation.
+
+This is diagnostic evidence, not a production lexer. The prototype declares
+`LexExcept`, `LexWarn`, `LexExpression` and `PrsStreamBlk` as unresolved externs;
+the valid-input contract does not exercise those services. It also suppresses
+`Kernel/CharBitmaps.HH` with its include guard and explicitly declares the two
+existing kernel bitmap objects needed by the define reader, alongside the
+already declared numeric bitmaps. This isolates header integration without
+replacing any lexer body. The workaround is absent from production sources.
+
+Earlier preserved experiments locate the failure: v1's combined library is
+rejected during publication with exception zero and no compiler errors; v2
+publishes declarations and file/member helpers, then rejects the token-helper
+section; v3 publishes each helper through identifiers, then rejects the
+`LexDefine.HC` section, which includes the shared bitmap header. V4 publishes
+all thirteen stages with that header isolated and reaches the full contract.
+The exact scripts, staged sources and results are retained under `build/`.
+
+The next integration work is the public bitmap-header/export contract, followed
+by real diagnostic, expression and executable-directive services and delivery
+through shared startup. The prototype does not qualify those paths, complete
+public compiler globals, physical terminal execution, or any C1–C5 milestone.

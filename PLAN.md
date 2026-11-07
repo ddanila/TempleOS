@@ -27256,3 +27256,21 @@ verify exact fixtures, original volume preservation and unchanged source images.
 See docs/i386-hash-source.md. This supplies a real dependency of token directives;
 Lex token publication, compiler diagnostics, expression/stream compilation and
 terminal execution remain open. All 686 inventory items remain unqualified.
+
+
+## Public token loader experiment (2026-11-07)
+
+A source-loaded test-task library with complete original Lex/LexExtStr bodies
+passes the existing 24-check reference table, nested song includes, embedded-NUL
+strings, exact caller heap recovery and arithmetic. Independent audit verifies
+exact original fixture/exports and function bodies, unchanged source/boot bytes,
+all original file tuples and exact staged sources. Evidence is retained in
+build/i386-public-token-loader-v4 and docs/i386-public-lexer.md.
+
+This is not a delivered lexer. Staged experiments locate a publication rejection
+in the LexDefine section; the passing diagnostic skips its shared bitmap
+header and declares the required existing kernel objects explicitly.
+Diagnostic, expression and executable-directive externs also remain unresolved.
+No such workaround or stub is added to production. Restore the real public bitmap
+contract and remaining services before normal shared-startup qualification.
+All C1–C5 milestones and inventory qualification gaps remain open.
