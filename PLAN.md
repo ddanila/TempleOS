@@ -26924,3 +26924,21 @@ WinCursorPosSet at line 619. See docs/i386-cd-dir-entry.md for evidence and the
 premature cross-v1 prerequisite rejection. The cross-v2 enclosing diagnostic
 and interactive regressions remain live. Full chooser workflows and C1–C5
 remain open.
+
+
+## Original window cursor and first native chooser workflow (2026-11-07)
+
+Interface 233 shares the complete original WinCursorPosSet body and appends its
+binding. Sixteen native checks and the exact coordinate record match the
+corrected original control; the initial incorrect viewport expectation and
+its diagnostic evidence remain preserved. Both bootstrap generations, all 1,736
+post-export source hashes, 386 instruction audit, full 16 MiB startup diagnostic
+and exact welcome screen pass. Enclosing interactive regressions remain live.
+
+The complete unchanged FileMgr now compiles with real settings libraries and
+passes default-directory, explicit-directory and Shift-Escape-cancel workflows.
+All three restoration masks are 127; exact paths/empty result, concluding
+arithmetic, filesystem validation and input pins pass. Native popup screenshots
+show overlapping text compared with the clean original control, so visual
+qualification remains open. See docs/i386-win-cursor-pos.md and
+docs/i386-pick-dir.md. Full FileMgr, complete desktop and C1–C5 remain open.

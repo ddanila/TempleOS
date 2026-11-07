@@ -36,4 +36,5 @@ public _extern _GR_UPDATE_TASK_WIN U0 GrUpdateTaskWin(CTask *task);
 public _extern _SYS_TASK_BEING_SCRN_UPDATED CTask *sys_task_being_scrn_updated;
 public _extern _WINDOW_PRESENT Bool NativeWindowPresent(Bool blink=FALSE);
 public _extern _WINMGR_START Bool NativeWinMgrStart();
+public _extern _WIN_CURSOR_POS_SET CDoc *WinCursorPosSet(CTask *task,I64 msx,I64 msy,Bool set_cursor=TRUE);
 #endif

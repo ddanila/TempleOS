@@ -46,3 +46,8 @@ unchanged FileMgr now compiles past Cd2DirEntry and rejects WinCursorPosSet at
 line 619 (build/i386-pick-dir-cd-dir-entry-v1, unchanged inputs). The chooser
 workflow has not executed. The enclosing cross-build diagnostic/interactive
 regression is still running; full FileMgr and C1–C5 remain open.
+
+The interface-232 full 16 MiB startup diagnostic now passes both program
+phases, code-heap ownership cases and file-break cleanup cases. All 307,200
+welcome pixels match (`build/i386-cd-dir-entry-cross-v2/diagnostic16-audit.json`).
+The enclosing interactive checks remain running.

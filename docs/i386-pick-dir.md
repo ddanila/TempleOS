@@ -105,3 +105,31 @@ With the real settings libraries loaded, complete FileMgr compilation next
 rejects WinCursorPosSet at line 619
 (`build/i386-pick-dir-cd-dir-entry-v1`, unchanged inputs). No chooser workflow
 has executed on this candidate.
+
+## First complete native chooser run (2026-11-07)
+
+Interface 233 supplies the complete original WinCursorPosSet body, with sixteen
+original/native checks and an exact coordinate/viewport record (see
+[cursor evidence](i386-win-cursor-pos.md)). Both bootstrap generations pass.
+The complete unchanged FileMgr now compiles after explicit real autocomplete
+and settings library loading into Adam.
+
+`build/i386-pick-dir-win-cursor-v1/result.json` passes all three native cases:
+Escape returns C:/Probe/PickScope for the default directory, Escape returns
+C:/Probe/PickScope/Nested for an explicit directory, and Shift-Escape returns an
+allocated empty string. All three restoration masks are 127, matching the
+original control: non-null result and expected bytes, unchanged caller put,
+display and border documents, restored popup pointer, and restored working
+directory. Actual keyboard events drive the popup. Final arithmetic pixels,
+filesystem validation and all input hashes pass; terminal-audit.json
+independently verifies pins, masks and returned bytes. FileMgr remains identical
+to the pinned original.
+
+Visual qualification is still open. Inspection of picker-0.png and picker-1.png
+shows overlapping tree text and underlying console text within the native popup.
+The original control's picker-0.png has clean distinct rows and selection.
+Inventories and background desktops differ, so this is a recorded visual defect,
+not an exact whole-frame differential measurement. The capture and
+visual-observation.txt are preserved beside the result. The cause has not been
+isolated. Selection/restoration success alone does not close the chooser UI,
+full FileMgr, mouse interaction, navigation/file operations or C1–C5.
