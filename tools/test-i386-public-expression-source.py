@@ -113,6 +113,7 @@ additions['/Probe/PublicExpression.HC']=(root/'tests/guest/i386-public-expressio
 additions['/Probe/PublicTypes.HC']=(root/'tests/guest/i386-public-expression/TypeContract.HC').read_bytes()
 additions['/Probe/PublicExpressionRuntime.HC']=(root/'tests/guest/i386-public-expression/Runtime.HC').read_bytes()
 additions['/Probe/PublicExpressionLifetime.HC']=(root/'tests/guest/i386-public-expression/Lifetime.HC').read_bytes()
+if args.classes:additions['/Probe/PublicClasses.HC']=(root/'tests/guest/i386-public-expression/ClassContract.HC').read_bytes()
 pack=runpy.run_path(str(root/'tools/package-i386-native-image.py'))
 r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers, optimizer and i386 backend on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Complete declaration/initializer bodies are source-loaded; AOT store callbacks and stream service remain unresolved explicit externs. Class/function-header joins remain unresolved unless --classes is requested; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
 pin_paths=[Path(__file__).resolve(),source]+[root/('tools/'+n) for n in ('test-i386-autocomplete-interaction.py','test-i386-timeclock-reference.py','test-i386-timeclock-welcome.py','package-i386-native-image.py','build-i386-kernel.py')]
@@ -153,6 +154,10 @@ try:
  g.command('#include \"C:/Probe/PublicExpressionLifetime.HC\"');g.wait('PUBLIC EXPRESSION LIFETIME DONE\n')
  data=(g.out/'public-expression-lifetime-mask.bin').read_bytes();(out/'public-expression-lifetime-mask.bin').write_bytes(data)
  r['lifetime_mask']=struct.unpack('<q',data)[0];assert r['lifetime_mask']==15,r['lifetime_mask']
+ if args.classes:
+  g.command('#include \"C:/Probe/PublicClasses.HC\"');g.wait('PUBLIC CLASSES DONE\n')
+  data=(g.out/'public-classes.bin').read_bytes();(out/'public-classes.bin').write_bytes(data)
+  r['class_records']=list(struct.unpack('<8q',data));assert r['class_records']==[1]*8,r['class_records']
  g.command('6*7;');r['arithmetic_pixels']=g.result_pixels()
  g.close();g=None
  after=pack['snapshot']((out/'working.img').read_bytes())[1]

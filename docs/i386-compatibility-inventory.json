@@ -10336,6 +10336,12 @@
           "result": "pass",
           "evidence": "docs/i386-hash-memory.md",
           "scope": "All four original accounting bodies: eighteen owned standard-record allocator-ledger and heap-recovery cases, including member/class/function/global/debug and pointer normalization branches. Borrowed native bootstrap/compiler tables and full memory reports remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --classes --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-classes-source-native-v3/result.json",
+          "scope": "Twenty-one actual shared source stages, eight class/function-header observations including evaluated array bound/default argument, pointer-width frame offsets, metadata lifetime and exact native heap recovery; all earlier token/graph/executable/type/runtime/lifetime regressions. Original normal-compilation metadata agrees but retains 6488 bytes in its shared heap after symbol deletion; recorded separately, never allowed for native. Full compiler, normal API delivery and C1\u2013C5 remain unqualified."
         }
       ]
     },
@@ -10689,6 +10695,18 @@
           "result": "fail",
           "evidence": "build/i386-public-classes-formal-baseline-v1/result.json",
           "scope": "Expected class integration dependency failure at HashSingleTableFind, Part20.HC line 46, after twenty published stages. Real native implementation exists but public binding is absent; exact-input/fixture-volume/boot audit. Class/header/full compiler qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --classes --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-classes-source-native-v3/result.json",
+          "scope": "Twenty-one actual shared source stages, eight class/function-header observations including evaluated array bound/default argument, pointer-width frame offsets, metadata lifetime and exact native heap recovery; all earlier token/graph/executable/type/runtime/lifetime regressions. Original normal-compilation metadata agrees but retains 6488 bytes in its shared heap after symbol deletion; recorded separately, never allowed for native. Full compiler, normal API delivery and C1\u2013C5 remain unqualified."
+        },
+        {
+          "command": "python3 tools/test-i386-public-classes.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-classes-original-v4/result.json",
+          "scope": "Actual original normal compilation: seven metadata/lifetime checks agree with shared native execution; successful removal and absence of both symbols checked independently. Raw retained bytes are exactly 6488 in the original shared data/code heap; native requires zero. Earlier exact-recovery reference attempts remain failed. Not full compiler qualification."
         }
       ]
     },
@@ -10755,6 +10773,12 @@
           "result": "pass",
           "evidence": "build/i386-public-declarations-formal-native-v1/result.json",
           "scope": "Twenty source-loaded stages include complete shared declaration/initializer bodies; all prior token/graph/basic/type/runtime/lifetime checks pass, exact original executable records and independent input/volume/boot audit. AOT stores remain explicit unresolved externs; normal/full compiler qualification remains open."
+        },
+        {
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --classes --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-classes-source-native-v3/result.json",
+          "scope": "Twenty-one actual shared source stages, eight class/function-header observations including evaluated array bound/default argument, pointer-width frame offsets, metadata lifetime and exact native heap recovery; all earlier token/graph/executable/type/runtime/lifetime regressions. Original normal-compilation metadata agrees but retains 6488 bytes in its shared heap after symbol deletion; recorded separately, never allowed for native. Full compiler, normal API delivery and C1\u2013C5 remain unqualified."
         }
       ]
     },

@@ -27544,3 +27544,17 @@ normal image rejects the first call. Both x86-64 bootstrap generations and the
 full 1758-source-pinned native build pass. Shared class/header execution remains
 under investigation; no inventory workflow is qualified by this narrow API
 restoration. See docs/i386-hash-single-table.md. Full C1–C5 remains open.
+
+
+## Executed shared class/header compiler bodies (2026-11-07)
+
+Twenty-one source stages now publish and execute the actual class/header parser
+bodies. Eight native checks pass, including an evaluated array bound, default
+argument, target-width frame offsets, metadata surviving controller release and
+exact heap recovery. All earlier source compiler regressions pass in the same
+guest. The original normal compiler supplies the matching metadata reference;
+its private parser entry points are not public. Its retained heap bytes after
+symbol deletion are recorded separately and do not relax native cleanup.
+Normal public compiler delivery, function bodies, full declaration/statement/
+stream/AOT integration and full C1–C5 remain open. See
+docs/i386-public-class-parser.md.
