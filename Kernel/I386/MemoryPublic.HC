@@ -90,11 +90,15 @@ U8 *MemoryCAllocExact(I64 size,CTask *selector=0)
 U0 MemoryFree(U8 *ptr)
 {
   U32 flags;
+  CHeapCtrl *hc;
+  Bool collect;
   CI386PublicPool *pool;
   if(!ptr) return;
   flags=I386IrqSave;
-  ptr=MemoryBase(ptr); pool=(ptr-offset(CMemUsed.start))(CMemUsed *)->hc->bp;
+  ptr=MemoryBase(ptr); hc=(ptr-offset(CMemUsed.start))(CMemUsed *)->hc;pool=hc->bp;
+  collect=(ptr-offset(CMemUsed.start))(CMemUsed *)->size>=MEM_HEAP_HASH_SIZE;
   if(!I386MemFree(ptr)) { KernelLog("BAD FREE\n"); KernelStop; }
+  if(collect && !I386MemHeapCollect(hc)) { KernelLog("BAD HEAP COLLECT\n"); KernelStop; }
   //Core Free has finished reading the page header. The provider remains live.
   if(pool->reclaim) (*pool->reclaim)(pool);
   I386IrqRestore(flags);

@@ -449,6 +449,44 @@ U0 I386MemFreeSpansMerge(CHeapCtrl *hc)
   }
   hc->malloc_free_lst=head;
 }
+//Return fully cached small-allocation blocks without moving live objects.
+//Unlike HeapTrim, a nonempty heap is allowed. Caller chooses collection points;
+//ordinary small frees retain their inexpensive size-bucket behavior.
+Bool I386MemHeapCollect(CHeapCtrl *hc)
+{
+  U32 flags=I386IrqSave;
+  CMemBlk *block,*next,*last;
+  CMemUnused *unused,**link,*following;
+  I64 bytes;
+  Bool result=FALSE;
+  if(!hc || hc->hc_signature!=HEAP_CTRL_SIGNATURE_VAL || hc->locked_flags ||
+      !I386MemPoolValid(hc->bp) || hc->bp->locked_flags) goto done;
+  hc->locked_flags=1;
+  I386MemFreeSpansMerge(hc);
+  block=hc->next_mem_blk;
+  while(block!=&hc->next_mem_blk) {
+    next=block->next;last=block->last;bytes=(block->pags+0)(U64)*512;
+    link=&hc->malloc_free_lst;
+    while((unused=*link) && (unused+0)(U64)<(block+0)(U64)+I386_MEM_BLOCK_OFFSET)
+      link=&unused->next;
+    if(unused && unused(U8 *)==block(U8 *)+I386_MEM_BLOCK_OFFSET &&
+        unused->size==((bytes-I386_MEM_BLOCK_OFFSET)&~7)) {
+      //PageFree can overwrite its own page header. Save all links first, and
+      //stop referring to the returned page before the backing provider trims.
+      following=unused->next;
+      if(!I386MemPageFree(hc->bp,block)) goto unlock;
+      *link=following;last->next=next;next->last=last;
+      hc->alloced_u8s-=bytes;
+      if(hc->last_mergable==block)hc->last_mergable=0;
+    }
+    block=next;
+  }
+  result=TRUE;
+unlock:
+  hc->locked_flags=0;
+done:
+  I386IrqRestore(flags);return result;
+}
 U8 *I386MemAlloc(CHeapCtrl *hc,I64 size,Bool exact_pages=FALSE)
 {
   U32 flags=I386IrqSave;

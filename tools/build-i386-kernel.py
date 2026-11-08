@@ -295,7 +295,7 @@ def memory_runtime_layout(module):
     if exports.get('memory_file_birth', (0, 0))[0] != 3:
         raise ValueError('Missing public task file-birth hook')
     version_offset = 32+exports['memory_runtime_version'][1]
-    if struct.unpack_from('<I', module, version_offset)[0] != 40:
+    if struct.unpack_from('<I', module, version_offset)[0] != 41:
         raise ValueError('Unexpected memory-runtime version')
     return dict(image_bytes=size+8, version_offset=version_offset,
                 import_offset=imports['I386HeapAlloc'],
@@ -3336,7 +3336,7 @@ def main():
             raise ValueError('Public define list ownership failed')
         result['public_define_lists']={'phases':[0,1],'cases_per_phase':6,'original_x64':'pass'}
         result['public_hash_tables']={'phases':[0,1],'cases_per_phase':10,'allocation_failure_cleanup':'pass'}
-        result['memory_runtime']=dict(version=40,image_address=mbase,image_bytes=msize,
+        result['memory_runtime']=dict(version=41,image_address=mbase,image_bytes=msize,
             retained_heap_bytes=mspan,validated_phases=phases,public_api_cases=public_memory,
             rejected=verify_memory_rejection(normal_disk,volume,out,memory_layout))
         result['file_runtime']['rejected']=verify_file_rejection(normal_disk,volume,out,files_layout)

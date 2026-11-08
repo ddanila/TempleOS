@@ -33,11 +33,13 @@ Bool I386TaskCodeRelease(CI386TaskHeaps *owner,U8 *allocation)
 {
   U32 flags=I386IrqSave;
   CI386PublicPool *pool;
-  Bool result=FALSE;
+  Bool result=FALSE,collect;
   if(I386TaskCodeCapacity(owner,allocation)<0) goto done;
+  collect=(allocation-offset(CMemUsed.start))(CMemUsed *)->size>=MEM_HEAP_HASH_SIZE;
   pool=owner->control.bp;
   if(owner->control.locked_flags || pool->locked_flags) goto done;
   if(!I386MemFree(allocation)) goto done;
+  if(collect && !I386MemHeapCollect(&owner->control)) goto done;
   //All object/page-header reads have finished before empty arenas can disappear.
   if(!owner->control.used_u8s && !I386MemHeapTrim(&owner->control)) goto done;
   if(pool->reclaim) (*pool->reclaim)(pool);

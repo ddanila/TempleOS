@@ -28,7 +28,9 @@ The tool uses ABI-100 32-bit pointer layouts with 64-bit I64 fields. It walks
 all bootstrap heap blocks, checks bounds/alignment/tags, reconciles used spans
 and allocation counts with the heap descriptor, checks the current control's
 bidirectional ownership queue, and validates the output chunk chain and capacity.
-It does not interpret every nested public task-heap object or prove allocator
+Optional repeated `--task-heap` arguments now validate nested native cached
+spans and page accounting; see [cached-page reclamation](i386-cached-page-reclamation.md).
+The tool does not interpret every live public task-heap object or prove allocator
 correctness generally.
 
 | Measurement at rejection | Bytes/count |

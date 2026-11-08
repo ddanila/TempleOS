@@ -621,7 +621,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                        rejection_message=rejection_message)
             pause_window_manager=startup_check is not None and startup_check.get('pause_window_manager',True)
             if pause_window_manager:
-                submit('U0 TestPauseWM(){if(sys_winmgr_task!=adam_task)Suspend(sys_winmgr_task,TRUE);}TestPauseWM;',[],'window-manager-pause')
+                submit('U0 TestPauseWM(){if(sys_winmgr_task!=adam_task){while(Bt(&sys_semas[SEMA_REFRESH_IN_PROGRESS],0))Yield;Suspend(sys_winmgr_task,TRUE);}}TestPauseWM;',[],'window-manager-pause')
             if startup_check is not None:
                 for index,command_spec in enumerate(startup_check['commands']):
                     source,answers=command_spec[:2]
@@ -860,7 +860,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             component_manager_pause=not welcome and not keep_window_manager and (groups is None or bool(set(groups)&{'windows','graphics','text-frames','documents','file-navigation','document-editing','document-resources','document-latency','document-sprites','document-compatibility','help','text'}))
             if component_manager_pause:
                 active_group=None
-                submit('U0 TestPauseWM(){if(sys_winmgr_task!=adam_task)Suspend(sys_winmgr_task,TRUE);}TestPauseWM;',[],'window-manager-pause')
+                submit('U0 TestPauseWM(){if(sys_winmgr_task!=adam_task){while(Bt(&sys_semas[SEMA_REFRESH_IN_PROGRESS],0))Yield;Suspend(sys_winmgr_task,TRUE);}}TestPauseWM;',[],'window-manager-pause')
             active_group='windows'
             submit('#include "/Kernel/I386/WindowServiceCheck.HC"', ['Warning: Unused var'], 'window-service-source')
             submit('WindowServiceCheck;', ['14'], 'window-service-check')

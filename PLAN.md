@@ -28396,3 +28396,39 @@ classification before reclaiming it. The reusable offline auditor and exact
 snapshot/module pins are documented in docs/i386-output-window-heap-census.md;
 all raw evidence remains in build/i386-window-heap-capture-v1. No production
 compiler behavior or milestone qualification changes; C1–C5 remain open, 2/686.
+
+### Cached task-page reclamation and durable-code frontier
+
+MemoryRuntime 41 adds internal collection of wholly cached small-allocation page
+blocks from nonempty heaps. Large public/task-code frees run it before the existing
+backing-region notification; ordinary small frees keep their bucket cache. Live
+payload addresses, public record layouts, page rounding, the memory export table
+and the strict empty-only HeapTrim contract are unchanged. IRQ exclusion and
+saved links keep page/header reads ahead of provider trimming. Compiler/Console
+remain 100/258; only Kernel and MemoryRuntime module bytes change.
+
+The source cache suite now checks partial live heaps, payload preservation, exact
+page accounting/recovery, idempotence, null/locked rejection and IRQ state. Both
+bootstrap generations, public allocator/task-heap suites, full cross-build,
+lexer16/backend48 and all 25 diagnostic source-compiler stages pass. Both full
+TCG boot rasters and diagnostic metadata/F64 failure/unwind/retry phases pass.
+Two assembly runs timed out on the window-manager pause raster after COMMAND OK.
+The shared input runner now drains SEMA_REFRESH_IN_PROGRESS before suspending
+the cooperative manager; the same assembly fixture passes all six commands,
+encoding/execution and pixel checks with this setup. Both failures are retained.
+The v2 cross-build pins the new runner and produces byte-identical normal and
+diagnostic images. Final source/image/bootstrap/module/semantic/capture audit is
+build/i386-cache-collect-cross-v2/final-verification-audit.json. Public memory
+layout and all five inventory guards pass; startup performance remains unqualified.
+
+The unchanged lexer8 advances through numeric, character, punctuation, identifier,
+define and conditional helpers. It still fails before API publication, now on
+14880-byte executable storage in PublicLexTokens.HC. A second stopped capture
+proves complete emission in 30 chunks and prior IR release: 344000 free arena span
+bytes but largest span 11376. This is a durable-code contiguity frontier, unlike
+the prior numeric-emitter arena exhaustion. The nested auditor identifies fully
+cached pages with complete page/span/counter reconciliation; corrupt nested
+accounting is rejected. See docs/i386-cached-page-reclamation.md and matching
+build/i386-cache-collect-* evidence. These different-point captures do not claim
+a controlled byte-saving delta. Full normal compiler, fault/concurrency/resource
+and performance gates, 684 workflows and C1–C5 remain open; qualification 2/686.

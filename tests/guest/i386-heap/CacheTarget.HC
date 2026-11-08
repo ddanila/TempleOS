@@ -73,6 +73,44 @@ I64 CacheMergeParity()
   }
   return 0;
 }
+I64 CacheCollectCheck()
+{
+  CI386PublicPool *pool=&cache_pool;
+  CHeapCtrl *hc=&cache_heap;
+  U8 *slots[240];
+  I64 i,before,used;
+  U32 flags=GetRFlags;
+  if(!I386MemPoolInit(pool,0x40000,0x40000) ||
+      !I386MemHeapInit(hc,pool,0x1234))return 175;
+  for(i=0;i<240;i++) {
+    slots[i]=I386MemAlloc(hc,64);
+    if(!slots[i])return 176;
+    slots[i][0]=i;slots[i][63]=i^0x5A;
+  }
+  before=hc->alloced_u8s;
+  if(before!=3*8192)return 177;
+  for(i=0;i<240;i++)if(i!=0 && i!=120)
+    if(!I386MemFree(slots[i]))return 178;
+  used=hc->used_u8s;
+  if(I386MemHeapTrim(hc) || !I386MemHeapCollect(hc) ||
+      hc->alloced_u8s!=2*8192 || pool->used_u8s!=2*8192 || hc->used_u8s!=used ||
+      slots[0][0] || slots[0][63]!=0x5A || slots[120][0]!=120 ||
+      slots[120][63]!=(120^0x5A))return 179;
+  if(!I386MemHeapCollect(hc) || hc->alloced_u8s!=2*8192 ||
+      I386MemHeapCollect(0))return 180;
+  hc->locked_flags=1;
+  if(I386MemHeapCollect(hc))return 181;
+  hc->locked_flags=0;pool->locked_flags=1;
+  if(I386MemHeapCollect(hc))return 182;
+  pool->locked_flags=0;
+  if(!I386MemFree(slots[120]) || !I386MemHeapCollect(hc) ||
+      hc->alloced_u8s!=8192 || slots[0][63]!=0x5A ||
+      !I386MemFree(slots[0]) || !I386MemHeapCollect(hc) ||
+      hc->used_u8s || hc->alloced_u8s || pool->used_u8s ||
+      (GetRFlags^flags)&0x200 || !I386MemPoolValid(pool) ||
+      !I386MemHeapDestroy(hc) || !I386MemPoolRemove(pool,&pool->initial))return 183;
+  return 0;
+}
 I64 Main(I64 a,I64 b)
 {
   CI386PublicPool *pool=&cache_pool;
@@ -83,6 +121,7 @@ I64 Main(I64 a,I64 b)
   I64 total,old,i;
   U32 saved_flags=GetRFlags;
   if((i=CacheMergeParity))return i;
+  if((i=CacheCollectCheck))return i;
   if(!I386MemPoolInit(pool,0x40000,0x40000) ||
       !I386MemHeapInit(hc,pool,0x1234)) return 131;
   //Fill one small-allocation batch, leaving only an exact-size cached span.
