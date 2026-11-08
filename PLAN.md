@@ -28112,3 +28112,37 @@ Allocation-fault handling during local-table replacement/import transfer/externa
 patching, asynchronous cancellation, automatic CmpJoin abort cleanup and complete
 assembler/compiler delivery remain open. Full C1-C5 and 684 workflows remain
 unqualified; inventory qualification remains 2/686.
+
+### Normal public OptPass012 delivery
+
+Console 256 appends OptPass012 after the previous 677 exports, preserving masks
+and existing indices. PublicCompiler.HH includes the canonical IR definitions.
+A separately loaded Adam source service compiles the complete shared optimizer,
+metadata, type/size/branch transformations and diagnostics, using standard public
+controls/allocations. There is no private arena-control cast. ConsoleInit borrows
+existing kernel canonical type pointers into cmp.internal_types without duplicate
+classes or a new hash table. CompilerRuntime remains 95. Shared helper extraction
+preserves the complete IC detach/free/diagnostic bodies in the normal compiler.
+
+The pinned original and normal native 16 MiB contracts pass eighteen assertions
+and identical 48-word integer/F64 opcode/type/value traces through all three
+passes, parser-stack reuse and canonical identity. Caller data/code growth is
+zero, one system publication occurs, and arithmetic/volume/input checks pass.
+The first native capture identified the missing opcode-header inclusion; its
+failure is preserved and the fixed normal header is exercised by current tests.
+
+The source compiler regression now calls normal OptPass012 rather than defining
+a source replacement. All 25 stages and lexer/graph/expression/type/runtime/
+lifetime/class/function/statement/ExeCmdLine/stream probes pass, with exactly one
+normal optimizer publication. The parser and backend adapter remain diagnostic,
+so this is not complete normal compiler delivery. Both original bootstrap
+generations and the full cross-build pass. The identical-binary prior header
+candidate passes resolver/JIT/AOT contracts and exact 8/16 MiB TCG frames with
+both diagnostic ownership phases; current fixed-header 8 MiB KVM startup passes.
+The volume comparison isolates the public header correction as the only change.
+See docs/i386-constant-optimizer.md and build/i386-public-opt-cross-v3 audits.
+
+Normal COCCompile/LexStmt2Bin/parser/global-table initialization, complete
+diagnostics and fault/concurrency/cancellation coverage, complete native
+generations and full C1-C5 remain open. Inventory qualification stays 2/686;
+684 required workflows remain unqualified.

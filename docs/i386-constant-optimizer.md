@@ -61,3 +61,86 @@ compilation still folds using x64 arithmetic; existing numerical compatibility
 limits, including NaN payload policy, remain. Full native source-to-code execution,
 public allocation/task interfaces, self-hosting and strict 386SX/DX verification
 remain required by `PLAN.md`.
+
+## Normal public optimizer delivery
+
+Console 256 adds the normal `OptPass012(CCmpCtrl *)` entry declared in
+`Kernel/I386/PublicCompiler.HH`. That header includes the canonical IR opcode
+and metadata definitions in `CompilerA.HH`, alongside the public control/graph
+interfaces. The complete original-style public wrapper and shared
+`OptPass012Core.HC` run from `Compiler/I386/PublicOptSupport.HC`, compiled in Adam
+on first use. This path uses ordinary public allocations and standard controls;
+it does not cast a public control to the private arena-owned optimizer control.
+
+`ConsoleInit` borrows the existing kernel canonical type pointers into
+`cmp.internal_types`. It creates no duplicate scalar records or hash table.
+The type registry already has kernel lifetime. Other compiler-global tables and
+complete normal parser/backend delivery remain separate work.
+
+The optimizer source module loads the complete opcode metadata, stack helpers,
+type/size/branch transformations and original diagnostic helpers. Metadata is
+initialized before publishing its function pointer. Its cache shares the existing
+system-service context and protected symbol table with the JIT/resolver services,
+while loading independently. The loader waits/rechecks Adam, restores its hash
+table on exit, and throws `OptLoad` if publication did not complete. First-use
+retry, concurrency and cancellation are not qualified by the current contract.
+
+`ICDetachCore.HC`, `OptFreeCore.HC` and `ICDiagnosticsCore.HC` extract the existing
+complete helper bodies. The normal compiler includes these same files. The
+extraction audit verifies identical bodies (apart from one final blank line).
+`OptPass012.HC` only gains a configurable implementation name; the optimizer core
+algorithm is unchanged. Console appends one function after the existing 677
+exports and keeps all data masks and context-data index 671 unchanged.
+CompilerRuntime remains 95; the strict builder requires the new function and
+Console version 256.
+
+`tools/test-i386-public-optimizer.py` compares sixteen integer/F64 expression
+graphs through all three passes against the pinned original complete optimizer
+and its original helpers/metadata. It checks exact opcode/type/value triples,
+full stack allocation/reuse, canonical type identity and caller data/code heap
+recovery. The native fixture imports only the normal public compiler header and
+constructs IR with public graph services; it loads no optimizer replacement.
+
+The original capture `build/i386-public-opt-original-v3` and native 16 MiB capture
+`build/i386-public-opt-native16-v2` pass all eighteen assertions and the same
+48-word trace. Native caller data/code growth is zero, with one system publication,
+normal arithmetic pixels, sole fixture addition and volume validation. Input
+hashes remain unchanged. The earlier native failure is retained: its header
+omitted opcode definitions and rejected `IC_ADD` before optimizer execution.
+The fixed header is preserved in the current image and verified by the native
+contract. The source modules and flat kernel are identical across that header
+fix; the logical-volume audit finds only PublicCompiler.HH changed.
+
+The full source compiler regression now imports this normal public optimizer
+instead of defining a replacement `OptPass012`. Its parser and backend adapter
+remain source-loaded diagnostics; this transition does not qualify normal
+`COCCompile`, `CmpJoin`, parsing, whole compiler files or a complete workflow.
+
+Verified commands:
+
+```
+python3 tools/test-i386-public-optimizer.py --out build/i386-public-opt-original-v3
+python3 tools/test-i386-public-optimizer.py build/i386-public-opt-cross-v3/kernel.img --reference build/i386-public-opt-original-v3 --ram-mib 16 --out build/i386-public-opt-native16-v2
+python3 tools/test-i386-public-expression-source.py build/i386-public-opt-cross-v3/kernel.img --compiler-stream --out build/i386-public-opt-compiler-source-v2
+```
+
+The last command passes all 25 publication stages and subsequent lexer, graph,
+expression/type/runtime/lifetime/class/function/statement/ExeCmdLine/stream
+probes through the delivered optimizer. Its debug log records exactly one
+`PUBLIC OPT loaded` publication. The preserved generated parts contain no
+source replacement of OptPass012. Input and volume checks pass.
+
+Both current-source original compiler/kernel rebuild generations and the full
+cross-build pass. Resolver-progress and JIT/AOT contracts pass on the preceding
+candidate with identical native binaries; that candidate differs only in the
+public header whose correction is exercised by the current optimizer contracts.
+Its 8/16 MiB TCG boots match every welcome/prompt pixel and the 16 MiB diagnostic
+boot completes both compiler phases and exact ownership markers. Timings are
+234.47 and 435.81 seconds respectively. The current fixed-header image also
+passes the 8 MiB KVM startup/source preflight. The audits retain this distinction;
+these are not new full C5 generation/reproducibility/performance qualifications.
+
+Normal COCCompile/LexStmt2Bin/parser delivery, compiler-global initialization
+beyond the canonical type pointers, complete diagnostic behavior, allocation
+failure, first-use recovery/concurrency/cancellation, and the full application
+inventory remain open. No workflow or C1–C5 milestone count advances.

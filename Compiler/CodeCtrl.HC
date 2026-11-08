@@ -5,10 +5,7 @@ U0 COCSeed(CCodeCtrl *coc)
   coc->coc_next_misc=coc->coc_last_misc=&coc->coc_next_misc;
   coc->coc_head.ic_code=0; //IC_END
 }
-U0 ICDetach(CIntermediateCode *node)
-{//Leave the removed node fields intact for compiler tree/backward references.
-  node->last->next=node->next; node->next->last=node->last;
-}
+#include "/Compiler/ICDetachCore.HC"
 U0 COCCopy(CCodeCtrl *dst,CCodeCtrl *src)
 {
   I64 i;

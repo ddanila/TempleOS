@@ -1,3 +1,6 @@
+#ifndef OPT_PASS012_IMPL
+#define OPT_PASS012_IMPL OptPass012
+#endif
 #include "/Compiler/OptPass012Core.HC"
 U0 OptPass012Report(U8 *context,CCmpCtrl *cc,CIntermediateCode *node,I64 reason)
 {
@@ -14,7 +17,7 @@ U0 OptPass012Report(U8 *context,CCmpCtrl *cc,CIntermediateCode *node,I64 reason)
       LexExcept(cc,"Compiler Optimization Error at ");
   }
 }
-CIntermediateCode *OptPass012(CCmpCtrl *cc)
+CIntermediateCode *OPT_PASS012_IMPL(CCmpCtrl *cc)
 {
   COptPass012Services services;
   if(!cc->ps) cc->ps=MAlloc(sizeof(CPrsStk));

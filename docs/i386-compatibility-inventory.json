@@ -10802,6 +10802,27 @@
           "result": "pass",
           "evidence": "build/i386-public-expression-loader-v9/result.json",
           "scope": "Source-loaded diagnostic: complete shared parser/optimizer, canonical type setup, 17 published stages, 24 token cases and integer/F64 graph mask 63; independent exact-input/fixture-only-volume/boot audit. Not normal delivered expression execution or full compiler qualification."
+        },
+        {
+          "target": "original-public-optimizer-component",
+          "command": "python3 tools/test-i386-public-optimizer.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-opt-original-v3/result.json",
+          "scope": "Pinned complete original optimizer, metadata, graph and optimizer helpers: 18 assertions, sixteen integer/F64 IR graphs through passes 0/1/2, exact 48-word opcode/type/value trace, full parser-stack reuse, canonical type identity and exact data/code heap recovery. Branch/pointer/error/concurrency coverage and whole compiler qualification remain open."
+        },
+        {
+          "target": "native-public-optimizer-16m-component",
+          "command": "python3 tools/test-i386-public-optimizer.py IMAGE --reference REFERENCE --ram-mib 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-opt-native16-v2/result.json",
+          "scope": "Normal Console 256 OptPass012 facade and PublicCompiler.HH; complete shared optimizer compiled in Adam on first use with canonical borrowed kernel types. Same eighteen assertions and 48-word original trace; zero caller data/code growth, one publication, arithmetic and volume checks, unchanged inputs. Public control is never cast to private arena control. Full normal compiler/backend/parsing and detailed diagnostics remain unqualified."
+        },
+        {
+          "target": "normal-optimizer-source-compiler-integration",
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --compiler-stream --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-opt-compiler-source-v2/result.json",
+          "scope": "All 25 source publication stages and lexer/graph/expression/type/runtime/lifetime/class/function/statement/ExeCmdLine/stream execution probes pass through delivered normal OptPass012. One PUBLIC OPT publication and no source optimizer wrapper replacement, verified by final audit. The parser and COCCompile backend adapter remain diagnostic source-loaded code; this does not qualify normal full compiler delivery or a complete workflow."
         }
       ]
     },

@@ -24,7 +24,7 @@ source=args.disk.resolve()
 header=b'''//Diagnostic source-loaded original token lexer. Unresolved compiler services remain explicit externs.
 #include "/Kernel/I386/PublicDocument.HH"
 #include "/Kernel/I386/PublicHash.HH"
-#include "/Kernel/I386/PublicLoader.HH"
+#include "/Kernel/I386/PublicCompiler.HH"
 #include "/Kernel/I386/PublicMath.HH"
 #include "/Kernel/I386/PublicFiles.HH"
 #include "/Kernel/StringLimits.HH"
@@ -60,21 +60,17 @@ ICInfoInit;
 #include "/Compiler/PrsStack.HC"
 #include "/Compiler/PrsKeyword.HC"
 #include "/Compiler/TargetSize.HC"
-public extern CIntermediateCode *OptPass012(CCmpCtrl *cc);
 public extern U8 *COCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_type);
 public extern CHashClass *PrsType(CCmpCtrl *cc,CHashClass **first,I64 *mode,CMemberLst *member,U8 **ident,CHashFun **fun,CHashExport **export_entry,CArrayDim *dim,I64 flags);
 '''
-code=(root/'Compiler/CodeCtrl.HC').read_bytes();parser_prefix+=code[code.index(b'U0 ICDetach('):code.index(b'U0 COCCopy(')]
-code=(root/'Compiler/OptLib.HC').read_bytes();parser_prefix+=code[code.index(b'CIntermediateCode *OptFree('):code.index(b'I64 CmpOffset2Reg(')]
-code=(root/'Compiler/CExcept.HC').read_bytes();parser_prefix+=code[code.index(b'U0 ParenWarning('):code.index(b'U0 ICClassPut(')]
+parser_prefix+=b'#include "/Compiler/ICDetachCore.HC"\n'
+parser_prefix+=b'#include "/Compiler/OptFreeCore.HC"\n'
+code=(root/'Compiler/CExcept.HC').read_bytes();parser_prefix+=code[code.index(b'U0 ParenWarning('):code.index(b'#include "/Compiler/ICDiagnosticsCore.HC"')]
 parts += [parser_prefix,b'#include "/Compiler/PrsExp.HC"\n']
 optimizer=b'''#include "/Compiler/OptCode.HC"
-#include "/Compiler/OptTypes.HC"
-#include "/Compiler/OptBranch.HC"
-#include "/Compiler/OptSize.HC"
 '''
-code=(root/'Compiler/CExcept.HC').read_bytes();optimizer+=code[code.index(b'U0 ICClassPut('):]
-optimizer+=b'#include "/Compiler/OptPass012.HC"\n'
+code=(root/'Compiler/CExcept.HC').read_bytes();optimizer+=code[code.index(b'#include "/Compiler/ICDiagnosticsCore.HC"'):]
+#Optimization uses the delivered normal public binding, not a source replacement.
 types=b'#include "/Compiler/SymbolInit.HC"\n'
 code=(root/'Compiler/PrsLib.HC').read_bytes();types+=code[code.index(b'CHashClass *PrsClassNew('):code.index(b'#include "/Compiler/PublicCodeCore.HC"')]
 types+=b'''#include "/Compiler/InternalTypes.HC"
@@ -150,7 +146,7 @@ if args.statement_code:additions['/Probe/PublicStatementCompile.HC']=(root/'test
 if args.execute_line:additions['/Probe/PublicExecuteLine.HC']=(root/'tests/guest/i386-public-expression/ExecuteLineContract.HC').read_bytes()
 if args.compiler_stream:additions['/Probe/PublicCompilerStream.HC']=(root/'tests/guest/i386-public-compiler-stream/Contract.HC').read_bytes()
 pack=runpy.run_path(str(root/'tools/package-i386-native-image.py'))
-r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers, optimizer and i386 backend on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Complete declaration/initializer bodies are source-loaded; AOT stores and the i386 data-range recorder use normal native bindings; remaining compiler services depend on the requested stages. Class/function-header joins remain unresolved unless --classes is requested; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
+r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers and i386 backend with normal public OptPass012 on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Complete declaration/initializer bodies are source-loaded; AOT stores and the i386 data-range recorder use normal native bindings; remaining compiler services depend on the requested stages. Class/function-header joins remain unresolved unless --classes is requested; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
 pin_paths=[Path(__file__).resolve(),source]+[root/('tools/'+n) for n in ('test-i386-autocomplete-interaction.py','test-i386-timeclock-reference.py','test-i386-timeclock-welcome.py','package-i386-native-image.py','build-i386-kernel.py')]
 for directory in ('Compiler','Kernel','tests/guest/i386-public-lexer','tests/guest/i386-public-expression','tests/guest/i386-public-compiler-stream'):
  pin_paths += sorted(p for p in (root/directory).rglob('*') if p.is_file() and p.suffix in ('.HC','.HH'))
