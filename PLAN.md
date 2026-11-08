@@ -27907,3 +27907,26 @@ bootstrap generations pass with all current source pins matching. This prepares
 real normal native bindings; no exports or workflow qualifications are added.
 Public AOT/lexer/assembly delivery and the complete C1–C5 gates remain open.
 See [AOT storage work](docs/i386-aot-storage.md) for evidence and remaining scope.
+
+### Normal public AOT storage bindings (2026-11-08)
+
+Console 251 appends five actual bindings for the shared original byte/word/quad/
+absolute-patch stores and the i386 data-range recorder (668 exports total). The
+source-loaded full compiler runner now uses these normal bindings. Original and
+native contracts agree on all 24 assertions, 32 exact binary bytes and 34 listing
+bytes, including block ends/crossings, sparse variadic patches, cursor/high-water
+independence, record gates/order/64-bit fields and exact public used-byte heap
+recovery. The previous Console 250 rejects the first missing call with the same
+final fixture. The original source-loads its private byte-identical store bodies
+and the port data-range recorder; it does not expose these as original public
+APIs. Preserved failed fixtures document the corrected symbol/constant, cursor
+marker and export-length assumptions.
+
+Both bootstrap generations, the full image build, all 26 source-loaded compiler
+stages, Carry/ClassMeta regressions, the 8 MiB welcome raster and both 16 MiB
+diagnostic phases pass. The full compiler runner's stale report text was then
+corrected; a saved diff proves that only the report string changed, with all
+other 1,040 pins still matching. Five inventory guard tests pass. The full native
+compiler module, lexer, assembly/AOT pipeline, 684 unqualified workflows and all
+complete C1–C5 gates remain open. See
+[AOT storage evidence](docs/i386-aot-storage.md).

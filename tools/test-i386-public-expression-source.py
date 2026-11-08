@@ -98,10 +98,6 @@ code=(root/'Compiler/PrsVar.HC').read_bytes()
 type_parser+=code[code.index(b'#include "/Compiler/PrsTypeCore.HC"'):code.index(b'#include "/Compiler/PrsDeclarationCore.HC"')]
 parts += [optimizer,types,(root/'tests/guest/i386-public-expression/BackendAdapter.HC').read_bytes(),type_parser]
 declarations=b'''public extern U0 PrsStaticInit(CCmpCtrl *cc,CMemberLst *member,I64 pass);
-public extern U0 AOTStoreCodeU8(CCmpCtrl *cc,U8 value);
-public extern U0 AOTStoreCodeU64(CCmpCtrl *cc,U64 value);
-public extern U0 AOTStoreCodeU8At(CCmpCtrl *cc,I64 rip,...);
-public extern U0 PrsI386DataRange(CCmpCtrl *cc,I64 start,I64 size);
 '''
 code=(root/'Compiler/PrsVar.HC').read_bytes()
 declarations+=code[code.index(b'#include "/Compiler/PrsDeclarationCore.HC"'):]
@@ -159,7 +155,7 @@ if args.statement_code:additions['/Probe/PublicStatementCompile.HC']=(root/'test
 if args.execute_line:additions['/Probe/PublicExecuteLine.HC']=(root/'tests/guest/i386-public-expression/ExecuteLineContract.HC').read_bytes()
 if args.compiler_stream:additions['/Probe/PublicCompilerStream.HC']=(root/'tests/guest/i386-public-compiler-stream/Contract.HC').read_bytes()
 pack=runpy.run_path(str(root/'tools/package-i386-native-image.py'))
-r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers, optimizer and i386 backend on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Complete declaration/initializer bodies are source-loaded; AOT store callbacks and stream service remain unresolved explicit externs. Class/function-header joins remain unresolved unless --classes is requested; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
+r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers, optimizer and i386 backend on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Complete declaration/initializer bodies are source-loaded; AOT stores and the i386 data-range recorder use normal native bindings; remaining compiler services depend on the requested stages. Class/function-header joins remain unresolved unless --classes is requested; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
 pin_paths=[Path(__file__).resolve(),source]+[root/('tools/'+n) for n in ('test-i386-autocomplete-interaction.py','test-i386-timeclock-reference.py','test-i386-timeclock-welcome.py','package-i386-native-image.py','build-i386-kernel.py')]
 for directory in ('Compiler','Kernel','tests/guest/i386-public-lexer','tests/guest/i386-public-expression','tests/guest/i386-public-compiler-stream'):
  pin_paths += sorted(p for p in (root/directory).rglob('*') if p.is_file() and p.suffix in ('.HC','.HH'))

@@ -179,4 +179,9 @@ public _extern _CMP_CTRL_DEL U0 CmpCtrlDel(CCmpCtrl *cc);
 public _extern _CMP_CTRL_SIZE I64 CmpCtrlSize(CCmpCtrl *cc);
 public _extern _LEX_ATTACH_DOC U0 LexAttachDoc(CCmpCtrl *cc,CLexFile *tmpf=NULL,
   CDoc *doc=NULL,U8 *abs_filename=NULL,CDocEntry *doc_e=NULL,I64 col=0);
+public _extern _AOT_STORE_CODE_U8 U0 AOTStoreCodeU8(CCmpCtrl *cc,U8 b);
+public _extern _AOT_STORE_CODE_U32 U0 AOTStoreCodeU32(CCmpCtrl *cc,U32 d);
+public _extern _AOT_STORE_CODE_U64 U0 AOTStoreCodeU64(CCmpCtrl *cc,U64 q);
+public _extern _AOT_STORE_CODE_U8_AT U0 AOTStoreCodeU8At(CCmpCtrl *cc,I64 rip,...);
+public _extern _PRS_I386_DATA_RANGE U0 PrsI386DataRange(CCmpCtrl *cc,I64 start,I64 size);
 #endif

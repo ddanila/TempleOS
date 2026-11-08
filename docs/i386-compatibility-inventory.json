@@ -9702,7 +9702,22 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-aot-storage-component",
+          "command": "python3 tools/test-i386-aot-storage.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-aot-storage-original-v4/result.json",
+          "scope": "Original x64 compiler source-loads byte-identical private original store bodies and the port data-range recorder. All 24 assertions, exact 32 binary bytes and 34 listing bytes, heap recovery; unchanged inputs. Not original public API delivery or whole-file qualification."
+        },
+        {
+          "target": "native-public-aot-storage-component",
+          "command": "python3 tools/test-i386-aot-storage.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-aot-storage-native-v4/result.json",
+          "scope": "Normal Console 251 bindings: sequential widths, exact block ends/crossings, sparse patches and byte truncation, cursor/high-water independence, listing, data-range gates/order/64-bit fields; same complete records, exact heap recovery, arithmetic and volume checks. Previous Console 250 rejects first missing call with final fixture. Full AOT, assembly, public compiler module and whole-file qualification remain open."
+        }
+      ]
     },
     {
       "path": "Compiler/AsmResolve.HC",
@@ -10960,6 +10975,20 @@
           "result": "pass",
           "evidence": "build/i386-public-functions-formal-native-v1/result.json",
           "scope": "Twenty-three actual source stages and seven ordinary function cases after public controller release, exact original return records, then generated-code/metadata deletion and exact native heap recovery. Function frame/argument/local/return metadata is retained; actual shared parser/optimizer/backend used. All earlier expression/token/type/runtime/lifetime/class regressions pass. Source-loaded diagnostic only; normal public Lex, complete compiler and full C1\u2013C5 remain unqualified."
+        },
+        {
+          "target": "original-aot-storage-component",
+          "command": "python3 tools/test-i386-aot-storage.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-aot-storage-original-v4/result.json",
+          "scope": "Original x64 compiler source-loads byte-identical private original store bodies and the port data-range recorder. All 24 assertions, exact 32 binary bytes and 34 listing bytes, heap recovery; unchanged inputs. Not original public API delivery or whole-file qualification."
+        },
+        {
+          "target": "native-public-aot-storage-component",
+          "command": "python3 tools/test-i386-aot-storage.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-aot-storage-native-v4/result.json",
+          "scope": "Normal Console 251 bindings: sequential widths, exact block ends/crossings, sparse patches and byte truncation, cursor/high-water independence, listing, data-range gates/order/64-bit fields; same complete records, exact heap recovery, arithmetic and volume checks. Previous Console 250 rejects first missing call with final fixture. Full AOT, assembly, public compiler module and whole-file qualification remain open."
         }
       ]
     },
