@@ -117,7 +117,6 @@ if args.statements:
  public extern I64 Un(U8 *rip,I64 count=0x80,I64 seg_size=64);
  public extern U0 PrsAsmBlk(CCmpCtrl *cc,I64 flags);
  public extern CAOT *CmpJoin(CCmpCtrl *cc,I64 flags,U8 *map_name=NULL,U8 map_drive=0);
- public extern U0 CmpFixUpJITAsm(CCmpCtrl *cc,CAOT *aot);
  public extern I64 ExeCmdLine(CCmpCtrl *cc);
  '''
   code=(root/'Compiler/PrsStmt.HC').read_bytes()

@@ -151,3 +151,16 @@ code-heap ownership and file-break cleanup phases. These concurrent runs do not
 establish the isolated 60-second startup budget. Minimal-profile packaging is
 separately verified in `i386-command-prompt-minimal-package-v2`; that result
 checks the catalog and volume, not a minimal-image boot.
+
+## JIT trace pointer widths and decoder compilation
+
+The normal JIT trace now exercises formatted Un output, including DolDoc
+highlight commands. Ui computes padding with scalar address differences rather
+than reinterpreting a stored four-byte pointer as I64; Un forms its byte end
+pointer without that reinterpretation. The complete ModRM/SIB block is extracted
+unchanged into UAsmModRM, preserving its arguments and prefix state while reducing
+the largest compilation graph. Original Ui, the current decoder on original x64,
+and normal native Ui pass the twelve exact cases; the full native JIT trace also
+matches the original's complete 113 bytes. Both full 8/16 MiB welcome rasters pass
+with the extracted decoder. See docs/i386-jit-fixup.md for evidence and remaining
+opcode, compiler, unwind and lifecycle limits.

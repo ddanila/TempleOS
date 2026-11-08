@@ -111,7 +111,8 @@ done:
   I386IrqRestore(irq); return allocation;
 exhausted:
 #ifdef I386_PARSER_FAILURE_TRACE
-  I386ParserFailure("PARSER CODE ALLOCATION REJECT ",cc);
+  if(record) I386ParserFailure("PARSER CODE STORAGE REJECT ",cc);
+  else I386ParserFailure("PARSER CODE RECORD REJECT ",cc);
 #endif
   I386IrqRestore(irq); throw('OutMem',TRUE); return 0;
 }

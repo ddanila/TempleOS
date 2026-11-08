@@ -3,6 +3,7 @@
 #include "/Compiler/ControlRelease.HC"
 #include "/Compiler/CodeCtrl.HC"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/CompilerScope.HC"
 #define I386_COMPILER_CONTROL_MAGIC 0x43435431
 class CI386CodeAllocation {
   CI386CodeAllocation *next,*last;
@@ -39,8 +40,8 @@ Bool I386CmpTaskOwnerValid(CI386Task *task,CI386Heap *heap,CHashTable *symbols)
   if(!task->owner || !task->symbol_state || task->hash_table!=symbols ||
       I386HeapSize(heap,task->symbol_state)!=sizeof(CI386TaskSymbols)) return FALSE;
   scope=task->symbol_state;
-  return scope->task==task && scope->heap==heap && scope->table==symbols &&
-    scope->signature==I386_TASK_SYMBOLS_MAGIC;
+  return scope->task==task && scope->heap==heap && scope->signature==I386_TASK_SYMBOLS_MAGIC &&
+    I386CompilerScopeLinked(symbols,scope->table);
 }
 CCmpCtrl *I386CmpCtrlNew(CI386Heap *heap,U8 *buffer,I64 flags,U8 *name,
   CHashTable *symbols,U32 *alpha_numeric,CI386Task *task=0)

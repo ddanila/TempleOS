@@ -9999,6 +9999,27 @@
           "result": "pass",
           "evidence": "build/i386-exefile2-puts-exceptions-v1/result.json",
           "scope": "Ordinary ExePutS retains explicit Compiler/Break absorption and custom exception propagation; unchanged inputs."
+        },
+        {
+          "target": "original-jit-fixup-component",
+          "command": "python3 tools/test-i386-jit-fixup.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-jit-fixup-original-v7/result.json",
+          "scope": "Pinned original complete JIT body and real label/import helpers: forty assertions, signed ranges, first-failure ownership, full 113-byte trace and independently measured diagnostic heap cost. Partial-progress unwind and complete compiler/assembler remain unqualified."
+        },
+        {
+          "target": "native-public-jit-fixup-component",
+          "command": "python3 tools/test-i386-jit-fixup.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-jit-fixup-native-v6/result.json",
+          "scope": "Normal Console 253 first-use Adam source service, unchanged forty-word record and exact trace, real forwarded labels/function/global addresses, exports/deferred imports, six range errors and exact caller heap recovery. One system publication and zero retained caller bytes for cold load. Native arithmetic pixels and sole fixture addition audited; unchanged inputs. First-use failure/retry/concurrency/cancellation, partial-progress unwind, full public compiler/AOT/assembly and C1-C5 remain open."
+        },
+        {
+          "target": "shared-jit-fixup-x64-component",
+          "command": "python3 build/jit-shared-x64-runner.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-jit-shared-x64-v1/result.json",
+          "scope": "Current shared complete JIT body compiled on pinned original x64 scaffolding passes all forty original assertions, full trace and independent diagnostic heap baseline. Original immutable helper graph/import routines and generated runner retained. No native self-hosting or whole compiler qualification."
         }
       ]
     },
@@ -11188,6 +11209,20 @@
           "result": "pass",
           "evidence": "build/i386-unassemble-native-v4/result.json",
           "scope": "Twelve actual Ui cases; exact instruction text, lengths and relative destinations. Original run reproduces catalog. No complete decoder qualification."
+        },
+        {
+          "target": "shared-decoder-x64-modrm-component",
+          "command": "python3 build/jit-current-decoder-x64.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-jit-current-decoder-x64-v1/result.json",
+          "scope": "Current shared decoder compiled under prefixed names on pinned original x64: exact twelve-case text/length/destination oracle and unchanged opcode catalog. Generated fixture and current source SHA-256 retained. Complete opcode coverage remains open."
+        },
+        {
+          "target": "native-decoder-modrm-component",
+          "command": "python3 tools/test-i386-unassemble.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-jit-modrm-native-v1/result.json",
+          "scope": "Shared complete ModRM/SIB extraction and scalar pointer-length repair preserve all twelve original decoder observations, arithmetic pixels and packaged volume. Full formatted Un trace is separately covered by the JIT component. Complete decoder and debugger workflows remain unqualified."
         }
       ]
     },

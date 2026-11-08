@@ -27975,3 +27975,30 @@ caller has installed a temporary linked hash-table head. Existing ownership
 checks reject that scope. No workflow count or C1–C5 milestone is advanced;
 684 workflows, public compiler delivery and complete release gates remain open.
 See docs/i386-jit-fixup.md.
+
+## Normal public JIT assembly fixups
+
+Console 253 now binds CmpFixUpJITAsm and loads the complete shared implementation
+into Adam on first use. Native fixtures package only the public header and their
+contract. All 40 assertions match the original, including all relocation widths,
+forwarded labels, function/global targets, exports/deferred imports, signed
+boundaries, six first-record failures, packet ownership and the exact 113-byte
+trace. Caller heap recovery is exact, including zero retained caller bytes for
+the cold system load. The current shared body also passes the 40-check contract
+on the original x64 system.
+
+CompilerRuntime 95 accepts borrowed hash-table prefixes linked to the validated
+owned task scope, rejecting detached heads and cycles. Post-emission IR release
+preserves saved parent trees and link payloads. The pointer-width padding repair
+and complete ModRM/SIB helper extraction preserve decoder behavior and restore
+8 MiB startup. Successful standalone ownership tests, both decoder architectures,
+25 public-source stages and all follow-up contracts, Carry and ClassMeta pass.
+Both complete 8/16 MiB welcome rasters pass; 16 MiB also completes both program,
+code-heap and file-break cleanup phases. All final build/source inputs are audited.
+
+Evidence is under build/i386-jit-fixup-cross-v9 and docs/i386-jit-fixup.md.
+Earlier failed candidates and allocation/trace probes remain preserved. This
+component does not qualify partial-progress exception unwind, first-use failure/
+retry/concurrency/cancellation, complete public compiler/assembler/AOT delivery,
+native self-hosting, 684 workflows or the full C1-C5 release gates. Inventory
+qualification remains two of 686 workflows.

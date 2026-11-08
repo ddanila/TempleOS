@@ -25,6 +25,69 @@ U0 ControlDocument(U8 *context,CDoc *document)
   if(context!=&control_documents || document!=0x1234) state_free_errors++;
   control_documents++;
 }
+U0 ControlZero(U8 *p,I64 size){while(size--)*p++=0;}
+Bool ControlScopeTest()
+{
+  CI386Task task;CI386Scheduler scheduler;
+  CI386TaskSymbols *scope=StateAlloc(sizeof(CI386TaskSymbols));
+  CHashTable owned,first,second,detached;
+  CCmpCtrl *cc;CIntermediateCode *retired,*live;CCodeMisc *misc;CCodeCtrl *saved;
+  Bool valid=TRUE;
+  ControlZero(&task,sizeof(task));ControlZero(&scheduler,sizeof(scheduler));
+  ControlZero(&owned,sizeof(owned));ControlZero(&first,sizeof(first));
+  ControlZero(&second,sizeof(second));ControlZero(&detached,sizeof(detached));
+  if(!scope)return FALSE;
+  task.owner=&scheduler;scheduler.current=&task;task.lifetime_refs=1;
+  task.next_cc=task.last_cc=&task.next_cc;task.symbol_state=scope;task.hash_table=&owned;
+  scope->task=&task;scope->heap=&state_heap;scope->table=&owned;
+  scope->signature=I386_TASK_SYMBOLS_MAGIC;
+  if(!I386CmpTaskOwnerValid(&task,&state_heap,&owned))valid=FALSE;
+  first.next=&second;second.next=&owned;task.hash_table=&first;
+  cc=I386CmpCtrlNew(&state_heap,"1",CCF_DONT_FREE_BUF,"Scope",&first,char_bmp_alpha_numeric,&task);
+  if(!cc)valid=FALSE;
+  else {
+    if(!I386CmpCtrlEnter(&state_heap,cc) || !I386COCInit(&state_heap,cc))valid=FALSE;
+    retired=I386ICAdd(&state_heap,cc,0x0A,1,0);
+    live=I386ICAdd(&state_heap,cc,0x0A,2,0);
+    misc=I386COCMiscNew(&state_heap,cc,CMT_ASM_LABEL);
+    if(!retired || !live || !misc)valid=FALSE;
+    else {
+      misc->flags=CMF_DEFINED;live->t.arg1_tree=retired;
+      if(!I386ICRetire(&state_heap,cc,retired) || !I386COCInstructionsRelease(&state_heap,cc) ||
+          I386HeapSize(&state_heap,live)>=0 || I386HeapSize(&state_heap,retired)>=0 ||
+          I386HeapSize(&state_heap,misc)<0 || cc->coc.coc_next_misc!=misc ||
+          cc->coc.coc_head.next!=&cc->coc.coc_head.next || cc->coc.coc_head.last!=&cc->coc.coc_head.next ||
+          !I386COCDiscard(&state_heap,cc) || I386HeapSize(&state_heap,retired)>=0 ||
+          I386HeapSize(&state_heap,misc)>=0)valid=FALSE;
+    }
+    //An outer graph must keep its detached operands across inner emission.
+    retired=I386ICAdd(&state_heap,cc,0x0A,3,0);live=I386ICAdd(&state_heap,cc,0x0A,4,0);
+    if(!retired || !live)valid=FALSE;
+    else {
+      live->t.arg1_tree=retired;
+      if(!I386ICRetire(&state_heap,cc,retired) || !I386COCPush(&state_heap,cc) ||
+          !I386COCInit(&state_heap,cc) || !I386ICAdd(&state_heap,cc,0x0A,5,0) ||
+          !I386COCInstructionsRelease(&state_heap,cc) || I386HeapSize(&state_heap,retired)<0 ||
+          live->t.arg1_tree!=retired || !I386COCDiscard(&state_heap,cc) ||
+          !(saved=I386COCPopNoFree(&state_heap,cc)) || !I386COCHeaderFree(&state_heap,cc,saved) ||
+          !I386COCInstructionsRelease(&state_heap,cc) ||
+          I386HeapSize(&state_heap,retired)>=0 || I386HeapSize(&state_heap,live)>=0 ||
+          !I386COCDiscard(&state_heap,cc))valid=FALSE;
+    }
+    task.hash_table=&detached;
+    if(I386CmpTaskOwnerValid(&task,&state_heap,&detached) || I386COCInit(&state_heap,cc))valid=FALSE;
+    task.hash_table=&first;second.next=&first;
+    if(I386CmpTaskOwnerValid(&task,&state_heap,&first) || I386COCInit(&state_heap,cc) ||
+        I386CmpCtrlNew(&state_heap,"1",CCF_DONT_FREE_BUF,"Cycle",&first,char_bmp_alpha_numeric,&task))valid=FALSE;
+    second.next=&owned;
+    if(!I386CmpCtrlLeave(&state_heap,cc) || !I386CmpCtrlDel(&state_heap,cc))valid=FALSE;
+  }
+  if(scope->table!=&owned || task.hash_table!=&first || task.active_controls || task.lifetime_refs!=1)valid=FALSE;
+  task.hash_table=&owned;scope->signature=0;
+  if(I386CmpTaskOwnerValid(&task,&state_heap,&owned))valid=FALSE;
+  StateFree(scope);
+  return valid && !state_free_errors && !state_heap.used && !state_heap.allocations && I386HeapValid(&state_heap);
+}
 I64 NativeControlTest()
 {
   CCmpCtrl *cc;
@@ -34,6 +97,7 @@ I64 NativeControlTest()
   CCodeMisc *misc;
   I64 size,i,successes=0,failures=0,used,lines=0;
   U32 flags=GetRFlags;
+  if(!ControlScopeTest())return 108;
   for(size=24;size<=1024;size+=8) {
     if(!I386HeapInit(&small,0x61000,size)) return 70;
     cc=I386CmpCtrlNew(&small,"source",CCF_DONT_FREE_BUF,"C:/Name.HC",0,char_bmp_alpha_numeric);

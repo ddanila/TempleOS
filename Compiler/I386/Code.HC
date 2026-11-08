@@ -31,8 +31,8 @@ Bool I386CmpCodeOwner(CI386Heap *heap,CCmpCtrl *cc)
   if(!task) { result=TRUE; goto done; }
   if(!task->owner || !(scope=task->symbol_state) ||
       !I386HeapKnownSize(heap,scope,sizeof(CI386TaskSymbols)) ||
-      scope->task!=task || scope->heap!=heap || scope->table!=task->hash_table ||
-      scope->signature!=I386_TASK_SYMBOLS_MAGIC) goto done;
+      scope->task!=task || scope->heap!=heap || scope->signature!=I386_TASK_SYMBOLS_MAGIC ||
+      !I386CompilerScopeLinked(task->hash_table,scope->table)) goto done;
   result=task->owner->current==task && !task->finished && !task->finishing && !task->compiler_busy;
 done:
   I386IrqRestore(irq); return result;
@@ -144,6 +144,42 @@ U0 I386CodeRetiredCollect(CI386CmpRelease *state)
     I386CodeFree(state,record);
     if(!state->ok) return;
   }
+}
+Bool I386COCInstructionsRelease(CI386Heap *heap,CCmpCtrl *cc)
+{//Emission is complete. Linking still borrows misc payloads and import metadata.
+  U32 irq=I386IrqSave;
+  CI386CmpRelease state;
+  CI386CmpCtrl *control=cc;
+  CIntermediateCode *node;
+  CI386CodeAllocation *record,*next;
+  Bool live=FALSE;
+  if(!I386CmpCodeOwner(heap,cc)) { I386IrqRestore(irq); return FALSE; }
+  control->code_busy=1;if(control->task)control->task->compiler_busy=1;
+  state.heap=heap;state.control=cc;state.ok=TRUE;
+  I386IrqRestore(irq);
+  while((node=cc->coc.coc_head.next)!=&cc->coc.coc_head.next) {
+    irq=I386IrqSave;ICDetach(node);I386CodeFreeIC(&state,node);I386IrqRestore(irq);
+    if(!state.ok)break;
+  }
+  //A saved outer graph may still borrow retired tree operands. With no live
+  //IR records anywhere in this control, no such tree can remain. Misc payloads,
+  //saved headers, output buffers and relocation records do not contain IR roots.
+  for(record=control->code_next;record!=&control->code_next;record=record->next)
+    if(record->kind==1) {live=TRUE;break;}
+  if(state.ok && !live) {
+    record=control->code_next;
+    while(record!=&control->code_next) {
+      next=record->next;
+      if(record->kind==4) {
+        irq=I386IrqSave;I386CodeFree(&state,record);I386IrqRestore(irq);
+        if(!state.ok)break;
+      }
+      record=next;
+    }
+  }
+  irq=I386IrqSave;
+  control->code_busy=0;if(control->task)control->task->compiler_busy=0;
+  I386IrqRestore(irq);return state.ok;
 }
 Bool I386COCDiscard(CI386Heap *heap,CCmpCtrl *cc,
   U0 (*label)(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)=0,U8 *context=0)

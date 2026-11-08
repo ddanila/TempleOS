@@ -93,3 +93,21 @@ Strict 386SX/DX/no-387 acceptance, full native parser/JIT and self-hosting remai
 Removed optimizer instructions can now be retired without reusing their storage.
 Discard collects them once all other code records are gone; control destruction
 always reclaims them. See [i386-ir-retirement.md](i386-ir-retirement.md).
+
+## Completed private emission boundary
+
+CompilerRuntime 95's private frontend releases its emitted current instruction
+list before allocating the persistent machine-code copy. At this explicit
+post-backend boundary, it can also collect retired nodes when no live IR record
+remains anywhere in the control. Live saved parent graphs defer that collection;
+miscellaneous records, saved headers, machine bytes and relocations retain their
+existing owners until linking/discard. As with discard, callers must not restore
+an aliased view of the released current graph. The ordinary public discard and
+retirement collection policy is unchanged.
+
+The standalone control test under
+build/i386-jit-linked-scope-control-v6 covers an inner emission with a saved
+parent tree still pointing to a detached operand, then outer emission and exact
+heap recovery. It also checks borrowed compiler symbol scopes and rejects
+detached/cyclic heads. The complete source suite and 16 MiB lifecycle checks in
+docs/i386-jit-fixup.md exercise this boundary during actual compilation.

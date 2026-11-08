@@ -1,5 +1,6 @@
 #include "/Kernel/I386/TaskCompiler.HH"
 #include "/Kernel/I386/Cpu.HH"
+#include "/Kernel/I386/CompilerScope.HC"
 Bool I386TaskCompilerInit(CI386TaskCompilerConfig *config,CI386CompilerServices *compiler,
   U8 *tmp_filename,U32 *alpha_numeric,U32 *alpha_numeric_no_at)
 {
@@ -31,8 +32,8 @@ CCmpCtrl *I386TaskCmpCtrlNew(CI386TaskCompilerConfig *config,U8 *buffer=0,I64 fl
   U32 *bitmap;
   if(!config || !config->compiler || config->compiler->version!=I386_COMPILER_SERVICES_VERSION ||
       config->compiler->bytes!=sizeof(CI386CompilerServices) || !config->compiler->control_new || !task ||
-      !(scope=task->symbol_state) || scope->task!=task || scope->table!=task->hash_table ||
-      scope->signature!=I386_TASK_SYMBOLS_MAGIC || !config->tmp_filename ||
+      !(scope=task->symbol_state) || scope->task!=task || scope->signature!=I386_TASK_SYMBOLS_MAGIC ||
+      !I386CompilerScopeLinked(task->hash_table,scope->table) || !config->tmp_filename ||
       !config->alpha_numeric || !config->alpha_numeric_no_at) goto task_control_done;
   name=config->tmp_filename;
   if(filename) {

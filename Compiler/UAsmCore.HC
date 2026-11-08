@@ -195,17 +195,151 @@ ief_compare_done:
   return table[k];
 }
 
+U8 *UAsmModRM(U8 *rip,CInst *tmpins,I64 seg_size,I64 opadd,
+  I64 REX,I64 REX_b,I64 REX_x,I64 REX_r,
+  U8 *arg1_st,U8 *arg2_st,U8 *seg_overrides)
+{//Shared operand decoder; keep each source compilation graph bounded.
+  I64 arg1=tmpins->arg1,arg2=tmpins->arg2,
+      arg1_size=tmpins->size1,arg2_size=tmpins->size2,
+      reloced_arg1,reloced_arg2,reloced_arg1_size,reloced_arg2_size,
+      disp,ModrM=-1,SIB=-1,Mod=-1,RM1=-1,RM2=-1,scale,r1,r2;
+  U8 *ptr,*reloced_arg1_st,*reloced_arg2_st;
+  if (ARGT_RM8<=arg1<=ARGT_RM64 || ARGT_M8<=arg1<=ARGT_M64 ||
+	ARGT_RM8<=arg2<=ARGT_RM64 || ARGT_M8<=arg2<=ARGT_M64) {
+    if (ARGT_RM8<=arg2<=ARGT_RM64 || ARGT_M8<=arg2<=ARGT_M64) {
+      reloced_arg1=arg2;
+      reloced_arg2=arg1;
+      reloced_arg1_size=arg2_size;
+      reloced_arg2_size=arg1_size;
+      reloced_arg1_st=arg2_st;
+      reloced_arg2_st=arg1_st;
+    } else {
+      reloced_arg1=arg1;
+      reloced_arg2=arg2;
+      reloced_arg1_size=arg1_size;
+      reloced_arg2_size=arg2_size;
+      reloced_arg1_st=arg1_st;
+      reloced_arg2_st=arg2_st;
+    }
+
+    CatPrint(reloced_arg1_st,seg_overrides);
+    ModrM=*rip++;
+    Mod=ModrM>>6 & 3;
+    RM1=ModrM & 7+REX_b;
+    RM2=ModrM>>3 & 7+REX_r;
+    if (Mod<3 && RM1&7==4)
+      SIB=*rip++;
+    if (Mod==1) {
+      disp=*rip(U8 *)++;
+      CatPrint(reloced_arg1_st,"%02X",disp);
+    } else if (Mod==2) {
+      disp=*rip(U32 *)++;
+      CatPrint(reloced_arg1_st,"%08X",disp);
+    }
+    if (tmpins->slash_val<8)
+      RM2=-1;
+    else {
+      ptr=NULL;
+      if (reloced_arg2==ARGT_SREG) {
+	if (RM2<=5)
+	  ptr="ST_SEG_REGS";
+      } else if (!(ARGT_IMM8<=reloced_arg2<=ARGT_IMM64) &&
+	    !(ARGT_UIMM8<=reloced_arg2<=ARGT_UIMM64)) {
+	if (reloced_arg2_size==8) {
+	  if (REX!=-1)
+	    ptr="ST_U8_REX_REGS";
+	  else
+	    ptr="ST_U8_REGS";
+	} else if (reloced_arg2_size==16)
+	  ptr="ST_U16_REGS";
+	else if (reloced_arg2_size==32)
+	  ptr="ST_U32_REGS";
+	else if (reloced_arg2_size==64)
+	  ptr="ST_U64_REGS";
+      }
+      if (ptr)
+	CatPrint(reloced_arg2_st,"%Z",RM2,ptr);
+    }
+    if (RM1&7==5 && !Mod) {
+      disp=*rip(I32 *)++;
+      if (seg_size==64) {
+	disp+=rip;
+	if (reloced_arg2==ARGT_IMM8 || reloced_arg2==ARGT_UIMM8)
+	  disp++;
+	else if (reloced_arg2==ARGT_IMM16 || reloced_arg2==ARGT_UIMM16)
+	  disp+=2;
+	else if (reloced_arg2==ARGT_IMM32 || reloced_arg2==ARGT_UIMM32)
+	  disp+=4;
+	else if (reloced_arg2==ARGT_IMM64 || reloced_arg2==ARGT_UIMM64)
+	  disp+=8;
+      }
+      CatPrint(reloced_arg1_st,"[%X]",disp);
+      RM1=-1;
+    } else {
+      if (Mod<3) {
+	if (RM1&7==4) {
+	  RM1=-1;
+	  r1=SIB & 7+REX_b;
+	  r2=SIB>>3 & 7+REX_x;
+	  scale=SIB>>6 &3;
+	  if (scale==3)
+	    scale=8;
+	  else if (scale==2)
+	    scale=4;
+	  else if (scale==1)
+	    scale=2;
+	  else
+	    scale=1;
+	  if (seg_size==64)
+	    ptr="ST_U64_REGS";
+	  else
+	    ptr="ST_U32_REGS";
+	  if (r1==REG_RBP && !Mod) {
+	    disp=*rip(U32 *)++;
+	    CatPrint(reloced_arg1_st,"%08X[%Z*%d]",disp,r2,ptr,scale);
+	  } else if (r2==4)
+	    CatPrint(reloced_arg1_st,"[%Z]",r1,ptr);
+	  else
+	    CatPrint(reloced_arg1_st,"[%Z+%Z*%d]",r1,ptr,r2,ptr,scale);
+	} else {
+	  if (opadd==16)
+	    ptr="ST_U16_REGS";
+	  else if (opadd==32)
+	    ptr="ST_U32_REGS";
+	  else
+	    ptr="ST_U64_REGS";
+	  CatPrint(reloced_arg1_st,"[%Z]",RM1,ptr);
+	}
+      } else {
+	ptr=NULL;
+	if (reloced_arg1_size==8) {
+	  if (REX!=-1)
+	    ptr="ST_U8_REX_REGS";
+	  else
+	    ptr="ST_U8_REGS";
+	} else if (reloced_arg1_size==16)
+	  ptr="ST_U16_REGS";
+	else if (reloced_arg1_size==32)
+	  ptr="ST_U32_REGS";
+	else if (reloced_arg1_size==64)
+	  ptr="ST_U64_REGS";
+	if (ptr)
+	  CatPrint(reloced_arg1_st,DefineSub(RM1,ptr));
+      }
+    }
+  }
+  return rip;
+}
+
 U0 Ui(U8 *buf,U8 **_rip,I64 seg_size=UASM_CODE_BITS,I64 *_jmp_dst=NULL,Bool just_ins=FALSE)
 {//Unassembles one inst
   I64 i,disp,imm,opsize,opadd,
-	arg1,arg2,reloced_arg1,reloced_arg2,
-	arg1_size=0,arg2_size=0,reloced_arg1_size,reloced_arg2_size,
-	ModrM=-1,SIB=-1,scale,r1,r2,
-	Mod=-1,RM1=-1,RM2=-1,REX=-1,REX_r=0,REX_x=0,REX_b=0;
+	arg1,arg2,arg1_size=0,arg2_size=0,
+	RM1=-1,REX=-1,REX_r=0,REX_x=0,REX_b=0;
   Bool cont;
   CInst *tmpins,*tmpins2;
   CHashOpcode *tmpo;
-  U8 *rip=*_rip,*ptr,*reloced_arg1_st,*reloced_arg2_st,
+  U8 *rip=*_rip,*ptr,
 	*bin_data_area1,*bin_data_area2,
 	line1[512],line2[512],buf2[512],arg1_st[512],
 	arg2_st[512],seg_overrides[32];
@@ -353,130 +487,8 @@ U0 Ui(U8 *buf,U8 **_rip,I64 seg_size=UASM_CODE_BITS,I64 *_jmp_dst=NULL,Bool just
     }
   }
 
-  if (ARGT_RM8<=arg1<=ARGT_RM64 || ARGT_M8<=arg1<=ARGT_M64 ||
-	ARGT_RM8<=arg2<=ARGT_RM64 || ARGT_M8<=arg2<=ARGT_M64) {
-    if (ARGT_RM8<=arg2<=ARGT_RM64 || ARGT_M8<=arg2<=ARGT_M64) {
-      reloced_arg1=arg2;
-      reloced_arg2=arg1;
-      reloced_arg1_size=arg2_size;
-      reloced_arg2_size=arg1_size;
-      reloced_arg1_st=arg2_st;
-      reloced_arg2_st=arg1_st;
-    } else {
-      reloced_arg1=arg1;
-      reloced_arg2=arg2;
-      reloced_arg1_size=arg1_size;
-      reloced_arg2_size=arg2_size;
-      reloced_arg1_st=arg1_st;
-      reloced_arg2_st=arg2_st;
-    }
-
-    CatPrint(reloced_arg1_st,seg_overrides);
-    ModrM=*rip++;
-    Mod=ModrM>>6 & 3;
-    RM1=ModrM & 7+REX_b;
-    RM2=ModrM>>3 & 7+REX_r;
-    if (Mod<3 && RM1&7==4)
-      SIB=*rip++;
-    if (Mod==1) {
-      disp=*rip(U8 *)++;
-      CatPrint(reloced_arg1_st,"%02X",disp);
-    } else if (Mod==2) {
-      disp=*rip(U32 *)++;
-      CatPrint(reloced_arg1_st,"%08X",disp);
-    }
-    if (tmpins->slash_val<8)
-      RM2=-1;
-    else {
-      ptr=NULL;
-      if (reloced_arg2==ARGT_SREG) {
-	if (RM2<=5)
-	  ptr="ST_SEG_REGS";
-      } else if (!(ARGT_IMM8<=reloced_arg2<=ARGT_IMM64) &&
-	    !(ARGT_UIMM8<=reloced_arg2<=ARGT_UIMM64)) {
-	if (reloced_arg2_size==8) {
-	  if (REX!=-1)
-	    ptr="ST_U8_REX_REGS";
-	  else
-	    ptr="ST_U8_REGS";
-	} else if (reloced_arg2_size==16)
-	  ptr="ST_U16_REGS";
-	else if (reloced_arg2_size==32)
-	  ptr="ST_U32_REGS";
-	else if (reloced_arg2_size==64)
-	  ptr="ST_U64_REGS";
-      }
-      if (ptr)
-	CatPrint(reloced_arg2_st,"%Z",RM2,ptr);
-    }
-    if (RM1&7==5 && !Mod) {
-      disp=*rip(I32 *)++;
-      if (seg_size==64) {
-	disp+=rip;
-	if (reloced_arg2==ARGT_IMM8 || reloced_arg2==ARGT_UIMM8)
-	  disp++;
-	else if (reloced_arg2==ARGT_IMM16 || reloced_arg2==ARGT_UIMM16)
-	  disp+=2;
-	else if (reloced_arg2==ARGT_IMM32 || reloced_arg2==ARGT_UIMM32)
-	  disp+=4;
-	else if (reloced_arg2==ARGT_IMM64 || reloced_arg2==ARGT_UIMM64)
-	  disp+=8;
-      }
-      CatPrint(reloced_arg1_st,"[%X]",disp);
-      RM1=-1;
-    } else {
-      if (Mod<3) {
-	if (RM1&7==4) {
-	  RM1=-1;
-	  r1=SIB & 7+REX_b;
-	  r2=SIB>>3 & 7+REX_x;
-	  scale=SIB>>6 &3;
-	  if (scale==3)
-	    scale=8;
-	  else if (scale==2)
-	    scale=4;
-	  else if (scale==1)
-	    scale=2;
-	  else
-	    scale=1;
-	  if (seg_size==64)
-	    ptr="ST_U64_REGS";
-	  else
-	    ptr="ST_U32_REGS";
-	  if (r1==REG_RBP && !Mod) {
-	    disp=*rip(U32 *)++;
-	    CatPrint(reloced_arg1_st,"%08X[%Z*%d]",disp,r2,ptr,scale);
-	  } else if (r2==4)
-	    CatPrint(reloced_arg1_st,"[%Z]",r1,ptr);
-	  else
-	    CatPrint(reloced_arg1_st,"[%Z+%Z*%d]",r1,ptr,r2,ptr,scale);
-	} else {
-	  if (opadd==16)
-	    ptr="ST_U16_REGS";
-	  else if (opadd==32)
-	    ptr="ST_U32_REGS";
-	  else
-	    ptr="ST_U64_REGS";
-	  CatPrint(reloced_arg1_st,"[%Z]",RM1,ptr);
-	}
-      } else {
-	ptr=NULL;
-	if (reloced_arg1_size==8) {
-	  if (REX!=-1)
-	    ptr="ST_U8_REX_REGS";
-	  else
-	    ptr="ST_U8_REGS";
-	} else if (reloced_arg1_size==16)
-	  ptr="ST_U16_REGS";
-	else if (reloced_arg1_size==32)
-	  ptr="ST_U32_REGS";
-	else if (reloced_arg1_size==64)
-	  ptr="ST_U64_REGS";
-	if (ptr)
-	  CatPrint(reloced_arg1_st,DefineSub(RM1,ptr));
-      }
-    }
-  }
+  rip=UAsmModRM(rip,tmpins,seg_size,opadd,REX,REX_b,REX_x,REX_r,
+    arg1_st,arg2_st,seg_overrides);
 
   switch (arg1) {
     case ARGT_IMM8:
@@ -587,18 +599,19 @@ U0 Ui(U8 *buf,U8 **_rip,I64 seg_size=UASM_CODE_BITS,I64 *_jmp_dst=NULL,Bool just
     CatPrint(line1,",%s",arg2_st);
   CatPrint(line1,"\n");
   CatPrint(line2,"\n");
+  disp=rip;i=*_rip;disp-=i;
   if (!just_ins) {
-    for (i=rip-(*_rip)(I64);i<6;i++) {
+    for (i=disp;i<6;i++) {
       bin_data_area1[i<<1]=CH_SPACE;
       bin_data_area1[i<<1+1]=CH_SPACE;
     }
-    for (i=rip-(*_rip)(I64);i<12;i++) {
+    for (i=disp;i<12;i++) {
       bin_data_area2[(i-6)<<1]=CH_SPACE;
       bin_data_area2[(i-6)<<1+1]=CH_SPACE;
     }
   }
   StrCpy(buf,line1);
-  if (!just_ins && rip-(*_rip)(I64)>6)
+  if (!just_ins && disp>6)
     CatPrint(buf,line2);
   *_rip=rip;
 }
@@ -621,7 +634,7 @@ U8 *U(U8 *rip,I64 cnt=20,I64 seg_size=UASM_CODE_BITS)
 I64 Un(U8 *rip,I64 cnt=0x80,I64 seg_size=UASM_CODE_BITS)
 {//Unassembles a num of bytes
   I64 i=0;
-  U8 buf[1024],*end_rip=rip(I64)+cnt;
+  U8 buf[1024],*end_rip=rip+cnt;
   if (seg_size==16)
     PrintWarn("16-bit unassembly is not well supported.\n");
   "$$HL,1$$";
