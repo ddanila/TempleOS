@@ -27815,3 +27815,31 @@ The final source26 regression passes all stages and earlier observations with
 1,039 independently verified input pins. Fresh 8 MiB normal and 16 MiB diagnostic
 boots pass complete welcome rasters; both diagnostic ownership/file-break phases
 complete. Inventory guard tests pass; qualification counts remain two of 686.
+
+### Literal pointers stored through command side effects (2026-11-08)
+
+Compiler92 preserves the parser's CCF_HAS_MISC_DATA mark in command output
+records. Replacing it with only a returned-address check lost literals stored
+through side effects when a compound block ended with another result. Both
+compile-time and ordinary runtime modes reproduce corrupted data after parent
+controller closure on compiler91. The original and candidate pass all twelve
+observations per mode, including exact bytes, later compilations, generated
+access and patterned code-heap reuse. This uses the original parser's conservative
+signal rather than selected-global scanning or assumptions about callees.
+
+Both bootstrap generations and the full 1,763-source build pass with current
+source/build-input audits. The earlier returned-literal regression, seventeen
+pending-answer cases and Carry/ClassMeta whole workflows pass. See
+docs/i386-stream-side-effect.md. Literal-bearing command outputs are retained
+conservatively; no peak-resource/reclamation claim follows. Constant/AOT paths,
+errors/OutMem, cancellation, cross-task teardown and public compiler delivery
+remain open, alongside 684 inventory workflows and the full C1–C5 release gates.
+
+Final source26 and every earlier observation pass with 1,039 independently
+verified pins. Both fresh 8/16 MiB welcome rasters match all 307,200 pixels and
+both diagnostic ownership/file-break phases complete. These startup checks do
+not establish peak resources or the full C5 generations/release budget.
+
+All 34 existing ordinary console answer commands also pass at 8 MiB KVM without
+FPU, with live WinMgr, exact rasters, filesystem checks and independent input
+audits. Inventory guards remain green; no additional whole workflow is qualified.

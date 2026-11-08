@@ -641,7 +641,8 @@ U8 *I386FrontendCommand(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *symbols
     enter->next->last=enter; cc->coc.coc_head.next=enter;
     I386FrontendAdd(state,cc,IC_RETURN_VAL2,0,type,0);
     I386FrontendAdd(state,cc,IC_LEAVE,0,type,0);
-    result=I386FrontendOutput(state,cc,type,0);
+    //Literal addresses may escape through stores or calls, not only returns.
+    result=I386FrontendOutput(state,cc,type,cc->flags&CCF_HAS_MISC_DATA);
     cc->htc.fun=0;
     I386FrontendFree(state,bound);
     if(raw_type) *raw_type=result->raw_type;

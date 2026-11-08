@@ -940,8 +940,8 @@ I64 I386FrontendExecute(U8 *context,U8 *code)
   for(record=state->codes;record;record=record->next)
     if(record->code==code) {
       entry=code; value=(*entry)(); base=(code+0)(U64);
-      //A numeric result may have used literal data while computing its value.
-      //Only a returned address into this output needs the default-string copy.
+      //Command records retain parser-marked data even for numeric results.
+      //Constant-expression records additionally recognize returned pool addresses.
       state->cc->flags=state->cc->flags&~CCF_HAS_MISC_DATA|record->prior_misc;
       if(record->raw_type!=RT_F64 && value(U64)>=base+record->data_start && value(U64)<base+record->bytes)
         state->cc->flags|=CCF_HAS_MISC_DATA;

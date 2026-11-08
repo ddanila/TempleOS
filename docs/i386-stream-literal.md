@@ -52,3 +52,10 @@ qualified workflows and exact original documents. Welcome8-v1 and diagnostic16-v
 match all 307,200 welcome pixels; both diagnostic program/code-ownership/file-break
 phases complete. The cross-build's memory audit records exact marker and raster
 checks. Inventory guards pass all five tests, with whole-workflow counts unchanged.
+
+
+Compiler92 extends retention to parser-marked literals stored through side effects
+when a command finishes with another value. The same defect affected normal and
+compile-time compound blocks; original comparisons and both native modes pass.
+See [side-effect lifetime evidence](i386-stream-side-effect.md). The returned-
+pointer regression above continues to pass on that candidate.
