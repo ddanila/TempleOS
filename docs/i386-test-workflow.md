@@ -6262,3 +6262,23 @@ See `docs/i386-expression-error-cleanup.md` and
 can use `tools/test-i386.py --functions --qmp-stdio --out FRESH_OUT` directly,
 without replacing the default output directory. Public allocator/handler exhaustion,
 cancellation, broader symbol rollback and full C1–C5 qualification remain open.
+
+
+## Normal assembly and compilation joins
+
+Run `python3 tools/test-i386-public-assembly.py IMAGE --out FRESH_OUT` against the
+current full-content image. It warms the ordinary expression facade, requires
+assembly to remain unloaded until requested, then exercises complete normal
+PrsAsmBlk/CmpJoin services without parser-body or callback injection. Twenty-four
+fields include raw bytes, branches, import records, eight inline/bare functions,
+canonical types, caller context, strict heap recovery and a fresh expression.
+The short forced-I32 branch must still issue its warning: an owned document
+captures it, the fixture verifies/copies its bytes and releases that document
+inside the measured operation. The host independently checks the exported warning.
+Do not subtract warning sizes from heap counters or waive a nonzero row.
+
+`build/i386-public-asm-cross-v4/final-verification-audit.json` ties current sources,
+build inputs, bootstrap, images/modules, the unchanged pre-release baseline and
+all normal regressions to raw artifacts. It preserves the failed ordering,
+packet-lifetime and unscoped-output variants. See
+`docs/i386-public-assembly.md` for exact scope and remaining qualification gaps.

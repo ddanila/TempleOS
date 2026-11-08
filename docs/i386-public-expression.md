@@ -332,3 +332,17 @@ Console 262 retain all 688 public exports. Run the error runner with
 `--array-partials --declarations --joins`; exact baselines, renderer-isolated
 measurement evidence and remaining limits are in
 `docs/i386-expression-error-cleanup.md`.
+
+
+## Separate normal assembly/join delivery (2026-11-09)
+
+PrsAsmBlk and CmpJoin now use separate normal public facades and four lazy shared
+source stages. Expression use keeps the twelve-stage parser path and does not
+load assembly. Console 263 has 690 exports/22 mask words; Compiler 104 and Memory
+41 remain. The 24-field assembly contract verifies real instruction-table lookup,
+eight inline/bare functions, strict packet/output ownership and fresh expression
+recovery. Existing basic/ten extended groups and all 46 error/control rows pass
+unchanged. This closes the unresolved assembly/join prerequisite for those
+cases; complete assembly forms, assembly error ownership, full Cmp/CmpBuf/map/file
+workflows and C1-C5 release qualification remain open. See
+`i386-public-assembly.md` for evidence and the preserved failures.

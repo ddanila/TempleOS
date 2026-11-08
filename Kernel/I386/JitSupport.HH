@@ -8,5 +8,7 @@ class CI386JitSupport {
   I64 lex_stage;
   U8 *expression,*expression_i64,*expression_f64,*expression_bin,*is_expression_bin,*stream;
   I64 prs_stage;
+  U8 *assembly,*join;
+  I64 asm_stage;
 };
 #endif

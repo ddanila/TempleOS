@@ -122,4 +122,3 @@ CAOT *CMP_JOIN_IMPL(CCmpCtrl *cc,I64 cmp_flags,U8 *map_name=NULL,U8 mapfile_drv_
   cc->aot_depth--;
   return res;
 }
-

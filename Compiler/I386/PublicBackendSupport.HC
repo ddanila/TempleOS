@@ -19,6 +19,7 @@ public extern I64 Un(U8 *code,I64 bytes,I64 bits);
 #include "/Compiler/I386/ValueClassCore.HC"
 #include "/Compiler/I386/CompileFrame.HC"
 #include "/Compiler/I386/AsmCore.HC"
+#include "/Compiler/I386/AsmReleaseCore.HC"
 #include "/Compiler/I386/PublicBackendCore.HC"
 U0 NativeSystemBackendPublish()
 {

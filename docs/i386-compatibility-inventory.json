@@ -9668,7 +9668,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "normal-public-assembly-64m-component",
+          "command": "python3 tools/test-i386-public-assembly.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-asm-contract-v5/result.json",
+          "scope": "Normal separate four-stage lazy delivery of complete shared PrsAsmBlk/CmpJoin/opcode-table/expression/listing bodies. Twenty-four fields: exact data/instruction bytes, executable forward/local branches, import metadata, eight inline/bare cases including an unreachable block, caller context, canonical types, real 31-form MOV lookup, verified expected warning output with owned document cleanup, fresh normal expression 42 and zero data/code heap deltas. Identical final fixture on unchanged pre-release image retains 992 bytes and emits identical warning bytes. Prior normal success/error, lexer, corpus/bootstrap and functional frame evidence is independently audited; no whole-file/compiler qualification. Complete assembly forms, assembly/backend/body error/OOM/cancellation ownership, Cmp/CmpBuf/file/map workflows and full C1-C5 release qualification remain open. See docs/i386-public-assembly.md."
+        }
+      ]
     },
     {
       "path": "Compiler/AsmInit.HC",
@@ -9685,7 +9693,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "normal-public-assembly-64m-component",
+          "command": "python3 tools/test-i386-public-assembly.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-asm-contract-v5/result.json",
+          "scope": "Normal separate four-stage lazy delivery of complete shared PrsAsmBlk/CmpJoin/opcode-table/expression/listing bodies. Twenty-four fields: exact data/instruction bytes, executable forward/local branches, import metadata, eight inline/bare cases including an unreachable block, caller context, canonical types, real 31-form MOV lookup, verified expected warning output with owned document cleanup, fresh normal expression 42 and zero data/code heap deltas. Identical final fixture on unchanged pre-release image retains 992 bytes and emits identical warning bytes. Prior normal success/error, lexer, corpus/bootstrap and functional frame evidence is independently audited; no whole-file/compiler qualification. Complete assembly forms, assembly/backend/body error/OOM/cancellation ownership, Cmp/CmpBuf/file/map workflows and full C1-C5 release qualification remain open. See docs/i386-public-assembly.md."
+        }
+      ]
     },
     {
       "path": "Compiler/AsmLib.HC",
@@ -9716,6 +9732,13 @@
           "result": "pass",
           "evidence": "build/i386-aot-storage-native-v4/result.json",
           "scope": "Normal Console 251 bindings: sequential widths, exact block ends/crossings, sparse patches and byte truncation, cursor/high-water independence, listing, data-range gates/order/64-bit fields; same complete records, exact heap recovery, arithmetic and volume checks. Previous Console 250 rejects first missing call with final fixture. Full AOT, assembly, public compiler module and whole-file qualification remain open."
+        },
+        {
+          "target": "normal-public-assembly-64m-component",
+          "command": "python3 tools/test-i386-public-assembly.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-asm-contract-v5/result.json",
+          "scope": "Normal separate four-stage lazy delivery of complete shared PrsAsmBlk/CmpJoin/opcode-table/expression/listing bodies. Twenty-four fields: exact data/instruction bytes, executable forward/local branches, import metadata, eight inline/bare cases including an unreachable block, caller context, canonical types, real 31-form MOV lookup, verified expected warning output with owned document cleanup, fresh normal expression 42 and zero data/code heap deltas. Identical final fixture on unchanged pre-release image retains 992 bytes and emits identical warning bytes. Prior normal success/error, lexer, corpus/bootstrap and functional frame evidence is independently audited; no whole-file/compiler qualification. Complete assembly forms, assembly/backend/body error/OOM/cancellation ownership, Cmp/CmpBuf/file/map workflows and full C1-C5 release qualification remain open. See docs/i386-public-assembly.md."
         }
       ]
     },
@@ -10098,6 +10121,13 @@
           "result": "pass",
           "evidence": "build/i386-normal-parser-contract-v4/result.json",
           "scope": "Console 259 normal lazy expression/binary facades and lexer stream callback; actual shared parser/type/declaration/class/function/statement/execution/stream bodies in Adam with canonical types, normal optimizer/backend. Nine basic expressions and ten extended groups pass, one publication, exact exported records, final arithmetic pixels and source/filesystem checks. No diagnostic parser/lexer injection. Full assembly/AOT, error/cancellation/concurrency and whole compiler qualification remain open; see docs/i386-public-expression.md."
+        },
+        {
+          "target": "normal-public-assembly-64m-component",
+          "command": "python3 tools/test-i386-public-assembly.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-asm-contract-v5/result.json",
+          "scope": "Normal separate four-stage lazy delivery of complete shared PrsAsmBlk/CmpJoin/opcode-table/expression/listing bodies. Twenty-four fields: exact data/instruction bytes, executable forward/local branches, import metadata, eight inline/bare cases including an unreachable block, caller context, canonical types, real 31-form MOV lookup, verified expected warning output with owned document cleanup, fresh normal expression 42 and zero data/code heap deltas. Identical final fixture on unchanged pre-release image retains 992 bytes and emits identical warning bytes. Prior normal success/error, lexer, corpus/bootstrap and functional frame evidence is independently audited; no whole-file/compiler qualification. Complete assembly forms, assembly/backend/body error/OOM/cancellation ownership, Cmp/CmpBuf/file/map workflows and full C1-C5 release qualification remain open. See docs/i386-public-assembly.md."
         }
       ]
     },
@@ -11287,6 +11317,13 @@
           "result": "pass",
           "evidence": "build/i386-join-error-contract-v3/result.json",
           "scope": "Thirteen normal anonymous function/type and extern-header replacement failure/control rows plus all 33 prior rows. Exact tags/counters, caller flags/snapshot/graph, zero data/code heap deltas, anonymous ownership transfer, registered header identity and whole-record restoration (except the legitimate lookup use-count increment), retained source/help-index contents, warning phases and continued result 42. Complete shared parser bodies; private arena callbacks remain explicit NULL. Failed fresh named entries remain table-owned. Public exhaustion/cancellation/concurrency, broader class/symbol/body rollback, assembly/AOT, complete compiler and C1-C5 qualification remain open. See docs/i386-expression-error-cleanup.md."
+        },
+        {
+          "target": "normal-public-assembly-64m-component",
+          "command": "python3 tools/test-i386-public-assembly.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-asm-contract-v5/result.json",
+          "scope": "Normal separate four-stage lazy delivery of complete shared PrsAsmBlk/CmpJoin/opcode-table/expression/listing bodies. Twenty-four fields: exact data/instruction bytes, executable forward/local branches, import metadata, eight inline/bare cases including an unreachable block, caller context, canonical types, real 31-form MOV lookup, verified expected warning output with owned document cleanup, fresh normal expression 42 and zero data/code heap deltas. Identical final fixture on unchanged pre-release image retains 992 bytes and emits identical warning bytes. Prior normal success/error, lexer, corpus/bootstrap and functional frame evidence is independently audited; no whole-file/compiler qualification. Complete assembly forms, assembly/backend/body error/OOM/cancellation ownership, Cmp/CmpBuf/file/map workflows and full C1-C5 release qualification remain open. See docs/i386-public-assembly.md."
         }
       ]
     },

@@ -14,8 +14,7 @@ public extern CHashFun *PrsFunJoin(CCmpCtrl *cc,CHashClass *type,U8 *name,I64 fl
 public extern U0 PrsStaticInit(CCmpCtrl *cc,CMemberLst *member,I64 pass);
 public extern Bool PrsStmt(CCmpCtrl *cc,I64 try_count=0,CCodeMisc *break_label=NULL,I64 flags=CMPF_PRS_SEMICOLON);
 public extern I64 Un(U8 *rip,I64 count=0x80,I64 seg_size=64);
-public extern U0 PrsAsmBlk(CCmpCtrl *cc,I64 flags);
-public extern CAOT *CmpJoin(CCmpCtrl *cc,I64 flags,U8 *map_name=NULL,U8 map_drive=0);
+#include "/Kernel/I386/PublicAssembly.HH"
 public extern I64 ExeCmdLine(CCmpCtrl *cc);
 #include "/Compiler/MemberClassBaseFind.HC"
 #include "/Compiler/PrsKeyword.HC"

@@ -194,7 +194,11 @@ U8 *NativeSystemCOCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_ty
   }catch{failed=TRUE;exception=Fs->except_ch;Fs->catch_except=TRUE;}
   I386CompileFrameClose(backend,&frame);cc->aot=old_aot;cc->aotc=old_ctrl;cc->htc.hash_table_lst=old_hash;
   cc->flags=flags|cc->flags&CCF_NOT_CONST;if(has_data && !failed)cc->flags|=CCF_HAS_MISC_DATA;
-  try{COCDel(cc,&cc->coc);}catch{if(!failed){failed=TRUE;exception=Fs->except_ch;}Fs->catch_except=TRUE;}
+  try{
+    for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next)
+      if(node->ic_code==IC_ASM && node->ic_data){I386AsmFree(node->ic_data);node->ic_data=0;}
+    COCDel(cc,&cc->coc);
+  }catch{if(!failed){failed=TRUE;exception=Fs->except_ch;}Fs->catch_except=TRUE;}
   if(!failed && state.aot){try{PCBPublish(&state,&staged,old_aot);}catch{failed=TRUE;exception=Fs->except_ch;Fs->catch_except=TRUE;}}
   while(state.allocations){allocation=state.allocations;state.allocations=allocation->next;Free(allocation->data);Free(allocation);}
   Free(out.data);

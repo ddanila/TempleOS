@@ -4,4 +4,3 @@ U0 LexSkipEol(CCmpCtrl *cc)
   do ch=$WW,0$LexGetChar(cc);
   while (Bt(char_bmp_non_eol,ch));
 }
-

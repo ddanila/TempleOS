@@ -28747,3 +28747,46 @@ by `build/i386-public-asm-cross-v1/shared-body-audit.json`. See
 publication; source probes exposed missing LexSkipEol and SwapI64 dependencies.
 Normal native assembly integration, compiler/AOT/error/resource qualification and
 all C1-C5 milestones remain in progress; bundled qualification remains 2/686.
+
+
+## Normal lazy assembler and compilation joins (2026-11-09)
+
+PrsAsmBlk and CmpJoin now have normal public facades and a separate four-stage
+lazy loader. Complete shared assembler, opcode parser, expression/listing, join
+and map bodies load in the system namespace. Plain expressions retain their
+twelve stages and do not load assembly. Console 263 exposes 690 exports with
+22 mask words; Compiler 104 and Memory 41 remain unchanged.
+
+The opcode table is inserted after the table containing the actual canonical
+I64 record and before recognition-only boot opcodes. This preserves type lookup
+and gives MOV its 31 real instruction forms. Earlier ordering errors are retained:
+one shadowed U8, another selected a zero-form MOV recognition record. Actual
+normal operand parsing and the complete factory/mask probe isolate the latter.
+The preceding committed image independently raises UndefExt on a function's asm.
+
+The public backend now consumes inline CAOT packets with the same I386AsmFree
+body as the private compiler. The final identical-fixture baseline retains
+992 bytes before this cleanup; the new image has zero data/code heap deltas.
+An intermediate 1,288-byte aggregate came entirely from the expected short-I32
+branch warning retained in the caller document. The final fixture owns, verifies
+and releases that output, retains the exact branch and normal warning, and
+exports byte-identical warning bytes on old/new images. No counter adjustment,
+warning suppression or shortened case is used. Earlier failed probes remain.
+
+`build/i386-public-asm-contract-v5/result.json` passes 24 fields covering raw
+bytes, executed code/branches, import metadata, eight inline/bare cases including
+an unreachable block, caller context, canonical types, warning ownership and a
+fresh normal expression returning 42. All 46 prior error/control rows, complete
+normal basic/ten extended groups, 8 MiB lexer, 249 audited function cases, two
+original bootstrap generations, full cross/instruction audit, complete 8/16 MiB
+TCG486 welcome frames and both diagnostic phases pass. The independent audit
+checks 1,845 source pins, 26 build inputs, complete body comparisons, images/
+modules/bootstrap, raw rows and old-image provenance:
+`build/i386-public-asm-cross-v4/final-verification-audit.json`.
+
+See `docs/i386-public-assembly.md` for commands, evidence and the failed variants.
+Assembly/backend/body error ownership, invalid/unsupported packets, exhaustion,
+cancellation/concurrency, complete assembly forms, Cmp/CmpBuf/file/map workflows,
+full desktop/apps and native C5 release generations remain open. Functional
+welcome frames do not qualify startup budgets or assembly at those memory sizes.
+C1-C5 remain active; bundled qualification remains 2/686.
