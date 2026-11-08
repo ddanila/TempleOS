@@ -294,3 +294,15 @@ prefix, unchanged private compiler module, byte-identical expansion of the
 three additional source extractions, and the unchanged 2/686 qualification
 count. Its base revision is explicit so committing this checkpoint does not
 change the source comparison target. The receipt lists the remaining limits.
+
+
+## Later array-bound failures (2026-11-08)
+
+The normal type/expression services now release partially parsed dimension lists
+on later-bound throws and size/bracket errors, reset the caller root, and retain
+original exception/counter semantics. Successful lists remain caller-owned. The
+shared parser accepts either explicit release or existing controller-arena
+ownership, with no extra handler allocation on the private arena path. Compiler
+102 / Console 260 retain the existing 688 public exports. Run the error runner
+with `--array-partials`; implementation, baseline leaks, retained rejected probes
+and remaining limits are in `docs/i386-expression-error-cleanup.md`.

@@ -6211,3 +6211,18 @@ The pre-fix syntax, evaluated-code and nested-bound leaks remain recorded under
 `build/i386-expression-error-baseline-v3` and
 `build/i386-expression-nested-error-baseline-v2`. This does not qualify every
 allocation/cancellation/type/backend error or full compiler/C1–C5 coverage.
+
+
+## Partial array-dimension cleanup (2026-11-08)
+
+Add `--array-partials` to `tools/test-i386-public-expression-errors.py IMAGE
+--out OUT` for the nine existing rows plus four partial-array expression failures
+and seven direct PrsType cases. Require exact tags/counters, reset failure roots,
+zero heap deltas, caller graph/flag restoration, continued execution and successful
+list transfer. The baseline observes 32/64-byte leaks before fixing the shared
+parser. See `docs/i386-expression-error-cleanup.md` for the two ownership policies
+and retained failures. The private arena path must also pass both phases of the
+existing 16 MiB PARSER TOKEN PROBE; an extra exception-record allocation there
+caused the rejected first implementation to fail. Normal throwing is tested on
+the delivered image; isolated success-codegen handler doubles are not an unwind
+oracle. Final evidence is under `build/i386-array-partial-cross-v4`.

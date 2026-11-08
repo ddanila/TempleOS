@@ -1416,7 +1416,7 @@ CI386Frontend *I386FrontendNew(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,C
   t->snapshot_push=&I386FrontendSnapshot; t->snapshot_drop=&I386FrontendDrop;
   t->integer_expression=&I386FrontendInteger; t->class_join=&I386FrontendClass; t->fun_join=&I386FrontendFun;
   t->allocate=&I386FrontendTypeAlloc; t->duplicate=&I386FrontendDuplicate;
-  t->member_new=&I386FrontendMember; t->member_add=&I386FrontendMemberAdd;
+  t->member_new=&I386FrontendMember; t->member_add=&I386FrontendMemberAdd; t->release=NULL;
   d=&state->declarations; d->context=state; d->expression=e; d->types=t;
   d->define_match=&I386FrontendDefine; d->evaluate=&I386FrontendEvaluate; d->snapshot_restore=&I386FrontendRestore;
   d->initialize_static=&I386FrontendInitialize; d->static_init=&I386FrontendStatic;

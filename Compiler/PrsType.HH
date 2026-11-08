@@ -3,7 +3,10 @@
 #include "/Kernel/CompilerTypes.HH"
 #include "/Compiler/PrsTypeFlags.HH"
 //Borrowed type descriptors and parser services. Errors and failed allocations
-//must throw. The environment owns partially built dimensions, symbols and strings.
+//must throw. Explicit-release dimensions transfer to the caller on success.
+//With no release callback the environment must retain all partial allocations
+//until its failed control/arena is discarded. Symbols and strings retain their
+//existing environment ownership.
 class CPrsTypeServices {
   U8 *context;
   CHashClass **types;
@@ -18,6 +21,8 @@ class CPrsTypeServices {
   U8 *(*duplicate)(U8 *context,U8 *source);
   CMemberLst *(*member_new)(U8 *context,I64 register_hint);
   U0 (*member_add)(U8 *context,CCmpCtrl *cc,CMemberLst *member,CHashClass *type,I64 mode);
+  //Match allocate; releasing a live dimension must not allocate or throw.
+  U0 (*release)(U8 *context,U8 *allocation);
 };
 extern U0 PrsArrayDimsCore(CPrsTypeServices *services,CCmpCtrl *cc,I64 mode,CArrayDim *dim);
 extern CHashClass *PrsTypeCore(CPrsTypeServices *services,CCmpCtrl *cc,CHashClass **_tmpc1,

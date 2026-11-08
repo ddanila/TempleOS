@@ -11106,6 +11106,13 @@
           "result": "pass",
           "evidence": "build/i386-expression-error-contract-v2/result.json",
           "scope": "Nine normal API rows: three malformed expressions, successful trace/host-constant preservation, invalid backend precondition, three evaluating-wrapper throws and a first-array-bound evaluation throw. Exact exception/error counters, restored saved graph and flag mask, outer node preservation, zero caller data/code heap deltas, compile-result ownership and continued result 42. Private diagnostic output and pending jobs are released before measurement; source/filesystem checks pass. The shared body fixes pre-change 4584/56/4640-byte leaks. Exhaustion, cancellation/concurrency, richer partial type ownership, other backend failures, whole compiler and C1-C5 remain open; see docs/i386-expression-error-cleanup.md."
+        },
+        {
+          "target": "native-partial-array-ownership",
+          "command": "python3 tools/test-i386-public-expression-errors.py IMAGE --array-partials --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-array-partial-contract-v4/result.json",
+          "scope": "Nine prior error/control rows plus four partial-array expression failures and seven direct PrsType cases. Original tags/counters, zero heap deltas, root reset before probe repair, graph/flag restoration, successful dimension transfer and continued execution. Shared parser uses explicit public release or private controller-arena ownership; full type/declaration/OOM/cancellation/compiler qualification remains open. See docs/i386-expression-error-cleanup.md."
         }
       ]
     },
@@ -11350,6 +11357,13 @@
           "result": "pass",
           "evidence": "build/i386-lex-savepoints-functions-native-v1/result.json",
           "scope": "All twenty-three stages and earlier token/graph/expression/type/runtime/lifetime/class/function checks pass using the delivered public LexPush/LexPopRestore/LexPopNoRestore APIs. Independent 1032-input/volume/boot audit excludes injected save-point bodies. Full declaration/compiler/normal-token API/C1\u2013C5 qualification remains open."
+        },
+        {
+          "target": "native-partial-array-ownership",
+          "command": "python3 tools/test-i386-public-expression-errors.py IMAGE --array-partials --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-array-partial-contract-v4/result.json",
+          "scope": "Nine prior error/control rows plus four partial-array expression failures and seven direct PrsType cases. Original tags/counters, zero heap deltas, root reset before probe repair, graph/flag restoration, successful dimension transfer and continued execution. Shared parser uses explicit public release or private controller-arena ownership; full type/declaration/OOM/cancellation/compiler qualification remains open. See docs/i386-expression-error-cleanup.md."
         }
       ]
     },

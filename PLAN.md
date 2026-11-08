@@ -28601,3 +28601,45 @@ Exhaustion and handler-install failure, cancellation/concurrency, richer partial
 type ownership and other backend failures remain open, together with assembly/
 AOT and full desktop/application/release qualification. These component checks
 do not complete C1–C5; bundled qualification remains 2/686.
+
+## Shared partial-array failure ownership (2026-11-08)
+
+The normal expression and direct type services leaked 32/64 bytes when a later
+array bound threw, and 32 bytes after missing brackets or negative later sizes.
+Direct type failures also left a partial dimension root. The preceding committed
+image reproduces those observations with the same fixture, including successful
+controls (`build/i386-array-partial-baseline-v2`).
+
+The shared dimension parser now supports an appended explicit release callback:
+normal host failures free linked/pending nodes, reset the root and automatically
+propagate the original exception; successful lists transfer to the caller. The
+private frontend retains its existing parser-controller arena ownership and
+uses the identical parsing body without another handler allocation. Its probe
+initializer explicitly selects the same policy. Compiler 102 / Console 260
+account for the changed embedded service layout; Memory 41 and all 688 public
+export names/order remain unchanged.
+
+An unconditional-handler attempt failed the 16 MiB exhausted-arena token probe.
+The revised policy passes both phases without weakening that probe. Rejected
+ternary-fixture and minimal-import NULL-initializer builds are also preserved;
+the final fixture uses supported syntax and the initializer uses zero.
+
+Current-source evidence: `build/i386-array-partial-contract-v4/result.json`
+passes the original nine error/control rows plus four partial-array expression
+failures and seven direct type cases, with exact tags/counters, reset roots,
+zero heap deltas, preserved graphs/flags, success ownership and continued result
+42. The complete normal success suite and 8 MiB lexer pass. The audited 249-case
+function corpus passes on the final bootstrap; its success-only handler symbol
+doubles are not the actual-unwind oracle. Two original bootstrap generations,
+full cross-build/instruction audit, normal 8 MiB and diagnostic 16 MiB complete
+welcome rasters, and both diagnostic phases pass. These functional frames do not
+qualify a startup budget or complete native release generations.
+
+`build/i386-array-partial-cross-v4/final-verification-audit.json` independently
+checks 1,833 source pins, 26 build-input pins, images/modules/bootstrap, exact raw
+rows, baseline provenance, prior success records, corpus and all diagnostic
+markers. See `docs/i386-expression-error-cleanup.md` for commands and limits.
+Public handler-install/allocation exhaustion, cancellation/concurrency, broader
+type/declaration ownership, other backend failures, assembly/AOT, full desktop/
+application coverage and native release qualification remain open. C1–C5 remain
+active; bundled qualification is still 2/686.

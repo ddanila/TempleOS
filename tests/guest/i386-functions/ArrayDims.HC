@@ -28,6 +28,11 @@ U8 *DimProbeAllocate(U8 *context,I64 bytes)
   if(bytes!=sizeof(CArrayDim) || probe->allocated>=3) while(TRUE) {}
   return &probe->nodes[probe->allocated++];
 }
+//This isolated successful-code fixture has no task exception runtime. Validate
+//the emitted handler labels; actual throw/unwind is covered on the normal image.
+U0 SysTry(U8 *c,U8 *u){if(!c || !u || c==u)while(TRUE){}}
+U0 SysUntry(){}
+U0 DimProbeRelease(U8 *context,U8 *allocation){while(TRUE){}}
 I64 DimProbe(I64 count,I64 empty_first)
 {
   CDimProbe probe;
@@ -48,7 +53,7 @@ I64 DimProbe(I64 count,I64 empty_first)
   probe.tokens[position]=';';
   cc.flags=CCF_TARGET_I386; cc.token=probe.tokens[0];
   services.context=&probe; services.lex=&DimProbeLex; services.report=&DimProbeError;
-  services.integer_expression=&DimProbeInteger; services.allocate=&DimProbeAllocate;
+  services.integer_expression=&DimProbeInteger; services.allocate=&DimProbeAllocate;services.release=&DimProbeRelease;
   PrsArrayDimsCore(&services,&cc,PRS1_NULL,&probe.root);
   if(probe.before!=0x13579BDF2468ACE0 || probe.after!=0xFEDCBA9876543210 ||
       probe.index!=position || cc.token!=';' || probe.allocated!=count ||
