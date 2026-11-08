@@ -9,13 +9,17 @@ public _extern _NATIVE_JIT_SUPPORT CI386JitSupport native_jit_support;
 #include "/Compiler/CodeLabel.HC"
 #include "/Compiler/LabelForwardCore.HC"
 #include "/Compiler/JITFixupCore.HC"
+#define AOT_FIXUP_IMPL NativeSystemAOTFixup
+#include "/Compiler/AOTFixupCore.HC"
 #define COC_LABEL_IMPL COCGoToLabelFind
 #define OPT_LABEL_IMPL OptLabelFwd
 #define JIT_FIXUP_IMPL CmpFixUpJITAsm
+#define AOT_FIXUP_IMPL CmpFixUpAOTAsm
 U0 NativeSystemJITPublish()
 {
   U8 *s="PUBLIC JIT loaded\n";
   native_jit_support.code=&NativeSystemJITFixup;
+  native_jit_support.aot_code=&NativeSystemAOTFixup;
   while(*s)OutU8(0xE9,*s++);
 }
 NativeSystemJITPublish;

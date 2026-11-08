@@ -1,6 +1,6 @@
 # Public JIT assembly fixups
 
-Console 253 binds `CmpFixUpJITAsm` through the explicit
+Console 253 first bound `CmpFixUpJITAsm` through the explicit
 `Kernel/I386/PublicLoader.HH` header. Its first call loads the shipping
 `Compiler/I386/PublicJITSupport.HC` source into Adam's system symbol scope and
 caches the complete implementation there. The facade subsequently calls that
@@ -92,7 +92,7 @@ Allocation diagnostics now distinguish code-buffer and tracking-record failure.
 
 ## Evidence and limits
 
-The final candidate is `build/i386-jit-fixup-cross-v9`. Its audit checks all
+The JIT delivery checkpoint uses `build/i386-jit-fixup-cross-v9`. Its audit checks all
 1,773 OS source hashes and 26 build-driver inputs. Passing evidence includes:
 
 - `build/rebuild-test/result.json`: two x86-64 compiler/kernel rebuild generations
@@ -138,3 +138,8 @@ This component does not qualify complete assembler/compiler/AOT delivery,
 partial-progress failure unwind, all decoder opcodes, 684 remaining inventory
 workflows, native self-hosting or the complete C1–C5 release gates. Inventory
 qualification remains two of 686 workflows.
+
+Console 254 extends this same first-use service with the complete AOT fixup
+routine and preserves all prior exports. The context publishes both entry
+pointers, and the existing JIT contract passes on that image. Current AOT and
+resource regression evidence is in docs/i386-aot-fixup.md.

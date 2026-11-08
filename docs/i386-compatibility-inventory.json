@@ -10020,6 +10020,27 @@
           "result": "pass",
           "evidence": "build/i386-jit-shared-x64-v1/result.json",
           "scope": "Current shared complete JIT body compiled on pinned original x64 scaffolding passes all forty original assertions, full trace and independent diagnostic heap baseline. Original immutable helper graph/import routines and generated runner retained. No native self-hosting or whole compiler qualification."
+        },
+        {
+          "target": "original-aot-fixup-component",
+          "command": "python3 tools/test-i386-aot-fixup.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-aot-fixup-original-v4/result.json",
+          "scope": "Pinned original complete AOT fixup routine: 32 assertions for eight absolute kinds, parent transfer/order, retained record kinds, grouped/forwarded labels, signed 8/16 boundaries and 32 upper/backward cases, five detached first-record failures and explicit legacy consumed-name retention. Two raw negative I64 values and independent diagnostic heap baseline; visible document stable during snapshots. Full assembler/file output and partial-progress unwind remain open."
+        },
+        {
+          "target": "shared-aot-fixup-x64-component",
+          "command": "python3 build/aot-fixup-shared-x64-runner.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-aot-fixup-shared-x64-v3/result.json",
+          "scope": "Current shared complete AOT core on original x64 scaffolding passes the same 32 assertions and raw negative values while freeing consumed owned names. Original helper graph restored under distinct names; independent five-error baseline accounts for 200 diagnostic bytes. No whole compiler or native-generation qualification."
+        },
+        {
+          "target": "native-public-aot-fixup-component",
+          "command": "python3 tools/test-i386-aot-fixup.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-aot-fixup-native-v3/result.json",
+          "scope": "Normal Console 254 binding via PublicLoader.HH and shared Adam source service; 32 assertions and both raw negative I64 values match original relocation/queue behavior. Consumed name ownership is repaired; cold load and total cleanup retain zero caller bytes, with document queues stable during exact snapshots. One system publication, arithmetic pixels, sole fixture addition and unchanged inputs. First-use failure/retry/concurrency/cancellation, partial-progress unwind, complete assembler/CmpJoin/AOT file delivery and C1-C5 remain open."
         }
       ]
     },

@@ -28002,3 +28002,28 @@ component does not qualify partial-progress exception unwind, first-use failure/
 retry/concurrency/cancellation, complete public compiler/assembler/AOT delivery,
 native self-hosting, 684 workflows or the full C1-C5 release gates. Inventory
 qualification remains two of 686 workflows.
+
+## Normal public AOT assembly fixups
+
+Console 254 appends the real CmpFixUpAOTAsm binding and shares its complete body
+with CMain. The first-use Adam service publishes both JIT and AOT entry points;
+all 672 prior exports are preserved. Scalar I64 patch addresses preserve backward
+64-bit relative values. Consumed local-label records now release their owned
+StrNew names as well as their source links and records; the original's omission
+is explicitly measured in the reference fixture.
+
+The original, current shared x64 and normal native routines pass 32 assertions
+covering absolute relocations, parent transfers/order, retained record kinds,
+grouped/forwarded labels, signed ranges, five detached first-failure records and
+exact cleanup. Both raw negative I64 values match. Native cold load and final
+cleanup retain zero caller bytes. Visible-document locking isolates heap samples
+from asynchronous refresh; earlier measurement failures remain preserved.
+
+Two rebuild generations, the existing 40-assertion JIT contract, all 25 public
+source stages and follow-up contracts, Carry, ClassMeta and complete 8/16 MiB
+welcome rasters pass. Diagnostics complete both program, code-heap and file-break
+cleanup phases. Evidence is under build/i386-aot-fixup-cross-v1 and
+docs/i386-aot-fixup.md. Complete assembler/CmpJoin/AOT file delivery, partial-
+progress unwind, first-use failure/retry/concurrency/cancellation, 684 workflows,
+native self-hosting and full C1-C5 release qualification remain open. Inventory
+qualification remains two of 686 workflows.
