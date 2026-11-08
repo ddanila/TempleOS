@@ -28693,3 +28693,45 @@ function/type-join ownership, broader symbol/header rollback, other backend
 errors and assembly/AOT remain open, alongside full desktop/application/native
 release qualification. Functional welcome frames do not qualify startup budgets.
 C1–C5 remain active and bundled qualification remains 2/686.
+
+
+## Shared function/type-join failure ownership (2026-11-08)
+
+The complete shared function-header parser now retains anonymous roots and incoming
+names until ownership transfers. Reused extern headers retain their previous
+member list, source link and help index until parsing/comparison/completion succeeds;
+failure deletes replacement payloads and restores the original record in place.
+The ordinary lookup use-count increment remains observable. Type parsing owns a
+completed anonymous function until the entire type, including dimensions, succeeds.
+Public hosts provide nonthrowing deletion; private controller arenas explicitly
+select NULL and execute the same complete parser body without another handler.
+Fresh named entries remain table-owned once published. Compiler 104 / Console 262
+account for the service layout; Memory 41 and all 688 exports remain unchanged.
+
+`build/i386-join-error-contract-v3/result.json` checks all 33 prior rows plus thirteen
+anonymous/type/header failure and success rows in one normal session. Exact tags,
+caller state, zero data/code heap deltas, restored header bytes and live non-NULL
+source/help-index contents, warning phases and continued result 42 are required.
+The unchanged prior image in `build/i386-join-error-baseline-v7` demonstrates
+720-byte anonymous/type leaks, 136-byte detached argument-list leaks and a 24-byte
+early-warning name leak. The baseline's exact source/image/fixture provenance is
+checked, rather than substituting reduced parser bodies.
+
+An initial -560-byte delta was traced to DocRecalc releasing five pre-existing
+unused-parameter warnings from fixture compilation. The raw hardware-watchpoint
+trace and renderer accounting remain under `build/i386-join-error-heap-trace-v4`.
+Using and validating every callback argument removes those unrelated warnings;
+acceptance retains the original include context, actual diagnostics, normal
+rendering and strict zero counters. No measurement adjustment is applied.
+
+Two original bootstrap generations, full cross-build/instruction audit, 249 audited
+function cases, complete normal success groups, 8 MiB lexer, complete 8/16 MiB TCG486
+welcome rasters and both diagnostic phases pass. Current source/build pins,
+images/modules/bootstrap, exact raw rows, old baseline provenance, renderer trace
+and component receipts are checked by
+`build/i386-join-error-cross-v1/final-verification-audit.json`.
+
+Public allocator/handler-install exhaustion, cancellation/concurrency, broader
+class/symbol/body rollback, assembly/AOT, full desktop/application coverage and
+native release qualification remain open. Functional frames do not qualify startup
+budgets. C1-C5 remain active; bundled qualification remains 2/686.

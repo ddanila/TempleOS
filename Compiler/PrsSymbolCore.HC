@@ -62,8 +62,17 @@ CHashClass *PrsClassCore(CPrsSymbolServices *services,CCmpCtrl *cc,I64 keyword,I
   return tmpc;
 }
 
-CHashFun *PrsFunJoinCore(CPrsSymbolServices *services,CCmpCtrl *cc,CHashClass *tmp_return,
-	U8 *name,I64 fsp_flags)
+class CPrsFunJoinScope {
+  U8 *name;
+  CHashFun *fresh,*target,*prior;
+};
+U0 PrsFunStateCopy(CHashFun *destination,CHashFun *source)
+{
+  I64 i;U8 *d=destination,*s=source;
+  for(i=0;i<sizeof(CHashFun);i++)d[i]=s[i];
+}
+CHashFun *PrsFunJoinParseCore(CPrsSymbolServices *services,CCmpCtrl *cc,CHashClass *tmp_return,
+  U8 *name,I64 fsp_flags,CPrsFunJoinScope *owned)
 {
   CPrsExpressionServices *expression=services->declarations->expression;
   CMemberLst *tmpm,*header_lst;
@@ -85,11 +94,16 @@ CHashFun *PrsFunJoinCore(CPrsSymbolServices *services,CCmpCtrl *cc,CHashClass *t
   } else
     tmpf=NULL;
   if (tmpf) {
+    if(owned) {
+      owned->prior=(*expression->allocate)(expression->context,sizeof(CHashFun),FALSE,FALSE);
+      owned->target=tmpf;PrsFunStateCopy(owned->prior,tmpf);
+    } else {
+      (*services->declarations->release)(services->declarations->context,tmpf->src_link);
+      (*services->declarations->release)(services->declarations->context,tmpf->idx);
+    }
     tmpf->used_reg_mask=services->used_mask;
-    (*services->declarations->release)(services->declarations->context,tmpf->src_link);
-    tmpf->src_link=NULL;
-    (*services->declarations->release)(services->declarations->context,tmpf->idx);
-    tmpf->idx=NULL;
+    tmpf->src_link=NULL;tmpf->idx=NULL;
+    if(owned)owned->name=NULL;
     (*services->declarations->release)(services->declarations->context,name);
     header_arg_cnt=tmpf->arg_cnt;
     header_lst=tmpf->member_lst_and_root;
@@ -98,18 +112,22 @@ CHashFun *PrsFunJoinCore(CPrsSymbolServices *services,CCmpCtrl *cc,CHashClass *t
     (*services->class_members_delete)(services->context,tmpf);
   } else {
     tmpf=(*services->fun_new)(services->context);
+    if(owned)owned->fresh=tmpf;
     header_return=NULL;
     tmpf->used_reg_mask=services->used_mask;
     tmpf->clobbered_reg_mask=services->clobbered_mask;
     tmpf->str=name;
+    if(owned)owned->name=NULL;
     if (cc->flags&CCF_AOT_COMPILE)
       tmpf->exe_addr=aotc->rip;
     else
       tmpf->exe_addr=services->undefined_function;
     LBts(&tmpf->flags,Cf_EXTERN);
     tmpf->flags|=fsp_flags&FSG_FUN_FLAGS1;
-    if (name) //if not fun_ptr
+    if (name) { //The table consumes a named function only after publication.
       (*expression->hash_add)(expression->context,tmpf,cc->htc.glbl_hash_table);
+      if(owned)owned->fresh=NULL;
+    }
   }
   if (services->header)(*services->header)(services->context,tmpf,FALSE);
   if (fsp_flags&FSF_PUBLIC)
@@ -139,8 +157,38 @@ CHashFun *PrsFunJoinCore(CPrsSymbolServices *services,CCmpCtrl *cc,CHashClass *t
 	(*services->warning)(services->context,cc,2,tmpf);
       }
     }
-    (*services->members_delete)(services->context,header_lst);
+    if(!owned)(*services->members_delete)(services->context,header_lst);
   }
   if (services->header)(*services->header)(services->context,tmpf,TRUE);
   return tmpf;
+}
+
+CHashFun *PrsFunJoinCore(CPrsSymbolServices *services,CCmpCtrl *cc,CHashClass *tmp_return,
+  U8 *name,I64 fsp_flags)
+{
+  CPrsFunJoinScope owned;
+  CHashFun *result;
+  if(!services->function_delete)
+    return PrsFunJoinParseCore(services,cc,tmp_return,name,fsp_flags,NULL);
+  owned.name=name;owned.fresh=NULL;owned.target=NULL;owned.prior=NULL;
+  try { result=PrsFunJoinParseCore(services,cc,tmp_return,name,fsp_flags,&owned); }
+  catch {
+    if(owned.prior) {
+      (*services->class_members_delete)(services->context,owned.target);
+      (*services->declarations->release)(services->declarations->context,owned.target->src_link);
+      (*services->declarations->release)(services->declarations->context,owned.target->idx);
+      PrsFunStateCopy(owned.target,owned.prior);
+      (*services->declarations->release)(services->declarations->context,owned.prior);
+    }
+    if(owned.fresh)(*services->function_delete)(services->context,owned.fresh);
+    if(owned.name)(*services->declarations->release)(services->declarations->context,owned.name);
+    //A named published entry stays table-owned. Preserve automatic propagation.
+  }
+  if(owned.prior) {
+    (*services->members_delete)(services->context,owned.prior->member_lst_and_root);
+    (*services->declarations->release)(services->declarations->context,owned.prior->src_link);
+    (*services->declarations->release)(services->declarations->context,owned.prior->idx);
+    (*services->declarations->release)(services->declarations->context,owned.prior);
+  }
+  return result;
 }

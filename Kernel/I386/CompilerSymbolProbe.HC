@@ -150,7 +150,7 @@ CProbeSymbols *ProbeSymbolSetup(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCt
   services=&state->symbols; services->context=state; services->declarations=&state->declaration.declarations;
   services->class_new=&ProbeSymbolClass; services->fun_new=&ProbeSymbolFun;
   services->single_find=&ProbeSymbolFind; services->source=&ProbeSymbolSource;
-  services->option=&ProbeSymbolOption; services->warning=&ProbeSymbolWarning;
+  services->option=&ProbeSymbolOption; services->warning=&ProbeSymbolWarning; services->function_delete=0;
   services->class_members_delete=&ProbeExpressionUnexpected; services->members_delete=&ProbeExpressionUnexpected;
   cc->aotc=ProbeDeclarationAllocate(state,sizeof(CAOTCtrl),TRUE,FALSE);
   return state;

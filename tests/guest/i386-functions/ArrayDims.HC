@@ -53,7 +53,7 @@ I64 DimProbe(I64 count,I64 empty_first)
   probe.tokens[position]=';';
   cc.flags=CCF_TARGET_I386; cc.token=probe.tokens[0];
   services.context=&probe; services.lex=&DimProbeLex; services.report=&DimProbeError;
-  services.integer_expression=&DimProbeInteger; services.allocate=&DimProbeAllocate;services.release=&DimProbeRelease;
+  services.integer_expression=&DimProbeInteger; services.allocate=&DimProbeAllocate;services.release=&DimProbeRelease;services.function_delete=NULL;
   PrsArrayDimsCore(&services,&cc,PRS1_NULL,&probe.root);
   if(probe.before!=0x13579BDF2468ACE0 || probe.after!=0xFEDCBA9876543210 ||
       probe.index!=position || cc.token!=';' || probe.allocated!=count ||

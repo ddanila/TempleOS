@@ -238,3 +238,97 @@ Public allocator/handler-install exhaustion, cancellation/concurrency, anonymous
 function/type-join ownership, broader symbol/header rollback, other backend errors,
 assembly/AOT, full desktop/apps and native release qualification remain open.
 These component corrections leave full C1–C5 qualification at 2/686.
+
+
+## Anonymous function types and header replacement (2026-11-08)
+
+The preceding committed image retains 720 bytes after anonymous function-header
+failures and after a completed function type encounters a later bound failure.
+A reused extern header detaches its old 136-byte argument list before parsing its
+replacement; failures orphan that list and alter the live header. An early unused
+extern warning throw also leaves the incoming 24-byte name allocation unowned.
+`build/i386-join-error-baseline-v7` observes these failures with the same fixture
+and exact preceding-image source provenance, including successful controls.
+
+CPrsSymbolServices and CPrsTypeServices append optional function_delete callbacks.
+The normal host uses HashDel; the private frontend and its probe initializers
+explicitly retain controller-arena ownership with NULL. The same complete parsing
+bodies serve both environments, with no extra exception record or backup allocation
+on the private arena path. Compiler ABI is 104, Console 262 and Memory remains 41;
+all 688 public export names/order and 22 mask words are unchanged.
+
+Normal function joining tracks the input name and a fresh anonymous function until
+publication or return transfers ownership. Published named entries stay table-owned
+on failure. For a reused extern header, it copies the root record after the ordinary
+single-table lookup and keeps the old source/index/argument payloads alive until
+replacement parsing, comparisons, warnings and completion callbacks finish. Failure
+deletes the new payloads and restores the original record in place; success deletes
+only the superseded payloads and backup. Deletion/release callbacks must not throw
+for valid owned objects. The existing lookup use-count increment remains observable.
+
+Normal type parsing similarly owns a completed anonymous function header until the
+whole type has parsed. Failure after that join frees the function and any dimensions
+still held by the type parser; successful function-pointer and dimension outputs
+remain caller-owned. This closes the gap between successful header joining and a
+later failed array bound without reducing the shared parser algorithm.
+
+Run:
+
+```
+python3 tools/test-i386-public-expression-errors.py IMAGE --array-partials --declarations --joins --out OUT
+```
+
+Thirteen new rows cover anonymous default throws, duplicate arguments, completed
+function types followed by bound/bracket errors, successful header/type transfer,
+failed extern replacement, successful replacement and warning throws before header
+mutation or after return/argument comparisons. They verify exact tags/counters,
+caller flags/snapshot/graph, anonymous non-publication, registered entry identity,
+whole-header restoration except the intended lookup use-count increment, retained
+non-NULL help-index and source-link string contents, zero heap
+deltas after caller-owned cleanup, callback phase and continued result 42. A raw
+hash-table scan observes identity without another use-count increment. The 33 prior
+expression/array/declaration rows remain required in the same normal session.
+
+The first exact contract correctly rejected a -560-byte heap row. Queue draining
+and saved Fix-location isolation did not explain it. A hardware-watchpoint trace
+of the original include context records allocation pointers, frees and caller frames:
+DocRecalc releases five pre-existing “Warning: Unused var” text/entry groups created
+while compiling the fixture's unused callback parameters. Document recalculation's
+net release accounts for exactly the entire 560-byte decrease; it is not a parser
+allocation or over-free. `build/i386-join-error-heap-trace-v4/renderer-audit.py`
+recomputes this from the raw events and the actual loaded module symbol ranges.
+Two allocation-pointer scans have ambiguous candidates, which remain recorded;
+the renderer counter accounting and warning-object evidence do not require choosing
+between those candidates.
+
+The final fixture uses/validates every callback argument, so it creates none of
+those unrelated compile warnings. The original include invocation, normal rendering,
+actual parser diagnostics and strict zero-delta requirement remain. The unchanged
+old image now observes the full 720-byte duplicate-argument leak too, rather than a
+160-byte net increase partially offset by renderer cleanup. No counter correction,
+dropped case or delayed standalone invocation is used for acceptance. Earlier
+padding/use-count probes, failed exact contract and debugger traces are retained.
+
+Current evidence:
+
+- `build/i386-join-error-contract-v3/result.json`: all 46 normal error/control rows,
+  one publication, exact raw rows, unchanged inputs and filesystem checks.
+- `build/i386-join-error-success-v1/result.json`: all previous basic and ten extended
+  normal expression/type/class/function/statement/execution/stream groups.
+- `build/i386-join-error-lex8-v1/result.json`: normal 8 MiB lexer regression.
+- `build/i386-join-error-functions-v1/result.json`: all 249 audited function cases
+  and five deliberate faults; a fresh --out preserves older corpus evidence.
+- `build/rebuild-test/result.json` and `build/i386-join-error-cross-v1/result.json`:
+  two original bootstrap generations and current full cross-build/instruction audit.
+- `build/i386-join-error-welcome8-v1/guest/screen-oracle.json` and the corresponding
+  diagnostic16-v1 receipt: full 307,200-pixel TCG486 frames and both diagnostic phases.
+- `build/i386-join-error-cross-v1/final-verification-audit.json`: current source/build
+  pins, images/modules/bootstrap, baseline provenance, raw rows, prior success
+  records, renderer accounting and component/profile evidence.
+
+Public handler-install/allocation exhaustion, cancellation/concurrency, broader
+class/symbol/body rollback, assembly/AOT, complete desktop/apps and native release
+qualification remain open. New named entries are still table-owned after failure;
+this is not whole-table rollback. Normal error testing uses 64 MiB, while the 8 MiB
+checks prove lexer/startup functionality. Functional frames do not qualify startup
+performance. C1–C5 remain active and bundled qualification is still 2/686.

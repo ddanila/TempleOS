@@ -6243,3 +6243,22 @@ type-identity control and final evidence under
 `tools/test-rebuild.py` now refuses an existing `build/rebuild-test` directory.
 Preserve it under a unique name before running a fresh two-generation bootstrap.
 This prevents accidentally overwriting prior evidence, including failed runs.
+
+
+## Function/type join ownership (2026-11-08)
+
+Add `--joins` to the normal error runner, retaining --array-partials and
+--declarations, to require all 46 rows. The new cases cover anonymous function
+ownership, late type-bound failure, extern-header replacement and early/late
+warning throws. Header comparison preserves the callee's legitimate lookup use
+count; observation uses a raw table scan to avoid incrementing it again. Use and
+validate fixture callback arguments: compiling unused parameters creates warning
+entries on the caller's console, whose later DocRecalc cleanup skews heap snapshots.
+The retained hardware-watchpoint trace identifies that exact unrelated release;
+acceptance keeps normal rendering, include-time execution and zero heap deltas.
+
+See `docs/i386-expression-error-cleanup.md` and
+`build/i386-join-error-cross-v1/final-verification-audit.json`. The 249-case corpus
+can use `tools/test-i386.py --functions --qmp-stdio --out FRESH_OUT` directly,
+without replacing the default output directory. Public allocator/handler exhaustion,
+cancellation, broader symbol rollback and full C1–C5 qualification remain open.

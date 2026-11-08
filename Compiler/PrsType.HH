@@ -23,6 +23,8 @@ class CPrsTypeServices {
   U0 (*member_add)(U8 *context,CCmpCtrl *cc,CMemberLst *member,CHashClass *type,I64 mode);
   //Match allocate; releasing a live dimension must not allocate or throw.
   U0 (*release)(U8 *context,U8 *allocation);
+  //Optional owned function-type cleanup; requires release and must not throw.
+  U0 (*function_delete)(U8 *context,CHashFun *function);
 };
 extern U0 PrsArrayDimsCore(CPrsTypeServices *services,CCmpCtrl *cc,I64 mode,CArrayDim *dim);
 extern CHashClass *PrsTypeCore(CPrsTypeServices *services,CCmpCtrl *cc,CHashClass **_tmpc1,

@@ -319,3 +319,16 @@ uses them; publication still has twelve stages and 688 public exports. Compiler
 normal error runner with `--array-partials --declarations`; exact baselines,
 retained rejected checks and qualification limits are in
 `docs/i386-expression-error-cleanup.md`.
+
+
+## Function/type join ownership (2026-11-08)
+
+Anonymous function metadata now remains owned until a successful complete type
+parse or another explicit transfer. Failed extern-header replacement preserves
+the previous root and payloads in place, retaining the ordinary lookup use-count
+increment. Normal services use explicit destruction; private services keep the
+same parser algorithm and existing controller-arena lifetime. Compiler 104 /
+Console 262 retain all 688 public exports. Run the error runner with
+`--array-partials --declarations --joins`; exact baselines, renderer-isolated
+measurement evidence and remaining limits are in
+`docs/i386-expression-error-cleanup.md`.

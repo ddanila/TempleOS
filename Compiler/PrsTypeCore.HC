@@ -2,9 +2,13 @@
 #include "/Compiler/PrsType.HH"
 #include "/Compiler/PrsArrayDimsCore.HC"
 
-CHashClass *PrsTypeCore(CPrsTypeServices *services,CCmpCtrl *cc,CHashClass **_tmpc1,
+class CPrsTypeScope {
+  CHashFun *function;
+  Bool dimensions;
+};
+CHashClass *PrsTypeParseCore(CPrsTypeServices *services,CCmpCtrl *cc,CHashClass **_tmpc1,
   I64 *_mode,CMemberLst *tmpm,U8 **_ident,CHashFun **_fun_ptr,
-  CHashExport **_tmpex,CArrayDim *tmpad,I64 fsp_flags)
+  CHashExport **_tmpex,CArrayDim *tmpad,I64 fsp_flags,CPrsTypeScope *owned)
 {
   I64 k,ptr_stars_cnt,mode=*_mode;
   CHashClass *tmpc1=*_tmpc1,*tmpc2;
@@ -72,9 +76,12 @@ CHashClass *PrsTypeCore(CPrsTypeServices *services,CCmpCtrl *cc,CHashClass **_tm
       (*services->report)(services->context,cc,0,"Missing ')' at ");
     if ((*services->lex)(services->context,cc)!='(')
       (*services->report)(services->context,cc,0,"Expecting '(' at ");
-    fun_ptr=(*services->fun_join)(services->context,cc,tmpc1,NULL,fsp_flags)+ptr_stars_cnt;
+    fun_ptr=(*services->fun_join)(services->context,cc,tmpc1,NULL,fsp_flags);
+    if(owned)owned->function=fun_ptr;
+    fun_ptr+=ptr_stars_cnt;
     tmpc1=services->types[RT_PTR]+ptr_stars_cnt;
   }
+  if(owned)owned->dimensions=TRUE;
   PrsArrayDimsCore(services,cc,mode,tmpad);
 
   tmpc2=OptClassFwd(tmpc1);
@@ -88,6 +95,30 @@ CHashClass *PrsTypeCore(CPrsTypeServices *services,CCmpCtrl *cc,CHashClass **_tm
   if (_fun_ptr)	*_fun_ptr=fun_ptr;
   if (_tmpex)	*_tmpex=tmpex;
   return tmpc1;
+}
+
+CHashClass *PrsTypeCore(CPrsTypeServices *services,CCmpCtrl *cc,CHashClass **first,
+  I64 *mode,CMemberLst *member,U8 **ident,CHashFun **function,
+  CHashExport **export_entry,CArrayDim *dim,I64 flags)
+{
+  CPrsTypeScope owned;
+  CHashClass *result;
+  CArrayDim *node;
+  if(!services->function_delete)
+    return PrsTypeParseCore(services,cc,first,mode,member,ident,function,export_entry,dim,flags,NULL);
+  owned.function=NULL;owned.dimensions=FALSE;
+  try { result=PrsTypeParseCore(services,cc,first,mode,member,ident,function,export_entry,dim,flags,&owned); }
+  catch {
+    if(owned.dimensions) {
+      while(node=dim->next) {
+        dim->next=node->next;(*services->release)(services->context,node);
+      }
+      dim->cnt=0;dim->total_cnt=1;
+    }
+    if(owned.function)(*services->function_delete)(services->context,owned.function);
+    //Successful output pointers transfer ownership only after the full parse.
+  }
+  return result;
 }
 
 U0 PrsDotDotDotCore(CPrsTypeServices *services,CCmpCtrl *cc,CHashFun *tmpf,I64 _reg)

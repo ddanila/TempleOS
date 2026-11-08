@@ -18,6 +18,9 @@ class CPrsSymbolServices {
   U0 (*source)(U8 *context,CCmpCtrl *cc,CHashSrcSym *symbol,I64 line_adjust);
   Bool (*option)(U8 *context,I64 index);
   U0 (*warning)(U8 *context,CCmpCtrl *cc,I64 kind,CHashSrcSym *symbol);
+  //Optional explicit lifetime; NULL retains failed allocations in the arena.
+  //Deletion/release callbacks must not throw for live owned data.
+  U0 (*function_delete)(U8 *context,CHashFun *function);
 };
 extern CHashClass *PrsClassCore(CPrsSymbolServices *services,CCmpCtrl *cc,I64 keyword,I64 fsp_flags,Bool is_extern);
 extern CHashFun *PrsFunJoinCore(CPrsSymbolServices *services,CCmpCtrl *cc,CHashClass *tmp_return,

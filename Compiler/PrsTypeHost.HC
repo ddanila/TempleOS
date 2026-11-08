@@ -8,6 +8,7 @@ CHashFun *PrsHostFunJoin(U8 *context,CCmpCtrl *cc,CHashClass *return_type,U8 *na
 { return PrsFunJoin(cc,return_type,name,flags); }
 U8 *PrsHostTypeAllocate(U8 *context,I64 bytes) { return MAlloc(bytes); }
 U0 PrsHostTypeRelease(U8 *context,U8 *allocation) { Free(allocation); }
+U0 PrsHostTypeFunctionDelete(U8 *context,CHashFun *function) { HashDel(function); }
 CMemberLst *PrsHostMemberNew(U8 *context,I64 register_hint) { return MemberLstNew(register_hint); }
 U0 PrsHostMemberAdd(U8 *context,CCmpCtrl *cc,CMemberLst *member,CHashClass *type,I64 mode)
 { MemberAdd(cc,member,type,mode); }
@@ -21,6 +22,7 @@ U0 PrsHostTypeServices(CPrsTypeServices *services)
   services->allocate=&PrsHostTypeAllocate; services->duplicate=&PrsHostDuplicate;
   services->member_new=&PrsHostMemberNew; services->member_add=&PrsHostMemberAdd;
   services->release=&PrsHostTypeRelease;
+  services->function_delete=&PrsHostTypeFunctionDelete;
 }
 
 U0 PrsArrayDims(CCmpCtrl *cc,I64 mode,CArrayDim *dim)

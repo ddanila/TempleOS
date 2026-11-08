@@ -5,6 +5,7 @@ CHash *PrsHostSingleFind(U8 *context,U8 *name,CHashTable *table,I64 mask)
 { return HashSingleTableFind(name,table,mask); }
 U0 PrsHostClassMembersDelete(U8 *context,CHashClass *symbol) { ClassMemberLstDel(symbol); }
 U0 PrsHostMembersDelete(U8 *context,CMemberLst *members) { MemberLstDel(members); }
+U0 PrsHostFunctionDelete(U8 *context,CHashFun *function) { HashDel(function); }
 U0 PrsHostSource(U8 *context,CCmpCtrl *cc,CHashSrcSym *symbol,I64 line_adjust)
 { HashSrcFileSet(cc,symbol,line_adjust); }
 Bool PrsHostOption(U8 *context,I64 index) { return GetOption(index); }
@@ -28,6 +29,7 @@ U0 PrsHostSymbolServices(CPrsSymbolServices *services,CPrsDeclarationServices *d
   services->single_find=&PrsHostSingleFind; services->class_members_delete=&PrsHostClassMembersDelete;
   services->members_delete=&PrsHostMembersDelete; services->source=&PrsHostSource;
   services->option=&PrsHostOption; services->warning=&PrsHostSymbolWarning;
+  services->function_delete=&PrsHostFunctionDelete;
 }
 
 CHashClass *PrsClass(CCmpCtrl *cc,I64 keyword,I64 fsp_flags,Bool is_extern)

@@ -69,7 +69,7 @@ U0 ProbeExpressionSetup(CProbeExpression *state,CI386CompilerProbe *probe,CI386H
   state->types.class_join=&ProbeExpressionUnexpected; state->types.fun_join=&ProbeExpressionUnexpected;
   state->types.allocate=&ProbeExpressionUnexpected; state->types.duplicate=&ProbeExpressionUnexpected;
   state->types.member_new=&ProbeExpressionUnexpected; state->types.member_add=&ProbeExpressionUnexpected;
-  state->types.release=0; //Probe allocations retain their existing control lifetime.
+  state->types.release=0;state->types.function_delete=0; //Existing control lifetime.
 }
 U0 ProbeExpression(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
