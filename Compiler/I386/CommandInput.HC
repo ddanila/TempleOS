@@ -37,6 +37,14 @@ Bool I386CommandInputHasDeclarations(CI386Frontend *state)
     if(state->table->body[i])return TRUE;
   return FALSE;
 }
+Bool I386CommandInputHasLiteralOutputs(CI386Frontend *state)
+{
+  CI386FrontendCode *output;
+  for(output=state->codes;output;output=output->next)
+    if(output->prior_misc&CCF_HAS_MISC_DATA && output->data_start<output->bytes)
+      return TRUE;
+  return FALSE;
+}
 //Commit completed statements before parsing or executing a later failing one.
 //The publisher validates and retains the complete ownership graph atomically.
 Bool I386CommandInput(CI386CommandInput *input)
@@ -148,10 +156,11 @@ Bool I386CommandInput(CI386CommandInput *input)
     task->except_ch=input->exception; task->except_rbp=saved_rbp;
     for(i=0;i<TASK_EXCEPT_CALLERS;i++) task->except_callers[i]=saved_callers[i];
   }
-  //Preserve the structurally owned declaration graph after a parser failure.
+  //Preserve declarations and escaped literal pools after a parser failure.
   //Partial descriptors keep their actual parsed metadata; error counts stay set.
   if(raised && !(input->flags&I386_INPUT_ATOMIC_DEFINES) && state &&
-      (state->published_children || I386CommandInputHasDeclarations(state))) {
+      (state->published_children || I386CommandInputHasDeclarations(state) ||
+       I386CommandInputHasLiteralOutputs(state))) {
     try {
       //An interrupted output can contain literal pools referenced by a global.
       //Retain its registered payload with the graph instead of freeing it here.

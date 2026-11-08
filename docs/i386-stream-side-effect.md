@@ -63,3 +63,12 @@ void suppression, declaration-only preservation, syntax recovery, nested documen
 execution and integer/F64/pointer initializers after changing ordinary command
 retention. All terminal pins are independently checked. Inventory guards pass
 all five tests; whole-workflow qualification counts remain two of 686.
+
+
+Compiler93 follows up later syntax failures: an input with retained literal
+outputs now reaches the existing terminal publication journal even when it
+created no declarations. Both compile-time and runtime failure cases preserve
+the original bytes after recovery; an independent nonliteral exception control
+keeps native code-heap used-byte growth at zero. See
+[failure evidence](i386-stream-failure.md). Other failure and release gates remain
+open.

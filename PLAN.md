@@ -27843,3 +27843,29 @@ not establish peak resources or the full C5 generations/release budget.
 All 34 existing ordinary console answer commands also pass at 8 MiB KVM without
 FPU, with live WinMgr, exact rasters, filesystem checks and independent input
 audits. Inventory guards remain green; no additional whole workflow is qualified.
+
+### Literal storage after a later syntax failure (2026-11-08)
+
+Compiler93 includes registered parser-marked literal pools in the existing
+terminal-publication gate, even when a failed input created no declarations.
+Completed writes to existing globals therefore keep their code/data owner after
+a later undefined identifier. Both original and corrected native pass twelve
+lifetime checks in compile-time and ordinary runtime modes; compiler92 fails
+later generated access and parent-closure/reuse checks. The captured diagnostic
+and native rejection counts prove a real failed input rather than suppressed
+errors. Atomic-definition behavior remains unchanged.
+
+A negative control runs eight warm-up plus 32 plain Compiler exceptions. Native
+used-byte growth remains zero; the original observes 169,984 bytes of growth in
+both modes. This is a public code-heap used_u8s observation, not reserved pages,
+private-parser recovery or peak RAM. Failed original-zero assumptions are kept.
+Both bootstrap generations, the full source-pinned build, successful lifetime
+modes, seventeen answer cases and Carry/ClassMeta whole workflows pass. See
+docs/i386-stream-failure.md. OutMem/publication failure, execution faults with
+partial effects, cancellation, task/cross-task teardown and public compiler
+integration remain open, as do 684 workflows and full C1–C5 release gates.
+
+Final source26 passes all stages and prior observations with 1,039 independently
+verified input pins. Fresh 8/16 MiB welcome rasters match all 307,200 pixels and
+both diagnostic ownership/file-break phases complete. Inventory guard tests pass;
+qualification counts remain two of 686.
