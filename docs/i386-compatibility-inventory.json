@@ -19205,6 +19205,20 @@
           "result": "pass",
           "evidence": "build/i386-public-functions-formal-native-v1/result.json",
           "scope": "Actual LoadOneImport and SysSymImportsResolve bodies source-loaded; resolver invoked during ordinary function completion with no pending imports. Import patching and complete loader behavior remain unqualified. All earlier expression/token/type/runtime/lifetime/class regressions pass. Source-loaded diagnostic only; normal public Lex, complete compiler and full C1\u2013C5 remain unqualified."
+        },
+        {
+          "target": "original-import-resolution-component",
+          "command": "python3 tools/test-i386-import-resolve.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-import-resolve-original-v5/result.json",
+          "scope": "Pinned original import routines source-loaded under distinct names with original x64 compiler/layouts. Twenty-four assertions and four raw backward displacement values cover grouped cursor, eight relative/immediate relocation kinds, no-op kinds, pending groups, function/global/parent exports, invalidation and exact cleanup; unchanged inputs. Whole loader unqualified."
+        },
+        {
+          "target": "native-public-import-resolution-component",
+          "command": "python3 tools/test-i386-import-resolve.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-import-resolve-native-v6/result.json",
+          "scope": "Normal Console 252 bindings via explicit PublicLoader.HH: identical 24-word record and four backward displacements, exact heap recovery, arithmetic pixels and packaged volume; unchanged inputs. I64 scalar address arithmetic preserves negative 64-bit displacement; explicit declarations avoid eager boot metadata regression. Earlier candidates and missing-binding baseline remain preserved. Full module loading and public compiler/assembly closure remain open."
         }
       ]
     },

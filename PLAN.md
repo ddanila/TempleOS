@@ -27930,3 +27930,31 @@ other 1,040 pins still matching. Five inventory guard tests pass. The full nativ
 compiler module, lexer, assembly/AOT pipeline, 684 unqualified workflows and all
 complete C1–C5 gates remain open. See
 [AOT storage evidence](docs/i386-aot-storage.md).
+
+### Normal import resolution and 64-bit backward relocations (2026-11-08)
+
+Console 252 appends LoadOneImport and SysSymImportsResolve (670 exports, prior
+668 names/setters unchanged). Both actual functions are boot-published; compiler
+clients explicitly include PublicLoader.HH. Their shared core now serves the
+original kernel and native console, replacing source-loader copies. A scalar I64
+patch address and exact-width byte copy preserve negative 64-bit relative values
+when native pointers are 32-bit. The independent pinned-original reference and
+normal native binding contract agree on all 24 assertions and four raw backward
+displacements, with exact heap recovery, arithmetic and volume checks.
+
+Forward-only tests missed this porting defect. The rejected native captures show
+zero-extended negative I64 values, then a failed pointer-lvalue reinterpretation
+correction. The scalar/copy implementation fixes the width case, but eager loader
+declarations still exhausted 8 MiB while compiling UAsmCore.HC. An image-level
+header-only isolation boot kept identical code/exports and restored startup. The
+explicit loader header retains both functions without that unrelated boot-time
+metadata cost. All rejected candidates and their limits remain preserved.
+
+Both final bootstrap generations, the full image build, all 25 source-loaded
+compiler stages, Carry/ClassMeta/AOT storage regressions, the 8 MiB complete
+welcome raster and both 16 MiB diagnostic phases pass. All 1,768 build source
+pins, 26 driver pins and 1,044 full compiler-suite pins match current inputs;
+normal and diagnostic images remain unchanged. Five inventory guard tests pass.
+Full module loading, assembly/JIT fixups, complete public compiler delivery,
+684 unqualified workflows and complete C1–C5 gates remain open. See
+[import resolution evidence](docs/i386-import-resolve.md).

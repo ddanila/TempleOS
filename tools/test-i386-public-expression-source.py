@@ -24,6 +24,7 @@ source=args.disk.resolve()
 header=b'''//Diagnostic source-loaded original token lexer. Unresolved compiler services remain explicit externs.
 #include "/Kernel/I386/PublicDocument.HH"
 #include "/Kernel/I386/PublicHash.HH"
+#include "/Kernel/I386/PublicLoader.HH"
 #include "/Kernel/I386/PublicMath.HH"
 #include "/Kernel/I386/PublicFiles.HH"
 #include "/Kernel/StringLimits.HH"
@@ -113,7 +114,6 @@ if args.classes:
 if args.statements:
   statements=b'''#include "/Compiler/PrsCompileFlags.HH"
  public extern Bool PrsStmt(CCmpCtrl *cc,I64 try_count=0,CCodeMisc *break_label=NULL,I64 flags=CMPF_PRS_SEMICOLON);
- public extern U0 SysSymImportsResolve(U8 *name,I64 flags=0);
  public extern I64 Un(U8 *rip,I64 count=0x80,I64 seg_size=64);
  public extern U0 PrsAsmBlk(CCmpCtrl *cc,I64 flags);
  public extern CAOT *CmpJoin(CCmpCtrl *cc,I64 flags,U8 *map_name=NULL,U8 map_drive=0);
@@ -123,10 +123,6 @@ if args.statements:
   code=(root/'Compiler/PrsStmt.HC').read_bytes()
   statements+=code[code.index(b'extern U0 PrsFun('):]
   parts.append(statements)
-if args.functions:
- support=(root/'Kernel/KLoad.HC').read_bytes()
- load_flags=b'\n'.join(line for line in (root/'Kernel/KernelA.HH').read_bytes().splitlines() if line.startswith(b'#define LDF_'))+b'\n'
- parts.append(load_flags+support[:support.index(b'U0 LoadPass1(')])
 if args.statement_code:
  main=(root/'Compiler/CMain.HC').read_bytes()
  parts.append(main[:main.index(b'CAOT *CmpJoin(')])
