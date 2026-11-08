@@ -28790,3 +28790,16 @@ cancellation/concurrency, complete assembly forms, Cmp/CmpBuf/file/map workflows
 full desktop/apps and native C5 release generations remain open. Functional
 welcome frames do not qualify startup budgets or assembly at those memory sizes.
 C1-C5 remain active; bundled qualification remains 2/686.
+
+## Shared buffer compilation and packet release bodies (2026-11-09)
+
+`Compiler/CmpBufCore.HC` now shares the complete existing `CmpBuf` body with
+`Compiler/CMain.HC`; `Compiler/I386/AOTReleaseCore.HC` shares the complete existing
+`I386AOTDel` body with the module writer. This extraction changes no algorithms.
+`build/i386-public-buffer-body-audit-v1/result.json` compares both complete bodies
+against e349c2f4519071919e83510ffe5d47f1e85626b5. The current extracted sources
+passed two original x86-64 bootstrap generations in
+`build/rebuild-test-before-public-buffer-target/result.json`, with every source
+pin unchanged at verification. This checkpoint does not qualify normal native
+buffer execution, map output, failure ownership, or complete module/release
+workflows. C1-C5 remain active; bundled qualification remains 2/686.

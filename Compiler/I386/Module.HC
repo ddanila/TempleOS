@@ -4,19 +4,7 @@
 #include "/Kernel/I386/ModuleLoad.HC"
 #include "/Kernel/I386/ModulePackCore.HC"
 
-U0 I386AOTDel(CAOT *aot)
-{
-  CAOTImportExport *ie,*next;
-  CAOTHeapGlbl *hg,*hg_next;
-  if (!aot) return;
-  for (ie=aot->next_ie;ie!=&aot->next_ie;ie=next) {
-    next=ie->next; Free(ie->str); Free(ie->src_link); Free(ie);
-  }
-  for (hg=aot->heap_glbls;hg;hg=hg_next) {
-    hg_next=hg->next; LinkedLstDel(hg->references); Free(hg->str); Free(hg);
-  }
-  LinkedLstDel(aot->abss); Free(aot->buf); Free(aot);
-}
+#include "/Compiler/I386/AOTReleaseCore.HC"
 
 public U8 *CmpI386Module(U8 *source,I64 *size,I64 *error_cnt=NULL)
 {
