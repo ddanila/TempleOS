@@ -18,6 +18,7 @@ class CI386ParserAllocation {
   //Present only when owner is non-null; ordinary arena records end here.
   U32 requested;
 };
+extern class CI386ICSlab;
 class CI386CmpCtrl {
   CCmpCtrl control;
   CI386Heap *heap;
@@ -32,6 +33,7 @@ class CI386CmpCtrl {
   CHashTable *private_defines;
   U8 *frontend; //Borrowed registered parser state, valid while control lives.
   U32 token_epoch; //Saturates rather than wrapping across a recursive lexer call.
+  CI386ICSlab *ic_slabs; //Private frontend IR storage; code records retain each slot.
 };
 Bool I386CmpTaskOwnerValid(CI386Task *task,CI386Heap *heap,CHashTable *symbols)
 {

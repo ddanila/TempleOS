@@ -40,6 +40,7 @@ extern I64 UnwindRootTest();
 extern I64 CodeTest();
 extern I64 CodeViewsTest();
 extern I64 CodeRetireTest();
+extern I64 CodeSlabTest();
 extern I64 CodeBranchTest();
 extern Bool FactoryWorkerTest(I64 id);
 U0 (*swap)(CI386Context *old,CI386Context *next);
@@ -174,6 +175,7 @@ I64 ScopeTest()
   i=CodeTest; if(i) return i;
   i=CodeViewsTest; if(i) return i;
   i=CodeRetireTest; if(i) return i;
+  i=CodeSlabTest; if(i) return i;
   i=CodeBranchTest; if(i) return i;
   borrow=I386TaskFilesBorrow(&root,&snapshot,&selected);
   if(!borrow || I386TaskSymbolsDestroy(&root) || !I386TaskFilesRelease(borrow) ||
@@ -276,10 +278,12 @@ Bool I386RedSeaEnd(CI386RedSea *volume) {return FALSE;}
 #include "T:/Views.HC"
 
 #include "T:/Retire.HC"
+#include "T:/PrivateSlab.HC"
 
 U0 throw(I64 ch=0,Bool no_log=FALSE)
 {//Unexpected optimizer failure terminates this fixture with an observable marker.
   OutU8(0xE9,'!'); while(TRUE) {}
 }
+#include "/Compiler/I386/NativeEmit.HC"
 #include "/Compiler/I386/OptBranch.HC"
 #include "T:/Branch.HC"

@@ -10677,15 +10677,15 @@
           "target": "normal-public-token-lexer-16m-component",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 16 --out OUT",
           "result": "pass",
-          "evidence": "build/i386-cache-collect-lex16-v1/result.json",
+          "evidence": "build/i386-ir-slabs-lex16-v5/result.json",
           "scope": "Normal Console 258 Lex/LexExtStr via twelve ordered complete shared-source stages; same 24 original result words, includes/adjacent strings/buffer borrowing and caller heap recovery, one publication, arithmetic/volume/input checks. No diagnostic source lexer installed for this contract. Normal expression/stream directive dependencies, fault/concurrency and full compiler remain open."
         },
         {
-          "target": "normal-public-token-lexer-8m-resource-frontier",
+          "target": "normal-public-token-lexer-8m-component",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 8 --out OUT",
-          "result": "fail",
-          "evidence": "build/i386-cache-collect-lex8-v1/result.json",
-          "scope": "Unchanged 24-case contract advances beyond numeric, character, punctuation, identifier, define and conditional helpers after MemoryRuntime-41 cached-page reclamation, then fails on 14880-byte final executable storage in PublicLexTokens.HC. Stopped snapshot after IR release: 344000 free arena span bytes, largest 11376; all 14880 output bytes emitted in 30 chunks. Inputs unchanged; no lexer publication. Durable code contiguity and C5 remain open; no inventory qualification."
+          "result": "pass",
+          "evidence": "build/i386-ir-slabs-lex8-v5/result.json",
+          "scope": "Normal Compiler 101 / Console 258 at 8 MiB: all 24 unchanged token results, one lexer publication, heap recovery, arithmetic and input/volume checks pass. Private grouped IR reuses freed slots and preserves retired operands; known-size native opcode catalog buffers use the retained exact-page allocator. Complete catalog remains 1833 entries. Expression/stream directive dependencies, fault/concurrency, full compiler and C1-C5 qualification remain open; no inventory workflow qualification."
         }
       ]
     },
@@ -10763,15 +10763,15 @@
           "target": "normal-public-token-lexer-16m-component",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 16 --out OUT",
           "result": "pass",
-          "evidence": "build/i386-cache-collect-lex16-v1/result.json",
+          "evidence": "build/i386-ir-slabs-lex16-v5/result.json",
           "scope": "Normal Console 258 Lex/LexExtStr via twelve ordered complete shared-source stages; same 24 original result words, includes/adjacent strings/buffer borrowing and caller heap recovery, one publication, arithmetic/volume/input checks. No diagnostic source lexer installed for this contract. Normal expression/stream directive dependencies, fault/concurrency and full compiler remain open."
         },
         {
-          "target": "normal-public-token-lexer-8m-resource-frontier",
+          "target": "normal-public-token-lexer-8m-component",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 8 --out OUT",
-          "result": "fail",
-          "evidence": "build/i386-cache-collect-lex8-v1/result.json",
-          "scope": "Unchanged 24-case contract advances beyond numeric, character, punctuation, identifier, define and conditional helpers after MemoryRuntime-41 cached-page reclamation, then fails on 14880-byte final executable storage in PublicLexTokens.HC. Stopped snapshot after IR release: 344000 free arena span bytes, largest 11376; all 14880 output bytes emitted in 30 chunks. Inputs unchanged; no lexer publication. Durable code contiguity and C5 remain open; no inventory qualification."
+          "result": "pass",
+          "evidence": "build/i386-ir-slabs-lex8-v5/result.json",
+          "scope": "Normal Compiler 101 / Console 258 at 8 MiB: all 24 unchanged token results, one lexer publication, heap recovery, arithmetic and input/volume checks pass. Private grouped IR reuses freed slots and preserves retired operands; known-size native opcode catalog buffers use the retained exact-page allocator. Complete catalog remains 1833 entries. Expression/stream directive dependencies, fault/concurrency, full compiler and C1-C5 qualification remain open; no inventory workflow qualification."
         }
       ]
     },
@@ -11353,10 +11353,10 @@
         },
         {
           "target": "native-unassemble",
-          "command": "python3 tools/test-i386-unassemble.py IMAGE --out OUT",
+          "command": "python3 tools/test-i386-unassemble.py IMAGE --ram-mib 8 --out OUT",
           "result": "pass",
-          "evidence": "build/i386-unassemble-native-v4/result.json",
-          "scope": "Twelve actual Ui cases; exact instruction text, lengths and relative destinations. Original run reproduces catalog. No complete decoder qualification."
+          "evidence": "build/i386-ir-slabs-unassemble-capacity-v6/result.json",
+          "scope": "At 8 MiB, twelve actual Ui cases retain exact instruction text, lengths and relative destinations; full unchanged 1833-entry catalog uses fixed buffers with less than one native page of spare capacity each. Catalog storage needs 131976 bytes and has 132060-byte capacity. Original catalog data unchanged; complete decoder, U/Un and symbol-link workflows remain unqualified."
         },
         {
           "target": "shared-decoder-x64-modrm-component",

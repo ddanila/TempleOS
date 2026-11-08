@@ -6,6 +6,8 @@ U0 NativeUAsmTablesInit()
   U8 *bytes=NULL,*storage=NULL,*record;
   CInst **table32=NULL,**table64=NULL;
   CHashOpcode *opcode;
+  CHashExport *allocator;
+  U8 *(*allocate)(I64 bytes,CTask *task);
   if(uasm.table_16_32)return;
   try {
     bytes=FileRead("::/Compiler/I386/UAsmTables.DATA",&size);
@@ -14,9 +16,14 @@ U0 NativeUAsmTablesInit()
     if(count32<=0 || count64<=0 || count32>4096 || count64>4096)throw('UAsmSize');
     n=count32+count64;
     if(size!=40+n*48)throw('UAsmSize');
-    table32=MAlloc(count32*sizeof(U8 *));
-    table64=MAlloc(count64*sizeof(U8 *));
-    storage=CAlloc(n*(sizeof(CHashOpcode)+32));
+    //These final sizes are known. Avoid the public pool's optional larger
+    //returned block and power-of-two page reserve for this retained catalog.
+    allocator=HashFind("I386CAllocExact",Fs->hash_table,HTT_EXPORT_SYS_SYM);
+    if(!allocator || !allocator->val)throw('UAsmMem');
+    allocate=allocator->val;
+    table32=(*allocate)(count32*sizeof(U8 *),Fs);
+    table64=(*allocate)(count64*sizeof(U8 *),Fs);
+    storage=(*allocate)(n*(sizeof(CHashOpcode)+32),Fs);
     for(i=0;i<n;i++) {
       record=bytes+40+i*48;
       if(!*record || record[31])throw('UAsmName');

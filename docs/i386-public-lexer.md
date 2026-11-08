@@ -395,3 +395,15 @@ this path reports no heap/count words. The test/input contract is unchanged and
 normal API publication is not reached. Matching call-reuse v1 receipts and final
 audits retain the passing compiler/backend/assembly/boot regressions and open
 8 MiB resource failure. Normal parser/directive closure and C1-C5 stay open.
+
+## Current 8 MiB component receipt
+
+Compiler 101 / Console 258 now passes the unchanged normal 24-case token contract
+at both 8 and 16 MiB. Evidence is `build/i386-ir-slabs-lex8-v5/result.json` and
+`build/i386-ir-slabs-lex16-v5/result.json`: exact original result words, one lexer
+publication, heap recovery, arithmetic, unchanged inputs and verified volume.
+Private grouped IR and fixed opcode-catalog buffers resolve the prior load-time
+resource failures; see [storage and ownership](i386-private-ir-slabs.md).
+This does not qualify expression/stream directive dependencies, fault/concurrency,
+the full normal compiler or the remaining original workflows. Qualification is
+still 2/686.

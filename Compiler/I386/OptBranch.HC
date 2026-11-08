@@ -20,7 +20,7 @@ CCodeMisc *COCMiscNew(CCmpCtrl *cc,I64 type)
 CIntermediateCode *I386OptBranch(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node)
 {
   CI386CodeAllocation *record;
-  if(!I386CmpCodeOwner(heap,cc) || !(record=I386ICLifetime(heap,node)) ||
+  if(!I386CmpCodeOwner(heap,cc) || !(record=I386ICLifetime(heap,cc,node)) ||
       record->control!=cc || record->kind!=1 || record->allocation!=node ||
       (node->ic_code!=IC_BR_ZERO && node->ic_code!=IC_BR_NOT_ZERO)) return 0;
   if(node->ic_code==IC_BR_ZERO) return OptBrZero(cc,node);

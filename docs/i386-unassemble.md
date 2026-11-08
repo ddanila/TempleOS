@@ -164,3 +164,18 @@ and normal native Ui pass the twelve exact cases; the full native JIT trace also
 matches the original's complete 113 bytes. Both full 8/16 MiB welcome rasters pass
 with the extracted decoder. See docs/i386-jit-fixup.md for evidence and remaining
 opcode, compiler, unwind and lifecycle limits.
+
+## Fixed native catalog capacity
+
+The native-only catalog initializer now uses the retained exact-page allocation
+provider for both lookup arrays and all opcode records. Its complete pointer-free
+catalog remains unchanged: 924 16/32-bit entries and 909 64-bit entries. A captured
+normal allocation had 263132 bytes of capacity for 131976 bytes of opcode data.
+The fixed allocation has 132060-byte capacity, removing 131072 excess bytes.
+
+`build/i386-ir-slabs-unassemble-capacity-v6/result.json` checks this at 8 MiB,
+alongside the unchanged twelve original Ui cases. Public MSize requested/capacity
+pairs are 3696/4060, 3636/4060 and 131976/132060; each buffer covers its data with
+less than one native page of spare capacity. Captured catalog validation checks
+every one of the 1833 names and instruction encodings. Complete opcode execution,
+U/Un, symbol-link and general register workflows remain unqualified.

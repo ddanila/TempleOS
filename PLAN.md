@@ -28432,3 +28432,39 @@ accounting is rejected. See docs/i386-cached-page-reclamation.md and matching
 build/i386-cache-collect-* evidence. These different-point captures do not claim
 a controlled byte-saving delta. Full normal compiler, fault/concurrency/resource
 and performance gates, 684 workflows and C1–C5 remain open; qualification 2/686.
+
+### Grouped private IR and fixed catalog buffers: lexer8 passes
+
+Compiler 101 appends an owned group list to its private control. Private 108-byte
+IR prefixes and 20-byte lifetime records occupy 128-byte slots; public complete
+ICAdd nodes remain unchanged. Groups prefer 160 slots, adapt to fitting extents,
+and fall back to individual compact allocations when no group fits. Freed slots
+are reused; retired tree operands remain registered and readable. Empty headers
+are collected at direct retired-collection boundaries as well as graph release;
+terminal teardown drains slot records before storage. No total instruction-count
+cap is added. Header lifetime 9 remains distinct from parser-stack 7/output 8.
+
+The ownership suite checks >160 nodes, 150 allocation-free slot reuses, saved
+outer trees, direct collection, partial-growth exhaustion, individual fallback,
+foreign/interior rejection, exact unwind recovery and both IRQ states. Both
+bootstrap generations, strict full cross-build, lexer16/backend48, all 25 diagnostic
+source-compiler stages, full TCG rasters and both metadata/F64 failure/retry phases
+pass. Local descriptor/frame guard measurements remain 3608/3808/8216 bytes, with
+no arbitrary recursive/callback stack qualification implied.
+
+Captures rejected a no-reuse policy (119 freed slots retaining 15232 bytes) and
+then exposed a larger catalog reserve: identical 1833 opcode records requested
+131976 bytes but received 263132-byte capacity, versus 132060 with exact pages.
+NativeUAsmTablesInit now uses the existing exact-page provider for all three
+known-size buffers, preserving the complete original catalog and public allocator
+behavior. Native disassembly and capacity checks pass at 8 MiB, including the
+3696/4060,3636/4060,131976/132060 requested/capacity pairs.
+
+The unchanged normal lexer now publishes once and passes all 24 token checks at
+8 MiB, with heap recovery, arithmetic and input/volume verification. The >1KiB
+assembly fixture and independent cross-window rel32 checks also pass. Evidence:
+build/i386-ir-slabs-cross-v5 and matching v5 runtime receipts, task-symbols v6,
+unassemble-capacity v6; design and rejected-policy captures are documented in
+docs/i386-private-ir-slabs.md. Normal token delivery is still a component result;
+full compiler/fault/concurrency/performance/native-generation gates and 684 workflows
+remain open. C1–C5 are not complete; qualification remains 2/686.

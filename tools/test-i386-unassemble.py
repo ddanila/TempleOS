@@ -17,12 +17,14 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('disk', type=Path, nargs='?')
     ap.add_argument('--out', type=Path, required=True)
+    ap.add_argument('--ram-mib', type=int, default=64, help='Native guest RAM; original reference remains unchanged')
     args = ap.parse_args()
     out = args.out.resolve()
     if out.exists():
         ap.error('Use a fresh output directory')
     fixture = ROOT/'tests/guest/i386-unassemble/Contract.HC'
     tables_fixture = fixture.with_name('Tables.HC')
+    capacity_fixture = fixture.with_name('NativeCapacity.HC')
     paths = [Path(__file__).resolve(), fixture, tables_fixture] + [ROOT/('tools/'+name) for name in (
         'test-i386-autocomplete-interaction.py', 'test-i386-timeclock-reference.py',
         'test-i386-timeclock-welcome.py', 'build-iso.py',
@@ -30,12 +32,13 @@ def main():
     paths.append(ROOT/'Kernel/FontStd.HC')
     catalog=ROOT/'Compiler/I386/UAsmTables.DATA'
     paths.append(catalog)
+    if args.disk: paths.append(capacity_fixture)
     if args.disk:
         paths.append(args.disk.resolve())
     out.mkdir()
     pins = {str(p): sha(p) for p in paths}
     report = dict(result='running', input_sha256=pins,
-                  scope='Twelve explicit 32-bit Ui cases: exact instruction text, consumed lengths and relative destinations; not full opcode, symbol-link or raw-register qualification.')
+                  scope='Twelve explicit 32-bit Ui cases: exact instruction text, consumed lengths and relative destinations; native fixed catalog buffer capacities. Not full opcode, symbol-link or raw-register qualification.', ram_mib=args.ram_mib if args.disk else 2048)
     (out/'fixture.HC').write_bytes(fixture.read_bytes())
     (out/'tables-fixture.HC').write_bytes(tables_fixture.read_bytes())
     (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
@@ -45,7 +48,8 @@ def main():
             image = out/'working.img'
             pack = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))
             before = pack['snapshot'](args.disk.read_bytes())[1]
-            additions = {'/Probe/Unassemble.HC': fixture.read_bytes()}
+            additions = {'/Probe/Unassemble.HC': fixture.read_bytes(),
+                         '/Probe/UAsmCapacity.HC': capacity_fixture.read_bytes()}
             report['packaging'] = pack['package'](args.disk.resolve(), image, additions=additions)
         else:
             overlay = out/'overlay'
@@ -55,7 +59,7 @@ def main():
             image = out/'original.iso'
             subprocess.run(['python3','tools/build-iso.py','--overlay',str(overlay),'--output',str(image)],cwd=ROOT,check=True)
         Guest = runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest']
-        g = Guest(image, out/'guest', bool(args.disk), reference_cpus=1)
+        g = Guest(image, out/'guest', bool(args.disk), ram_mib=args.ram_mib, reference_cpus=1)
         if args.disk:
             g.wait('DONE native kernel startup\n')
             g.command('#include "C:/Probe/Unassemble.HC"')
@@ -87,6 +91,21 @@ def main():
             report['catalog_sha256']=hashlib.sha256(generated).hexdigest()
             report['catalog_counts']=list(struct.unpack('<2q',generated[:16]))
         if args.disk:
+            g.command('#include "C:/Probe/UAsmCapacity.HC"')
+            g.command('UANativeCapacity;')
+            g.wait('UNASSEMBLE CAPACITIES DONE\n')
+            (out/'unassemble-capacities.bin').write_bytes((g.out/'unassemble-capacities.bin').read_bytes())
+            sizes=list(struct.unpack('<6q',(out/'unassemble-capacities.bin').read_bytes()))
+            count32,count64=struct.unpack_from('<2q',catalog.read_bytes())
+            wanted=[count32*4,count64*4,(count32+count64)*72]
+            if sizes[::2]!=wanted:raise ValueError('Native catalog sizes differ from the complete original catalog')
+            for requested,capacity in zip(sizes[::2],sizes[1::2]):
+                #A fixed-size catalog buffer may have less than one native
+                #page of spare capacity, independent of allocator header layout.
+                if not requested<=capacity<requested+512:
+                    raise ValueError('Catalog buffer retained an optional larger page allocation')
+            report['native_catalog_capacities']=sizes
+            report['catalog_entries']=count32+count64
             g.command('6*7;');report['arithmetic_pixels']=g.result_pixels()
         g.close()
         g = None
