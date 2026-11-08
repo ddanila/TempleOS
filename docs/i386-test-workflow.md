@@ -6226,3 +6226,20 @@ existing 16 MiB PARSER TOKEN PROBE; an extra exception-record allocation there
 caused the rejected first implementation to fail. Normal throwing is tested on
 the delivered image; isolated success-codegen handler doubles are not an unwind
 oracle. Final evidence is under `build/i386-array-partial-cross-v4`.
+
+
+## Declaration failure ownership (2026-11-08)
+
+Use `--declarations` with the public expression error runner (and retain
+`--array-partials`) to require twelve direct normal declaration rows and a
+throwing member-insertion diagnostic in the same session. Caller snapshots,
+owned flags, outer graphs, retained member/index/list consistency and heap
+ownership are observed before probe cleanup. Actual compiled default code is
+executed; no reduced parser body is injected. See
+`docs/i386-expression-error-cleanup.md` for baseline leaks, the loader dependency,
+type-identity control and final evidence under
+`build/i386-declaration-error-cross-v2`.
+
+`tools/test-rebuild.py` now refuses an existing `build/rebuild-test` directory.
+Preserve it under a unique name before running a fresh two-generation bootstrap.
+This prevents accidentally overwriting prior evidence, including failed runs.

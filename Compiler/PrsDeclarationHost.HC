@@ -15,6 +15,7 @@ U8 *PrsHostCompileExpression(U8 *context,CCmpCtrl *cc,I64 *type)
 { return LexExpression2Bin(cc,type); }
 I64 PrsHostExecute(U8 *context,U8 *code) { return Call(code); }
 U0 PrsHostRelease(U8 *context,U8 *allocation) { Free(allocation); }
+U0 PrsHostDeclarationMembersDelete(U8 *context,CMemberLst *members) { MemberLstDel(members); }
 U0 PrsHostDeclarationServices(CPrsDeclarationServices *services,
   CPrsExpressionServices *expression,CPrsTypeServices *types)
 {
@@ -25,6 +26,7 @@ U0 PrsHostDeclarationServices(CPrsDeclarationServices *services,
   services->store_u8_at=&PrsHostStoreU8At; services->data_range=&PrsHostDataRange;
   services->compile_expression=&PrsHostCompileExpression; services->execute=&PrsHostExecute;
   services->release=&PrsHostRelease;
+  services->members_delete=&PrsHostDeclarationMembersDelete;
 }
 
 U0 PrsVarLst(CCmpCtrl *cc,CHashClass *tmpc,I64 mode,I64 union_base=0)

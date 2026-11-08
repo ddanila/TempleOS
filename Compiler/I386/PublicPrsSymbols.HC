@@ -1,6 +1,4 @@
 //Ordered normal shared-parser stage.
-#include "/Kernel/SymbolDelete.HC"
-#include "/Compiler/PrsMemberDelete.HC"
 #include "/Compiler/PrsOptions.HC"
 #include "/Compiler/PrsExternDiagnostics.HC"
 #include "/Compiler/PrsSymbolHost.HC"

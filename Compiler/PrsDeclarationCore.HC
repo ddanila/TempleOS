@@ -1,6 +1,11 @@
 //Production member/local/argument declaration loop with explicit effects.
 #include "/Compiler/PrsDeclaration.HH"
-U0 PrsVarLstCore(CPrsDeclarationServices *services,CCmpCtrl *cc,CHashClass *tmpc,I64 mode,I64 union_base=0)
+class CPrsDeclarationScope {
+  CMemberLst *pending;
+  U8 *machine_code;
+};
+U0 PrsVarLstParseCore(CPrsDeclarationServices *services,CCmpCtrl *cc,CHashClass *tmpc,
+  I64 mode,I64 union_base,CPrsDeclarationScope *owned)
 {
   CPrsExpressionServices *expression=services->expression;
   CPrsTypeServices *types=services->types;
@@ -85,6 +90,7 @@ pvl_restart2:
       (*types->snapshot_push)(types->context,cc);
       (*expression->lex)(expression->context,cc); //skip type or ','
       tmpm=(*types->member_new)(types->context,_reg);
+      if(owned)owned->pending=tmpm;
       _reg=REG_UNDEF;
       if (mode.u8[1]==PRS1B_STATIC_LOCAL_VAR) {
 	tmpm->flags|=MLF_STATIC;
@@ -123,6 +129,7 @@ pvl_restart3:
 	(*types->member_add)(types->context,cc,tmpm,tmpc,mode.u8[1]);
       else
 	(*types->member_add)(types->context,cc,tmpm,tmpc,PRS1B_NULL);
+      if(owned)owned->pending=NULL; //The class now owns this complete insertion.
       tmpc->member_cnt++;
 
       tmpc2=tmpm->member_class;
@@ -231,6 +238,7 @@ pvl_restart3:
 	      old_flags2=cc->flags;
 	      cc->flags&=~CCF_HAS_MISC_DATA;
 	      machine_code=(*services->compile_expression)(services->context,cc,&type);
+      if(owned)owned->machine_code=machine_code;
 	      if (!machine_code)
 		throw('Compiler');
 	      tmpm->dft_val=(*services->execute)(services->context,machine_code);
@@ -246,7 +254,8 @@ pvl_restart3:
 		tmpm->dft_val=(*expression->duplicate)(expression->context,tmpm->dft_val);
 		tmpm->flags|=MLF_STR_DFT_AVAILABLE;
 	      }
-	      (*services->release)(services->context,machine_code);
+	      if(owned)owned->machine_code=NULL;
+      (*services->release)(services->context,machine_code);
 	      cc->flags|=old_flags2&CCF_HAS_MISC_DATA;
 	    }
 	    tmpm->flags|=MLF_DFT_AVAILABLE;
@@ -314,4 +323,30 @@ pvl_restart3:
 pvl_done:
   cc->flags=cc->flags&~(CCF_CLASS_DOL_OFFSET|CCF_DONT_MAKE_RES)|
 	old_flags&(CCF_CLASS_DOL_OFFSET|CCF_DONT_MAKE_RES);
+}
+
+U0 PrsVarLstCore(CPrsDeclarationServices *services,CCmpCtrl *cc,CHashClass *tmpc,
+  I64 mode,I64 union_base=0)
+{
+  CPrsDeclarationScope owned;
+  CLexFile *snapshot;
+  I64 flags,mask=CCF_DONT_MAKE_RES|CCF_CLASS_DOL_OFFSET|CCF_HAS_MISC_DATA;
+  if(!services->members_delete) {
+    //Private allocations already belong to the parser controller's lifetime.
+    PrsVarLstParseCore(services,cc,tmpc,mode,union_base,NULL);
+  } else {
+    owned.pending=NULL;owned.machine_code=NULL;
+    snapshot=cc->lex_prs_stk;flags=cc->flags;
+    try { PrsVarLstParseCore(services,cc,tmpc,mode,union_base,&owned); }
+    catch {
+      if(owned.machine_code)
+        (*services->release)(services->context,owned.machine_code);
+      if(owned.pending)
+        (*services->members_delete)(services->context,owned.pending);
+      while(cc->lex_prs_stk!=snapshot)
+        (*services->types->snapshot_drop)(services->types->context,cc);
+      cc->flags=cc->flags&~mask|flags&mask;
+      //Registered members remain owned by the class; propagate automatically.
+    }
+  }
 }

@@ -155,3 +155,86 @@ later-array-dimension ownership gap. It does not qualify allocator/handler-insta
 failure in public services, cancellation/concurrency, broader type/declaration
 ownership, other backend failures, assembly/AOT closure, full desktop/apps or
 native release generations. Qualification remains 2/686 and C1–C5 remain open.
+
+
+## Declaration members and default code (2026-11-08)
+
+On the preceding committed normal image, a member allocated before a failed type
+parse retained 136 bytes. Rejecting a duplicate array member retained 168 bytes;
+a throw while executing compiled function-default code retained 56 bytes. The
+outer instruction graph survived, but declaration-owned flags and lexer snapshots
+were left changed. `build/i386-declaration-error-baseline-v3` records twelve
+actual normal PrsVarLst failure/control cases with a pre-existing caller snapshot.
+It also records a throwing MemberInsert warning: the pending member became
+visible in the name tree before being appended to the owned member list.
+
+CPrsDeclarationServices appends optional members_delete. The normal host uses
+MemberLstDel; the shared declaration wrapper tracks an unlinked member and a
+compiled default-value block until their respective ownership transfers. On
+failure it releases those temporaries, drops only snapshots acquired by this
+call, restores incoming DONT_MAKE_RES/CLASS_DOL_OFFSET/HAS_MISC_DATA bits, and
+propagates the same exception automatically. Already registered members remain
+in the class and are released with that owner. It does not roll back the entire
+class or publish a failed pending member. The same parsing body runs for the
+private controller-arena environment with members_delete=NULL, without an extra
+exception record; the diagnostic service initializer explicitly selects it too.
+Cleanup callbacks must not throw for live allocations or snapshots.
+
+MemberInsert now performs duplicate-type warnings before changing either index
+or the owned list. Its member_add ownership contract transfers only on successful
+return, so a throwing diagnostic leaves the pending member with its caller.
+Normal parser loading now delivers the shared symbol/member deletion helpers in
+the declaration stage, before the new cleanup callback references them. The
+following symbol stage reuses them; the twelve-stage publication protocol and
+688 public exports are unchanged. Compiler ABI is 103, Console 261, Memory 41.
+
+Run:
+
+```
+python3 tools/test-i386-public-expression-errors.py IMAGE --array-partials --declarations --out OUT
+```
+
+The twelve declaration rows cover first/later-bound throws, bad brackets,
+duplicate array members, missing class closure, throwing and malformed function
+defaults, throwing metadata, nested-union failure and successful multidimensional,
+default-value and metadata controls. They check exact tags/counters, caller
+snapshot/flag/graph preservation, retained member counts and index/list agreement,
+zero heap deltas after releasing the registered owner, and continued result 42.
+The insertion row checks both indexes/list remain unchanged on a warning throw,
+with caller cleanup performed only after observation. The nine original error
+rows and eleven array rows remain required in the same normal session.
+
+The first fixture incorrectly equated the lexer-resolved I64 descriptor with
+cmp.internal_types[RT_I64]. The recorded type detail on the unchanged baseline
+shows the named descriptor is a different pointer, with the correct I64 raw type
+and 2-by-3 dimensions. The final control compares against the input's own named
+lookup, and records both identities; it does not discard the type/shape check.
+The first delivered image also exposed a real missing loader dependency at
+PrsDeclarationHost: MemberLstDel was still in the next stage. Its failed normal
+API receipts remain in `build/i386-declaration-error-contract-v1` and
+`build/i386-declaration-error-success-v1`; the dependency is moved earlier.
+
+Final source/image/component evidence is indexed by
+`build/i386-declaration-error-cross-v2/final-verification-audit.json`: all 33 normal
+failure/control rows, prior success records, 8 MiB lexer, 249-case corpus, two
+original bootstrap generations, cross-build/instruction audit, full 8/16 MiB TCG
+welcome frames and both diagnostic phases. The normal declaration contract uses
+64 MiB; the full-frame checks do not qualify startup performance or complete
+native C5 generations.
+
+The initial bootstrap invocation accidentally reused build/rebuild-test after a
+patch-script assertion stopped before its rename. The prior receipt survives
+exactly in the preceding checkpoint's function-bootstrap-input.json; its native
+cross-build and API evidence remain independent. Both prior second-generation
+binaries were recovered byte-for-byte from its retained compiler ISO and checked
+against that receipt; the first-generation binaries were not recovered. The
+mistake is documented in
+`build/i386-declaration-error-bootstrap-v1-preservation`. tools/test-rebuild.py now
+refuses an existing output directory before modifying it; a real refusal check
+verifies every existing file's size/mtime and receipt hash stay unchanged. Rename
+the old directory to a unique evidence name before a fresh bootstrap.
+
+Public allocator/handler-install exhaustion, cancellation/concurrency, anonymous
+function/type-join ownership, broader symbol/header rollback, other backend errors,
+assembly/AOT, full desktop/apps and native release qualification remain open.
+These component corrections leave full C1–C5 qualification at 2/686.

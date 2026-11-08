@@ -29,8 +29,9 @@ def main():
     args=parser.parse_args()
     if not 1 <= args.guest_timeout <= 3600:
         parser.error('--guest-timeout must be between 1 and 3600 seconds')
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT/'result.json').unlink(missing_ok=True)
+    if OUT.exists():
+        parser.error('Preserve the existing build/rebuild-test under a unique name before rebuilding')
+    OUT.mkdir(parents=True)
     manifest = {'revision': subprocess.check_output(['git','rev-parse','HEAD'],
                 cwd=ROOT, text=True).strip(), 'source_sha256': {}, 'generations': [],
                 'qmp_stdio': args.qmp_stdio, 'guest_timeout': args.guest_timeout}

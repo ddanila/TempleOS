@@ -117,6 +117,7 @@ U0 ProbeDeclarationSetup(CProbeDeclarations *state,CI386CompilerProbe *probe,CI3
   services->expression=&state->expression.services; services->types=types;
   services->evaluate=&ProbeDeclarationInteger; services->snapshot_restore=&ProbeDeclarationRestore;
   services->release=&ProbeDeclarationRelease;
+  services->members_delete=0;
   //Remaining callback paths are outside this fixture's declared coverage.
   services->define_match=&ProbeExpressionUnexpected; services->initialize_static=&ProbeExpressionUnexpected;
   services->static_init=&ProbeExpressionUnexpected; services->store_u64=&ProbeExpressionUnexpected;

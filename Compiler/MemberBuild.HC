@@ -13,6 +13,12 @@ Bool MemberInsert(CMemberLst *tmpm,CHashClass *tmpc,Bool local_var,
     (*diagnostic)(context,FALSE);
     return FALSE;
   }
+  //Diagnostics may throw. Keep both indexes and the list unchanged until they return.
+  if(local_var) {
+    tmpm->member_class_base=tmpm->member_class-tmpm->member_class->ptr_stars_cnt;
+    if(warn_dup_types && MemberClassBaseFind(tmpm->member_class_base,tmpc))
+      (*diagnostic)(context,TRUE);
+  } else tmpm->member_class_base=0;
   tmpm1=&tmpc->member_lst_and_root;
   while (tmpm2=*tmpm1) {
     if (StrCmp(tmpm2->str,st)<=0)
@@ -23,11 +29,6 @@ Bool MemberInsert(CMemberLst *tmpm,CHashClass *tmpc,Bool local_var,
   *tmpm1=tmpm;
 
   if (local_var) {
-    tmpm->member_class_base=
-	tmpm->member_class-tmpm->member_class->ptr_stars_cnt;
-    if (warn_dup_types &&
-	 MemberClassBaseFind(tmpm->member_class_base,tmpc))
-      (*diagnostic)(context,TRUE);
     tmpm1=&tmpc->member_class_base_root;
     while (tmpm2=*tmpm1) {
       if (tmpm->member_class_base<tmpm2->member_class_base)
@@ -41,8 +42,7 @@ Bool MemberInsert(CMemberLst *tmpm,CHashClass *tmpc,Bool local_var,
     }
     if (tmpm1)
       *tmpm1=tmpm;
-  } else
-    tmpm->member_class_base=0;
+  }
 
   tmpm->left=0;
   tmpm->right=0;

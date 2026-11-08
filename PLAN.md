@@ -28643,3 +28643,53 @@ Public handler-install/allocation exhaustion, cancellation/concurrency, broader
 type/declaration ownership, other backend failures, assembly/AOT, full desktop/
 application coverage and native release qualification remain open. C1–C5 remain
 active; bundled qualification is still 2/686.
+
+## Shared declaration failure ownership (2026-11-08)
+
+The preceding committed normal image leaks 136 bytes for a member rejected during
+its type parse, 168 bytes for a duplicate array member, and 56 bytes when compiled
+function-default code throws. Declaration flags and lexer snapshots remain
+changed. A throwing duplicate-type warning can also publish the pending member
+in the name index before ownership reaches the member list. The same complete
+normal API fixtures reproduce these failures in
+`build/i386-declaration-error-baseline-v3`, with exact old source/image provenance.
+
+CPrsDeclarationServices appends optional members_delete. The shared wrapper tracks
+unlinked members and compiled defaults, releases only these temporaries on failure,
+drops only the current call's snapshots, restores its incoming owned flag bits,
+and automatically propagates the original exception. Registered members remain
+with their class. Private controller-arena services explicitly select NULL and
+run the same parsing body without another handler allocation. MemberInsert now
+issues warnings before mutating either index/list, preserving failed-insertion
+caller ownership. Shared member deletion loads before the normal declaration
+stage references it; all twelve publication stages and 688 exports remain.
+Compiler 103 / Console 261 account for the embedded service layout; Memory is 41.
+
+`build/i386-declaration-error-contract-v2/result.json` passes all twenty prior
+expression/array rows, twelve declaration failure/control rows and the throwing
+member-warning case. Exact tags/counters, pre-existing caller snapshot/flags/
+graph, retained member/index/list consistency, successful dimension/default/
+metadata ownership, zero heap deltas and continued result 42 are checked. Named
+type identity is compared with the input's own lexer lookup; the recorded distinct
+canonical pointer has the same I64 raw type and does not replace shape checks.
+
+The complete normal success suite, 8 MiB lexer, 249 audited function cases, two
+original bootstrap generations, full cross-build/instruction audit, full 8/16 MiB
+TCG welcome rasters and both diagnostic phases pass. Source pins (1,833), build
+pins (26), images/modules, raw rows, baselines and component receipts are checked
+by `build/i386-declaration-error-cross-v2/final-verification-audit.json`.
+The first image's real loader dependency failure is retained rather than hidden.
+
+The rebuild tool now rejects an existing output directory before any mutation.
+Actual refusal preserves all files and the receipt hash; the final fresh run
+completes both generations. An earlier output reuse mistake and partial recovery
+of the prior checkpoint's bootstrap evidence are explicitly documented under
+`build/i386-declaration-error-bootstrap-v1-preservation`; its prior receipt and
+second-generation binaries are preserved, with unrecovered first-generation
+binaries left visible. See `docs/i386-expression-error-cleanup.md` for details.
+
+Public allocation/handler-install exhaustion, cancellation/concurrency, anonymous
+function/type-join ownership, broader symbol/header rollback, other backend
+errors and assembly/AOT remain open, alongside full desktop/application/native
+release qualification. Functional welcome frames do not qualify startup budgets.
+C1–C5 remain active and bundled qualification remains 2/686.

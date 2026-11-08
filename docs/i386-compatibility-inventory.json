@@ -10786,6 +10786,13 @@
           "result": "pass",
           "evidence": "build/i386-ir-slabs-lex8-v5/result.json",
           "scope": "Normal Compiler 101 / Console 258 at 8 MiB: all 24 unchanged token results, one lexer publication, heap recovery, arithmetic and input/volume checks pass. Private grouped IR reuses freed slots and preserves retired operands; known-size native opcode catalog buffers use the retained exact-page allocator. Complete catalog remains 1833 entries. Expression/stream directive dependencies, fault/concurrency, full compiler and C1-C5 qualification remain open; no inventory workflow qualification."
+        },
+        {
+          "target": "native-declaration-error-ownership",
+          "command": "python3 tools/test-i386-public-expression-errors.py IMAGE --array-partials --declarations --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-declaration-error-contract-v2/result.json",
+          "scope": "Twelve actual normal PrsVarLst failure/control rows and a throwing MemberInsert warning. Exact tags/counters, zero caller heap deltas, caller snapshots/owned flags/graph, retained member/index/list consistency and successful array/default/metadata ownership. Pending member and default-code cleanup uses full shared bodies; diagnostics precede insertion publication. Prior twenty error/array rows remain required. Public exhaustion/cancellation, anonymous function/type-join ownership, broader symbol rollback and whole compiler/C1-C5 qualification remain open."
         }
       ]
     },
@@ -11364,6 +11371,13 @@
           "result": "pass",
           "evidence": "build/i386-array-partial-contract-v4/result.json",
           "scope": "Nine prior error/control rows plus four partial-array expression failures and seven direct PrsType cases. Original tags/counters, zero heap deltas, root reset before probe repair, graph/flag restoration, successful dimension transfer and continued execution. Shared parser uses explicit public release or private controller-arena ownership; full type/declaration/OOM/cancellation/compiler qualification remains open. See docs/i386-expression-error-cleanup.md."
+        },
+        {
+          "target": "native-declaration-error-ownership",
+          "command": "python3 tools/test-i386-public-expression-errors.py IMAGE --array-partials --declarations --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-declaration-error-contract-v2/result.json",
+          "scope": "Twelve actual normal PrsVarLst failure/control rows and a throwing MemberInsert warning. Exact tags/counters, zero caller heap deltas, caller snapshots/owned flags/graph, retained member/index/list consistency and successful array/default/metadata ownership. Pending member and default-code cleanup uses full shared bodies; diagnostics precede insertion publication. Prior twenty error/array rows remain required. Public exhaustion/cancellation, anonymous function/type-join ownership, broader symbol rollback and whole compiler/C1-C5 qualification remain open."
         }
       ]
     },

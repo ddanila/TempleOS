@@ -6,6 +6,7 @@ ROOT=Path(__file__).resolve().parents[1]
 ap=argparse.ArgumentParser(description=__doc__)
 ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True)
 ap.add_argument('--array-partials',action='store_true',help='Also check partial dimension ownership, reset and successful transfer through normal expression/type services')
+ap.add_argument('--declarations',action='store_true',help='Also check member/default-code cleanup, declaration state and diagnostic insertion ownership')
 args=ap.parse_args();source=args.disk.resolve();out=args.out.resolve()
 if out.exists():ap.error('Use a fresh output directory')
 out.mkdir(parents=True)
@@ -15,9 +16,13 @@ paths=[Path(__file__).resolve(),source,fixture]+[ROOT/'tools'/n for n in ('test-
 paths+=sorted(p for directory in ('Compiler','Kernel') for p in (ROOT/directory).rglob('*') if p.is_file() and p.suffix in ('.HC','.HH'))
 array_fixture=fixture.parent/'ArrayPartial.HC'
 if args.array_partials:paths.append(array_fixture)
+declaration_fixture=fixture.parent/'DeclarationErrors.HC'
+if args.declarations:paths.append(declaration_fixture)
 pins={str(p):sha(p) for p in paths}
 r=dict(result='running',input_sha256=pins,scope='Nine normal API cases: three syntax failures, successful flag preservation, backend precondition failure, raw/I64/F64 evaluation exceptions and a nested array-bound evaluation throw. Exact exception and error counters, graph/flag restoration, zero caller heap deltas, NULL/result ownership and continued execution. Not all error/OOM/cancellation paths.')
 r['array_partials_requested']=args.array_partials
+r['declarations_requested']=args.declarations
+if args.declarations:r['scope']+=' Also twelve direct normal declaration failure/control rows and a real MemberInsert warning exception: unlinked member/default-code ownership, caller snapshots/flags/graph, retained prefix and zero heap deltas.'
 if args.array_partials:r['scope']+=' Also four partial-array expression failures and seven direct type cases: exact counters, reset dimensions, zero heap deltas, successful dimension transfer and continued execution.'
 (out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
 pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));g=None
@@ -29,6 +34,7 @@ try:
    if n in before and p.read_bytes()!=before[n][2]:raise ValueError('Delivered source differs: '+n)
  additions={'/Probe/Errors.HC':fixture.read_bytes()}
  if args.array_partials:additions['/Probe/ArrayPartial.HC']=array_fixture.read_bytes();(out/'array-fixture.HC').write_bytes(array_fixture.read_bytes())
+ if args.declarations:additions['/Probe/DeclarationErrors.HC']=declaration_fixture.read_bytes();(out/'declaration-fixture.HC').write_bytes(declaration_fixture.read_bytes())
  r['packaging']=pack['package'](source,out/'working.img',additions=additions)
  Guest=runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest'];g=Guest(out/'working.img',out/'guest',True)
  g.wait('DONE native kernel startup\n');g.command('#include "C:/Probe/Errors.HC"',timeout=600);g.wait('EXPRESSION ERRORS DONE\n')
@@ -45,6 +51,18 @@ try:
   expression_expected=[[evaluation,0,1,1,1,0,0,1,42]]*2+[[compiler,2,1,1,1,0,0,1,42]]*2
   type_expected=[[evaluation,0,1,1,0,0,42,1]]*2+[[compiler,1,1,1,0,0,42,1]]*2+[[0,0,1,1,0,0,42,1]]*3
   if r['array_expression_rows']!=expression_expected or r['array_type_rows']!=type_expected:raise ValueError('Array ownership differs: '+str(r['array_expression_rows'])+' '+str(r['array_type_rows']))
+ if args.declarations:
+  g.command('#include "C:/Probe/DeclarationErrors.HC"',timeout=600);g.wait('DECLARATION ERRORS DONE\n')
+  data=(g.out/'declaration-errors.bin').read_bytes();(out/'declaration-errors.bin').write_bytes(data)
+  values=list(struct.unpack('<151q',data));r['declaration_rows']=[values[i:i+12] for i in range(0,144,12)];r['member_insert_row']=values[144:]
+  r['declaration_type_detail']=list(struct.unpack('<8q',(g.out/'declaration-type-detail.bin').read_bytes()))
+  detail=r['declaration_type_detail']
+  if detail[0]!=detail[1] or detail[3:]!=[1,6,2,3,1]:raise ValueError('Named declaration type/dimensions differ: '+str(detail))
+  tags=[evaluation,evaluation,compiler,compiler,compiler,evaluation,compiler,evaluation,0,0,evaluation,0]
+  errors=[0,0,1,1,1,0,2,0,0,0,0,0];counts=[0,1,0,1,1,1,1,1,1,1,1,1]
+  expected=[[tag,error,1,1,1,1,count,count,0,0,42,1] for tag,error,count in zip(tags,errors,counts)]
+  if r['declaration_rows']!=expected:raise ValueError('Declaration ownership/state differs: '+str(r['declaration_rows']))
+  if r['member_insert_row']!=[int.from_bytes(b'MemWarn','little'),1,1,1,1,0,42]:raise ValueError('Diagnostic insertion ownership differs: '+str(r['member_insert_row']))
  log=g.collect();r['parser_publications']=log.count('PUBLIC PARSER loaded\n')
  if r['parser_publications']!=1:raise ValueError('Expected one parser publication')
  g.command('6*7;');r['arithmetic_pixels']=g.result_pixels();g.close();g=None

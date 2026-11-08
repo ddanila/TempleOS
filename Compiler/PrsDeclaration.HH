@@ -2,7 +2,9 @@
 #define PRS_DECLARATION_INCLUDED
 #include "/Compiler/PrsExpression.HH"
 #include "/Compiler/PrsType.HH"
-//One environment owns expression/type services and partially constructed members.
+//One environment owns expression/type services. member_add transfers ownership
+//only on successful return. With members_delete, failed members/code are released;
+//otherwise the environment must retain them until its failed arena is discarded.
 //Compile/execute/release keep executable storage alive through default-value copying.
 class CPrsDeclarationServices {
   U8 *context;
@@ -19,6 +21,8 @@ class CPrsDeclarationServices {
   U8 *(*compile_expression)(U8 *context,CCmpCtrl *cc,I64 *type);
   I64 (*execute)(U8 *context,U8 *code);
   U0 (*release)(U8 *context,U8 *allocation);
+  //Optional explicit member cleanup; release/drop callbacks must not throw.
+  U0 (*members_delete)(U8 *context,CMemberLst *members);
 };
 extern U0 PrsVarLstCore(CPrsDeclarationServices *services,CCmpCtrl *cc,
   CHashClass *type,I64 mode,I64 union_base=0);

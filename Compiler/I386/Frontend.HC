@@ -1422,6 +1422,7 @@ CI386Frontend *I386FrontendNew(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,C
   d->initialize_static=&I386FrontendInitialize; d->static_init=&I386FrontendStatic;
   d->store_u64=&I386FrontendStore; d->store_u8_at=&I386FrontendStoreAt; d->data_range=&I386FrontendRange;
   d->compile_expression=&I386FrontendCompile; d->execute=&I386FrontendExecute; d->release=&I386FrontendFree;
+  d->members_delete=NULL;
   s=&state->symbols; s->context=state; s->declarations=d; s->undefined_function=&I386FrontendUndefined; s->header=&I386FrontendHeader;
   s->used_mask=REGG_CLOBBERED+REGG_SAVED+REGG_STK_TMP;
   s->clobbered_mask=REGG_CLOBBERED+REGG_STK_TMP;

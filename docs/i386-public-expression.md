@@ -306,3 +306,16 @@ ownership, with no extra handler allocation on the private arena path. Compiler
 102 / Console 260 retain the existing 688 public exports. Run the error runner
 with `--array-partials`; implementation, baseline leaks, retained rejected probes
 and remaining limits are in `docs/i386-expression-error-cleanup.md`.
+
+
+## Declaration failure ownership (2026-11-08)
+
+Normal shared PrsVarLst now releases unlinked members and compiled default-value
+code on failure, preserves the caller's lexer snapshot and owned flags, and leaves
+registered members with their class owner. Member warnings run before either
+index/list publication. Shared deletion bodies load before the declaration stage
+uses them; publication still has twelve stages and 688 public exports. Compiler
+103 / Console 261 account for the appended declaration service callback. Run the
+normal error runner with `--array-partials --declarations`; exact baselines,
+retained rejected checks and qualification limits are in
+`docs/i386-expression-error-cleanup.md`.
