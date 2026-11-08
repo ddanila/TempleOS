@@ -50,6 +50,7 @@ class CI386Backend {
   CDbgInfo *debug; //Borrowed line offsets plus one; zero means no emitted node.
   Bool initialize_variables;
   U8 variable_init_value;
+  CI386Call *free_calls; //Caller-owned scratch, reused through both passes.
 };
 //Valid target IR, initialized output and borrowed AOT/type/symbol context.
 //Allocations are zeroed or throw. The caller owns success/failure cleanup.

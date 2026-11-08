@@ -252,3 +252,30 @@ rounded to 32 plus its 20-byte lifetime. The 52-byte request exceeds the largest
 `allocation-frontier.json` and its disassembly map that exact call site. Reusing
 call contexts across measurement/emission is the next resource investigation;
 complete workflow/C1-C5 qualification stays open at 2/686.
+
+Compiler ABI 100 appends a free-call list to CI386Backend. CALL_START takes an
+inactive context before allocating another; both normal and Carry-folded call
+ends return contexts to that list. Each reuse resets called/indirect state and
+replaces function/depth/slot values. Balanced IR therefore needs at most its
+maximum simultaneously open call contexts, shared across both passes. Successful
+compilation drains the pool through the allocator's release callback. On failure,
+the existing allocation owners retain cleanup responsibility; the host compiler
+now explicitly frees both active and inactive call lists. Descriptors initialize
+to zero as with the existing call/logic lists.
+
+Current build `build/i386-call-reuse-cross-v1` passes fresh original bootstrap
+rebuilds, strict cross-build, normal lexer16/backend48, all 25 diagnostic source
+compiler stages, both full TCG rasters and the unchanged >1 KiB assembly contract
+at 8 MiB 486,-fpu. Metadata traces and caller heap restoration match the prior
+checkpoint; both metadata/F64 fault-recovery phases pass. The enlarged frontend
+bound is 3608 bytes: its compiled 8216-byte stack preflight retains the existing
+4096-byte downstream reserve plus 4120 extra bytes, above the measured 3808-byte
+local frame/argument/linkage delta. This is not arbitrary stack-depth qualification.
+
+The unchanged 8 MiB lexer no longer fails allocating CI386Call. It instead reports
+EMITTER CHUNK SPACE REJECT in PublicLexNumber.HC: no usable output window fits.
+That path does not report heap/count words, so none are inferred from the prior
+52-byte failure. Live IR/metadata/window capacity remains a resource investigation.
+Final v1 audits pin the current source/images/modules/inputs/bootstrap, all passing
+records, descriptor/frame changes and this explicit failure. No workflow or C1-C5
+milestone advances; qualification remains 2/686.

@@ -521,7 +521,9 @@ U0 I386BackendCore(CI386Backend *backend)
           case IC_NOP1:
           case IC_NOP2: break;
           case IC_CALL_START:
-            call=(*backend->allocate)(backend->context,sizeof(CI386Call));
+            if(call=backend->free_calls)backend->free_calls=call->next;
+            else call=(*backend->allocate)(backend->context,sizeof(CI386Call));
+            call->called=FALSE;call->indirect=FALSE;
             call->next=backend->calls;
             backend->calls=call;
             call->fun=ic->ic_data;
@@ -873,7 +875,8 @@ U0 I386BackendCore(CI386Backend *backend)
             if (!backend->calls || !backend->calls->called || backend->calls->fun!=ic->ic_data ||
                 backend->calls->fun->exe_addr!=IC_CARRY || depth!=backend->calls->depth)
               throw('Compiler');
-            call=backend->calls; backend->calls=call->next; (*backend->release)(backend->context,call);
+            call=backend->calls;backend->calls=call->next;
+            call->next=backend->free_calls;backend->free_calls=call;
             break;
           case IC_CALL_END:
             if (!backend->calls || !backend->calls->called || backend->calls->fun!=ic->ic_data)
@@ -883,7 +886,8 @@ U0 I386BackendCore(CI386Backend *backend)
             else I386Bytes(out,"\x6A\x00\x58\x99",4);
             I386Bytes(out,"\x52\x50",2);
             depth++;
-            call=backend->calls; backend->calls=call->next; (*backend->release)(backend->context,call);
+            call=backend->calls;backend->calls=call->next;
+            call->next=backend->free_calls;backend->free_calls=call;
             break;
           case IC_AND_AND:
           case IC_OR_OR:
@@ -1373,5 +1377,8 @@ U0 I386BackendCore(CI386Backend *backend)
       }
     }
     out->planned=0;
+  }
+  while(call=backend->free_calls) {
+    backend->free_calls=call->next;(*backend->release)(backend->context,call);
   }
 }

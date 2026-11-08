@@ -114,7 +114,7 @@ U8 *I386COCCompile(CCmpCtrl *cc,I64 *_size,CDbgInfo **_dbg,I64 *_type)
       PrintErr("i386 COC failure at opcode %X, depth %d, pass %d\n",
         backend.current->ic_code,backend.depth,backend.pass);
     I386CompileFrameClose(&backend,&frame);
-    LinkedLstDel(backend.calls); LinkedLstDel(backend.logics); LinkedLstDel(backend.chains);
+    LinkedLstDel(backend.calls); LinkedLstDel(backend.free_calls); LinkedLstDel(backend.logics); LinkedLstDel(backend.chains);
     Free(out.data);
   }
   I386CompileFrameClose(&backend,&frame);

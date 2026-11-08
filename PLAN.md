@@ -28355,3 +28355,30 @@ pass. Both metadata-reservation and F64 failure/retry phases pass. Final current
 source/image/module/input/bootstrap/export/frame audits and inventory guards
 pass. Measurement-fault/concurrency/cancellation, full normal compiler delivery,
 684 workflows and full C1-C5 qualification remain open; qualification stays 2/686.
+
+### Backend call-context reuse
+
+Compiler 100 appends an inactive-call list to the zero-initialized backend
+descriptor. Call entry reuses a context and resets its called/indirect state;
+function, depth and slot values are replaced for every use. Normal and Carry-folded
+call ends recycle their contexts. Both passes share the pool, bounded by maximum
+simultaneously open calls rather than total call sites. Successful compilation
+drains it through the allocator callback; host failure cleanup frees active and
+inactive lists, while tracked native/public allocations retain their normal owners.
+
+Both original bootstrap generations and strict cross-build pass. Normal lexer16
+(24 checks), backend48 (original trace and zero caller heap growth), all 25
+diagnostic source-compiler stages, both complete TCG boot frames and the unchanged
+>1 KiB assembly contract at 8 MiB 486,-fpu pass, including both metadata/F64
+failure/retry phases. The descriptor extension makes the frontend bound 3608
+bytes. The compiled stack guard reserves 8216 bytes: existing 4096 downstream plus
+4120 extra versus a 3808-byte measured local delta. Frame proof remains local.
+
+The unchanged lexer8 now passes the former 52-byte call-context allocation point
+but still fails with EMITTER CHUNK SPACE REJECT in PublicLexNumber.HC, before API
+publication. No heap/count words are emitted by that failure path; the previous
+request/usage values do not describe it. Live IR/metadata/window capacity remains
+the next resource investigation. Evidence is build/i386-call-reuse-cross-v1 and
+matching v1 receipts, with current source/image/module/input/bootstrap/export/frame
+audits. Inventory guards pass; qualification stays 2/686. Full normal compiler,
+resource/fault/concurrency coverage, 684 workflows and complete C1-C5 remain open.

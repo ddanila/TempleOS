@@ -385,3 +385,13 @@ largest payload 0x30, 0x4F99 allocations. The mapped 26-byte CI386Call rounds to
 Matching fixup-reserve v1 receipts and the final audit retain the full inputs,
 passing regressions and this new resource failure. Call-context reuse remains
 the next investigation; normal parser/directive closure remains open.
+
+Compiler 100 reuses call contexts within and across backend passes, with complete
+state reset and normal success/failure cleanup. On
+`build/i386-call-reuse-cross-v1`, lexer16 still passes all 24 unchanged checks.
+Lexer8 passes the former 52-byte call-context allocation point, then reports
+EMITTER CHUNK SPACE REJECT in PublicLexNumber.HC. No usable output window remains;
+this path reports no heap/count words. The test/input contract is unchanged and
+normal API publication is not reached. Matching call-reuse v1 receipts and final
+audits retain the passing compiler/backend/assembly/boot regressions and open
+8 MiB resource failure. Normal parser/directive closure and C1-C5 stay open.
