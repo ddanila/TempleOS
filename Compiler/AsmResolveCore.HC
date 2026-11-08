@@ -75,6 +75,8 @@ U0 AOT_LOCALS_RESOLVE_IMPL(CCmpCtrl *cc)
     }
     if (!undefined)
       ASM_RESOLVE_IMPL(cc,tmpu,label,FALSE);
+    //Commit the consumed prefix before releasing its owned record.
+    aotc->local_unresolved=tmpu1;
     Free(tmpu->machine_code);
     LinkedLstDel(tmpu->asm_undef_hash);
     Free(tmpu->str);
@@ -138,6 +140,8 @@ U0 AOT_GLBLS_RESOLVE_IMPL(CCmpCtrl *cc,CAOT *tmpaot)
       tmpauh=tmpauh->next;
     }
     ASM_RESOLVE_IMPL(cc,tmpu,label,undefined);
+    //A later exception must leave the remaining suffix reachable.
+    aotc->glbl_unresolved=tmpu1;
     Free(tmpu->machine_code);
     LinkedLstDel(tmpu->asm_undef_hash);
     Free(tmpu->str);

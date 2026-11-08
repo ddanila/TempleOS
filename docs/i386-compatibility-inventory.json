@@ -9762,6 +9762,27 @@
           "result": "pass",
           "evidence": "build/i386-asm-resolve-native16-v1/result.json",
           "scope": "Same normal shipping service and 38-assertion contract at 16 MiB using the preserved, pinned RAM-setting runner. All raw values match original, six heap metrics are zero, one system load, arithmetic/volume and input checks pass. This includes real cold compilation of the service at the compiler memory target, not complete native generations or release-resource qualification."
+        },
+        {
+          "target": "original-asm-progress-component",
+          "command": "python3 tools/test-i386-asm-resolve-progress.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-asm-progress-original-v2/result.json",
+          "scope": "Pinned original consumed-prefix failure behavior, with explicit legacy dangling-head expectations and safe fixture rebasing. 28 assertions cover local undefined/global range errors, remaining node/code/hash ownership, committed prefix bytes/import metadata, repair/retry and caller abandonment. Sixteen raw patch/counter words and an independent four-error 160/160 diagnostic baseline; no net extra caller bytes. This is reference observation of a defect, not qualification of legacy cleanup."
+        },
+        {
+          "target": "shared-asm-progress-x64-component",
+          "command": "python3 tools/test-i386-asm-resolve-progress.py --shared-x64 --expect-repaired --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-asm-progress-shared-v2/result.json",
+          "scope": "Current shared complete resolver body on original x64 scaffolding: 28 repaired-head, retry and abandonment assertions pass with identical raw output, exact normalized caller data/code accounting, and unchanged inputs. Local/global owning heads advance before consumed records are released. Allocation faults, asynchronous cancellation and CmpJoin abort remain open."
+        },
+        {
+          "target": "native-public-asm-progress-16m-component",
+          "command": "python3 tools/test-i386-asm-resolve-progress.py IMAGE --expect-repaired --ram-mib 16 --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-asm-progress-native16-v1/result.json",
+          "scope": "Normal shipping Console 255 service at 16 MiB: 28 assertions and sixteen raw patch/counter words match original recoverable behavior while remaining heads are safe without fixture rebasing. Retry does not re-execute committed prefix expressions; caller abandonment reclaims pending code/records plus hash-owned imports. Zero net caller data/code growth, independently measured native diagnostic cost zero, one system load, arithmetic/volume and input checks. Prior native image fails exactly the two original head assertions in the initial 14-check contract. No complete compiler or workflow qualification."
         }
       ]
     },

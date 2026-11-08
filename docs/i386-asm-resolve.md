@@ -141,3 +141,71 @@ source/input hashes, original/shared/native records and raw values, both native
 memory sizes, heap baselines, all regression receipts, both immutable image
 hashes, export-prefix preservation, the previous-module rejection, bootstrap
 receipts, diagnostic phase markers, and complete startup rasters.
+
+## Ownership after a consumed prefix and a later exception
+
+The local and global reference loops now advance their owning list heads after
+successful expression resolution and before freeing the consumed record. A later
+validation or branch-range exception therefore leaves the failed record and its
+unprocessed suffix reachable. Previously the head still pointed at the freed
+prefix record. Completed patches and import records remain committed; retrying
+the remaining list must not execute the prefix expression again.
+
+`tools/test-i386-asm-resolve-progress.py` constructs three references in each
+local/global case, using real machine-code expressions and the normal public
+interfaces. The local case consumes the first record and rejects an undefined
+second symbol before executing its expression. The global case consumes an
+imported first expression, retains its hash-owned relocation record, then rejects
+a signed-16 branch in the second expression after executing it but before
+patching bytes. The final expression remains unexecuted in both cases.
+
+The contract tests both repairing/retrying the remaining records and abandoning
+them through an explicit caller-owned cleanup walk. It checks the remaining
+head, suffix links, controller/table ownership, exact patches and untouched
+bytes, expression counts, import ownership/transfer, and net caller data/code
+heaps against an independent four-LexExcept baseline. The 28 assertions and
+16 raw patch/counter values distinguish these paths. Legacy mode observes the
+original dangling head before safely rebasing it from a saved pointer; repaired
+mode must obtain the remaining work directly from the delivered list head.
+
+The initial 14-check version captured an expected native failure on the prior
+image in `build/i386-asm-progress-prior-red-v1`: only local/global head words 1
+and 7 failed, and the recorded inputs were unchanged. Its `prior-core.HC`
+preserves the old implementation independently of subsequent source edits.
+The expanded original capture `build/i386-asm-progress-original-v2` passes
+28 checks with explicit legacy expectations, demonstrating the original defect
+and its recoverable output behavior; the fixture safely repairs legacy ownership
+only after observing it. Its diagnostic data/code costs are 160/160 bytes.
+
+This fixes reference-list ownership for these validation and range-error paths.
+Allocation failure during table replacement, import-queue transfer and external
+usage-list patching, asynchronous cancellation, automatic CmpJoin abort cleanup,
+and full assembler/compiler qualification remain open.
+
+Verified repaired captures:
+
+```
+python3 tools/test-i386-asm-resolve-progress.py --shared-x64 --expect-repaired --reference build/i386-asm-progress-original-v2 --out build/i386-asm-progress-shared-v2
+python3 tools/test-i386-asm-resolve-progress.py build/i386-asm-progress-cross-v1/kernel.img --expect-repaired --ram-mib 16 --reference build/i386-asm-progress-original-v2 --out build/i386-asm-progress-native16-v1
+```
+
+Both pass 28/28, with all sixteen raw patch/counter words identical to the
+expanded original capture and all pinned inputs unchanged. The native progress
+heap record is `[0,0,0,0,1,1]`: zero normalized data/code growth, zero independently
+measured diagnostic data/code cost, diagnostic baseline valid, repaired mode.
+There is one normal system load; arithmetic pixels, the sole fixture addition,
+and volume validation pass. The caller heap measurement includes first use.
+
+Both current-source original bootstrap generations and the full cross-build
+pass. The existing 38-check resolver, 40-check JIT and 32-check AOT contracts pass
+on the new image, including first-use service compilation and their ownership
+checks. The 8 MiB KVM startup/source preflight also passes.
+
+All native module hashes and the flat kernel hash are identical to the preceding
+checkpoint. An exact logical-volume comparison finds only
+`/Compiler/AsmResolveCore.HC` changed. The Console 255 ABI and its 677 exports
+therefore remain unchanged. This source-only service repair uses targeted
+resolver/fixup/startup regressions; the preceding checkpoint's full compiler
+suite and TCG rasters are historical evidence, not new current-image receipts.
+The new audit records source/input/image hashes, the old native failure with its
+captured sources, current contracts, binary identity and this sole-file diff.

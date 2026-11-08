@@ -28080,3 +28080,35 @@ pixels; both diagnostic program/ownership phases complete. The first parallel
 passes, and the subsequent TCG attempt passes in 235.62 seconds with a longer
 observation limit. The timeout and timing evidence remain recorded; this is not
 new release-performance or full C5 qualification.
+
+### Resolver ownership after partial progress
+
+Fixed local/global unresolved-reference list heads after a successfully consumed
+prefix. Each head advances before its consumed record is released, so a later
+undefined-local or branch-range exception preserves access to the failing record
+and suffix. Prefix patches and hash-owned import metadata remain committed.
+Callers can retry or explicitly reclaim the remainder without following freed
+nodes or re-executing completed prefix expressions.
+
+The original baseline captures the dangling-head defect explicitly. The prior
+native image fails precisely local/global head words 1 and 7 in the initial
+14-check contract. The expanded 28-check contract covers local pre-execution
+failure and global post-expression/pre-patch failure, retry and abandonment,
+remaining ownership, import metadata, guards and exact expression counts.
+Original/shared/native sixteen-word traces agree. Shared x64 and normal native
+16 MiB repaired-head contracts pass, with exact normalized caller data/code heap
+recovery against an independent four-LexExcept baseline (native diagnostic cost
+zero), one service publication, arithmetic/volume validation and unchanged inputs.
+
+Two current original bootstrap generations, the full native cross-build, prior
+38-check resolver and JIT/AOT fixup regressions, and 8 MiB KVM startup pass.
+All native modules and the flat kernel are byte-identical to the preceding
+checkpoint; only AsmResolveCore.HC differs in the logical disk volume. Targeted
+checks validate this loaded-source repair; the preceding full compiler suite
+and TCG frames remain historical receipts. See `docs/i386-asm-resolve.md` and
+`build/i386-asm-progress-cross-v1` for commands and evidence.
+
+Allocation-fault handling during local-table replacement/import transfer/external
+patching, asynchronous cancellation, automatic CmpJoin abort cleanup and complete
+assembler/compiler delivery remain open. Full C1-C5 and 684 workflows remain
+unqualified; inventory qualification remains 2/686.
