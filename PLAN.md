@@ -27896,3 +27896,14 @@ Final source26 passes all stages and prior observations with 1,039 independent
 input-pin checks. Both 8/16 MiB welcome rasters match all 307,200 pixels and both
 diagnostic ownership/file-break phases complete. Inventory guards pass; no
 additional workflow or C1–C5 milestone is qualified.
+
+### Shared AOT storage source for public compiler delivery (2026-11-08)
+
+The four existing AOT byte/word/quad/absolute-patch implementations and the i386
+data-range recorder now live in shared core files, included by their original
+compiler translation units. Include expansion reproduces the parent sources
+byte-for-byte, apart from the removed include separator blank line. Both x64
+bootstrap generations pass with all current source pins matching. This prepares
+real normal native bindings; no exports or workflow qualifications are added.
+Public AOT/lexer/assembly delivery and the complete C1–C5 gates remain open.
+See [AOT storage work](docs/i386-aot-storage.md) for evidence and remaining scope.
