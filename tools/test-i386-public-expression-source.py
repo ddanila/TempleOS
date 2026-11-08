@@ -6,12 +6,16 @@ root=Path(__file__).resolve().parents[1]
 ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True)
 ap.add_argument('--classes',action='store_true',help='Also source-load actual class/function-header services; unresolved dependencies remain visible')
 ap.add_argument('--canonical-types',action='store_true',help='Borrow the normal runtime type objects instead of publishing diagnostic replacements')
+ap.add_argument('--normal-lexer',action='store_true',help='Use the delivered normal lexer with canonical types; only parser bodies are source-loaded')
+ap.add_argument('--system-parser',action='store_true',help='Load parser bodies through Adam in the normal lexer namespace; implies --normal-lexer')
 ap.add_argument('--statements',action='store_true',help='Also source-load complete shared global/function/statement bodies; implies --classes')
 ap.add_argument('--compiler-stream',action='store_true',help='Load complete DirFile/StreamPrint/StreamDir and test shared #exe injection; implies --execute-line')
 ap.add_argument('--execute-line',action='store_true',help='Execute actual ExeCmdLine against the shared compiler; implies --statement-code')
 ap.add_argument('--statement-code',action='store_true',help='Compile actual top-level statements with LexStmt2Bin; implies --functions')
 ap.add_argument('--functions',action='store_true',help='Execute ordinary function bodies through the shared compiler; implies --statements')
 args=ap.parse_args()
+if args.system_parser:args.normal_lexer=True
+if args.normal_lexer:args.canonical_types=True
 if args.compiler_stream:args.execute_line=True
 if args.execute_line:args.statement_code=True
 if args.statement_code:args.functions=True
@@ -55,6 +59,35 @@ lexer_stages=('LexIncludeCore.HC','LexStringSystemCore.HC','LexNumber.HC','LexCh
 parts=[prefix,b'#include "/Compiler/LexFiles.HC"\n'+control+lookup]
 parts += [('#include "/Compiler/'+name+'"\n').encode() for name in lexer_stages]
 parts += [b'#define LEX_TOKEN_IMPL Lex\n#include "/Compiler/LexDispatchCore.HC"\n',lib,init]
+if args.normal_lexer:
+ # Keep stage numbers stable for the existing statement-default assertion.
+ parts=[prefix.replace(b'public extern I64 Lex(CCmpCtrl *cc);',b'#include "/Kernel/I386/PublicLexer.HH"').replace(b'public extern U8 *LexExtStr(CCmpCtrl *cc,I64 *_size=NULL,Bool lex_next=TRUE);',b'')+b'''
+U0 ProbeNormalLexerLoad()
+{
+  CCmpCtrl *cc=CmpCtrlNew(StrNew("42"));
+  if(Lex(cc)!=TK_I64 || cc->cur_i64!=42)throw;
+  CmpCtrlDel(cc);
+}
+ProbeNormalLexerLoad;
+''']+[b'//Use the normal delivered lexer.\n']*12
+ if args.system_parser:
+  # Do not create caller-local externs that shadow the system definitions.
+  parts[0]=parts[0].replace(b'public extern I64 LexExpression(CCmpCtrl *cc);\n',b'').replace(b'public extern U0 PrsStreamBlk(CCmpCtrl *cc);\n',b'')
+  parts[0]+=b'''#include "/Kernel/I386/PublicCompilerContext.HH"
+#include "/Kernel/I386/PublicExecution.HH"
+#include "/Kernel/I386/PublicTerminal.HH"
+U0 ProbeSystemParserLoad(U8 *filename)
+{
+  CHashTable *saved;
+  if(Fs!=adam_task)TaskWait(adam_task);
+  saved=adam_task->hash_table;adam_task->hash_table=native_jit_support.symbols;
+  try{AdamFile(filename,FALSE);}
+  catch{adam_task->hash_table=saved;}
+  adam_task->hash_table=saved;
+}
+'''
+ # Member lookup is needed by the parser independently of the lexer loader.
+ parts[1]=lookup
 parser_prefix=b'''#include "/Compiler/CompilerA.HH"
 #include "/Compiler/ICInfo.HC"
 ICInfoInit;
@@ -67,6 +100,8 @@ parser_prefix+=b'#include "/Compiler/ICDetachCore.HC"\n'
 parser_prefix+=b'#include "/Compiler/OptFreeCore.HC"\n'
 code=(root/'Compiler/CExcept.HC').read_bytes();parser_prefix+=code[code.index(b'U0 ParenWarning('):code.index(b'#include "/Compiler/ICDiagnosticsCore.HC"')]
 parts += [parser_prefix,b'#include "/Compiler/PrsExp.HC"\n']
+if args.system_parser:
+ parts[13]=b'#include "/Kernel/I386/PublicCompiler.HH"\n'+parts[13]
 optimizer=b'''#include "/Compiler/OptCode.HC"
 '''
 code=(root/'Compiler/CExcept.HC').read_bytes();optimizer+=code[code.index(b'#include "/Compiler/ICDiagnosticsCore.HC"'):]
@@ -166,6 +201,12 @@ pins={str(p):sha(p) for p in pin_paths};r['input_sha256']=pins
 (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
 r['classes_requested']=args.classes
 r['canonical_types_requested']=args.canonical_types
+r['normal_lexer_requested']=args.normal_lexer
+r['system_parser_requested']=args.system_parser
+if args.normal_lexer:
+ r['scope']=r['scope'].replace('Source-loaded complete token lexer, shared expression/type parsers','Normal delivered token lexer, source-loaded shared expression/type parsers')
+if args.system_parser:
+ r['scope']+=' Parser stages are loaded in the normal system namespace through AdamFile; diagnostic loading still does not provide normal lazy expression API publication.'
 r['statements_requested']=args.statements
 r['functions_requested']=args.functions
 r['statement_code_requested']=args.statement_code
@@ -186,7 +227,13 @@ try:
  Guest=runpy.run_path(str(root/'tools/test-i386-autocomplete-interaction.py'))['Guest'];g=Guest(out/'working.img',out/'guest',True);g.delay=.04
  g.wait('DONE native kernel startup\n');r['published_parts']=[]
  for i in range(len(parts)):
-  r['attempted_part']=i;g.command(f'#include "C:/Probe/Part{i}.HC"',timeout=240);r['published_parts'].append(i)
+  r['attempted_part']=i
+  command=f'ProbeSystemParserLoad("C:/Probe/Part{i}.HC");' if args.system_parser and i else f'#include "C:/Probe/Part{i}.HC"'
+  start=len(g.collect());g.command(command,timeout=240)
+  stage_log=g.collect()[start:]
+  if 'INPUT REJECT ' in stage_log or 'FRONTEND ERROR ' in stage_log:
+   raise ValueError('Parser source stage failed: '+stage_log[-2000:])
+  r['published_parts'].append(i)
   if args.statement_code and i==23:
    g.command('U0 ProbeStatementDefault(){CHashFun *f=HashFind("LexStmt2Bin",Fs->hash_table,HTT_FUN);CMemberLst *m=f->member_lst_and_root;m=m->next->next;if(!(m->flags&MLF_DFT_AVAILABLE) || m->dft_val!=CMPF_PRS_SEMICOLON)throw;}ProbeStatementDefault;')
    r['statement_default_semicolon']='pass'

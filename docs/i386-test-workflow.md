@@ -6089,3 +6089,47 @@ not normal parser publication. The separate normal-image contract in
 `build/i386-normal-expression-baseline-v1/result.json` still fails with an
 undefined `LexExpression`. Normal API delivery and the complete C1–C5 inventory
 remain open.
+
+## Normal lexer and system parser integration probes (2026-11-08)
+
+The source-loaded compiler runner supports `--normal-lexer` (implies canonical
+types), retaining the normal delivered Lex/LexExtStr instead of compiling a
+replacement lexer. `--system-parser` implies that mode and loads parser stages
+through AdamFile in `native_jit_support.symbols`, restoring Adam's original
+hash table after each call, as the normal support loaders do. These remain
+explicit diagnostic modes; no normal expression facade is installed by them.
+
+The caller-namespace probe `build/i386-normal-lexer-parser-v1` passes lexer,
+graph, expression, type, runtime, lifetime, class, function, statement and
+execution contracts, but fails stream records with undefined extern calls.
+The normal lexer's retained PrsStreamBlk reference belongs to the system
+namespace, so caller-local parser definitions do not complete it.
+
+System loading exposed two additional harness requirements. The system parser
+prelude needs PublicCompiler.HH to declare normal OptPass012/COCCompile;
+`build/i386-system-parser-v1` records the missing OptPass012 compile failure
+and was interrupted after that confirmed failure. The runner now rejects
+nested AdamFile frontend errors even if the outer command returns COMMAND OK.
+Also, a caller-local LexExpression extern shadows the system implementation:
+`build/i386-system-parser-v2` passes graph checks and the typed expression
+wrappers, but fails the six direct LexExpression cases. System-parser mode
+therefore avoids creating the diagnostic caller-local LexExpression and
+PrsStreamBlk externs.
+
+The corrected system-namespace run passes the full unchanged contract set:
+
+```
+python3 tools/test-i386-public-expression-source.py \
+  build/i386-ir-slabs-cross-v5/kernel.img --system-parser --compiler-stream \
+  --out build/i386-system-parser-v3
+```
+
+Require `result.json` result pass, all 25 published stages, all nine stream
+records equal to one, and unchanged input/source plus filesystem checks.
+The v3 run also passes all preceding lexer, graph, expression, type, runtime,
+lifetime, class, function, statement and execution checks. This proves the
+tested shared parser dependencies can operate with the normal lexer and
+canonical type families in its system namespace. It does not install normal
+lazy expression facades, qualify assembly/AOT closure, or complete C1–C5.
+The runner copy and candidate parts in each evidence directory preserve the
+exact code used for that run, including earlier failed probes.

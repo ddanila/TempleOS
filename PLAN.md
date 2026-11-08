@@ -28486,3 +28486,26 @@ This checkpoint removes the need for diagnostic replacement types in the tested
 integration paths; it does not qualify the normal compiler API or advance the
 2/686 bundled-item qualification count. Next work is ordered normal parser
 publication with complete dependencies and normal-image contract coverage.
+
+## Normal lexer/system parser integration checkpoint (2026-11-08)
+
+The shared parser now passes its full diagnostic contract set with the normal
+delivered lexer, canonical types, and actual source stages loaded through
+AdamFile in the lexer's system namespace. Evidence:
+`build/i386-system-parser-v3/result.json`: all 25 stages, lexer/graph/basic and
+runtime expressions/types/lifetime/classes/functions/statements/execution,
+all nine stream checks, exact final arithmetic pixels, unchanged sources and
+inputs, and filesystem verification. No production compiler bodies changed.
+
+The new runner modes retain failures that establish why this namespace matters:
+`build/i386-normal-lexer-parser-v1` passes all prior groups but fails streams
+with undefined externs; `build/i386-system-parser-v1` exposes a missing system
+PublicCompiler declaration; v2 exposes a caller-local LexExpression extern
+shadowing the completed system implementation. V3 supplies system declarations
+and avoids those diagnostic caller-local externs. The runner now rejects
+nested AdamFile compile errors even when its outer command returns success.
+
+Next implementation work remains normal lazy API facades and ordered production
+parser stages, using this demonstrated dependency/namespace layout. No normal
+LexExpression delivery, complete compiler qualification, or additional bundled
+item qualification is claimed; C1–C5 remain open at 2/686 qualified items.
