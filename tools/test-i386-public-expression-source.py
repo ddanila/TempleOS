@@ -38,9 +38,8 @@ public extern I64 LexExpression(CCmpCtrl *cc);
 public extern U0 PrsStreamBlk(CCmpCtrl *cc);
 #include "/Compiler/LexFiles.HC"
 '''
-control=(root/'Compiler/PublicControlCore.HC').read_bytes();a=control.index(b'CLexFile *LexFilePush(');b=control.index(b'CLexFile *LexFilePop(',a)
-lex=(root/'Compiler/Lex.HC').read_bytes();lex=lex[lex.index(b'U0 LexIncludeStr('):]
-lib=(root/'Compiler/LexLib.HC').read_bytes();lib=lib[lib.index(b'U8 *LexExtStr('):]
+control=(root/'Compiler/LexFilePushCore.HC').read_bytes()
+lib=(root/'Compiler/LexExtStrCore.HC').read_bytes()
 init=b'''
 #include "/Compiler/LexPunctInit.HC"
 cmp.dual_U16_tokens1=CAlloc(sizeof(U32)*TK_TKS_NUM);
@@ -49,11 +48,12 @@ cmp.dual_U16_tokens3=CAlloc(sizeof(U32)*TK_TKS_NUM);
 LexPunctInit(cmp.dual_U16_tokens1,cmp.dual_U16_tokens2,cmp.dual_U16_tokens3);
 '''
 prefix=header[:header.index(b'#include "/Compiler/LexFiles.HC"')]
-cut=lex.index(b'I64 LexSystemToken(')
-helpers=re.split(rb'(?=#include "/Compiler/Lex(?:String|Number|Char|Punct|Ident|Define|Conditional)\.HC")',lex[:cut])
 lookup=(root/'Compiler/MemberLookup.HC').read_bytes()
 lookup=b'#include "/Compiler/MemberLookup.HH"\n'+lookup[lookup.index(b'CMemberLst *MemberClassBaseFind('):]
-parts=[prefix,b'#include "/Compiler/LexFiles.HC"\n'+control[a:b]+lookup]+helpers+[lex[cut:],lib,init]
+lexer_stages=('LexIncludeCore.HC','LexStringSystemCore.HC','LexNumber.HC','LexChar.HC','LexPunct.HC','LexIdentSystemCore.HC','LexDefineSystemCore.HC','LexConditional.HC')
+parts=[prefix,b'#include "/Compiler/LexFiles.HC"\n'+control+lookup]
+parts += [('#include "/Compiler/'+name+'"\n').encode() for name in lexer_stages]
+parts += [b'#define LEX_TOKEN_IMPL Lex\n#include "/Compiler/LexDispatchCore.HC"\n',lib,init]
 parser_prefix=b'''#include "/Compiler/CompilerA.HH"
 #include "/Compiler/ICInfo.HC"
 ICInfoInit;

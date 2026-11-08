@@ -28196,3 +28196,54 @@ The repaired 16 MiB TCG diagnostic boot now passes both program/ownership phases
 and its exact 307200-pixel welcome frame. The final current-source/image/export/
 helper/record audit and five inventory guards pass. These close the diagnostic
 regression for this backend checkpoint, without advancing workflow qualification.
+
+### Normal token lexer and first-use resource frontier
+
+Console 258 appends normal Lex/LexExtStr bindings after the existing 680 exports,
+with preserved indices/data masks. PublicLexer.HH includes only the public control/
+document interfaces needed by token clients. Complete production lexer/string/
+include-stack bodies are shared includes; reconstruction preserves the entire
+previous token suffix, including every directive. Normal expression/stream
+compilation dependencies are retained explicitly, rather than replaced by a
+restricted lexer. The normal parser/stream dependency closure remains open.
+
+First use loads twelve ordered source stages in Adam. Completed stages advance
+a shared progress counter; incomplete publication throws LexLoad. Tables initialize
+before the API pointers publish. Existing compiler-cache field offsets are retained;
+new lexer entries/progress append to the context. The staged design releases
+compilation temporaries between loads. First-use fault/retry/concurrency/cancellation
+qualification remains open.
+
+The original and normal 16 MiB token contracts pass all 24 unchanged assertions,
+identical result words, one cache publication, arithmetic/volume/input checks and
+caller heap restoration. Opposite first-use orders for lexer, optimizer/backend
+and JIT/AOT services pass eight checks, twelve-word traces, repeated calls and zero
+caller data/code growth, with each cache published once. The original order-test
+fixture incorrectly passed a stack packet to consuming JIT fixup; its corrected
+heap ownership is retained in the final passing v4 runs.
+
+The 8 MiB full token contract remains FAILED. Removing unrelated compiler/IR
+header dependencies makes the fixture compile; staging advances beyond string
+helpers, but numeric-helper compilation still throws OutMem before publication.
+The exact unchanged-input receipt is build/i386-public-lex-native8-v3. Its 0xE14
+parser-payload request exceeds the largest 0x608 free payload at 0x66FA28/0x671000
+heap usage. The retained frontend's full F64 helper-bound reservation has that
+compiled size; its live workspace/fragmentation is the next C5 investigation.
+No test or grammar path is reduced to claim 8 MiB compatibility.
+
+Both fresh original bootstrap generations and the strict cross-build pass. The
+full 25-stage diagnostic source compiler suite passes all token/graph/expression/
+type/runtime/lifetime/class/function/statement/command/stream probes through normal
+optimizer/backend services. The full normal backend contract still passes 48
+checks and the original trace. Current 8 MiB TCG welcome and diagnostic 16 MiB TCG
+pass exact 307200-pixel frames and both diagnostic ownership phases. Final audits
+under build/i386-public-lex-cross-v3 validate current source/image/input pins,
+ABI/export prefix, shared bodies, stages and both passing and failing receipts.
+See docs/i386-public-lexer.md. Full normal compiler, resource closure, complete
+native generations and C1-C5 gates remain open; workflow qualification stays 2/686.
+
+Final image build/i386-public-lex-cross-v4 normalizes only four extracted-file EOF
+separators. All native binaries match v3; those are the only volume differences.
+Native16-v4 passes the complete token contract and native8-v4 reproduces the same
+numeric-stage OutMem. The final current-image audit verifies prior source hashes
+against preserved bodies and retains the 8 MiB failure as an open C5 frontier.

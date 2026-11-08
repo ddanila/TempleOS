@@ -233,3 +233,82 @@ expression and executable-directive services remain unresolved and normal
 startup does not yet deliver the token API. Final-image 16 MiB diagnostics pass both program/ownership/cleanup phases and
 the complete 307,200-pixel welcome frame in
 `build/i386-public-bitmaps-diagnostic16-v4`, with an independent terminal audit. No C1–C5 milestone is qualified by these results.
+
+## Normal token API delivery
+
+Console 258 appends `_LEX` and `_LEX_EXT_STR` after the existing 680 public
+exports, preserving indices and data masks. `Kernel/I386/PublicLexer.HH` supplies
+the normal declarations. The facades load twelve ordered source stages in Adam on first
+use, sharing the guarded compiler-service context with optimizer/backend/fixups.
+Each completed stage advances lex_stage; a failed stage stops loading before API
+publication. The final PublicLexSupport.HC initializes tables and publishes the
+entries. Separate compilation releases temporary compiler state between stages.
+The loader waits/rechecks Adam and restores its hash table on all exits. Failed
+publication throws LexLoad. Invalid null control/include-stack input is rejected.
+
+LexTokenCore.HC includes the complete previous LexIncludeStr-through-Lex body,
+including all directives and shared string/number/character/punctuation/identifier/
+define/conditional helpers. LexExtStrCore.HC contains the complete adjacent-string
+ownership implementation. LexFilePushCore.HC extracts the existing include-stack
+allocation helper. Include/string/identifier/define system helpers and LexDispatchCore.HC are shared
+by both ordered stages and LexTokenCore.HC. Their concatenation reconstructs the
+complete prior suffix apart from normalized separator blank lines at file ends. The original compiler includes these same bodies, with only
+configurable implementation names added. No directive branch is replaced by a
+restricted lexer. Source audits compare the complete extracted bodies.
+
+Punctuation tables are allocated in the system task and initialized before
+publication; partial allocations are released on exceptions. Existing complete
+tables are reused; partial table state rejects publication. The cached string
+entry is installed before the token entry, which marks successful loading.
+First-use concurrency/cancellation and allocation-fault qualification remain open.
+
+The normal API does not complete public compiler delivery: expression directives
+retain the LexExpression dependency, and executable directives retain PrsStreamBlk.
+Their complete normal parser/stream dependencies remain work in progress. The
+source compiler regression still loads lexer/parser bodies diagnostically while
+using normal optimizer/backend services. It validates the shared-body refactor,
+rather than proving those unresolved normal directive paths work.
+
+The full 24-check original and normal 16 MiB contracts pass with identical result
+bytes, one normal lexer publication, arithmetic/volume validation and unchanged
+inputs. The first broad header exhausted 8 MiB while compiling the unchanged
+fixture include. Restricting PublicLexer.HH to PublicDocument.HH removes unrelated
+IR/compiler/loader declarations and lets that fixture compile. No token test is
+removed. The monolithic first-use library still exhausted memory in string-helper
+compilation; ordered source stages advance the same 8 MiB test through that stage.
+
+The current 8 MiB run remains a failure, preserved in
+`build/i386-public-lex-native8-v3`. It rejects PublicLexNumber.HC with OutMem before
+API publication: a 0xE14-byte parser payload request, heap usage 0x66FA28 of
+0x671000 bytes, largest free payload 0x608, 0x4F6A live allocations. LexLoad then
+reports the incomplete service. No 8 MiB lexer or C5 resource qualification is
+claimed. The retained frontend's F64 helper-bound allocation and its surrounding
+live IR/workspace are the next resource investigation; no grammar path is removed
+to accommodate this limit. Normal parser/directive closure also remains open.
+
+Current evidence is `build/i386-public-lex-cross-v3`, the original token contract
+in original-v1 and normal token contract in native16-v3. The two service-order v4
+runs load lexer/string, optimizer/backend and empty JIT/AOT fixups in opposite
+orders, repeat calls and pass eight assertions, identical twelve-word traces and
+zero caller data/code growth; every service publishes once. Earlier order v1
+failures used a stack packet despite JIT's documented consuming ownership; v2/v3
+correct that fixture before the final staged-loader rerun.
+
+The full source compiler suite passes all 25 stages and lexer/graph/expression/
+type/runtime/lifetime/class/function/statement/command/stream probes in
+compiler-source-v2. This deliberately retains diagnostic lexer/parser loading,
+with normal optimizer/backend calls. The normal backend's 48-check regression
+also passes (backend-v2). Fresh original bootstrap generations, strict cross-build,
+8 MiB TCG welcome and diagnostic 16 MiB TCG both ownership phases and complete
+307200-pixel frames pass. The final audit checks current source/image/input pins,
+ABI 96/258, retained export prefix/data masks, full helper-body reconstruction,
+ordered stage files, passing records and the unchanged failing 8 MiB contract.
+These component results do not qualify a complete workflow or C1-C5 milestone.
+
+Final whitespace normalization removes only separator blank lines from four
+extracted system-helper files. `build/i386-public-lex-cross-v4` has identical
+native modules/flat kernel to v3 and only those four volume changes; preserved
+prior files validate historical source pins. Its native16-v4 contract passes,
+and native8-v4 reproduces the exact numeric-stage allocation failure above.
+The final v4 audit covers these current-image receipts and the binary-identical
+v3 regressions/rasters, with unchanged body tokens and normalized source pins.

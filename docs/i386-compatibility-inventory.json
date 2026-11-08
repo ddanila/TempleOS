@@ -10672,6 +10672,20 @@
           "result": "pass",
           "evidence": "build/i386-public-token-loader-v14/result.json",
           "scope": "All 13 stages publish with the original shared bitmap header; printable compatibility alias has identical storage; all 24 original token cases and exact original Lex/LexExtStr bodies pass independent contract audit. Diagnostic/expression/stream services remain unresolved; token API not delivered by normal startup. No inventory qualification."
+        },
+        {
+          "target": "normal-public-token-lexer-16m-component",
+          "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-lex-native16-v4/result.json",
+          "scope": "Normal Console 258 Lex/LexExtStr via twelve ordered complete shared-source stages; same 24 original result words, includes/adjacent strings/buffer borrowing and caller heap recovery, one publication, arithmetic/volume/input checks. No diagnostic source lexer installed for this contract. Normal expression/stream directive dependencies, fault/concurrency and full compiler remain open."
+        },
+        {
+          "target": "normal-public-token-lexer-8m-resource-frontier",
+          "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 8 --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-public-lex-native8-v4/result.json",
+          "scope": "Unchanged 24-case contract compiles after removing unrelated compiler declarations from PublicLexer.HH. Ordered first-use loading reaches PublicLexNumber.HC, then OutMem on a 0xE14 parser payload; no cache publication. Inputs unchanged. Retained C5 resource failure, not a reduced test or lexer qualification."
         }
       ]
     },
@@ -10744,6 +10758,20 @@
           "result": "pass",
           "evidence": "build/i386-member-lookup-functions-native-v2/result.json",
           "scope": "All twenty-three stages and token/graph/expression/type/runtime/lifetime/class/function regressions pass using the normal public member lookup functions; no injected public lookup bodies. The internal header preserves resolved addresses instead of shadowing with undefined forwards. Exact original function bytes/heap recovery, independent 1032-input/volume/boot audit. Full compiler and C1\u2013C5 remain unqualified."
+        },
+        {
+          "target": "normal-public-token-lexer-16m-component",
+          "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-lex-native16-v4/result.json",
+          "scope": "Normal Console 258 Lex/LexExtStr via twelve ordered complete shared-source stages; same 24 original result words, includes/adjacent strings/buffer borrowing and caller heap recovery, one publication, arithmetic/volume/input checks. No diagnostic source lexer installed for this contract. Normal expression/stream directive dependencies, fault/concurrency and full compiler remain open."
+        },
+        {
+          "target": "normal-public-token-lexer-8m-resource-frontier",
+          "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 8 --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-public-lex-native8-v4/result.json",
+          "scope": "Unchanged 24-case contract compiles after removing unrelated compiler declarations from PublicLexer.HH. Ordered first-use loading reaches PublicLexNumber.HC, then OutMem on a 0xE14 parser payload; no cache publication. Inputs unchanged. Retained C5 resource failure, not a reduced test or lexer qualification."
         }
       ]
     },
@@ -11123,6 +11151,13 @@
           "result": "pass",
           "evidence": "build/i386-public-backend-compiler-source-v2/result.json",
           "scope": "All 25 source stages and lexer/graph/expression/type/runtime/lifetime/class/function/statement/command/stream probes pass through normal OptPass012 and COCCompile; no source backend adapter. Parser fixture retains shared CodeLabel helper. Source-loaded parser and remaining globals prevent full normal compiler or workflow qualification."
+        },
+        {
+          "target": "normal-compiler-service-load-order-component",
+          "command": "python3 tools/test-i386-compiler-service-order.py IMAGE [--reverse] --ram-mib 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-lex-order-forward-v4/result.json",
+          "scope": "Forward and reverse v4 receipts: normal lexer/string, optimizer/backend and empty JIT/AOT fixups in one VM, two rounds, eight assertions, exact twelve-word basic trace and zero caller heaps. One publication for each cache and arithmetic/volume/input checks. Tests correct JIT packet consumption ownership; earlier stack-packet fixture failure retained. This is initialization integration, not relocation or full compiler qualification."
         }
       ]
     },

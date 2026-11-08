@@ -10,10 +10,7 @@ U0 LexFileSystemDocDel(U8 *context,CDoc *document)
 {
   DocDel(document);
 }
-CLexFile *LexFilePush(CCmpCtrl *cc)
-{
-  return LexFileAttach(cc,CAlloc(sizeof(CLexFile)));
-}
+#include "/Compiler/LexFilePushCore.HC"
 CLexFile *LexFilePop(CCmpCtrl *cc)
 {
   CLexFileRelease owner;
