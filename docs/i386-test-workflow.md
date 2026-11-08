@@ -6192,3 +6192,22 @@ probes remain under `build/`. The 180-second welcome harness timeout remains
 visible; successful long-form full-image raster checks do not qualify startup
 performance. Full compiler error/cancellation/assembly/AOT paths and C1–C5
 qualification remain open.
+
+## Public expression error cleanup (2026-11-08)
+
+Run `python3 tools/test-i386-public-expression-errors.py IMAGE --out OUT` on the
+normal 64 MiB expression image. See `docs/i386-expression-error-cleanup.md`.
+Require all nine exact rows: three syntax failures, successful flag restoration,
+backend precondition rejection, raw/I64/F64 evaluated throws and a throw while
+parsing the first array-cast bound. Counters/tags, saved graph, trace/host-constant
+mask, outer node, both heap deltas, compile-result presence and continued result
+42 are checked separately. A private diagnostic document and drained Adam jobs
+exclude persistent output from heap measurements. Manual reachable cleanup
+occurs only after restoration observations, so it cannot conceal broken state.
+
+`build/i386-expression-error-contract-v2/result.json` passes all rows; the full
+normal success suite and 8 MiB lexer regressions pass on the same source image.
+The pre-fix syntax, evaluated-code and nested-bound leaks remain recorded under
+`build/i386-expression-error-baseline-v3` and
+`build/i386-expression-nested-error-baseline-v2`. This does not qualify every
+allocation/cancellation/type/backend error or full compiler/C1–C5 coverage.

@@ -11099,6 +11099,13 @@
           "result": "pass",
           "evidence": "build/i386-normal-parser-retry-final-v4/result.json",
           "scope": "Actual stage 11 execution failure and resume on a writable image copy: thirteen records check unpublished callbacks, completed-stage preservation, Adam namespace, exact caller heap restoration, returned 42, reuse and one publication. Stage bytes/attributes restored and complete filesystem integrity checked; other failure/cancellation/concurrency modes remain open."
+        },
+        {
+          "target": "normal-public-expression-error-cleanup-64m-component",
+          "command": "python3 tools/test-i386-public-expression-errors.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-expression-error-contract-v2/result.json",
+          "scope": "Nine normal API rows: three malformed expressions, successful trace/host-constant preservation, invalid backend precondition, three evaluating-wrapper throws and a first-array-bound evaluation throw. Exact exception/error counters, restored saved graph and flag mask, outer node preservation, zero caller data/code heap deltas, compile-result ownership and continued result 42. Private diagnostic output and pending jobs are released before measurement; source/filesystem checks pass. The shared body fixes pre-change 4584/56/4640-byte leaks. Exhaustion, cancellation/concurrency, richer partial type ownership, other backend failures, whole compiler and C1-C5 remain open; see docs/i386-expression-error-cleanup.md."
         }
       ]
     },

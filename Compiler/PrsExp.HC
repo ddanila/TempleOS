@@ -137,12 +137,17 @@ Bool PrsExpression(CCmpCtrl *cc,I64 *_max_prec,Bool end_exp,CPrsStk *_ps=NULL)
     if (Fs->except_ch=='Compiler') {
       res=FALSE;
       Fs->catch_except=TRUE;
+    } else if (!_ps) {
+      Free(ps);
+      cc->flags|=old_flags&(CCF_PREINC|CCF_PREDEC);
     }
   }
   if (!_ps) {
-    if (ps->ptr)
-      LexExcept(cc,"Compiler Parse Error at ");
+    //The diagnostic may throw again; release our stack before reporting it.
+    Bool unbalanced=ps->ptr!=0;
     Free(ps);
+    if (unbalanced)
+      LexExcept(cc,"Compiler Parse Error at ");
   }
   if (res) {
     if (end_exp)
@@ -157,21 +162,38 @@ Bool PrsExpression(CCmpCtrl *cc,I64 *_max_prec,Bool end_exp,CPrsStk *_ps=NULL)
 
 U8 *LEX_EXPRESSION_BIN_IMPL(CCmpCtrl *cc,I64 *_type=NULL)
 {//Compile cc expression. You call the code.
-  U8 *res;
-  I64 size;
-  Bool old_trace=Btr(&cc->flags,CCf_PASS_TRACE_PRESENT);
-  COCPush(cc);
-  COCInit(cc);
-  if (PrsExpression(cc,NULL,FALSE)) {
-    ICAdd(cc,IC_RETURN_VAL,0,0);
-    ICAdd(cc,IC_RET,0,0);
-    if (cc->flags&CCF_TARGET_I386) cc->flags|=CCF_TARGET_HOST_CONST;
-    res=COCCompile(cc,&size,NULL,_type);
-    cc->flags&=~CCF_TARGET_HOST_CONST;
-  } else
-    res=NULL;
-  COCPop(cc);
-  BEqu(&cc->flags,CCf_PASS_TRACE_PRESENT,old_trace);
+  U8 *res=NULL;
+  I64 size,exception=0,old_flags=cc->flags;
+  Bool failed=FALSE,pushed=FALSE;
+  //Install the handler before acquiring a saved graph or changing flags.
+  try {
+    COCPush(cc);pushed=TRUE;
+    Btr(&cc->flags,CCf_PASS_TRACE_PRESENT);
+    COCInit(cc);
+    if (PrsExpression(cc,NULL,FALSE)) {
+      ICAdd(cc,IC_RETURN_VAL,0,0);
+      ICAdd(cc,IC_RET,0,0);
+      if (cc->flags&CCF_TARGET_I386) cc->flags|=CCF_TARGET_HOST_CONST;
+      res=COCCompile(cc,&size,NULL,_type);
+    }
+  } catch {
+    failed=TRUE;exception=Fs->except_ch;Fs->catch_except=TRUE;
+  }
+  //COCCompile releases a completed graph. Parse/precondition failures may not.
+  //Release only the nested graph, preserving the original exception if cleanup
+  //also diagnoses a label. Restore the caller before propagating any failure.
+  if(pushed) {
+    try { COCDel(cc,&cc->coc); }
+    catch {
+      if(!failed){failed=TRUE;exception=Fs->except_ch;}
+      Fs->catch_except=TRUE;
+    }
+    COCPop(cc);
+  }
+  BEqu(&cc->flags,CCf_PASS_TRACE_PRESENT,Bt(&old_flags,CCf_PASS_TRACE_PRESENT));
+  if(old_flags&CCF_TARGET_HOST_CONST)cc->flags|=CCF_TARGET_HOST_CONST;
+  else cc->flags&=~CCF_TARGET_HOST_CONST;
+  if(failed){Free(res);throw(exception);}
   return res;
 }
 
@@ -185,7 +207,8 @@ I64 LEX_EXPRESSION_I64_IMPL(CCmpCtrl *cc)
   U8 *machine_code;
   I64 res,type;
   if (machine_code=LexExpression2Bin(cc,&type)) {
-    res=Call(machine_code);
+    try { res=Call(machine_code); }
+    catch { Free(machine_code); }
     Free(machine_code);
     if (type==RT_F64)
       res=ToI64(res(F64));
@@ -199,7 +222,8 @@ F64 LEX_EXPRESSION_F64_IMPL(CCmpCtrl *cc)
   U8 *machine_code;
   I64 res,type;
   if (machine_code=LexExpression2Bin(cc,&type)) {
-    res=Call(machine_code);
+    try { res=Call(machine_code); }
+    catch { Free(machine_code); }
     Free(machine_code);
     if (type!=RT_F64)
       res(F64)=ToF64(res);
@@ -213,7 +237,8 @@ I64 LEX_EXPRESSION_IMPL(CCmpCtrl *cc)
   U8 *machine_code;
   I64 res;
   if (machine_code=LexExpression2Bin(cc)) {
-    res=Call(machine_code);
+    try { res=Call(machine_code); }
+    catch { Free(machine_code); }
     Free(machine_code);
   } else
     res=0;

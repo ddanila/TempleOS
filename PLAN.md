@@ -28572,3 +28572,32 @@ Assembly/AOT closure, broader expression/backend failure cleanup, cancellation,
 full desktop/application coverage and native release qualification remain open.
 The 8 MiB checks qualify startup/lexer functionality, not full expression
 loading. C1–C5 remain active and bundled qualification remains 2/686.
+
+## Shared expression failure cleanup (2026-11-08)
+
+Normal malformed expressions previously leaked 4,584 bytes each and failed to
+restore their saved graph and trace flag. Raw/I64/F64 evaluated throws leaked
+56-byte code blocks; a throw during a cast's first array bound leaked 4,640
+bytes and lost its caller context. Successful compilation also discarded an
+incoming host-constant bit. These failures are captured on the preceding
+normal image, separately from diagnostic output ownership.
+
+The shared PrsExp body now frees owned parser stacks before throwing parse
+diagnostics and on non-Compiler propagation. Its binary wrapper installs the
+handler before graph acquisition, releases the temporary graph on failure,
+restores the caller and owned flag bits, and propagates the original exception.
+The evaluating wrappers release code before automatic catch propagation.
+Supplied parser stacks remain caller-owned. ABI and all native module/kernel
+bytes are unchanged; the loaded shared source implementation is corrected.
+
+Evidence: `build/i386-expression-error-contract-v2/result.json` passes nine
+exact normal 64 MiB failure/control rows, zero heap deltas, intact outer nodes,
+continued execution, input and filesystem checks. The complete normal success
+suite (`build/i386-expression-error-success-v2`), normal 8 MiB lexer regression,
+two original bootstrap rebuilds and native cross-build/instruction audit pass.
+Commands, baselines and scope are in `docs/i386-expression-error-cleanup.md`.
+
+Exhaustion and handler-install failure, cancellation/concurrency, richer partial
+type ownership and other backend failures remain open, together with assembly/
+AOT and full desktop/application/release qualification. These component checks
+do not complete C1–C5; bundled qualification remains 2/686.

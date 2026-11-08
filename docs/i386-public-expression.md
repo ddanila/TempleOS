@@ -86,6 +86,16 @@ and the lexer, not the complete expression service. Bundled qualification
 remains 2/686.
 
 
+## Error cleanup checkpoint (2026-11-08)
+
+`docs/i386-expression-error-cleanup.md` records normal parse/evaluation failure
+cleanup, saved graph and trace/host-constant restoration, nine exact error
+rows with zero heap deltas, and the preserved successful-expression suite.
+The implementation remains in the shared body and preserves tested exception
+codes/counters. The older broad error-cleanup gap above is narrowed by those
+specific cases; exhaustion, cancellation, richer partial type ownership and
+other backend failure modes remain unqualified.
+
 ## Earlier integration evidence
 
 The following paragraphs record earlier diagnostic checkpoints. Their normal
