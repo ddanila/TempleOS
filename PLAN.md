@@ -27959,3 +27959,19 @@ and diagnostic images remain unchanged. Five inventory guard tests pass.
 Full module loading, assembly/JIT fixups, complete public compiler delivery,
 684 unqualified workflows and complete C1–C5 gates remain open. See
 [import resolution evidence](docs/i386-import-resolve.md).
+
+## Shared complete JIT fixup preparation
+
+CMain now consumes the full shared JIT assembly fixup routine, alongside the
+real label-search and label-forwarding bodies. Scalar I64 patch addresses retain
+negative 64-bit relative values on a 32-bit pointer target; export/import and
+trace paths remain in the complete routine. Two x86-64 rebuild generations pass
+with the exact shared inputs (`build/rebuild-test/result.json`, bootstrap-v5).
+
+This is preparation, not native JIT qualification. Preserved native candidates
+still fail 8 MiB decoder compilation and full trace capture. The latter failure
+is isolated to DolDoc's highlight command opening a compiler control while the
+caller has installed a temporary linked hash-table head. Existing ownership
+checks reject that scope. No workflow count or C1–C5 milestone is advanced;
+684 workflows, public compiler delivery and complete release gates remain open.
+See docs/i386-jit-fixup.md.

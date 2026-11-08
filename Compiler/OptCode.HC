@@ -1,10 +1,4 @@
-CCodeMisc *OptLabelFwd(CCodeMisc *lb)
-{
-  CCodeMisc *lb1;
-  while (lb1=lb->fwd)
-    lb=lb1;
-  return lb;
-}
+#include "/Compiler/LabelForwardCore.HC"
 
 #include "/Compiler/OptClassFwdCore.HC"
 

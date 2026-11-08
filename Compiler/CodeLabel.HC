@@ -1,4 +1,7 @@
-CCodeMisc *COCGoToLabelFind(CCmpCtrl *cc,U8 *name)
+#ifndef COC_LABEL_IMPL
+#define COC_LABEL_IMPL COCGoToLabelFind
+#endif
+CCodeMisc *COC_LABEL_IMPL(CCmpCtrl *cc,U8 *name)
 {
   CCodeMisc *cm=cc->coc.coc_next_misc;
   while (cm!=&cc->coc.coc_next_misc) {
