@@ -6133,3 +6133,38 @@ canonical type families in its system namespace. It does not install normal
 lazy expression facades, qualify assembly/AOT closure, or complete C1–C5.
 The runner copy and candidate parts in each evidence directory preserve the
 exact code used for that run, including earlier failed probes.
+
+## Shared source boundaries for parser loading (2026-11-08)
+
+The original compiler entry files now include reusable, ordered host-service
+bodies rather than requiring the diagnostic runner to slice those source files:
+
+| Entry | Shared include bodies |
+| --- | --- |
+| PrsLib.HC | PrsSymbolAllocate.HC |
+| CExcept.HC | PrsExternDiagnostics.HC, PrsParenWarning.HC |
+| LexLib.HC | PrsMemberBuild.HC, PrsMemberDelete.HC |
+| PrsVar.HC | PrsTypeHost.HC, PrsDeclarationHost.HC |
+| PrsStmt.HC | PrsSymbolHost.HC, PrsStatementHost.HC |
+| CMisc.HC | PrsOptions.HC, PrsStreamOutput.HC |
+
+The complete extracted bodies retain their original bytes and include order.
+`build/i386-parser-stage-extraction-v1/expanded-identity.json` verifies that
+expanding these eleven includes reproduces all six pre-change entry files
+byte-for-byte. These are shared production sources, not generated copies or
+reduced implementations. Existing entry files continue to serve the original
+compiler; the native diagnostic runner now includes the same bodies directly.
+
+Validation: `build/rebuild-test/result.json` passes two original x86-64 native
+rebuilds (not bit reproducibility); `build/i386-parser-stage-cross-v1` passes
+native cross-building and the 386 instruction audit. The current-image full
+system-namespace parser run in `build/i386-parser-stage-contract-v1/result.json`
+passes all 25 stages and all existing lexer, graph, expression, type, runtime,
+lifetime, class, function, statement, execution and stream assertions, including
+input/source integrity and filesystem verification. The separate
+`build/i386-parser-stage-lex8-v1/result.json` passes the normal 24-case lexer
+contract at 8 MiB. The prior bootstrap is preserved under
+`build/rebuild-test-before-parser-stage-extraction`.
+
+This source split prepares ordered normal parser loading. Normal lazy expression
+facades, assembly/AOT closure and full C1–C5 qualification remain open.

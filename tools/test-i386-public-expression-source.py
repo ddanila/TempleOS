@@ -98,7 +98,7 @@ public extern CHashClass *PrsType(CCmpCtrl *cc,CHashClass **first,I64 *mode,CMem
 '''
 parser_prefix+=b'#include "/Compiler/ICDetachCore.HC"\n'
 parser_prefix+=b'#include "/Compiler/OptFreeCore.HC"\n'
-code=(root/'Compiler/CExcept.HC').read_bytes();parser_prefix+=code[code.index(b'U0 ParenWarning('):code.index(b'#include "/Compiler/ICDiagnosticsCore.HC"')]
+parser_prefix+=b'#include "/Compiler/PrsParenWarning.HC"\n'
 parts += [parser_prefix,b'#include "/Compiler/PrsExp.HC"\n']
 if args.system_parser:
  parts[13]=b'#include "/Kernel/I386/PublicCompiler.HH"\n'+parts[13]
@@ -106,8 +106,7 @@ optimizer=b'''#include "/Compiler/OptCode.HC"
 '''
 code=(root/'Compiler/CExcept.HC').read_bytes();optimizer+=code[code.index(b'#include "/Compiler/ICDiagnosticsCore.HC"'):]
 #Optimization uses the delivered normal public binding, not a source replacement.
-types=b'#include "/Compiler/SymbolInit.HC"\n'
-code=(root/'Compiler/PrsLib.HC').read_bytes();types+=code[code.index(b'CHashClass *PrsClassNew('):code.index(b'#include "/Compiler/PublicCodeCore.HC"')]
+types=b'#include "/Compiler/PrsSymbolAllocate.HC"\n'
 types+=b'''#include "/Compiler/InternalTypes.HC"
 #include "/Compiler/PrsBinary.HC"
 U0 ProbePublicCompilerTypes()
@@ -124,7 +123,7 @@ U0 ProbePublicCompilerTypes()
 ProbePublicCompilerTypes;
 '''
 if args.canonical_types:
- types=types[:types.index(b'#include "/Compiler/InternalTypes.HC"')]+b'''#include "/Compiler/PrsBinary.HC"
+ types=b'#include "/Compiler/PrsSymbolAllocate.HC"\n'+b'''#include "/Compiler/PrsBinary.HC"
 U0 ProbePublicCompilerTypes()
 {
   if(!cmp.asm_hash)cmp.asm_hash=HashTableNew(32);
@@ -136,23 +135,15 @@ U0 ProbePublicCompilerTypes()
 ProbePublicCompilerTypes;
 '''
 type_parser=b'public extern CHashClass *PrsClass(CCmpCtrl *cc,I64 keyword,I64 flags,Bool is_extern);\npublic extern CHashFun *PrsFunJoin(CCmpCtrl *cc,CHashClass *type,U8 *name,I64 flags);\n'
-code=(root/'Compiler/LexLib.HC').read_bytes()
-type_parser+=code[code.index(b'#include "/Compiler/MemberLookup.HC"'):code.index(b'#include "/Kernel/SymbolDelete.HH"')].replace(b'#include "/Compiler/MemberLookup.HC"',b'//Member lookup is already published.')
-code=(root/'Compiler/PrsVar.HC').read_bytes()
-type_parser+=code[code.index(b'#include "/Compiler/PrsTypeCore.HC"'):code.index(b'#include "/Compiler/PrsDeclarationCore.HC"')]
+type_parser+=b'#include "/Compiler/PrsMemberBuild.HC"\n#include "/Compiler/PrsTypeHost.HC"\n'
 parts += [optimizer,types,b'//Parser label lookup is shared; COCCompile uses the normal public binding.\n#include "/Compiler/CodeLabel.HC"\n',type_parser]
 declarations=b'''public extern U0 PrsStaticInit(CCmpCtrl *cc,CMemberLst *member,I64 pass);
 '''
-code=(root/'Compiler/PrsVar.HC').read_bytes()
-declarations+=code[code.index(b'#include "/Compiler/PrsDeclarationCore.HC"'):]
+declarations+=b'#include "/Compiler/PrsDeclarationHost.HC"\n'
 parts.append(declarations)
 if args.classes:
  classes=b'#include "/Kernel/SymbolDelete.HC"\n'
- code=(root/'Compiler/LexLib.HC').read_bytes()
- classes+=code[code.index(b'#include "/Kernel/SymbolDelete.HH"'):code.index(b'#include "/Compiler/MemberSizeCore.HC"')]
- code=(root/'Compiler/CMisc.HC').read_bytes();classes+=code[:code.index(b'asm {')]
- code=(root/'Compiler/CExcept.HC').read_bytes();classes+=code[code.index(b'U0 UndefinedExtern('):code.index(b'U0 ParenWarning(')]
- code=(root/'Compiler/PrsStmt.HC').read_bytes();classes+=code[:code.index(b'extern U0 PrsFun(')]
+ classes+=b'#include "/Compiler/PrsMemberDelete.HC"\n#include "/Compiler/PrsOptions.HC"\n#include "/Compiler/PrsExternDiagnostics.HC"\n#include "/Compiler/PrsSymbolHost.HC"\n'
  parts.append(classes)
 if args.statements:
   statements=b'''#include "/Compiler/PrsCompileFlags.HH"
@@ -162,8 +153,7 @@ if args.statements:
  public extern CAOT *CmpJoin(CCmpCtrl *cc,I64 flags,U8 *map_name=NULL,U8 map_drive=0);
  public extern I64 ExeCmdLine(CCmpCtrl *cc);
  '''
-  code=(root/'Compiler/PrsStmt.HC').read_bytes()
-  statements+=code[code.index(b'extern U0 PrsFun('):]
+  statements+=b'#include "/Compiler/PrsStatementHost.HC"\n'
   parts.append(statements)
 if args.statement_code:
  main=(root/'Compiler/CMain.HC').read_bytes()
@@ -173,8 +163,7 @@ if args.execute_line:
  parts.append(b'#include "/Kernel/I386/PublicDate.HH"\n'+task[task.index(b'I64 ExeCmdLine('):task.index(b'#include "/Kernel/SrvTaskContCore.HC"')])
 if args.compiler_stream:
  path=(root/'Kernel/BlkDev/DirFileCore.HC').read_bytes()
- misc=(root/'Compiler/CMisc.HC').read_bytes()
- parts.append(path+misc[misc.index(b'U0 StreamPrint('):misc.index(b'CD2I32 *LexD2I32(')])
+ parts.append(path+b'#include "/Compiler/PrsStreamOutput.HC"\n')
 candidate=b'\n'.join(parts)
 (out/'candidate.HC').write_bytes(candidate)
 for i,part in enumerate(parts):(out/f'part-{i}.HC').write_bytes(part)

@@ -28509,3 +28509,27 @@ Next implementation work remains normal lazy API facades and ordered production
 parser stages, using this demonstrated dependency/namespace layout. No normal
 LexExpression delivery, complete compiler qualification, or additional bundled
 item qualification is claimed; C1–C5 remain open at 2/686 qualified items.
+
+## Shared production parser-stage sources (2026-11-08)
+
+Extracted eleven complete host-service bodies from six original compiler entry
+files into reusable includes: symbol allocation, extern/parenthesis diagnostics,
+member build/delete, type/declaration services, symbol/statement services,
+options and stream output. Original entry points include the same bytes in the
+same order; the diagnostic compiler now loads those actual includes instead of
+slicing those bodies out of larger files. This establishes source boundaries
+for the ordered production loader without maintaining duplicate implementations.
+
+`build/i386-parser-stage-extraction-v1/expanded-identity.json` proves expanded
+source identity against the previous commit. Current-source validation passes:
+two original native compiler/kernel rebuilds (`build/rebuild-test/result.json`),
+full native cross-build and instruction audit (`build/i386-parser-stage-cross-v1`),
+all 25 stages and the full system-namespace shared-parser contract including
+streams (`build/i386-parser-stage-contract-v1/result.json`), and the normal
+24-case public lexer contract at 8 MiB (`build/i386-parser-stage-lex8-v1/result.json`).
+Integrity and filesystem checks pass. The original rebuild test does not claim
+bit reproducibility or the two complete native i386 release generations of C5.
+
+Normal lazy expression facades and production stage publication are next.
+The tested diagnostic loading remains explicit, normal LexExpression delivery
+is still open, and bundled qualification remains 2/686. C1–C5 are not complete.

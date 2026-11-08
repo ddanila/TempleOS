@@ -1,13 +1,4 @@
-Bool Option(I64 num,Bool val)
-{//Set compiler $LK,"Option",A="FI:::/Doc/Options.DD"$ to val.
-  return BEqu(&Fs->last_cc->opts,num,val);
-}
-
-Bool GetOption(I64 num)
-{//Get state of compiler $LK,"option",A="MN:OPTf_ECHO"$.
-  return Bt(&Fs->last_cc->opts,num);
-}
-
+#include "/Compiler/PrsOptions.HC"
 asm {
 _LAST_FUN::	//See $LK,"_CALL_IND",A="MN:_CALL_IND"$
 	PUSH	RBP
@@ -65,29 +56,7 @@ Bool Echo(Bool val)
   return Option(OPTf_ECHO,val);
 }
 
-U0 StreamPrint(U8 *fmt,...)
-{//Injects text into the compile stream. Used in #exe{} blocks.
-  U8 *buf=StrPrintJoin(NULL,fmt,argc,argv),*st;
-  CCmpCtrl *cc=Fs->last_cc;
-  CStreamBlk *tmpe=cc->last_stream_blk;
-  if (tmpe!=&cc->next_stream_blk) {
-    st=MStrPrint("%s%s",tmpe->body,buf);
-    Free(tmpe->body);
-    tmpe->body=st;
-  } else
-    PrintErr("No exe{} blk\n");
-  Free(buf);
-}
-
-U0 StreamDir()
-{
-  U8 *dirname;
-  if (dirname=DirFile(Fs->last_cc->lex_include_stk->full_name)) {
-    StreamPrint("\"%s\"",dirname);
-    Free(dirname);
-  }
-}
-
+#include "/Compiler/PrsStreamOutput.HC"
 CD2I32 *LexD2I32(CCmpCtrl *cc,CD2I32 *p)
 {//Not HolyC. Sprite-like lex 2D point.
   if (cc->token!='(')
