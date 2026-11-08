@@ -27869,3 +27869,30 @@ Final source26 passes all stages and prior observations with 1,039 independently
 verified input pins. Fresh 8/16 MiB welcome rasters match all 307,200 pixels and
 both diagnostic ownership/file-break phases complete. Inventory guard tests pass;
 qualification counts remain two of 686.
+
+### Active stream contexts after execution faults (2026-11-08)
+
+Compiler94 retires outstanding stream hash contexts and unfinished generated
+buffers before existing terminal publication. The original successful epilogue
+and shared parser body remain unchanged; cleanup is terminal-only and allocates
+nothing. Tracked storage and queue links are validated before release, the outer
+function context still passes partial-declaration validation, and the actual
+exception is retained. Ordinary, single-stream and nested-stream fault fixtures
+pass thirteen original/candidate observations, including no execution after
+throw, literal survival after parent closure/reuse and no declaration from an
+unfinished generated buffer. Compiler93 rejects terminal publication and loses
+the payload in the active-stream cases; ordinary runtime already passes there.
+
+Both bootstraps and full source-pinned build pass, as do prior later-syntax-error
+modes, seventeen answer cases and Carry/ClassMeta whole workflows. The eight
+warm-up plus 32 plain-exception control remains zero used-byte growth on native;
+the original observed growth is kept separate from that stronger requirement.
+See docs/i386-stream-execution-fault.md. OutMem, retirement/publication failure,
+arbitrary partial initializer/function contexts, cancellation and task/cross-task
+teardown remain open, with public compiler delivery, 684 workflows and full
+C1–C5 release gates still unqualified.
+
+Final source26 passes all stages and prior observations with 1,039 independent
+input-pin checks. Both 8/16 MiB welcome rasters match all 307,200 pixels and both
+diagnostic ownership/file-break phases complete. Inventory guards pass; no
+additional workflow or C1–C5 milestone is qualified.

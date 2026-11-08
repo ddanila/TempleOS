@@ -396,6 +396,32 @@ U0 I386FrontendHeader(U8 *context,CHashFun *function,Bool complete)
   if(!record)I386FrontendUnavailable(state);
   record->header=complete;record->complete=complete;
 }
+Bool I386FrontendRetireStreams(CI386Frontend *state)
+{//Terminal only: discard generated text and restore the outer symbol context.
+  CCmpCtrl *cc=state->cc;
+  CLexHashTableContext *saved;
+  CStreamBlk *head=&cc->next_stream_blk,*block,*previous;
+  U8 *source,*dest;
+  I64 flags,i;
+  while(saved=cc->htc.next) {
+    if(I386ParserSize(state->heap,cc,saved)!=sizeof(CLexHashTableContext))return FALSE;
+    flags=saved->old_flags;source=saved;dest=&cc->htc;
+    for(i=0;i<sizeof(CLexHashTableContext);i++)dest[i]=source[i];
+    cc->flags=cc->flags&~CCF_EXE_BLK |
+      flags&(CCF_ASM_EXPRESSIONS|CCF_EXE_BLK|CCF_AOT_COMPILE);
+    I386FrontendFree(state,saved);
+  }
+  while((block=cc->last_stream_blk)!=head) {
+    if(I386ParserSize(state->heap,cc,block)!=sizeof(CStreamBlk) ||
+        block->next!=head || !(previous=block->last) ||
+        previous!=head && I386ParserSize(state->heap,cc,previous)!=sizeof(CStreamBlk) ||
+        previous->next!=block || !block->body ||
+        I386ParserSize(state->heap,cc,block->body)<1)return FALSE;
+    previous->next=block->next;block->next->last=previous;
+    I386FrontendFree(state,block->body);I386FrontendFree(state,block);
+  }
+  return cc->next_stream_blk==head;
+}
 Bool I386FrontendRetireFunction(CI386Frontend *state)
 {//A failed parse leaves its owned partial extern descriptor in the hash table.
   CCmpCtrl *cc=state->cc;

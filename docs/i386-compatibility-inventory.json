@@ -10001,7 +10001,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Call original CmdLinePmt with six real queued GetStr inputs and seeded pending answer states; inspect exact returned strings, saved document prefixes and task/document state.",
-      "oracle": "docs/i386-command-prompt.md: exact signed/unsigned/F64/void answer formatting, current-directory prefix, trailing whitespace and semicolon normalization, 24-word task/document state table. The shared original public body passes on the final native image; retained terminal input still bypasses it; raw/debug, physical input, exit/unwind, resource recovery and full interactive lexer remain unqualified. docs/i386-stream-directory.md records normal ExePutS/ExeFile StreamDir source-context comparisons: fourteen words and fourteen complete paths, including active pending macro/default temporary filenames. Stream error/ownership and whole-file qualification remain open. docs/i386-stream-answers.md records seventeen actual original/normal-native execution-and-prompt cases, including compile-time answer categories, void directory macros and lookahead ordering; full terminal/stream ownership remains open. docs/i386-stream-literal.md records a compile-time literal escaping through a global and task answer: twelve checks, explicit native parent-controller closure and code-heap reuse. Other stream ownership/failure modes and whole-file qualification remain open. docs/i386-stream-side-effect.md covers literal pointers stored by a compound block whose final result is not that pointer, in compile-time and ordinary runtime modes. Original and corrected native pass twelve checks per mode; compiler91 loses the stored data after parent closure. Broader ownership/failure remains open. docs/i386-stream-failure.md covers completed literal stores before a later syntax failure, in compile-time and runtime modes, with actual diagnostic capture and an independent repeated-nonliteral-exception recovery control. Broader failures and whole-file qualification remain open.",
+      "oracle": "docs/i386-command-prompt.md: exact signed/unsigned/F64/void answer formatting, current-directory prefix, trailing whitespace and semicolon normalization, 24-word task/document state table. The shared original public body passes on the final native image; retained terminal input still bypasses it; raw/debug, physical input, exit/unwind, resource recovery and full interactive lexer remain unqualified. docs/i386-stream-directory.md records normal ExePutS/ExeFile StreamDir source-context comparisons: fourteen words and fourteen complete paths, including active pending macro/default temporary filenames. Stream error/ownership and whole-file qualification remain open. docs/i386-stream-answers.md records seventeen actual original/normal-native execution-and-prompt cases, including compile-time answer categories, void directory macros and lookahead ordering; full terminal/stream ownership remains open. docs/i386-stream-literal.md records a compile-time literal escaping through a global and task answer: twelve checks, explicit native parent-controller closure and code-heap reuse. Other stream ownership/failure modes and whole-file qualification remain open. docs/i386-stream-side-effect.md covers literal pointers stored by a compound block whose final result is not that pointer, in compile-time and ordinary runtime modes. Original and corrected native pass twelve checks per mode; compiler91 loses the stored data after parent closure. Broader ownership/failure remains open. docs/i386-stream-failure.md covers completed literal stores before a later syntax failure, in compile-time and runtime modes, with actual diagnostic capture and an independent repeated-nonliteral-exception recovery control. Broader failures and whole-file qualification remain open. docs/i386-stream-execution-fault.md records thirteen observations in ordinary, active compile-time and nested compile-time fault modes, including discarded unfinished generated text. Active stream context retirement preserves stored literal bytes; nonliteral exception control remains zero-growth on native. General failures and whole-file qualification remain open.",
       "tests": [
         {
           "target": "original-command-prompt",
@@ -10198,6 +10198,69 @@
           "result": "pass",
           "evidence": "build/i386-stream-failure-runtime-native-v1/result.json",
           "scope": "Twelve literal-lifetime checks after one real undefined-identifier diagnostic, explicit native parent closure, generated access and code-heap reuse. Eight warm-up plus 32 nonliteral Compiler exceptions: native zero used-byte delta, original observes 169984-byte growth. Terminal pins independently checked; not general failure/cancellation/teardown qualification."
+        },
+        {
+          "target": "original-stream-execution-fault",
+          "command": "python3 tools/test-i386-stream-execution-fault.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-execution-fault-original-v3/result.json",
+          "scope": "Thirteen fault/literal/context checks, actual Compiler exception, no execution after throw, explicit native parent closure, generated pointer access, code reuse and no unfinished declaration injection. Plain-exception public used-byte control: native zero, original observed growth. Independently checked terminal pins; not general failure/cancellation/teardown qualification."
+        },
+        {
+          "target": "original-runtime-execution-fault",
+          "command": "python3 tools/test-i386-stream-execution-fault.py --runtime-block --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-execution-fault-runtime-original-v3/result.json",
+          "scope": "Thirteen fault/literal/context checks, actual Compiler exception, no execution after throw, explicit native parent closure, generated pointer access, code reuse and no unfinished declaration injection. Plain-exception public used-byte control: native zero, original observed growth. Independently checked terminal pins; not general failure/cancellation/teardown qualification."
+        },
+        {
+          "target": "original-nested-stream-execution-fault",
+          "command": "python3 tools/test-i386-stream-execution-fault.py --nested --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-execution-fault-nested-original-v2/result.json",
+          "scope": "Thirteen fault/literal/context checks, actual Compiler exception, no execution after throw, explicit native parent closure, generated pointer access, code reuse and no unfinished declaration injection. Plain-exception public used-byte control: native zero, original observed growth. Independently checked terminal pins; not general failure/cancellation/teardown qualification."
+        },
+        {
+          "target": "native-stream-execution-fault-baseline",
+          "command": "python3 tools/test-i386-stream-execution-fault.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-stream-execution-fault-baseline-v2/result.json",
+          "scope": "Thirteen fault/literal/context checks, actual Compiler exception, no execution after throw, explicit native parent closure, generated pointer access, code reuse and no unfinished declaration injection. Plain-exception public used-byte control: native zero, original observed growth. Independently checked terminal pins; not general failure/cancellation/teardown qualification."
+        },
+        {
+          "target": "native-nested-stream-execution-fault-baseline",
+          "command": "python3 tools/test-i386-stream-execution-fault.py IMAGE --nested --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-stream-execution-fault-nested-baseline-v1/result.json",
+          "scope": "Thirteen fault/literal/context checks, actual Compiler exception, no execution after throw, explicit native parent closure, generated pointer access, code reuse and no unfinished declaration injection. Plain-exception public used-byte control: native zero, original observed growth. Independently checked terminal pins; not general failure/cancellation/teardown qualification."
+        },
+        {
+          "target": "native-runtime-execution-fault-baseline",
+          "command": "python3 tools/test-i386-stream-execution-fault.py IMAGE --runtime-block --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-execution-fault-runtime-baseline-v2/result.json",
+          "scope": "Thirteen fault/literal/context checks, actual Compiler exception, no execution after throw, explicit native parent closure, generated pointer access, code reuse and no unfinished declaration injection. Plain-exception public used-byte control: native zero, original observed growth. Independently checked terminal pins; not general failure/cancellation/teardown qualification."
+        },
+        {
+          "target": "native-stream-execution-fault",
+          "command": "python3 tools/test-i386-stream-execution-fault.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-execution-fault-native-v2/result.json",
+          "scope": "Thirteen fault/literal/context checks, actual Compiler exception, no execution after throw, explicit native parent closure, generated pointer access, code reuse and no unfinished declaration injection. Plain-exception public used-byte control: native zero, original observed growth. Independently checked terminal pins; not general failure/cancellation/teardown qualification."
+        },
+        {
+          "target": "native-runtime-execution-fault",
+          "command": "python3 tools/test-i386-stream-execution-fault.py IMAGE --runtime-block --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-execution-fault-runtime-native-v2/result.json",
+          "scope": "Thirteen fault/literal/context checks, actual Compiler exception, no execution after throw, explicit native parent closure, generated pointer access, code reuse and no unfinished declaration injection. Plain-exception public used-byte control: native zero, original observed growth. Independently checked terminal pins; not general failure/cancellation/teardown qualification."
+        },
+        {
+          "target": "native-nested-stream-execution-fault",
+          "command": "python3 tools/test-i386-stream-execution-fault.py IMAGE --nested --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-execution-fault-nested-native-v2/result.json",
+          "scope": "Thirteen fault/literal/context checks, actual Compiler exception, no execution after throw, explicit native parent closure, generated pointer access, code reuse and no unfinished declaration injection. Plain-exception public used-byte control: native zero, original observed growth. Independently checked terminal pins; not general failure/cancellation/teardown qualification."
         }
       ]
     },
@@ -11685,7 +11748,7 @@
       "source_at_discovery": "identical",
       "compatibility": "qualified",
       "reference_workflow": "Run complete unchanged Demo/Carry.HC through normal ExeFile: verify all 1024 BigCnt rows, 128 BigShift rows and 64 Branch bits, then invoke the real retained functions after declaration input release and 32 KiB data/code heap churn. Both complete DolDoc captures must match the independent mathematical oracle and original byte-for-byte.",
-      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime93/console250 stream-failure-v1 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
+      "oracle": "docs/i386-carry.md: mask 7, two exact 39258-byte original DolDoc documents, source digest and normal retained-call workflow. Individual demo on runtime94/console250 stream-execution-fault-v1 current normal candidate; other arithmetic/CPU flags, C5 generations/full suite/resource gates remain open.",
       "tests": [
         {
           "command": "python3 tools/test-i386-carry-demo.py [IMAGE] --out OUT",
@@ -11764,6 +11827,12 @@
           "result": "pass",
           "evidence": "build/i386-stream-failure-carry-v1/result.json",
           "scope": "Compiler93 retained literal publication after later syntax failure: unchanged complete qualified workflow, exact original documents, retained callbacks, normal arithmetic, volume integrity and independently checked terminal inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-carry-demo.py build/i386-stream-execution-fault-cross-v1/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-execution-fault-carry-v1/result.json",
+          "scope": "Compiler94 terminal stream-context retirement: unchanged whole qualified workflow, exact original documents, retained callbacks, arithmetic, volume integrity and independently audited terminal inputs."
         }
       ]
     },
@@ -11854,6 +11923,12 @@
           "result": "pass",
           "evidence": "build/i386-stream-failure-classmeta-v1/result.json",
           "scope": "Compiler93 retained literal publication after later syntax failure: unchanged complete qualified workflow, exact original documents, retained callbacks, normal arithmetic, volume integrity and independently checked terminal inputs."
+        },
+        {
+          "command": "python3 tools/test-i386-class-meta.py build/i386-stream-execution-fault-cross-v1/kernel.img --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-stream-execution-fault-classmeta-v1/result.json",
+          "scope": "Compiler94 terminal stream-context retirement: unchanged whole qualified workflow, exact original documents, retained callbacks, arithmetic, volume integrity and independently audited terminal inputs."
         }
       ]
     },

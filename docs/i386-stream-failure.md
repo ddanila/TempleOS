@@ -69,3 +69,11 @@ stream observation; 1,039 input pins are independently verified. Both fresh
 Both diagnostic program/code-ownership/file-break phases complete. The cross-build
 records the exact checks in memory-audit.json. Inventory guards pass five tests,
 with whole-workflow qualification counts unchanged at two of 686.
+
+
+Compiler94 follows up faults during active stream execution: terminal retirement
+restores outstanding hash contexts and discards unfinished stream buffers before
+publication. Single and nested stream faults preserve the literal and do not
+inject partial generated declarations. Ordinary runtime faults are a passing
+control on both epochs. See [execution-fault evidence](i386-stream-execution-fault.md).
+The earlier later-syntax-error cases still pass in both modes.
