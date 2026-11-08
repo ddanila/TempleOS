@@ -1,3 +1,18 @@
+#ifndef LEX_EXPRESSION_IMPL
+#define LEX_EXPRESSION_IMPL LexExpression
+#endif
+#ifndef LEX_EXPRESSION_I64_IMPL
+#define LEX_EXPRESSION_I64_IMPL LexExpressionI64
+#endif
+#ifndef LEX_EXPRESSION_F64_IMPL
+#define LEX_EXPRESSION_F64_IMPL LexExpressionF64
+#endif
+#ifndef LEX_EXPRESSION_BIN_IMPL
+#define LEX_EXPRESSION_BIN_IMPL LexExpression2Bin
+#endif
+#ifndef IS_LEX_EXPRESSION_BIN_IMPL
+#define IS_LEX_EXPRESSION_BIN_IMPL IsLexExpression2Bin
+#endif
 //Host services for the shared HolyC expression parser.
 #include "/Compiler/PrsExpressionCore.HC"
 extern Bool PrsExpression(CCmpCtrl *cc,I64 *_max_prec,Bool end_exp,CPrsStk *_ps=NULL);
@@ -140,7 +155,7 @@ Bool PrsExpression(CCmpCtrl *cc,I64 *_max_prec,Bool end_exp,CPrsStk *_ps=NULL)
   return res;
 }
 
-U8 *LexExpression2Bin(CCmpCtrl *cc,I64 *_type=NULL)
+U8 *LEX_EXPRESSION_BIN_IMPL(CCmpCtrl *cc,I64 *_type=NULL)
 {//Compile cc expression. You call the code.
   U8 *res;
   I64 size;
@@ -160,12 +175,12 @@ U8 *LexExpression2Bin(CCmpCtrl *cc,I64 *_type=NULL)
   return res;
 }
 
-Bool IsLexExpression2Bin(CCmpCtrl *cc,U8 **_machine_code)
+Bool IS_LEX_EXPRESSION_BIN_IMPL(CCmpCtrl *cc,U8 **_machine_code)
 {//Compile cc expression to bin. Return err status.
   return ToBool(*_machine_code=LexExpression2Bin(cc));
 }
 
-I64 LexExpressionI64(CCmpCtrl *cc)
+I64 LEX_EXPRESSION_I64_IMPL(CCmpCtrl *cc)
 {//Compile cc expression, forcing to I64 and eval.
   U8 *machine_code;
   I64 res,type;
@@ -179,7 +194,7 @@ I64 LexExpressionI64(CCmpCtrl *cc)
   return res;
 }
 
-F64 LexExpressionF64(CCmpCtrl *cc)
+F64 LEX_EXPRESSION_F64_IMPL(CCmpCtrl *cc)
 {//Compile cc expression, forcing to F64 and eval.
   U8 *machine_code;
   I64 res,type;
@@ -193,7 +208,7 @@ F64 LexExpressionF64(CCmpCtrl *cc)
   return res(F64);
 }
 
-I64 LexExpression(CCmpCtrl *cc)
+I64 LEX_EXPRESSION_IMPL(CCmpCtrl *cc)
 {//Compile cc expression and eval.  Might be I64 or F64.
   U8 *machine_code;
   I64 res;

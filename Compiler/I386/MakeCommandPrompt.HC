@@ -1,5 +1,6 @@
 //Loaded once in Adam: public prompt/debugger helpers have system lifetime.
 #include "/Kernel/I386/PublicDocument.HH"
+#include "/Kernel/I386/PublicExpression.HH"
 #include "/Kernel/I386/PublicHash.HH"
 #include "/Kernel/I386/PublicDebug.HH"
 #include "/Kernel/I386/PublicWindow.HH"

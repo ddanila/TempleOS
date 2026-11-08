@@ -28481,7 +28481,9 @@ inputs/source and filesystem verification. The initial probe's missing
 allocation-helper failure remains in `build/i386-canonical-parser-v1`.
 
 Normal delivery is still open: the normal-image expression contract records
-undefined `LexExpression` in `build/i386-normal-expression-baseline-v1`.
+a rejection at the first `Lex(cc)` call in
+`build/i386-normal-expression-baseline-v1`; that run did not reach an expression
+call and therefore did not independently isolate expression publication.
 This checkpoint removes the need for diagnostic replacement types in the tested
 integration paths; it does not qualify the normal compiler API or advance the
 2/686 bundled-item qualification count. Next work is ordered normal parser
@@ -28533,3 +28535,40 @@ bit reproducibility or the two complete native i386 release generations of C5.
 Normal lazy expression facades and production stage publication are next.
 The tested diagnostic loading remains explicit, normal LexExpression delivery
 is still open, and bundled qualification remains 2/686. C1–C5 are not complete.
+
+## Normal expression and lexer stream publication (2026-11-08)
+
+Console 259 now provides normal lazy LexExpression/I64/F64/2Bin,
+IsLexExpression2Bin and PrsStreamBlk facades. Twelve ordered system-namespace
+stages include the complete shared expression/type/declaration/symbol/statement,
+execution and stream bodies, borrow canonical types, and publish six callbacks
+only after loading succeeds. Readiness is assigned last; failed stages resume
+without reloading completed stages, and Adam's hash table is restored on both
+paths. Six exports append to the preserved 682-entry prefix (688 total), using
+the same 22-word data mask. Compiler 101 and Memory 41 are unchanged.
+
+Current-source evidence: `build/i386-normal-parser-contract-v4/result.json`
+passes nine basic expressions and all ten extended graph/type/runtime/lifetime/
+binary/class/function/statement/execution/stream groups through normal APIs,
+with exactly one lazy publication. `build/i386-normal-parser-retry-final-v4`
+passes thirteen actual failed-stage/resume, unpublished callback, namespace,
+caller heap and filesystem checks. The independent 25-stage source compiler
+regression passes in `build/i386-normal-parser-source-regression-v4`.
+Normal lexer at 8 MiB, two full TCG welcome rasters (8 MiB normal/16 MiB
+diagnostic), both diagnostic phases, two original bootstrap rebuilds and the
+native cross-build/instruction audit also pass. A short 180-second welcome
+harness timed out during startup; the long-form full-image check passes, with
+no new startup-budget qualification claimed. Full evidence and commands are
+in `docs/i386-public-expression.md`.
+
+The initial expression baseline actually failed at Lex(cc), before expression
+execution. An isolated old-image probe supplies only lexer declarations and
+records direct LexExpression rejection. Failed fixture/macro/diagnostic probes
+are retained. Original automatic catch propagation fixes the retry fixture's
+explicit-throw/double-free error; no allocator workaround was introduced.
+
+Expression APIs are now delivered normally for the tested 64 MiB paths.
+Assembly/AOT closure, broader expression/backend failure cleanup, cancellation,
+full desktop/application coverage and native release qualification remain open.
+The 8 MiB checks qualify startup/lexer functionality, not full expression
+loading. C1–C5 remain active and bundled qualification remains 2/686.

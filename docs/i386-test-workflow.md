@@ -6086,8 +6086,10 @@ failed while loading class services because its diagnostic setup omitted
 
 This is diagnostic integration evidence using normal OptPass012/COCCompile,
 not normal parser publication. The separate normal-image contract in
-`build/i386-normal-expression-baseline-v1/result.json` still fails with an
-undefined `LexExpression`. Normal API delivery and the complete C1–C5 inventory
+`build/i386-normal-expression-baseline-v1/result.json` rejects the fixture at
+its first `Lex(cc)` call, before reaching an expression call. The original
+normal expression declarations and implementation were also absent from the
+inspected delivery, but this initial runtime probe did not isolate that gap. Normal API delivery and the complete C1–C5 inventory
 remain open.
 
 ## Normal lexer and system parser integration probes (2026-11-08)
@@ -6168,3 +6170,25 @@ contract at 8 MiB. The prior bootstrap is preserved under
 
 This source split prepares ordered normal parser loading. Normal lazy expression
 facades, assembly/AOT closure and full C1–C5 qualification remain open.
+
+## Normal public expression publication (2026-11-08)
+
+See `docs/i386-public-expression.md` for the Console 259 normal facades,
+twelve-stage system loader, default shared-body implementation hooks, ownership,
+and current evidence. Run `tools/test-i386-public-expression.py IMAGE --extended
+--out OUT` to exercise the normal interfaces without diagnostic source loading.
+Run `tools/test-i386-public-parser-retry.py IMAGE --out OUT` for the actual failed
+stage/resume, unpublished callbacks, hash-table restoration and exact caller
+heap contract. Both pass on `build/i386-normal-parser-cross-v4/kernel.img`.
+The independent source-loaded compiler regression also passes on this image.
+
+The earlier baseline's line 6 is Lex(cc), not LexExpression(cc); the isolated
+old-image rejection audit supplies the lexer declarations and records the
+actual direct-expression rejection. The retry probe's discarded bad fixture
+explicitly threw inside a catch and freed its controller twice. Original
+exception semantics and the captured allocator stack explain that failure;
+the verified fixture releases once and propagates automatically. These failed
+probes remain under `build/`. The 180-second welcome harness timeout remains
+visible; successful long-form full-image raster checks do not qualify startup
+performance. Full compiler error/cancellation/assembly/AOT paths and C1–C5
+qualification remain open.

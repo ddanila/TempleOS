@@ -12,6 +12,7 @@
 #include "/Kernel/I386/Intrinsic.HH"
 
 #include "/Kernel/I386/PublicDocument.HH"
+#include "/Kernel/I386/PublicExpression.HH"
 #include "/Kernel/I386/PublicFiles.HH"
 
 #include "/Kernel/I386/PublicHash.HH"

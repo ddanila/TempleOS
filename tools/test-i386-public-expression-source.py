@@ -54,7 +54,7 @@ LexPunctInit(cmp.dual_U16_tokens1,cmp.dual_U16_tokens2,cmp.dual_U16_tokens3);
 '''
 prefix=header[:header.index(b'#include "/Compiler/LexFiles.HC"')]
 lookup=(root/'Compiler/MemberLookup.HC').read_bytes()
-lookup=b'#include "/Compiler/MemberLookup.HH"\n'+lookup[lookup.index(b'CMemberLst *MemberClassBaseFind('):]
+lookup=b'#include "/Compiler/MemberLookup.HH"\n#include "/Compiler/MemberClassBaseFind.HC"\n'
 lexer_stages=('LexIncludeCore.HC','LexStringSystemCore.HC','LexNumber.HC','LexChar.HC','LexPunct.HC','LexIdentSystemCore.HC','LexDefineSystemCore.HC','LexConditional.HC')
 parts=[prefix,b'#include "/Compiler/LexFiles.HC"\n'+control+lookup]
 parts += [('#include "/Compiler/'+name+'"\n').encode() for name in lexer_stages]
@@ -156,11 +156,9 @@ if args.statements:
   statements+=b'#include "/Compiler/PrsStatementHost.HC"\n'
   parts.append(statements)
 if args.statement_code:
- main=(root/'Compiler/CMain.HC').read_bytes()
- parts.append(main[:main.index(b'CAOT *CmpJoin(')])
+ parts.append(b'#include "/Compiler/PrsStatementCompile.HC"\n')
 if args.execute_line:
- task=(root/'Kernel/KTask.HC').read_bytes()
- parts.append(b'#include "/Kernel/I386/PublicDate.HH"\n'+task[task.index(b'I64 ExeCmdLine('):task.index(b'#include "/Kernel/SrvTaskContCore.HC"')])
+ parts.append(b'#include "/Kernel/I386/PublicDate.HH"\n#include "/Compiler/PrsExecuteLine.HC"\n')
 if args.compiler_stream:
  path=(root/'Kernel/BlkDev/DirFileCore.HC').read_bytes()
  parts.append(path+b'#include "/Compiler/PrsStreamOutput.HC"\n')

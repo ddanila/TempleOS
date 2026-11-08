@@ -17,7 +17,10 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('disk', type=Path, nargs='?')
     ap.add_argument('--out', type=Path, required=True)
+    ap.add_argument('--extended', action='store_true', help='Run the existing parser/type/lifetime/function/statement/stream contracts through normal native publication')
     args = ap.parse_args()
+    if args.extended and not args.disk:
+        ap.error('--extended requires a native image')
     out = args.out.resolve()
     if out.exists():
         ap.error('Use a fresh output directory')
@@ -27,8 +30,23 @@ def main():
         'test-i386-timeclock-welcome.py', 'build-iso.py',
         'package-i386-native-image.py', 'build-i386-kernel.py')]
     paths.append(ROOT/'Kernel/FontStd.HC')
+    extended = [
+        ('BinaryContract.HC','PUBLIC EXPRESSION BINARY DONE','public-expression-binary.bin',[1]*5),
+        ('ParserGraph.HC','PUBLIC PARSER GRAPH DONE','public-parser-graph.bin',[63]),
+        ('TypeContract.HC','PUBLIC TYPES DONE','public-types.bin',[1]*6),
+        ('Runtime.HC','PUBLIC EXPRESSION RUNTIME DONE','public-expression-runtime.bin',[1]*11+[7,12,12,12,4615626668101337088,4612811918334230528,4612811918334230528,98,4617878467915022336,1<<40,98,1,1]),
+        ('Lifetime.HC','PUBLIC EXPRESSION LIFETIME DONE','public-expression-lifetime-mask.bin',[15]),
+        ('ClassContract.HC','PUBLIC CLASSES DONE','public-classes.bin',[1]*8),
+        ('FunctionsContract.HC','PUBLIC FUNCTIONS DONE','public-functions.bin',[1]*7+[26,25,26,20,9,12,4615063718147915776,1,1]),
+        ('StatementCompileContract.HC','PUBLIC STATEMENT COMPILE DONE','public-statement-compile.bin',[1]*10+[42,0x123456789ABCDEF,42,42,42,42,4615626668101337088,4615626668101337088]+[1]*4),
+        ('ExecuteLineContract.HC','PUBLIC EXECUTE LINE DONE','public-execute-line.bin',[1]*16),
+        ('../i386-public-compiler-stream/Contract.HC','PUBLIC COMPILER STREAM DONE','public-compiler-stream.bin',[1]*9),
+    ] if args.extended else []
+    for name,_,_,_ in extended:
+        paths.append(fixture.parent/name)
     if args.disk:
         paths.append(args.disk.resolve())
+        paths += sorted(p for directory in ('Compiler','Kernel') for p in (ROOT/directory).rglob('*') if p.is_file() and p.suffix in ('.HC','.HH'))
     out.mkdir()
     pins = {str(p): sha(p) for p in paths}
     report = dict(result='running', input_sha256=pins,
@@ -42,6 +60,7 @@ def main():
             pack = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))
             before = pack['snapshot'](args.disk.read_bytes())[1]
             additions = {'/Probe/PublicExpressions.HC': fixture.read_bytes()}
+            additions.update({f'/Probe/Extended{i}.HC':(fixture.parent/name).read_bytes() for i,(name,_,_,_) in enumerate(extended)})
             report['packaging'] = pack['package'](args.disk.resolve(), image, additions=additions)
         else:
             overlay = out/'overlay'
@@ -54,6 +73,8 @@ def main():
         g = Guest(image, out/'guest', bool(args.disk), reference_cpus=1)
         if args.disk:
             g.wait('DONE native kernel startup\n')
+            if 'PUBLIC PARSER loaded\n' in g.collect():
+                raise ValueError('Parser loaded eagerly during normal startup')
             g.command('#include "C:/Probe/PublicExpressions.HC"')
         g.wait('PUBLIC EXPRESSION DONE\n')
         data=(g.out/'public-expression.bin').read_bytes()
@@ -62,6 +83,16 @@ def main():
         expected=[1]*9+[42,0x123456789ABCDEF,3,20,1,1,5,struct.unpack('<q',struct.pack('<d',7.0))[0],struct.unpack('<q',struct.pack('<d',3.75))[0]]
         if report['state']!=expected:raise ValueError('Expression result/control state differs: '+str(report['state']))
         if args.disk:
+            report['extended_records']={}
+            for i,(_,marker,filename,expected_records) in enumerate(extended):
+                g.command(f'#include "C:/Probe/Extended{i}.HC"',timeout=240)
+                g.wait(marker+'\n')
+                data=(g.out/filename).read_bytes();(out/filename).write_bytes(data)
+                records=list(struct.unpack('<'+'q'*len(expected_records),data))
+                report['extended_records'][filename]=records
+                if records!=expected_records:raise ValueError(filename+' differs: '+str(records))
+            report['parser_publications']=g.collect().count('PUBLIC PARSER loaded\n')
+            if report['parser_publications']!=1:raise ValueError('Expected one lazy parser publication')
             g.command('6*7;');report['arithmetic_pixels']=g.result_pixels()
         g.close()
         g = None

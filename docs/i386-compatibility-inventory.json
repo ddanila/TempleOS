@@ -10091,6 +10091,13 @@
           "result": "pass",
           "evidence": "build/i386-aot-fixup-native-v3/result.json",
           "scope": "Normal Console 254 binding via PublicLoader.HH and shared Adam source service; 32 assertions and both raw negative I64 values match original relocation/queue behavior. Consumed name ownership is repaired; cold load and total cleanup retain zero caller bytes, with document queues stable during exact snapshots. One system publication, arithmetic pixels, sole fixture addition and unchanged inputs. First-use failure/retry/concurrency/cancellation, partial-progress unwind, complete assembler/CmpJoin/AOT file delivery and C1-C5 remain open."
+        },
+        {
+          "target": "normal-public-expression-64m-component",
+          "command": "python3 tools/test-i386-public-expression.py IMAGE --extended --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-normal-parser-contract-v4/result.json",
+          "scope": "Console 259 normal lazy expression/binary facades and lexer stream callback; actual shared parser/type/declaration/class/function/statement/execution/stream bodies in Adam with canonical types, normal optimizer/backend. Nine basic expressions and ten extended groups pass, one publication, exact exported records, final arithmetic pixels and source/filesystem checks. No diagnostic parser/lexer injection. Full assembly/AOT, error/cancellation/concurrency and whole compiler qualification remain open; see docs/i386-public-expression.md."
         }
       ]
     },
@@ -10686,6 +10693,13 @@
           "result": "pass",
           "evidence": "build/i386-ir-slabs-lex8-v5/result.json",
           "scope": "Normal Compiler 101 / Console 258 at 8 MiB: all 24 unchanged token results, one lexer publication, heap recovery, arithmetic and input/volume checks pass. Private grouped IR reuses freed slots and preserves retired operands; known-size native opcode catalog buffers use the retained exact-page allocator. Complete catalog remains 1833 entries. Expression/stream directive dependencies, fault/concurrency, full compiler and C1-C5 qualification remain open; no inventory workflow qualification."
+        },
+        {
+          "target": "normal-public-expression-64m-component",
+          "command": "python3 tools/test-i386-public-expression.py IMAGE --extended --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-normal-parser-contract-v4/result.json",
+          "scope": "Console 259 normal lazy expression/binary facades and lexer stream callback; actual shared parser/type/declaration/class/function/statement/execution/stream bodies in Adam with canonical types, normal optimizer/backend. Nine basic expressions and ten extended groups pass, one publication, exact exported records, final arithmetic pixels and source/filesystem checks. No diagnostic parser/lexer injection. Full assembly/AOT, error/cancellation/concurrency and whole compiler qualification remain open; see docs/i386-public-expression.md."
         }
       ]
     },
@@ -11071,6 +11085,20 @@
           "result": "pass",
           "evidence": "build/i386-public-functions-formal-native-v1/result.json",
           "scope": "Twenty-three actual source stages and seven ordinary function cases after public controller release, exact original return records, then generated-code/metadata deletion and exact native heap recovery. Function frame/argument/local/return metadata is retained; actual shared parser/optimizer/backend used. All earlier expression/token/type/runtime/lifetime/class regressions pass. Source-loaded diagnostic only; normal public Lex, complete compiler and full C1\u2013C5 remain unqualified."
+        },
+        {
+          "target": "normal-public-expression-64m-component",
+          "command": "python3 tools/test-i386-public-expression.py IMAGE --extended --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-normal-parser-contract-v4/result.json",
+          "scope": "Console 259 normal lazy expression/binary facades and lexer stream callback; actual shared parser/type/declaration/class/function/statement/execution/stream bodies in Adam with canonical types, normal optimizer/backend. Nine basic expressions and ten extended groups pass, one publication, exact exported records, final arithmetic pixels and source/filesystem checks. No diagnostic parser/lexer injection. Full assembly/AOT, error/cancellation/concurrency and whole compiler qualification remain open; see docs/i386-public-expression.md."
+        },
+        {
+          "target": "normal-parser-stage-failure-retry-64m-component",
+          "command": "python3 tools/test-i386-public-parser-retry.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-normal-parser-retry-final-v4/result.json",
+          "scope": "Actual stage 11 execution failure and resume on a writable image copy: thirteen records check unpublished callbacks, completed-stage preservation, Adam namespace, exact caller heap restoration, returned 42, reuse and one publication. Stage bytes/attributes restored and complete filesystem integrity checked; other failure/cancellation/concurrency modes remain open."
         }
       ]
     },
@@ -11224,6 +11252,13 @@
           "result": "pass",
           "evidence": "build/i386-public-functions-formal-native-v1/result.json",
           "scope": "Twenty-three actual source stages and seven ordinary function cases after public controller release, exact original return records, then generated-code/metadata deletion and exact native heap recovery. Function frame/argument/local/return metadata is retained; actual shared parser/optimizer/backend used. All earlier expression/token/type/runtime/lifetime/class regressions pass. Source-loaded diagnostic only; normal public Lex, complete compiler and full C1\u2013C5 remain unqualified."
+        },
+        {
+          "target": "normal-public-expression-64m-component",
+          "command": "python3 tools/test-i386-public-expression.py IMAGE --extended --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-normal-parser-contract-v4/result.json",
+          "scope": "Console 259 normal lazy expression/binary facades and lexer stream callback; actual shared parser/type/declaration/class/function/statement/execution/stream bodies in Adam with canonical types, normal optimizer/backend. Nine basic expressions and ten extended groups pass, one publication, exact exported records, final arithmetic pixels and source/filesystem checks. No diagnostic parser/lexer injection. Full assembly/AOT, error/cancellation/concurrency and whole compiler qualification remain open; see docs/i386-public-expression.md."
         }
       ]
     },

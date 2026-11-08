@@ -1,5 +1,97 @@
 # Public expression compiler integration
 
+## Normal delivery checkpoint (2026-11-08)
+
+Console 259 provides normal `LexExpression`, `LexExpressionI64`,
+`LexExpressionF64`, `LexExpression2Bin`, `IsLexExpression2Bin`, and the lexer's
+`PrsStreamBlk` callback. `PublicExpression.HH` also supplies the required normal
+lexer declarations. Initial-console, root/user, and Adam prompt declarations
+expose these entry points without diagnostic source loading.
+
+The first call loads twelve ordered `PublicPrs*.HC` stages in Adam's existing
+system namespace, after the normal lexer and optimizer. The stages include the
+actual shared expression, type, declaration, class/function, statement,
+execution, and stream bodies. They borrow canonical runtime types and initialize
+only missing assembler lookup and binary precedence tables. The original
+compiler uses the same bodies with default implementation-name hooks. Shared
+statement compilation, execution, and base-class lookup were extracted into
+includes without changing their bodies.
+
+The six callback slots remain null until the final publication. Readiness is
+assigned last; completed stage numbers let a later call resume a failed load.
+Every load restores Adam's original hash table on success or exception. Loaded
+code/metadata have system lifetime; expression controllers and returned code
+keep their existing public allocation/ownership contracts. Earlier export
+ordinals remain unchanged: six function exports extend the prior 682-entry
+prefix to 688, within the existing 22-word data-kind mask. Compiler 101 and
+Memory 41 are unchanged.
+
+Run on a current full native image:
+
+```
+python3 tools/test-i386-public-expression.py IMAGE --extended --out OUT
+python3 tools/test-i386-public-parser-retry.py IMAGE --out RETRY_OUT
+```
+
+The first command checks lazy, exactly-once publication, nine basic executable
+expressions, five Boolean binary-wrapper/ownership checks, graph mask 63, six
+type checks, eleven runtime expression cases, lifetime mask 15, eight class
+checks, seven function cases, ten statement cases, sixteen execution checks,
+and nine stream cases. It checks all exported records, final arithmetic pixels,
+source/input identity, and filesystem integrity. No replacement parser or lexer
+is injected by this command.
+
+The retry test changes only a disposable image copy. It makes stage 11 throw,
+checks stage resume, all six unpublished callbacks, namespace restoration and
+exact caller heap recovery, restores the original stage bytes/attributes,
+then requires successful execution and reuse with one publication. All thirteen
+records must equal one. Only the added fixture and the restored stage's date
+may differ from the original tree; reachable extents and allocation bitmap
+must agree. Its catch releases the controller and propagates automatically,
+as required by original HolyC semantics.
+
+Current evidence:
+
+- `build/i386-normal-parser-contract-v4/result.json`: normal APIs and all ten
+  extended groups pass, one parser publication, unchanged inputs.
+- `build/i386-normal-parser-retry-final-v4/result.json`: all thirteen recovery
+  records pass, restored stage bytes/attributes and filesystem checks.
+- `build/i386-normal-parser-source-regression-v4/result.json`: independent
+  25-stage diagnostic lexer/parser suite with canonical types also passes.
+- `build/i386-normal-parser-lex8-v4/result.json`: normal 24-case lexer contract
+  passes at 8 MiB.
+- `build/i386-normal-parser-welcome8-full-v4/guest/screen-oracle.json` and
+  `build/i386-normal-parser-diagnostic16-v4/guest/screen-oracle.json`: all
+  307,200 welcome pixels pass in TCG; the diagnostic run completes both phases.
+- `build/rebuild-test/result.json` and `build/i386-normal-parser-cross-v4`:
+  two original native rebuilds, current-source cross-build, instruction audit.
+  These are not the complete native i386 release generations required by C5.
+
+The earlier expression baseline rejected the fixture's first `Lex(cc)` call;
+it did not isolate expression publication. The old-image probe in
+`build/i386-normal-expression-isolated-baseline-v1/rejection-audit.json`
+supplies only existing lexer declarations and verifies rejection at the direct
+`LexExpression` call. Its runner expected a different diagnostic string;
+the original failing receipt and actual guest log are preserved separately.
+The short welcome harness in `build/i386-normal-parser-welcome8-v4` reached its
+180-second deadline during startup. The longer full-image boot check passes;
+no startup performance qualification is claimed here.
+
+Full compiler/assembly/AOT closure, broader expression-error and backend-failure
+cleanup, cancellation/concurrency, and complete application/desktop/release
+qualification remain open. The source stages retain explicit unresolved
+assembly/AOT services; this checkpoint does not qualify those paths. Normal
+expression functionality is tested at 64 MiB; 8 MiB evidence covers startup
+and the lexer, not the complete expression service. Bundled qualification
+remains 2/686.
+
+
+## Earlier integration evidence
+
+The following paragraphs record earlier diagnostic checkpoints. Their normal
+delivery gaps are superseded only to the tested extent described above; their
+remaining full-compiler and C1–C5 gaps remain open.
+
 The actual original public LexExpression, LexExpressionI64 and LexExpressionF64
 APIs pass the reusable contract in tests/guest/i386-public-expression/Contract.HC.
 Nine expressions cover integer arithmetic, a full-width literal, unary and
@@ -180,3 +272,15 @@ public export index do not publish it. This identifies the next integration
 work, without replacing lookup semantics or class parsing. Independent terminal
 stage audits verify both modes' inputs, packaged files, fixture-only volume
 changes and boot bytes. Neither mode qualifies normal compiler delivery or C1–C5.
+
+## Verification receipt for normal publication
+
+`build/i386-normal-parser-cross-v4/final-verification-audit.json` checks all
+1,833 source pins and 26 build-input pins, both disk hashes, module hashes and
+layouts, bootstrap identity, every component receipt/input pin, unchanged
+source-regression records, the actual injected failure signature, exact rasters
+and both diagnostic recovery phases. It also verifies the preserved export
+prefix, unchanged private compiler module, byte-identical expansion of the
+three additional source extractions, and the unchanged 2/686 qualification
+count. Its base revision is explicit so committing this checkpoint does not
+change the source comparison target. The receipt lists the remaining limits.

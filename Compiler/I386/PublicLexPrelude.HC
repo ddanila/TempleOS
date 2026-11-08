@@ -6,7 +6,6 @@
 #include "/Kernel/StringLimits.HH"
 #include "/Compiler/Keywords.HH"
 #include "/Kernel/CharBitmaps.HH"
-public extern I64 LexExpression(CCmpCtrl *cc);
-public extern U0 PrsStreamBlk(CCmpCtrl *cc);
+#include "/Kernel/I386/PublicExpression.HH"
 if(native_jit_support.lex_stage!=0)throw('LexLoad');
 native_jit_support.lex_stage=1;

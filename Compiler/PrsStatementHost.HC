@@ -199,7 +199,10 @@ U0 PrsNoWarn(CCmpCtrl *cc)
   PrsNoWarnCore(&services,cc);
 }
 
-U0 PrsStreamBlk(CCmpCtrl *cc)
+#ifndef PRS_STREAM_BLK_IMPL
+#define PRS_STREAM_BLK_IMPL PrsStreamBlk
+#endif
+U0 PRS_STREAM_BLK_IMPL(CCmpCtrl *cc)
 {
   CPrsExpressionServices expression;
   CPrsTypeServices types;
