@@ -5,6 +5,7 @@ import argparse,hashlib,json,runpy,struct,re
 root=Path(__file__).resolve().parents[1]
 ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True)
 ap.add_argument('--classes',action='store_true',help='Also source-load actual class/function-header services; unresolved dependencies remain visible')
+ap.add_argument('--canonical-types',action='store_true',help='Borrow the normal runtime type objects instead of publishing diagnostic replacements')
 ap.add_argument('--statements',action='store_true',help='Also source-load complete shared global/function/statement bodies; implies --classes')
 ap.add_argument('--compiler-stream',action='store_true',help='Load complete DirFile/StreamPrint/StreamDir and test shared #exe injection; implies --execute-line')
 ap.add_argument('--execute-line',action='store_true',help='Execute actual ExeCmdLine against the shared compiler; implies --statement-code')
@@ -87,6 +88,18 @@ U0 ProbePublicCompilerTypes()
 }
 ProbePublicCompilerTypes;
 '''
+if args.canonical_types:
+ types=types[:types.index(b'#include "/Compiler/InternalTypes.HC"')]+b'''#include "/Compiler/PrsBinary.HC"
+U0 ProbePublicCompilerTypes()
+{
+  if(!cmp.asm_hash)cmp.asm_hash=HashTableNew(32);
+  if(!cmp.binary_ops) {
+    cmp.binary_ops=CAlloc(sizeof(U32)*TK_TKS_NUM);
+    PrsBinaryInit(cmp.binary_ops);
+  }
+}
+ProbePublicCompilerTypes;
+'''
 type_parser=b'public extern CHashClass *PrsClass(CCmpCtrl *cc,I64 keyword,I64 flags,Bool is_extern);\npublic extern CHashFun *PrsFunJoin(CCmpCtrl *cc,CHashClass *type,U8 *name,I64 flags);\n'
 code=(root/'Compiler/LexLib.HC').read_bytes()
 type_parser+=code[code.index(b'#include "/Compiler/MemberLookup.HC"'):code.index(b'#include "/Kernel/SymbolDelete.HH"')].replace(b'#include "/Compiler/MemberLookup.HC"',b'//Member lookup is already published.')
@@ -152,6 +165,7 @@ for directory in ('Compiler','Kernel','tests/guest/i386-public-lexer','tests/gue
 pins={str(p):sha(p) for p in pin_paths};r['input_sha256']=pins
 (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
 r['classes_requested']=args.classes
+r['canonical_types_requested']=args.canonical_types
 r['statements_requested']=args.statements
 r['functions_requested']=args.functions
 r['statement_code_requested']=args.statement_code

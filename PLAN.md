@@ -28468,3 +28468,21 @@ unassemble-capacity v6; design and rejected-policy captures are documented in
 docs/i386-private-ir-slabs.md. Normal token delivery is still a component result;
 full compiler/fault/concurrency/performance/native-generation gates and 684 workflows
 remain open. C1–C5 are not complete; qualification remains 2/686.
+
+## Canonical-type compiler integration checkpoint (2026-11-08)
+
+The complete 25-stage source-loaded shared compiler now passes its existing
+lexer, graph, expression, type, runtime, lifetime, class, function, statement,
+execution and stream contracts while borrowing the normal runtime's internal
+type objects. The new `--canonical-types` test mode keeps real class/function
+allocation helpers and initializes only missing lookup/precedence tables.
+Evidence: `build/i386-canonical-parser-v2/result.json`, including unchanged
+inputs/source and filesystem verification. The initial probe's missing
+allocation-helper failure remains in `build/i386-canonical-parser-v1`.
+
+Normal delivery is still open: the normal-image expression contract records
+undefined `LexExpression` in `build/i386-normal-expression-baseline-v1`.
+This checkpoint removes the need for diagnostic replacement types in the tested
+integration paths; it does not qualify the normal compiler API or advance the
+2/686 bundled-item qualification count. Next work is ordered normal parser
+publication with complete dependencies and normal-image contract coverage.

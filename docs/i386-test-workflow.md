@@ -6058,3 +6058,34 @@ before compiler allocation. Its reserve method later applies the existing
 writes in prepared state and a second reservation; prepared cleanup needs no
 disk mutation. This allocation-order candidate still needs native provider
 readback and the complete startup/generation gates.
+
+## Shared compiler with canonical runtime types (2026-11-08)
+
+Run the complete source-loaded compiler contract without replacing the normal
+runtime's internal type families:
+
+```
+python3 tools/test-i386-public-expression-source.py \
+  build/i386-ir-slabs-cross-v5/kernel.img --canonical-types --compiler-stream \
+  --out build/i386-canonical-parser-v2
+```
+
+`--canonical-types` retains the complete shared class/function allocation
+helpers, borrows `cmp.internal_types`, and initializes only missing assembler
+lookup and binary precedence tables. The default diagnostic mode still creates
+its own type families. This distinction matters when preparing normal parser
+delivery: replacement types could conceal pointer-identity incompatibilities.
+
+The v2 result passes all 25 source stages, 24 lexer cases, parser graph mask 63,
+nine basic expressions, six type cases, eleven runtime expression cases,
+lifetime mask 15, eight class cases, seven function cases, ten statement cases,
+sixteen execution checks and nine stream checks. Input/source integrity and
+filesystem checks pass. The first probe, `build/i386-canonical-parser-v1`,
+failed while loading class services because its diagnostic setup omitted
+`PrsClassNew`; v2 keeps the actual allocation bodies without recreating types.
+
+This is diagnostic integration evidence using normal OptPass012/COCCompile,
+not normal parser publication. The separate normal-image contract in
+`build/i386-normal-expression-baseline-v1/result.json` still fails with an
+undefined `LexExpression`. Normal API delivery and the complete C1–C5 inventory
+remain open.
