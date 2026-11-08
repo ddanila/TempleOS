@@ -28041,3 +28041,42 @@ ownership expectations. Input hashes remain unchanged. See
 `docs/i386-asm-resolve.md` for coverage and commands. Native resolver delivery,
 diagnostics/error ownership, remaining assembler/compiler work, 684 workflows and
 full C1–C5 release gates remain open. Inventory qualification remains 2/686.
+
+### Normal public deferred assembler resolver delivery
+
+The entire AsmResolve module now lives in shared `AsmResolveCore.HC`, included by
+the normal compiler and the Adam-owned fixup service. Console 255 appends normal
+`AsmResolve`, `AOTLocalsResolve`, `AOTGlblsResolve`, and `AsmUnresolvedAdd` bindings;
+all previous 673 export names, publication order and data masks are preserved.
+CompilerRuntime remains 95. The strict driver rejects the prior Console module
+for missing AsmResolve. Successful resolution frees constructor-owned names,
+clears consumed global/external-use heads, and explicitly obtains the function
+being exported rather than relying on an earlier loop assignment.
+
+Original, shared x64, and normal native captures pass 38 assertions, including
+real expression code, widths and block crossings, constructor routing, local and
+import resolution, external patches/exports and eight first-record errors. Raw
+relocation values agree across all three. Independent eight-LexExcept baselines
+account for the original/shared diagnostic residue; both 64 and 16 MiB native
+contracts have six zero heap metrics, including cold service load. One system
+publication, arithmetic, sole fixture addition, volume validation and unchanged
+inputs are checked. The 16 MiB case actually compiles the shipping service on
+first use. Evidence and commands are in `docs/i386-asm-resolve.md`.
+
+Both original bootstrap generations, the full cross-build, JIT/AOT fixups, carry,
+class metadata and the complete public-source compiler/stream regression pass.
+The source-loaded compiler suite retains its test adapter and does not establish
+normal full-compiler delivery. Deferred function fallback/goto integration,
+remaining symbol/range/warning cases, allocation failure, partial-progress
+unwind and first-use failure/retry/concurrency/cancellation remain open alongside
+CmpJoin, assembler/AOT delivery, complete native generations, 684 workflows and
+the full C1-C5 release gates. No workflow or milestone count advances (2/686).
+
+The final resolver audit verifies all 1,775 source pins and 26 driver inputs,
+both immutable native images, component records/heap baselines and regression
+receipts. TCG normal 8 MiB and diagnostic 16 MiB boots match all 307,200 welcome
+pixels; both diagnostic program/ownership phases complete. The first parallel
+8 MiB TCG attempt timed out at 360 seconds; the unchanged-image KVM preflight
+passes, and the subsequent TCG attempt passes in 235.62 seconds with a longer
+observation limit. The timeout and timing evidence remain recorded; this is not
+new release-performance or full C5 qualification.

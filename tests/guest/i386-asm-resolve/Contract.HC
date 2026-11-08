@@ -1,7 +1,11 @@
 #ifndef AR_X64
 #define AR_X64 0
 #endif
-I64 ar_calls,ar_results[32],ar_values[8];
+#ifndef AR_ORIGINAL
+#define AR_ORIGINAL 0
+#endif
+I64 ar_calls,ar_results[38],ar_values[8],ar_heap[6];
+I64 ar_diag_cost,ar_diag_code;Bool ar_diag_ok;
 I64 ar_widths[8]={1,1,2,2,4,4,8,8};
 U0 ARLog(U8 *s){while(*s)OutU8(0xE9,*s++);}
 U0 ARExport(U8 *name,U8 *data,I64 size)
@@ -19,15 +23,107 @@ U8 *ARThunk(I64 value)
 #endif
  return p;
 }
+I64 ARErrorCost()
+{
+ CDoc *display=Fs->display_doc;Bool unlock=FALSE,old;CCmpCtrl *cc;
+ U8 *saved;I64 before,after,i,code;
+ if(display)unlock=DocLock(display);before=Fs->data_heap->used_u8s;code=Fs->code_heap->used_u8s;
+ cc=CmpCtrlNew(StrNew("ARProbe"),0,"ARProbe.HC");saved=dbg.fix_file_line;dbg.fix_file_line=NULL;
+ old=Raw(ON);ar_diag_ok=TRUE;
+ for(i=0;i<8;i++){
+  try{LexExcept(cc);ar_diag_ok=FALSE;}
+  catch{if(Fs->except_ch!='Compiler')ar_diag_ok=FALSE;Fs->catch_except=TRUE;}
+ }
+ if(cc->error_cnt!=8)ar_diag_ok=FALSE;
+ Raw(old);Free(dbg.fix_file_line);dbg.fix_file_line=saved;CmpCtrlDel(cc);
+ ar_diag_code=Fs->code_heap->used_u8s-code;after=Fs->data_heap->used_u8s;if(unlock)DocUnlock(display);return after-before;
+}
+U0 ARErrors(CCmpCtrl *cc)
+{
+ CAsmUnresolvedRef u,*owned;CAsmUndefHash *ref,*ref2;CHashExport *h,*h2;
+ CLexHashTableContext saved;CAOTCtrl *ctrl=cc->aotc;
+ I64 i,j,delta,width,caught,old_calls=ar_calls;Bool old=Raw(ON),reject=TRUE,unchanged=TRUE;
+ U8 *old_fix=dbg.fix_file_line;dbg.fix_file_line=NULL;
+ MemCpy(&saved,&cc->htc,sizeof(CLexHashTableContext));
+ for(i=0;i<4;i++){
+  width=1;if(i>=2)width=2;delta=-129;if(i==1)delta=128;if(i==2)delta=-32769;if(i==3)delta=32768;
+  MemSet(&u,0,sizeof(CAsmUnresolvedRef));u.type=IET_REL_I8+(width-1)*2;u.rip=256;u.rel_rip=0x10000;
+  u.machine_code=ARThunk(u.rel_rip+delta);MemSet(ctrl->bin->body+256,0x5A,8);caught=0;
+  try{AsmResolve(cc,&u,"ARRange",FALSE);}
+  catch{caught=Fs->except_ch;Fs->catch_except=TRUE;}
+  if(caught!='Compiler')reject=FALSE;
+  for(j=0;j<8;j++)if(ctrl->bin->body[256+j]!=0x5A)unchanged=FALSE;
+  Free(u.machine_code);
+ }
+ ar_results[32]=reject;ar_results[33]=unchanged && ar_calls==old_calls+4;
+ reject=TRUE;unchanged=TRUE;
+ for(i=0;i<4;i++){
+  cc->htc.glbl_hash_table=HashTableNew(16);cc->htc.local_hash_table=HashTableNew(16);
+  cc->htc.local_hash_table->next=cc->htc.glbl_hash_table;cc->htc.hash_table_lst=cc->htc.local_hash_table;
+  h=CAlloc(sizeof(CHashExport));h->str=StrNew("ARUndefined");h->type=HTT_EXPORT_SYS_SYM|HTF_UNRESOLVED;
+  if(i==3)h->type|=HTF_EXPORT;
+  if(i==2)h->type|=HTF_IMPORT;
+  if(!i)HashAdd(h,cc->htc.local_hash_table);else HashAdd(h,cc->htc.glbl_hash_table);
+  owned=NULL;
+  if(i!=3){
+   ref=CAlloc(sizeof(CAsmUndefHash));ref->hash=h;
+   if(i==2){
+    h2=CAlloc(sizeof(CHashExport));h2->str=StrNew("ARSecondImport");h2->type=h->type;
+    HashAdd(h2,cc->htc.glbl_hash_table);ref2=CAlloc(sizeof(CAsmUndefHash));ref2->hash=h2;ref->next=ref2;
+   }
+   if(!i){AsmUnresolvedAdd(cc,ARThunk(7),IET_REL_I32,264,0,ref,NULL,50,FALSE);owned=ctrl->local_unresolved;}
+   else{AsmUnresolvedAdd(cc,ARThunk(7),IET_REL_I32,264,0,NULL,ref,50,FALSE);owned=ctrl->glbl_unresolved;}
+  }
+  MemSet(ctrl->bin->body+264,0x5A,8);caught=0;
+  try{if(!i)AOTLocalsResolve(cc);else AOTGlblsResolve(cc,cc->aot);}
+  catch{caught=Fs->except_ch;Fs->catch_except=TRUE;}
+  if(caught!='Compiler')reject=FALSE;
+  for(j=0;j<8;j++)if(ctrl->bin->body[264+j]!=0x5A)unchanged=FALSE;
+  if(owned){
+   if(!i){if(ctrl->local_unresolved!=owned)unchanged=FALSE;}
+   else if(ctrl->glbl_unresolved!=owned)unchanged=FALSE;
+   Free(owned->machine_code);LinkedLstDel(owned->asm_undef_hash);Free(owned->str);Free(owned);
+  }
+  if(h->ie_lst)unchanged=FALSE;
+  ctrl->local_unresolved=NULL;ctrl->glbl_unresolved=NULL;
+  HashTableDel(cc->htc.local_hash_table);HashTableDel(cc->htc.glbl_hash_table);
+ }
+ ar_results[34]=reject;ar_results[35]=unchanged && ar_calls==old_calls+4;
+ ar_results[36]=cc->error_cnt==8;ar_results[37]=ar_diag_ok;
+ MemCpy(&cc->htc,&saved,sizeof(CLexHashTableContext));
+ Raw(old);Free(dbg.fix_file_line);dbg.fix_file_line=old_fix;
+}
+U0 ARWarm()
+{
+ CDoc *display=Fs->display_doc,*put=Fs->put_doc;Bool ud=FALSE,up=FALSE;
+ CCmpCtrl *cc;CAOT packet;CAOTCtrl ctrl;CLexHashTableContext saved;CHashTable *table;
+ I64 data,code;
+ if(display)ud=DocLock(display);if(put && put!=display)up=DocLock(put);
+ data=Fs->data_heap->used_u8s;code=Fs->code_heap->used_u8s;
+ cc=CmpCtrlNew();MemCpy(&saved,&cc->htc,sizeof(CLexHashTableContext));
+ table=HashTableNew(16);cc->htc.glbl_hash_table=table;
+ MemSet(&packet,0,sizeof(CAOT));MemSet(&ctrl,0,sizeof(CAOTCtrl));QueInit(&packet.next_ie);
+ cc->aotc=&ctrl;cc->aot=&packet;AOTGlblsResolve(cc,&packet);
+ HashTableDel(table);MemCpy(&cc->htc,&saved,sizeof(CLexHashTableContext));
+ cc->aotc=NULL;cc->aot=NULL;CmpCtrlDel(cc);
+ ar_heap[0]=Fs->data_heap->used_u8s-data;ar_heap[1]=Fs->code_heap->used_u8s-code;
+ if(up)DocUnlock(put);if(ud)DocUnlock(display);
+}
 U0 ARCheck()
 {
- CCmpCtrl *cc=CmpCtrlNew();CAOTCtrl ctrl;CAOT packet;
+ CDoc *display=Fs->display_doc,*put=Fs->put_doc;Bool ud=FALSE,up=FALSE;
+ I64 data,code_used;CCmpCtrl *cc;CAOTCtrl ctrl;CAOT packet;
  CAsmUnresolvedRef u,*first,*second;CAsmUndefHash *ref,*ref2;
  CHashExport *h;CLexHashTableContext saved;
  CAOTBinBlk *blk;I64 i,j,v,expect,width,actual,seed=0x123456789ABCDEF0;
- Bool bytes=TRUE,guards=TRUE;U8 *code,*name1,*name2;
+ CDoc *capture;Bool bytes=TRUE,guards=TRUE;U8 *code,*name1,*name2;
  CAOTImportExport *ie,*ie2;CHashFun *fun;CExternUsage *ext;
- ar_calls=0;
+ if(display)ud=DocLock(display);if(put && put!=display)up=DocLock(put);
+ data=Fs->data_heap->used_u8s;code_used=Fs->code_heap->used_u8s;
+ cc=CmpCtrlNew(StrNew("ARProbe"),0,"ARProbe.HC");capture=DocNew;Fs->put_doc=capture;ar_calls=0;
+#if !AR_ORIGINAL
+ cc->flags|=0x10000000000;
+#endif
  MemCpy(&saved,&cc->htc,sizeof(CLexHashTableContext));
  MemSet(&ctrl,0,sizeof(CAOTCtrl));MemSet(&packet,0,sizeof(CAOT));
  QueInit(&packet.next_ie);cc->aotc=&ctrl;cc->aot=&packet;
@@ -95,14 +191,22 @@ U0 ARCheck()
  AOTGlblsResolve(cc,&packet);ie=packet.next_ie;ie2=ie->next;
  ar_results[22]=ie!=&packet.next_ie && ie2!=&packet.next_ie && ie2->next==&packet.next_ie;
  ar_results[23]=ie->rip==200 && ie2->rip==204 && ie->type==IET_REL_I32 && ie2->type==IET_IMM_U32;
+#if AR_ORIGINAL
  ar_results[24]=!StrCmp(ie->str,"ARExternal") && !ie2->str && !h->ie_lst;
+#else
+ ar_results[24]=!StrCmp(ie->str,"ARExternal") && !StrCmp(ie2->str,"ARExternal") && !h->ie_lst;
+#endif
  ar_results[25]=ie->aot==&packet && ie2->aot==&packet && ar_calls==14;
  actual=0;MemCpy(&actual,ctrl.bin->body+200,4);ar_results[26]=actual==0x1357;
  actual=0;MemCpy(&actual,ctrl.bin->body+204,4);ar_results[27]=actual==0x2468;
  //Original leaves the consumed list head and constructor-owned names behind.
+#if AR_ORIGINAL
  ar_results[28]=ctrl.glbl_unresolved==second;ctrl.glbl_unresolved=NULL;
  Free(name1);Free(name2);
- QueRem(ie);QueRem(ie2);Free(ie->str);Free(ie);Free(ie2);
+#else
+ ar_results[28]=!ctrl.glbl_unresolved;
+#endif
+ QueRem(ie);QueRem(ie2);Free(ie->str);Free(ie2->str);Free(ie);Free(ie2);
  //A defined function resolves external call sites and emits an export record.
  fun=CAlloc(sizeof(CHashFun));fun->str=StrNew("ARFunction");
  fun->type=HTT_FUN|HTF_RESOLVE|HTF_EXPORT;fun->exe_addr=0x180;
@@ -110,12 +214,24 @@ U0 ARCheck()
  HashAdd(fun,cc->htc.glbl_hash_table);AOTGlblsResolve(cc,&packet);
  actual=0;MemCpy(&actual,ctrl.bin->body+220,4);ar_results[29]=actual==0x180-224;
  ie=packet.next_ie;ar_results[30]=ie!=&packet.next_ie && ie->type==IET_REL32_EXPORT && ie->rip==0x180 && !StrCmp(ie->str,"ARFunction");
- ar_results[31]=fun->ext_lst==ext;fun->ext_lst=NULL;fun->exe_addr=NULL;
+#if AR_ORIGINAL
+ ar_results[31]=fun->ext_lst==ext;fun->ext_lst=NULL;
+#else
+ ar_results[31]=!fun->ext_lst;
+#endif
+ fun->exe_addr=NULL;
  QueRem(ie);Free(ie->str);Free(ie->src_link);Free(ie);
  HashTableDel(cc->htc.local_hash_table);HashTableDel(cc->htc.glbl_hash_table);MemCpy(&cc->htc,&saved,sizeof(CLexHashTableContext));
+ ARErrors(cc);
  while(ctrl.bin){blk=ctrl.bin->next;Free(ctrl.bin);ctrl.bin=blk;}
- Free(ctrl.last_label);cc->aotc=NULL;cc->aot=NULL;CmpCtrlDel(cc);ar_results[19]=ar_calls==14;
+ Free(ctrl.last_label);cc->aotc=NULL;cc->aot=NULL;CmpCtrlDel(cc);ar_results[19]=ar_calls==18;Fs->put_doc=put;DocDel(capture);
+ ar_heap[2]=Fs->data_heap->used_u8s-data-ar_diag_cost;ar_heap[3]=Fs->code_heap->used_u8s-code_used-ar_diag_code;
+ ar_heap[4]=ar_diag_cost;ar_heap[5]=ar_diag_code;
+ if(up)DocUnlock(put);if(ud)DocUnlock(display);
+ ARExport("asm-heap.bin",ar_heap,sizeof(ar_heap));
  ARExport("asm-resolve.bin",ar_results,sizeof(ar_results));
  ARExport("asm-values.bin",ar_values,sizeof(ar_values));ARLog("ASM RESOLVE DONE\n");Sleep(1000);
 }
+while(!Bt(&sys_run_level,RLf_ADAM_SERVER))Yield;
+ar_diag_cost=ARErrorCost;ARWarm;
 ARCheck;

@@ -9734,7 +9734,36 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-asm-resolve-component",
+          "command": "python3 tools/test-i386-asm-resolve.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-asm-resolve-original-v11/result.json",
+          "scope": "Pinned original complete resolver module: 38 assertions for executed expression thunks, eight widths, cross-block storage, undefined import metadata, local routing/LIFO/consumption, import ordering/addends, external call patching and function exports, plus eight first-record errors. Legacy retained constructor names and consumed list heads are observed then caller-cleaned. Independent diagnostic data/code costs are 320/320; resolver adds zero net bytes. Full assembler/compiler and partial-progress unwind remain open."
+        },
+        {
+          "target": "shared-asm-resolve-x64-component",
+          "command": "python3 tools/test-i386-asm-resolve.py --shared-x64 --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-asm-resolve-shared-x64-v2/result.json",
+          "scope": "Current shared complete resolver body on original x64 scaffolding: 38 assertions and raw relocation values match the original, with repaired name/head ownership and i386 import naming. Exact first-use and normalized steady caller data/code accounting; independent eight-error cost 320/320. Not native generation or whole-compiler qualification."
+        },
+        {
+          "target": "native-public-asm-resolve-component",
+          "command": "python3 tools/test-i386-asm-resolve.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-asm-resolve-native-v1/result.json",
+          "scope": "Normal Console 255 bindings through PublicLoader.HH and the Adam-owned source service: 38 assertions and raw relocation values match original behavior, with repaired owned-name and list-head cleanup. First-use and steady caller data/code growth are zero, including independently measured zero-cost native diagnostics. One publication, arithmetic pixels, sole fixture addition, volume validation and unchanged inputs. Failure/retry/concurrency/cancellation, partial-progress unwind, remaining symbol/goto paths, full assembler/CmpJoin/AOT delivery and C1-C5 remain open."
+        },
+        {
+          "target": "native-public-asm-resolve-16m-component",
+          "command": "python3 build/asm-resolve-native16-runner.py IMAGE --reference REFERENCE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-asm-resolve-native16-v1/result.json",
+          "scope": "Same normal shipping service and 38-assertion contract at 16 MiB using the preserved, pinned RAM-setting runner. All raw values match original, six heap metrics are zero, one system load, arithmetic/volume and input checks pass. This includes real cold compilation of the service at the compiler memory target, not complete native generations or release-resource qualification."
+        }
+      ]
     },
     {
       "path": "Compiler/BackA.HC",
