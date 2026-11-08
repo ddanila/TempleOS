@@ -28382,3 +28382,17 @@ the next resource investigation. Evidence is build/i386-call-reuse-cross-v1 and
 matching v1 receipts, with current source/image/module/input/bootstrap/export/frame
 audits. Inventory guards pass; qualification stays 2/686. Full normal compiler,
 resource/fault/concurrency coverage, 684 workflows and complete C1-C5 remain open.
+
+### Live output-window heap census
+
+A stopped ABI-100 8 MiB guest snapshot now establishes the current allocation
+frontier before error cleanup. The heap has 20,393 live allocations and only
+528 total free span bytes (largest span 32), with output 3320/7245 bytes and 33
+adaptive chunks. Current control ownership includes 1384 compact live IR nodes
+(199296 occupied bytes), versus only 17 backend workspace allocations. This
+changes the next investigation from merely fitting a fragmented request to
+reducing actual live arena cost. Nested public backing-region usage still needs
+classification before reclaiming it. The reusable offline auditor and exact
+snapshot/module pins are documented in docs/i386-output-window-heap-census.md;
+all raw evidence remains in build/i386-window-heap-capture-v1. No production
+compiler behavior or milestone qualification changes; C1–C5 remain open, 2/686.
