@@ -79,3 +79,70 @@ passing them does not establish complete native coverage. Native source parsing,
 full AOT/JIT linking and publication, top-level execution, `#exe`, public task and
 allocation interfaces, DolDoc, self-hosting and strict 386SX/DX acceptance remain
 required by `PLAN.md`.
+
+## Normal public COCCompile
+
+Console 257 appends `_COC_COMPILE` and `_COMPILER_BREAK_POLL` after the existing
+678 exports. `PublicCompiler.HH` declares the ordinary four-argument COCCompile
+interface. First use loads the normal optimizer and then PublicBackendSupport.HC
+in Adam, using the guarded shared PublicCompilerContext.HH cache. The guard keeps
+mixed optimizer/backend/JIT source loads from redeclaring the context data alias
+and triggering the parser's unused-alias warning. Warning checks remain enabled.
+
+CompilerRuntime 96 publishes `_I386_BACKEND_CORE`, a descriptor-based entry to the
+same resident production emitter. It validates descriptor size, canonical scalar
+types, callbacks and the initial output/AOT context. Public controls are never
+cast to private arena controls. ValueClassCore.HC extracts the existing value/type
+helpers for both wrappers; CompileFrame.HC supplies temporary expression frames.
+
+PublicBackendCore.HC owns allocations through a per-call tracked workspace.
+Function/global proxies isolate generated relocation lists from borrowed symbols.
+JIT resolves relative calls and addresses before returning executable heap code;
+late external calls retain the original function's mutable executable slot.
+AOT stages import/data/poll records and external usages, validates their ownership,
+and transfers records into the caller's packet/symbol lists without allocations
+in the publication phase. Transferred allocations use standard Free ownership.
+Backedge polls use the normal compiler break service; AOT poll records name its
+public binding. Debug maps retain line bounds, zero holes and the end sentinel,
+using executable addresses for JIT and segment-relative addresses for AOT.
+
+The wrapper restores borrowed context, consumes IR, releases temporary workspace
+and returns code independent of the compiler control. It preserves the first
+compilation/cleanup exception and frees unpublished code/debug data. Trace requests
+call Un rather than silently omitting disassembly; normal disassembler delivery
+remains an open dependency. Allocation faults, cancellation, concurrency, complete
+assembly/diagnostic behavior and complete public parser delivery remain unqualified.
+
+`tools/test-i386-public-backend.py` compares the pinned original COCCompile binary
+with the normal binding. The 48-check original/native 16 MiB contracts pass with
+identical 44-word traces and zero caller data/code heap growth. They exercise
+sixteen integer/F64 graphs, retained execution, output types, debug-map bounds,
+consumed graphs, borrowed-context restoration, two executable AOT constant graphs,
+direct and mutable-slot calls, AOT import/extern record ownership and patched
+execution after control deletion. Native publication occurs once. Arithmetic,
+fixture-only volume mutation and input hashes also pass. Evidence is in
+`build/i386-public-backend-original-v5` and `build/i386-public-backend-native16-v4`;
+the earlier 28-check normal contract is retained in native16-v2. This is component
+coverage; it does not qualify a complete compiler workflow or a C1-C5 milestone.
+
+The full source compiler regression in
+`build/i386-public-backend-compiler-source-v2` passes all 25 publication stages and
+lexer/graph/expression/type/runtime/lifetime/class/function/statement/command/stream
+probes using normal OptPass012 and COCCompile. Each normal service loads once;
+no source backend adapter is included. The source parser explicitly includes the
+existing shared CodeLabel.HC helper formerly supplied by that adapter. This parser
+still loads diagnostically and does not establish complete normal compiler delivery.
+The normal optimizer and existing JIT/AOT fixup regressions also pass on this image.
+
+Current build `build/i386-public-backend-cross-v3` passes fresh original bootstrap
+rebuilds and the strict cross-build. Its diagnostic probe validates the new
+resident export at index 5 and rejects index 6; the first diagnostic attempt's
+stale boundary assertion is preserved in diagnostic16-v1. The corrected diagnostic
+16 MiB TCG run passes both program/ownership phases and the exact 307200-pixel
+welcome frame. The prior normal candidate's 8 MiB TCG frame also passes; the
+final audit proves the flat kernel and all normal runtime modules are identical,
+with only the diagnostic probe module/source changed. Native16-v4 rechecks all
+48 backend assertions against the current image. `final-audit.py` and
+`final-verification-audit.json` under that build verify current source/image pins,
+historical probe-source pins, bootstrap generations, ABI 96/257, export prefix,
+shared helper extraction, original/native records and regression receipts.

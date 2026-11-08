@@ -1,8 +1,7 @@
 //Loaded in Adam on first use; only complete publication enables the facade.
 #include "/Kernel/I386/PublicDocument.HH"
 #include "/Kernel/I386/PublicLoader.HH"
-#include "/Kernel/I386/JitSupport.HH"
-public _extern _NATIVE_JIT_SUPPORT CI386JitSupport native_jit_support;
+#include "/Kernel/I386/PublicCompilerContext.HH"
 #define COC_LABEL_IMPL NativeSystemJITLabelFind
 #define OPT_LABEL_IMPL NativeSystemJITLabelForward
 #define JIT_FIXUP_IMPL NativeSystemJITFixup

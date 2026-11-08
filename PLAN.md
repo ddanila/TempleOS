@@ -28146,3 +28146,53 @@ Normal COCCompile/LexStmt2Bin/parser/global-table initialization, complete
 diagnostics and fault/concurrency/cancellation coverage, complete native
 generations and full C1-C5 remain open. Inventory qualification stays 2/686;
 684 required workflows remain unqualified.
+
+### Normal public COCCompile delivery
+
+Console 257 appends COCCompile and the compiler-break-poll binding after the
+existing 678 exports, preserving indices/data masks. CompilerRuntime 96 exposes
+the shared stateless production emitter through a validated CI386Backend
+callback descriptor. The normal public backend source service owns workspace,
+canonical types and optimizer/assembly/report callbacks; it never casts public
+controls into private arena controls. Shared ValueClassCore extraction preserves
+the complete existing helper bodies. A guarded compiler-context header prevents
+mixed lazy-loaded services from redeclaring the context alias; strict warning
+checks remain enabled.
+
+The wrapper returns executable code/debug maps with independent lifetime,
+consumes IR, restores borrowed context and frees temporary allocations. JIT
+supports direct/late-slot calls; AOT stages import/data/poll records and external
+usages before ownership transfer to caller packets/symbols. Debug maps retain
+line bounds and end sentinels with JIT addresses or AOT segment-relative offsets.
+Trace requests retain the Un dependency rather than silently skipping disassembly.
+
+The original compiler binary and normal native 16 MiB contract pass 48 checks
+and identical 44-word traces, with zero caller data/code growth. Coverage includes
+sixteen integer/F64 graphs, executable retained code, types/debug maps/context,
+two executable AOT constant graphs, direct/mutable-slot calls and AOT import/extern
+metadata, patched and executed after control deletion. Normal optimizer and
+existing JIT/AOT fixup regressions pass. All 25 source compiler stages and the
+lexer/graph/expression/type/runtime/lifetime/class/function/statement/command/stream
+probes pass using normal optimizer and COCCompile, without the backend adapter.
+The source parser includes the shared label helper previously supplied by that
+adapter; it remains diagnostic source loading, not full normal parser delivery.
+
+Both fresh original bootstrap generations and the full cross-build pass. The
+initial TCG diagnostic run exposed its stale end-of-export assertion; it now
+validates the appended backend binding and rejects index 6. Only the diagnostic
+probe module/source differ between those images; flat kernel and all normal
+compiler/backend/console/startup modules are byte-identical. The prior candidate
+passes the full 8 MiB TCG welcome raster; the repaired image passes the complete
+48-check normal backend contract. Evidence and final audits are under
+build/i386-public-backend-cross-v3; component documentation is in
+docs/i386-native-backend.md.
+
+Normal LexStmt2Bin/parser/global compiler initialization, full diagnostics and
+fault/concurrency/cancellation coverage, complete native generations, 684 required
+workflows and full C1-C5 release qualification remain open. Inventory qualification
+stays 2/686; no complete workflow or milestone is advanced by these component tests.
+
+The repaired 16 MiB TCG diagnostic boot now passes both program/ownership phases
+and its exact 307200-pixel welcome frame. The final current-source/image/export/
+helper/record audit and five inventory guards pass. These close the diagnostic
+regression for this backend checkpoint, without advancing workflow qualification.

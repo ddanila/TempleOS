@@ -1155,7 +1155,7 @@ I64 ProbeProgramNativeExpandRun(CI386CompilerProbe *probe,CI386Heap *heap,
   CI386ModuleRecord *record;
   CI386ModuleBinding binding;
   CI386ModuleBinding compiler_binding;
-  CHashExport *resident,*compiler_resident,*validator_resident,*parts_resident,*undefined_resident;
+  CHashExport *resident,*compiler_resident,*validator_resident,*parts_resident,*undefined_resident,*backend_resident;
   CHashTable *table;
   CArcCtrl *control;
   U8 *image,*stack,*source,*destination;
@@ -1163,7 +1163,7 @@ I64 ProbeProgramNativeExpandRun(CI386CompilerProbe *probe,CI386Heap *heap,
   Bool (*expand)(CArcCtrl *control);
   resident=0;
   compiler_resident=0;
-  validator_resident=0;parts_resident=0;undefined_resident=0;
+  validator_resident=0;parts_resident=0;undefined_resident=0;backend_resident=0;
   for(table=I386TaskSelf->hash_table;table && !resident;table=table->next)
     resident=ProbeSymbolFind(0,"I386ArcEntryGet",table,HTT_EXPORT_SYS_SYM);
   for(table=I386TaskSelf->hash_table;table && !compiler_resident;table=table->next)
@@ -1174,6 +1174,8 @@ I64 ProbeProgramNativeExpandRun(CI386CompilerProbe *probe,CI386Heap *heap,
     parts_resident=ProbeSymbolFind(0,"I386ModuleValidParts",table,HTT_EXPORT_SYS_SYM);
   for(table=I386TaskSelf->hash_table;table && !undefined_resident;table=table->next)
     undefined_resident=ProbeSymbolFind(0,"UndefinedExtern",table,HTT_EXPORT_SYS_SYM);
+  for(table=I386TaskSelf->hash_table;table && !backend_resident;table=table->next)
+    backend_resident=ProbeSymbolFind(0,"_I386_BACKEND_CORE",table,HTT_EXPORT_SYS_SYM);
   if(!compiler_resident || !probe->compiler->export_at(0,&compiler_binding) ||
       compiler_binding.kind!=I386_MODULE_EXPORT ||
       StrCmp(compiler_binding.name,"I386ModulePackRaw") ||
@@ -1191,7 +1193,11 @@ I64 ProbeProgramNativeExpandRun(CI386CompilerProbe *probe,CI386Heap *heap,
       compiler_binding.kind!=I386_MODULE_EXPORT ||
       StrCmp(compiler_binding.name,"UndefinedExtern") ||
       compiler_binding.address!=undefined_resident->val ||
-      probe->compiler->export_at(5,&compiler_binding) ||
+      !backend_resident || !probe->compiler->export_at(5,&compiler_binding) ||
+      compiler_binding.kind!=I386_MODULE_EXPORT ||
+      StrCmp(compiler_binding.name,"_I386_BACKEND_CORE") ||
+      compiler_binding.address!=backend_resident->val ||
+      probe->compiler->export_at(6,&compiler_binding) ||
       !I386ModuleValid(module,module_bytes) || !resident ||
       !probe->files->export_at(0,&binding) ||
       binding.kind!=I386_MODULE_EXPORT || StrCmp(binding.name,"I386ArcEntryGet") ||

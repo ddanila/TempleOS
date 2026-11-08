@@ -117,3 +117,14 @@ Bool I386BackendCompile(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386Out
 {//Standalone/native backend service retains its existing uninstrumented contract.
   return I386BackendCompileWithBreak(heap,cc,types,out,status,0);
 }
+
+U0 I386PublicBackendCore(CI386Backend *backend,I64 bytes)
+{//The shared emitter owns no arena state; callbacks own every temporary object.
+  if(!backend || bytes!=sizeof(CI386Backend) || !backend->cc || !backend->out ||
+      !backend->types || !backend->types[RT_I64] || !backend->types[RT_U64] || !backend->types[RT_F64] ||
+      backend->types[RT_I64]->raw_type!=RT_I64 || backend->types[RT_U64]->raw_type!=RT_U64 || backend->types[RT_F64]->raw_type!=RT_F64 ||
+      !backend->allocate || !backend->release || !backend->fold || !backend->assembly || !backend->report ||
+      !backend->out->reserve || backend->out->count || !backend->cc->aot || !backend->cc->aotc)
+    throw('Compiler',TRUE);
+  I386BackendCore(backend);
+}

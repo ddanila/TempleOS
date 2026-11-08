@@ -1,7 +1,6 @@
 //Compile the complete shared optimizer in Adam; canonical types are borrowed.
 #include "/Kernel/I386/PublicCompiler.HH"
-#include "/Kernel/I386/JitSupport.HH"
-public _extern _NATIVE_JIT_SUPPORT CI386JitSupport native_jit_support;
+#include "/Kernel/I386/PublicCompilerContext.HH"
 #include "/Compiler/ICInfo.HC"
 #include "/Compiler/PrsStack.HC"
 #include "/Compiler/TargetSize.HC"

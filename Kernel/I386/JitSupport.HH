@@ -4,6 +4,6 @@
 class CI386JitSupport {
   CHashTable *symbols;
   U8 *code,*aot_code;
-  U8 *resolve,*locals,*globals,*unresolved_add,*optimize;
+  U8 *resolve,*locals,*globals,*unresolved_add,*optimize,*compile,*poll;
 };
 #endif

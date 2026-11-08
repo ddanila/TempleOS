@@ -60,7 +60,6 @@ ICInfoInit;
 #include "/Compiler/PrsStack.HC"
 #include "/Compiler/PrsKeyword.HC"
 #include "/Compiler/TargetSize.HC"
-public extern U8 *COCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_type);
 public extern CHashClass *PrsType(CCmpCtrl *cc,CHashClass **first,I64 *mode,CMemberLst *member,U8 **ident,CHashFun **fun,CHashExport **export_entry,CArrayDim *dim,I64 flags);
 '''
 parser_prefix+=b'#include "/Compiler/ICDetachCore.HC"\n'
@@ -93,7 +92,7 @@ code=(root/'Compiler/LexLib.HC').read_bytes()
 type_parser+=code[code.index(b'#include "/Compiler/MemberLookup.HC"'):code.index(b'#include "/Kernel/SymbolDelete.HH"')].replace(b'#include "/Compiler/MemberLookup.HC"',b'//Member lookup is already published.')
 code=(root/'Compiler/PrsVar.HC').read_bytes()
 type_parser+=code[code.index(b'#include "/Compiler/PrsTypeCore.HC"'):code.index(b'#include "/Compiler/PrsDeclarationCore.HC"')]
-parts += [optimizer,types,(root/'tests/guest/i386-public-expression/BackendAdapter.HC').read_bytes(),type_parser]
+parts += [optimizer,types,b'//Parser label lookup is shared; COCCompile uses the normal public binding.\n#include "/Compiler/CodeLabel.HC"\n',type_parser]
 declarations=b'''public extern U0 PrsStaticInit(CCmpCtrl *cc,CMemberLst *member,I64 pass);
 '''
 code=(root/'Compiler/PrsVar.HC').read_bytes()
@@ -146,7 +145,7 @@ if args.statement_code:additions['/Probe/PublicStatementCompile.HC']=(root/'test
 if args.execute_line:additions['/Probe/PublicExecuteLine.HC']=(root/'tests/guest/i386-public-expression/ExecuteLineContract.HC').read_bytes()
 if args.compiler_stream:additions['/Probe/PublicCompilerStream.HC']=(root/'tests/guest/i386-public-compiler-stream/Contract.HC').read_bytes()
 pack=runpy.run_path(str(root/'tools/package-i386-native-image.py'))
-r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers and i386 backend with normal public OptPass012 on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Complete declaration/initializer bodies are source-loaded; AOT stores and the i386 data-range recorder use normal native bindings; remaining compiler services depend on the requested stages. Class/function-header joins remain unresolved unless --classes is requested; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
+r=dict(result='running',scope='Source-loaded complete token lexer, shared expression/type parsers with normal public OptPass012 and COCCompile on public controls. Nine basic executable cases, eleven runtime call/storage/pointer cases, six type checks, retained-code/unresolved-call/completion checks, token and graph regressions. Complete declaration/initializer bodies are source-loaded; AOT stores and the i386 data-range recorder use normal native bindings; remaining compiler services depend on the requested stages. Class/function-header joins remain unresolved unless --classes is requested; not normal API delivery or full compiler qualification.',disk_sha256=sha(source),candidate_sha256=sha(out/'candidate.HC'),fixture_sha256=sha(fixture))
 pin_paths=[Path(__file__).resolve(),source]+[root/('tools/'+n) for n in ('test-i386-autocomplete-interaction.py','test-i386-timeclock-reference.py','test-i386-timeclock-welcome.py','package-i386-native-image.py','build-i386-kernel.py')]
 for directory in ('Compiler','Kernel','tests/guest/i386-public-lexer','tests/guest/i386-public-expression','tests/guest/i386-public-compiler-stream'):
  pin_paths += sorted(p for p in (root/directory).rglob('*') if p.is_file() and p.suffix in ('.HC','.HH'))

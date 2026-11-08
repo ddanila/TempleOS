@@ -1,6 +1,6 @@
 #ifndef I386_COMPILE_FRAME_INCLUDED
 #define I386_COMPILE_FRAME_INCLUDED
-//Included after BackendCore.HC. Allocator callbacks own the temporary ENTER.
+//Included after the value/class helpers. Allocator callbacks own the temporary ENTER.
 class CI386CompileFrame {
   CHashFun function,*previous_fun;
   CIntermediateCode *enter,*result;

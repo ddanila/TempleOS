@@ -11102,6 +11102,27 @@
           "result": "pass",
           "evidence": "build/i386-aot-storage-native-v4/result.json",
           "scope": "Normal Console 251 bindings: sequential widths, exact block ends/crossings, sparse patches and byte truncation, cursor/high-water independence, listing, data-range gates/order/64-bit fields; same complete records, exact heap recovery, arithmetic and volume checks. Previous Console 250 rejects first missing call with final fixture. Full AOT, assembly, public compiler module and whole-file qualification remain open."
+        },
+        {
+          "target": "original-public-backend-component",
+          "command": "python3 tools/test-i386-public-backend.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-backend-original-v5/result.json",
+          "scope": "Original COCCompile binary: 48 checks, 44-word semantic trace, sixteen integer/F64 graphs, JIT/AOT code after control deletion, debug maps, direct/late calls, AOT import/extern metadata and patched execution, exact caller heaps. Component coverage only."
+        },
+        {
+          "target": "native-public-backend-16m-component",
+          "command": "python3 tools/test-i386-public-backend.py IMAGE --reference REFERENCE --ram-mib 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-backend-native16-v4/result.json",
+          "scope": "Normal Console 257 COCCompile and typed resident production emitter on standard public controls; same 48 checks and 44-word original trace, zero data/code growth, one publication, arithmetic and volume validation. Descriptor callbacks own workspace, proxies stage AOT metadata, no private-control cast. Faults/concurrency/cancellation/trace/full compiler remain unqualified."
+        },
+        {
+          "target": "normal-backend-source-compiler-integration",
+          "command": "python3 tools/test-i386-public-expression-source.py IMAGE --compiler-stream --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-backend-compiler-source-v2/result.json",
+          "scope": "All 25 source stages and lexer/graph/expression/type/runtime/lifetime/class/function/statement/command/stream probes pass through normal OptPass012 and COCCompile; no source backend adapter. Parser fixture retains shared CodeLabel helper. Source-loaded parser and remaining globals prevent full normal compiler or workflow qualification."
         }
       ]
     },
