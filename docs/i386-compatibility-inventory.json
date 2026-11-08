@@ -10677,15 +10677,15 @@
           "target": "normal-public-token-lexer-16m-component",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 16 --out OUT",
           "result": "pass",
-          "evidence": "build/i386-segmented-lex16-v6/result.json",
+          "evidence": "build/i386-fixup-reserve-lex16-v1/result.json",
           "scope": "Normal Console 258 Lex/LexExtStr via twelve ordered complete shared-source stages; same 24 original result words, includes/adjacent strings/buffer borrowing and caller heap recovery, one publication, arithmetic/volume/input checks. No diagnostic source lexer installed for this contract. Normal expression/stream directive dependencies, fault/concurrency and full compiler remain open."
         },
         {
           "target": "normal-public-token-lexer-8m-resource-frontier",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 8 --out OUT",
           "result": "fail",
-          "evidence": "build/i386-segmented-lex8-v6/result.json",
-          "scope": "Unchanged 24-case contract reaches numeric-helper IC_CALL_IMPORT emission using compiler-98 segmented scratch, then OutMem on a 68-byte rel32 fixup (44-byte record aligned to 48 plus 20-byte lifetime). Heap usage 0x670B20/0x671000; largest payload 0x30; 0x4F97 live allocations. Inputs unchanged; no lexer publication. Import-fixup ordering/resource closure and C5 remain open; no inventory qualification."
+          "evidence": "build/i386-fixup-reserve-lex8-v1/result.json",
+          "scope": "Unchanged 24-case contract passes the former import-fixup allocation after compiler-99 measurement-pass reservation, then fails on a 52-byte IC_CALL_START context (26-byte CI386Call aligned to 32 plus 20-byte lifetime). Heap usage 0x670B28/0x671000; largest payload 0x30; 0x4F99 live allocations. Inputs unchanged; no lexer publication. Call-context reuse/resource closure and C5 remain open; no inventory qualification."
         }
       ]
     },
@@ -10763,15 +10763,15 @@
           "target": "normal-public-token-lexer-16m-component",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 16 --out OUT",
           "result": "pass",
-          "evidence": "build/i386-segmented-lex16-v6/result.json",
+          "evidence": "build/i386-fixup-reserve-lex16-v1/result.json",
           "scope": "Normal Console 258 Lex/LexExtStr via twelve ordered complete shared-source stages; same 24 original result words, includes/adjacent strings/buffer borrowing and caller heap recovery, one publication, arithmetic/volume/input checks. No diagnostic source lexer installed for this contract. Normal expression/stream directive dependencies, fault/concurrency and full compiler remain open."
         },
         {
           "target": "normal-public-token-lexer-8m-resource-frontier",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 8 --out OUT",
           "result": "fail",
-          "evidence": "build/i386-segmented-lex8-v6/result.json",
-          "scope": "Unchanged 24-case contract reaches numeric-helper IC_CALL_IMPORT emission using compiler-98 segmented scratch, then OutMem on a 68-byte rel32 fixup (44-byte record aligned to 48 plus 20-byte lifetime). Heap usage 0x670B20/0x671000; largest payload 0x30; 0x4F97 live allocations. Inputs unchanged; no lexer publication. Import-fixup ordering/resource closure and C5 remain open; no inventory qualification."
+          "evidence": "build/i386-fixup-reserve-lex8-v1/result.json",
+          "scope": "Unchanged 24-case contract passes the former import-fixup allocation after compiler-99 measurement-pass reservation, then fails on a 52-byte IC_CALL_START context (26-byte CI386Call aligned to 32 plus 20-byte lifetime). Heap usage 0x670B28/0x671000; largest payload 0x30; 0x4F99 live allocations. Inputs unchanged; no lexer publication. Call-context reuse/resource closure and C5 remain open; no inventory qualification."
         }
       ]
     },

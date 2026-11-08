@@ -227,3 +227,28 @@ does not establish release performance or the separate DocWrite staging workflow
 records. The normal 8 MiB token loader still fails on a 68-byte IC_CALL_IMPORT
 rel32 fixup in PublicLexNumber.HC; resource/full compiler closure remains open.
 No complete workflow or C1–C5 milestone advances (qualification stays 2/686).
+
+Compiler ABI 99 reserves import, extern, function-address and module poll fixups
+in the measurement pass. Their measured offsets use the same layout as labels;
+byte emission remains unchanged and creates no duplicate fixup records. Existing
+caller-owned lists and allocation lifetimes retain partial records for failure
+cleanup. Raw backend callers still own that cleanup; public COCCompile continues
+to stage metadata before publication. Literal-range reservation remains at the
+start of emission. Measurement-fault/concurrency/cancellation qualification is
+not established by this checkpoint.
+
+`build/i386-fixup-reserve-cross-v1` passes both fresh original bootstrap generations,
+strict cross-build, the normal lexer16/backend contracts, all 25 diagnostic source
+compiler stages, both complete TCG boot rasters and the unchanged >1 KiB assembly
+contract at 8 MiB 486,-fpu. Original backend traces, metadata ownership and zero
+caller heap growth remain intact. Both metadata-reservation and F64 failure/retry
+phases pass. Final audits validate current source/image/module/input/bootstrap
+pins, records, exports and retained frame budgets.
+
+The unchanged 8 MiB token contract now passes the former 68-byte import-fixup
+allocation point but fails on IC_CALL_START workspace: CI386Call is 26 bytes,
+rounded to 32 plus its 20-byte lifetime. The 52-byte request exceeds the largest
+48-byte free payload at usage 0x670B28/0x671000 and 0x4F99 live allocations.
+`allocation-frontier.json` and its disassembly map that exact call site. Reusing
+call contexts across measurement/emission is the next resource investigation;
+complete workflow/C1-C5 qualification stays open at 2/686.

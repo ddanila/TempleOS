@@ -28330,3 +28330,28 @@ frame evidence, not arbitrary recursive/callback stack qualification. The unchan
 the v6 build verify current source/image/module/bootstrap/input pins, emitted frame
 sizes, complete contract records, assembly fixture/encoding checks and the explicit
 resource failure. Workflow qualification stays 2/686; full C1–C5 remain open.
+
+### Measurement-pass relocation reservation
+
+Compiler 99 attaches import, extern, function-address and module poll fixups
+during measurement, using the same instruction layout as label placement. The
+emission pass writes the same bytes and creates no duplicate records. Existing
+allocation/list ownership handles partial failure; public COCCompile staging is
+preserved. Literal-pool range reservation remains at the beginning of emission.
+
+The unchanged 8 MiB token contract advances beyond the former 68-byte fixup
+allocation, then fails on a 52-byte IC_CALL_START workspace (CI386Call: 26 bytes
+aligned to 32 plus a 20-byte lifetime). Usage is 0x670B28/0x671000, largest free
+payload 0x30, live allocations 0x4F99. The exact call site and disassembly are
+retained under build/i386-fixup-reserve-cross-v1. Reusing call contexts across
+measurement/emission is the next resource investigation; no test/grammar path
+is reduced and no complete workflow or C1-C5 milestone advances.
+
+Both fresh original bootstrap generations, strict cross-build, normal lexer16
+(24 checks), normal backend (48 checks, original 44-word trace, zero caller heap
+growth), all 25 diagnostic source-compiler stages, exact 8 MiB welcome/16 MiB
+diagnostic frames and the unchanged >1 KiB assembly contract at 8 MiB 486,-fpu
+pass. Both metadata-reservation and F64 failure/retry phases pass. Final current
+source/image/module/input/bootstrap/export/frame audits and inventory guards
+pass. Measurement-fault/concurrency/cancellation, full normal compiler delivery,
+684 workflows and full C1-C5 qualification remain open; qualification stays 2/686.

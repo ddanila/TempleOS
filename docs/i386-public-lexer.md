@@ -374,3 +374,14 @@ failed at the same IC_CALL_IMPORT request/heap words above; API publication is
 not reached. Current receipts are in matching segmented v6 directories and
 `final-verification-audit.json` checks their pins/records. This does not complete
 normal parser/directive closure, 8 MiB token loading or C1–C5 qualification.
+
+The compiler-99 checkpoint (`build/i386-fixup-reserve-cross-v1`) reserves all
+import/extern/address/poll fixups during measurement, before output windows
+fragment the heap. The unchanged lexer16 contract still passes all 24 checks.
+Lexer8 advances past the former import-fixup allocation, then fails in
+PublicLexNumber.HC on a 52-byte IC_CALL_START context: heap 0x670B28/0x671000,
+largest payload 0x30, 0x4F99 allocations. The mapped 26-byte CI386Call rounds to
+32 plus its 20-byte lifetime. No lexer publication or 8 MiB/C5 pass is claimed.
+Matching fixup-reserve v1 receipts and the final audit retain the full inputs,
+passing regressions and this new resource failure. Call-context reuse remains
+the next investigation; normal parser/directive closure remains open.

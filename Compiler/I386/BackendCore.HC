@@ -196,7 +196,7 @@ U0 I386F64Runtime(CI386Backend *backend,CI386Out *out,I64 op,I64 pass)
   if (arg_count==2) I386Bytes(out,"\x53\x51",2);
   I386Bytes(out,"\x52\x50\xE8",3);
   if (fun->type&HTF_IMPORT) {
-    if (pass) {
+    if (!pass) {
       import_rec=(*backend->allocate)(backend->context,sizeof(CAOTImportExport));
       import_rec->type=IET_REL_I32;
       import_rec->rip=cc->aotc->rip+out->count;
@@ -204,7 +204,7 @@ U0 I386F64Runtime(CI386Backend *backend,CI386Out *out,I64 op,I64 pass)
     }
     I386Dword(out,0);
   } else if (Bt(&fun->flags,Cf_EXTERN)) {
-    if (pass) {
+    if (!pass) {
       usage=(*backend->allocate)(backend->context,sizeof(CExternUsage));
       usage->next=fun->ext_lst; fun->ext_lst=usage;
       usage->rip=cc->aotc->rip+out->count;
@@ -280,7 +280,7 @@ U0 I386BackendBreakPoll(CI386Backend *backend,CI386Out *out)
   I386Dword(out,1<<11); //TASKf_PENDING_BREAK, checked by the native adapter.
   if(backend->cc->flags&CCF_MODULE_SOURCE) {
     I386Bytes(out,"\x74\x07\x60\xE8",4); //JZ restore; PUSHAD; CALL rel32
-    if(backend->pass) {
+    if(!backend->pass) {
       record=(*backend->allocate)(backend->context,sizeof(CAOTImportExport));
       record->type=IET_I386_BREAK_POLL;
       record->rip=backend->cc->aotc->rip+out->count;
@@ -425,8 +425,10 @@ U0 I386BackendCore(CI386Backend *backend)
     for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
       if (ic->ic_code==IC_BR_ZERO || ic->ic_code==IC_BR_NOT_ZERO)
         I386BranchLogic(backend,ic->t.arg1_tree);
-    //First pass measures label offsets without an output allocation. The second
-    //pass reserves exactly that size and must reproduce the measured layout.
+    //Measure offsets and attach caller-owned relocation records before output
+    //windows fragment free space. Both passes use the same instruction layout;
+    //the emission pass reserves exactly the measured size and creates no duplicate
+    //import/extern/poll records. Partial records retain normal failure ownership.
     for (pass=0;pass<2;pass++) {
       if(pass) out->planned=out->count;
       out->measuring=!pass;
@@ -818,7 +820,7 @@ U0 I386BackendCore(CI386Backend *backend)
             } else if(ic->ic_code==IC_CALL_INDIRECT2) {
               if(ic->ic_data<0 || ic->ic_data>U32_MAX)throw('Compiler');
               I386Bytes(out,"\xFF\x15",2);
-              if(pass) {
+              if(!pass) {
                 import_rec=(*backend->allocate)(backend->context,sizeof(CAOTImportExport));
                 import_rec->type=IET_IMM_U32;
                 import_rec->rip=cc->aotc->rip+out->count;
@@ -831,7 +833,7 @@ U0 I386BackendCore(CI386Backend *backend)
               if (ic->ic_code==IC_CALL) {
                 I386Dword(out,ic->ic_data-(cc->aotc->rip+out->count+4));
               } else if (ic->ic_code==IC_CALL_IMPORT) {
-                if (pass) {
+                if (!pass) {
                   import_rec=(*backend->allocate)(backend->context,sizeof(CAOTImportExport));
                   import_rec->type=IET_REL_I32;
                   import_rec->rip=cc->aotc->rip+out->count;
@@ -840,7 +842,7 @@ U0 I386BackendCore(CI386Backend *backend)
                 }
                 I386Dword(out,0);
               } else {
-                if (pass) {
+                if (!pass) {
                   usage=(*backend->allocate)(backend->context,sizeof(CExternUsage));
                   usage->next=backend->calls->fun->ext_lst;
                   backend->calls->fun->ext_lst=usage;
@@ -954,7 +956,7 @@ U0 I386BackendCore(CI386Backend *backend)
             I386Byte(out,0x9C);
             I386Byte(out,0xE8); I386Dword(out,0);
             I386Bytes(out,"\x58\x83\xC0\x09\x05",5);
-            if (pass) {
+            if (!pass) {
               if (addr_fun->type&HTF_IMPORT) {
                 import_rec=(*backend->allocate)(backend->context,sizeof(CAOTImportExport));
                 import_rec->type=IET_I386_REL32_ADDR;
