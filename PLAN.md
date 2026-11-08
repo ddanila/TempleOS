@@ -28027,3 +28027,17 @@ docs/i386-aot-fixup.md. Complete assembler/CmpJoin/AOT file delivery, partial-
 progress unwind, first-use failure/retry/concurrency/cancellation, 684 workflows,
 native self-hosting and full C1-C5 release qualification remain open. Inventory
 qualification remains two of 686 workflows.
+
+### Deferred assembler resolver original baseline
+
+Added a pinned-original execution contract for the complete AsmResolve module,
+preparing the next public compiler service dependency of CmpJoin. The original
+capture `build/i386-asm-resolve-original-v6` passes 32 assertions: real expression
+thunks, all eight relocation widths, block-boundary storage, local constructor
+routing and consumption, import ordering/addends, external call patches and
+function exports. The fixture explicitly records and caller-cleans the original
+retained import names and stale consumed-list heads; these are not native
+ownership expectations. Input hashes remain unchanged. See
+`docs/i386-asm-resolve.md` for coverage and commands. Native resolver delivery,
+diagnostics/error ownership, remaining assembler/compiler work, 684 workflows and
+full C1–C5 release gates remain open. Inventory qualification remains 2/686.
