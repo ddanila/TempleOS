@@ -10677,15 +10677,15 @@
           "target": "normal-public-token-lexer-16m-component",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 16 --out OUT",
           "result": "pass",
-          "evidence": "build/i386-helper-frame-lex16-v5/result.json",
+          "evidence": "build/i386-segmented-lex16-v6/result.json",
           "scope": "Normal Console 258 Lex/LexExtStr via twelve ordered complete shared-source stages; same 24 original result words, includes/adjacent strings/buffer borrowing and caller heap recovery, one publication, arithmetic/volume/input checks. No diagnostic source lexer installed for this contract. Normal expression/stream directive dependencies, fault/concurrency and full compiler remain open."
         },
         {
           "target": "normal-public-token-lexer-8m-resource-frontier",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 8 --out OUT",
           "result": "fail",
-          "evidence": "build/i386-helper-frame-lex8-v5/result.json",
-          "scope": "Unchanged 24-case contract reaches PublicLexNumber.HC after complete stack-bound F64 helper setup and compact private IR allocation, then OutMem on a 0x1C4D emitter buffer. Heap usage 0x66D8C8/0x671000; largest payload 0x5A8; 0x4F7E live allocations. No cache publication; inputs unchanged. C5 fragmentation remains open; no inventory qualification."
+          "evidence": "build/i386-segmented-lex8-v6/result.json",
+          "scope": "Unchanged 24-case contract reaches numeric-helper IC_CALL_IMPORT emission using compiler-98 segmented scratch, then OutMem on a 68-byte rel32 fixup (44-byte record aligned to 48 plus 20-byte lifetime). Heap usage 0x670B20/0x671000; largest payload 0x30; 0x4F97 live allocations. Inputs unchanged; no lexer publication. Import-fixup ordering/resource closure and C5 remain open; no inventory qualification."
         }
       ]
     },
@@ -10763,15 +10763,15 @@
           "target": "normal-public-token-lexer-16m-component",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 16 --out OUT",
           "result": "pass",
-          "evidence": "build/i386-helper-frame-lex16-v5/result.json",
+          "evidence": "build/i386-segmented-lex16-v6/result.json",
           "scope": "Normal Console 258 Lex/LexExtStr via twelve ordered complete shared-source stages; same 24 original result words, includes/adjacent strings/buffer borrowing and caller heap recovery, one publication, arithmetic/volume/input checks. No diagnostic source lexer installed for this contract. Normal expression/stream directive dependencies, fault/concurrency and full compiler remain open."
         },
         {
           "target": "normal-public-token-lexer-8m-resource-frontier",
           "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 8 --out OUT",
           "result": "fail",
-          "evidence": "build/i386-helper-frame-lex8-v5/result.json",
-          "scope": "Unchanged 24-case contract reaches PublicLexNumber.HC after complete stack-bound F64 helper setup and compact private IR allocation, then OutMem on a 0x1C4D emitter buffer. Heap usage 0x66D8C8/0x671000; largest payload 0x5A8; 0x4F7E live allocations. No cache publication; inputs unchanged. C5 fragmentation remains open; no inventory qualification."
+          "evidence": "build/i386-segmented-lex8-v6/result.json",
+          "scope": "Unchanged 24-case contract reaches numeric-helper IC_CALL_IMPORT emission using compiler-98 segmented scratch, then OutMem on a 68-byte rel32 fixup (44-byte record aligned to 48 plus 20-byte lifetime). Heap usage 0x670B20/0x671000; largest payload 0x30; 0x4F97 live allocations. Inputs unchanged; no lexer publication. Import-fixup ordering/resource closure and C5 remain open; no inventory qualification."
         }
       ]
     },

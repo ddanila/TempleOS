@@ -17,6 +17,11 @@ I64 I386OutCapacity(CI386Out *out,I64 minimum)
   }
   return capacity;
 }
+U8 *I386OutAddress(CI386Out *out,I64 offset)
+{
+  if(out->address)return (*out->address)(out,offset);
+  return out->data+offset;
+}
 U0 I386Byte(CI386Out *out,U8 val)
 {
   if(out->measuring) {
@@ -24,7 +29,7 @@ U0 I386Byte(CI386Out *out,U8 val)
     out->count++; return;
   }
   if(out->count>=out->capacity) (*out->reserve)(out,out->count+1);
-  out->data[out->count++]=val;
+  out->data[out->count-out->window_start]=val;out->count++;
 }
 U0 I386Dword(CI386Out *out,U32 val)
 {

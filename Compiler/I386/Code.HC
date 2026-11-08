@@ -3,6 +3,8 @@
 class CI386OwnedIC { CIntermediateCode node; CI386CodeAllocation lifetime; };
 class CI386OwnedMisc { CCodeMisc node; CI386CodeAllocation lifetime; };
 class CI386OwnedCode { CCodeCtrl header; CI386CodeAllocation lifetime; };
+//Kinds 1..7 include the parser's owned pass stack. Keep segmented headers distinct.
+#define I386_CODE_SEGMENTED_OUT 8
 //The native emitter stores machine bytes in CI386Out, not the original ic_body.
 //Private frontend nodes need all tree links, but no unused machine-byte tail.
 //Keep public I386ICAdd allocations complete and preserve every field offset.
@@ -266,6 +268,9 @@ Bool I386COCAppend(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header)
   ok=I386COCHeaderFree(heap,cc,header);
   I386IrqRestore(irq); return ok;
 }
+//Implemented by NativeEmit.HC in the same retained module. Control teardown
+//must release raw segmented chunks before retiring their registered header.
+extern Bool I386OutChunksRelease(CI386Heap *heap,CI386Out *out);
 U0 I386CmpCodeRelease(CCmpCtrl *cc,CI386CmpRelease *state)
 {//Walk allocation ownership, never potentially aliased or detached queue views.
   CI386CmpCtrl *owned=cc;
@@ -277,6 +282,9 @@ U0 I386CmpCodeRelease(CCmpCtrl *cc,CI386CmpRelease *state)
     if(record->kind==2) {
       cm=record->allocation; COCPayloadRelease(cm,&owner);
       (*owner.release)(owner.context,cm->str);
+    }
+    if(record->kind==I386_CODE_SEGMENTED_OUT && !I386OutChunksRelease(state->heap,record->allocation)) {
+      state->ok=FALSE;return;
     }
     if(record->kind==5) I386CmpReleaseAllocation(state,record->allocation(CI386Out *)->data);
     I386CodeFree(state,record);

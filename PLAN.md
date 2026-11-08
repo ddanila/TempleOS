@@ -28279,3 +28279,54 @@ still open. The final audit under build/i386-helper-frame-cross-v5 checks curren
 source/image/module/input pins, ABI/export preservation, compiled frame/node
 layouts, full contract records, both rasters and explicit 8 MiB failure receipts.
 Five inventory guards pass. Workflow qualification remains 2/686; C1–C5 stay open.
+
+### Segmented frontend emission and metadata reservation
+
+Compiler 98 keeps public/host emitter buffers contiguous and gives the retained
+frontend owned output windows of at most 512 data bytes, shrinking to fit validated
+free blocks. Sequential writes stay direct; random relocation patches and the
+final executable copy use logical addresses. One registered header releases the
+raw window list on deletion or control unwind. Its distinct lifetime tag is 8;
+parser pass stacks retain tag 7. The first compact-header candidate's collision
+with that existing tag failed the unchanged deep-unary teardown diagnostic; the
+corrected candidate retains all assertions.
+
+The literal-pool range record reserves and attaches before byte emission, with
+its actual range finalized afterwards. A new failure case leaves space for this
+metadata but not the first output buffer and requires exact heap/control/IF
+restoration after unwind; the original no-literal allocation failure remains.
+High-end private IR placement was separately rejected because it regresses the
+8 MiB token contract to an earlier node allocation. Production keeps first fit.
+
+Both fresh original bootstrap generations and strict cross-build pass. Normal
+16 MiB Lex/LexExtStr still passes all 24 checks, and the normal backend passes all
+48 checks, identical 44-word trace and zero caller data/code growth. The unchanged
+8 MiB token contract remains failed during numeric-helper call-import emission:
+a 68-byte rel32 fixup cannot fit the largest 48-byte payload at heap usage
+0x670B20/0x671000 with 0x4F97 live allocations. A 44-byte CAOTImportExport rounds
+to 48 plus a 20-byte registered lifetime. The earlier literal-pool interpretation
+of this call site was incorrect: stored type 8 is IET_REL_I32; literal data is 26.
+Import-fixup allocation ordering remains a resource target. No grammar/test path
+is removed, and complete compiler delivery, 684 workflows and C1–C5 remain open.
+Current evidence is build/i386-segmented-cross-v5 and matching v5 regressions.
+
+Final build build/i386-segmented-cross-v6 also removes the separate 1024-byte
+inline/top-level assembly scratch arrays and dynamically sizes packed top-level
+code storage. The stronger fixture's unchanged 1532-byte block now compiles at
+8 MiB TCG 486,-fpu; the final code has the expected rel32 opcode/displacement at
+509/510..513 and executes correctly. All six packaged-fixture command checkpoints
+match every VGA pixel. The original DocWrite staging mode remains available and
+is not qualified by this packaged run. Its extended functional startup budget
+is not a release-performance pass; observed concurrent startup is recorded in
+the receipt. Remaining opcode/count limits and full assembler delivery stay open.
+
+Both fresh original bootstrap generations, strict cross-build, all 25 diagnostic
+source-compiler stages, normal 24-check lexer16 and 48-check backend, normal 8 MiB
+welcome and complete 16 MiB diagnostic frames pass on the final image. Both
+metadata-reservation and F64 allocation/unwind/retry phases pass with exact warm
+heap recovery. The two assembler frames shrink by 1024 bytes each; this is local
+frame evidence, not arbitrary recursive/callback stack qualification. The unchanged
+8 MiB lexer still fails on the same rel32 import-fixup request. Final audits under
+the v6 build verify current source/image/module/bootstrap/input pins, emitted frame
+sizes, complete contract records, assembly fixture/encoding checks and the explicit
+resource failure. Workflow qualification stays 2/686; full C1–C5 remain open.

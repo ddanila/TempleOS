@@ -842,7 +842,7 @@ CI386FrontendCode *I386FrontendOutputBound(CI386Frontend *state,CCmpCtrl *cc,CHa
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT CALLS START\n");
   I386FrontendCalls(state,bound,cc);
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT CALLS DONE\n");
-  out=I386OutNew(state->heap,cc);
+  out=I386OutNewSegmented(state->heap,cc);
   if(!out) throw('OutMem',TRUE);
   if(debug) {
     *debug=0;
@@ -882,7 +882,7 @@ CI386FrontendCode *I386FrontendOutputBound(CI386Frontend *state,CCmpCtrl *cc,CHa
       if(metadata->rip<result->data_start) result->data_start=metadata->rip;
     }
   }
-  for(i=0;i<out->count;i++) result->code[i]=out->data[i];
+  for(i=0;i<out->count;i++) result->code[i]=*I386OutAddress(out,i);
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT LINK START\n");
   I386FrontendLink(state,bound,result);
   if(debug_info) {

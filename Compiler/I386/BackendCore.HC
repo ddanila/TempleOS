@@ -367,7 +367,7 @@ U0 I386BackendCore(CI386Backend *backend)
   CI386Logic *logic;
   CI386Chain *chain;
   CExternUsage *usage;
-  CAOTImportExport *import_rec;
+  CAOTImportExport *import_rec,*literal_pool=0;
   CMemberLst *arg;
   I64 arg_index,arg_offset,pool_start,switch_base,switch_index;
   I64 depth,pass,stack_size=0,args=0,debug_line;
@@ -432,6 +432,16 @@ U0 I386BackendCore(CI386Backend *backend)
       out->measuring=!pass;
       out->count=0;
       depth=0;
+      if(pass && out->planned>pool_start) {
+        //The measured pool needs one range record. Reserve and attach it before
+        //output windows fragment the remaining heap; failure cleanup owns it.
+        literal_pool=(*backend->allocate)(backend->context,sizeof(CAOTImportExport));
+        literal_pool->type=IET_I386_DATA;
+        literal_pool->rip=cc->aotc->rip+pool_start;
+        literal_pool->flags=out->planned-pool_start;
+        literal_pool->next=&cc->aot->next_ie;literal_pool->last=cc->aot->last_ie;
+        literal_pool->last->next=literal_pool;cc->aot->last_ie=literal_pool;
+      }
       for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next) {
         if(pass && backend->debug &&
             backend->debug->min_line<=ic->ic_line<=backend->debug->max_line) {
@@ -1355,12 +1365,9 @@ U0 I386BackendCore(CI386Backend *backend)
         }
       if(pass && out->count!=out->planned) throw('Compiler');
       if (pass && out->count>pool_start) {
-        import_rec=(*backend->allocate)(backend->context,sizeof(CAOTImportExport));
-        import_rec->type=IET_I386_DATA;
-        import_rec->rip=cc->aotc->rip+pool_start;
-        import_rec->flags=out->count-pool_start;
-        import_rec->next=&cc->aot->next_ie; import_rec->last=cc->aot->last_ie;
-        import_rec->last->next=import_rec; cc->aot->last_ie=import_rec;
+        if(!literal_pool)throw('Compiler');
+        literal_pool->rip=cc->aotc->rip+pool_start;
+        literal_pool->flags=out->count-pool_start;
       }
     }
     out->planned=0;

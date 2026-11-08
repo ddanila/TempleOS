@@ -168,3 +168,62 @@ function context, unwinds the control, requires exact warm private/public heap
 recovery, and repeats successful compilation/execution. The complete 16 MiB TCG
 diagnostic boot also reaches startup with its exact 307200-pixel welcome frame.
 Evidence is `build/i386-helper-frame-diagnostic16-v5/debug.log` and its screen oracle.
+
+Compiler ABI 98 adds logical output-window addressing after the existing
+CI386Out fields. Host output and the public out_new service keep their contiguous
+byte view with a zero window origin and no address callback. Only the retained
+frontend selects segmented scratch: sequential emission writes directly into the
+current window; relocation patches and the final executable copy use logical
+addresses. Each window holds at most 512 data bytes and can shrink to fit a
+validated free block. The allocator validates again before committing it. Complete
+measured/emitted byte counts, literal bytes, relocation arithmetic and debug maps
+remain part of the backend contract.
+
+One registered output header owns the raw window list. Successful deletion and
+control unwind both release every window before retiring that header, including
+partially completed growth. Its lifetime tag is 8; tag 7 remains the existing
+parser pass-stack role. The first compact-ownership candidate reused tag 7 and
+failed the unchanged deep-unary diagnostic teardown; that failure is retained in
+`build/i386-segmented-diagnostic16-v4`. No diagnostic assertion was removed.
+
+The backend reserves its measured literal-pool range record at the start of the
+emission pass, before window allocation fragments the remaining space. It attaches
+the record to the caller-owned AOT list immediately, preserving failure ownership,
+and finalizes the actual range after emission. A new diagnostic leaves one
+128-byte hole for that metadata and then forces the first output allocation to
+fail. It requires the retained four-byte literal range, an empty output buffer,
+and exact heap/control/interrupt restoration after unwind. The original no-literal
+OutMem case remains alongside it.
+
+The stronger assembly fixture exposed the retained parser's separate 1024-byte
+scratch limit (`build/i386-segmented-inline-asm-v5-packaged`). Inline and top-level
+assembly now use the same growable owned windows; local branch patches and copies
+use logical addresses. Top-level bundles retain dynamically sized code rather
+than an embedded 1024-byte array, within the existing signed 32-bit code-size
+domain. Existing opcode, label/import/fixup-count and full assembler-delivery
+qualification remain open. Compiled local frames shrink from 1240 to 216 bytes
+for I386FrontendJoin and 7368 to 6344 for I386FrontendAssembly. This does not prove
+arbitrary recursive/callback stack bounds.
+
+The inline-assembly runner retains its original DocWrite staging mode and adds
+an optional verified packaged-source mode using the same source and execution
+checks. Its expanded fixture contains a 1532-byte assembly block and independently
+checks the rel32 instruction at function offset 509 and displacement bytes
+510..513 before executing it. Native welcome styling and an explicit functional
+startup budget are selectable; neither an extended observation budget nor fixture
+packaging establishes startup performance or document-staging qualification.
+
+Final current-image evidence is `build/i386-segmented-cross-v6`. Fresh original
+bootstrap generations and strict cross-build pass, as do the full 25-stage
+diagnostic source compiler (normal optimizer/backend), the 48-check normal backend
+with identical original trace and zero caller heap growth, both diagnostic fault/
+recovery phases, and exact 8 MiB welcome/16 MiB diagnostic rasters. The packaged
+assembly contract passes all six command checkpoints at 8 MiB TCG 486,-fpu,
+including the unchanged >1024-byte block, independent encoded-branch check and
+execution. Evidence is `build/i386-segmented-inline-asm-v6-packaged/result.json`;
+this functional run uses an explicit 900-second startup observation budget and
+does not establish release performance or the separate DocWrite staging workflow.
+`final-audit.py`/`final-verification-audit.json` verify current pins and these
+records. The normal 8 MiB token loader still fails on a 68-byte IC_CALL_IMPORT
+rel32 fixup in PublicLexNumber.HC; resource/full compiler closure remains open.
+No complete workflow or C1–C5 milestone advances (qualification stays 2/686).

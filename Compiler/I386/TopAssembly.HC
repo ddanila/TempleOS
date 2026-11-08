@@ -8,7 +8,7 @@ U0 I386FrontendTopName(CI386Frontend *state,U8 *dst,U8 *src)
 }
 class CI386FrontendTopBundle {
   I64 bytes,export_count,call_count;
-  U8 code[1024];
+  U8 *code;
   CI386AsmLabel exports[32];
   CI386AsmFix calls[16];
 };
@@ -18,7 +18,7 @@ I64 I386FrontendTopPack(CI386Frontend *state,U8 *output,I64 capacity)
   CI386ModuleRecord records[48];
   U8 strings[2048],*name;
   I64 i,j,length,string_bytes=0,record_count;
-  if(!bundle || bundle->bytes<1 || bundle->bytes>1024 ||
+  if(!bundle || !bundle->code || bundle->bytes<1 || bundle->bytes>0x7FFFFFFF ||
       bundle->export_count<1 || bundle->export_count>32 ||
       bundle->call_count<0 || bundle->call_count>16) return 0;
   record_count=bundle->export_count+bundle->call_count;
@@ -48,12 +48,15 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
   CI386AsmLabel labels[32],imports[8],exports[32];
   CI386AsmFix branches[64],calls[16];
   CI386FrontendTopBundle *bundle;
-  U8 bytes[1024],name[32];
+  CI386Out *bytes;
+  U8 name[32];
   I64 count=0,label_count=0,import_count=0,branch_count=0,call_count=0;
   I64 i,j,k,delta,opcode,export_count=0;
   if(flags || !(cc->flags&CCF_MODULE_SOURCE) || cc->htc.fun ||
       cc->token!='{' || state->top_bundle)
     I386FrontendReport(state,cc,0,"Invalid top-level assembly entry");
+  bytes=I386OutNewSegmented(state->heap,cc);
+  if(!bytes)throw('OutMem',TRUE);
   I386FrontendLex(state,cc);
   while(cc->token!='}') {
     if(cc->token==';') I386FrontendLex(state,cc);
@@ -289,12 +292,14 @@ U0 I386FrontendAssembly(U8 *context,CCmpCtrl *cc,I64 flags)
       if(j==export_count) I386FrontendUnavailable(state);
       delta=exports[j].offset-branches[i].offset-4;
     }
-    for(k=0;k<4;k++) bytes[branches[i].offset+k]=delta>>(k*8);
+    for(k=0;k<4;k++) *I386OutAddress(bytes,branches[i].offset+k)=delta>>(k*8);
   }
   bundle=I386FrontendAlloc(state,sizeof(CI386FrontendTopBundle),TRUE,FALSE);
   bundle->bytes=count; bundle->export_count=export_count;
   bundle->call_count=call_count;
-  for(i=0;i<count;i++) bundle->code[i]=bytes[i];
+  bundle->code=I386FrontendAlloc(state,count,FALSE,FALSE);
+  for(i=0;i<count;i++) bundle->code[i]=*I386OutAddress(bytes,i);
+  if(!I386OutDel(state->heap,cc,bytes))I386FrontendUnavailable(state);
   for(i=0;i<export_count;i++) {
     bundle->exports[i].offset=exports[i].offset;
     for(j=0;j<32;j++) bundle->exports[i].name[j]=exports[i].name[j];

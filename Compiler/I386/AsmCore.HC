@@ -4,8 +4,8 @@ U0 I386AsmCore(CI386Backend *backend,CCmpCtrl *cc,CI386Out *out,CAOT *aot,I64 pa
 {
   CAOTImportExport *ie;
   CCodeMisc *label;
-  I64 begin=out->count,width,delta;
-  U8 *ptr;
+  I64 begin=out->count,width,delta,i;
+  U32 encoded;
   if(!aot || aot->abss || aot->heap_glbls || aot->aot_U8s<0 ||
       (aot->aot_U8s && !aot->buf)) {
     (*backend->report)(backend->context,6,0,0);
@@ -26,22 +26,18 @@ U0 I386AsmCore(CI386Backend *backend,CCmpCtrl *cc,CI386Out *out,CAOT *aot,I64 pa
     label=OptLabelFwd(label);
     if(!pass) label->use_cnt++;
     if(pass) {
-      ptr=out->data+begin+ie->rip;
-      //Unresolved assembler expressions retain their numeric addend in-place.
-      if(width==1) delta=*ptr(I8 *);
-      else if(width==2) delta=*ptr(I16 *);
-      else delta=*ptr(I32 *);
+      //Read/write through logical offsets: a relocation may cross scratch chunks.
+      encoded=0;
+      for(i=0;i<width;i++)encoded.u8[i]=*I386OutAddress(out,begin+ie->rip+i);
+      if(width==1)delta=encoded.u8[0](I8);
+      else if(width==2)delta=encoded.u16[0](I16);
+      else delta=encoded(I32);
       delta+=label->addr-begin-ie->rip-width;
-      if(width==1) {
-        if(delta<I8_MIN || delta>I8_MAX) throw('Compiler');
-        *ptr(U8 *)=delta;
-      } else if(width==2) {
-        if(delta<I16_MIN || delta>I16_MAX) throw('Compiler');
-        *ptr(U16 *)=delta;
-      } else {
-        if(delta<I32_MIN || delta>I32_MAX) throw('Compiler');
-        *ptr(U32 *)=delta;
-      }
+      if(width==1 && (delta<I8_MIN || delta>I8_MAX) ||
+         width==2 && (delta<I16_MIN || delta>I16_MAX) ||
+         width==4 && (delta<I32_MIN || delta>I32_MAX))throw('Compiler');
+      encoded=delta;
+      for(i=0;i<width;i++)*I386OutAddress(out,begin+ie->rip+i)=encoded.u8[i];
     }
   }
 }

@@ -24,7 +24,7 @@ U0 ProbeBackend(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   CCodeMisc *label,*literal;
   CAOTImportExport *metadata;
   I64 (*generated)(I64 a,I64 b);
-  U8 *text_value,*fill,*block,*next,*bytes;
+  U8 *text_value,*fill,*block,*next,*bytes,*hole;
   I64 used=heap->used,allocations=heap->allocations,refs=task->lifetime_refs;
   I64 i,kind,op,a,b,expected,accepted,size,actual;
   U32 flags=GetRFlags;
@@ -111,7 +111,9 @@ U0 ProbeBackend(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
     if(!probe->compiler->control_unwind(task,outer) || heap->used!=used ||
         heap->allocations!=allocations || task->lifetime_refs!=refs) KernelStop;
   }
-  //OutMem inside the lowering loop: first emit fills a real owned output buffer.
+  //Keep the original no-output OutMem case and add a reserved literal record:
+  //one deliberate hole fits its metadata, then the first output reserve fails.
+  for(kind=0;kind<2;kind++) {
   bytes=&fun; for(i=0;i<sizeof(fun);i++) bytes[i]=0;
   bytes=&aot; for(i=0;i<sizeof(aot);i++) bytes[i]=0;
   bytes=&aotc; for(i=0;i<sizeof(aotc);i++) bytes[i]=0;
@@ -120,19 +122,33 @@ U0 ProbeBackend(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   if(!cc || !probe->compiler->control_enter(heap,cc,0,0)) KernelStop;
   cc->htc.fun=&fun; cc->aot=&aot; cc->aotc=&aotc;
   ProbeBackendAdd(probe,heap,cc,IC_ENTER,0,0);
-  ProbeBackendAdd(probe,heap,cc,IC_IMM_I64,42,probe->i64_type);
-  ProbeBackendAdd(probe,heap,cc,IC_RETURN_VAL,0,probe->i64_type);
+  if(kind) {
+    literal=probe->compiler->code_misc(heap,cc,CMT_STR_CONST);
+    if(!literal)KernelStop;
+    literal->str=I386HeapAlloc(heap,4,FALSE);literal->st_len=4;
+    if(!literal->str)KernelStop;
+    literal->str[0]='J';literal->str[1]='I';literal->str[2]='T';literal->str[3]=0;
+    ProbeBackendAdd(probe,heap,cc,IC_STR_CONST,literal,probe->internal_types[RT_U8]+1);
+    ProbeBackendAdd(probe,heap,cc,IC_RETURN_VAL,0,probe->internal_types[RT_U8]+1);
+  } else {
+    ProbeBackendAdd(probe,heap,cc,IC_IMM_I64,42,probe->i64_type);
+    ProbeBackendAdd(probe,heap,cc,IC_RETURN_VAL,0,probe->i64_type);
+  }
   ProbeBackendAdd(probe,heap,cc,IC_LEAVE,0,0);
   //Allocate pass stack before exhaustion, so the failure comes from code emission.
   probe->compiler->code_optimize(heap,cc,probe->internal_types,0);
   out=probe->compiler->out_new(heap,cc); if(!out) KernelStop;
+  hole=0;if(kind && !(hole=I386HeapAlloc(heap,128,FALSE)))KernelStop;
   fill=0; accepted=0;
   try {
     for(size=8192;size>=8;size>>=1)
       while(block=I386HeapAlloc(heap,size,FALSE)) { block(U8 **)[0]=fill; fill=block; }
+    if(hole) {if(!I386HeapFree(heap,hole))KernelStop;hole=0;}
     probe->compiler->backend(heap,cc,probe->internal_types,out,&status); KernelStop;
   } catch {
     if(task->except_ch!='OutMem' || out->count || out->data) KernelStop;
+    if(kind && (aot.next_ie==&aot.next_ie || aot.next_ie->type!=IET_I386_DATA ||
+        aot.next_ie->flags!=4 || aot.next_ie->next!=&aot.next_ie))KernelStop;
     task->catch_except=TRUE; accepted=1;
   }
   while(fill) { next=fill(U8 **)[0]; if(!I386HeapFree(heap,fill)) KernelStop; fill=next; }
@@ -140,5 +156,7 @@ U0 ProbeBackend(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
       task->last_cc!=outer || task->active_controls!=1 || task->lifetime_refs!=refs ||
       heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap) ||
       (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
+  }
+  KernelLog("BACKEND LITERAL RESERVATION ");KernelHex(probe->phase);KernelLog(" ");KernelHex(1);KernelLog(" ");KernelHex(0);KernelLog("\n");
   KernelLog("BACKEND PROBE "); KernelHex(probe->phase); KernelLog("\n");
 }

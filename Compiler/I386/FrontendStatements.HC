@@ -154,12 +154,12 @@ I64 I386FrontendAsmReg(U8 *name)
   if(!StrCmp(name,"EDI")) return 7;
   return -1;
 }
-U0 I386FrontendAsmByte(CI386Frontend *state,U8 *bytes,I64 *count,I64 value)
+U0 I386FrontendAsmByte(CI386Frontend *state,CI386Out *bytes,I64 *count,I64 value)
 {
-  if(*count>=1024) I386FrontendUnavailable(state);
-  bytes[*count]=value; (*count)++;
+  if(*count!=bytes->count)I386FrontendUnavailable(state);
+  I386Byte(bytes,value);*count=bytes->count;
 }
-U0 I386FrontendAsmDword(CI386Frontend *state,U8 *bytes,I64 *count,I64 value)
+U0 I386FrontendAsmDword(CI386Frontend *state,CI386Out *bytes,I64 *count,I64 value)
 {
   I64 i;
   for(i=0;i<4;i++) I386FrontendAsmByte(state,bytes,count,value>>(i*8));
@@ -279,7 +279,7 @@ U0 I386FrontendAsmOperand(CI386Frontend *state,CCmpCtrl *cc,CI386AsmOperand *arg
   I386FrontendLex(state,cc);
   arg->kind=2; arg->base=register_code; arg->disp=offset;
 }
-U0 I386FrontendAsmModRM(CI386Frontend *state,U8 *bytes,I64 *count,
+U0 I386FrontendAsmModRM(CI386Frontend *state,CI386Out *bytes,I64 *count,
   I64 register_code,CI386AsmOperand *arg)
 {
   I64 mode,disp=arg->disp,i;
@@ -308,7 +308,8 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
   CI386AsmOperand dst,src;
   CI386AsmLabel *labels;
   CI386AsmFix *fixes;
-  U8 bytes[1024],opcode;
+  CI386Out *bytes;
+  U8 opcode;
   I64 count=0,op,label_count=0,fix_count=0,i,j,delta;
   Bool single=flags==(CMPF_ASM_BLK|CMPF_ONE_ASM_INS);
   if(!cc->htc.fun) I386FrontendUnavailable(state);
@@ -318,6 +319,8 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
   } else if(flags!=CMPF_ASM_BLK || !cc->htc.fun || cc->token!=TK_IDENT ||
       !cc->hash_entry || !(cc->hash_entry->type&HTT_KEYWORD) ||
       cc->hash_entry(CHashGeneric *)->user_data0!=KW_ASM) I386FrontendUnavailable(state);
+  bytes=I386OutNewSegmented(state->heap,cc);
+  if(!bytes)throw('OutMem',TRUE);
   labels=I386FrontendAlloc(state,32*sizeof(CI386AsmLabel),TRUE,FALSE);
   fixes=I386FrontendAlloc(state,64*sizeof(CI386AsmFix),TRUE,FALSE);
   if(!single) {
@@ -327,7 +330,7 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
   while(single || cc->token!='}') {
     if(cc->token==';') I386FrontendLex(state,cc);
     else {
-      if(cc->token!=TK_IDENT || !cc->cur_str || count>=sizeof(bytes))
+      if(cc->token!=TK_IDENT || !cc->cur_str)
         I386FrontendUnavailable(state);
       if(cc->cur_str[0]=='@' && cc->cur_str[1]=='@') {
         if(label_count>=32) I386FrontendUnavailable(state);
@@ -535,14 +538,15 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
     for(j=0;j<label_count;j++) if(!StrCmp(fixes[i].name,labels[j].name)) break;
     if(j==label_count) I386FrontendUnavailable(state);
     delta=labels[j].offset-fixes[i].offset-4;
-    for(j=0;j<4;j++) bytes[fixes[i].offset+j]=delta>>(j*8);
+    for(j=0;j<4;j++) *I386OutAddress(bytes,fixes[i].offset+j)=delta>>(j*8);
   }
   if(!count) I386FrontendUnavailable(state);
   aot=I386FrontendAlloc(state,sizeof(CAOT),TRUE,FALSE);
   aot->buf=I386FrontendAlloc(state,count,FALSE,FALSE);
-  for(i=0;i<count;i++) aot->buf[i]=bytes[i];
+  for(i=0;i<count;i++) aot->buf[i]=*I386OutAddress(bytes,i);
   aot->aot_U8s=count;
   aot->next_ie=aot->last_ie=&aot->next_ie;
+  if(!I386OutDel(state->heap,cc,bytes))I386FrontendUnavailable(state);
   I386FrontendFree(state,labels); I386FrontendFree(state,fixes);
   return aot;
 }

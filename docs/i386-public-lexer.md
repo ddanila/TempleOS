@@ -344,3 +344,33 @@ helper fault probe validates failure/unwind/retry in both diagnostic phases.
 `final-verification-audit.json` validate current source/image/input/module pins,
 compiled frame/node layouts, records and both passing and failing receipts.
 Qualification remains 2/686; no complete workflow or milestone advances.
+
+The compiler-98 scratch-output investigation rejects high-end private IR placement:
+its unchanged 8 MiB contract fails earlier, on a 128-byte node during string-helper
+loading (`build/i386-ir-high-lex8-v1`). Production retains first-fit IR allocation.
+Segmented frontend output removes the single 7245-byte temporary-buffer requirement
+without changing token bodies, grammar, the twelve source stages or the executable
+allocation boundary after IR release. Windows adapt below 512 bytes to available
+contiguous space and share one registered lifetime owner. Public emitter buffers
+remain contiguous.
+
+The compact-window v4 candidate reaches numeric-helper call-import emission but
+cannot allocate its 68-byte rel32 import-fixup workspace: usage 0x670B20 of
+0x671000, largest payload 0x30, 0x4F97 live allocations. The mapped call site and
+44-byte record request are preserved in
+`build/i386-segmented-cross-v4/allocation-frontier.json`. The record stores type 8
+(IET_REL_I32); the initial literal-pool interpretation was incorrect (that type is
+26). Compiler 98 separately reserves the required literal range before output
+emission and tests its failure ownership. That change does not close the remaining
+import-fixup frontier. Full 8 MiB lexer qualification still requires the unchanged
+complete contract to pass.
+
+Final build `build/i386-segmented-cross-v6` passes both fresh original bootstrap
+generations, strict cross-build, the 24-check normal lexer16 contract, 48-check
+normal backend, all 25 diagnostic source-compiler stages, exact 8 MiB welcome and
+16 MiB diagnostic frames, both new metadata/F64 fault-recovery phases and the
+expanded packaged inline-assembly contract. Its unchanged lexer8 receipt remains
+failed at the same IC_CALL_IMPORT request/heap words above; API publication is
+not reached. Current receipts are in matching segmented v6 directories and
+`final-verification-audit.json` checks their pins/records. This does not complete
+normal parser/directive closure, 8 MiB token loading or C1–C5 qualification.
