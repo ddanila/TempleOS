@@ -57,7 +57,7 @@ and calls the delivered bindings without source-loading their implementations.
   assertion record and 32-byte displacement record, exact heap recovery,
   arithmetic/volume checks and unchanged inputs.
 - `build/rebuild-test/result.json`: both bootstrap generations pass, with all
-  1,768 current source hashes independently checked.
+  1,768 source hashes independently checked before the EOF-only cleanup below.
 - `build/i386-import-resolve-cross-v4/result.json`: full image build, with 1,768
   source and 26 build-driver pins checked. Its `export-audit.json` checks the
   complete ordered export table and unchanged preceding 668 slots.
@@ -125,6 +125,14 @@ the same welcome raster pass; see
 Five inventory guard tests and Python compilation checks pass.
 
 `build/i386-import-resolve-cross-v4/terminal-audit.json` records independent checks
-of every final report's current pins, build pins, unchanged normal/diagnostic
+of every final report's pins before the EOF-only cleanup, build pins, unchanged normal/diagnostic
 images and complete low-memory/diagnostic markers. These checks qualify the
 component checkpoint, not the remaining C1–C5 release gates.
+
+The verified implementation checkpoint is `23fc3c2a`. A later formatting-only
+follow-up removes one extra LF after the core's final closing brace.
+`build/i386-import-resolve-cross-v4/eof-whitespace-audit.json` checks the tested
+core hash, saves `tested-import-core.HC`, proves that exact one-byte deletion,
+and rechecks every other bootstrap/full-build/compiler-suite pin. No code tokens
+or source positions before final EOF change; functional tests were not repeated
+for this formatting-only cleanup.

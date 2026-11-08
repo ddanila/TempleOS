@@ -27953,8 +27953,9 @@ metadata cost. All rejected candidates and their limits remain preserved.
 Both final bootstrap generations, the full image build, all 25 source-loaded
 compiler stages, Carry/ClassMeta/AOT storage regressions, the 8 MiB complete
 welcome raster and both 16 MiB diagnostic phases pass. All 1,768 build source
-pins, 26 driver pins and 1,044 full compiler-suite pins match current inputs;
-normal and diagnostic images remain unchanged. Five inventory guard tests pass.
+pins, 26 driver pins and 1,044 full compiler-suite pins were checked before a
+separately audited one-LF EOF cleanup; every other pin still matches, and normal
+and diagnostic images remain unchanged. Five inventory guard tests pass.
 Full module loading, assembly/JIT fixups, complete public compiler delivery,
 684 unqualified workflows and complete C1–C5 gates remain open. See
 [import resolution evidence](docs/i386-import-resolve.md).

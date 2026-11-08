@@ -61,4 +61,3 @@ U0 SysSymImportsResolve(U8 *st_ptr,I64 ld_flags)
     tmpiss->type=HTT_INVALID;
   }
 }
-
