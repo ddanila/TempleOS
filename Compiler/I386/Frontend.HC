@@ -821,14 +821,9 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
     record=next;
   }
 }
-CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashClass *type,I64 prior_misc,CDbgInfo **debug=0)
-{
-  Bool has_helpers=I386FrontendNeedsHelpers(cc,type,state->expression.types);
-  I64 bound_bytes=offset(CI386FrontendBound.helpers);
-  CI386FrontendBound *bound;
-  if(has_helpers) bound_bytes=sizeof(CI386FrontendBound);
-  bound=I386FrontendAlloc(state,bound_bytes,TRUE,FALSE);
-  bound->has_helpers=has_helpers;
+CI386FrontendCode *I386FrontendOutputBound(CI386Frontend *state,CCmpCtrl *cc,CHashClass *type,
+  I64 prior_misc,CI386FrontendBound *bound,CDbgInfo **debug=0)
+{//The caller owns the temporary bound; no successful output retains its pointers.
   CI386FrontendCode *result;
   CI386Out *out;
   CDbgInfo *debug_info=0;
@@ -840,6 +835,7 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   CAOTImportExport *metadata;
   I64 old_flags=cc->flags,old_pass=cc->pass,i;
   I64 mask=CCF_AOT_COMPILE|CCF_EXE_BLK|CCF_TARGET_HOST_CONST;
+  try {
   bound->aot.next_ie=bound->aot.last_ie=&bound->aot.next_ie;
   cc->aot=&bound->aot; cc->aotc=&bound->aotc;
   cc->flags=cc->flags&~mask|CCF_AOT_COMPILE; cc->pass=0;
@@ -898,6 +894,11 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT LINK DONE\n");
   result->next=state->codes; state->codes=result;
   if(!I386OutDel(state->heap,cc,out) || !I386COCDiscard(state->heap,cc)) I386FrontendUnavailable(state);
+  } catch {
+    //Restore borrowed pointers before a floating helper frame leaves the stack.
+    cc->aot=old_aot; cc->aotc=old_aotc; cc->htc.hash_table_lst=old_hash;
+    cc->flags=cc->flags&~mask|old_flags&mask; cc->pass=old_pass;
+  }
   cc->aot=old_aot; cc->aotc=old_aotc; cc->htc.hash_table_lst=old_hash;
   cc->flags=cc->flags&~mask|old_flags&mask; cc->pass=old_pass;
   //Backend folding may create a stack. Its IR/result no longer borrows it.
@@ -906,7 +907,33 @@ CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashCla
     if(!I386ParserFree(state->heap,cc,cc->ps)) I386FrontendUnavailable(state);
     cc->ps=0;
   }
-  I386FrontendFree(state,bound); return result;
+  return result;
+}
+//Keep large scratch off integer-only call stacks. All ten helpers and their
+//argument/relocation metadata have one emission/link lifetime, including unwind.
+#assert sizeof(CI386FrontendBound)<=4096
+CI386FrontendCode *I386FrontendFloatingOutput(CI386Frontend *state,CCmpCtrl *cc,
+  CHashClass *type,I64 prior_misc,CDbgInfo **debug)
+{
+  CI386FrontendBound storage,*bound=&storage;
+  U8 *bytes=bound;I64 i;
+  for(i=0;i<sizeof(storage);i++)bytes[i]=0;
+  bound->has_helpers=TRUE;
+  return I386FrontendOutputBound(state,cc,type,prior_misc,bound,debug);
+}
+CI386FrontendCode *I386FrontendOutput(CI386Frontend *state,CCmpCtrl *cc,CHashClass *type,
+  I64 prior_misc,CDbgInfo **debug=0)
+{
+  CI386FrontendBound *bound;CI386FrontendCode *result;
+  if(I386FrontendNeedsHelpers(cc,type,state->expression.types)) {
+    //Retain the parser's existing 4 KiB downstream reserve plus call overhead.
+    if(!I386ParserStackReserve(cc,sizeof(CI386FrontendBound)+4096+512))
+      I386FrontendUnavailable(state);
+    return I386FrontendFloatingOutput(state,cc,type,prior_misc,debug);
+  }
+  bound=I386FrontendAlloc(state,offset(CI386FrontendBound.helpers),TRUE,FALSE);
+  result=I386FrontendOutputBound(state,cc,type,prior_misc,bound,debug);
+  I386FrontendFree(state,bound);return result;
 }
 U8 *I386FrontendCompile(U8 *context,CCmpCtrl *cc,I64 *raw_type)
 {

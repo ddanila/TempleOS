@@ -146,3 +146,25 @@ with only the diagnostic probe module/source changed. Native16-v4 rechecks all
 `final-verification-audit.json` under that build verify current source/image pins,
 historical probe-source pins, bootstrap generations, ABI 96/257, export prefix,
 shared helper extraction, original/native records and regression receipts.
+
+Compiler ABI 97 (`build/i386-helper-frame-cross-v5`) bounds the frontend's complete
+F64 helper workspace on the task stack for emission/linking and restores borrowed
+AOT/hash/pass state during exception propagation. Integer-only compilation keeps
+its small heap descriptor. The emitted frame audit measures 3808 additional bytes
+against a 4116-byte extra reserve, preserving the existing 4096-byte downstream
+reserve. It does not establish arbitrary recursive/callback stack bounds. Compact
+private IR prefixes retain the complete tree while saving eight physical heap
+bytes per node; public full nodes and field offsets are unchanged.
+
+The current 48-check normal backend contract passes against the original v5
+reference, including identical 44-word traces and zero caller data/code growth:
+`build/i386-helper-frame-backend-v5/result.json`. The current normal 8 MiB TCG
+welcome raster also matches all 307200 pixels. These component results do not
+close the remaining 8 MiB token-loader fragmentation or full C1-C5 gates.
+
+The new diagnostic helper-frame probe passes in both phases: it executes an F64
+expression, injects an executable-allocation OutMem, checks restored AOT/hash/
+function context, unwinds the control, requires exact warm private/public heap
+recovery, and repeats successful compilation/execution. The complete 16 MiB TCG
+diagnostic boot also reaches startup with its exact 307200-pixel welcome frame.
+Evidence is `build/i386-helper-frame-diagnostic16-v5/debug.log` and its screen oracle.

@@ -21,13 +21,13 @@ Bool I386ExpressionServicesValid(CPrsExpressionServices *services)
     services->pop && services->append && services->optimize && services->allocate && services->duplicate &&
     services->string && services->hash_add && services->hash_after && services->type && services->expression;
 }
-Bool I386ParserStackCheck(CCmpCtrl *cc)
+Bool I386ParserStackReserve(CCmpCtrl *cc,I64 reserve)
 {
   CI386CmpCtrl *owned=cc;
   CI386Task *task=owned->task;
   U8 *frame=GetRBP;
   U64 base,end;
-  if(!task) return FALSE;
+  if(!task || reserve<4096 || reserve>0x7FFFFFFF) return FALSE;
   if(!task->stk || task->stk->stk_size<4096 || task->stk->stk_size>0xFFFFFFFF)
     throw('Compiler',TRUE);
   base=(&task->stk->stk_base)(U64); end=base+task->stk->stk_size;
@@ -39,9 +39,11 @@ Bool I386ParserStackCheck(CCmpCtrl *cc)
     base=(task->debug_stack+0)(U64);end=base+task->debug_stack_size;
   }
   if(end>0x100000000 || (frame+0)(U64)<base || (frame+0)(U64)>end-8 ||
-      (frame+0)(U64)-base<4096) throw('Compiler',TRUE);
+      (frame+0)(U64)-base<reserve) throw('Compiler',TRUE);
   return TRUE;
 }
+Bool I386ParserStackCheck(CCmpCtrl *cc)
+{ return I386ParserStackReserve(cc,4096); }
 Bool I386ParseExpression(CI386Heap *heap,CCmpCtrl *cc,CPrsExpressionServices *services,
   I64 *precedence,Bool end_exp,CPrsStk *stack=0)
 {

@@ -1,6 +1,7 @@
 //Definitions must survive control destruction and later failed input.
 #include "/Kernel/Arc.HH"
 #include "/Kernel/I386/CompilerProgramReadCore.HC"
+#include "/Kernel/I386/CompilerHelperFrameProbe.HC"
 
 U0 ProbeProgramJitSpan(CI386CompilerProbe *probe,CPrsSymbolServices *symbols,
   CHashTable *table,U8 *name,I64 phase,I64 index)
@@ -2380,6 +2381,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
         !I386HeapValid(heap) || (GetRFlags&0x200)!=(flags&0x200)) { KernelLog("PROGRAM OWNERSHIP REJECT\n"); KernelStop; }
     KernelLog("PROGRAM CASE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(kind); KernelLog("\n");
   }
+  ProbeHelperFrameFailure(probe,heap,outer);
   ProbeProgramUnit(probe,heap,outer);
   ProbeProgramKMath(probe,heap,outer);
   ProbeProgramArc(probe,heap,outer);

@@ -312,3 +312,35 @@ prior files validate historical source pins. Its native16-v4 contract passes,
 and native8-v4 reproduces the exact numeric-stage allocation failure above.
 The final v4 audit covers these current-image receipts and the binary-identical
 v3 regressions/rasters, with unchanged body tokens and normalized source pins.
+
+The helper-frame resource checkpoint (`build/i386-helper-frame-cross-v5`, compiler
+ABI 97, Console 258) removes the 3604-byte F64 helper descriptor from the compiler
+arena for its emission/link lifetime. Its complete ten-helper metadata resides in
+a checked stack frame; the integer-only path retains its small arena descriptor.
+Borrowed AOT/hash/pass state is restored on exceptions before that frame retires.
+The additional stack reserve is 4116 bytes above the existing 4096-byte downstream
+reserve. Disassembly measures a 3808-byte local frame/argument/linkage delta;
+this is not a bound on arbitrary recursive compiler or callback depth.
+
+Private frontend IR storage now rounds the complete tree prefix to four bytes
+(108 rather than 112). The following lifetime record contains only 32-bit fields;
+its payload becomes 128 bytes and its physical heap span 144 rather than 152.
+Public full-node allocations and all field offsets remain unchanged.
+
+The unchanged 24-check 16 MiB token contract passes on this image. The 8 MiB
+contract still fails in PublicLexNumber.HC, now after descriptor/proxy setup at
+an emitter-buffer request of 0x1C4D bytes. Heap usage is 0x66D8C8 of 0x671000,
+with largest free payload 0x5A8 and 0x4F7E live allocations. Aggregate free space
+exceeds that request, but no contiguous block fits. Receipts are
+`build/i386-helper-frame-lex16-v5` and `build/i386-helper-frame-lex8-v5`.
+The next C5 resource investigation is emitter/IR lifetime and fragmentation;
+normal parser/directive closure and 8 MiB lexer qualification remain open.
+
+The checkpoint also passes both fresh original bootstrap generations, the strict
+cross-build, all 25 diagnostic source-compiler publication stages through normal
+optimizer/backend services, and the full 16 MiB diagnostic frame. Its new F64
+helper fault probe validates failure/unwind/retry in both diagnostic phases.
+`build/i386-helper-frame-cross-v5/final-audit.py` and
+`final-verification-audit.json` validate current source/image/input/module pins,
+compiled frame/node layouts, records and both passing and failing receipts.
+Qualification remains 2/686; no complete workflow or milestone advances.

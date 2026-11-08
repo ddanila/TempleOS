@@ -6,7 +6,11 @@ class CI386OwnedCode { CCodeCtrl header; CI386CodeAllocation lifetime; };
 //The native emitter stores machine bytes in CI386Out, not the original ic_body.
 //Private frontend nodes need all tree links, but no unused machine-byte tail.
 //Keep public I386ICAdd allocations complete and preserve every field offset.
-#define I386_FRONTEND_IC_BYTES ((offset(CIntermediateCode.t)+sizeof(CICTreeLinks)+7)&~7)
+#define I386_FRONTEND_IC_BYTES ((offset(CIntermediateCode.t)+sizeof(CICTreeLinks)+3)&~3)
+//The following lifetime has only 32-bit pointers/words. Four-byte alignment
+//retains every tree byte and avoids an extra eight-byte heap span per node.
+#assert I386_FRONTEND_IC_BYTES>=offset(CIntermediateCode.t)+sizeof(CICTreeLinks)
+#assert !(I386_FRONTEND_IC_BYTES&3)
 CI386CodeAllocation *I386ICLifetime(CI386Heap *heap,CIntermediateCode *node)
 {
   I64 bytes;

@@ -28247,3 +28247,35 @@ separators. All native binaries match v3; those are the only volume differences.
 Native16-v4 passes the complete token contract and native8-v4 reproduces the same
 numeric-stage OutMem. The final current-image audit verifies prior source hashes
 against preserved bodies and retains the 8 MiB failure as an open C5 frontier.
+
+### Checked F64 helper workspace and compact private IR
+
+Compiler 97 bounds the complete ten-helper F64 descriptor on the current task
+stack for emission/linking, retaining a small heap descriptor for integer-only
+work. Borrowed compiler state restores before exception propagation retires that
+frame. The compiled local frame/argument/linkage delta is 3808 bytes against an
+extra 4116-byte preflight reserve, above the existing 4096-byte downstream reserve.
+This is not arbitrary-recursion stack qualification. Four-byte rounding retains
+the complete private IR tree prefix and all public field offsets, saving eight
+physical heap bytes per frontend node; public full-node allocations are unchanged.
+
+The unchanged normal 16 MiB lexer contract passes all 24 checks; the normal backend
+passes 48 checks, the original 44-word trace and zero caller data/code growth.
+The 8 MiB TCG welcome frame matches all 307200 pixels. The 8 MiB full lexer contract
+still fails in PublicLexNumber.HC, now on a 0x1C4D emitter buffer: usage
+0x66D8C8/0x671000, largest free payload 0x5A8, 0x4F7E live allocations. Aggregate
+free space exceeds the request; fragmentation/lifetime remains the next C5 target.
+No grammar/test reduction or workflow qualification is claimed. Evidence is under
+build/i386-helper-frame-cross-v5 and its matching v5 regression directories.
+
+Both diagnostic phases now pass injected executable-allocation failure, borrowed
+context restoration, exact warm private/public heap recovery and F64 retry. The
+complete 16 MiB TCG diagnostic also passes its exact 307200-pixel startup frame.
+
+Both fresh original bootstrap generations, strict cross-build and all 25 source
+compiler publication stages pass. That suite retains diagnostic lexer/parser
+loading and uses the normal optimizer/backend; full normal compiler delivery is
+still open. The final audit under build/i386-helper-frame-cross-v5 checks current
+source/image/module/input pins, ABI/export preservation, compiled frame/node
+layouts, full contract records, both rasters and explicit 8 MiB failure receipts.
+Five inventory guards pass. Workflow qualification remains 2/686; C1–C5 stay open.
