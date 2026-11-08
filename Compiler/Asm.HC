@@ -909,7 +909,10 @@ U0 PrsBinFile(CCmpCtrl *cc)
   Lex(cc);
 }
 
-U0 PrsAsmBlk(CCmpCtrl *cc,I64 cmp_flags)
+#ifndef PRS_ASM_BLOCK_IMPL
+#define PRS_ASM_BLOCK_IMPL PrsAsmBlk
+#endif
+U0 PRS_ASM_BLOCK_IMPL(CCmpCtrl *cc,I64 cmp_flags)
 {
   CAOTCtrl *aotc=cc->aotc;
   I64 i,j,k,argcnt,

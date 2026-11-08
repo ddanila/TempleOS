@@ -28735,3 +28735,15 @@ Public allocator/handler-install exhaustion, cancellation/concurrency, broader
 class/symbol/body rollback, assembly/AOT, full desktop/application coverage and
 native release qualification remain open. Functional frames do not qualify startup
 budgets. C1-C5 remain active; bundled qualification remains 2/686.
+
+## Complete shared assembler/join bodies (2026-11-08)
+
+Assembler expression/listing, opcode-table parsing, compilation join, map writing
+and end-of-line skipping now have shared complete bodies. Original wrappers retain
+their prior entry points and type/table setup. Two original bootstrap generations
+pass; selected source pins, binary hashes and exact body extraction are verified
+by `build/i386-public-asm-cross-v1/shared-body-audit.json`. See
+`docs/i386-public-assembly.md`. This prepares separate lazy native assembly
+publication; source probes exposed missing LexSkipEol and SwapI64 dependencies.
+Normal native assembly integration, compiler/AOT/error/resource qualification and
+all C1-C5 milestones remain in progress; bundled qualification remains 2/686.
