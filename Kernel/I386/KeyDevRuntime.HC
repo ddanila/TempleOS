@@ -110,15 +110,22 @@ U0 NativeKeyDevStart()
   native_keydev_ready=TRUE;
 }
 
+I64 NativeKeyboardMouseScan(I64 scan)
+{//Original KbdBuildSC mirrors flags into both merged and raw scan halves.
+  I64 flags=0,mask=SCF_MS_L_DOWN|SCF_MS_R_DOWN;
+  if(console_config->mouse && console_config->mouse->installed) {
+    if(ms.lb)flags|=SCF_MS_L_DOWN;
+    if(ms.rb)flags|=SCF_MS_R_DOWN;
+    scan&=~(mask|(mask<<32));
+    scan|=flags|(flags<<32);
+  }
+  return scan;
+}
+
 U0 NativeKeyboardStateEvent(CI386KeyEvent *event)
 {//The scheduled decoder publishes the original public keyboard-state fields.
-  I64 scan=event->scan;
+  I64 scan=NativeKeyboardMouseScan(event->scan);
   U32 merged=scan&255,raw=(scan>>32)&255;
-  if(console_config->mouse && console_config->mouse->installed) {
-    scan&=~(SCF_MS_L_DOWN|SCF_MS_R_DOWN);
-    if(ms.lb)scan|=SCF_MS_L_DOWN;
-    if(ms.rb)scan|=SCF_MS_R_DOWN;
-  }
   kbd.scan_code=scan;kbd.new_key_timestamp=kbd.timestamp;kbd.cnt++;
   if(event->type==MSG_KEY_UP) {
     Btr(kbd.down_bitmap,merged);Btr(kbd.down_bitmap2,raw);

@@ -54,11 +54,7 @@ Bool NativeKeyboardPump()
       native_keyboard_losses++;
       NativeTerminalDiscardKeyboard;
     } else if(decoded && !NativeTerminalFocusKey(&event)) {
-      if(console_config->mouse && console_config->mouse->installed) {
-        event.scan&=~(SCF_MS_L_DOWN|SCF_MS_R_DOWN);
-        if(ms.lb)event.scan|=SCF_MS_L_DOWN;
-        if(ms.rb)event.scan|=SCF_MS_R_DOWN;
-      }
+      event.scan=NativeKeyboardMouseScan(event.scan);
       target=sys_focus_task;
       if(!TaskValidate(target)) target=native_keyboard_owner;
       if(!native_keyboard_reported) {

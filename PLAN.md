@@ -29626,3 +29626,26 @@ all remaining C1–C5 acceptance stays open. An isolated single-job normal8MiB
 KVM486,-fpu startup takes53.207s with live WinMgr and exact welcome/42 pixels,
 passing the current60s baseline subgate, not fullC5. See
 docs/i386-mouse-first-event.md.
+
+### C2/C3: full keyboard scans with mouse buttons
+
+Original KbdBuildSC mirrors mouse flags into both32-bit scan halves; the native
+adapters previously populated only the low half. A shared adapter now preserves
+both delivered scans and public kbd.scan_code/last_down_scan_code through all
+four button combinations. Console ABI268 versions the behavior. Eight actual
+key-down/up phases under synthetic and physical mouse input match80 original
+values and exact IF/caller/heap/mouse restoration; fresh42 and unchanged files
+pass. The previous image has12 rows missing only the upper flags, with mask7.
+The oracle audit rejects81 value corruptions. MsSet544+32 also passes.
+
+The full image build/i386-keyboard-mouse-scan-cross-v1/kernel.img pins1860 sources
+and26 helpers, passes the386 instruction audit and has two source-matching
+classic bootstrap generations. Only Kernel/ConsoleRuntime modules change from
+the preceding image; kernel size stays457416. These are not C5 native builds.
+A separate original-calibrated source literal regression proves that native
+compilation drops MsgLoop's quoted link. Ordinary underlined text correctly
+projects its tag in both systems, so serializing every styled entry would also
+be wrong. The literal test is a strict native failure, not an application pass.
+Full MsgLoop, remaining input/desktop/apps/resources and C1–C5 stay open;
+qualification remains2/686. See docs/i386-keyboard-mouse-scan.md and
+[quoted source evidence](docs/i386-document-literal.md).
