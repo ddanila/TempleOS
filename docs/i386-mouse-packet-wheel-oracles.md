@@ -6,7 +6,11 @@ The packet oracle compiles arithmetic extracted from the original
 each axis and eight button combinations, plus all 256 fourth bytes for each
 button combination. Native probes compile the exact current decoder source
 with unbounded coordinates. These are source probes, not delivered-image IRQ
-or protocol-negotiation qualification.
+or protocol-negotiation qualification. Native rows inspect the three raw button
+bits and stored fourth byte. Their wheel/extra-button columns reconstruct the
+original arithmetic from that stored byte; they do not exhaustively test the
+scheduled wheel accumulator or implement a native five-button API. The physical
+wheel oracle separately tests the actual positive/negative wheel path.
 
 Evidence under `build/`:
 
@@ -15,7 +19,8 @@ Evidence under `build/`:
 - `mouse-packets-native-before-v1`: strict failure in 6,144 cases against the
   original, with unchanged inputs.
 - `mouse-packets-native-fixed-v1`: candidate decoder source passes all 10,240
-  cases with unchanged inputs. Production integration is still pending.
+  cases with unchanged inputs. Production integration and physical wheel verification are recorded in
+  [the implementation record](i386-mouse-wheel.md).
 
 The physical wheel fixture uses actual QEMU wheel events and a focused managed
 window. It checks positive/negative public z, first-control priority outside the

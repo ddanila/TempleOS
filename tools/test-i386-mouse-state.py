@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT/'tests/guest/i386-mouse-state/MouseState.HC'
 COMMANDS = [
     ('#include "/Kernel/I386/PublicUser.HH"', []),
-    ('#include "C:/MouseState.HC"', []),
+    ('#include "C:/MouseState.HC"', ['Warning: Unused var', 'Warning: Unused var']),
     ('MSTProbe;', ['63'], {
         'begin':'MS TEST ready\n','initial_rows':['A'],
         'events':[
@@ -43,6 +43,7 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
+    parser.add_argument('--accel',choices=('tcg','kvm'),default='tcg')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     commands = list(COMMANDS)
@@ -55,11 +56,11 @@ def main():
     working = out/'working.img'
     runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](source, working, additions={'/MouseState.HC': FIXTURE.read_bytes()})
     report = dict(result='running', scope='PS/2 motion, both buttons, text coordinates, timestamp, speed, scaling and grid snapping; not complete original mouse qualification',
-                  input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
+                  input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib, accel=args.accel)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
-            cpu='486,-fpu', accel='tcg', qmp_stdio=True, welcome=True,
+            cpu='486,-fpu', accel=args.accel, qmp_stdio=True, welcome=True,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
                            'rejection_prefixes':('INPUT REJECT ',),

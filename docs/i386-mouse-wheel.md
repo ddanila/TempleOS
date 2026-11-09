@@ -35,6 +35,9 @@ classic bootstrap generations are not C5 native self-hosting generations.
 
 - `mouse-wheel-packets-v1`: all 10240 source-decoder probe rows exactly match
   `mouse-packets-original-v1`; independent original arithmetic model passes.
+  The probe checks raw buttons and fourth-byte preservation; its reconstructed
+  wheel/extra-button columns do not qualify every scheduled wheel value or
+  native extra-button APIs.
 - `mouse-wheel-native-v1`: physical wheel state/callbacks exactly match
   `mouse-wheel-original-v2` across eight phases, six callbacks, mask 15.
 - `mouse-wheel-audit-v1`: independently accumulated wheel model matches both
@@ -45,9 +48,24 @@ classic bootstrap generations are not C5 native self-hosting generations.
 - `mouse-wheel-lifetime-v1` and `mouse-wheel-click-lifetime-v1`: five modes each
   pass 255, covering throw, recovering/committed Exit and owner retirement.
 
-These passing native runs preserve fixture files/metadata and execute a fresh
-42 afterward. Input hashes remain unchanged. Original and strict old-native
-failures are preserved as described in [the oracle record](i386-mouse-packet-wheel-oracles.md).
+- `mouse-wheel-raw-api-v1`: raw/logical/button state mask 15, unchanged files.
+- `mouse-wheel-help-v1`, `mouse-wheel-picker-v1`, `mouse-wheel-state-8m-v2`:
+  8 MiB 486,-fpu KVM/live WinMgr pixel checks pass; mouse state mask 63.
+  The state driver now checks the two existing unused-var diagnostics directly
+  and offers an explicit acceleration option. Its initial missing-warning
+  screen failure is retained in `mouse-wheel-state-8m-v1`; the prior passing
+  mouse-gain run used an adapter for the same diagnostics.
+- `mouse-wheel-budget-v1`: full Budget save/cold-reopen masks 1023/63, exact
+  original reports and saved records, 1886 prior files preserved, cold-reopen
+  file/metadata stability and fresh 42 in both sessions.
+
+The packet, wheel, queue, gain, lifetime and raw API runs preserve their fixture
+files/metadata and execute a fresh 42 afterward. Input hashes remain unchanged.
+`mouse-wheel-audit-v1/regressions.json` checks the eleven passing receipts and
+1859 source/26 helper pins against committed blobs, preserving the inventory
+snapshot used by Budget. These concurrent 8 MiB runs do not establish the
+isolated 60-second C5 startup gate. Original and strict old-native failures are
+preserved as described in [the oracle record](i386-mouse-packet-wheel-oracles.md).
 
 Malformed/resynchronized packets, controller failures on physical hardware,
 Explorer device negotiation, complete extra-button APIs, queue burst/FIFO parity,

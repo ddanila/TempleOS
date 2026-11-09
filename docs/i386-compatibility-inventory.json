@@ -712,6 +712,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -1601,6 +1608,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -7116,6 +7130,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -7347,6 +7368,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -7583,6 +7611,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -7885,6 +7920,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -8197,6 +8239,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -8467,6 +8516,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -8802,6 +8858,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -9072,6 +9135,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -9174,6 +9244,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -9489,6 +9566,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -9626,6 +9710,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -9944,6 +10035,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -9993,6 +10091,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
@@ -23521,6 +23626,13 @@
           "result": "pass",
           "evidence": "build/mouse-gain-audit-v1/result.json",
           "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
+        },
+        {
+          "target": "original-packet-wheel-input",
+          "command": "python3 tools/test-i386-mouse-packets.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-mouse-wheel.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-wheel-audit-v1/result.json",
+          "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
       ]
     },
