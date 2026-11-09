@@ -28955,3 +28955,36 @@ partial headers/optimization/fixup failures, cancellation/concurrency and reuse
 of failed caller-owned joins remain unqualified. Desktop/apps, resource and
 performance gates and complete native C5 release generations remain open.
 C1-C5 remain active; bundled qualification remains 2/686.
+
+
+### C4: unwind nested assembly ownership before propagating Compiler
+
+Inner CMPF_ASM_BLK joins now catch Compiler only long enough to run the existing
+owned-scope release and parent-context restoration, then rethrow Compiler outside
+the catch block. The enclosing CmpBuf join preserves its error/NULL-return
+policy. Other exception kinds still propagate as before; parser, resolver,
+successful packing and graph/control destructors are unchanged.
+
+The identical nested fixture retains 67,056–67,336 bytes in nine native cases on
+the unchanged a0ed image; the final image restores all ten caller heaps exactly
+with unchanged error counts, source/queue/recovery and backing checks. The tenth
+case is an unresolved label: native rejects it later with one error and no
+retention; original x64 permits an unresolved reference with zero errors. That
+existing semantic gap is preserved, not qualified as equivalent. Nine original
+nested failures drop from 68,216–68,528 retained bytes to zero, with identical
+81,920-byte diagnostics across the ten original outcomes.
+
+Three direct CmpJoin errors also preserve the caller's parent packet/control,
+hash context, depth, two code frames, instruction/misc records and immutable mode
+bits before propagation. The unchanged image fails structural checks and retains
+71,200–71,480 bytes after public caller cleanup. Changed lexer flags remain
+recorded and unchanged from baseline; full failed-parser reuse is unqualified.
+
+The final source/image audit checks 1,849 source/26 helper hashes, sixteen
+modules, both original bootstrap generations, the exact three-part production
+diff and all raw before/after records. The ten ordinary error paths, fourteen
+successful buffers, full assembly contract, 46 prior error rows, ten DolDoc
+boundary cases and six independent ELF32 packets pass. See
+docs/i386-nested-asm-errors.md and the canonical receipts. No new resource,
+performance, desktop/app or complete native C5 release claim is made. C1-C5 remain
+active; bundled qualification remains 2/686.

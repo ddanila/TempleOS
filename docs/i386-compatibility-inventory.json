@@ -9703,6 +9703,20 @@
           "result": "pass",
           "evidence": "build/i386-public-asm-contract-v5/result.json",
           "scope": "Normal separate four-stage lazy delivery of complete shared PrsAsmBlk/CmpJoin/opcode-table/expression/listing bodies. Twenty-four fields: exact data/instruction bytes, executable forward/local branches, import metadata, eight inline/bare cases including an unreachable block, caller context, canonical types, real 31-form MOV lookup, verified expected warning output with owned document cleanup, fresh normal expression 42 and zero data/code heap deltas. Identical final fixture on unchanged pre-release image retains 992 bytes and emits identical warning bytes. Prior normal success/error, lexer, corpus/bootstrap and functional frame evidence is independently audited; no whole-file/compiler qualification. Complete assembly forms, assembly/backend/body error/OOM/cancellation ownership, Cmp/CmpBuf/file/map workflows and full C1-C5 release qualification remain open. See docs/i386-public-assembly.md."
+        },
+        {
+          "target": "native-nested-assembly-compiler-error-ownership",
+          "command": "python3 tools/test-i386-public-buffer-errors.py IMAGE --assembly-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-buffer-nested-after-v2/result.json",
+          "scope": "Ten actual CmpBuf nested assembly contexts, zero caller deltas, unchanged counts/input/queue/recovery and task/global-output ownership. Three direct propagated Compiler cases preserve parent packet/control/hash/depth and two caller code frames; normal public cleanup returns exact heaps. Unchanged baseline fails with positive retention and structural-state failures. Flags/parser reuse, arbitrary exceptions/OOM, fixup/optimization and complete C1-C5 remain open. See docs/i386-nested-asm-errors.md."
+        },
+        {
+          "target": "original-rebuilt-nested-assembly-error-ownership",
+          "command": "python3 tools/test-buffer-errors-original.py --assembly-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/buffer-nested-original-after-v3/result.json",
+          "scope": "Actual rebuilt x64 Cmp/internal CmpBuf: nine nested Compiler failures restore caller heaps versus retained old scopes; original accepted unresolved-reference case stays accepted. Counts and full 81920-byte diagnostic buffers identical. Native rejects that unresolved case, an existing assembly/module semantic gap; no whole-assembly equivalence or native backing qualification is inferred."
         }
       ]
     },
@@ -9834,6 +9848,20 @@
           "result": "pass",
           "evidence": "build/i386-asm-progress-native16-v1/result.json",
           "scope": "Normal shipping Console 255 service at 16 MiB: 28 assertions and sixteen raw patch/counter words match original recoverable behavior while remaining heads are safe without fixture rebasing. Retry does not re-execute committed prefix expressions; caller abandonment reclaims pending code/records plus hash-owned imports. Zero net caller data/code growth, independently measured native diagnostic cost zero, one system load, arithmetic/volume and input checks. Prior native image fails exactly the two original head assertions in the initial 14-check contract. No complete compiler or workflow qualification."
+        },
+        {
+          "target": "native-nested-assembly-compiler-error-ownership",
+          "command": "python3 tools/test-i386-public-buffer-errors.py IMAGE --assembly-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-buffer-nested-after-v2/result.json",
+          "scope": "Ten actual CmpBuf nested assembly contexts, zero caller deltas, unchanged counts/input/queue/recovery and task/global-output ownership. Three direct propagated Compiler cases preserve parent packet/control/hash/depth and two caller code frames; normal public cleanup returns exact heaps. Unchanged baseline fails with positive retention and structural-state failures. Flags/parser reuse, arbitrary exceptions/OOM, fixup/optimization and complete C1-C5 remain open. See docs/i386-nested-asm-errors.md."
+        },
+        {
+          "target": "original-rebuilt-nested-assembly-error-ownership",
+          "command": "python3 tools/test-buffer-errors-original.py --assembly-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/buffer-nested-original-after-v3/result.json",
+          "scope": "Actual rebuilt x64 Cmp/internal CmpBuf: nine nested Compiler failures restore caller heaps versus retained old scopes; original accepted unresolved-reference case stays accepted. Counts and full 81920-byte diagnostic buffers identical. Native rejects that unresolved case, an existing assembly/module semantic gap; no whole-assembly equivalence or native backing qualification is inferred."
         }
       ]
     },
@@ -10184,6 +10212,20 @@
           "result": "pass",
           "evidence": "build/buffer-errors-original-after-v7/result.json",
           "scope": "Actual rebuilt x64 Cmp calling internal shared CmpBuf, ten failures with normal kernel declarations. Exact caller heap/source-file/queue recovery and subsequent valid file compilation; two-error/zero-warning summaries and full 81920-byte diagnostics identical to old generated compiler baseline. Not native backing or whole original module qualification."
+        },
+        {
+          "target": "native-nested-assembly-compiler-error-ownership",
+          "command": "python3 tools/test-i386-public-buffer-errors.py IMAGE --assembly-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-buffer-nested-after-v2/result.json",
+          "scope": "Ten actual CmpBuf nested assembly contexts, zero caller deltas, unchanged counts/input/queue/recovery and task/global-output ownership. Three direct propagated Compiler cases preserve parent packet/control/hash/depth and two caller code frames; normal public cleanup returns exact heaps. Unchanged baseline fails with positive retention and structural-state failures. Flags/parser reuse, arbitrary exceptions/OOM, fixup/optimization and complete C1-C5 remain open. See docs/i386-nested-asm-errors.md."
+        },
+        {
+          "target": "original-rebuilt-nested-assembly-error-ownership",
+          "command": "python3 tools/test-buffer-errors-original.py --assembly-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/buffer-nested-original-after-v3/result.json",
+          "scope": "Actual rebuilt x64 Cmp/internal CmpBuf: nine nested Compiler failures restore caller heaps versus retained old scopes; original accepted unresolved-reference case stays accepted. Counts and full 81920-byte diagnostic buffers identical. Native rejects that unresolved case, an existing assembly/module semantic gap; no whole-assembly equivalence or native backing qualification is inferred."
         }
       ]
     },
@@ -11349,6 +11391,20 @@
           "result": "pass",
           "evidence": "build/buffer-errors-original-after-v7/result.json",
           "scope": "Actual rebuilt x64 Cmp calling internal shared CmpBuf, ten failures with normal kernel declarations. Exact caller heap/source-file/queue recovery and subsequent valid file compilation; two-error/zero-warning summaries and full 81920-byte diagnostics identical to old generated compiler baseline. Not native backing or whole original module qualification."
+        },
+        {
+          "target": "native-nested-assembly-compiler-error-ownership",
+          "command": "python3 tools/test-i386-public-buffer-errors.py IMAGE --assembly-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-buffer-nested-after-v2/result.json",
+          "scope": "Ten actual CmpBuf nested assembly contexts, zero caller deltas, unchanged counts/input/queue/recovery and task/global-output ownership. Three direct propagated Compiler cases preserve parent packet/control/hash/depth and two caller code frames; normal public cleanup returns exact heaps. Unchanged baseline fails with positive retention and structural-state failures. Flags/parser reuse, arbitrary exceptions/OOM, fixup/optimization and complete C1-C5 remain open. See docs/i386-nested-asm-errors.md."
+        },
+        {
+          "target": "original-rebuilt-nested-assembly-error-ownership",
+          "command": "python3 tools/test-buffer-errors-original.py --assembly-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/buffer-nested-original-after-v3/result.json",
+          "scope": "Actual rebuilt x64 Cmp/internal CmpBuf: nine nested Compiler failures restore caller heaps versus retained old scopes; original accepted unresolved-reference case stays accepted. Counts and full 81920-byte diagnostic buffers identical. Native rejects that unresolved case, an existing assembly/module semantic gap; no whole-assembly equivalence or native backing qualification is inferred."
         }
       ]
     },
@@ -11457,6 +11513,20 @@
           "result": "pass",
           "evidence": "build/buffer-errors-original-after-v7/result.json",
           "scope": "Actual rebuilt x64 Cmp calling internal shared CmpBuf, ten failures with normal kernel declarations. Exact caller heap/source-file/queue recovery and subsequent valid file compilation; two-error/zero-warning summaries and full 81920-byte diagnostics identical to old generated compiler baseline. Not native backing or whole original module qualification."
+        },
+        {
+          "target": "native-nested-assembly-compiler-error-ownership",
+          "command": "python3 tools/test-i386-public-buffer-errors.py IMAGE --assembly-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-buffer-nested-after-v2/result.json",
+          "scope": "Ten actual CmpBuf nested assembly contexts, zero caller deltas, unchanged counts/input/queue/recovery and task/global-output ownership. Three direct propagated Compiler cases preserve parent packet/control/hash/depth and two caller code frames; normal public cleanup returns exact heaps. Unchanged baseline fails with positive retention and structural-state failures. Flags/parser reuse, arbitrary exceptions/OOM, fixup/optimization and complete C1-C5 remain open. See docs/i386-nested-asm-errors.md."
+        },
+        {
+          "target": "original-rebuilt-nested-assembly-error-ownership",
+          "command": "python3 tools/test-buffer-errors-original.py --assembly-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/buffer-nested-original-after-v3/result.json",
+          "scope": "Actual rebuilt x64 Cmp/internal CmpBuf: nine nested Compiler failures restore caller heaps versus retained old scopes; original accepted unresolved-reference case stays accepted. Counts and full 81920-byte diagnostic buffers identical. Native rejects that unresolved case, an existing assembly/module semantic gap; no whole-assembly equivalence or native backing qualification is inferred."
         }
       ]
     },

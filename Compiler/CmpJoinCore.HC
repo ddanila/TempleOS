@@ -25,7 +25,7 @@ CAOT *CMP_JOIN_IMPL(CCmpCtrl *cc,I64 cmp_flags,U8 *map_name=NULL,U8 mapfile_drv_
   U8 *buf;
   CAOTBinBlk *tmpbin;
   CAOTImportExport *tmpie;
-  Bool okay=TRUE;
+  Bool okay=TRUE,propagate=FALSE;
   CLexHashTableContext *htc=MAlloc(sizeof(CLexHashTableContext));
   CAOT *res=CAlloc(sizeof(CAOT)),*parent;
   if (parent=cc->aot) {
@@ -82,9 +82,12 @@ CAOT *CMP_JOIN_IMPL(CCmpCtrl *cc,I64 cmp_flags,U8 *map_name=NULL,U8 mapfile_drv_
       PrsStmt(cc,,,cmp_flags);
     AOTGlblsResolve(cc,res);
   } catch {
-    if (Fs->except_ch=='Compiler' && !(cmp_flags&CMPF_ASM_BLK)) {
-      LexPutPos(cc);
+    if (Fs->except_ch=='Compiler') {
+      //Catch an inner assembly error long enough to restore its owned scope.
+      //The enclosing join still receives the same Compiler exception.
       Fs->catch_except=TRUE;
+      if(cmp_flags&CMPF_ASM_BLK) propagate=TRUE;
+      else LexPutPos(cc);
     }
     okay=FALSE;
   }
@@ -168,5 +171,6 @@ CAOT *CMP_JOIN_IMPL(CCmpCtrl *cc,I64 cmp_flags,U8 *map_name=NULL,U8 mapfile_drv_
   Free(aotc);
   cc->aotc=old_aot;
   cc->aot_depth--;
+  if(propagate) throw('Compiler');
   return res;
 }

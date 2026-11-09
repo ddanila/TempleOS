@@ -16,13 +16,17 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--baseline-revision', help='Require delivered sources to match this Git revision instead of the checkout')
+    parser.add_argument('--assembly-errors', action='store_true', help='Check failures within nested assembly joins')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     if out.exists():
         parser.error('Use a fresh output directory')
     out.mkdir(parents=True)
-    fixture = ROOT/'tests/guest/i386-public-buffer-errors/Contract.HC'
+    fixture = ROOT/'tests/guest/i386-public-buffer-errors'/('Assembly.HC' if args.assembly_errors else 'Contract.HC')
     paths = [Path(__file__).resolve(), source, fixture, ROOT/'Compiler/OpCodes.DD']
+    boundary = ROOT/'tests/guest/i386-public-buffer-errors/Boundary.HC'
+    if args.assembly_errors:
+        paths.append(boundary)
     paths += [ROOT/'Adam/DolDoc'/name for name in ('DocDollarParseCore.HC', 'DocDollarFlagsCore.HC', 'DocDollarServices.HH', 'DocEntryLife.HC', 'DocFormDataCore.HC')]
     paths += [ROOT/'tools'/name for name in (
         'test-i386-autocomplete-interaction.py', 'package-i386-native-image.py',
@@ -42,6 +46,7 @@ def main():
         baseline = subprocess.check_output(['git', 'rev-parse', args.baseline_revision+'^{commit}'], cwd=ROOT, text=True).strip()
         report['baseline_revision'] = baseline
         report['baseline_source_sha256'] = {}
+    report['assembly_errors'] = args.assembly_errors
     guest = None
     try:
         pack = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))
@@ -60,6 +65,8 @@ def main():
         report['accounting_layout_sha256'] = layout_hashes
         prelude = '\n'.join(text for text, _ in layouts).encode()+b'\n'
         additions = {'/Probe/BufferErrors.HC': prelude+fixture.read_bytes()}
+        if args.assembly_errors:
+            additions['/Probe/JoinBoundary.HC'] = boundary.read_bytes()
         report['packaging'] = pack['package'](source, out/'working.img', additions=additions)
         Guest = runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest']
         guest = Guest(out/'working.img', out/'guest', True)
@@ -80,6 +87,12 @@ def main():
         report['backing_per_case'] = [report['records'][107+i*8:115+i*8] for i in range(10)]
         expected = [1,1,1,1,1,0,0,1]*10+[1,1,1]
         report['ownership_matches'] = report['records'][:83] == expected and report['fix_set_records'] == [1]*10 and report['diagnostic_warmup_stable'] and report['records'][213] == 1 and report['records'][215] == 1
+        if args.assembly_errors:
+            guest.command('#include \"C:/Probe/JoinBoundary.HC\"', timeout=180)
+            guest.wait('JOIN BOUNDARY DONE\n')
+            report['boundary_records'] = list(struct.unpack('<45q', (guest.out/'join-boundary.bin').read_bytes()))
+            report['boundary_matches'] = all(report['boundary_records'][i*15:i*15+14] == [1]*12+[0,0] for i in range(3))
+            report['ownership_matches'] = report['ownership_matches'] and report['boundary_matches']
         guest.command('6*7;')
         report['arithmetic_pixels'] = guest.result_pixels()
         guest.close()

@@ -171,3 +171,9 @@ cancellation and concurrency remain unqualified. Reusing a caller-owned failed
 desktop/apps and native C5 release generations remain open. No startup,
 performance or new low-memory qualification is claimed. C1–C5 remain active and
 bundled qualification remains 2/686.
+
+
+The subsequent [nested assembly ownership checks](i386-nested-asm-errors.md)
+cover Compiler exceptions propagated from inner assembly joins, including
+caller-owned parent/code-stack preservation. Other exception kinds, full parser
+reuse and complete invalid-assembly/module behavior remain open.

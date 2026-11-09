@@ -15,19 +15,22 @@ def main():
     parser.add_argument('--bootstrap', type=Path, default=ROOT/'build/rebuild-test')
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--observe-baseline', action='store_true')
+    parser.add_argument('--assembly-errors', action='store_true', help='Check failures within nested assembly joins')
     args = parser.parse_args()
     bootstrap, out = args.bootstrap.resolve(), args.out.resolve()
     if out.exists():
         parser.error('Use a fresh output directory')
     out.mkdir(parents=True)
-    fixture = ROOT/'tests/guest/buffer-error-original/Contract.HC'
+    fixture = ROOT/'tests/guest/buffer-error-original'/('Assembly.HC' if args.assembly_errors else 'Contract.HC')
     paths = [Path(__file__).resolve(), fixture, bootstrap/'result.json',
              bootstrap/'overlay/Compiler/Compiler.BIN', bootstrap/'overlay/0000Boot/0000Kernel.BIN.C',
              ROOT/'tools/build-iso.py', ROOT/'tools/guest-run.py']
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     pins = {str(p): sha(p) for p in paths}
     report = dict(result='running', input_sha256=pins,
-                  scope='Ten actual normal Cmp failures through its internal CmpBuf on generated original x64 compiler/kernel; unchanged source files, queue, error counts, exact caller heap counters and subsequent successful file compilation. Not native backing, OOM, cancellation or arbitrary exception qualification.')
+                  scope='Ten actual normal Cmp calls through its internal CmpBuf on generated original x64 compiler/kernel; unchanged source files, queue, error counts, exact caller heap counters and subsequent successful file compilation. Not native backing, OOM, cancellation or arbitrary exception qualification.')
+    report['assembly_errors'] = args.assembly_errors
+    report['expected_error_cases'] = [i != 2 for i in range(10)] if args.assembly_errors else [True]*10
     try:
         manifest = json.loads((bootstrap/'result.json').read_text())
         if manifest['result'] != 'pass':
@@ -63,10 +66,14 @@ catch {
                         '--qmp-stdio', '--timeout', '300'], cwd=ROOT, check=True)
         data = (out/'guest/buffer-errors.bin').read_bytes()
         report['records'] = list(struct.unpack('<70q', data))
+        diagnostics = (out/'guest/original-diagnostics.bin').read_bytes()
+        report['diagnostics_sha256'] = hashlib.sha256(diagnostics).hexdigest()
+        if args.assembly_errors and b'Unresolved Reference:@@missing' not in diagnostics[2*8192:3*8192]:
+            raise ValueError('Original unresolved-reference behavior differs')
         if args.observe_baseline:
             report['result'] = 'observed'
         else:
-            if any(report['records'][i*7:i*7+6] != [1, 1, 1, 0, 0, 1] for i in range(10)):
+            if any(report['records'][i*7:i*7+6] != [int(report['expected_error_cases'][i]), 1, 1, 0, 0, 1] for i in range(10)):
                 raise ValueError('Original failed-buffer ownership differs: '+str(report['records']))
             report['result'] = 'pass'
     except BaseException as error:
