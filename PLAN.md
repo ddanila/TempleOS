@@ -29429,3 +29429,40 @@ No milestone is marked complete. Inventory receipts only append; qualification
 stays 2/686. Remaining work includes control callbacks/capture, wheel, border
 move/resize, top menus, full settled raster/pointer parity and resources, the
 normal editor/console input gaps, all remaining applications and full C1–C5.
+
+### C2/C4: managed control mouse callbacks, capture and lifetime
+
+The same original eight-phase control fixture records zero callbacks on the old
+native image despite completing all physical inputs and caller/heap mask 15.
+The new image passes ordinary left/right and border coordinates, repeated held
+capture, monotone dragging/outside release and self/focus control inhibition.
+The original uses 0.5 hardware scaling; the final host observer waits for settled
+movement before the next relative correction, retaining actual original settings.
+Earlier strict observer failures stay failed. Default native hardware motion gain
+still differs and remains an explicit input-fidelity gap.
+
+The dispatcher applies original CtrlInside/queue/inhibition/coordinate rules
+before document actions, tracks control-owned gestures and revalidates numeric
+owner/control membership between frames. Active callbacks borrow the owner;
+throws, Exit and retirement unwind through existing cleanup policy. The focused
+lifetime contract passes five masks 255: throw, recovered Exit, committed Exit
+with end callback deliberately cleared, and owner retirement with recovering or
+committed worker cancellation. Worker identity/progress, physical release,
+actual child reap, detached borrowed-control canary and controller heap pass.
+Earlier lifetime setup omitted NOT_RAW, leaving the focused child outside managed
+admission. The final fixture exports/checks managed flags/focus/hit admission;
+raw-focus controls remain unqualified rather than bypassing that production gate.
+
+The unchanged Budget mouse workflow/cold reboot passes 1023/63, exact state,
+1885 prior files, unchanged cold metadata/bytes and both fresh arithmetic results.
+Two classic bootstrap generations and 386 audit pass. All 1858 production and
+26 helper pins match; only ConsoleRuntime changes among sixteen modules, with
+kernel bytes and ABI versions unchanged. The raw-capture audit rejects 102
+corruptions. See `docs/i386-control-mouse.md` and
+`build/control-mouse-audit-v1/result.json`.
+
+Qualification remains 2/686; no milestone is marked complete. Next C2 work must
+cover raw-focus/non-document controls, custom hit/capture mutation, simultaneous
+buttons, wheel, borders/dragging and menus, plus default hardware motion gain and
+full pointer/frame parity. Normal editor/console input, application/resource
+coverage and C5 native generations/minimal startup remain open.

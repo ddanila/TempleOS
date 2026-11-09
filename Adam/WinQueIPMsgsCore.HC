@@ -137,4 +137,3 @@ I64 WinQueIPMsgsCore(CMsStateGlbls *mouse,CMsStateGlbls *old,
   }
   return msg_code;
 }
-

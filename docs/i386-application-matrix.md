@@ -804,3 +804,14 @@ mouse run takes 65.97 seconds and is not a 60-second startup-gate pass.
 See [architecture, receipts and remaining gaps](i386-window-mouse-dispatch.md).
 Control capture, wheel, borders/dragging, top menus, rendering/resources and
 native rebuild generations remain open. Qualification remains 2/686.
+
+Managed control mouse dispatch now passes the same eight-phase original oracle:
+left/right ordinary and border coordinates, repeated held capture, outside
+release and self/focus inhibition. The unchanged old image records no callbacks;
+its strict failure is retained. Five native throw/recovering/committed Exit and
+owner-retirement cases pass 255, including actual worker identity, child drain,
+borrowed-control detachment and exact controller heap recovery. Budget retains
+its full mouse/cold pass (1023/63, 1885 prior files). See
+[the control component evidence](i386-control-mouse.md). This does not qualify
+raw-focus controls, default motion gain, wheel/border/menu/raster/resources or
+complete C1–C5. Qualification stays 2/686.

@@ -68,7 +68,7 @@ continued document use, exact caller heap recovery and inactive-target behavior.
 The Budget contract retains its full original mouse workflow, 112-byte storage,
 report/live identities, real native cold reopening and mouse abort requirements.
 
-This is document mouse dispatch. Control callback/capture, wheel handling,
+At the initial document-dispatch checkpoint, control callback/capture, wheel handling,
 window-border dragging/resizing, top-level menu navigation, settled pointer/raster
 fidelity and repeated-use resources still require their own implementation and
 qualification. No C1–C5 milestone or complete Budget acceptance follows from
@@ -120,3 +120,14 @@ changes; the 454392-byte kernel and public ABI versions Compiler 104, Console
 264 and Memory 41 remain unchanged. Both classic bootstrap generations pass and
 match current source pins. They do not satisfy C5 native-generation acceptance.
 Inventory receipts are append-only; qualification remains 2/686.
+
+## Later control dispatch checkpoint
+
+Control callbacks/capture now have a separate implementation and strict
+original/native comparison. The old native image records zero callbacks; the
+new one passes ordinary left/right, border coordinates, repeated capture,
+outside release and inhibition. Five native callback-lifetime cases pass 255.
+The unchanged Budget mouse/cold workflow still passes 1023/63. See
+[control architecture, exact receipts and remaining input gaps](i386-control-mouse.md).
+Default hardware motion gain and raw-focus control admission are explicitly
+still open, alongside wheel/borders/menus, rendering/resources and full C1–C5.

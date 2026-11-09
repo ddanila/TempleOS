@@ -691,6 +691,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -1559,6 +1566,13 @@
           "result": "pass",
           "evidence": "build/control-retire-derived-source-v2/result.json",
           "scope": "Six explicit derived-control modes return/throw/Exit/worker kill/owner Exit/owner kill all 63, worker context/IRQ/task lock, flow, exact caller heap/frame recovery, unchanged files/metadata and fresh 42. All thirteen definitions and six DLRun calls unchanged from fa030de4. Generated include, raw six-mode export and identical WinMgr pause inside contract avoid long input while paused. Legacy v3 viewport shift and first include INPUT RESET are retained open input/setup failures before any cleanup call; neither is qualified or claimed fixed. No runtime changes; not automatic prepass or console qualification. See docs/i386-control-retirement.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -7277,6 +7291,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -7492,6 +7513,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -7773,6 +7801,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -8064,6 +8099,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -8313,6 +8355,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -8627,6 +8676,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -8876,6 +8932,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -8957,6 +9020,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -9251,6 +9321,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -9367,6 +9444,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -9664,6 +9748,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
@@ -9692,6 +9783,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "native-managed-control-mouse-capture",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/control-mouse-audit-v1/result.json",
+          "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
         }
       ]
     },
