@@ -7137,6 +7137,13 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "original-msset-state-control-messages",
+          "command": "python3 tools/test-i386-mouse-set.py IMAGE --reference STATE_ORIGINAL --out OUT_STATE; python3 tools/test-i386-mouse-set-controls.py IMAGE --reference CONTROL_ORIGINAL --out OUT_CONTROL; python3 tools/test-i386-mouse-set-messages.py IMAGE --reference MESSAGES_ORIGINAL --out OUT_MESSAGES; python3 tools/test-i386-mouse-set-messages.py IMAGE --raw --reference RAW_ORIGINAL --out OUT_RAW",
+          "result": "pass",
+          "evidence": "build/mouse-set-audit-v1/result.json",
+          "scope": "Shared exact original MsSet body; 544 state/model values plus 32 actual ScanKey mouse-button bits match original/current-classic/native. Nine synthetic control phases yield six exact original callbacks with transient/simultaneous left priority; managed/raw public message modes each match six records. Source queue/raw API/IF/heap probe 63; audit rejects 755 corruptions. Physical managed/raw controls, wheel, 62 gain phases, five click and five wheel lifetime modes at 255, 8 MiB Help/picker/state pixels, raw API 15 and Budget save/cold 1023/63 pass; 1887 prior files preserved. Console ABI 266 with 693 bindings. Held-click console frame remains identical failure; DocEd remains at 113/95 and 524/609 pixel differences. Not full ms_hard, timing, arbitrary settings, missing devices, queued IRQ/FIFO permutations, legacy views, desktop/raster/resources or full-file/C1-C5 qualification. See docs/i386-mouse-set.md."
         }
       ]
     },
@@ -7375,6 +7382,13 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "original-msset-state-control-messages",
+          "command": "python3 tools/test-i386-mouse-set.py IMAGE --reference STATE_ORIGINAL --out OUT_STATE; python3 tools/test-i386-mouse-set-controls.py IMAGE --reference CONTROL_ORIGINAL --out OUT_CONTROL; python3 tools/test-i386-mouse-set-messages.py IMAGE --reference MESSAGES_ORIGINAL --out OUT_MESSAGES; python3 tools/test-i386-mouse-set-messages.py IMAGE --raw --reference RAW_ORIGINAL --out OUT_RAW",
+          "result": "pass",
+          "evidence": "build/mouse-set-audit-v1/result.json",
+          "scope": "Shared exact original MsSet body; 544 state/model values plus 32 actual ScanKey mouse-button bits match original/current-classic/native. Nine synthetic control phases yield six exact original callbacks with transient/simultaneous left priority; managed/raw public message modes each match six records. Source queue/raw API/IF/heap probe 63; audit rejects 755 corruptions. Physical managed/raw controls, wheel, 62 gain phases, five click and five wheel lifetime modes at 255, 8 MiB Help/picker/state pixels, raw API 15 and Budget save/cold 1023/63 pass; 1887 prior files preserved. Console ABI 266 with 693 bindings. Held-click console frame remains identical failure; DocEd remains at 113/95 and 524/609 pixel differences. Not full ms_hard, timing, arbitrary settings, missing devices, queued IRQ/FIFO permutations, legacy views, desktop/raster/resources or full-file/C1-C5 qualification. See docs/i386-mouse-set.md."
         }
       ]
     },
@@ -23438,6 +23452,13 @@
           "result": "pass",
           "evidence": "docs/i386-input-event-time.md",
           "scope": "Complete shared original timing body/layout; original five decision cases, native actual PS/2 make/break state and mouse-only timing with exact VGA and resumed console. Full keyboard driver, mappings, typematic and loss recovery remain open."
+        },
+        {
+          "target": "original-msset-state-control-messages",
+          "command": "python3 tools/test-i386-mouse-set.py IMAGE --reference STATE_ORIGINAL --out OUT_STATE; python3 tools/test-i386-mouse-set-controls.py IMAGE --reference CONTROL_ORIGINAL --out OUT_CONTROL; python3 tools/test-i386-mouse-set-messages.py IMAGE --reference MESSAGES_ORIGINAL --out OUT_MESSAGES; python3 tools/test-i386-mouse-set-messages.py IMAGE --raw --reference RAW_ORIGINAL --out OUT_RAW",
+          "result": "pass",
+          "evidence": "build/mouse-set-audit-v1/result.json",
+          "scope": "Shared exact original MsSet body; 544 state/model values plus 32 actual ScanKey mouse-button bits match original/current-classic/native. Nine synthetic control phases yield six exact original callbacks with transient/simultaneous left priority; managed/raw public message modes each match six records. Source queue/raw API/IF/heap probe 63; audit rejects 755 corruptions. Physical managed/raw controls, wheel, 62 gain phases, five click and five wheel lifetime modes at 255, 8 MiB Help/picker/state pixels, raw API 15 and Budget save/cold 1023/63 pass; 1887 prior files preserved. Console ABI 266 with 693 bindings. Held-click console frame remains identical failure; DocEd remains at 113/95 and 524/609 pixel differences. Not full ms_hard, timing, arbitrary settings, missing devices, queued IRQ/FIFO permutations, legacy views, desktop/raster/resources or full-file/C1-C5 qualification. See docs/i386-mouse-set.md."
         }
       ]
     },
@@ -23594,6 +23615,13 @@
           "result": "pass",
           "evidence": "build/i386-c2-getstr-docclear-native/result.json",
           "scope": "26 native commands including original GetStr/DocGetStr2 and public fp_getstr2 hook, flags, formatted prompt, defaults and 13 scripted-input cases; unchanged inputs. Physical keyboard, filter/replay and task exit remain open."
+        },
+        {
+          "target": "original-msset-state-control-messages",
+          "command": "python3 tools/test-i386-mouse-set.py IMAGE --reference STATE_ORIGINAL --out OUT_STATE; python3 tools/test-i386-mouse-set-controls.py IMAGE --reference CONTROL_ORIGINAL --out OUT_CONTROL; python3 tools/test-i386-mouse-set-messages.py IMAGE --reference MESSAGES_ORIGINAL --out OUT_MESSAGES; python3 tools/test-i386-mouse-set-messages.py IMAGE --raw --reference RAW_ORIGINAL --out OUT_RAW",
+          "result": "pass",
+          "evidence": "build/mouse-set-audit-v1/result.json",
+          "scope": "Shared exact original MsSet body; 544 state/model values plus 32 actual ScanKey mouse-button bits match original/current-classic/native. Nine synthetic control phases yield six exact original callbacks with transient/simultaneous left priority; managed/raw public message modes each match six records. Source queue/raw API/IF/heap probe 63; audit rejects 755 corruptions. Physical managed/raw controls, wheel, 62 gain phases, five click and five wheel lifetime modes at 255, 8 MiB Help/picker/state pixels, raw API 15 and Budget save/cold 1023/63 pass; 1887 prior files preserved. Console ABI 266 with 693 bindings. Held-click console frame remains identical failure; DocEd remains at 113/95 and 524/609 pixel differences. Not full ms_hard, timing, arbitrary settings, missing devices, queued IRQ/FIFO permutations, legacy views, desktop/raster/resources or full-file/C1-C5 qualification. See docs/i386-mouse-set.md."
         }
       ]
     },
@@ -23633,6 +23661,13 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "original-msset-state-control-messages",
+          "command": "python3 tools/test-i386-mouse-set.py IMAGE --reference STATE_ORIGINAL --out OUT_STATE; python3 tools/test-i386-mouse-set-controls.py IMAGE --reference CONTROL_ORIGINAL --out OUT_CONTROL; python3 tools/test-i386-mouse-set-messages.py IMAGE --reference MESSAGES_ORIGINAL --out OUT_MESSAGES; python3 tools/test-i386-mouse-set-messages.py IMAGE --raw --reference RAW_ORIGINAL --out OUT_RAW",
+          "result": "pass",
+          "evidence": "build/mouse-set-audit-v1/result.json",
+          "scope": "Shared exact original MsSet body; 544 state/model values plus 32 actual ScanKey mouse-button bits match original/current-classic/native. Nine synthetic control phases yield six exact original callbacks with transient/simultaneous left priority; managed/raw public message modes each match six records. Source queue/raw API/IF/heap probe 63; audit rejects 755 corruptions. Physical managed/raw controls, wheel, 62 gain phases, five click and five wheel lifetime modes at 255, 8 MiB Help/picker/state pixels, raw API 15 and Budget save/cold 1023/63 pass; 1887 prior files preserved. Console ABI 266 with 693 bindings. Held-click console frame remains identical failure; DocEd remains at 113/95 and 524/609 pixel differences. Not full ms_hard, timing, arbitrary settings, missing devices, queued IRQ/FIFO permutations, legacy views, desktop/raster/resources or full-file/C1-C5 qualification. See docs/i386-mouse-set.md."
         }
       ]
     },

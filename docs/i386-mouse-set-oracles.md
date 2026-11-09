@@ -35,7 +35,8 @@ the caller also verifies that MsSet preserves a cleared IF bit.
   follows its first left-control callback jumping to `wmt_start`, with the
   shared message recognizer copying both button values into the old state.
 
-Native implementation and comparison are in progress. These workflows do not
+The native implementation and comparisons are recorded in
+[the implementation record](i386-mouse-set.md). These workflows do not
 qualify all pending-packet orderings, arbitrary settings, missing-device behavior,
 `ms_hard`, complete window interactions, raster/resource limits or C1–C5.
 
@@ -54,7 +55,8 @@ managed message workflows pass (`mouse-set-native-v2`,
 workflow remains a strict zero-message failure in
 `mouse-set-messages-raw-native-v2`, despite correct public position/buttons.
 The earlier v1 control candidate retains its strict eight-versus-six callback
-failure. The final candidate is being rebuilt with raw message delivery.
+failure. The v3 candidate adds raw message delivery; both managed and raw comparisons
+now pass as recorded in the implementation record.
 
 `tools/test-i386-mouse-set-queue.py` compiles the exact delivered native
 `MsHardSet` source into isolated state with clock/init stubs. Fixed numerical
@@ -65,3 +67,12 @@ state, masked IF restoration and exact caller heap. `mouse-set-queue-v2` passes
 mask 63 and a fresh 42 with unchanged files/inputs. This is not a live pending
 IRQ-interleaving test. `mouse-set-current-classic-v3` also matches the original
 544 values on the latest source-pinned classic bootstrap.
+
+
+The final state oracle also records the two mouse-button bits returned directly
+through `ScanKey` at every phase. `mouse-set-original-v2`,
+`mouse-set-current-classic-v4` and `mouse-set-native-v4` match all 544 state
+values and these 32 delivered key-button values, with mask 7. The original v1
+and earlier native/classic captures remain valid state-only evidence with their
+archived fixtures/runners. See the implementation record for final regressions
+and current failed console/editor gates.

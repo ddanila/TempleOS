@@ -28,6 +28,10 @@ I64 native_mouse_start_x,native_mouse_start_y;
 CI386MouseState native_mouse_irq_state;
 CI386MouseEvents native_mouse_packets,native_mouse_events;
 I64 native_mouse_irq_z,native_mouse_packet_z[64];
+Bool native_mouse_set_pending;
+CD3I64 native_mouse_set_prescale;
+U32 native_mouse_set_buttons;
+I64 native_mouse_set_stamp;
 class CNativeMousePosition {CD3I64 pos,presnap;};
 CNativeMousePosition native_mouse_positions[64];
 U0 NativeMouseDecoderInit()
@@ -111,6 +115,11 @@ U0 NativeMouseSync()
     native_mouse_events.read=native_mouse_events.write=native_mouse_events.count=0;
     native_mouse_events.losses++;
   }
+  if(native_mouse_set_pending) {
+    native_mouse_set_pending=FALSE;
+    NativeMouseApply(native_mouse_set_prescale.x,native_mouse_set_prescale.y,
+      native_mouse_set_prescale.z,native_mouse_set_buttons,native_mouse_set_stamp,TRUE);
+  }
   while(native_mouse_packets.count) {
     slot=native_mouse_packets.read;
     if(!I386MouseEventPop(&native_mouse_packets,&event))break;
@@ -127,4 +136,38 @@ Bool NativeLogicalMouseGet(I64 *x,I64 *y,I64 *buttons=0,I64 *packets=0)
   if(buttons)*buttons=ms.lb+2*ms.rb;
   if(packets)*packets=console_config->mouse->packets;
   I386IrqRestore(irq);return TRUE;
+}
+
+U0 MsHardSet(I64 x,I64 y,I64 z,I64 l,I64 r)
+{//MsSet holds the IRQ lock. Pending physical deltas remain after the new base.
+  CD3I64 prescale,position,previous;
+  I64 dx,dy,dz;
+  U32 slot,remaining;
+  NativeMouseDecoderInit;
+  MemCpy(&previous,&native_mouse_hard_prescale,sizeof(CD3I64));
+  if(native_mouse_set_pending)MemCpy(&previous,&native_mouse_set_prescale,sizeof(CD3I64));
+  prescale.x=x/native_mouse_hard_scale.x/ms_grid.x_speed;
+  prescale.y=y/native_mouse_hard_scale.y/ms_grid.y_speed;
+  prescale.z=z/native_mouse_hard_scale.z/ms_grid.z_speed;
+  dx=prescale.x-previous.x;dy=prescale.y-previous.y;dz=prescale.z-previous.z;
+  native_mouse_irq_state.x+=dx;native_mouse_irq_state.y+=dy;native_mouse_irq_z+=dz;
+  slot=native_mouse_packets.read;remaining=native_mouse_packets.count;
+  while(remaining) {
+    native_mouse_packets.events[slot].x+=dx;native_mouse_packets.events[slot].y+=dy;
+    native_mouse_packet_z[slot]+=dz;slot=(slot+1)&63;remaining--;
+  }
+  native_mouse_irq_state.buttons=(native_mouse_irq_state.buttons&4)|l|(r<<1);
+  MemCpy(&native_mouse_set_prescale,&prescale,sizeof(CD3I64));
+  native_mouse_set_buttons=native_mouse_irq_state.buttons;
+  native_mouse_set_stamp=native_input_mouse.timestamp=NativeTimeStamp;
+  native_mouse_set_pending=TRUE;
+  MouseHardPositionCore(&prescale,&native_mouse_hard_scale,&position,&ms,&ms_grid);
+}
+#define MOUSE_SET_FUNCTION NativeMouseSetCore
+#include "/Kernel/MouseSetCore.HC"
+U0 MsSet(I64 x=I64_MAX,I64 y=I64_MAX,I64 z=I64_MAX,I64 l=I64_MAX,I64 r=I64_MAX)
+{
+  U32 irq=I386IrqSave;
+  NativeMouseSetCore(x,y,z,l,r);
+  I386IrqRestore(irq);
 }

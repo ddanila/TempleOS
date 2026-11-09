@@ -1,4 +1,4 @@
-I64 mt_phase,mt_rows[16][2][17],mt_mask;
+I64 mt_phase,mt_rows[16][2][17],mt_key_rows[16][2],mt_mask;
 U0 MTLog(U8 *s){while(*s)OutU8(0xE9,*s++);}
 U0 MTRow(I64 *r)
 {
@@ -21,7 +21,7 @@ U0 MouseSetContract()
   I64 before=Fs->data_heap->used_u8s,flags=Fs->display_flags,inhibit=Fs->win_inhibit;
   I64 left=Fs->win_left,right=Fs->win_right,top=Fs->win_top,bottom=Fs->win_bottom;
   I64 x=ms.pos.x,y=ms.pos.y,z=ms.pos.z,lb=ms.lb,rb=ms.rb;
-  I64 ch,deadline,irq;U8 *s;
+  I64 ch,scan,deadline,irq;U8 *s;
   Bool bordered=!Bt(&Fs->display_flags,DISPLAYf_NO_BORDER),ac_old=AutoComplete(FALSE);
   MemCpy(&old_grid,&ms_grid,sizeof(CGridGlbls));MemCpy(&old_scale,&ms.scale,sizeof(CD3));
   MemCpy(&old_offset,&ms.offset,sizeof(CD3I64));mt_mask=0;
@@ -59,9 +59,11 @@ U0 MouseSetContract()
     }
     MTRow(mt_rows[mt_phase][0]);SetRFlags(irq);
     s=MStrPrint("MT READY %d\n",mt_phase);MTLog(s);Free(s);
-    deadline=cnts.jiffies+20000;ch=0;
-    while(ch!='n' && cnts.jiffies<deadline){ScanKey(&ch);Sleep(10);}
-    if(ch!='n')throw('SetWait',TRUE);Sleep(250);MTRow(mt_rows[mt_phase][1]);
+    deadline=cnts.jiffies+20000;ch=scan=0;
+    while(ch!='n' && cnts.jiffies<deadline){ScanKey(&ch,&scan);Sleep(10);}
+    if(ch!='n')throw('SetWait',TRUE);
+    mt_key_rows[mt_phase][0]=Bt(&scan,SCf_MS_L_DOWN);
+    mt_key_rows[mt_phase][1]=Bt(&scan,SCf_MS_R_DOWN);Sleep(250);MTRow(mt_rows[mt_phase][1]);
   }
   Fs->put_doc=put;Fs->display_doc=display;DocDel(doc);Fs->win_inhibit=inhibit;
   WinBorder(bordered);WinHorz(left,right);WinVert(top,bottom);Fs->display_flags=flags;
@@ -73,5 +75,6 @@ U0 MouseSetContract()
   if(ms.pos.x==x&&ms.pos.y==y&&ms.pos.z==z&&ms.lb==lb&&ms.rb==rb)mt_mask|=4;
   AutoComplete(ac_old);
   s=MStrPrint("EXPORT set-rows.bin %X %X\n",mt_rows,sizeof(mt_rows));MTLog(s);Free(s);
+  s=MStrPrint("EXPORT set-key-bits.bin %X %X\n",mt_key_rows,sizeof(mt_key_rows));MTLog(s);Free(s);
   s=MStrPrint("EXPORT set-mask.bin %X 8\n",&mt_mask);MTLog(s);Free(s);MTLog("MT DONE\n");
 }

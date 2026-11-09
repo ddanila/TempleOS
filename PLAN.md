@@ -29553,3 +29553,48 @@ settings, burst/loss behavior, raw/legacy rendering/document input, custom hit/
 capture transitions, simultaneous UI buttons, borders/menus, full pointer/frame
 parity and resources. Console/editor gaps, remaining applications and full
 C1–C5 native/minimal startup acceptance remain open.
+
+
+### C2/C4: original MsSet, control priority and raw public mouse messages
+
+The preceding wheel checkpoint preserves the original signed packet header
+arithmetic, three/four-byte protocol and physical focused wheel callbacks. The
+current checkpoint adds public MsSet/GridInit bindings and shares the original
+MsSet body byte-for-byte through MouseSetCore.HC. Native calls preserve immediate
+versus settled grid-speed quantization, pending synthetic state, relative queued
+physical motion and the independent raw MouseGet API. Keyboard globals and
+actual delivered key scans retain logical synthetic button state. Managed
+control dispatch now restarts after its first handled control, reproducing the
+original left priority for the tested simultaneous transitions. Visible raw
+focused tasks receive public mouse messages without managed rendering admission.
+
+Pinned original, independent model, rebuilt classic and native state comparisons
+match 544 values plus 32 delivered key-button bits. Nine synthetic control phases
+match six callbacks; eight managed/raw message phases match six messages each.
+The audit rejects 755 value corruptions and verifies the retained strict missing
+GridInit, extra simultaneous callbacks and zero raw-message failures. The exact
+source queue probe passes 63 with clock/init stubs; its real MsSet case preserves
+raw MouseGet, IF and heap. This is not a live pending IRQ permutation oracle.
+
+Physical managed/raw controls, wheel, all 62 gain phases, five click and five
+wheel lifetime modes, raw API mask 15 and 8 MiB Help/picker/state pixel workflows
+pass. Budget save/real cold-reopen/abort passes 1023/63, preserves 1887 prior
+files and cold tuples/files/metadata, and executes fresh 42 in both sessions.
+Held-click console typing remains pixel-identical to the prior failure;
+unflagged DocEd remains 113/95 with 524/609 pixel differences. No whole mouse
+or editor qualification is claimed.
+
+The current full image pins 1860 sources/26 helpers with Console ABI 266 and
+693 bindings. Only Kernel/ConsoleRuntime differ from the wheel image; kernel
+size stays 457416. Two source-matching classic bootstrap generations and the 386
+instruction audit pass. The final v4 rebuild after trimming a copied separator blank has all sixteen
+modules and the bare kernel byte-identical to v3; the only volume file-content
+difference is that trailing blank. A final single-job normal 8 MiB KVM 486,-fpu
+boot reaches startup in 53.959 seconds with live WinMgr and exact welcome/42
+pixels. It meets the current normal baseline's 60-second threshold, not full
+original-desktop/all-app/resource C5 acceptance. These classic rebuilds are not
+C5 native generations. Qualification
+stays 2/686. Public ms_hard, complete timing/speed, arbitrary settings, missing
+devices, pending IRQ/FIFO/loss permutations, legacy transitions, full desktop,
+remaining apps, raster/resources and C1–C5 acceptance remain open. See
+[MsSet evidence](docs/i386-mouse-set.md) and build/mouse-set-audit-v1/result.json.

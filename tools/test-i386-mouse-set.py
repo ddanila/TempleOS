@@ -9,6 +9,9 @@ def verify(out,reference=None):
  raw=(out/'set-rows.bin').read_bytes()
  if len(raw)!=16*2*17*8:raise ValueError('MsSet row count differs')
  rows=list(struct.iter_unpack('<17q',raw))
+ keys=(out/'set-key-bits.bin').read_bytes()
+ if keys!=b''.join(struct.pack('<2q',*rows[2*p+1][12:14]) for p in range(16)):raise ValueError('Delivered key button bits differ from settled public mouse state')
+ if reference and keys!=(reference/'set-key-bits.bin').read_bytes():raise ValueError('Delivered key button bits differ from original')
  if (out/'set-mask.bin').read_bytes()!=struct.pack('<q',7):raise ValueError('MsSet restoration mask differs')
  if reference and raw!=(reference/'set-rows.bin').read_bytes():
   gold=list(struct.iter_unpack('<17q',(reference/'set-rows.bin').read_bytes()));bad=[i for i,(a,b) in enumerate(zip(rows,gold)) if a!=b];raise ValueError('MsSet state differs at rows '+repr(bad))
@@ -21,7 +24,7 @@ def main():
  fixture=ROOT/'tests/guest/i386-mouse-set/Contract.HC';paths=[fixture,Path(__file__).resolve(),ROOT/'Kernel/FontStd.HC']+[ROOT/('tools/'+n) for n in ['build-iso.py','test-i386-timeclock-reference.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','package-i386-native-image.py','build-i386-kernel.py']]
  if a.disk:
   ref=json.loads((a.reference/'result.json').read_text());assert ref['result']=='pass' and ref['inputs_unchanged'] and ref['fixture_sha256']==sha(fixture);verify(a.reference)
-  paths += [a.disk.resolve(),a.reference/'result.json']+[a.reference/n for n in ['set-rows.bin','set-mask.bin']]
+  paths += [a.disk.resolve(),a.reference/'result.json']+[a.reference/n for n in ['set-rows.bin','set-mask.bin','set-key-bits.bin']]
  out.mkdir();pins={str(p):sha(p) for p in paths};(out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes());g=None;events=[]
  report=dict(result='running',input_sha256=pins,fixture_sha256=sha(fixture),scope='Original MsSet immediate and settled public position/presnap/offset/text/button/key-scan state, defaults/invalid coordinates, scale/grid/speed quantization and physical movement/wheel/button follow-up; caller/heap restoration. Not full ms_hard, timing or C1-C5 qualification.')
  try:
@@ -45,8 +48,8 @@ def main():
      e=[{'type':'btn','data':{'button':button,'down':down}}];g.call('input-send-event',events=e);events.append(dict(phase=phase,events=e));time.sleep(.04)
    time.sleep(.6);g.press('n')
   g.wait('MT DONE\n')
-  for n in ['set-rows.bin','set-mask.bin']:(out/n).write_bytes((g.out/n).read_bytes())
-  report.update(rows=verify(out,a.reference if a.disk else None),mask=7)
+  for n in ['set-rows.bin','set-mask.bin','set-key-bits.bin']:(out/n).write_bytes((g.out/n).read_bytes())
+  report.update(rows=verify(out,a.reference if a.disk else None),mask=7,delivered_key_button_values=32)
   if a.disk:g.command('6*7;');report['fresh_result']=g.result_pixels()
   g.close();g=None
   if a.disk:

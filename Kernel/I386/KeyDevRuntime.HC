@@ -115,8 +115,9 @@ U0 NativeKeyboardStateEvent(CI386KeyEvent *event)
   I64 scan=event->scan;
   U32 merged=scan&255,raw=(scan>>32)&255;
   if(console_config->mouse && console_config->mouse->installed) {
-    if(console_config->mouse->buttons&1)scan|=SCF_MS_L_DOWN;
-    if(console_config->mouse->buttons&2)scan|=SCF_MS_R_DOWN;
+    scan&=~(SCF_MS_L_DOWN|SCF_MS_R_DOWN);
+    if(ms.lb)scan|=SCF_MS_L_DOWN;
+    if(ms.rb)scan|=SCF_MS_R_DOWN;
   }
   kbd.scan_code=scan;kbd.new_key_timestamp=kbd.timestamp;kbd.cnt++;
   if(event->type==MSG_KEY_UP) {
