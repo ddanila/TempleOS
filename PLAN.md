@@ -28803,3 +28803,53 @@ passed two original x86-64 bootstrap generations in
 pin unchanged at verification. This checkpoint does not qualify normal native
 buffer execution, map output, failure ownership, or complete module/release
 workflows. C1-C5 remain active; bundled qualification remains 2/686.
+
+## Normal buffer compilation and public compiler contexts (2026-11-09)
+
+Console264/Compiler104/Memory41 now exposes the complete original `CmpBuf` body
+through the four normal assembly/join stages, with 691 console exports and the
+unchanged 22-word data mask. Public native controls receive `CCF_TARGET_I386`;
+original controls keep zero extra target flags. This corrects actual function
+parameter offsets from EBP+16 to EBP+8. The original control/lexer oracles and
+native twelve-control/24-token checks assert exact requested flags with that
+explicit architecture difference, rather than ignoring flag bits.
+
+Queued buffer compilation exposed DolDoc's private cleanup validating a borrowed
+public outer boundary as an arena record. Cleanup now drains nested arena
+controls to its own validated control and deletes that control, preserving the
+outer queue and the arena validator. Complete copied-writer probes isolate the
+queued boundary; the published writer itself succeeds outside that context.
+`build/i386-public-buffer-contract-v5` passes fourteen cold normal API cases,
+actual JIT packet consumption, functions/defaults/globals/loop/imports/literals,
+empty/null buffers, optional parameters, exact rich-link map/debug data, input
+borrowing, queue restoration and subsequent expression/arithmetic recovery.
+`build/i386-public-buffer-elf-v1` independently executes six saved native packets.
+
+Literal #exe retains data under the original ExeCmdLine lifetime policy. The
+pinned original ExePutS/ExeCmdLine probe returns 42 and retains 40 bytes on each
+heap; it is not a complete original CmpBuf packet oracle. Native retains 104,
+then its owned child terminates and restores backing usage/allocation counts
+exactly. Every other buffer case, including cold loading and map writing,
+reports zero caller deltas. No counters are subtracted or adjusted.
+
+`build/i386-public-buffer-cross-v3/final-verification-audit.json` verifies all
+1,847 source/26 helper pins, sixteen modules, two original bootstrap generations,
+complete shared bodies and sixteen scoped receipts. The final image passes ten
+extended expression groups, 46 error rows, assembly, native control/lexer checks,
+64 MiB nested dollar and ten printed-field cycles, both 16 MiB diagnostic phases
+and exact full welcome rasters at 8/16 MiB. These are functional/resource checks.
+The default 180-second TCG8 dollar/startup runs time out before document tests;
+a separate longer observation reaches startup in about 219 seconds. Those
+failures remain recorded and the 60-second performance gate is not qualified.
+
+A new failing C4 oracle in `build/i386-public-buffer-doc-boundary-v2` preserves
+queue/error-record/task-reclamation behavior but exposes the shared malformed
+button conversion dropping tag ownership: it returns DOCT_ERROR, zero ownership
+flags and a non-null tag, then retains 16 caller bytes after normal deletion.
+The pinned original returns the same error/tag/flag combination; its total
+counters include other diagnostic allocations and are not a 16-byte baseline.
+The next concrete ownership fix is releasing a partial error entry's payload
+without changing the returned error-record semantics, then rerunning that oracle.
+Failed CmpBuf controls, OOM/cancellation/concurrency, complete module/file
+workflows, desktop/apps and two complete native C5 release generations remain
+open. See docs/i386-public-buffer.md. C1-C5 remain active; qualification 2/686.

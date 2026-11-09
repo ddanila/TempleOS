@@ -27,6 +27,7 @@ U0 NativeSystemAsmPublish()
   cmp.asm_hash=native_jit_support.symbols;
   native_jit_support.assembly=&NativeSystemPrsAsmBlk;
   native_jit_support.join=&NativeSystemCmpJoin;
+  native_jit_support.buffer=&NativeSystemCmpBuf;
   while(*s)OutU8(0xE9,*s++);
 }
 if(native_jit_support.asm_stage!=3)throw('AsmLoad');

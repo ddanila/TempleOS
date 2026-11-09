@@ -18,6 +18,8 @@ def main():
     parser.add_argument('--original', action='store_true')
     parser.add_argument('--fields', action='store_true', help='Check bound name/repeat formatting, scanning and exact task heap recovery')
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--ram-mib', type=int, choices=(8,64), default=8, help='Native RAM profile; original runs keep their existing configuration')
+    parser.add_argument('--accel', choices=('tcg','kvm'), default='tcg', help='Native accelerator')
     parser.add_argument('--printed-fields', action='store_true', help='Ten DocPrint-bound field/button cycles with exact caller heap recovery')
     args = parser.parse_args()
     if args.fields and args.printed_fields:
@@ -41,6 +43,7 @@ def main():
         report['scope'] = 'Original DA name/repeat grammar, bound values, formatting, refresh, string/integer scanning with terminator restoration, deletion and exact task data heap; no chooser interaction or allocation faults'
     if args.printed_fields:
         report['scope'] = 'Ten DocPrint-bound name/repeat and button cycles, format/refresh/scan-back, exact caller task data heap; no chooser, shared compiler heap or allocator fault coverage'
+    report['native_profile'] = None if args.original else dict(ram_mib=args.ram_mib, accel=args.accel, cpu='486,-fpu')
     (out / 'result.json').write_text(json.dumps(report, indent=2)+'\n')
     try:
         if args.original:
@@ -66,7 +69,7 @@ def main():
             if args.printed_fields:
                 commands += [('DollarParserContract;', ['63']) for _ in range(9)]
             commands += [('6*7;', ['42'])]
-            report['behavior'] = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input'](disk, out / 'behavior', cpu='486,-fpu', qmp_stdio=True, snapshot=False, welcome=True, startup_check={'status':'ok', 'answers':[], 'commands':commands})
+            report['behavior'] = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input'](disk, out / 'behavior', cpu='486,-fpu', ram_mib=args.ram_mib, accel=args.accel, qmp_stdio=True, snapshot=False, welcome=True, startup_check={'status':'ok', 'answers':[], 'commands':commands})
         if not args.original:
             saved = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk, {'/DollarContract.HC'}).get('/DollarContract.HC')
             report['guest_fixture_sha256'] = hashlib.sha256(saved).hexdigest() if saved is not None else None

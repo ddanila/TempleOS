@@ -26,6 +26,7 @@ def main():
     out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Twenty-four public CmpCtrlNew/CmpCtrlDel/Lex/LexExtStr checks: buffer identity, scalar tokens, adjacent strings, borrowing, prompt allocation, flags and heap cleanup. Nested includes and song tokens are checked; full compiler/Psalmody behavior remains separate.');g=None
     if args.characters:report['scope']='Sixteen public raw-character checks: cursor skipping, newline/putback, normalization, EOF, include resumption and ownership, document input and heap cleanup; prompt and error unwind remain separate.'
     if args.attachment:report['scope']='Twelve public LexAttachDoc checks: supplied document/file/entry, cursor bounds, root resumption state, owning/borrowed cleanup and original empty-document ownership.'
+    report['target_flags'] = 'CCF_TARGET_I386' if args.disk else '0'
     report['attachment_mode']=args.attachment
     report['character_mode']=args.characters
     (out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
@@ -34,7 +35,7 @@ def main():
             pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));image=out/'working.img'
             before=pack['snapshot'](args.disk.read_bytes())[1]
             code=fixture.read_bytes()
-            if not args.characters and not args.attachment:code=b'#include "/Kernel/I386/PublicLexer.HH"\n'+code
+            if not args.characters and not args.attachment:code=b'#define PL_TARGET_FLAGS CCF_TARGET_I386\n#include "/Kernel/I386/PublicLexer.HH"\n'+code
             additions={'/Probe/PublicLexer.HC':code,**{'/'+p.name:p.read_bytes() for p in includes}}
             report['packaging']=pack['package'](args.disk.resolve(),image,additions=additions)
         else:

@@ -1,15 +1,16 @@
 # Public compiler-control ownership
 
-Native console interface 226 exports the original `CmpCtrlNew`, `CmpCtrlDel`
-and `CmpCtrlSize` signatures. `Compiler/PublicControlCore.HC` contains the exact
+The initial native console interface 226 exports the original `CmpCtrlNew`, `CmpCtrlDel`
+and `CmpCtrlSize` signatures. `Compiler/PublicControlCore.HC` contains the shared
 constructor, destructor, size accounting and allocator adapters formerly at
 the start of `Compiler/Lex.HC`; both original compiler and native console
 include it. Public controls use public allocations throughout. The private
 native compiler's arena controls and their validation are unchanged.
 
 The console binds the kernel's existing no-at-sign bitmap directly for
-`CCF_KEEP_AT_SIGN`. It does not copy input buffers or add the private target
-flag to public controls. `CmpCtrlSize` retains original allocated-size accounting
+`CCF_KEEP_AT_SIGN`. It does not copy input buffers. At the initial
+checkpoint public controls did not receive the native target flag; the correction
+below makes that architecture choice explicit. `CmpCtrlSize` retains original allocated-size accounting
 and excludes borrowed root buffers. The export array grows from 612 to 615;
 its existing 20-word data mask still covers every entry.
 
@@ -80,3 +81,24 @@ preserved in `build/rebuild-public-control-v3-verified`.
 `build/i386-public-control-welcome-v3` passes exact welcome pixels, suspended
 clear and subsequent input at 8 MiB TCG with unchanged inputs. This does not
 close the separately recorded full-diagnostic memory failure.
+
+## Native target selection (2026-11-09)
+
+Public controls now include `CCF_TARGET_I386` at construction. The normal native
+parser uses this flag to select four-byte pointer and saved-frame conventions;
+leaving it unset emitted function parameters at `EBP+16` while native calls
+supply the first argument at `EBP+8`. The complete buffer execution probe in
+`build/i386-public-buffer-contract-v2` records wrong internal-call/default/loop
+results. With the native constructor flag, v3 records 26, 26 and 45 for those
+same sources, with zero packet cleanup deltas. Its separate map-writing failure
+is preserved and does not qualify full buffer compilation.
+
+`CMP_CTRL_TARGET_FLAGS` defaults to zero in the shared constructor and is set to
+`CCF_TARGET_I386` only by the native console. The original constructor's behavior
+is preserved. All twelve control checks pass in
+`build/i386-public-buffer-control-reference-v1` and
+`build/i386-public-buffer-control-v2`, with unchanged inputs. Their exact flag
+assertions account for this architecture bit while still checking requested
+flags, ownership, size, buffer identity, filenames and complete heap recovery.
+The native run also verifies fresh arithmetic pixels. This is an intentional
+architecture difference, not a public record or call-signature change.

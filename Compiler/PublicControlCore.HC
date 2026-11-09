@@ -1,3 +1,6 @@
+#ifndef CMP_CTRL_TARGET_FLAGS
+#define CMP_CTRL_TARGET_FLAGS 0
+#endif
 #include "/Compiler/ControlInit.HC"
 
 #include "/Compiler/LexFiles.HC"
@@ -30,7 +33,7 @@ CCmpCtrl *CmpCtrlNew(U8 *buf=NULL,I64 flags=0,U8 *filename=NULL)
     alpha_numeric=char_bmp_alpha_numeric_no_at;
   else
     alpha_numeric=char_bmp_alpha_numeric;
-  CmpCtrlSeed(cc,flags,Fs->hash_table,alpha_numeric);
+  CmpCtrlSeed(cc,flags|CMP_CTRL_TARGET_FLAGS,Fs->hash_table,alpha_numeric);
   tmpf=LexFilePush(cc);
   if (filename)
     tmpf->full_name=FileNameAbs(filename);

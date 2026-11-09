@@ -12,9 +12,12 @@ U0 NativeDocParserClose(CI386DocParser *parser)
   if(!parser || !parser->control) return;
   if(parser->task!=I386TaskSelf) throw('Compiler',TRUE);
   if(parser->entered) {
-    if(!(*console_config->compiler->control_unwind)(parser->task,parser->boundary))
+    //The outer boundary may be an ordinary public CCmpCtrl. Drain nested
+    //arena controls to our own validated control, then release that control.
+    if(!(*console_config->compiler->control_unwind)(parser->task,parser->control))
       throw('Compiler',TRUE);
-  } else if(!(*console_config->compiler->control_del)(parser->heap,parser->control,0,0))
+  }
+  if(!(*console_config->compiler->control_del)(parser->heap,parser->control,0,0))
     throw('Compiler',TRUE);
   parser->control=0; parser->symbols=0; parser->entered=FALSE;
 }

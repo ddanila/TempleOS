@@ -1,10 +1,13 @@
+#ifndef PL_TARGET_FLAGS
+#define PL_TARGET_FLAGS 0
+#endif
 U0 PLLog(U8 *s){while(*s)OutU8(0xE9,*s++);}
 U0 PLCheck()
 {
   I64 v[24],used=Fs->data_heap->used_u8s,size;
   U8 *buffer=StrNew("UniquePublicLexName 42 -7 3.5 \"ab\" \"cd\" +\n"),*joined,*s;
   CCmpCtrl *cc=CmpCtrlNew(buffer);
-  v[0]=cc && !cc->flags && cc->next==cc && cc->last==cc;
+  v[0]=cc && cc->flags==PL_TARGET_FLAGS && cc->next==cc && cc->last==cc;
   v[1]=cc->cur_buf_ptr==buffer && cc->lex_include_stk->buf==buffer &&
     cc->htc.glbl_hash_table==Fs->hash_table;
   v[2]=cc->lex_include_stk->line_num==1 && cc->lex_include_stk->full_name &&
@@ -19,15 +22,15 @@ U0 PLCheck()
   Free(joined);v[9]=Lex(cc)==TK_EOF;CmpCtrlDel(cc);
   v[10]=Fs->data_heap->used_u8s==used;
   buffer=StrNew("9");cc=CmpCtrlNew(buffer,CCF_DONT_FREE_BUF);
-  v[11]=cc->flags==CCF_DONT_FREE_BUF && cc->cur_buf_ptr==buffer &&
+  v[11]=cc->flags==(CCF_DONT_FREE_BUF|PL_TARGET_FLAGS) && cc->cur_buf_ptr==buffer &&
     Bt(cc->char_bmp_alpha_numeric,'@');
   v[12]=Lex(cc)==TK_I64 && cc->cur_i64==9;
   CmpCtrlDel(cc);v[12]=v[12] && !StrCmp(buffer,"9") && MSize(buffer)>=2;Free(buffer);
   cc=CmpCtrlNew(,CCF_PMT);
-  v[13]=cc->flags==CCF_PMT && cc->cur_buf_ptr && MSize(cc->cur_buf_ptr)>=8 &&
+  v[13]=cc->flags==(CCF_PMT|PL_TARGET_FLAGS) && cc->cur_buf_ptr && MSize(cc->cur_buf_ptr)>=8 &&
     !cc->cur_buf_ptr[0];CmpCtrlDel(cc);
   cc=CmpCtrlNew(,CCF_KEEP_AT_SIGN);
-  v[14]=cc->flags==CCF_KEEP_AT_SIGN && !Bt(cc->char_bmp_alpha_numeric,'@');
+  v[14]=cc->flags==(CCF_KEEP_AT_SIGN|PL_TARGET_FLAGS) && !Bt(cc->char_bmp_alpha_numeric,'@');
   CmpCtrlDel(cc);v[15]=Fs->data_heap->used_u8s==used;
   cc=CmpCtrlNew(StrNew("#include \"::/PublicLexerSong.HC\""));
   v[16]=Lex(cc)==TK_IDENT && !StrCmp(cc->cur_str,"music") &&

@@ -10,5 +10,6 @@ class CI386JitSupport {
   I64 prs_stage;
   U8 *assembly,*join;
   I64 asm_stage;
+  U8 *buffer;
 };
 #endif

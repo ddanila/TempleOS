@@ -24,9 +24,10 @@ def main():
     out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Twelve public CmpCtrlNew/CmpCtrlDel/CmpCtrlSize ownership, size, buffer identity, flag, filename and heap-cleanup checks; lexer and application qualification remain separate.');g=None
     (out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     try:
+        report['target_flags'] = 'CCF_TARGET_I386' if args.disk else '0'
         if args.disk:
             pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));image=out/'working.img'
-            report['packaging']=pack['package'](args.disk.resolve(),image,additions={'/Probe/PublicControl.HC':fixture.read_bytes(),**{'/'+p.name:p.read_bytes() for p in includes}})
+            report['packaging']=pack['package'](args.disk.resolve(),image,additions={'/Probe/PublicControl.HC':b'#define PC_TARGET_FLAGS CCF_TARGET_I386\n'+fixture.read_bytes(),**{'/'+p.name:p.read_bytes() for p in includes}})
         else:
             overlay=out/'overlay';overlay.mkdir();report['reference_sha256']=runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))['restore_reference'](overlay)
             (overlay/'PublicControl.HC').write_bytes(fixture.read_bytes())

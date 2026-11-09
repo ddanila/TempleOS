@@ -3975,6 +3975,20 @@
           "result": "pass",
           "evidence": "build/i386-doc-put-line-native-v1/result.json",
           "scope": "Same five checks and exact original saved output through public API; unchanged shared body, input pins, arithmetic and volume validation. Not whole-file compatibility, contention or allocation-failure recovery."
+        },
+        {
+          "target": "native-normal-public-buffer-component",
+          "command": "python3 tools/test-i386-public-buffer.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-buffer-contract-v5/result.json",
+          "scope": "Fourteen normal cold CmpBuf cases: borrowed sources, queue restoration, native target parameter offsets, executed functions/defaults/globals/loop/imports/literals, exact queued rich-link map/debug bin, metadata bounds and fresh arithmetic. Zero caller deltas except original literal-code policy; owned literal task restores backing usage/allocation counts on termination. Complete failure ownership, module/file flows and C1-C5 remain open. See docs/i386-public-buffer.md."
+        },
+        {
+          "target": "native-public-dollar-boundary-cleanup-baseline",
+          "command": "python3 tools/test-i386-doc-public-boundary.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-public-buffer-doc-boundary-v2/result.json",
+          "scope": "Valid and malformed dollar commands restore queued public controls and owner-task backing memory. Existing malformed button error conversion clears ownership flags but keeps a tag, retaining 16 native caller bytes. Error-record semantics match the pinned original; immediate payload cleanup remains an explicit C4 gap."
         }
       ]
     },
@@ -10128,6 +10142,20 @@
           "result": "pass",
           "evidence": "build/i386-public-asm-contract-v5/result.json",
           "scope": "Normal separate four-stage lazy delivery of complete shared PrsAsmBlk/CmpJoin/opcode-table/expression/listing bodies. Twenty-four fields: exact data/instruction bytes, executable forward/local branches, import metadata, eight inline/bare cases including an unreachable block, caller context, canonical types, real 31-form MOV lookup, verified expected warning output with owned document cleanup, fresh normal expression 42 and zero data/code heap deltas. Identical final fixture on unchanged pre-release image retains 992 bytes and emits identical warning bytes. Prior normal success/error, lexer, corpus/bootstrap and functional frame evidence is independently audited; no whole-file/compiler qualification. Complete assembly forms, assembly/backend/body error/OOM/cancellation ownership, Cmp/CmpBuf/file/map workflows and full C1-C5 release qualification remain open. See docs/i386-public-assembly.md."
+        },
+        {
+          "target": "native-normal-public-buffer-component",
+          "command": "python3 tools/test-i386-public-buffer.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-buffer-contract-v5/result.json",
+          "scope": "Fourteen normal cold CmpBuf cases: borrowed sources, queue restoration, native target parameter offsets, executed functions/defaults/globals/loop/imports/literals, exact queued rich-link map/debug bin, metadata bounds and fresh arithmetic. Zero caller deltas except original literal-code policy; owned literal task restores backing usage/allocation counts on termination. Complete failure ownership, module/file flows and C1-C5 remain open. See docs/i386-public-buffer.md."
+        },
+        {
+          "target": "native-normal-public-buffer-independent-elf",
+          "command": "python3 tools/check-i386-buffer-code.py CONTRACT_OUT --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-buffer-elf-v1/result.json",
+          "scope": "Six complete unrelocated CmpBuf packets independently execute as ELF32, including internal calls/defaults; no imports/absolute relocation execution or full module qualification."
         }
       ]
     },
@@ -10730,6 +10758,41 @@
           "result": "pass",
           "evidence": "build/i386-normal-parser-contract-v4/result.json",
           "scope": "Console 259 normal lazy expression/binary facades and lexer stream callback; actual shared parser/type/declaration/class/function/statement/execution/stream bodies in Adam with canonical types, normal optimizer/backend. Nine basic expressions and ten extended groups pass, one publication, exact exported records, final arithmetic pixels and source/filesystem checks. No diagnostic parser/lexer injection. Full assembly/AOT, error/cancellation/concurrency and whole compiler qualification remain open; see docs/i386-public-expression.md."
+        },
+        {
+          "target": "native-normal-public-buffer-component",
+          "command": "python3 tools/test-i386-public-buffer.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-buffer-contract-v5/result.json",
+          "scope": "Fourteen normal cold CmpBuf cases: borrowed sources, queue restoration, native target parameter offsets, executed functions/defaults/globals/loop/imports/literals, exact queued rich-link map/debug bin, metadata bounds and fresh arithmetic. Zero caller deltas except original literal-code policy; owned literal task restores backing usage/allocation counts on termination. Complete failure ownership, module/file flows and C1-C5 remain open. See docs/i386-public-buffer.md."
+        },
+        {
+          "target": "original-public-control-target-oracle",
+          "command": "python3 tools/test-i386-public-control.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-buffer-control-reference-v1/result.json",
+          "scope": "Twelve ownership/size/input/filename/heap assertions preserve exact requested flags plus the explicit CCF_TARGET_I386 architecture bit only on native. Original extra target flags remain zero. No whole lexer/compiler or milestone qualification."
+        },
+        {
+          "target": "native-public-control-target-oracle",
+          "command": "python3 tools/test-i386-public-control.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-buffer-control-v2/result.json",
+          "scope": "Twelve ownership/size/input/filename/heap assertions preserve exact requested flags plus the explicit CCF_TARGET_I386 architecture bit only on native. Original extra target flags remain zero. No whole lexer/compiler or milestone qualification."
+        },
+        {
+          "target": "native-public-lexer-target-oracle",
+          "command": "python3 tools/test-i386-public-lexer.py IMAGE --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-buffer-lex8-v2/result.json",
+          "scope": "All 24 token/include/string/borrow/heap checks, with exact architecture target flags on native and zero extra flags on the pinned original. No whole lexer or compiler qualification."
+        },
+        {
+          "target": "original-public-lexer-target-oracle",
+          "command": "python3 tools/test-i386-public-lexer.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-buffer-lex-reference-v1/result.json",
+          "scope": "All 24 token/include/string/borrow/heap checks, with exact architecture target flags on native and zero extra flags on the pinned original. No whole lexer or compiler qualification."
         }
       ]
     },
@@ -11150,6 +11213,13 @@
           "result": "pass",
           "evidence": "build/i386-array-partial-contract-v4/result.json",
           "scope": "Nine prior error/control rows plus four partial-array expression failures and seven direct PrsType cases. Original tags/counters, zero heap deltas, root reset before probe repair, graph/flag restoration, successful dimension transfer and continued execution. Shared parser uses explicit public release or private controller-arena ownership; full type/declaration/OOM/cancellation/compiler qualification remains open. See docs/i386-expression-error-cleanup.md."
+        },
+        {
+          "target": "native-normal-public-buffer-component",
+          "command": "python3 tools/test-i386-public-buffer.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-buffer-contract-v5/result.json",
+          "scope": "Fourteen normal cold CmpBuf cases: borrowed sources, queue restoration, native target parameter offsets, executed functions/defaults/globals/loop/imports/literals, exact queued rich-link map/debug bin, metadata bounds and fresh arithmetic. Zero caller deltas except original literal-code policy; owned literal task restores backing usage/allocation counts on termination. Complete failure ownership, module/file flows and C1-C5 remain open. See docs/i386-public-buffer.md."
         }
       ]
     },
@@ -11324,6 +11394,13 @@
           "result": "pass",
           "evidence": "build/i386-public-asm-contract-v5/result.json",
           "scope": "Normal separate four-stage lazy delivery of complete shared PrsAsmBlk/CmpJoin/opcode-table/expression/listing bodies. Twenty-four fields: exact data/instruction bytes, executable forward/local branches, import metadata, eight inline/bare cases including an unreachable block, caller context, canonical types, real 31-form MOV lookup, verified expected warning output with owned document cleanup, fresh normal expression 42 and zero data/code heap deltas. Identical final fixture on unchanged pre-release image retains 992 bytes and emits identical warning bytes. Prior normal success/error, lexer, corpus/bootstrap and functional frame evidence is independently audited; no whole-file/compiler qualification. Complete assembly forms, assembly/backend/body error/OOM/cancellation ownership, Cmp/CmpBuf/file/map workflows and full C1-C5 release qualification remain open. See docs/i386-public-assembly.md."
+        },
+        {
+          "target": "native-normal-public-buffer-component",
+          "command": "python3 tools/test-i386-public-buffer.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-public-buffer-contract-v5/result.json",
+          "scope": "Fourteen normal cold CmpBuf cases: borrowed sources, queue restoration, native target parameter offsets, executed functions/defaults/globals/loop/imports/literals, exact queued rich-link map/debug bin, metadata bounds and fresh arithmetic. Zero caller deltas except original literal-code policy; owned literal task restores backing usage/allocation counts on termination. Complete failure ownership, module/file flows and C1-C5 remain open. See docs/i386-public-buffer.md."
         }
       ]
     },
