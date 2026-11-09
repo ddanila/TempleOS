@@ -149,6 +149,16 @@ U0 NativeRenderOwnerRetire(CI386Task *task)
   }
   NativeRenderDrainExiting(task);
   NativeRenderRetire(task,NULL);
+  //No descendant or render callback can still use these window associations.
+  //Task-owned allocations are reclaimed with the heap; borrowed controls must
+  //remain allocated, detached from the dying queue and without a stale target.
+  CCtrl *control;
+  U32 irq=I386IrqSave;
+  while(task->next_ctrl!=&task->next_ctrl) {
+    control=task->next_ctrl;QueRem(control);QueInit(control);
+    if(control->win_task==task)control->win_task=NULL;
+  }
+  I386IrqRestore(irq);
 }
 
 Bool NativeLegacyViewActive(CTask *task)

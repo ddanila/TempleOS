@@ -29263,3 +29263,43 @@ See docs/i386-budget-templates.md and build/budget-templates-audit-v1/result.jso
 Inventory appends component receipts to twelve relevant entries only. Other
 recurrence types, template editing/deletion, mouse, repeated-use resources and
 full C1–C5 acceptance remain open; qualification stays 2/686.
+
+### C1/C2/C3/C4: calendar templates and linked-control task retirement
+
+Four original/native real-keyboard workflows cover monthly, bimonthly,
+semiannual and annual recurrence, including the 1998–2000 leap-year range.
+Nested Shift-Escape and literal signed CANCEL=-1 retain Interval. Each creates
+three generated rows, cancels a changed schedule preserving all identities,
+accepts a different recurrence/base entry with replacement template/strings,
+deletes the whole family and recreates/saves it. Exact menu actions/cursors,
+thirteen form phases, backing records, row/string ownership, report U actions,
+92-byte storage and twelve strings are checked. Masks 16777215/63 pass; native
+cold reboot/read-only abort preserves all file bytes/attributes/timestamps and
+renders fresh arithmetic after both returns. Only saved byte 84 differs under
+the existing exact original/native binary64 policy; date fraction four agrees.
+
+All four pre-fix native controls stop before the second form. Retained stopped
+RAM/registers identify three finished picker children whose two linked scroll
+controls prevent reclamation. Parent heap/symbol child references keep the outer
+popup waiting. NativeRenderOwnerRetire now detaches associations only after
+all descendants and render borrowers have drained, preserving borrowed storage
+and clearing its stale target. Recovering task-end callbacks retain controls;
+the scheduler's low-level reaper guard stays intact. The unchanged focused
+return/Exit/recovering-Kill fixture fails 51/0/0 before and passes 255/255/255
+after, including actual child-list drain and exact caller heap recovery.
+
+Both existing bootstrap generations and the 386 audit pass. Only RenderScope.HC
+changes among runtime sources and only ConsoleRuntime among sixteen modules;
+kernel bytes and public ABI versions remain unchanged. The existing DocEd
+callback-exit regression passes under KVM/full-welcome with its exact unused-
+parameter warning expected. The derived-control regression is still running;
+its result is not yet claimed. Earlier startup/warning expectation failures
+remain preserved separately. These original bootstrap generations do not close
+C5's two successive native-generation requirement.
+
+See docs/i386-budget-recurrence.md, docs/i386-control-retirement.md and
+build/budget-recurrence-audit-v1/result.json. The audit revalidates all eight
+captures under an explicitly recorded post-execution identity assertion and
+rejects 660 corruptions. Inventory only appends component receipts. Budget
+boundary/validation cases, mouse, repeated-use resources, remaining applications
+and full C1–C5 acceptance remain open; bundled qualification stays 2/686.

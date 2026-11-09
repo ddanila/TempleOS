@@ -1537,6 +1537,13 @@
           "result": "pass",
           "evidence": "build/i386-c4-control-draw-green/result.json",
           "scope": "Rebuilt original shared control renderer returns [31,31], normal and throwing callbacks restore geometry/task lock and exact alias/parent heap; intentional common cleanup fix, not whole-file qualification"
+        },
+        {
+          "target": "native-linked-control-task-retirement",
+          "command": "python3 tools/test-i386-control-retirement.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/control-retirement-fixed-v1/result.json",
+          "scope": "Unchanged mature fixture fails pre-fix masks 51/0/0 and passes 255/255/255: nested parent/leaf own scroll controls, caller-owned generic control/state survives detached with stale target cleared. Return, explicit Exit, Kill with recovering task-end callback then final Kill; real child-list drain and exact caller heap recovery per mode, unchanged files/metadata and fresh 42. Associations released only after descendants and render borrowers drain; low-level reaper guard unchanged. Not general mouse/control/resource qualification. See docs/i386-control-retirement.md."
         }
       ]
     },
@@ -2386,6 +2393,20 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -2672,6 +2693,20 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -3983,6 +4018,20 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -4598,6 +4647,13 @@
           "result": "pass",
           "evidence": "build/budget-accounts-editor-native-v3/result.json",
           "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-linked-control-task-retirement",
+          "command": "python3 tools/test-i386-control-retirement.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/control-retirement-fixed-v1/result.json",
+          "scope": "Unchanged mature fixture fails pre-fix masks 51/0/0 and passes 255/255/255: nested parent/leaf own scroll controls, caller-owned generic control/state survives detached with stale target cleared. Return, explicit Exit, Kill with recovering task-end callback then final Kill; real child-list drain and exact caller heap recovery per mode, unchanged files/metadata and fresh 42. Associations released only after descendants and render borrowers drain; low-level reaper guard unchanged. Not general mouse/control/resource qualification. See docs/i386-control-retirement.md."
         }
       ]
     },
@@ -7555,6 +7611,20 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -7783,6 +7853,20 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -7997,6 +8081,20 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -8262,6 +8360,20 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -8476,6 +8588,20 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -8508,6 +8634,20 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -8739,6 +8879,20 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -8806,6 +8960,20 @@
           "result": "pass",
           "evidence": "build/i386-budget-session-abort-native-v1/result.json",
           "scope": "64 MiB KVM: fresh QEMU reopens actual keyboard-saved image without installation/reseeding; Home/Ctrl-Y temporary deletion, Shift-Escape abort. Original/independent documents and records match, both masks 63, entire filesystem bytes/attributes/timestamps unchanged during cold reopen/abort, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Popup entry/templates/mouse and full C1-C5 remain unqualified."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -9040,6 +9208,20 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "original-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py --archive ARCHIVE --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Pinned original reference; no seeded transactions or direct application-handler calls. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "native-budget-calendar-recurrence",
+          "command": "python3 tools/test-i386-budget-recurrence.py IMAGE --reference ORIGINAL --kind KIND --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-recurrence-audit-v1/result.json",
+          "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
         }
       ]
     },
@@ -21253,6 +21435,13 @@
           "result": "pass",
           "evidence": "build/i386-terminals-handoff-v3/result.json",
           "scope": "Final shared-startup image: eleven commands after setup pass two-terminal definitions/history/focus/exit and exact parent public-heap recovery, with exact VGA. Checker/image hashes independently rechecked, source disk unchanged. Not original public interactive lexer or full UserTaskCont qualification."
+        },
+        {
+          "target": "native-linked-control-task-retirement",
+          "command": "python3 tools/test-i386-control-retirement.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/control-retirement-fixed-v1/result.json",
+          "scope": "Unchanged mature fixture fails pre-fix masks 51/0/0 and passes 255/255/255: nested parent/leaf own scroll controls, caller-owned generic control/state survives detached with stale target cleared. Return, explicit Exit, Kill with recovering task-end callback then final Kill; real child-list drain and exact caller heap recovery per mode, unchanged files/metadata and fresh 42. Associations released only after descendants and render borrowers drain; low-level reaper guard unchanged. Not general mouse/control/resource qualification. See docs/i386-control-retirement.md."
         }
       ]
     },

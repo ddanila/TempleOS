@@ -733,3 +733,23 @@ fraction four agrees on both targets. No runtime/application code changes.
 See [template and periodic evidence](i386-budget-templates.md). Other recurrence
 types, template editing/deletion, mouse/resources and full Budget/C1–C5 remain
 open; component evidence leaves qualification at 2/686.
+
+Calendar recurrence now has four original/native real-keyboard controls:
+monthly/bimonthly/semiannual/annual creation, both nested cancellation paths,
+identity-preserving cancelled edit, accepted recurrence/base-entry replacement,
+whole-family deletion, recreation and cold persistence. Masks 16777215/63 and
+exact menu/form/backing/live/storage oracles pass; only saved byte 84 differs
+under the established exact binary64 policies. All expanded dates retain the
+same four-tick quantization. See [recurrence evidence](i386-budget-recurrence.md).
+
+The first native controls exposed finished picker children retained by linked
+scroll controls. Generic committed task retirement now detaches associations
+after descendant/render draining. The focused unchanged return/Exit/recovering-
+Kill fixture fails 51/0/0 before and passes 255/255/255 afterward, including
+borrowed storage survival and actual heap/child-list reclamation. See
+[retirement evidence](i386-control-retirement.md). Both existing bootstraps and
+the 386 audit pass; only ConsoleRuntime changes, with unchanged kernel/ABIs.
+The DocEd-exit regression passes; derived-control regression remains pending.
+The combined audit revalidates eight captures and rejects 660 corruptions.
+Boundary validation, mouse/resources, complete Budget and C1–C5 remain open;
+component receipts leave qualification at 2/686.
