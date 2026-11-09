@@ -4,12 +4,14 @@ import argparse,hashlib,json,re,runpy,struct
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 def main():
- ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',required=True,type=Path);a=ap.parse_args();out=a.out.resolve()
+ ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--waiter-retirement',choices=('kill','exit'),help='Observe a blocked second initializer taking over after owner retirement');ap.add_argument('--exit-cases',action='store_true',help='Include four explicit Exit cases in addition to throw/Kill');ap.add_argument('--out',required=True,type=Path);a=ap.parse_args();out=a.out.resolve()
  if out.exists():ap.error('Use a fresh output directory')
+ if a.waiter_retirement and a.exit_cases:ap.error('Choose waiter or exit matrix mode')
  fixture=ROOT/'tests/guest/i386-pen-init-recovery/Contract.HC';pens=ROOT/'tests/guest/i386-graphics-pens/Contract.HC'
  paths=[a.disk.resolve(),fixture,pens,Path(__file__).resolve()]+[ROOT/('tools/'+n) for n in ['package-i386-native-image.py','build-i386-kernel.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','test-i386-graphics-pens.py']]+[ROOT/n for n in ['Kernel/FontStd.HC','Kernel/I386/GraphicsContext.HC','Kernel/I386/GraphicsPens.HC','Kernel/I386/RenderScope.HC','Adam/Gr/GrDCCore.HC','Kernel/I386/Heap.HH','Kernel/I386/Scheduler.HH','Kernel/I386/MemoryBacking.HH','Kernel/I386/DCNewScope.HC','Kernel/I386/DCNewScope.HH','Kernel/I386/RenderScope.HH','Kernel/I386/Memory.HH','Kernel/MemoryTypes.HH','Kernel/MemoryAllocTypes.HH']]
+ if a.waiter_retirement:paths.append(fixture.with_name('Waiter.HC'))
  sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();out.mkdir();pins={str(p):sha(p) for p in paths};(out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'pens.HC').write_bytes(pens.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes());g=None
- report=dict(result='running',input_sha256=pins,scope='Actual normal-image pen constructors: throw before body allocation or Kill while allocator yields, at1/33/128/256; complete table/state cleanup, exact Adam/caller logical recovery and physical main-heap changes fully reconciled to validated backing regions, successful public retry and all pen bytes. Existing allocator callback is temporarily replaced and restored; no pen implementation substitute. Not every allocation/cancellation/resource/C1-C5 qualification.')
+ report=dict(result='running',input_sha256=pins,exit_cases=a.exit_cases,waiter_retirement=a.waiter_retirement,scope='Actual normal-image pen constructors: throw before body allocation, Kill while allocator yields, and optionally explicit Exit, at1/33/128/256; complete table/state cleanup, exact Adam/caller logical recovery and physical main-heap changes fully reconciled to validated backing regions, successful public retry and all pen bytes. Existing allocator callback is temporarily replaced and restored; no pen implementation substitute. Not every allocation/cancellation/resource/C1-C5 qualification.')
  try:
   pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));source=pack['snapshot'](a.disk.read_bytes())[1];module=source['/Modules/I386/ConsoleRuntime.t32m'][2];size,count,records=struct.unpack_from('<III',module,16)
   wanted={'native_graphics_body_calloc','native_graphics_pens_ready','native_graphics_pen_builder','native_render_scopes'};offsets={};ranges=[]
@@ -27,24 +29,43 @@ def main():
    if kind==1 and memory[n:n+l]==b'MemoryCAllocExact':allocator_offsets.append(o)
   assert len(pool_offsets)==len(allocator_offsets)==1
   report['memory_module_sha256']=hashlib.sha256(memory).hexdigest();report['memory_pool_offset']=pool_offsets[0]
+  if a.waiter_retirement:
+   functions=[]
+   for i in range(count):
+    kind,o,n,l=struct.unpack_from('<4I',module,records+i*16)
+    if kind==1:functions.append((o,module[n:n+l].decode('ascii')))
+   functions.sort();index=next(i for i,f in enumerate(functions) if f[1]=='NativeGraphicsPensEnsure');ensure=(functions[index][0],functions[index+1][0]);report['ensure_offsets']=ensure
   bind='\nU0 PCBind(U8 *base,U8 *memory){pc_pool=memory+0x%X;pc_slot=base+0x%X;pc_ready=base+0x%X;pc_builder=base+0x%X;pc_scope_head=base+0x%X;}\n'%tuple([pool_offsets[0]]+[offsets[n] for n in ['native_graphics_body_calloc','native_graphics_pens_ready','native_graphics_pen_builder','native_render_scopes']])
-  code=fixture.read_bytes()+pens.read_bytes()+bind.encode();(out/'delivered.HC').write_bytes(code);image=out/'working.img';report['packaging']=pack['package'](a.disk.resolve(),image,additions={'/Probe/PenRecovery.HC':code});before=pack['snapshot'](image.read_bytes())[1]
+  if a.waiter_retirement:
+   bind=bind.replace(';}\n',';pw_ensure_lo=base+0x%X;pw_ensure_hi=base+0x%X;}\n'%ensure)
+  code=(b'#define PC_TRIALS 12\n' if a.exit_cases else b'')+fixture.read_bytes()+pens.read_bytes()+(fixture.with_name('Waiter.HC').read_bytes() if a.waiter_retirement else b'')+bind.encode();(out/'delivered.HC').write_bytes(code);image=out/'working.img';report['packaging']=pack['package'](a.disk.resolve(),image,additions={'/Probe/PenRecovery.HC':code});before=pack['snapshot'](image.read_bytes())[1]
   Guest=runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest'];g=Guest(image,out/'guest',True);g.wait('DONE native kernel startup\n');match=re.search(r'^CONSOLE ([0-9A-F]+) ',g.collect(),re.M);assert match;base=int(match[1],16)+8;report['runtime_module_base']=base;mm=re.search(r'^MEMORY ([0-9A-F]+) ',g.collect(),re.M);assert mm;memory_base=int(mm[1],16)+8;report['runtime_memory_base']=memory_base
   g.command('#include "/Kernel/I386/PublicUser.HH"');g.command('#include "C:/Probe/PenRecovery.HC"')
   slot=base+offsets['native_graphics_body_calloc']
   g.call('pmemsave',val=slot,size=4,filename=str(out/'allocator-before.bin'))
   original=struct.unpack('<I',(out/'allocator-before.bin').read_bytes())[0];assert original==memory_base+allocator_offsets[0]
   report['allocator_address']=original
-  g.command(f'PCBind(0x{base:X},0x{memory_base:X});PCProbe;GPProbe;',timeout=300)
-  g.wait('PEN RECOVERY DONE\n');g.wait('GRAPHICS PENS DONE\n')
+  action='PWProbe('+str(int(a.waiter_retirement=='exit'))+');' if a.waiter_retirement else 'PCProbe;'
+  g.command(f'PCBind(0x{base:X},0x{memory_base:X});'+action+'GPProbe;',timeout=300)
+  g.wait('PEN WAITER DONE\n' if a.waiter_retirement else 'PEN RECOVERY DONE\n');g.wait('GRAPHICS PENS DONE\n')
   g.call('pmemsave',val=slot,size=4,filename=str(out/'allocator-after.bin'))
   assert (out/'allocator-before.bin').read_bytes()==(out/'allocator-after.bin').read_bytes();report['allocator_restored']=True
-  for name in ('pen-recovery.bin','graphics-pens.bin'):(out/name).write_bytes((g.out/name).read_bytes())
-  values=struct.unpack('<192q',(out/'pen-recovery.bin').read_bytes());rows=[list(values[i:i+24]) for i in range(0,192,24)];report['rows']=rows
-  report['heap_deltas']=[dict(main=r[6]-r[4],allocations=r[7]-r[5],adam=r[9]-r[8],caller=r[11]-r[10],main_backing=r[17]-r[16],main_regions=r[19]-r[18]) for r in rows]
+  for name in (('pen-waiter.bin','pen-waiter-frames.bin','graphics-pens.bin') if a.waiter_retirement else ('pen-recovery.bin','graphics-pens.bin')):(out/name).write_bytes((g.out/name).read_bytes())
+  if a.waiter_retirement:
+   values=list(struct.unpack('<32q',(out/'pen-waiter.bin').read_bytes()));report['waiter_values']=values;rows=[]
+  else:
+   trials=12 if a.exit_cases else 8;values=struct.unpack('<'+str(trials*24)+'q',(out/'pen-recovery.bin').read_bytes());rows=[list(values[i:i+24]) for i in range(0,trials*24,24)];report['rows']=rows
+   report['heap_deltas']=[dict(main=r[6]-r[4],allocations=r[7]-r[5],adam=r[9]-r[8],caller=r[11]-r[10],main_backing=r[17]-r[16],main_regions=r[19]-r[18]) for r in rows]
   expected=runpy.run_path(str(ROOT/'tools/test-i386-graphics-pens.py'))['expected']();assert (out/'graphics-pens.bin').read_bytes()==expected;report['retry_pen_bytes']=len(expected)
   g.command('6*7;');report['fresh_result']=g.result_pixels();g.close();g=None
   assert pack['snapshot'](image.read_bytes())[1]==before;report['files_unchanged']=True
+  if a.waiter_retirement:
+   v=values;frames=struct.unpack('<16q',(out/'pen-waiter-frames.bin').read_bytes())
+   assert v[:4]==[int(a.waiter_retirement=='exit'),33,33,0]
+   assert 0<=v[5]<16 and v[4]==frames[v[5]] and base+ensure[0]<=v[4]<base+ensure[1]
+   assert v[6:12]==[1,1,256,1,1,1] and v[15]==1 and v[18:20]==[1,1]
+   assert v[13]-v[12]==v[14]>0 and v[16]==v[17]
+   assert v[21]-v[20]==v[25]-v[24] and v[23]-v[22]==v[27]-v[26]
   for i,r in enumerate(rows):
    assert r[:4]==[i//4,(1,33,128,256)[i%4],(1,33,128,256)[i%4],2 if i<4 else 0],(i,r)
    if any(r[x]!=r[y] for x,y in ((8,9),(10,11))) or r[6]-r[4]!=r[17]-r[16] or r[7]-r[5]!=r[19]-r[18] or r[12:16]!=[1]*4:raise ValueError(f'Pen recovery differs at trial{i}: {r}')

@@ -1,3 +1,6 @@
+#ifndef PC_TRIALS
+#define PC_TRIALS 8
+#endif
 #include "/Kernel/I386/Scheduler.HH"
 #include "/Kernel/I386/MemoryBacking.HH"
 U8 **pc_slot,**pc_scope_head;
@@ -6,7 +9,7 @@ CTask **pc_builder,*pc_child;
 CI386Heap *pc_heap;CI386BackingPool *pc_pool;
 CDC *pc_dc;
 U8 *(*pc_original)(I64 size,CTask *task);
-I64 pc_target,pc_mode,pc_calls,pc_outcome,pc_values[192];
+I64 pc_target,pc_mode,pc_calls,pc_outcome,pc_values[PC_TRIALS*24];
 Bool pc_hit,pc_done;
 U0 PCLog(U8 *s){while(*s)OutU8(0xE9,*s++);}
 U8 *PCAlloc(I64 size,CTask *task)
@@ -14,6 +17,7 @@ U8 *PCAlloc(I64 size,CTask *task)
   if(Fs==pc_child && ++pc_calls==pc_target) {
     pc_hit=TRUE;
     if(!pc_mode)throw('PenFail',TRUE);
+    if(pc_mode==2)Exit;
     while(TRUE)Yield;
   }
   return (*pc_original)(size,task);
@@ -60,18 +64,22 @@ U0 PCRun(I64 mode,I64 target,I64 *v=NULL)
   I64 backing[4],after[4];PCBacking(backing);
   U8 *scope=*pc_scope_head;
   CTask *task;
-  Bool killed;
+  Bool retired;
   pc_mode=mode;pc_target=target;pc_calls=pc_outcome=0;pc_hit=pc_done=FALSE;pc_child=NULL;
   task=Spawn(&PCChild,NULL,"Pen fault",-1,Fs,131072);
   while(!(mode&&pc_hit || !mode&&pc_done)&&cnts.jiffies<deadline)Yield;
   if(!(mode&&pc_hit || !mode&&pc_done))throw('PCWait',TRUE);
-  killed=Kill(task);Sleep(100);PCBacking(after);
+  if(mode==2) {
+    while(TaskValidate(task)&&cnts.jiffies<deadline)Yield;
+    retired=!TaskValidate(task);
+  } else retired=Kill(task);
+  Sleep(100);PCBacking(after);
   if(v) {
     v[0]=mode;v[1]=target;v[2]=pc_calls;v[3]=pc_outcome;
     v[4]=used;v[5]=allocations;v[6]=pc_heap->used;v[7]=pc_heap->allocations;
     v[8]=root;v[9]=adam_task->data_heap->used_u8s;
     v[10]=caller;v[11]=Fs->data_heap->used_u8s;
-    v[12]=PCEmpty;v[13]=!*pc_ready && !*pc_builder;v[14]=killed;v[15]=*pc_scope_head==scope;
+    v[12]=PCEmpty;v[13]=!*pc_ready && !*pc_builder;v[14]=retired;v[15]=*pc_scope_head==scope;
     v[16]=backing[0];v[17]=after[0];v[18]=backing[1];v[19]=after[1];
     v[20]=backing[2];v[21]=after[2];v[22]=backing[3];v[23]=after[3];
   }
@@ -90,7 +98,7 @@ U0 PCProbe()
   try {
     pc_dc=DCNew(32,32);pc_slot[0]=&PCAlloc;
     PCRun(0,256);PCRun(0,256);
-    for(i=0;i<8;i++) {
+    for(i=0;i<PC_TRIALS;i++) {
       switch(i%4){case 0:target=1;break;case 1:target=33;break;case 2:target=128;break;case 3:target=256;break;}
       PCRun(i/4,target,pc_values+i*24);
     }

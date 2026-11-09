@@ -79,6 +79,54 @@ Regression evidence:
 `build/dc-constructor-audit-v1/verify.py` rechecks source/helper/bootstrap pins,
 raw recovery records, allocator restoration, delivered fixtures/volumes, complete
 pen retry bytes, and entire original MsgLoop documents/framebuffers.
-Other allocation points, explicit Exit within this constructor, reentrancy,
+Other allocation points, reentrancy,
 DCAlias construction and all-resource/default-desktop/native-generation
 qualification remain open. Inventory stays2/686; full C1-C5 remain open.
+
+
+Explicit Exit and waiter handoff coverage
+--------------------------------------
+
+The extended matrix uses `--exit-cases` to add Exit at body-call1,33,128,256.
+`build/pen-init-exit-recovery-v2` passes all12 cases, including exact zero
+Adam/caller logical deltas, complete partial-state cleanup and physical backing
+reconciliation. The original eight-case invocation remains available.
+
+`--waiter-retirement kill` and `--waiter-retirement exit` exercise two actual
+initializing tasks. The first blocks in the real body allocator at call33;
+the second enters public GrFillCircle. TaskCaller observes its saved return PC
+within the actual ConsoleRuntime NativeGraphicsPensEnsure function range,
+located through module exports. The second has made zero body allocations
+before the owner retires. It must then complete all256 body allocations,
+publish ready state, clear the builder and leave the original scope chain.
+
+The waiter tests validate the owner and MHeapCtrl of every context, matrix and
+body. Summed MSize2 spans equal542976 bytes, exactly Adam's net logical growth;
+MSize2 already includes allocation headers. Both child tasks retire, the parent's
+child lists restore and its logical heap has zero growth. Physical used-byte
+and allocation-count changes must exactly equal validated backing changes.
+Each run restores the original allocator entry, matches all391680 modeled pen
+bytes, executes fresh42 and preserves the entire volume.
+
+The first fixtures are retained as pen-waiter-{kill,exit}-v1/v2. Besides the
+MSize2 correction, the heap audit at pen-waiter-heap-audit-v1 records every used
+main-heap block before/after. Its only new small block has span64, request48,
+exception signature0x45323349 and the parent task pointer. This is the live try
+record: the original fixture measured before try entry and inside try. The
+final fixture measures both sides inside the same try. Warm failure cycles
+settle first-use state before the measured handoff, as in the original matrix.
+No heap tolerance or resource exclusion is added.
+
+Reproduce with the unchanged full-profile image:
+
+```sh
+python3 tools/test-i386-pen-init-recovery.py build/i386-dc-constructor-scope-cross-v1/kernel.img --exit-cases --out build/new-pen-exit-matrix
+python3 tools/test-i386-pen-init-recovery.py build/i386-dc-constructor-scope-cross-v1/kernel.img --waiter-retirement kill --out build/new-pen-waiter-kill
+python3 tools/test-i386-pen-init-recovery.py build/i386-dc-constructor-scope-cross-v1/kernel.img --waiter-retirement exit --out build/new-pen-waiter-exit
+```
+
+Final waiter receipts are pen-waiter-{kill,exit}-v3.
+`build/pen-retirement-audit-v1/verify.py` independently rechecks source pins,
+raw measurements, saved frames, complete delivered volumes, allocator pointers
+and pen bytes for all three final workflows. These are C4 recovery subcases;
+full C1-C5 and the remaining gaps above stay open.

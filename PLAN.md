@@ -29814,3 +29814,31 @@ normal8MiB startup is54.265s. Other allocation/cancellation/reentry paths,
 default scheduling, remaining apps and native self-host release generations
 remain open. Qualification stays2/686; full C1-C5 remain open. See
 docs/i386-dc-constructor-recovery.md.
+
+### C4: explicit pen-initializer Exit and waiting-task handoff
+
+The constructor recovery matrix now includes explicit Exit at actual body-call
+1/33/128/256, alongside the existing throw/Kill cases. All12 cases recover
+Adam/caller logical heaps exactly, clear partial tables/bounds/builder state,
+restore the render scope chain and reconcile physical heap changes to validated
+backing regions. The public retry matches all391680 pen bytes.
+
+A separate two-task workflow holds the first initializer at body-call33 and
+uses public TaskCaller to witness the second task's saved stack inside the
+actual NativeGraphicsPensEnsure wait loop, before any waiter body allocation.
+It then retires the owner by Kill or explicit Exit and requires the waiter to
+complete all256 allocations. Every live context/matrix/body belongs to Adam;
+the542976-byte live allocation census equals Adam's exact logical growth.
+Caller heap and child lists restore; physical heap growth is fully reconciled.
+
+The initial waiter fixture double-counted MSize2 headers and compared opposite
+sides of its own try entry. A retained block census identifies the remaining
+64 bytes as the test's live48-byte CI386Except plus16-byte heap header, with
+signature45323349 and the parent task pointer. Both snapshots now share the
+same try scope; no tolerance or unaccounted allocation is allowed.
+
+Evidence: pen-init-exit-recovery-v2, pen-waiter-{kill,exit}-v3 and
+build/pen-retirement-audit-v1/verify.py. These extend recovery qualification on
+the unchanged ABI273 image; they do not qualify default desktop scheduling,
+all allocation/resource paths, remaining applications or native C5 generations.
+Inventory stays2/686; full C1-C5 remain open.
