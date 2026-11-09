@@ -8,11 +8,13 @@ class CI386IncludeDocumentCallbacks {
 CI386IncludeDocumentCallbacks task_public_doc;
 U0 I386TaskFilePublicReader(U8 *callback)
 { task_public_read=callback; }
-U0 I386TaskFilePublicDocument(U8 *create,U8 *destroy)
+U0 I386TaskFilePublicDocument(U8 *create,U8 *destroy,U8 *format=0)
 {
   U32 flags=I386IrqSave;
   if(create && destroy) {task_public_doc.create=create;task_public_doc.destroy=destroy;}
   else {task_public_doc.create=0;task_public_doc.destroy=0;}
+  if(!create || !destroy)format=0;
+  I386LexDocFormatProvider(format);
   I386IrqRestore(flags);
 }
 U8 *I386TaskFileReadMode(CI386Heap *heap,U8 *filename,I64 *size,I64 *attr,U8 **name,Bool raw,Bool stored=FALSE)

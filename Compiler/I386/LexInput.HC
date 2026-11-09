@@ -1,6 +1,112 @@
 #include "/Compiler/I386/LexInput.HH"
 #include "/Kernel/I386/Bits.HH"
 #include "/Compiler/LexInput.HC"
+#include "/Kernel/I386/Cpu.HH"
+U8 *(*i386_lex_doc_format)(CI386Heap *heap,CDoc *doc,CDocEntry *entry);
+U0 I386LexDocFormatProvider(U8 *format)
+{//The retained provider outlives every active compiler control.
+  U32 flags=I386IrqSave;
+  i386_lex_doc_format=format;
+  I386IrqRestore(flags);
+}
+U8 *I386LexScalarDollar(CI386Heap *heap,CDocEntry *entry)
+{//Bootstrap-only scalar support; complete documents use the shared serializer.
+  U8 *format;I64 i,j,n,last,digit;U8 swap;
+  if(!(entry->type_u8==DOCT_PAGE_BREAK || entry->type_u8==DOCT_CLEAR ||
+             entry->type_u8==DOCT_PAGE_LEN || entry->type_u8==DOCT_LEFT_MARGIN ||
+             entry->type_u8==DOCT_RIGHT_MARGIN || entry->type_u8==DOCT_HEADER ||
+             entry->type_u8==DOCT_FOOTER || entry->type_u8==DOCT_INDENT ||
+             entry->type_u8==DOCT_WORD_WRAP || entry->type_u8==DOCT_HIGHLIGHT ||
+             entry->type_u8==DOCT_FOREGROUND || entry->type_u8==DOCT_BACKGROUND ||
+             entry->type_u8==DOCT_DFT_FOREGROUND ||
+             entry->type_u8==DOCT_DFT_BACKGROUND ||
+             entry->type_u8==DOCT_BLINK || entry->type_u8==DOCT_INVERT ||
+             entry->type_u8==DOCT_UNDERLINE || entry->type_u8==DOCT_SHIFTED_X ||
+             entry->type_u8==DOCT_SHIFTED_Y))return 0;
+  if(entry->attr!=DOC_DFT) {
+    if(entry->type_u8==DOCT_FOREGROUND ||
+        entry->type_u8==DOCT_BACKGROUND) {
+      if(entry->attr<0 || entry->attr>15) return 0;
+    } else if(entry->type_u8==DOCT_BLINK ||
+        entry->type_u8==DOCT_INVERT ||
+        entry->type_u8==DOCT_UNDERLINE) {
+      if(entry->attr<0 || entry->attr>1) return 0;
+    }
+  }
+  format=I386HeapAlloc(heap,32,FALSE);
+  if(!format) return 0;
+  i=0; format[i++]='$$';
+  if(entry->type_u8==DOCT_PAGE_BREAK) {
+    format[i++]='P'; format[i++]='B';
+  } else if(entry->type_u8==DOCT_CLEAR) {
+    format[i++]='C'; format[i++]='L';
+  } else if(entry->type_u8==DOCT_PAGE_LEN) {
+    format[i++]='P'; format[i++]='L';
+  } else if(entry->type_u8==DOCT_LEFT_MARGIN) {
+    format[i++]='L'; format[i++]='M';
+  } else if(entry->type_u8==DOCT_RIGHT_MARGIN) {
+    format[i++]='R'; format[i++]='M';
+  } else if(entry->type_u8==DOCT_HEADER) {
+    format[i++]='H'; format[i++]='D';
+  } else if(entry->type_u8==DOCT_FOOTER) {
+    format[i++]='F'; format[i++]='O';
+  } else if(entry->type_u8==DOCT_INDENT) {
+    format[i++]='I'; format[i++]='D';
+  } else if(entry->type_u8==DOCT_WORD_WRAP) {
+    format[i++]='W'; format[i++]='W';
+  } else if(entry->type_u8==DOCT_HIGHLIGHT) {
+    format[i++]='H'; format[i++]='L';
+  } else if(entry->type_u8==DOCT_FOREGROUND) {
+    format[i++]='F'; format[i++]='G';
+  } else if(entry->type_u8==DOCT_BACKGROUND) {
+    format[i++]='B'; format[i++]='G';
+  } else if(entry->type_u8==DOCT_DFT_FOREGROUND) {
+    format[i++]='F'; format[i++]='D';
+  } else if(entry->type_u8==DOCT_DFT_BACKGROUND) {
+    format[i++]='B'; format[i++]='D';
+  } else if(entry->type_u8==DOCT_BLINK) {
+    format[i++]='B'; format[i++]='K';
+  } else if(entry->type_u8==DOCT_INVERT) {
+    format[i++]='I'; format[i++]='V';
+  } else if(entry->type_u8==DOCT_UNDERLINE) {
+    format[i++]='U'; format[i++]='L';
+  } else if(entry->type_u8==DOCT_SHIFTED_X) {
+    format[i++]='S'; format[i++]='X';
+  } else {
+    format[i++]='S'; format[i++]='Y';
+  }
+  if(entry->attr!=DOC_DFT && entry->type_u8!=DOCT_PAGE_BREAK &&
+      entry->type_u8!=DOCT_CLEAR) {
+    format[i++]=',';
+    n=entry->attr;
+    if(n<0) format[i++]='-';
+    j=i;
+    do {
+      digit=n%10;
+      if(digit<0) digit=-digit;
+      format[i++]='0'+digit;
+      n/=10;
+    } while(n);
+    last=i-1;
+    while(j<last) {
+      swap=format[j]; format[j]=format[last]; format[last]=swap;
+      j++; last--;
+    }
+  }
+  format[i++]='$$'; format[i]=0;
+  return format;
+}
+Bool I386LexEntryDollar(CDocEntry *entry)
+{//Original LexGetChar selection, including the ordinary-text exclusions.
+  switch(entry->type_u8) {
+    case DOCT_TEXT:
+      return (entry->de_flags&~(DOCEF_TAG|DOCEF_DEFINE|DOCEF_TAG_CB|
+        DOCG_BL_IV_UL|DOCEF_WORD_WRAP|DOCEF_HIGHLIGHT|DOCEF_SKIP|DOCEF_FILTER_SKIP))!=0;
+    case DOCT_NEW_LINE:case DOCT_TAB:case DOCT_INS_BIN:case DOCT_INS_BIN_SIZE:
+    case DOCT_MARKER:case DOCT_CURSOR:return FALSE;
+  }
+  return TRUE;
+}
 I64 I386LexRawChar(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines)
 {
   CLexFile *file;
@@ -8,9 +114,8 @@ I64 I386LexRawChar(CI386Heap *heap,CCmpCtrl *cc,I64 *compiled_lines)
   CDocEntry *entry;
   CDocBin *bin;
   U8 *binary,*format;
-  I64 i,j,n,last,digit;
+  I64 i;
   U8 *end;
-  U8 swap;
   if(!cc || !compiled_lines || !cc->lex_include_stk || cc->flags&CCF_PMT || cc->opts&OPTF_ECHO) return -1;
   if(Btr(&cc->flags,CCf_USE_LAST_U16)) {
     return cc->last_U16;
@@ -31,99 +136,19 @@ lex_step:
       while(entry!=doc) {
         file->cur_entry=entry;
         file->buf_ptr=cc->cur_buf_ptr=&i386_doc_zero;
+        if(cc->flags&CCF_IN_QUOTES && I386LexEntryDollar(entry)) {
+          if(cc->dollar_buf && !I386HeapFree(heap,cc->dollar_buf))return -1;
+          cc->dollar_buf=0;
+          if(i386_lex_doc_format)format=(*i386_lex_doc_format)(heap,doc,entry);
+          else format=I386LexScalarDollar(heap,entry);
+          if(!format)return -1;
+          cc->dollar_buf=format;cc->dollar_cnt=2;
+          file->line_num=entry->y+1;file->buf_ptr=cc->cur_buf_ptr=format;
+          goto lex_step;
+        }
         if(entry->type_u8==DOCT_TEXT && entry->tag && *entry->tag) {
           file->buf_ptr=cc->cur_buf_ptr=entry->tag;
           break;
-        }
-        if(cc->flags&CCF_IN_QUOTES &&
-            (entry->type_u8==DOCT_PAGE_BREAK || entry->type_u8==DOCT_CLEAR ||
-             entry->type_u8==DOCT_PAGE_LEN || entry->type_u8==DOCT_LEFT_MARGIN ||
-             entry->type_u8==DOCT_RIGHT_MARGIN || entry->type_u8==DOCT_HEADER ||
-             entry->type_u8==DOCT_FOOTER || entry->type_u8==DOCT_INDENT ||
-             entry->type_u8==DOCT_WORD_WRAP || entry->type_u8==DOCT_HIGHLIGHT ||
-             entry->type_u8==DOCT_FOREGROUND || entry->type_u8==DOCT_BACKGROUND ||
-             entry->type_u8==DOCT_DFT_FOREGROUND ||
-             entry->type_u8==DOCT_DFT_BACKGROUND ||
-             entry->type_u8==DOCT_BLINK || entry->type_u8==DOCT_INVERT ||
-             entry->type_u8==DOCT_UNDERLINE || entry->type_u8==DOCT_SHIFTED_X ||
-             entry->type_u8==DOCT_SHIFTED_Y)) {
-          if(cc->dollar_buf && !I386HeapFree(heap,cc->dollar_buf)) return -1;
-          cc->dollar_buf=0;
-          if(entry->attr!=DOC_DFT) {
-            if(entry->type_u8==DOCT_FOREGROUND ||
-                entry->type_u8==DOCT_BACKGROUND) {
-              if(entry->attr<0 || entry->attr>15) return -1;
-            } else if(entry->type_u8==DOCT_BLINK ||
-                entry->type_u8==DOCT_INVERT ||
-                entry->type_u8==DOCT_UNDERLINE) {
-              if(entry->attr<0 || entry->attr>1) return -1;
-            }
-          }
-          format=I386HeapAlloc(heap,32,FALSE);
-          if(!format) return -1;
-          i=0; format[i++]='$$';
-          if(entry->type_u8==DOCT_PAGE_BREAK) {
-            format[i++]='P'; format[i++]='B';
-          } else if(entry->type_u8==DOCT_CLEAR) {
-            format[i++]='C'; format[i++]='L';
-          } else if(entry->type_u8==DOCT_PAGE_LEN) {
-            format[i++]='P'; format[i++]='L';
-          } else if(entry->type_u8==DOCT_LEFT_MARGIN) {
-            format[i++]='L'; format[i++]='M';
-          } else if(entry->type_u8==DOCT_RIGHT_MARGIN) {
-            format[i++]='R'; format[i++]='M';
-          } else if(entry->type_u8==DOCT_HEADER) {
-            format[i++]='H'; format[i++]='D';
-          } else if(entry->type_u8==DOCT_FOOTER) {
-            format[i++]='F'; format[i++]='O';
-          } else if(entry->type_u8==DOCT_INDENT) {
-            format[i++]='I'; format[i++]='D';
-          } else if(entry->type_u8==DOCT_WORD_WRAP) {
-            format[i++]='W'; format[i++]='W';
-          } else if(entry->type_u8==DOCT_HIGHLIGHT) {
-            format[i++]='H'; format[i++]='L';
-          } else if(entry->type_u8==DOCT_FOREGROUND) {
-            format[i++]='F'; format[i++]='G';
-          } else if(entry->type_u8==DOCT_BACKGROUND) {
-            format[i++]='B'; format[i++]='G';
-          } else if(entry->type_u8==DOCT_DFT_FOREGROUND) {
-            format[i++]='F'; format[i++]='D';
-          } else if(entry->type_u8==DOCT_DFT_BACKGROUND) {
-            format[i++]='B'; format[i++]='D';
-          } else if(entry->type_u8==DOCT_BLINK) {
-            format[i++]='B'; format[i++]='K';
-          } else if(entry->type_u8==DOCT_INVERT) {
-            format[i++]='I'; format[i++]='V';
-          } else if(entry->type_u8==DOCT_UNDERLINE) {
-            format[i++]='U'; format[i++]='L';
-          } else if(entry->type_u8==DOCT_SHIFTED_X) {
-            format[i++]='S'; format[i++]='X';
-          } else {
-            format[i++]='S'; format[i++]='Y';
-          }
-          if(entry->attr!=DOC_DFT && entry->type_u8!=DOCT_PAGE_BREAK &&
-              entry->type_u8!=DOCT_CLEAR) {
-            format[i++]=',';
-            n=entry->attr;
-            if(n<0) format[i++]='-';
-            j=i;
-            do {
-              digit=n%10;
-              if(digit<0) digit=-digit;
-              format[i++]='0'+digit;
-              n/=10;
-            } while(n);
-            last=i-1;
-            while(j<last) {
-              swap=format[j]; format[j]=format[last]; format[last]=swap;
-              j++; last--;
-            }
-          }
-          format[i++]='$$'; format[i]=0;
-          cc->dollar_buf=format;
-          cc->dollar_cnt=2;
-          file->buf_ptr=cc->cur_buf_ptr=format;
-          goto lex_step;
         }
         if(entry->type_u8==DOCT_NEW_LINE) {
           file->line_start=entry->next;

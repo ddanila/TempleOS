@@ -26,6 +26,7 @@ import I64 I386RedSeaFind(CI386RedSea *volume,I64 directory,U8 *name,CI386RedSea
 import I64 I386RedSeaResolve(CI386RedSea *volume,I64 directory,U8 *path,CI386RedSeaEntry *entry);
 import U8 *I386RedSeaReadAll(CI386RedSea *volume,CI386Heap *heap,CI386RedSeaEntry *entry,I64 *size=0);
 import Bool I386LexIncludeTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,U8 *source,Bool is_define=FALSE);
+import U0 I386LexDocFormatProvider(U8 *format);
 import Bool I386LexIncludeDocTake(CI386Heap *heap,CCmpCtrl *cc,U8 *name,CDoc *doc,
   U0 (*document)(U8 *context,CDoc *document),U8 *context=0);
 import Bool I386RedSeaBegin(CI386RedSea *volume);

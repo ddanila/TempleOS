@@ -15,6 +15,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('disk',type=Path,nargs='?')
     ap.add_argument('--out',type=Path,required=True)
+    ap.add_argument('--accel',choices=('tcg','kvm'),default='tcg')
     args=ap.parse_args();out=args.out.resolve()
     if out.exists():ap.error('Use a fresh output directory')
     out.mkdir(parents=True)
@@ -25,7 +26,7 @@ def main():
            '/DocIncludeCase/Bad.HC':b'$IS,"payload",BI=1$;\nI64 broken=;\n\0'+binary,
            '/DocIncludeCase/Cleanup.HC':fixture.read_bytes()}
     inputs=[Path(__file__).resolve(),fixture]
-    report=dict(result='running',mode='native' if args.disk else 'pinned-original',scope='Repeated real document includes and task heap recovery on original/native; native also checks compiler-error unwind and later command; not cancellation, OOM, task death or AOT qualification')
+    report=dict(result='running',mode='native' if args.disk else 'pinned-original',accel=args.accel if args.disk else 'tcg',scope='Repeated real document includes and task heap recovery on original/native; native also checks compiler-error unwind and later command; not cancellation, OOM, task death or AOT qualification')
     if args.disk:
         inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC')]
     else:
@@ -38,7 +39,7 @@ def main():
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions=files)
             commands=['#include "C:/DocIncludeCase/Cleanup.HC"',"if(DocumentIncludeCleanup('C')!=31)throw('DocInc',TRUE);",'6*7;']
-            runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk,out/'guest',commands,64,True,allow_inner_rejection=True)
+            runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk,out/'guest',commands,64,True,allow_inner_rejection=True,accel=args.accel)
             delivered=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,set(files))
             if delivered!=files:raise ValueError('Delivered include files changed')
         else:

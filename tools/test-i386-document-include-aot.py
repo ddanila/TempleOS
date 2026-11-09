@@ -14,6 +14,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--accel',choices=('tcg','kvm'),default='tcg')
     args = parser.parse_args()
     out = args.out.resolve()
     if out.exists():
@@ -29,13 +30,13 @@ def main():
         'tools/i386-kernel-input.py', 'tools/test-i386-timeclock-welcome.py',
         'tools/test-i386-retained-build.py', 'Kernel/FontStd.HC')]
     report = dict(result='running', input_sha256={str(p): sha(p) for p in paths},
-                  scope='Native AOT build of nested serialized document with binary and size entries, persisted module export and separate JIT behavior; not module installation or execution')
+                  accel=args.accel,scope='Native AOT build of nested serialized document with binary and size entries, persisted module export and separate JIT behavior; not module installation or execution')
     try:
         disk = out/'working.img'
         report['packaging'] = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(), disk, additions=files)
         commands = ['if(!I386BuildModule("C:/DocAot/Main.HC","C:/DocAot/Out.t32m",TRUE))throw(\'DocAot\',TRUE);',
                     '#include "C:/DocAot/Main.HC"', "if(!DocAotCheck)throw('DocAot',TRUE);", '6*7;']
-        runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk, out/'guest', commands, 64, True, command_timeout=600)
+        runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk, out/'guest', commands, 64, True, command_timeout=600,accel=args.accel)
         delivered = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk, set(files) | {'/DocAot/Out.t32m'})
         if any(delivered.get(name) != data for name, data in files.items()):
             raise ValueError('Delivered include files changed')

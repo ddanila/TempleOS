@@ -9,11 +9,14 @@
 CI386Heap state_heap;
 I64 state_free_errors;
 extern I64 NativeControlTest();
+extern I64 NativeDollarControlTest();
 I64 Main(I64 unused,I64 unused2)
 {
   if(!I386HeapInit(&state_heap,0x50000,65536)) return 8;
   OutU8(0x21,255); OutU8(0xA1,255);
-  return NativeControlTest;
+  I64 result=NativeControlTest;
+  if(result)return result;
+  return NativeDollarControlTest;
 }
 #include "/Kernel/I386/Heap.HC"
 #include "/Kernel/I386/Cpu.HC"
@@ -26,3 +29,5 @@ U0 StateFree(U8 *allocation) { if(!I386HeapFree(&state_heap,allocation)) state_f
 #include "/Kernel/I386/Hash.HC"
 #include "/Kernel/I386/HashTableCore.HC"
 #include "T:/Control.HC"
+
+#include "T:/DollarControl.HC"

@@ -47,3 +47,9 @@ as full application qualification.
 Qualification remains2/686. This workflow does not cover every key, initial
 mouse setting, pending-input/loss/focus/callback permutation or complete
 original desktop/resource/native self-hosting behavior required by C1–C5.
+
+The shared serializer repair fixes the header in both native variants:
+`msg-loop-literal-native-v1` and `msg-loop-literal-shift-native-v1` match the
+complete original chronological streams and restore mask7. They still fail
+strict saved-document equality, so no application qualification is added. See
+[serialization evidence](i386-document-serialization.md).

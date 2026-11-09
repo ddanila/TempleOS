@@ -15,6 +15,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('disk',type=Path,nargs='?')
     ap.add_argument('--out',type=Path,required=True)
+    ap.add_argument('--accel',choices=('tcg','kvm'),default='tcg')
     args=ap.parse_args();out=args.out.resolve()
     if out.exists():ap.error('Use a fresh output directory')
     out.mkdir(parents=True)
@@ -23,7 +24,7 @@ def main():
     files={'/Probe/Main.HC':b'#include "/Probe/Binary.HC"\nI64 EmbeddedCheck(){I64 m=0;if(embedded_size==4)m|=1;if(embedded_bin[0]==0 && embedded_bin[1]==65 && embedded_bin[2]==0 && embedded_bin[3]==255)m|=2;return m;}\n',
            '/Probe/Binary.HC':b'U8 *embedded_bin=$IB,"payload",BI=1$;\nI64 embedded_size=$IS,"payload",BI=1$;\n\0'+struct.pack('<IIII',1,0,4,2)+bytes([0,65,0,255])}
     inputs=[Path(__file__).resolve(),fixture]
-    report=dict(result='running',mode='native' if args.disk else 'pinned-original',scope='Nested includes, actual DolDoc binary and binary-size entries, exact bytes and return to parent; not error, cancellation, AOT or full application qualification')
+    report=dict(result='running',mode='native' if args.disk else 'pinned-original',accel=args.accel if args.disk else 'tcg',scope='Nested includes, actual DolDoc binary and binary-size entries, exact bytes and return to parent; not error, cancellation, AOT or full application qualification')
     if args.disk:
         inputs += [args.disk.resolve()]+[ROOT/n for n in ('tools/package-i386-native-image.py','tools/build-i386-kernel.py','tools/i386-kernel-input.py','tools/test-i386-timeclock-welcome.py','Kernel/FontStd.HC')]
     else:
@@ -36,7 +37,7 @@ def main():
             disk=out/'working.img'
             report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk.resolve(),disk,additions=files)
             commands=['#include "C:/Probe/Main.HC"',"if(EmbeddedCheck!=3)throw('DocInc',TRUE);",'6*7;']
-            runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk,out/'guest',commands,64,True)
+            runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk,out/'guest',commands,64,True,accel=args.accel)
             delivered=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents'](disk,set(files))
             if delivered!=files:raise ValueError('Delivered include files changed')
         else:

@@ -3387,7 +3387,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-quoted-document-serialization",
+          "command": "python3 tools/test-i386-document-dollar-matrix.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-document-dollar-cleanup.py IMAGE --accel kvm --out CLEANUP; python3 tools/test-i386.py --lex-state --lex-control --qmp-stdio --out CONTROL",
+          "result": "pass",
+          "evidence": "build/document-serialization-audit-v1/result.json",
+          "scope": "Shared original Doc2PlainText/escaping with original entry selection and retained root/include provider. 71 exact original/native outputs:35 cases in both paths plus constructed CLEAR; long1200-character link, special-text flags, quote/dollar escaping and inline checkbox. Prior image strict failure. Eight bare binding/buffer/failure/teardown cases preserve IRQ/arena; actual emitter release source linked. Three formatted pre-codegen errors restore caller data/code heaps, compiler/put-doc/IF and recover127; original baseline7. Binary include/AOT/cleanup and lexer/snapshot regressions pass. ABIs105/66/269,1860+26 pins,two classic generations,386 audit,458680 kernel bytes,isolated8MiB startup53.610s. Complete MsgLoop streams now match but saved documents/raster remain unqualified. Not all flags/commands, serializer OOM/cancellation/formatted snapshot permutations or whole-file/C1-C5. See docs/i386-document-serialization.md."
+        }
+      ]
     },
     {
       "path": "Adam/DolDoc/DocPopUp.HC",
@@ -13099,6 +13107,13 @@
           "result": "fail",
           "evidence": "build/document-literal-native-before-v1/result.json",
           "scope": "Actual source-file compilation: original preserves the LK command inside a quoted literal, native drops it; ordinary TX+UL control correctly projects tag text in both. Exact independent bytes including NUL; passing original-v2 and native strict failure, inputs unchanged. Initial incorrect underline expectation retained as failed original-v1. Isolates MsgLoop header loss from renderer/input. No native pass, whole-file/app or C1-C5 qualification. See docs/i386-document-literal.md."
+        },
+        {
+          "target": "original-quoted-document-serialization",
+          "command": "python3 tools/test-i386-document-dollar-matrix.py IMAGE --reference ORIGINAL --out OUT; python3 tools/test-i386-document-dollar-cleanup.py IMAGE --accel kvm --out CLEANUP; python3 tools/test-i386.py --lex-state --lex-control --qmp-stdio --out CONTROL",
+          "result": "pass",
+          "evidence": "build/document-serialization-audit-v1/result.json",
+          "scope": "Shared original Doc2PlainText/escaping with original entry selection and retained root/include provider. 71 exact original/native outputs:35 cases in both paths plus constructed CLEAR; long1200-character link, special-text flags, quote/dollar escaping and inline checkbox. Prior image strict failure. Eight bare binding/buffer/failure/teardown cases preserve IRQ/arena; actual emitter release source linked. Three formatted pre-codegen errors restore caller data/code heaps, compiler/put-doc/IF and recover127; original baseline7. Binary include/AOT/cleanup and lexer/snapshot regressions pass. ABIs105/66/269,1860+26 pins,two classic generations,386 audit,458680 kernel bytes,isolated8MiB startup53.610s. Complete MsgLoop streams now match but saved documents/raster remain unqualified. Not all flags/commands, serializer OOM/cancellation/formatted snapshot permutations or whole-file/C1-C5. See docs/i386-document-serialization.md."
         }
       ]
     },
@@ -17044,6 +17059,13 @@
           "result": "fail",
           "evidence": "build/msg-loop-stream-native-v1/result.json",
           "scope": "Original normal/Shift-Escape pass an independent chronological output model with18/19 records, full scan values, real GetMsg/Print/QMP input and exact heap/caller restoration7. Byte-identical source function loaded without auto-execution then called in one wrapper. Native ABI268 message-record streams match originals exactly and restore7, but both full streams fail because the header link is missing. A non-consuming user_put_s observer supplements strict final document capture; no record reordering. Saved original insertion order varies and pixels remain unqualified. No native full application/files/fresh42 or C1-C5 pass. See docs/i386-msg-loop.md."
+        },
+        {
+          "target": "msg-loop-full-stream-after-serialization",
+          "command": "python3 tools/test-i386-msg-loop.py IMAGE --reference ORIGINAL --out NORMAL; python3 tools/test-i386-msg-loop.py IMAGE --shift-exit --reference SHIFT_ORIGINAL --out SHIFT",
+          "result": "fail",
+          "evidence": "build/msg-loop-literal-native-v1/result.json",
+          "scope": "Both complete original chronological streams now match including header and18/19 exact messages/full scans; restoration7. Both native saved-document comparisons still fail insertion/cursor state. No pixel/fresh42/unchanged-volume or whole-application/C1-C5 pass. See docs/i386-document-serialization.md and docs/i386-msg-loop.md."
         }
       ]
     },

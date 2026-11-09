@@ -39,3 +39,8 @@ This is a strict failing C3 regression, not a change to source syntax or an
 application-specific workaround. It covers two entry cases, not every DolDoc
 command, ownership path or complete MsgLoop/C1–C5 acceptance. Qualification
 remains 2/686.
+
+The ABI105/66/269 repair now passes the two-case probe and 71 original-calibrated
+root/include results, using the shared serializer. MsgLoop's full chronological
+streams now match, while its saved documents remain failed. See
+[serialization implementation and evidence](i386-document-serialization.md).

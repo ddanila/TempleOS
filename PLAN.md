@@ -29659,3 +29659,34 @@ normal8MiB KVM486,-fpu boot reaches live WinMgr and exact welcome/42 pixels in
 MsgLoop chronological streams now match all18/19 message records; full output
 still fails the missing quoted header link and saved-document/raster acceptance
 remains open. No C1–C5 milestone or additional file is qualified.
+
+### C2/C3/C4: original serialization of quoted document source
+
+Replace native quoted-source metadata skipping with original LexGetChar entry
+selection and the shared Doc2PlainText/quoted-dollar serializer. A retained,
+versioned provider serves both roots and nested includes; final buffers belong
+to the requesting compiler heap/control. Ordinary styled text still projects
+its tag. Unconfigured bootstrap scalar support remains, with explicit failure
+for unsupported quoted metadata. ABIs are Compiler105/File66/Console269.
+
+Seventy-one original/native results match:35 cases through nested includes and
+ExeDoc roots, including special text metadata, escaping, inline checkbox,
+layout/script controls and a1200-character link label, plus a constructed CLEAR
+entry without source-recalc deletion. The previous image fails the same matrix.
+Eight bare formatter binding/allocation/teardown cases across both IRQ states
+and existing lexer/snapshot tests pass. Three formatted-source failures before
+code generation restore caller data/code heaps, IF, put document and compiler
+boundary, then execute successfully (127); original ordinary baseline is7.
+Executed string statements may intentionally retain CCF_HAS_MISC_DATA and are
+not given an invalid zero-heap requirement. Binary include/AOT/cleanup regressions
+pass with unchanged assertions on KVM; initial TCG startup timeouts are retained.
+
+The full image build/i386-document-literal-cross-v1/kernel.img pins1860 sources
+and26 helpers, with two source-matching classic generations and a386 audit.
+Five modules change; eleven match the prior image. Kernel size is458680.
+Isolated normal8MiB KVM486,-fpu startup is53.610s with live WinMgr and exact
+welcome/42 pixels: current60-second baseline only, not fullC5/native generations.
+Both unchanged MsgLoop streams now match the full original18/19-record output
+including the header. Saved-document insertion/cursor state still differs and
+both strict application tests remain failed. Qualification stays2/686; all
+remaining C1–C5 acceptance remains open. See docs/i386-document-serialization.md.

@@ -1360,6 +1360,24 @@ CDoc *NativeIncludeDocumentCreate(U8 *name,U8 *source,I64 size)
 }
 U0 NativeIncludeDocumentDestroy(U8 *context,CDoc *doc)
 { DocDel(doc); }
+U8 *NativeIncludeDocumentFormat(CI386Heap *heap,CDoc *doc,CDocEntry *entry)
+{//Use the original serializer/escaping, transferring only the final buffer.
+  U8 *plain=NULL,*quoted=NULL,*result=NULL;I64 size;
+  try {
+    if(!doldoc.hash)throw('DolDoc',TRUE);
+    plain=Doc2PlainText(doc,entry);
+    quoted=MStrPrint("$$%$$Q$$",plain);
+    size=StrLen(quoted)+1;result=I386HeapAlloc(heap,size,FALSE);
+    if(!result)throw('OutMem',TRUE);
+    MemCpy(result,quoted,size);
+  } catch {
+    if(result)I386HeapFree(heap,result);
+    result=NULL;Free(quoted);quoted=NULL;Free(plain);plain=NULL;
+    Fs->catch_except=FALSE;
+  }
+  Free(quoted);Free(plain);
+  return result;
+}
 Bool ConsoleRootHeaders()
 {
   //Publish the resident reader with root declarations, after early diagnostics.
@@ -1376,7 +1394,7 @@ Bool ConsoleRootHeaders()
   if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
       "RootUserHeaders.HC",I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
   KernelLog("ROOT USER HEADERS ok\n");
-  console_config->files->public_document(&NativeIncludeDocumentCreate,&NativeIncludeDocumentDestroy);
+  console_config->files->public_document(&NativeIncludeDocumentCreate,&NativeIncludeDocumentDestroy,&NativeIncludeDocumentFormat);
   return TRUE;
 }
 Bool ConsoleCancelRead(CI386Task *task)

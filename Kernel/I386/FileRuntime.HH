@@ -5,7 +5,7 @@
 #include "/Kernel/I386/TaskCompiler.HH"
 #include "/Kernel/I386/ModuleBind.HH"
 //Native task extensions include public heap ownership callbacks.
-#define I386_FILE_SERVICES_VERSION 65
+#define I386_FILE_SERVICES_VERSION 66
 //Caller-owned interface. Code is borrowed from a kernel-lifetime retained module.
 #include "/Kernel/DirEntryTypes.HH"
 class CI386WriteCache {
@@ -61,7 +61,7 @@ class CI386FileServices {
   Bool (*raw_blocks)(CDrv *drive,U8 *buffer,I64 block,I64 count,Bool write);
   //Console-lifetime document services for source includes, installed after
   //the initial root headers have been compiled.
-  U0 (*public_document)(U8 *create,U8 *destroy);
+  U0 (*public_document)(U8 *create,U8 *destroy,U8 *format=0);
   //Owned absolute directory path for the current task.
   U8 *(*dir_name_abs)(CI386Heap *heap,U8 *name);
   //Identity-only backend query. Quarantine does not turn a backend into fallback media.

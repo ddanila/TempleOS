@@ -39,7 +39,7 @@ I64 DocumentInputTest()
 U0 Report(U8 *s) { while (*s) OutU8(0xE9,*s++); }
 U0 CompileTests()
 {
-  U8 *source=FileRead("T:/Target.HC"),*module,*image,*line;
+  U8 *source=FileRead("T:/Target.HC"),*module,*image,*line,*emit,*defs,*defs_end,*release,*release_end,*joined;
   I64 size,loaded,errors,i;
   CI386ModuleHeader *h;
   CI386ModuleRecord *r;
@@ -50,6 +50,19 @@ U0 CompileTests()
   if(DocumentInputTest) { Report("FAIL x64 document input\n"); return; }
   if(LexFilesTest) { Report("FAIL x64 lexical files\n"); return; }
   if(LexStateTest) { Report("FAIL x64 lexer snapshots\n"); return; }
+  if(StrMatch("NativeDollarControlTest",source)) {
+    //Link the actual release implementation without unrelated emitter paths.
+    emit=FileRead("T:/Compiler/I386/NativeEmit.HC");
+    defs=StrMatch("#define I386_OUT_CHUNK_BYTES",emit);
+    defs_end=StrMatch("Bool I386OutValid(",emit);
+    release=StrMatch("Bool I386OutChunksRelease(",emit);
+    release_end=StrMatch("Bool I386OutDel(",emit);
+    if(!defs || !defs_end || !release || !release_end)throw('OutCode',TRUE);
+    *defs_end=0;*release_end=0;
+    joined=MStrPrint("%s\n%s\n%s",source,defs,release);
+    Free(source);Free(emit);source=joined;
+    line=MStrPrint("EXPORT dollar-control-source.HC %X %X\n",source,StrLen(source)+1);Report(line);Free(line);
+  }
   module=CmpI386Module(source,&size,&errors);
   if (!module || errors) {
     source=DocSave(DocPut,&size);
