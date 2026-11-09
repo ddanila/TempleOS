@@ -29342,3 +29342,49 @@ docs/i386-budget-boundaries.md and their build audit receipts. The earlier
 derived-control regression remains pending and is not counted as passing here.
 Mouse, repeated-use resources, remaining inventory and full C1–C5 remain open;
 bundled qualification stays 2/686.
+
+### C1/C2/C4: mouse reference/failing native gate and explicit derived cleanup
+
+A full original Budget mouse control passes masks 1023/63 over three constructed
+persisted transactions. PS/2 motion/button events select the second row at column
+two, select RENT through its real menu action, select the first row, double-left-
+click save and double-right-click abort after reopening. Keyboard Enter/ShiftEsc
+opens/cancels the mouse-selected entry with exact prefill. Host oracles check
+reports, portable live row/string ownership, action identities, cursor columns,
+menu/form/backing records, all 112 stored bytes, fourteen strings and accounts.
+The observer never assigns cursor/pointer state or invokes application handlers.
+The regenerated viewport must complete two frames before target capture.
+
+The unchanged native fixture fails at the first row click. Observed pointer
+(20,20), injected left edges, stopped RAM/registers and public task analysis show
+an active Budget document whose cursor remains at the end; WinMgr has completed
+276 updates. This is not popup retirement/I/O unwind. Source inspection shows the
+managed window loop syncs mouse state and renders but does not invoke original
+retained-document click dispatch. Integrate the original dispatch, preserve its
+focus/menu/control semantics, and verify packet/button consumption and default
+click timing. The strict test remains failing; no native mouse/cold acceptance.
+See docs/i386-budget-mouse.md and build/budget-mouse-audit-v1/result.json, which
+audits the positive original and negative native captures and rejects 188
+corruptions. One post-execution pointer-bound assertion and its exact patch are
+recorded; all test-time snapshots/pins remain preserved. Early original syntax
+and unsettled-viewport failures are not qualifying references.
+
+The older derived-control interactive regression terminated before any DLRun
+call while typing DLFlow. Every prior rendered row is exactly the expected image
+shifted eight pixels left. That console viewport/wrap case remains open. The
+new --source-fixture option delivers the identical thirteen definitions from a
+file, pauses WinMgr with the identical function before callbacks inside the short
+contract call, and exports all six modes as raw records. Masks 63/63/63/63/63/63
+pass, including callback context/IRQ/task lock, return/throw/Exit/kill/owner modes,
+exact caller heap/frame recovery, unchanged filesystem metadata and fresh 42.
+Its first include attempt paused before typing and observed INPUT RESET with a
+truncated include; that setup failure is preserved, not a cleanup result.
+The default interactive path remains available. See
+build/control-retire-derived-source-audit-v1/result.json and
+docs/i386-control-retirement.md for exact fa030de4 definition/call provenance.
+
+No runtime/application source or module changes; current source/helper pins and
+both existing bootstrap generations remain unchanged. Inventory appends explicit
+original pass/native fail/component cleanup receipts only. Native mouse dispatch,
+console wrapping/input delivery, resources, remaining applications and full
+C1–C5 remain open; bundled qualification remains 2/686.

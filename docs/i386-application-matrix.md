@@ -771,3 +771,24 @@ contents/links and an empty queue after cleanup. See
 inputs remain unchanged. Earlier setup/synchronization failures are retained,
 not passing controls. The derived-control regression is still pending. Mouse,
 resources and complete Budget/C1–C5 remain open; qualification remains 2/686.
+
+The Budget mouse workflow now has a passing original reference (1023/63) and an
+explicit unchanged native failure. Real PS/2 events select rows/accounts, and
+original double-left/right clicks save/abort. Exact report/live identities,
+column-two cursors, edit prefill/cancellation, menus, storage and caller recovery
+are checked. Native reaches the first pointer target but leaves the retained
+document cursor at the end; stopped RAM/registers and 276 completed manager
+updates are retained. The managed worker lacks original retained-document mouse
+click dispatch; packet/button consumption and default timing also need checks.
+See [the strict mouse gate](i386-budget-mouse.md). The audit rejects 188 corrupted
+records and does not label the native failure as a pass.
+
+Explicit derived-control cleanup now passes all six masks 63 via the unchanged
+function definitions compiled from a file, with the identical WinMgr pause
+before callbacks, raw results, exact caller heap/frame recovery and unchanged
+files/metadata. The legacy interactive attempt stopped on an eight-pixel console
+viewport shift before cleanup; that wrapping issue remains open. See
+[cleanup provenance and commands](i386-control-retirement.md). This does not
+qualify automatic prepass or console input. No runtime/modules/bootstrap inputs
+changed. Native mouse, console input, resources and full C1–C5 remain open;
+qualification remains 2/686.

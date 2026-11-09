@@ -1544,6 +1544,13 @@
           "result": "pass",
           "evidence": "build/control-retirement-fixed-v1/result.json",
           "scope": "Unchanged mature fixture fails pre-fix masks 51/0/0 and passes 255/255/255: nested parent/leaf own scroll controls, caller-owned generic control/state survives detached with stale target cleared. Return, explicit Exit, Kill with recovering task-end callback then final Kill; real child-list drain and exact caller heap recovery per mode, unchanged files/metadata and fresh 42. Associations released only after descendants and render borrowers drain; low-level reaper guard unchanged. Not general mouse/control/resource qualification. See docs/i386-control-retirement.md."
+        },
+        {
+          "target": "native-derived-cleanup-included-source",
+          "command": "python3 tools/test-i386-control-derived-lifecycle.py IMAGE --source-fixture --out OUT",
+          "result": "pass",
+          "evidence": "build/control-retire-derived-source-v2/result.json",
+          "scope": "Six explicit derived-control modes return/throw/Exit/worker kill/owner Exit/owner kill all 63, worker context/IRQ/task lock, flow, exact caller heap/frame recovery, unchanged files/metadata and fresh 42. All thirteen definitions and six DLRun calls unchanged from fa030de4. Generated include, raw six-mode export and identical WinMgr pause inside contract avoid long input while paused. Legacy v3 viewport shift and first include INPUT RESET are retained open input/setup failures before any cleanup call; neither is qualified or claimed fixed. No runtime changes; not automatic prepass or console qualification. See docs/i386-control-retirement.md."
         }
       ]
     },
@@ -2421,6 +2428,20 @@
           "result": "pass",
           "evidence": "build/budget-validation-native-v2/result.json",
           "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "original-budget-mouse-workflow",
+          "command": "python3 tools/test-i386-budget-mouse.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-original-v3/result.json",
+          "scope": "Full Budget with three constructed persisted transactions: actual PS/2 select second row at column two, keyboard edit/cancel with exact prefill, click RENT menu action, select first row, double-left-click save and reopen/double-right-click abort. Masks 1023/63; exact reports/live identities/ownership, menu/form/backing/cursors, all 112 stored bytes/fourteen strings/accounts and caller restoration. Observer only reads state/layout. Two rendered frames settle regenerated viewport before target capture. Host-only post-capture pointer-bound assertion revalidates preserved captures. Not native, mouse creation, settled raster or resources qualification. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-budget-mouse-workflow-open",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/budget-mouse-native-v1/result.json",
+          "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
         }
       ]
     },
@@ -2735,6 +2756,20 @@
           "result": "pass",
           "evidence": "build/budget-validation-native-v2/result.json",
           "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "original-budget-mouse-workflow",
+          "command": "python3 tools/test-i386-budget-mouse.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-original-v3/result.json",
+          "scope": "Full Budget with three constructed persisted transactions: actual PS/2 select second row at column two, keyboard edit/cancel with exact prefill, click RENT menu action, select first row, double-left-click save and reopen/double-right-click abort. Masks 1023/63; exact reports/live identities/ownership, menu/form/backing/cursors, all 112 stored bytes/fourteen strings/accounts and caller restoration. Observer only reads state/layout. Two rendered frames settle regenerated viewport before target capture. Host-only post-capture pointer-bound assertion revalidates preserved captures. Not native, mouse creation, settled raster or resources qualification. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-budget-mouse-workflow-open",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/budget-mouse-native-v1/result.json",
+          "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
         }
       ]
     },
@@ -7213,6 +7248,20 @@
           "result": "pass",
           "evidence": "build/i386-win-cursor-pos-native-v1/terminal-audit.json",
           "scope": "Sixteen direct WinCursorPosSet checks and exact coordinate record match the original, including viewport, lock and boundary behavior. Not complete cross-task mouse/window workflow qualification."
+        },
+        {
+          "target": "original-budget-mouse-workflow",
+          "command": "python3 tools/test-i386-budget-mouse.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-original-v3/result.json",
+          "scope": "Full Budget with three constructed persisted transactions: actual PS/2 select second row at column two, keyboard edit/cancel with exact prefill, click RENT menu action, select first row, double-left-click save and reopen/double-right-click abort. Masks 1023/63; exact reports/live identities/ownership, menu/form/backing/cursors, all 112 stored bytes/fourteen strings/accounts and caller restoration. Observer only reads state/layout. Two rendered frames settle regenerated viewport before target capture. Host-only post-capture pointer-bound assertion revalidates preserved captures. Not native, mouse creation, settled raster or resources qualification. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-budget-mouse-workflow-open",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/budget-mouse-native-v1/result.json",
+          "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
         }
       ]
     },
@@ -7681,6 +7730,20 @@
           "result": "pass",
           "evidence": "build/budget-validation-native-v2/result.json",
           "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "original-budget-mouse-workflow",
+          "command": "python3 tools/test-i386-budget-mouse.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-original-v3/result.json",
+          "scope": "Full Budget with three constructed persisted transactions: actual PS/2 select second row at column two, keyboard edit/cancel with exact prefill, click RENT menu action, select first row, double-left-click save and reopen/double-right-click abort. Masks 1023/63; exact reports/live identities/ownership, menu/form/backing/cursors, all 112 stored bytes/fourteen strings/accounts and caller restoration. Observer only reads state/layout. Two rendered frames settle regenerated viewport before target capture. Host-only post-capture pointer-bound assertion revalidates preserved captures. Not native, mouse creation, settled raster or resources qualification. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-budget-mouse-workflow-open",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/budget-mouse-native-v1/result.json",
+          "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
         }
       ]
     },
@@ -7951,6 +8014,20 @@
           "result": "pass",
           "evidence": "build/budget-boundaries-native-v2/result.json",
           "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Native capture equals original and host oracle exactly; unchanged filesystem/metadata and fresh 42. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
+        },
+        {
+          "target": "original-budget-mouse-workflow",
+          "command": "python3 tools/test-i386-budget-mouse.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-original-v3/result.json",
+          "scope": "Full Budget with three constructed persisted transactions: actual PS/2 select second row at column two, keyboard edit/cancel with exact prefill, click RENT menu action, select first row, double-left-click save and reopen/double-right-click abort. Masks 1023/63; exact reports/live identities/ownership, menu/form/backing/cursors, all 112 stored bytes/fourteen strings/accounts and caller restoration. Observer only reads state/layout. Two rendered frames settle regenerated viewport before target capture. Host-only post-capture pointer-bound assertion revalidates preserved captures. Not native, mouse creation, settled raster or resources qualification. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-budget-mouse-workflow-open",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/budget-mouse-native-v1/result.json",
+          "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
         }
       ]
     },
@@ -8179,6 +8256,20 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-mouse-workflow",
+          "command": "python3 tools/test-i386-budget-mouse.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-original-v3/result.json",
+          "scope": "Full Budget with three constructed persisted transactions: actual PS/2 select second row at column two, keyboard edit/cancel with exact prefill, click RENT menu action, select first row, double-left-click save and reopen/double-right-click abort. Masks 1023/63; exact reports/live identities/ownership, menu/form/backing/cursors, all 112 stored bytes/fourteen strings/accounts and caller restoration. Observer only reads state/layout. Two rendered frames settle regenerated viewport before target capture. Host-only post-capture pointer-bound assertion revalidates preserved captures. Not native, mouse creation, settled raster or resources qualification. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-budget-mouse-workflow-open",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/budget-mouse-native-v1/result.json",
+          "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
         }
       ]
     },
@@ -8472,6 +8563,20 @@
           "result": "pass",
           "evidence": "build/budget-validation-native-v2/result.json",
           "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "original-budget-mouse-workflow",
+          "command": "python3 tools/test-i386-budget-mouse.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-original-v3/result.json",
+          "scope": "Full Budget with three constructed persisted transactions: actual PS/2 select second row at column two, keyboard edit/cancel with exact prefill, click RENT menu action, select first row, double-left-click save and reopen/double-right-click abort. Masks 1023/63; exact reports/live identities/ownership, menu/form/backing/cursors, all 112 stored bytes/fourteen strings/accounts and caller restoration. Observer only reads state/layout. Two rendered frames settle regenerated viewport before target capture. Host-only post-capture pointer-bound assertion revalidates preserved captures. Not native, mouse creation, settled raster or resources qualification. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-budget-mouse-workflow-open",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/budget-mouse-native-v1/result.json",
+          "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
         }
       ]
     },
@@ -8700,6 +8805,20 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-mouse-workflow",
+          "command": "python3 tools/test-i386-budget-mouse.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-original-v3/result.json",
+          "scope": "Full Budget with three constructed persisted transactions: actual PS/2 select second row at column two, keyboard edit/cancel with exact prefill, click RENT menu action, select first row, double-left-click save and reopen/double-right-click abort. Masks 1023/63; exact reports/live identities/ownership, menu/form/backing/cursors, all 112 stored bytes/fourteen strings/accounts and caller restoration. Observer only reads state/layout. Two rendered frames settle regenerated viewport before target capture. Host-only post-capture pointer-bound assertion revalidates preserved captures. Not native, mouse creation, settled raster or resources qualification. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-budget-mouse-workflow-open",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/budget-mouse-native-v1/result.json",
+          "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
         }
       ]
     },
@@ -9047,6 +9166,20 @@
           "result": "pass",
           "evidence": "build/budget-boundaries-native-v2/result.json",
           "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Native capture equals original and host oracle exactly; unchanged filesystem/metadata and fresh 42. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
+        },
+        {
+          "target": "original-budget-mouse-workflow",
+          "command": "python3 tools/test-i386-budget-mouse.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-original-v3/result.json",
+          "scope": "Full Budget with three constructed persisted transactions: actual PS/2 select second row at column two, keyboard edit/cancel with exact prefill, click RENT menu action, select first row, double-left-click save and reopen/double-right-click abort. Masks 1023/63; exact reports/live identities/ownership, menu/form/backing/cursors, all 112 stored bytes/fourteen strings/accounts and caller restoration. Observer only reads state/layout. Two rendered frames settle regenerated viewport before target capture. Host-only post-capture pointer-bound assertion revalidates preserved captures. Not native, mouse creation, settled raster or resources qualification. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-budget-mouse-workflow-open",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/budget-mouse-native-v1/result.json",
+          "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
         }
       ]
     },
@@ -9142,6 +9275,20 @@
           "result": "pass",
           "evidence": "build/budget-validation-native-v2/result.json",
           "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "original-budget-mouse-workflow",
+          "command": "python3 tools/test-i386-budget-mouse.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-original-v3/result.json",
+          "scope": "Full Budget with three constructed persisted transactions: actual PS/2 select second row at column two, keyboard edit/cancel with exact prefill, click RENT menu action, select first row, double-left-click save and reopen/double-right-click abort. Masks 1023/63; exact reports/live identities/ownership, menu/form/backing/cursors, all 112 stored bytes/fourteen strings/accounts and caller restoration. Observer only reads state/layout. Two rendered frames settle regenerated viewport before target capture. Host-only post-capture pointer-bound assertion revalidates preserved captures. Not native, mouse creation, settled raster or resources qualification. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-budget-mouse-workflow-open",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/budget-mouse-native-v1/result.json",
+          "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
         }
       ]
     },
@@ -9418,6 +9565,20 @@
           "result": "pass",
           "evidence": "build/budget-boundaries-native-v2/result.json",
           "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Native capture equals original and host oracle exactly; unchanged filesystem/metadata and fresh 42. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
+        },
+        {
+          "target": "original-budget-mouse-workflow",
+          "command": "python3 tools/test-i386-budget-mouse.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-original-v3/result.json",
+          "scope": "Full Budget with three constructed persisted transactions: actual PS/2 select second row at column two, keyboard edit/cancel with exact prefill, click RENT menu action, select first row, double-left-click save and reopen/double-right-click abort. Masks 1023/63; exact reports/live identities/ownership, menu/form/backing/cursors, all 112 stored bytes/fourteen strings/accounts and caller restoration. Observer only reads state/layout. Two rendered frames settle regenerated viewport before target capture. Host-only post-capture pointer-bound assertion revalidates preserved captures. Not native, mouse creation, settled raster or resources qualification. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-budget-mouse-workflow-open",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/budget-mouse-native-v1/result.json",
+          "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
         }
       ]
     },
@@ -21653,6 +21814,13 @@
           "result": "pass",
           "evidence": "build/control-retirement-fixed-v1/result.json",
           "scope": "Unchanged mature fixture fails pre-fix masks 51/0/0 and passes 255/255/255: nested parent/leaf own scroll controls, caller-owned generic control/state survives detached with stale target cleared. Return, explicit Exit, Kill with recovering task-end callback then final Kill; real child-list drain and exact caller heap recovery per mode, unchanged files/metadata and fresh 42. Associations released only after descendants and render borrowers drain; low-level reaper guard unchanged. Not general mouse/control/resource qualification. See docs/i386-control-retirement.md."
+        },
+        {
+          "target": "native-derived-cleanup-included-source",
+          "command": "python3 tools/test-i386-control-derived-lifecycle.py IMAGE --source-fixture --out OUT",
+          "result": "pass",
+          "evidence": "build/control-retire-derived-source-v2/result.json",
+          "scope": "Six explicit derived-control modes return/throw/Exit/worker kill/owner Exit/owner kill all 63, worker context/IRQ/task lock, flow, exact caller heap/frame recovery, unchanged files/metadata and fresh 42. All thirteen definitions and six DLRun calls unchanged from fa030de4. Generated include, raw six-mode export and identical WinMgr pause inside contract avoid long input while paused. Legacy v3 viewport shift and first include INPUT RESET are retained open input/setup failures before any cleanup call; neither is qualified or claimed fixed. No runtime changes; not automatic prepass or console qualification. See docs/i386-control-retirement.md."
         }
       ]
     },

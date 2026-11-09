@@ -44,10 +44,63 @@ def serializable(value):
     return value
 
 
+
+def run_source_fixture(source,out,ram_mib,pins):
+    """Keep the cleanup functions unchanged; compile definitions from a file."""
+    import struct
+    helpers=['package-i386-native-image.py','build-i386-kernel.py',
+             'test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py']
+    sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+    pins.update({str(ROOT/('tools/'+name)):sha(ROOT/('tools/'+name)) for name in helpers})
+    pause='U0 TestPauseWM(){if(sys_winmgr_task!=adam_task){while(Bt(&sys_semas[SEMA_REFRESH_IN_PROGRESS],0))Yield;Suspend(sys_winmgr_task,TRUE);}}TestPauseWM;'
+    definitions='\n'.join(c[0] for c in COMMANDS[:13])+'\n'
+    source_text=definitions+pause.removesuffix("TestPauseWM;")+"\n"+"""I64 dl_results[6];
+U0 DLContract(){I64 i;U8 *line,*p;TestPauseWM;for(i=0;i<6;i++)dl_results[i]=DLRun(i);
+line=MStrPrint("EXPORT derived-modes.bin %X %X\\n",dl_results,sizeof(dl_results));
+p=line;while(*p)OutU8(0xE9,*p++);Free(line);}
+"""
+    fixture=source_text.encode();(out/'fixture.HC').write_bytes(fixture)
+    (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
+    report=dict(result='running',execution='included-source',input_sha256=pins,
+        definition_commands=COMMANDS[:13],calls=[c[0] for c in COMMANDS[13:19]],
+        fixture_sha256=hashlib.sha256(fixture).hexdigest(),pause_command=pause,
+        ram_mib=ram_mib,scope='Unchanged explicit derived-control lifecycle functions compiled from a file: six return/throw/Exit/worker kill/owner Exit/owner kill modes, worker context/IRQ/task lock, flow, exact parent heap and frame reuse. WinMgr paused as in legacy test. Not interactive typing/wrapping or automatic prepass qualification.')
+    guest=None
+    try:
+        pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));image=out/'working.img'
+        report['packaging']=pack['package'](source,image,additions={'/Probe/DerivedLifecycle.HC':fixture})
+        before=pack['snapshot'](image.read_bytes())[1]
+        Guest=runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest']
+        guest=Guest(image,out/'guest',True,ram_mib=ram_mib);guest.wait('DONE native kernel startup\n')
+        commands=['#include "C:/Probe/DerivedLifecycle.HC"','DLContract;','6*7;'];report['commands']=commands
+        for c in commands:guest.command(c)
+        raw=(out/'guest/derived-modes.bin').read_bytes();(out/'derived-modes.bin').write_bytes(raw)
+        if raw!=struct.pack('<6q',*([63]*6)):raise ValueError('Derived lifecycle masks differ: '+repr(struct.unpack('<6q',raw)))
+        report['fresh_result']=guest.result_pixels();guest.close();guest=None
+        if pack['snapshot'](image.read_bytes())[1]!=before:raise ValueError('Derived lifecycle changed files or metadata')
+        report.update(result='pass',masks=[63]*6,files_unchanged=True)
+    except Exception as exc:
+        report.update(result='fail',error=str(exc))
+        if guest is not None and guest.p.poll() is None:
+            try:
+                guest.call('stop');guest.collect()
+                (out/'failure-registers.txt').write_text(guest.call('human-monitor-command',**{'command-line':'info registers'}))
+                guest.call('pmemsave',val=0,size=ram_mib*1024*1024,filename=str(out/'failure-memory.bin'))
+                report['failure_capture']={n:sha(out/n) for n in ('failure-memory.bin','failure-registers.txt')}
+            except Exception as err:report['capture_error']=str(err)
+        raise
+    finally:
+        if guest is not None:guest.close()
+        report['inputs_unchanged']=all(sha(Path(p))==digest for p,digest in pins.items())
+        if not report['inputs_unchanged']:report.update(result='fail',error='Inputs changed')
+        (out/'result.json').write_text(json.dumps(report,indent=2)+'\n')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--source-fixture',action='store_true',help='KVM file-include execution of the unchanged cleanup functions, with raw six-mode results')
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
@@ -58,6 +111,8 @@ def main():
     runner = ROOT/'tools/i386-kernel-input.py'
     pins = {str(p):sha(p) for p in [source, runner, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]}
     out.mkdir(parents=True)
+    if args.source_fixture:
+        return run_source_fixture(source,out,args.ram_mib,pins)
     working = out/'working.img'
     shutil.copyfile(source, working)
     report = dict(result='running', scope='Explicit derived-control update: worker context, IRQ and task lock, return/throw/Exit/kill and owner Exit/kill, exact parent heap and frame reuse; not automatic prepass qualification',

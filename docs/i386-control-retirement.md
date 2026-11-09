@@ -53,3 +53,30 @@ parameters, preserving guest command sources, fixtures, deadlines and pixel
 comparison. Earlier wrappers that expected blank startup or omitted that warning
 are preserved as failed observations, not cleanup-contract failures. See their
 `execution-adapter.json` and the combined recurrence audit for final outcomes.
+
+The derived-control regression now has passing explicit cleanup evidence at
+`build/control-retire-derived-source-v2/result.json`: six masks all 63,
+unchanged filesystem bytes/attributes/timestamps and fresh arithmetic 42.
+Run it with:
+
+```
+python3 tools/test-i386-control-derived-lifecycle.py IMAGE --source-fixture --out FRESH_OUT
+```
+
+The option compiles the same thirteen definition commands from a generated file,
+then calls the same DLRun modes 0–5 and exports their raw results. Its WinMgr
+pause function is unchanged and runs before the first mode, inside the short
+contract invocation. The default interactive execution remains available.
+`build/control-retire-derived-source-audit-v1/result.json` compares every
+definition and mode with committed revision fa030de4, verifies source/fixture/raw
+pins and audits the preserved preceding failures. This qualifies the explicit
+callback cleanup contract, not automatic control prepass or console input.
+
+The legacy v3 driver stopped while typing DLFlow, before any DLRun call. Every
+prior screen row exactly matches the expected raster shifted eight pixels left;
+the console viewport/wrap compatibility case remains open. The first included
+attempt paused WinMgr before typing its include, then observed INPUT RESET and
+a truncated include before any cleanup call. The final option loads definitions
+with WinMgr active and pauses inside the contract before callbacks. These are
+preserved input/setup failures, not passing cleanup observations or fixed console
+issues. No runtime module changed in this regression checkpoint.
