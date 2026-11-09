@@ -53,3 +53,12 @@ The shared serializer repair fixes the header in both native variants:
 complete original chronological streams and restore mask7. They still fail
 strict saved-document equality, so no application qualification is added. See
 [serialization evidence](i386-document-serialization.md).
+
+Automatic original terminal scroll controls (Console ABI270) fix the missing
+wheel/cursor behavior. The unchanged Shift-Escape case at
+`build/msg-loop-scroll-shift-native-v1` now passes exact original saved document
+and chronological stream,19 records, restoration7, fresh42 and unchanged volume.
+Normal Escape at `build/msg-loop-scroll-native-v1` still fails saved-document
+equality despite an exact18-record stream and restoration7. No complete raster
+or full application qualification is added. See
+[terminal scroll evidence](i386-terminal-scrolls.md).

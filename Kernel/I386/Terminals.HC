@@ -153,6 +153,8 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE,CDoc *document=NULL)
   CNativeTerminal *terminal=NULL,*last;
   I64 i;
   U8 *p,*q;
+  CCtrl *old_h=NULL,*old_v=NULL,*control;
+  Bool scrolls_started=FALSE;
   U32 irq;
   if(NativeTerminalFind(task)) throw('TermBusy');
   try {
@@ -178,7 +180,25 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE,CDoc *document=NULL)
       terminal->transcript_started=terminal->document_view=TRUE;
     } else terminal->document=DocNew(NULL,task);
     if(!terminal->document) throw('OutMem');
+    if(terminal->owns_document) {
+      //DocTermNew installs these even when the document hides its scrollbars.
+      //The wheel callback still updates the public scroll/cursor state.
+      old_h=CtrlFindUnique(task,CTRLT_WIN_HSCROLL);
+      old_v=CtrlFindUnique(task,CTRLT_WIN_VSCROLL);
+      scrolls_started=TRUE;
+      WinScrollsInit(task);
+    }
   } catch {
+    if(scrolls_started) {
+      //A failed second allocation must not publish a partial terminal control.
+      //Retain controls that existed before this constructor.
+      if(!old_h && (control=CtrlFindUnique(task,CTRLT_WIN_HSCROLL))) {
+        QueRem(control);Free(control);
+      }
+      if(!old_v && (control=CtrlFindUnique(task,CTRLT_WIN_VSCROLL))) {
+        QueRem(control);Free(control);
+      }
+    }
     if(terminal) {
       if(terminal->document && terminal->owns_document) DocDel(terminal->document);
       if(terminal->owns_planes) I386HeapFree(console_config->heap,terminal->planes);

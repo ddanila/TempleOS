@@ -29690,3 +29690,35 @@ Both unchanged MsgLoop streams now match the full original18/19-record output
 including the header. Saved-document insertion/cursor state still differs and
 both strict application tests remain failed. Qualification stays2/686; all
 remaining C1–C5 acceptance remains open. See docs/i386-document-serialization.md.
+
+### C2/C3/C4: automatic original terminal scroll controls
+
+NativeTerminalCreate now installs the shared original WinScrollsInit for newly
+owned terminal documents, matching DocTermNew's default controls. Hidden
+scrollbars still allow the original wheel/cursor path. Existing controls and
+continuation documents are reused; failed unpublished construction rolls back
+only newly installed controls. Console ABI270 versions the behavior.
+
+The pinned original and candidate match all nine default-control/wheel/cursor/
+caller-restoration values, including document position5,2. The prior image
+has neither control and remains at0,3; explicit initialization on that image
+repairs the observed behavior. Three actual User create/reuse/kill cycles match
+all4095 ownership/idempotence/retirement/caller-data-and-code-heap checks.
+Candidate root and lifecycle runs pass fresh42 and unchanged full volume.
+The existing full DocTermNew regression additionally checks reuse of controls.
+
+The unchanged Shift-Escape MsgLoop case now matches the exact original complete
+serialized document and19-record chronological stream, restores7, then passes
+fresh42 and unchanged volume. Normal Escape still fails strict serialized
+output with an exact18-record stream and restoration7; full original raster
+and whole-application qualification remain open. No output entries are dropped
+or reordered to obtain a match.
+
+The full image build/i386-terminal-scrolls-cross-v1/kernel.img pins1860 sources
+and26 helpers, with two source-matching classic generations and a386 audit.
+Only Kernel and ConsoleRuntime modules change; bare kernel remains458680 bytes.
+Isolated normal8MiB KVM486,-fpu startup is53.763s with live WinMgr and exact
+welcome/42 pixels: the current60-second baseline subgate only. Failed-init
+rollback, other terminal roles, remaining input/desktop/raster/resources/native
+generations and fullC1–C5 remain open. Inventory qualification stays2/686.
+See docs/i386-terminal-scrolls.md.
