@@ -1,0 +1,7 @@
+{
+  "result": "pass",
+  "commit": "08a7f4255e2f258bc5be85fa9ef689577587a5f8",
+  "source_pins": 1861,
+  "helper_pins": 26,
+  "method": "git cat-file --batch HEAD:path; SHA-256 of every committed source/helper blob equals final cross-v5 build pins"
+}
