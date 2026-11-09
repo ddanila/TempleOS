@@ -283,6 +283,7 @@ U0 BFieldOrU32(U8 *bit_field,I64 bit,U32 pattern)
 #include "/Kernel/I386/MediaPathDispatch.HH"
 extern U0 Yield();
 extern U8 *Char2KeyName(I64 ch,Bool include_ctrl=TRUE);
+extern Bool NativeLogicalMouseGet(I64 *x,I64 *y,I64 *buttons=0,I64 *packets=0);
 #include "/Kernel/I386/DocumentRuntime.HC"
 #include "/Kernel/I386/InstallTree.HC"
 #include "/Kernel/I386/BuildModuleDispatch.HC"
@@ -1474,7 +1475,7 @@ U0 NativeTerminalInput()
   native_console_mouse_visible=FALSE;
   if(!doc) throw('DocOwner',TRUE);
   prompt=NativeConsolePrompt; ConsolePresent;
-  MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
+  NativeLogicalMouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
   while(1) {
     decoded=NativeTerminalInputKey(&event);
     if(decoded>0) I386TaskSelf->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_CMD_LINE_PMT);
@@ -1524,7 +1525,7 @@ U0 NativeTerminalInput()
       }
       ConsolePresent;
     }
-    if(NativeTerminalVisible && MouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
+    if(NativeTerminalVisible && NativeLogicalMouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
         next_mouse_packets!=mouse_packets) {
       if(mouse_visible)
         NativeMousePlaneMove(console_planes,mouse_x,mouse_y,next_mouse_x,next_mouse_y);

@@ -24,13 +24,15 @@ I64 NativeWindowMouseMessages(Bool que)
     que,&NativeWindowMousePost);
   NativeWindowMousePublish;return code;
 }
-U0 NativeWindowMousePosition(I64 x,I64 y)
+U0 NativeWindowMousePosition(CNativeMousePosition *position)
 {
-  //Do not overwrite public live mouse/button/keyboard state with queued history.
-  MemCpy(&native_window_mouse.scale,&ms.scale,sizeof(CD3));
-  MemCpy(&native_window_mouse.offset,&ms.offset,sizeof(CD3I64));
+  //These logical coordinates already include the original per-packet offset path.
+  //Never reapply today's scale/offset to historical hardware coordinates.
   native_window_mouse.dbl_time=ms.dbl_time;
-  MousePositionCore(&native_window_mouse,&ms_grid,x,y,0,text.cols,text.rows);
+  MemCpy(&native_window_mouse.pos,&position->pos,sizeof(CD3I64));
+  MemCpy(&native_window_mouse.presnap,&position->presnap,sizeof(CD3I64));
+  native_window_mouse.pos_text.x=position->pos.x/FONT_WIDTH;
+  native_window_mouse.pos_text.y=position->pos.y/FONT_HEIGHT;
 }
 class CNativeWindowMouseScope:CNativeRenderScope {
   CDoc *doc;
@@ -141,6 +143,7 @@ Bool NativeWindowMouseQueueMessages()
 U0 NativeWindowMousePump()
 {
   CI386MouseEvent event;
+  CNativeMousePosition position;
   U32 previous;
   I64 code;
   Bool managed=NativeWindowNeeded(),admitted=managed || NativeWindowControlNeeded();
@@ -148,14 +151,14 @@ U0 NativeWindowMousePump()
     native_window_mouse_losses=native_mouse_events.losses;NativeWindowMouseCancel;
     KernelLog("MOUSE input reset\n");
   }
-  while(NativeMouseEventRead(&event)) {
+  while(NativeMouseEventRead(&event,&position)) {
     if(!admitted){NativeWindowMouseReset;goto mouse_next_event;}
     if(native_window_mouse_resync) {
       if(event.buttons&3)goto mouse_next_event;
       native_window_mouse_resync=FALSE;NativeWindowMouseReset;
     }
     previous=native_window_mouse_buttons;
-    NativeWindowMousePosition(event.x,event.y);
+    NativeWindowMousePosition(&position);
     native_window_mouse.lb=(event.buttons&1)!=0;native_window_mouse.rb=(event.buttons&2)!=0;
     native_window_mouse_time=event.stamp/1193182.0;
     code=NativeWindowMouseMessages(managed && NativeWindowMouseQueueMessages);

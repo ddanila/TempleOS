@@ -39,6 +39,10 @@ U0 MouseQueueContract()
   if(q->count==64 && !q->losses)mq_mask|=32;
   MouseQueueProbePush(q,64,64,1,1064);
   if(q->losses==1 && q->count==1 && MouseQueueProbePop(q,&e) && MQEvent(&e,64,64,1064,1,TRUE) && !q->count)mq_mask|=64;
+  MemSet(q,0,sizeof(CMouseQueueProbeEvents));
+  MouseQueueProbePush(q,100,200,0,1,FALSE);MouseQueueProbePush(q,90,190,0,2,FALSE);
+  if(q->count==2 && MouseQueueProbePop(q,&e) && MQEvent(&e,100,200,1,0,FALSE) &&
+      MouseQueueProbePop(q,&e) && MQEvent(&e,90,190,2,0,FALSE) && !q->count)mq_mask|=512;
   if(guard.before==0x123456789ABCDEF && guard.after==0x3456789ABCDEF01 && Fs->data_heap->used_u8s==before)mq_mask|=128;
   if(mq_initial[0]==320 && mq_initial[1]==240 && !mq_initial[2] && mq_initial[3]==320 && mq_initial[4]==240)mq_mask|=256;
   line=MStrPrint("EXPORT initial-mouse.bin %X 28\n",mq_initial);MQLog(line);Free(line);

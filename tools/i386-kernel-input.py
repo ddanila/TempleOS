@@ -204,6 +204,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
     audio_emission={}
     mouse_host_x=320
     mouse_host_y=240
+    logical_mouse_addresses=None
     out=out.resolve(); out.mkdir(parents=True,exist_ok=True)
     #Aggregate fixtures can select copy-backed snapshots without modifying each
     #test's assertions. Explicit writable runs retain their original disk path.
@@ -280,6 +281,37 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                     reply=qmp_reply()
                     if 'error' in reply: raise RuntimeError(reply)
                     if 'return' in reply: return reply['return']
+
+            def logical_mouse_state():
+                nonlocal logical_mouse_addresses
+                if logical_mouse_addresses is None:
+                    import runpy
+                    reader=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents']
+                    module=reader(disk,{'/Modules/I386/ConsoleRuntime.t32m'})['/Modules/I386/ConsoleRuntime.t32m']
+                    _,count,records=struct.unpack_from('<III',module,16);symbols={}
+                    for i in range(count):
+                        kind,offset,name,length=struct.unpack_from('<4I',module,records+16*i)
+                        if kind==3 and module[name:name+length] in (b'ms',b'ms_grid',b'native_mouse_hard_scale'):
+                            symbols[module[name:name+length].decode('ascii')]=offset
+                    bases=re.findall(r'^CONSOLE ([0-9A-F]+) ',log.read_text(),re.M)
+                    if len(bases)!=1 or 'ms' not in symbols:raise ValueError('Missing unique logical mouse state')
+                    base=int(bases[0],16)+8
+                    logical_mouse_addresses={n:base+symbols[n] for n in ('ms','ms_grid','native_mouse_hard_scale') if n in symbols}
+                paths={};command('stop')
+                try:
+                    for name,size in [('ms',112),('ms_grid',80),('native_mouse_hard_scale',16)]:
+                        if name not in logical_mouse_addresses:continue
+                        path=out/('logical-mouse-'+name+'.bin');paths[name]=path
+                        command('pmemsave',val=logical_mouse_addresses[name],size=size,filename=str(path))
+                finally:command('cont')
+                state=paths['ms'].read_bytes();x,y=struct.unpack_from('<2q',state)
+                scale=struct.unpack_from('<2d',state,96);gain=(1.,1.)
+                if 'native_mouse_hard_scale' in paths:
+                    hard=struct.unpack('<2d',paths['native_mouse_hard_scale'].read_bytes())
+                    speed=struct.unpack_from('<2d',paths['ms_grid'].read_bytes(),56)
+                    gain=tuple(a*b*c for a,b,c in zip(hard,scale,speed))
+                else:gain=scale
+                return x,y,gain
 
             def pointer_answer(spec,name,timeout):
                 if set(spec)!={'pointer_symbol','literal'}:
@@ -519,11 +551,19 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                         elif 'delay' in action:
                             time.sleep(action['delay'])
                         elif 'mouse_to' in action:
-                            target_x,target_y=action['mouse_to']
-                            command('input-send-event',events=[
-                                {'type':'rel','data':{'axis':'x','value':target_x-mouse_host_x}},
-                                {'type':'rel','data':{'axis':'y','value':target_y-mouse_host_y}}])
-                            mouse_host_x=target_x; mouse_host_y=target_y
+                            target_x,target_y=action['mouse_to'];deadline=time.monotonic()+15
+                            if not 0<=target_x<640 or not 0<=target_y<480:raise ValueError('Mouse target outside screen')
+                            while time.monotonic()<deadline:
+                                x,y,gain=logical_mouse_state()
+                                if (x,y)==(target_x,target_y):break
+                                if not all(abs(v)>1e-12 for v in gain):raise ValueError('Mouse target has zero logical gain')
+                                dx,dy=[round(d/g) for d,g in zip((target_x-x,target_y-y),gain)]
+                                if target_x!=x and not dx:dx=1 if (target_x-x)*gain[0]>0 else -1
+                                if target_y!=y and not dy:dy=1 if (target_y-y)*gain[1]>0 else -1
+                                command('input-send-event',events=[{'type':'rel','data':{'axis':'x','value':dx}},{'type':'rel','data':{'axis':'y','value':dy}}])
+                                time.sleep(.3)
+                            else:raise TimeoutError('Logical pointer did not reach requested screen target')
+                            mouse_host_x=target_x;mouse_host_y=target_y
                         elif 'mouse_rel' in action:
                             delta_x,delta_y=action['mouse_rel']
                             command('input-send-event',events=[
@@ -837,7 +877,11 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 command('input-send-event',events=[
                     {'type':'rel','data':{'axis':'x','value':24}},
                     {'type':'rel','data':{'axis':'y','value':16}}])
-                mouse_host_x+=24; mouse_host_y+=16
+                # The native raw device API retains +24/+16. The visible pointer
+                # follows original half-gain logical coordinates from the center.
+                logical_mouse_state()
+                if 'native_mouse_hard_scale' in logical_mouse_addresses:mouse_host_x,mouse_host_y=332,248
+                else:mouse_host_x,mouse_host_y=344,256
                 wait_for(lambda:log.read_text().count('CONSOLE mouse pointer\n')>console_pointer_marks)
                 screen(rows,'mouse-console-pointer',pointer=[mouse_host_x,mouse_host_y])
             submit('MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets)&&mouse_x>320&&mouse_y>240&&mouse_packets>0;', ['1'], 'mouse-motion')

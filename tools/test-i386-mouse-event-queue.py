@@ -24,11 +24,11 @@ def main():
   Guest=runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest'];guest=Guest(image,out/'guest',True);guest.wait('DONE native kernel startup\n');guest.command('#include "C:/Probe/MouseQueue.HC"');guest.command('MouseQueueContract;')
   raw=(out/'guest/queue-mask.bin').read_bytes();(out/'queue-mask.bin').write_bytes(raw)
   initial_mouse=(out/'guest/initial-mouse.bin').read_bytes();(out/'initial-mouse.bin').write_bytes(initial_mouse)
-  if raw!=struct.pack('<q',511):raise ValueError('Mouse queue contract differs: '+repr(struct.unpack('<q',raw)))
+  if raw!=struct.pack('<q',1023):raise ValueError('Mouse queue contract differs: '+repr(struct.unpack('<q',raw)))
   if initial_mouse!=struct.pack('<5q',320,240,0,320,240):raise ValueError('Initial logical/hardware mouse state differs')
   guest.command('6*7;');report['fresh_result']=guest.result_pixels();guest.close();guest=None
   if pack['snapshot'](image.read_bytes())[1]!=initial_files:raise ValueError('Queue contract changed files/metadata')
-  report.update(result='pass',mask=511,files_unchanged=True)
+  report.update(result='pass',mask=1023,files_unchanged=True)
  except Exception as exc:
   report.update(result='fail',error=str(exc));raise
  finally:

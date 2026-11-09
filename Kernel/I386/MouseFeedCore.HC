@@ -13,8 +13,10 @@ public Bool MOUSE_FEED_FUNCTION(CI386MouseState *mouse,U8 data,U8 status)
   if(mouse->count<3) return TRUE;
   mouse->count=0; dx=mouse->bytes[1](I8); dy=mouse->bytes[2](I8);
   mouse->x+=dx; mouse->y-=dy;
+#ifndef MOUSE_FEED_UNBOUNDED
   if(mouse->x<0) mouse->x=0; else if(mouse->x>639) mouse->x=639;
   if(mouse->y<0) mouse->y=0; else if(mouse->y>479) mouse->y=479;
+#endif
   mouse->buttons=mouse->bytes[0]&7;
   if(mouse->packets!=U32_MAX) mouse->packets++;
   mouse->serial++;

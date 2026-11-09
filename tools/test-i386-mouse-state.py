@@ -21,7 +21,7 @@ COMMANDS = [
             {'key':'a'}, {'wait_log':'MS TEST keyboard\n'},
             {'mouse_button':'left','down':False}, {'mouse_button':'right','down':False},
             {'wait_log':'MS TEST snap ready\n'},
-            {'mouse_to':[358,262]}, {'wait_log':'MS TEST snap\n'}],
+            {'mouse_rel':[16,24]}, {'wait_log':'MS TEST snap\n'}],
         'final_rows':['A'], 'preserve_history':True,
         'exit_key':'esc','end':'MS TEST end\n'}),
     ('6*7;', ['42']),

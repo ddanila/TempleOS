@@ -705,6 +705,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -1587,6 +1594,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -7095,6 +7109,13 @@
           "result": "pass",
           "evidence": "build/i386-win-tile-many-native-64m-final-v1/result.json",
           "scope": "Five live tasks in horizontal and vertical tiling, including group-of-four transition; other counts, concurrency and callback failures unqualified"
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -7319,6 +7340,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -7548,6 +7576,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -7843,6 +7878,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -8148,6 +8190,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -8411,6 +8460,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -8739,6 +8795,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -9002,6 +9065,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -9097,6 +9167,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -9405,6 +9482,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -9535,6 +9619,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -9846,6 +9937,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -9888,6 +9986,13 @@
           "result": "pass",
           "evidence": "build/raw-control-audit-v1/result.json",
           "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },
@@ -23409,6 +23514,13 @@
           "result": "pass",
           "evidence": "build/window-mouse-audit-v1/result.json",
           "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        },
+        {
+          "target": "original-logical-mouse-gain-edge-history",
+          "command": "python3 tools/test-i386-mouse-gain.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/mouse-gain-audit-v1/result.json",
+          "scope": "62 identical physical-input steps/744 independent original/model/native/current-classic values: default0.5 hardware gain, integer prescale/odd truncation, full0..639/0..479 extents, clipping/offset/reversal and public scale/grid. Raw MouseGet retained; UI consumers logical. 8MiB Help/picker pixels and state63, queue1023, raw controls, five255 lifetime modes and Budget mouse/cold1023/63 pass;1886 prior files/cold tuples preserved. Audit rejects744 corruptions. Device held-click console typing remains byte-identical failure; unflagged DocEd113/95 and524/609 remains failing. Not full wheel/ms_hard/MsSet/timing/bursts/desktop/raster/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-gain.md."
         }
       ]
     },

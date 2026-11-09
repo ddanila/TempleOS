@@ -90,3 +90,12 @@ simultaneous buttons, wheel, border moving/resizing, menus, default hardware
 motion gain and settled pointer/full-frame fidelity. Resource qualification,
 normal editor/console input, remaining applications and native rebuild/minimal
 startup acceptance are also open.
+
+## Later motion-gain checkpoint
+
+The default unit-gain difference is now implemented and compared against the
+original unbounded prescale/edge-offset path. See [motion gain](i386-mouse-gain.md)
+for 62 original/model/native state steps, complete coordinate extents, rebuilt-
+classic comparison, 8 MiB UI pixel regressions and retained console/editor gaps.
+Raw control callbacks and Budget cold reopening still pass. This does not close
+raw rendering, document routing or complete C1–C5 acceptance.

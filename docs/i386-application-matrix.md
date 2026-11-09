@@ -825,3 +825,15 @@ The strict unflagged editor retains exactly its prior 113/95 and 524/609 client
 failure. See [raw control input](i386-raw-control-input.md). Raw document input,
 raw control drawing/legacy scopes, default hardware motion gain and full C1–C5
 remain open; qualification stays 2/686.
+
+Original default mouse gain and edge history now match 62 physical-input steps
+and 744 independent state values, including x=0/639, y=0/479 and reversal. The
+shared integer prescale/offset helper also matches on the rebuilt classic system.
+Native UI consumers use logical coordinates while raw MouseGet retains its
+additional device contract. Help/picker pixels and mouse-state behavior pass at
+8 MiB; queue, raw controls, five callback-lifetime cases and Budget mouse/cold
+reopening pass. See [motion evidence](i386-mouse-gain.md). The complete device
+group still fails console typing after held click, byte-identically before/after;
+unflagged DocEd remains 113/95 with 524/609 client differences. Wheel, full
+ms_hard/MsSet, timing/bursts, remaining desktop/app/resources and native/minimal
+startup acceptance remain open. Qualification remains 2/686.

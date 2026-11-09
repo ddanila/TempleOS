@@ -32,14 +32,15 @@ def main():
             window=(out/'guest'/f'control-life-window-{mode}.bin').read_bytes();(out/f'control-life-window-{mode}.bin').write_bytes(window)
             flags,inhibit,focus,inside=struct.unpack('<4q',window)
             if flags&3!=3 or inhibit&0x40005 or (focus,inside)!=(1,1):raise ValueError('Control lifetime fixture is not an admitted focused managed window')
-            target=struct.unpack('<2q',raw);deadline=time.monotonic()+15;sent=False
+            target=struct.unpack('<2q',raw);deadline=time.monotonic()+15
             while time.monotonic()<deadline:
                 address=int(re.findall(r'CL STATE ([0-9A-F]+)\n',guest.collect())[-1],16)
                 p=out/'guest/mouse-state.bin';guest.call('pmemsave',val=address,size=24,filename=str(p));x,y,b=struct.unpack('<3q',p.read_bytes())
                 if (x,y)==target:break
-                if not sent:
-                    guest.call('input-send-event',events=[{'type':'rel','data':{'axis':'x','value':target[0]-x}},{'type':'rel','data':{'axis':'y','value':target[1]-y}}]);sent=True
-                time.sleep(.1)
+                guest.call('input-send-event',events=[{'type':'rel','data':{'axis':'x','value':target[0]-x}},{'type':'rel','data':{'axis':'y','value':target[1]-y}}])
+                # Wait for the scheduled observer before another correction.
+                # The target is logical; physical gain is not assumed to be one.
+                time.sleep(.75)
             else:raise TimeoutError('Pointer did not reach control')
             guest.call('input-send-event',events=[{'type':'btn','data':{'button':'left','down':True}}])
             guest.wait(f'CL ENTER {mode}\n',30)

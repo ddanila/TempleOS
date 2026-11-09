@@ -509,7 +509,7 @@ U0 NativeDirPickerDraw(U8 *directory,U8 **items,I64 count,I64 selected,
     else I386TextWrite(&console_text,"Name: ");
     I386TextWrite(&console_text,new_name);
     I386TextPut(&console_text,0xDB); ConsolePresent;
-    if(native_dir_mouse_visible && MouseGet(&mouse_x,&mouse_y))
+    if(native_dir_mouse_visible && NativeLogicalMouseGet(&mouse_x,&mouse_y))
       NativeDocMouseShow(console_planes,mouse_x,mouse_y);
     return;
   }
@@ -519,7 +519,7 @@ U0 NativeDirPickerDraw(U8 *directory,U8 **items,I64 count,I64 selected,
     else I386TextWrite(&console_text,"Delete ");
     I386TextWrite(&console_text,delete_name);
     I386TextWrite(&console_text,"? Y/N"); ConsolePresent;
-    if(native_dir_mouse_visible && MouseGet(&mouse_x,&mouse_y))
+    if(native_dir_mouse_visible && NativeLogicalMouseGet(&mouse_x,&mouse_y))
       NativeDocMouseShow(console_planes,mouse_x,mouse_y);
     return;
   }
@@ -533,7 +533,7 @@ U0 NativeDirPickerDraw(U8 *directory,U8 **items,I64 count,I64 selected,
     if(index+1<end) I386TextWrite(&console_text,"\n");
   }
   ConsolePresent;
-  if(native_dir_mouse_visible && MouseGet(&mouse_x,&mouse_y))
+  if(native_dir_mouse_visible && NativeLogicalMouseGet(&mouse_x,&mouse_y))
     NativeDocMouseShow(console_planes,mouse_x,mouse_y);
 }
 Bool NativeDirPicker(U8 *directory,U8 **picked,Bool pick_directory=FALSE)
@@ -557,7 +557,7 @@ Bool NativeDirPicker(U8 *directory,U8 **picked,Bool pick_directory=FALSE)
   }
   try {
   legacy_view=NativeLegacyViewOpen;
-  MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
+  NativeLogicalMouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
   native_dir_mouse_visible=FALSE;
   KernelLog("FILE PICK begin\n"); NativeDirPickerDraw(current,items,count,selected);
     while(!done) {
@@ -659,7 +659,7 @@ Bool NativeDirPicker(U8 *directory,U8 **picked,Bool pick_directory=FALSE)
           if(path) Free(path);
         } else if(event.type==2 && event.ch=='\n' && count) activate=TRUE;
       }
-      if(MouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
+      if(NativeLogicalMouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
           next_mouse_packets!=mouse_packets) {
         native_dir_mouse_visible=TRUE;
         if(mouse_buttons&1 && !(next_mouse_buttons&1))
@@ -1136,7 +1136,7 @@ U0 NativeDocEditDraw(CDoc *doc,Bool blink_phase=FALSE,I64 save_status=0)
     if(!NativeGraphicsPresent(&NativeDocEditDrawSprites,blink_phase)) KernelStop;
     native_doc_sprite_doc=NULL;
   } else ConsolePresent;
-  if(native_doc_mouse_visible && MouseGet(&mouse_x,&mouse_y)) {
+  if(native_doc_mouse_visible && NativeLogicalMouseGet(&mouse_x,&mouse_y)) {
     if(NativeDocHasSprite(doc) && NativeGraphicsPlanes)
       NativeDocMouseShowSplit(NativeGraphicsPlanes,mouse_x,mouse_y);
     else NativeDocMouseShow(console_planes,mouse_x,mouse_y);
@@ -1519,7 +1519,7 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
     legacy_view=NativeLegacyViewOpen(TRUE);
     Fs->put_doc=Fs->display_doc=doc;
     blink_phase=NativeDocEditBlinkPhase;
-    MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
+    NativeLogicalMouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
     native_doc_mouse_visible=FALSE;
     KernelLog("DOC EDIT begin\n"); NativeDocEditDraw(doc,blink_phase);
     while(!done) {
@@ -1674,7 +1674,7 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
           DocPutKey(doc,0,event.scan); changed=TRUE;
         }
       }
-      if(MouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
+      if(NativeLogicalMouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
           next_mouse_packets!=mouse_packets) {
         native_doc_mouse_visible=TRUE;
         if(next_mouse_buttons&1 && !(mouse_buttons&1) &&
@@ -2119,7 +2119,7 @@ I64 NativeHelpDraw(U8 *name,U8 *text,I64 size,I64 start,
     }
   }
   ConsolePresent;
-  if(native_help_mouse_visible && MouseGet(&mouse_x,&mouse_y))
+  if(native_help_mouse_visible && NativeLogicalMouseGet(&mouse_x,&mouse_y))
     NativeDocMouseShow(console_planes,mouse_x,mouse_y);
   return index;
 }
@@ -2196,7 +2196,7 @@ Bool NativeHelpView(U8 *name,I64 line,U8 *find,I64 occurrence,U8 *anchor)
   pages[0]=initial;
   try {
     legacy_view=NativeLegacyViewOpen;
-  MouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
+  NativeLogicalMouseGet(&mouse_x,&mouse_y,&mouse_buttons,&mouse_packets);
   native_help_mouse_visible=FALSE;
   next=NativeHelpDraw(name,plain,size,initial,links,link_count,selected);
   KernelLog("HELP VIEW begin\n");
@@ -2244,7 +2244,7 @@ Bool NativeHelpView(U8 *name,I64 line,U8 *find,I64 occurrence,U8 *anchor)
         } else if(event.type==2 && event.ch=='\n' && 0<=selected<link_count)
           activate=TRUE;
       }
-      if(MouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
+      if(NativeLogicalMouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
           next_mouse_packets!=mouse_packets) {
         native_help_mouse_visible=TRUE;
         if(mouse_buttons&1 && !(next_mouse_buttons&1))

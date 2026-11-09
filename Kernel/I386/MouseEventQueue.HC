@@ -4,13 +4,13 @@ class CI386MouseEvents {
   CI386MouseEvent events[64];
   U32 read,write,count,losses,last_buttons;
 };
-U0 I386MouseEventPush(CI386MouseEvents *queue,I64 x,I64 y,U32 buttons,I64 stamp)
+U0 I386MouseEventPush(CI386MouseEvents *queue,I64 x,I64 y,U32 buttons,I64 stamp,Bool coalesce=TRUE)
 {
   CI386MouseEvent *event;
   U32 slot;
   Bool transition=buttons!=queue->last_buttons;
   queue->last_buttons=buttons;
-  if(!transition && queue->count) {
+  if(coalesce && !transition && queue->count) {
     slot=(queue->write+63)&63;event=&queue->events[slot];
     if(!event->transition && event->buttons==buttons)goto mouse_queue_store;
   }

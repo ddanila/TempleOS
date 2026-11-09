@@ -29503,3 +29503,53 @@ first relative movement (-188,-134) from (320,240) settles at (226,173) original
 versus (132,106) natively, confirming the 0.5 versus unit-gain difference rather
 than assuming pointer-target success proves motion parity. Editor/console input,
 remaining applications, resources and C5 native/minimal startup remain open.
+
+### C2/C4: original half-gain prescale, edge offset and logical UI consumers
+
+The original uses integer unbounded prescale, hardware scale 0.5 and grid-based
+logical offset adjustment at edges. Native formerly applied unit deltas to a
+640-by-480-clipped decoder. A shared parameterized MsHardSetPost position body
+now runs in scheduled native context before logical MousePositionCore. IRQ input
+stays integer-only. Every raw packet is retained until offset history is applied;
+logical motion may then coalesce with per-slot position/presnap snapshots. WinMgr
+uses those snapshots without reapplying the latest offset. Exported raw MouseGet
+and native kernel bytes stay unchanged; terminal/editor/directory/Help/managed
+pointer consumers now use the internal logical getter.
+
+The first sixty-step original matches an independent integer/binary64 model.
+The mature old native control completes all steps but differs at 59. A prototype
+export-prefix race and a shared-helper CD3/CD3I64 prescale type error are retained:
+the latter passed structural bounds but failed rebuilt-classic parity. The type
+is corrected and both classic/native match the original. Coverage inspection
+found minimum x=3, so two exact left-edge/reversal steps extend the final corpus
+to 62 and every extent x=0/639, y=0/479. Final original/model/native/current-classic
+records match all 744 values. The audit rejects a corruption of each value even
+when its per-step copy is changed consistently.
+
+Help and file-picker exact pixel workflows and mouse-state mask 63 pass at 8 MiB,
+486 without FPU/live WinMgr. Host mouse_to now steers using real logical state;
+the final mouse-state public-scale/grid case receives physical (16,24) for hard
+increment (8,12), preserving its existing oracle. Queue mask 1023 adds explicit
+noncoalesced reverse motion. Raw controls and all five callback lifetime modes
+still pass. Budget mouse/save/real cold reopening/abort passes 1023/63 with exact
+state/storage, 1886 prior files, unchanged cold tuples and both fresh 42 results.
+The raw API probe passes six raw/logical/button snapshots and mask 15, including
+NULL/IRQ/heap/document restoration; its unsupported local-initializer prototype
+remains a compile failure. Held-click console command typing still fails on both
+old/new images with exactly the same bitmap. Unflagged editor remains the strict
+113/95 and 524/609 client failure; no whole mouse group/editor qualification.
+
+The final v3 image is byte-identical to the corrected v2 image; its build record
+also pins the updated host pointer oracle. All 1859 delivered source/26 helper
+pins, sixteen modules, ABI 104/264/41, kernel bytes and two current classic
+bootstrap generations are audited. Only ConsoleRuntime changes among native
+modules. These are classic generations, not C5 native generations. Concurrent
+8 MiB functional startup near 54 seconds is not the isolated 60-second gate.
+See docs/i386-mouse-gain.md and build/mouse-gain-audit-v1/result.json.
+
+No milestone is marked complete; qualification remains 2/686. Remaining C2/C4
+work includes wheel/extended packets, ms_hard/MsSet, timing/speed and arbitrary
+settings, burst/loss behavior, raw/legacy rendering/document input, custom hit/
+capture transitions, simultaneous UI buttons, borders/menus, full pointer/frame
+parity and resources. Console/editor gaps, remaining applications and full
+C1–C5 native/minimal startup acceptance remain open.

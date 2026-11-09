@@ -161,25 +161,12 @@ U0 MsHardSetPre()
   ms_hard_last.timestamp=old_timestamp;
 }
 
+#include "/Kernel/MouseHardPositionCore.HC"
+
 U0 MsHardSetPost()
 {
   I64 i;
-  ms_hard.pos.x=ms_hard.prescale.x*ms_hard.scale.x*ms_grid.x_speed;
-  ms_hard.pos.y=ms_hard.prescale.y*ms_hard.scale.y*ms_grid.y_speed;
-  ms_hard.pos.z=ms_hard.prescale.z*ms_hard.scale.z*ms_grid.z_speed;
-
-  i=Trunc(ms.scale.x*ms_hard.pos.x/ms_grid.x)*ms_grid.x+ms.offset.x;
-//TODO ms_grid.x_offset?
-  if (i<0)
-    ms.offset.x-=i;
-  else if (i>=GR_WIDTH)
-    ms.offset.x+=GR_WIDTH-1-i;
-
-  i=Trunc(ms.scale.y*ms_hard.pos.y/ms_grid.y)*ms_grid.y+ms.offset.y;
-  if (i<0)
-    ms.offset.y-=i;
-  else if (i>=GR_HEIGHT)
-    ms.offset.y+=GR_HEIGHT-1-i;
+  MouseHardPositionCore(&ms_hard.prescale,&ms_hard.scale,&ms_hard.pos,&ms,&ms_grid);
 
   if (ms_hard.pos.x!=ms_hard_last.pos.x || ms_hard.pos.y!=ms_hard_last.pos.y ||
 	ms_hard.pos.z!=ms_hard_last.pos.z) {

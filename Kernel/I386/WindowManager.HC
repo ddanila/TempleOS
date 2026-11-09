@@ -134,7 +134,7 @@ U0 NativeWindowWorker(U8 *data)
         //its visible pointer from the graphics backing after each new frame.
         if(graphics_frame && native_console_mouse_visible &&
             native_terminal_root && sys_focus_task==native_terminal_root->task &&
-            MouseGet(&mouse_x,&mouse_y))
+            NativeLogicalMouseGet(&mouse_x,&mouse_y))
           NativeDocMouseShowSplit(NativeGraphicsPlanes,mouse_x,mouse_y);
         //A shown document can be fully covered by the retained console. The
         //document admission then declines, but its Refresh still needs frames.
