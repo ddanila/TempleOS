@@ -2407,6 +2407,20 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-original-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. Pinned original reference; no application handlers or seeded entries. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "native-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-native-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
         }
       ]
     },
@@ -2707,6 +2721,20 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-original-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. Pinned original reference; no application handlers or seeded entries. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "native-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-native-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
         }
       ]
     },
@@ -4032,6 +4060,20 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-original-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. Pinned original reference; no application handlers or seeded entries. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "native-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-native-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
         }
       ]
     },
@@ -7625,6 +7667,20 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-original-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. Pinned original reference; no application handlers or seeded entries. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "native-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-native-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
         }
       ]
     },
@@ -7867,6 +7923,34 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-original-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. Pinned original reference; no application handlers or seeded entries. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "original-budget-recurrence-boundaries",
+          "command": "python3 tools/test-i386-budget-boundaries.py --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-boundaries-original-v2/result.json",
+          "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Independent Python dates/fixed-point oracle, restored pinned original sources. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
+        },
+        {
+          "target": "native-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-native-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "native-budget-recurrence-boundaries",
+          "command": "python3 tools/test-i386-budget-boundaries.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-boundaries-native-v2/result.json",
+          "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Native capture equals original and host oracle exactly; unchanged filesystem/metadata and fresh 42. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
         }
       ]
     },
@@ -8374,6 +8458,20 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-original-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. Pinned original reference; no application handlers or seeded entries. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "native-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-native-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
         }
       ]
     },
@@ -8648,6 +8746,34 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-original-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. Pinned original reference; no application handlers or seeded entries. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "original-budget-recurrence-boundaries",
+          "command": "python3 tools/test-i386-budget-boundaries.py --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-boundaries-original-v2/result.json",
+          "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Independent Python dates/fixed-point oracle, restored pinned original sources. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
+        },
+        {
+          "target": "native-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-native-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "native-budget-recurrence-boundaries",
+          "command": "python3 tools/test-i386-budget-boundaries.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-boundaries-native-v2/result.json",
+          "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Native capture equals original and host oracle exactly; unchanged filesystem/metadata and fresh 42. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
         }
       ]
     },
@@ -8893,6 +9019,34 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-original-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. Pinned original reference; no application handlers or seeded entries. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "original-budget-recurrence-boundaries",
+          "command": "python3 tools/test-i386-budget-boundaries.py --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-boundaries-original-v2/result.json",
+          "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Independent Python dates/fixed-point oracle, restored pinned original sources. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
+        },
+        {
+          "target": "native-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-native-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "native-budget-recurrence-boundaries",
+          "command": "python3 tools/test-i386-budget-boundaries.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-boundaries-native-v2/result.json",
+          "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Native capture equals original and host oracle exactly; unchanged filesystem/metadata and fresh 42. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
         }
       ]
     },
@@ -8974,6 +9128,20 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-original-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. Pinned original reference; no application handlers or seeded entries. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "native-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-native-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
         }
       ]
     },
@@ -9222,6 +9390,34 @@
           "result": "pass",
           "evidence": "build/budget-recurrence-audit-v1/result.json",
           "scope": "Four real keyboard workflows (monthly, bimonthly, semiannual, annual), nested Shift-Escape and signed CANCEL=-1, template creation, cancelled edit preserving identities, accepted recurrence/base-entry replacement, whole-family deletion and recreation; masks 16777215/63, exact menus/forms/backing records/live ownership and all 92 stored bytes/twelve strings/accounts. Actual cold reboot/read-only abort preserves all file bytes/attributes/timestamps; 1877 prior files preserved and fresh rendered 42 after both returns. Generic control-retirement deadlock fixed; only ConsoleRuntime module changes. Exact target-specific amount bits differ only at saved byte 84; expanded date fractions agree at four. Test-time runner snapshots and one post-capture edited-report/live-identity assertion are preserved; all eight captures pass the stronger verifier. Mouse/resources/boundary validation and full Budget/C1-C5 remain open. See docs/i386-budget-recurrence.md."
+        },
+        {
+          "target": "original-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-original-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. Pinned original reference; no application handlers or seeded entries. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "original-budget-recurrence-boundaries",
+          "command": "python3 tools/test-i386-budget-boundaries.py --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-boundaries-original-v2/result.json",
+          "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Independent Python dates/fixed-point oracle, restored pinned original sources. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
+        },
+        {
+          "target": "native-budget-schedule-validation",
+          "command": "python3 tools/test-i386-budget-validation.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-validation-native-v2/result.json",
+          "scope": "Real t keyboard forms reject zero/negative intervals and Null recurrence; cancelling a fully typed transaction returns committed schedule, then changing period to zero rejects without any entries/templates/data/string files. Exact raw documents/tags/deferred backing/menu, four empty reports, mask 1023 and caller restoration. All file bytes/attributes/timestamps unchanged after Install; fresh 42. Retained period 1 has exact target-specific binary64 bits, not tolerance. First native timing failure retained; observer now waits for picker return plus Null tag/backing value before typing. Not date-boundary expansion, mouse/resources or full Budget/C1-C5. See docs/i386-budget-validation.md."
+        },
+        {
+          "target": "native-budget-recurrence-boundaries",
+          "command": "python3 tools/test-i386-budget-boundaries.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-boundaries-native-v2/result.json",
+          "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Native capture equals original and host oracle exactly; unchanged filesystem/metadata and fresh 42. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
         }
       ]
     },
@@ -20757,7 +20953,22 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-budget-recurrence-boundaries",
+          "command": "python3 tools/test-i386-budget-boundaries.py --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-boundaries-original-v2/result.json",
+          "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Independent Python dates/fixed-point oracle, restored pinned original sources. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
+        },
+        {
+          "target": "native-budget-recurrence-boundaries",
+          "command": "python3 tools/test-i386-budget-boundaries.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-boundaries-native-v2/result.json",
+          "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Native capture equals original and host oracle exactly; unchanged filesystem/metadata and fresh 42. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
+        }
+      ]
     },
     {
       "path": "Kernel/KDbg.HC",

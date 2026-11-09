@@ -753,3 +753,21 @@ The DocEd-exit regression passes; derived-control regression remains pending.
 The combined audit revalidates eight captures and rejects 660 corruptions.
 Boundary validation, mouse/resources, complete Budget and C1–C5 remain open;
 component receipts leave qualification at 2/686.
+
+Budget validation now has original/native real-keyboard rejection controls for
+zero/negative intervals, Null type, and cancellation of a typed base transaction
+followed by invalidating the retained schedule. Mask 1023, exact seven-phase
+forms/backing/menu and four empty reports pass. No data/string file is created;
+native abort preserves all file bytes/metadata after installation and renders 42.
+See [validation evidence](i386-budget-validation.md).
+
+The separate direct expansion API control matches all 2872 bytes for eighteen
+boundary/mode cases: day/month overflow, leap year, reversed/equal ranges, Null,
+half-day intervals and the existing >2050 year mapping. It checks template shared
+ownership versus independently owned periodic copies, first-row omission,
+contents/links and an empty queue after cleanup. See
+[boundary evidence](i386-budget-boundaries.md). Audits reject
+323 validation and 361 boundary corruptions; runtime modules/bootstrap
+inputs remain unchanged. Earlier setup/synchronization failures are retained,
+not passing controls. The derived-control regression is still pending. Mouse,
+resources and complete Budget/C1–C5 remain open; qualification remains 2/686.

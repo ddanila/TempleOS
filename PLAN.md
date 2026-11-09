@@ -29303,3 +29303,42 @@ captures under an explicitly recorded post-execution identity assertion and
 rejects 660 corruptions. Inventory only appends component receipts. Budget
 boundary/validation cases, mouse, repeated-use resources, remaining applications
 and full C1–C5 acceptance remain open; bundled qualification stays 2/686.
+
+### C1/C3/C4: Budget rejected schedules and calendar boundary APIs
+
+Original/native real forms now reject zero/negative interval periods and Null
+recurrence without entries, templates or data/string files. Cancelling a fully
+typed GHOST/VOID base transaction returns the accepted schedule with all values
+retained. Changing its period to zero leaves the committed backing value intact
+until acceptance, then rejects the schedule. Exact seven-phase raw documents,
+visible tags/backing records, nested menu actions and four empty reports pass
+mask 1023 with caller restoration. Native abort preserves every file byte,
+attribute and timestamp after Install and renders fresh arithmetic 42.
+
+The first native validation observation typed before the nested picker had
+finished returning; its stopped capture shows shifted fields. The observer now
+waits for child closure and exact Null tag/backing zero before announcing field
+readiness. Both final controls pass without runtime/application changes; the
+failed observation remains preserved. Exact original/native retained period
+bits differ only at backing byte 36 under the established binary64 policy.
+
+A separate direct original/native API fixture checks nine boundary schedules in
+template and periodic-copy modes: day-31 rollover, February-29 annual expansion,
+reversed/equal ranges, Null, half-day intervals and the original >2050-to-previous-
+century mapping. All 2872 portable bytes match the independent Python calendar/
+fixed-point oracle and each other, including exact dates/fraction four, types,
+flags, constructed amount, owner/string identity policy, contents and queue links.
+Periodic copies omit only the first occurrence and own independent strings;
+template rows share owner/strings. Each cleanup leaves the entry queue empty.
+This is direct API evidence, not a UI or exact heap profile. Its first native
+setup failure omitted required autocomplete/task-settings definitions; final
+controls load the same dependencies as existing Budget workflows.
+
+Audits reject 323 validation and 361 boundary corruptions, preserve source/runner/
+fixture/raw capture pins and verify append-only inventory receipts. Current
+1850 source/26 helper pins, sixteen modules and both existing bootstrap generations
+remain unchanged. See docs/i386-budget-validation.md,
+docs/i386-budget-boundaries.md and their build audit receipts. The earlier
+derived-control regression remains pending and is not counted as passing here.
+Mouse, repeated-use resources, remaining inventory and full C1–C5 remain open;
+bundled qualification stays 2/686.
