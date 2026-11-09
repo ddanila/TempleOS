@@ -29649,3 +29649,13 @@ be wrong. The literal test is a strict native failure, not an application pass.
 Full MsgLoop, remaining input/desktop/apps/resources and C1–C5 stay open;
 qualification remains2/686. See docs/i386-keyboard-mouse-scan.md and
 [quoted source evidence](docs/i386-document-literal.md).
+
+The key-device regression also matches all12 original hook-dispatch values and
+fresh42 on this image. Its host driver accepts KVM/full-welcome options and
+checks nine existing unused-parameter warnings explicitly; the three earlier
+startup/screen/warning expectation failures remain retained. A final isolated
+normal8MiB KVM486,-fpu boot reaches live WinMgr and exact welcome/42 pixels in
+53.060s, passing only the current60-second baseline subgate. Both unchanged
+MsgLoop chronological streams now match all18/19 message records; full output
+still fails the missing quoted header link and saved-document/raster acceptance
+remains open. No C1–C5 milestone or additional file is qualified.

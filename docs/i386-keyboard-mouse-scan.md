@@ -36,6 +36,24 @@ change from `i386-vga-wide-cross-v1`; the bare kernel stays457416 bytes.
 The 544-value MsSet comparison and32 existing delivered low-half button values
 also pass in `build/keyboard-mouse-scan-msset-v1`.
 
+The public key-device regression passes all12 original dispatch values and
+fresh42 in `build/keyboard-mouse-scan-keydev-v4`. Its driver now offers KVM and
+full-welcome options while retaining the existing defaults and exact vectors.
+It explicitly expects the nine existing unused-parameter diagnostics from its
+callback definitions. Retained failed runs cover the earlier TCG startup timeout,
+wrong minimal-screen expectation, and omitted warning lines; none is reported
+as a behavioral pass.
+
+The isolated normal8MiB KVM486,-fpu check passes in53.060 seconds with live
+WinMgr and exact welcome/fresh42 pixels (`keyboard-mouse-scan-startup-8m-v1`).
+No other QEMU process was present at invocation. This is the current normal
+baseline's60-second subgate, not original-desktop/all-app/resource C5 acceptance.
+
+The unchanged MsgLoop normal/Shift-Escape probes now match all18/19
+chronological message records, including held-button scans, and restore mask7.
+Their full output still fails because the header link is missing. See
+[MsgLoop evidence](i386-msg-loop.md).
+
 The literal regression is separately committed: actual included source loses a
 quoted link but correctly projects ordinary styled text. See
 [document literal evidence](i386-document-literal.md). Complete MsgLoop output,
