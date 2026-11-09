@@ -51,8 +51,10 @@ CI386ConsoleConfig *console_config;
 CI386EditorContext native_editor_context;
 CI386Text console_default_text;
 U8 *console_default_planes;
+extern Bool NativeTerminalDocumentView(CTask *task,CDoc *doc);
 extern CI386Text *NativeTerminalText();
 extern U8 **NativeTerminalPlanes();
+extern U0 NativeTerminalMaterialize(CI386Text *surface);
 extern Bool NativeTerminalVisible();
 extern U0 NativeTerminalAdoptRoot();
 extern U0 NativeTerminalConsoleHeading();
@@ -1544,7 +1546,8 @@ U0 NativeTerminalInput()
       }
       ConsolePresent;
     }
-    if(NativeTerminalVisible && NativeLogicalMouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
+    if(NativeTerminalVisible && (IsRaw || NativeLegacyViewActive(Fs) ||
+        !NativeTerminalDocumentView(Fs,DocDisplay(Fs))) && NativeLogicalMouseGet(&next_mouse_x,&next_mouse_y,&next_mouse_buttons,&next_mouse_packets) &&
         next_mouse_packets!=mouse_packets) {
       if(mouse_visible)
         NativeMousePlaneMove(console_planes,mouse_x,mouse_y,next_mouse_x,next_mouse_y);

@@ -30,6 +30,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--accel',choices=('tcg','kvm'),default='tcg')
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
@@ -48,7 +49,7 @@ def main():
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
-            cpu='486,-fpu', accel='tcg', qmp_stdio=True, welcome=True,
+            cpu='486,-fpu', accel=args.accel, qmp_stdio=True, welcome=True,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
                            'rejected_answers':['0'],

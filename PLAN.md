@@ -29722,3 +29722,31 @@ welcome/42 pixels: the current60-second baseline subgate only. Failed-init
 rollback, other terminal roles, remaining input/desktop/raster/resources/native
 generations and fullC1–C5 remain open. Inventory qualification stays2/686.
 See docs/i386-terminal-scrolls.md.
+
+
+### C2/C3/C4: complete original User startup and compact text projection
+
+Native User now calls the shared complete original UserStartUp through its
+actual symbol chain and adopts the resulting documents, menu and controls.
+HomeSys include expansion equals both pinned originals. The welcome title
+define is shared in Adam; public Dir uses the complete original listing path
+for cwd, masks and normal string/character output. Exact model-based directory
+output and original counts3/3/0/1 pass; inherited custom startup passes63.
+
+Document terminals retain captured glyph/color cells (43200 bytes) and allocate
+the equivalent153600-byte raster only for retained/raw consumers. Byte-for-byte
+projection equivalence and all307200 VGA pixels pass; actual User-to-DocEd
+transition checks614400 pixels, exact saved bytes and document restoration.
+Stock User startup passes255 at8/64MiB. Three measured create/Kill cycles
+recover physical main-heap bytes and allocation counts exactly; live usage is
+110112 bytes lower per User than the eager-raster control. Three public caller
+heap/control lifecycle cycles still pass4095.
+
+The final ABI271 image pins1861 sources/26 helpers; only Kernel/ConsoleRuntime
+change and bare kernel remains458680 bytes. Source-matching classic rebuild
+passes,386 audit passes, and isolated8MiB normal startup is54.576s. Native
+self-host generations and full C5 remain open. Both current MsgLoop variants
+still fail strict saved-document equality despite exact complete streams and
+restoration7; an original repeat also varies its saved document. A controlled
+render/input schedule remains necessary. Qualification stays2/686; no whole
+milestone is complete. See docs/i386-user-startup.md.

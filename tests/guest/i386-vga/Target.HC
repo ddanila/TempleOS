@@ -10,6 +10,7 @@
 extern U0 MousePlaneSplitXor(U8 **planes,I64 x,I64 y);
 extern U0 GraphicsPlanarSplitCore(U8 **planes,U8 *pixels);
 extern I64 SplitPlaneContract(CI386Heap *heap);
+extern I64 TextProjectionContract(CI386Heap *heap);
 extern U0 I386VgaPalette(U8 *rgb6);
 U8 palette[]={
   0,0,0, 0,0,42, 0,42,0, 0,42,42,
@@ -32,6 +33,7 @@ I64 Main(I64 a,I64 b)
       !I386HeapInit(&heap,arena.base,arena.size)) return 1;
   if (!extended || arena.base<0x110000) return 4; //This 8 MiB QEMU fixture requires high RAM.
   i=SplitPlaneContract(&heap); if(i) return i;
+  i=TextProjectionContract(&heap);if(i)return 20+i;
   planes=I386HeapAlloc(&heap,153600);
   if (!planes) return 2;
   for (i=0;i<153600;i++) planes[i]=255;
@@ -75,3 +77,6 @@ I64 Main(I64 a,I64 b)
 #include "/Kernel/GraphicsPlanarCore.HC"
 #include "/Kernel/MousePlaneCore.HC"
 #include "SplitPlanes.HC"
+
+#include "/Kernel/I386/Text.HC"
+#include "Projection.HC"

@@ -359,23 +359,11 @@ public Bool DirMk(U8 *filename,I64 entry_cnt=0)
   return (*console_config->files->dir_mk)(filename,entry_cnt);
 }
 public I64 Dir(U8 *filename=NULL,Bool full=FALSE)
-{
-  U8 *listing;
-  I64 needed,count=0;
-  if(full || NativeFileUsesOriginal(filename)) {
-    if(!filename)filename="*";
-    return NativeOriginalDir(filename,full);
-  }
-  if(!filename) filename="C:/";
-  if(!console_config || !console_config->files || !console_config->files->dir_list)
-    return -1;
-  needed=(*console_config->files->dir_list)(filename,NULL,0,&count);
-  if(!needed || !(listing=MAlloc(needed))) return -1;
-  if((*console_config->files->dir_list)(filename,listing,needed,&count)!=needed) {
-    Free(listing); return -1;
-  }
-  NativeConsoleWrite(listing); Free(listing); return count;
+{//Mapped and external drives share original cwd, mask, links and stdout policy.
+  if(!filename)filename="*";
+  return NativeOriginalDir(filename,full);
 }
+
 public Bool FileDel(U8 *filename)
 {
   if(!filename || !console_config || !console_config->files ||

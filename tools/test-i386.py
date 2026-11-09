@@ -290,6 +290,8 @@ def main():
     #Message tasks use 256 KiB below 0x50000, with their arena moved to 0x60000.
     #Other core corpora retain their 192 KiB transfer and first arena at 0x40000.
     boot_sectors = 768 if args.functions else 1056 if args.task_symbols else 1056 if args.ata_tasks else 640 if args.ata_tasks or args.tasks or args.lex_define or args.lex_tokens or args.lex_cond else 480 if args.task_heaps else 448 if args.input else 512 if args.messages or args.except_tasks or args.tasks or args.lex_state or args.ata_tasks or args.redsea_read or args.arc_expand or args.lex_number or args.lex_tokens or args.lex_define or args.lex_cond else 384 if args.input or args.messages or args.except_tasks or args.task_heaps or args.heap else 320 if args.redsea_load or args.redsea_load_set or args.lex_ident or args.float or args.redsea or args.redsea_bind or args.ata_tasks or args.tasks or args.input or args.messages or args.except_tasks or args.symbols else 256 if large_runner or args.heap or args.except_records or except_runner else 128
+    #VGA scratch starts above 1 MiB; 128 KiB of code stays below 0x30000.
+    if args.vga: boot_sectors = 256
     if args.heap_public: boot_sectors = 448
     if args.lex_ident: boot_sectors = 384
     kind = 'expressions'
@@ -997,7 +999,7 @@ def main():
                     raise ValueError(f'VGA pixel mismatch at {x},{y}: {screen.getpixel((x,y))} != {expected}')
         screen.save(OUT/'display/screen.png')
         (OUT/'result.json').write_text(json.dumps({'result':'pass', 'cpu':'486',
-            'ram_mib':8, 'pixels':640*480, 'scope':'native VGA palette, full/partial uploads and invalid-range rejection'}, indent=2)+'\n')
+            'ram_mib':8, 'pixels':640*480, 'scope':'native VGA palette, full/partial uploads and invalid-range rejection, plus compact glyph/attribute projection byte equivalence across scrolling, controls, font changes and materialization'}, indent=2)+'\n')
         print('PASS: native VGA upload, all 307200 displayed pixels match.')
         return
     if args.ata:

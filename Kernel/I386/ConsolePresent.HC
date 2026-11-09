@@ -45,7 +45,8 @@ U0 NativeConsolePresentRows(CI386Text *surface)
   I64 rows,i,p;
   U8 *planes[4];
   U8 message[13],*prefix="VGA ROWS ";
-  if(!surface || !surface->planes)KernelStop;
+  if(!surface)KernelStop;
+  if(!surface->planes)NativeTerminalMaterialize(surface);
   for(p=0;p<4;p++)planes[p]=surface->planes+p*38400;
   //Partial text rows cannot restore a different graphics/terminal image.
   if(!NativeDisplayViewMatches(planes)) {

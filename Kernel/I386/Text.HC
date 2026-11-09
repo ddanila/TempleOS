@@ -9,7 +9,7 @@ public Bool I386TextInit(CI386Text *text,U8 *planes,U8 *font,
   if(!text || !planes || !font || foreground<0 || foreground>15 ||
       background<0 || background>15 || (planes+0)(U64)>0x100000000-153600 ||
       (font+0)(U64)>0x100000000-2048) return FALSE;
-  text->planes=planes; text->font=font;
+  text->planes=planes; text->font=font; text->cells=0;
   text->column=0; text->row=0;
   text->underline=FALSE;
   text->dirty_first=0; text->dirty_last=60;
@@ -23,9 +23,18 @@ public Bool I386TextInit(CI386Text *text,U8 *planes,U8 *font,
 U0 I386TextCell(CI386Text *text,U8 ch)
 {
   I64 plane,y;
-  U8 glyph,value;
+  U8 glyph,value,*cell;
+  U64 saved_glyph;
   if(text->row<text->dirty_first) text->dirty_first=text->row;
   if(text->row+1>text->dirty_last) text->dirty_last=text->row+1;
+  if(text->cells) {
+    cell=text->cells+(text->row*80+text->column)*9;
+    saved_glyph=(text->font+ch*8)(U64 *)[0];
+    if(text->underline)saved_glyph|=0xFF00000000000000;
+    cell(U64 *)[0]=saved_glyph;
+    cell[8]=(text->foreground&15)|(text->background&15)<<4;
+  }
+  if(!text->planes)return;
   for(plane=0;plane<4;plane++)
     for(y=0;y<8;y++) {
       glyph=text->font[ch*8+y];
@@ -44,6 +53,14 @@ U0 I386TextNewLine(CI386Text *text)
   if(++text->row<60) return;
   text->row=59;
   text->dirty_first=0; text->dirty_last=60;
+  if(text->cells) {
+    for(i=0;i<42480;i++)text->cells[i]=text->cells[i+720];
+    for(i=42480;i<43200;i+=9) {
+      (text->cells+i)(U64 *)[0]=0;
+      text->cells[i+8]=(text->background&15)<<4;
+    }
+  }
+  if(!text->planes)return;
   for(plane=0;plane<4;plane++) {
     buffer=text->planes+plane*38400;
     for(i=0;i<37760;i++) buffer[i]=buffer[i+640];
@@ -72,4 +89,42 @@ public U0 I386TextPut(CI386Text *text,U8 ch)
 public U0 I386TextWrite(CI386Text *text,U8 *string)
 {
   while(*string) I386TextPut(text,*string++);
+}
+
+public Bool I386TextCellsInit(CI386Text *text,U8 *cells,U8 *font,
+  I64 foreground=0,I64 background=15)
+{
+  I64 i;
+  if(!text || !cells || !font || foreground<0 || foreground>15 ||
+      background<0 || background>15 || (cells+0)(U64)>0x100000000-43200 ||
+      (font+0)(U64)>0x100000000-2048)return FALSE;
+  text->planes=0;text->cells=cells;text->font=font;
+  text->column=text->row=0;text->underline=FALSE;
+  text->foreground=foreground;text->background=background;
+  text->dirty_first=0;text->dirty_last=60;
+  for(i=0;i<43200;i+=9) {
+    (cells+i)(U64 *)[0]=0;cells[i+8]=background<<4;
+  }
+  return TRUE;
+}
+public Bool I386TextMaterialize(CI386Text *text,U8 *planes)
+{//Glyphs are captured at write time, including font changes and underline.
+//Materialization preserves all cursor/attribute state and the compact bytes.
+  I64 i,plane,y,base;
+  U64 saved_glyph;
+  U8 *cell,glyph,value,attr;
+  if(!text || !text->cells || !planes ||
+      (planes+0)(U64)>0x100000000-153600)return FALSE;
+  for(i=0;i<4800;i++) {
+    cell=text->cells+i*9;saved_glyph=cell(U64 *)[0];attr=cell[8];
+    base=i/80*640+i%80;
+    for(plane=0;plane<4;plane++)for(y=0;y<8;y++) {
+      glyph=saved_glyph>>(y*8);value=0;
+      if(attr&(1<<plane))value=glyph;
+      if(attr&(16<<plane))value|=~glyph;
+      planes[plane*38400+base+y*80]=value;
+    }
+  }
+  text->planes=planes;text->dirty_first=0;text->dirty_last=60;
+  return TRUE;
 }

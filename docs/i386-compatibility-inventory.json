@@ -4817,6 +4817,13 @@
           "result": "pass",
           "evidence": "build/terminal-scroll-lifecycle-native-v1/result.json",
           "scope": "Console ABI270 installs shared original controls for newly created terminal documents. Root actual wheel with hidden scrollbars matches nine original values, including cursor5,2; prior image lacks both controls, explicit initializer repairs it. Three actual User create/reuse/kill cycles pass4095 with task-owned controls and exact caller data/code heaps. Fresh42 and unchanged volume pass. Allocation-failure rollback, other terminal roles, full pixels/input/desktop/resources/native generations and whole-file/C1-C5 remain unqualified. See docs/i386-terminal-scrolls.md."
+        },
+        {
+          "target": "original-user-startup-and-compact-projection",
+          "command": "python3 tools/test-i386-user-startup.py IMAGE --ram-mib 8 --out OUT; python3 tools/test-i386-user-main-heap.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/user-constructor-native-8m-v2/result.json",
+          "scope": "ABI271 shares the exact original UserStartUp body and inherited title define; actual task symbol lookup preserves custom hook. Stock fixture passes255 at8/64MiB, custom override63, three control/caller-heap cycles4095, physical main-heap bytes/allocation counts recover exactly over three measured cycles. Compact glyph raster reduces live main-heap use110112 bytes per User; all307200 VGA pixels and614400 native retained-editor transition pixels pass. Root desktop orchestration, general prompt/menu/input/resources/native self-host and whole C1-C5 remain open. See docs/i386-user-startup.md."
         }
       ]
     },
@@ -17087,6 +17094,13 @@
           "result": "pass",
           "evidence": "build/msg-loop-scroll-shift-native-v1/result.json",
           "scope": "Unchanged Shift-Escape workflow now matches exact original serialized document, complete19-record chronological stream and restoration7, then fresh42 and unchanged volume. Normal Escape remains strict saved-document failure with exact18-record stream and restoration7 at build/msg-loop-scroll-native-v1. No original full-raster or whole-application/C1-C5 qualification. See docs/i386-terminal-scrolls.md."
+        },
+        {
+          "target": "msg-loop-after-original-user-startup",
+          "command": "python3 tools/test-i386-msg-loop.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "fail",
+          "evidence": "build/msg-loop-user-startup-native-v1/result.json",
+          "scope": "Both final normal/Shift variants retain strict saved-document failures with exact complete18/19-record chronological streams and restoration7. An original repeat changes its own saved document with identical stream; controlled render/input scheduling remains required. No application/raster/C1-C5 qualification. See docs/i386-msg-loop.md."
         }
       ]
     },
@@ -19970,6 +19984,13 @@
           "result": "pass",
           "evidence": "build/i386-terminal-handoff-native-v2/result.json",
           "scope": "Same two cases and exact masks after normal boot; original default SrvStartUp shared in Adam and existing document borrowed. Source/files/arithmetic independently audited. Full prompt/result formatting, heap and terminal qualification remain open."
+        },
+        {
+          "target": "original-user-startup-and-compact-projection",
+          "command": "python3 tools/test-i386-user-startup.py IMAGE --ram-mib 8 --out OUT; python3 tools/test-i386-user-main-heap.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/user-constructor-native-8m-v2/result.json",
+          "scope": "ABI271 shares the exact original UserStartUp body and inherited title define; actual task symbol lookup preserves custom hook. Stock fixture passes255 at8/64MiB, custom override63, three control/caller-heap cycles4095, physical main-heap bytes/allocation counts recover exactly over three measured cycles. Compact glyph raster reduces live main-heap use110112 bytes per User; all307200 VGA pixels and614400 native retained-editor transition pixels pass. Root desktop orchestration, general prompt/menu/input/resources/native self-host and whole C1-C5 remain open. See docs/i386-user-startup.md."
         }
       ]
     },
@@ -20510,6 +20531,13 @@
           "result": "pass",
           "evidence": "docs/i386-mount-file.md",
           "scope": "Rebuilt-original MountFile reference v7 and FAT path reference v4; final-image native v4 counterparts, independent filesystem/FAT and 1252 delivered-source checks. Complete mounted RedSea/FAT32 path bodies; hardware, broad filename/volume, repeated heap recovery and whole-file qualification remain open."
+        },
+        {
+          "target": "complete-public-dir-output",
+          "command": "python3 tools/test-i386-dir-output.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/dir-output-native-v4/result.json",
+          "scope": "Default cwd, full, missing-mask and file-mask outputs match every byte of the original-calibrated live metadata model; original counts3/3/0/1 match directly. Actual stdout is not normalized. Cwd/document/timezone restored; fresh42 and full volume unchanged. Other directory/file workflows and whole-file/C1-C5 remain unqualified. See docs/i386-user-startup.md."
         }
       ]
     },

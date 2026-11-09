@@ -62,3 +62,14 @@ Normal Escape at `build/msg-loop-scroll-native-v1` still fails saved-document
 equality despite an exact18-record stream and restoration7. No complete raster
 or full application qualification is added. See
 [terminal scroll evidence](i386-terminal-scrolls.md).
+
+
+ABI271 startup checkpoint: both `msg-loop-user-startup-native-v1` and
+`msg-loop-user-startup-shift-native-v1` fail strict saved-document equality,
+with exact complete original streams and restoration7. The original repeat
+`msg-loop-repeat-original-v1` itself changes saved-document bytes while its
+stream stays identical to `msg-loop-stream-original-v1`. This exposes an
+uncontrolled render/cursor/output schedule in the current snapshot comparison;
+it does not qualify the native behavior. Preserve strict failures and add
+explicit frame/input barriers before drawing a cursor-parity conclusion.
+See [startup evidence](i386-user-startup.md).

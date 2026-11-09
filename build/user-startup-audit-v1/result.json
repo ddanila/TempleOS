@@ -1,0 +1,69 @@
+{
+  "result": "pass",
+  "historical_source_pins_verified_in_iso": [
+    {
+      "receipt": "user-constructor-current-original-v1",
+      "path": "/home/ddanila/fun/TempleOS/Kernel/I386/ConsolePresent.HC",
+      "sha256": "5eaba1d3181683aa30dee37ae59987fdbb7ab694f3656ab7b4b7ce9c6b030218",
+      "verified_in": "build/user-constructor-current-original-v1/original.iso"
+    },
+    {
+      "receipt": "user-constructor-current-original-v1",
+      "path": "/home/ddanila/fun/TempleOS/Kernel/I386/ConsoleRuntime.HC",
+      "sha256": "bdd2d89c76649388286bcba6bf2c5ee2eaeb187008eeac62611ffed297c7c1f3",
+      "verified_in": "build/user-constructor-current-original-v1/original.iso"
+    },
+    {
+      "receipt": "user-constructor-current-original-v1",
+      "path": "/home/ddanila/fun/TempleOS/Kernel/I386/StartOS.HC",
+      "sha256": "855316315fd9276d49db11e36c722aee5e17018a438f13142935c01fb0ef8e3d",
+      "verified_in": "build/user-constructor-current-original-v1/original.iso"
+    },
+    {
+      "receipt": "user-constructor-current-original-v1",
+      "path": "/home/ddanila/fun/TempleOS/Kernel/I386/Terminals.HC",
+      "sha256": "ef49198daec73a379cf5923465fc64af6cbc024b3dad543ed50b5e91014bc6a9",
+      "verified_in": "build/user-constructor-current-original-v1/original.iso"
+    },
+    {
+      "receipt": "user-constructor-current-original-v1",
+      "path": "/home/ddanila/fun/TempleOS/Kernel/I386/Text.HC",
+      "sha256": "1df4a6f8018202270e077a8e45eced2a97dc07f3a9a7a22da8fcf3dac52b479d",
+      "verified_in": "build/user-constructor-current-original-v1/original.iso"
+    },
+    {
+      "receipt": "user-constructor-current-original-v1",
+      "path": "/home/ddanila/fun/TempleOS/Kernel/I386/Text.HH",
+      "sha256": "78169ab276e75dcf817f974ac3bed95428a919edcff3e1decab9074c3dbeb026",
+      "verified_in": "build/user-constructor-current-original-v1/original.iso"
+    }
+  ],
+  "source_pins": 1861,
+  "helper_pins": 26,
+  "changed_modules": [
+    "Kernel",
+    "ConsoleRuntime"
+  ],
+  "checked_receipts": [
+    "user-constructor-current-original-v1",
+    "user-constructor-native-v4",
+    "user-constructor-native-8m-v2",
+    "user-hook-original-v2",
+    "user-hook-native-v3",
+    "dir-output-original-v8",
+    "dir-output-native-v4",
+    "user-main-heap-native-v3",
+    "user-main-heap-before-cells-v1",
+    "user-startup-scroll-original-v1",
+    "user-startup-scroll-native-v3",
+    "user-legacy-native-v3",
+    "user-text-projection-vga-v3",
+    "user-startup-startup-8m-v2",
+    "msg-loop-user-startup-native-v1",
+    "msg-loop-user-startup-shift-native-v1",
+    "msg-loop-repeat-original-v1"
+  ],
+  "corruptions_rejected": 1726,
+  "live_main_heap_saving_per_user": 110112,
+  "qualification": "Partial startup, directory, projection and ownership evidence only. Both strict MsgLoop saved documents fail; C1-C5 remain open,2/686."
+}

@@ -48,6 +48,11 @@ if(!NativeWinMgrStart) throw('WinMgr',TRUE);
 //definitions. Publish the original default there; SrvCmdLine still resolves
 //caller overrides by name through the normal hash-table chain.
 #include "/Kernel/I386/PublicExecution.HH"
+//Document defines must be inherited from Adam by every user and servant.
+Adam("DefinePrint(\"DD_OS_NAME_VERSION\",\"TempleOS V%%0.2f\",sys_os_version);");
+AdamFile("::/Adam/UserStartUpCore.HC",FALSE);
+CHashFun *native_user_startup=HashFind("UserStartUp",adam_task->hash_table,HTT_FUN);
+if(!native_user_startup || !native_user_startup->exe_addr)throw('UsrStart',TRUE);
 AdamFile("::/Adam/SrvStartUpCore.HC",FALSE);
 CHashFun *native_srv_startup=HashFind("SrvStartUp",adam_task->hash_table,HTT_FUN);
 if(!native_srv_startup || !native_srv_startup->exe_addr)throw('SrvStart',TRUE);

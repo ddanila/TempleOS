@@ -8,6 +8,7 @@ class CNativeTerminal {
   CI386Task *task;
   CI386Text surface;
   U8 *planes;
+  U8 *cells;
   CDoc *document;
   U0 (*cleanup)(CI386Task *task);
   I64 loss_seen;
@@ -83,11 +84,27 @@ CI386Text *NativeTerminalText()
   if(terminal) return &terminal->surface;
   return &console_default_text;
 }
+U0 NativeTerminalMaterialize(CI386Text *surface)
+{
+  CNativeTerminal *terminal=native_terminal_head;
+  U8 *planes;
+  if(surface->planes)return;
+  while(terminal && surface!=&terminal->surface)terminal=terminal->next;
+  if(!terminal || !terminal->cells)throw('TermVga',TRUE);
+  planes=I386HeapAlloc(console_config->heap,153600,FALSE);
+  if(!planes)throw('OutMem',TRUE);
+  if(!I386TextMaterialize(surface,planes)) {
+    I386HeapFree(console_config->heap,planes);throw('TermVga',TRUE);
+  }
+  terminal->planes=planes;terminal->owns_planes=TRUE;
+}
 U8 **NativeTerminalPlanes()
 {
   CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
   if(!terminal) terminal=native_terminal_root;
-  if(terminal) return &terminal->planes;
+  if(terminal) {
+    NativeTerminalMaterialize(&terminal->surface);return &terminal->planes;
+  }
   return &console_default_planes;
 }
 Bool NativeTerminalVisible()
@@ -140,6 +157,7 @@ U0 NativeTerminalRelease(CI386Task *task)
   } else focus=NULL;
   I386IrqRestore(irq);
   if(terminal->owns_planes) I386HeapFree(console_config->heap,terminal->planes);
+  if(terminal->cells)I386HeapFree(console_config->heap,terminal->cells);
   I386HeapFree(console_config->heap,terminal);
   task->cleanup=NULL;
   if(focus) {
@@ -166,6 +184,12 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE,CDoc *document=NULL)
       terminal->planes=console_default_planes;
       p=&terminal->surface; q=&console_default_text;
       for(i=0;i<sizeof(CI386Text);i++) p[i]=q[i];
+    } else if(document) {
+      //Managed documents own their display. Preserve the incremental projection
+      //as cells, materializing its identical raster only for a retained view.
+      terminal->cells=I386HeapAlloc(console_config->heap,43200,FALSE);
+      if(!terminal->cells)throw('OutMem',TRUE);
+      if(!I386TextCellsInit(&terminal->surface,terminal->cells,sys_font_std))throw('TermVga',TRUE);
     } else {
       terminal->planes=I386HeapAlloc(console_config->heap,153600,FALSE);
       if(!terminal->planes) throw('OutMem');
@@ -202,6 +226,7 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE,CDoc *document=NULL)
     if(terminal) {
       if(terminal->document && terminal->owns_document) DocDel(terminal->document);
       if(terminal->owns_planes) I386HeapFree(console_config->heap,terminal->planes);
+      if(terminal->cells)I386HeapFree(console_config->heap,terminal->cells);
       I386HeapFree(console_config->heap,terminal);
     }
   }
@@ -348,13 +373,7 @@ U0 NativeUserConsoleStart(Bool focus)
   CNativeTerminal *terminal;
   SetRFlags(GetRFlags|512);
   Fs->win_inhibit=WIG_USER_TASK_DFT;
-  LBts(&Fs->display_flags,DISPLAYf_SHOW);
-  LBts(&Fs->display_flags,DISPLAYf_NOT_RAW);
   terminal=NativeTerminalFind(I386TaskSelf);
-  if(!terminal) {
-    terminal=NativeTerminalCreate;
-    NativeTerminalConsoleHeading;
-  }
   KernelLog("USER headers begin\n");
   if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
       "UserHeaders.HC",I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD))
@@ -362,6 +381,16 @@ U0 NativeUserConsoleStart(Bool focus)
   KernelLog("USER headers ok\n");
   if(!HashFind("ST_COLORS",Fs->hash_table,HTT_DEFINE_STR))
     DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
+  if(!terminal) {
+    //Resolve the original startup hook in this task's actual symbol chain.
+    //It creates the document/border/menu, types the welcome and lists files.
+    CallExtStr("UserStartUp");
+    if(!DocPut)throw('UserDoc',TRUE);
+    terminal=NativeTerminalCreate(FALSE,DocPut);
+    terminal->surface.foreground=Fs->text_attr&15;
+    terminal->surface.background=Fs->text_attr>>4&15;
+  }
+  LBts(&Fs->display_flags,DISPLAYf_SHOW);
   if(focus) NativeWinFocus(I386TaskSelf);
   KernelLog("USER input begin\n");
   Fs->win_inhibit&=~WIF_SELF_KEY_DESC;
