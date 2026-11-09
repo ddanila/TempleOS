@@ -7088,6 +7088,27 @@
           "result": "pass",
           "evidence": "build/budget-existing-cancel-native-v1/result.json",
           "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "original-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-original-v7/result.json",
+          "scope": "Preseeded three-record Budget session, real v menu keyboard acceptance/cancellation, BANK/RENT defaults, thirteen stable literal actions and preserved row/transaction identities. Exact 112-byte data, sixteen strings and thirteen accounts; mask 2047 and same-boot reopen mask 63. Post-return RENT assertion prevents popup teardown false passes. Full Budget remains open."
+        },
+        {
+          "target": "original-reviewed-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --shared-budget --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-shared-original-v1/result.json",
+          "scope": "All eleven current reviewed Budget files overlaid on pinned original runtime; same exact picker outputs and masks 2047/63. Three explicit pointer-width cancellation comparisons preserve original x64 behavior; earlier sort-slot port retained."
+        },
+        {
+          "target": "native-budget-view-account-picker-cold-reopen",
+          "command": "python3 tools/test-i386-budget-account-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
+          "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
         }
       ]
     },
@@ -7231,6 +7252,27 @@
           "result": "pass",
           "evidence": "build/budget-existing-cancel-native-v1/result.json",
           "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "original-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-original-v7/result.json",
+          "scope": "Preseeded three-record Budget session, real v menu keyboard acceptance/cancellation, BANK/RENT defaults, thirteen stable literal actions and preserved row/transaction identities. Exact 112-byte data, sixteen strings and thirteen accounts; mask 2047 and same-boot reopen mask 63. Post-return RENT assertion prevents popup teardown false passes. Full Budget remains open."
+        },
+        {
+          "target": "original-reviewed-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --shared-budget --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-shared-original-v1/result.json",
+          "scope": "All eleven current reviewed Budget files overlaid on pinned original runtime; same exact picker outputs and masks 2047/63. Three explicit pointer-width cancellation comparisons preserve original x64 behavior; earlier sort-slot port retained."
+        },
+        {
+          "target": "native-budget-view-account-picker-cold-reopen",
+          "command": "python3 tools/test-i386-budget-account-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
+          "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
         }
       ]
     },
@@ -7350,6 +7392,41 @@
           "result": "pass",
           "evidence": "build/budget-existing-cancel-native-v1/result.json",
           "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "original-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-original-v7/result.json",
+          "scope": "Preseeded three-record Budget session, real v menu keyboard acceptance/cancellation, BANK/RENT defaults, thirteen stable literal actions and preserved row/transaction identities. Exact 112-byte data, sixteen strings and thirteen accounts; mask 2047 and same-boot reopen mask 63. Post-return RENT assertion prevents popup teardown false passes. Full Budget remains open."
+        },
+        {
+          "target": "original-reviewed-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --shared-budget --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-shared-original-v1/result.json",
+          "scope": "All eleven current reviewed Budget files overlaid on pinned original runtime; same exact picker outputs and masks 2047/63. Three explicit pointer-width cancellation comparisons preserve original x64 behavior; earlier sort-slot port retained."
+        },
+        {
+          "target": "native-budget-view-account-picker-cold-reopen",
+          "command": "python3 tools/test-i386-budget-account-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
+          "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
+        },
+        {
+          "target": "original-budget-pointer-cancellation-boundary",
+          "command": "python3 tools/test-i386-budget-account-picker.py --pointer-boundary --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-pointer-boundary-original-v1/result.json",
+          "scope": "Exact twelve-field ABI probe: pointer width, zero extension, negative sentinel comparisons and explicit narrowing. No sentinel dereference. Does not establish nested entry-picker UI qualification."
+        },
+        {
+          "target": "native-budget-pointer-cancellation-boundary",
+          "command": "python3 tools/test-i386-budget-account-picker.py IMAGE --reference ORIGINAL --pointer-boundary --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-pointer-boundary-native-v1/result.json",
+          "scope": "Exact twelve-field ABI probe: pointer width, zero extension, negative sentinel comparisons and explicit narrowing. No sentinel dereference. Does not establish nested entry-picker UI qualification."
         }
       ]
     },
@@ -7469,6 +7546,27 @@
           "result": "pass",
           "evidence": "build/budget-existing-cancel-native-v1/result.json",
           "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "original-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-original-v7/result.json",
+          "scope": "Preseeded three-record Budget session, real v menu keyboard acceptance/cancellation, BANK/RENT defaults, thirteen stable literal actions and preserved row/transaction identities. Exact 112-byte data, sixteen strings and thirteen accounts; mask 2047 and same-boot reopen mask 63. Post-return RENT assertion prevents popup teardown false passes. Full Budget remains open."
+        },
+        {
+          "target": "original-reviewed-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --shared-budget --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-shared-original-v1/result.json",
+          "scope": "All eleven current reviewed Budget files overlaid on pinned original runtime; same exact picker outputs and masks 2047/63. Three explicit pointer-width cancellation comparisons preserve original x64 behavior; earlier sort-slot port retained."
+        },
+        {
+          "target": "native-budget-view-account-picker-cold-reopen",
+          "command": "python3 tools/test-i386-budget-account-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
+          "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
         }
       ]
     },
@@ -7625,6 +7723,41 @@
           "result": "pass",
           "evidence": "build/budget-existing-cancel-native-v1/result.json",
           "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "original-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-original-v7/result.json",
+          "scope": "Preseeded three-record Budget session, real v menu keyboard acceptance/cancellation, BANK/RENT defaults, thirteen stable literal actions and preserved row/transaction identities. Exact 112-byte data, sixteen strings and thirteen accounts; mask 2047 and same-boot reopen mask 63. Post-return RENT assertion prevents popup teardown false passes. Full Budget remains open."
+        },
+        {
+          "target": "original-reviewed-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --shared-budget --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-shared-original-v1/result.json",
+          "scope": "All eleven current reviewed Budget files overlaid on pinned original runtime; same exact picker outputs and masks 2047/63. Three explicit pointer-width cancellation comparisons preserve original x64 behavior; earlier sort-slot port retained."
+        },
+        {
+          "target": "native-budget-view-account-picker-cold-reopen",
+          "command": "python3 tools/test-i386-budget-account-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
+          "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
+        },
+        {
+          "target": "original-budget-pointer-cancellation-boundary",
+          "command": "python3 tools/test-i386-budget-account-picker.py --pointer-boundary --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-pointer-boundary-original-v1/result.json",
+          "scope": "Exact twelve-field ABI probe: pointer width, zero extension, negative sentinel comparisons and explicit narrowing. No sentinel dereference. Does not establish nested entry-picker UI qualification."
+        },
+        {
+          "target": "native-budget-pointer-cancellation-boundary",
+          "command": "python3 tools/test-i386-budget-account-picker.py IMAGE --reference ORIGINAL --pointer-boundary --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-pointer-boundary-native-v1/result.json",
+          "scope": "Exact twelve-field ABI probe: pointer width, zero extension, negative sentinel comparisons and explicit narrowing. No sentinel dereference. Does not establish nested entry-picker UI qualification."
         }
       ]
     },
@@ -7750,6 +7883,27 @@
           "result": "pass",
           "evidence": "build/budget-existing-cancel-native-v1/result.json",
           "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "original-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-original-v7/result.json",
+          "scope": "Preseeded three-record Budget session, real v menu keyboard acceptance/cancellation, BANK/RENT defaults, thirteen stable literal actions and preserved row/transaction identities. Exact 112-byte data, sixteen strings and thirteen accounts; mask 2047 and same-boot reopen mask 63. Post-return RENT assertion prevents popup teardown false passes. Full Budget remains open."
+        },
+        {
+          "target": "original-reviewed-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --shared-budget --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-shared-original-v1/result.json",
+          "scope": "All eleven current reviewed Budget files overlaid on pinned original runtime; same exact picker outputs and masks 2047/63. Three explicit pointer-width cancellation comparisons preserve original x64 behavior; earlier sort-slot port retained."
+        },
+        {
+          "target": "native-budget-view-account-picker-cold-reopen",
+          "command": "python3 tools/test-i386-budget-account-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
+          "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
         }
       ]
     },
@@ -7903,6 +8057,27 @@
           "result": "pass",
           "evidence": "build/budget-existing-cancel-native-v1/result.json",
           "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "original-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-original-v7/result.json",
+          "scope": "Preseeded three-record Budget session, real v menu keyboard acceptance/cancellation, BANK/RENT defaults, thirteen stable literal actions and preserved row/transaction identities. Exact 112-byte data, sixteen strings and thirteen accounts; mask 2047 and same-boot reopen mask 63. Post-return RENT assertion prevents popup teardown false passes. Full Budget remains open."
+        },
+        {
+          "target": "original-reviewed-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --shared-budget --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-shared-original-v1/result.json",
+          "scope": "All eleven current reviewed Budget files overlaid on pinned original runtime; same exact picker outputs and masks 2047/63. Three explicit pointer-width cancellation comparisons preserve original x64 behavior; earlier sort-slot port retained."
+        },
+        {
+          "target": "native-budget-view-account-picker-cold-reopen",
+          "command": "python3 tools/test-i386-budget-account-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
+          "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
         }
       ]
     },
@@ -8115,6 +8290,27 @@
           "result": "pass",
           "evidence": "build/budget-existing-cancel-native-v1/result.json",
           "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "original-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-original-v7/result.json",
+          "scope": "Preseeded three-record Budget session, real v menu keyboard acceptance/cancellation, BANK/RENT defaults, thirteen stable literal actions and preserved row/transaction identities. Exact 112-byte data, sixteen strings and thirteen accounts; mask 2047 and same-boot reopen mask 63. Post-return RENT assertion prevents popup teardown false passes. Full Budget remains open."
+        },
+        {
+          "target": "original-reviewed-budget-view-account-picker",
+          "command": "python3 tools/test-i386-budget-account-picker.py --shared-budget --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-shared-original-v1/result.json",
+          "scope": "All eleven current reviewed Budget files overlaid on pinned original runtime; same exact picker outputs and masks 2047/63. Three explicit pointer-width cancellation comparisons preserve original x64 behavior; earlier sort-slot port retained."
+        },
+        {
+          "target": "native-budget-view-account-picker-cold-reopen",
+          "command": "python3 tools/test-i386-budget-account-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
+          "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
         }
       ]
     },

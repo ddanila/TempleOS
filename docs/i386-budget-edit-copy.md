@@ -6,9 +6,10 @@ its real popup forms and QEMU keyboard events. The observer reads documents,
 transaction lists and caller state; it does not fill fields, call the application
 key handler or inject task messages.
 
-The native source checker retains the reviewed `BgtStrs.HC` pointer-width port.
-The eleven inventoried Budget files retain their pinned repaired references,
-with only that reviewed source port. The additional compressed account template
+The native source checker retains the reviewed sort-slot port and the explicit
+account-picker cancellation casts; see [the picker repair](i386-budget-account-picker.md).
+The eleven inventoried Budget files retain their repaired reference provenance
+with only those reviewed width ports. The additional compressed account template
 is checked against the archive used by the original control. The native base
 image has no installed Budget data; installation and initial UI entry are part
 of the session.
@@ -72,8 +73,8 @@ on the original two-CPU system.
 Reproduce with fresh output directories:
 
 ```
-python3 tools/test-i386-budget-edit-copy.py --archive build/i386-operand-cross-v1/exports/BudgetAccts.DD.Z --out OUT_REFERENCE
-python3 tools/test-i386-budget-edit-copy.py build/i386-operand-cross-v1/kernel.img --reference OUT_REFERENCE --out OUT_NATIVE
+python3 tools/test-i386-budget-edit-copy.py --archive build/i386-budget-pointer-cross-v1/exports/BudgetAccts.DD.Z --out OUT_REFERENCE
+python3 tools/test-i386-budget-edit-copy.py build/i386-budget-pointer-cross-v1/kernel.img --reference OUT_REFERENCE --out OUT_NATIVE
 ```
 
 Other field changes, alternate account choices, templates, mouse workflows,
@@ -92,7 +93,7 @@ workflow does not remove any of these paths from C3.
 | `c`: copy entry | This runner accepts populated copy, checks independent strings and both saved records | Change the copied fields and verify the source remains intact |
 | Ctrl-Y: delete | `test-i386-budget-session.py` selects/deletes/saves, then deletes/aborts after native reboot | Mouse selection and deletion |
 | Escape / Shift-Escape | Entry/session runners cover save, abort and caller restoration; this runner checks edited/copied persistence | Equivalent menu and mouse routes |
-| `v`: view account | `test-i386-budget-views.py` checks reports through component calls | Drive actual account picker; accept and cancel; verify balances and return |
+| `v`: view account | Component reports plus real picker accept/cancel and cold reset in `test-i386-budget-account-picker.py` | Nested credit/debit pickers and mouse |
 | `a`: accounts file | Installation/storage runners check the initial account file | Open its real editor, rename/recolor an account, save/reopen and cancel |
 | `t`: new template | No UI qualification | Create a schedule, expand it, save/reopen, edit and delete it |
 | `p`: periodic entry | No UI qualification | Apply a temporary schedule to an entry and check generated transactions/persistence |
@@ -111,7 +112,7 @@ Cold reopening skips installation and data seeding. Both transactions survive,
 read-only abort preserves every file's bytes, attributes and timestamps, and both
 console returns render fresh arithmetic 42. The only session additions/changes
 are the probe and three installed Budget files; 1,877 existing files remain
-unchanged. Application and runtime code are unchanged.
+unchanged. That earlier accepted-workflow checkpoint changed no application/runtime code.
 
 The current-runner original control is
 `build/budget-edit-copy-original-v7/result.json`. Its normalized outputs match
@@ -151,8 +152,8 @@ mask 63 and exact file-preservation checks.
 Reproduce with fresh output directories:
 
 ```
-python3 tools/test-i386-budget-edit-copy.py --cancel-existing --archive build/i386-operand-cross-v1/exports/BudgetAccts.DD.Z --out OUT_REFERENCE
-python3 tools/test-i386-budget-edit-copy.py build/i386-operand-cross-v1/kernel.img --cancel-existing --reference OUT_REFERENCE --out OUT_NATIVE
+python3 tools/test-i386-budget-edit-copy.py --cancel-existing --archive build/i386-budget-pointer-cross-v1/exports/BudgetAccts.DD.Z --out OUT_REFERENCE
+python3 tools/test-i386-budget-edit-copy.py build/i386-budget-pointer-cross-v1/kernel.img --cancel-existing --reference OUT_REFERENCE --out OUT_NATIVE
 ```
 
 Original controls `build/budget-existing-cancel-original-v2/result.json` and

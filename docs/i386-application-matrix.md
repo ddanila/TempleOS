@@ -599,3 +599,33 @@ of observed draft changes and cancellation; exact fixtures/raw records, source
 provenance and prior accepted outputs are audited. No application/runtime code
 changed. Other field changes, account-picker/editor, templates, mouse and full
 Budget qualification remain open; no C1–C5 milestone or inventory item closes.
+
+## Budget view-account picker and cancellation repair (2026-11-09)
+
+The actual `v` menu accepts RENT from BANK and then cancels a changed BANK choice.
+Three seeded transactions retain their identities and middle-row selection;
+reports, thirteen literal account links/defaults, all record fields and saved
+bytes match the original exactly. A post-return account check prevents an early
+observer sample from concealing the native cancellation defect.
+
+The unchanged caller fails at mask 1535: cancellation changes the RENT balance
+to zero. Both popup boundaries return -1 correctly. Budget's pointer comparison
+loses the sentinel through zero extension on i386; BgtMain and the two analogous
+BgtEntry comparisons now use DOCM_CANCEL(U8 *). No runtime/compiler ABI changes
+are required. The current-source original control verifies the reviewed casts
+on the original x64 runtime; nested entry-picker UI is still separate work.
+
+Pinned-original v7, reviewed-source original v1 and repaired native v1/v2 pass
+masks 2047/63. Native reopening is a real shutdown/restart; read-only abort leaves
+all file bytes/attributes/timestamps unchanged. All 112 transaction bytes,
+sixteen strings and thirteen accounts equal seed/original exports; 1,877 existing
+files are preserved and both exits render fresh arithmetic. The prior modified
+entry/copy cancellation and cold-reopen regression also passes.
+
+See [the exact workflow and reproduction commands](i386-budget-account-picker.md)
+and build/budget-account-picker-audit-v1/result.json. Both bootstrap generations,
+source/image delivery, unchanged kernel/sixteen runtime modules, twelve-field
+pointer probes and seventeen negative oracle checks are audited. Inventory only
+appends component receipts. Nested pickers, account-file editing, other field
+changes, templates, mouse, resource profiles and full Budget/C1–C5 qualification
+remain open; bundled qualification remains 2/686.

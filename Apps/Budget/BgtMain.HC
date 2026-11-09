@@ -56,7 +56,7 @@ Bool BgtPutKey(CDoc *doc,U8 *,I64 ch,I64 sc)
       }
       return TRUE;
     case 'v':
-      if ((st=BgtPopUpAcct("View Acct\n\n",view_acct))>=0) {
+      if ((st=BgtPopUpAcct("View Acct\n\n",view_acct))!=DOCM_CANCEL(U8 *)) {
 	StrCpy(view_acct,st);
 	BgtRegen;
       }

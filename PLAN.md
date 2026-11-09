@@ -29068,3 +29068,31 @@ See docs/i386-budget-edit-copy.md, docs/i386-application-matrix.md and
 build/budget-existing-cancel-audit-v1/result.json. Other field changes, account
 choices/editor, templates, mouse, resource profiles and full app/release
 acceptance remain open. C1–C5 remain active; qualification remains 2/686.
+
+### C1/C3: Budget view-account selection and pointer-width cancellation
+
+The real `v` popup now has keyboard acceptance/cancellation coverage with three
+explicitly seeded transactions. Exact menu defaults, thirteen literal actions,
+report regeneration, row/transaction identities and all saved fields are checked.
+A post-return RENT assertion exposes a native cancellation defect that an earlier
+observer sampled too soon: mask 1535 and a wrong zero balance. Diagnostic traces
+show correct -1 delivery; the application compares a zero-extended pointer with
+an eight-byte sentinel. Three comparisons in BgtMain/BgtEntry now explicitly
+cast DOCM_CANCEL to U8 *. Runtime/compiler normalization and ABI stay unchanged.
+
+Pinned-original and current-source-original controls pass masks 2047/63. Two
+repaired native runs pass those masks through actual shutdown/restart/read-only
+abort, preserving file bytes/attributes/timestamps and 1,877 existing files.
+Exact 112-byte data, sixteen strings and thirteen accounts match original; both
+returns render fresh 42. The existing changed-entry/copy cancellation regression
+also passes with cold reopening. Nested credit/debit picker UI remains untested.
+
+Both bootstrap generations and the 386 boot audit pass. The 1,850 source/26 helper
+pins verify; only two Budget sources differ from the previous image, while the
+kernel and sixteen runtime modules are identical. Exact pointer-boundary probes
+and seventeen rejected oracle corruptions support the audit. Inventory changes
+append component receipts without altering discovery or qualification metadata.
+See docs/i386-budget-account-picker.md and
+build/budget-account-picker-audit-v1/result.json. Account editing, other fields,
+templates, mouse, resources and complete application/release acceptance remain
+open. C1–C5 remain active; bundled qualification stays 2/686.

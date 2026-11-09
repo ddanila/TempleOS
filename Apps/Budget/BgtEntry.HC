@@ -60,11 +60,11 @@ CBgtEntry *BgtEntryPmt(CBgtEntry *dft=NULL)
     if (PopUpForm(&b)) {
       if (!*b.credit) {
 	st=BgtPopUpAcct("Credit Acct\n\n");
-	if (st!=DOCM_CANCEL)
+	if (st!=DOCM_CANCEL(U8 *))
 	  StrCpy(b.credit,st);
       } else if (!*b.debit) {
 	st=BgtPopUpAcct("Debit Acct\n\n");
-	if (st!=DOCM_CANCEL)
+	if (st!=DOCM_CANCEL(U8 *))
 	  StrCpy(b.debit,st);
       } else {
 	tmpb=CAlloc(sizeof(CBgtEntry));
