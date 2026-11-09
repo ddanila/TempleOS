@@ -2372,6 +2372,20 @@
           "result": "pass",
           "evidence": "build/budget-accounts-editor-native-v3/result.json",
           "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
         }
       ]
     },
@@ -2644,6 +2658,20 @@
           "result": "fail",
           "evidence": "build/i386-c2-menu-chooser-console91-red/result.json",
           "scope": "Console91 missing native DocMenu rejects prerequisite helper; fixture transfer and chooser cases unexecuted, unchanged pins; full menu/list/entry-action integration required"
+        },
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
         }
       ]
     },
@@ -3941,6 +3969,20 @@
           "result": "pass",
           "evidence": "build/budget-accounts-editor-native-v3/result.json",
           "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
         }
       ]
     },
@@ -7267,6 +7309,20 @@
           "result": "pass",
           "evidence": "build/budget-accounts-editor-native-v3/result.json",
           "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
         }
       ]
     },
@@ -7485,6 +7541,20 @@
           "result": "pass",
           "evidence": "build/budget-accounts-editor-native-v3/result.json",
           "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
         }
       ]
     },
@@ -7699,6 +7769,20 @@
           "result": "pass",
           "evidence": "build/budget-accounts-editor-native-v3/result.json",
           "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
         }
       ]
     },
@@ -7899,6 +7983,20 @@
           "result": "pass",
           "evidence": "build/budget-accounts-editor-native-v3/result.json",
           "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
         }
       ]
     },
@@ -8150,6 +8248,20 @@
           "result": "pass",
           "evidence": "build/budget-accounts-editor-native-v3/result.json",
           "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
         }
       ]
     },
@@ -8350,6 +8462,20 @@
           "result": "pass",
           "evidence": "build/budget-accounts-editor-native-v3/result.json",
           "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
         }
       ]
     },
@@ -8368,7 +8494,22 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        }
+      ]
     },
     {
       "path": "Apps/Budget/Budget.HC",
@@ -8584,6 +8725,20 @@
           "result": "pass",
           "evidence": "build/budget-accounts-editor-native-v3/result.json",
           "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
         }
       ]
     },
@@ -8871,6 +9026,20 @@
           "result": "pass",
           "evidence": "build/budget-accounts-editor-native-v3/result.json",
           "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "original-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-original-v4/result.json",
+          "scope": "Pinned original real t/p keyboard workflow, no seeded entries: cancel typed schedule; create interval template and base entry; cancel periodic entry, verify retained accepted schedule, cancel outer schedule; accept periodic copy. Exact visible tags and deferred backing records, three shared generated rows versus two independently owned normal entries, stable original identities, all 156 saved bytes/thirteen strings/accounts; masks 262143/63 and same-boot reopen. Original amounts/periods are checked at their exact one-ULP-above-integer bits; all expanded dates have the original four-tick quantization. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-budget-interval-template-periodic",
+          "command": "python3 tools/test-i386-budget-templates.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-templates-native-v1/result.json",
+          "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
         }
       ]
     },

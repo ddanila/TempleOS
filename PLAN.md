@@ -29225,3 +29225,41 @@ receipts, exact host oracles, source/image pins and corruption rejection checks.
 Inventory only appends component evidence to twelve relevant entries. Templates,
 periodic entries, mouse, repeated-use resources, broader application coverage
 and full C1–C5 acceptance remain open; qualification stays 2/686.
+
+### C1/C3: Budget interval templates and periodic copies through real forms
+
+The real `t`/`p` workflow now starts from no transactions/templates: cancel a
+fully typed schedule, create a September 4–8 interval template every two days,
+then enter a 100.00 BANK-to-RENT base transaction. Three generated entries share
+the template's strings. A periodic copy cancels its changed entry form, returns
+to the accepted schedule with every value retained, and cancels that schedule.
+The original template and all three entry identities/owners survive. Repeating
+and accepting the copy creates independently owned ordinary entries on September
+5 and 6; the first occurrence is intentionally skipped.
+
+Original and native masks 262143/63 pass the unchanged fixture. Separate raw
+exports check visible form tags, deferred backing values, exact live dates/types/
+flags/amounts and entry/template/string identities. Only two normal records and
+one template are saved in the independently checked 156-byte file; thirteen
+strings and unchanged accounts are exact. Reopening reconstructs generated rows
+before equal-date normal rows, unlike the pre-save insertion order. Both report
+orders and cursor positions are checked. Native cold restart omits Install and
+reseeding, then read-only abort preserves every file byte, attribute and timestamp.
+It preserves 1877 existing files and renders fresh arithmetic after both exits.
+
+The original decimal parser produces 100.00/1.00/2.00 one ULP above the integers;
+native retains its established exact-power/binary64 policy. Both are checked
+exactly, without tolerance, and only saved bytes 32/64/116/148 may differ. The
+calendar Date2Struct/Struct2Date upward quantization adds four fraction ticks to
+expanded dates on both targets; stored template base dates retain fraction zero.
+Early fixture-development failures incorrectly assumed eager form-data commit
+and zero date fractions; their raw evidence remains preserved, not qualified.
+
+No application, compiler or runtime code changes. The current image, all 1850
+source and 26 helper pins, sixteen module hashes and both existing bootstrap
+generations match; no rebuild is needed for test/documentation changes. The audit
+rejects 112 corrupted masks, saved fields, forms and live ownership records.
+See docs/i386-budget-templates.md and build/budget-templates-audit-v1/result.json.
+Inventory appends component receipts to twelve relevant entries only. Other
+recurrence types, template editing/deletion, mouse, repeated-use resources and
+full C1–C5 acceptance remain open; qualification stays 2/686.

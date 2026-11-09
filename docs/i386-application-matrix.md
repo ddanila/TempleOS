@@ -719,3 +719,17 @@ ABI remain unchanged. Both bootstraps and a standalone parent-search editor
 regression pass. See [account editor evidence](i386-budget-accounts-editor.md).
 Templates/periodic entries, mouse, resources and complete Budget/C1–C5 acceptance
 remain open; component receipts leave qualification at 2/686.
+
+Budget interval templates and periodic copies now have original/native real-form
+keyboard evidence, without seeded entries. Typed schedule cancellation, accepted
+three-row template, nested periodic entry cancellation and retained schedule,
+outer cancellation, and final two-entry periodic copy pass masks 262143/63.
+Host checks cover all form tags/deferred backing bytes, row/string ownership,
+unchanged original identities, exact template/ordinary storage and reconstructed
+equal-date ordering. Native cold restart/read-only abort preserves all file
+bytes/attributes/timestamps; fresh arithmetic follows both exits. Both exact
+floating-point policies are recorded (four saved-byte differences), while date
+fraction four agrees on both targets. No runtime/application code changes.
+See [template and periodic evidence](i386-budget-templates.md). Other recurrence
+types, template editing/deletion, mouse/resources and full Budget/C1–C5 remain
+open; component evidence leaves qualification at 2/686.
