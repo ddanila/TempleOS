@@ -13092,6 +13092,13 @@
           "result": "pass",
           "evidence": "build/i386-public-buffer-lex-reference-v1/result.json",
           "scope": "All 24 token/include/string/borrow/heap checks, with exact architecture target flags on native and zero extra flags on the pinned original. No whole lexer or compiler qualification."
+        },
+        {
+          "target": "quoted-document-link-literal",
+          "command": "python3 tools/test-i386-document-literal.py --out ORIGINAL; python3 tools/test-i386-document-literal.py IMAGE --reference ORIGINAL --out NATIVE",
+          "result": "fail",
+          "evidence": "build/document-literal-native-before-v1/result.json",
+          "scope": "Actual source-file compilation: original preserves the LK command inside a quoted literal, native drops it; ordinary TX+UL control correctly projects tag text in both. Exact independent bytes including NUL; passing original-v2 and native strict failure, inputs unchanged. Initial incorrect underline expectation retained as failed original-v1. Isolates MsgLoop header loss from renderer/input. No native pass, whole-file/app or C1-C5 qualification. See docs/i386-document-literal.md."
         }
       ]
     },
