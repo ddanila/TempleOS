@@ -107,7 +107,7 @@ U0 NativeMouseSync()
   ms.has_wheel=(native_mouse_irq_state.protocol_flags&1)!=0;
   if(!native_mouse_synchronized) {
     NativeMouseApply(native_mouse_start_x,native_mouse_start_y,0,
-      native_mouse_start_buttons,NativeTimeStamp,FALSE);
+      native_mouse_start_buttons,NativeTimeStamp,TRUE);
     native_mouse_synchronized=TRUE;
   }
   if(native_mouse_packet_losses!=native_mouse_packets.losses) {

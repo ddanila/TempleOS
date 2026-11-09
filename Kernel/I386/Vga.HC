@@ -41,7 +41,7 @@ public Bool I386VgaSplitRows(U8 **planes,I64 first,I64 count)
 {//Existing logical layout: low bit is the left pixel; VGA uses the opposite order.
   U8 *vga=0xA0000,*source,*destination;
   I64 plane,begin,end;
-  U32 remaining;
+  U32 remaining,value;
   if(!planes || (planes+0)(U64)>0x100000000-4*sizeof(U8 *) ||
       first<0 || first>480 || count<0 || count>480-first) return FALSE;
   for(plane=0;plane<4;plane++)
@@ -53,6 +53,16 @@ public Bool I386VgaSplitRows(U8 **planes,I64 first,I64 count)
     OutU8(0x3C5,1<<plane);
     source=planes[plane]+begin;destination=vga+begin;
     remaining=end-begin;
+    //Rows start on four-byte boundaries. Combine logical bytes before the
+    //device write: byte-at-a-time MMIO stalls the window manager under KVM.
+    while(remaining>=4) {
+      value=i386_vga_reverse[source[0]]|
+        (i386_vga_reverse[source[1]]<<8)|
+        (i386_vga_reverse[source[2]]<<16)|
+        (i386_vga_reverse[source[3]]<<24);
+      *destination(U32 *)=value;
+      source+=4;destination+=4;remaining-=4;
+    }
     while(remaining--) *destination++=i386_vga_reverse[*source++];
   }
   OutU8(0x3C4,2); OutU8(0x3C5,15);

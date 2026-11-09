@@ -29598,3 +29598,31 @@ stays 2/686. Public ms_hard, complete timing/speed, arbitrary settings, missing
 devices, pending IRQ/FIFO/loss permutations, legacy transitions, full desktop,
 remaining apps, raster/resources and C1–C5 acceptance remain open. See
 [MsSet evidence](docs/i386-mouse-set.md) and build/mouse-set-audit-v1/result.json.
+
+### C2/C4: first button at startup and VGA device-write cost
+
+Publish the initial logical pointer to the normal WinMgr queue before user
+mouse clients run, eliminating an extra first-button move in both managed/raw
+modes. Console ABI267 versions the change. Eight original/native phases match
+six exact messages and state/mode/IF/caller/heap restoration. The earlier fixture
+without diagnostic work also passes its unchanged 600 ms window in both modes;
+previous repeated missing-right-down failures remain retained.
+
+VGA upload combines four reversed logical bytes in each aligned 32-bit store,
+reducing full-frame device writes fourfold. Independent full/partial hardware
+readback, all256 byte values, guards/range rejection and307200 pixels pass.
+Managed diagnostic frames improve from2 to4–5 per600ms; original has18. MsSet
+544 values plus32 delivered button values and8MiB picker/state pixels pass.
+Help passes on repeat, but its initial first-selection timeout remains an open
+intermittent failure, not a reliability qualification.
+
+The full image is build/i386-vga-wide-cross-v1/kernel.img, with1860 source and26
+helper pins, a386 instruction audit, two source-matching classic bootstrap
+generations and457416 kernel bytes. Only ConsoleRuntime changes from the prior
+initial-publication candidate. These are not C5 native generations. Unchanged
+MsgLoop investigation exposes missing upper-half mouse scan flags and link/text
+output differences; its harness remains unfinished. Qualification stays2/686;
+all remaining C1–C5 acceptance stays open. An isolated single-job normal8MiB
+KVM486,-fpu startup takes53.207s with live WinMgr and exact welcome/42 pixels,
+passing the current60s baseline subgate, not fullC5. See
+docs/i386-mouse-first-event.md.
