@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "commit": "2e9b646a8b500b30683220d9b342b11661e8d2e9",
+  "image": "build/i386-managed-pointer-cross-v5/kernel.img",
+  "source_pins": 1865,
+  "helper_pins": 26,
+  "method": "git cat-file --batch HEAD:path; SHA256 of every committed source/helper blob equals final tested cross-v5 build pins"
+}
