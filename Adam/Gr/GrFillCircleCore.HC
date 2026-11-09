@@ -1,9 +1,13 @@
+#ifndef GRAPHICS_PEN_TABLES_ENSURE
+#define GRAPHICS_PEN_TABLES_ENSURE
+#endif
 #include "/Adam/Gr/GrDefaultContext.HH"
 //Complete original filled-circle and all semicircle branches.
 I64 GrFillSemiCircle(CDC *dc=GRAPHICS_DEFAULT_DC,I64 cx,I64 cy,I64 z=0,I64 diameter,I64 n)
 {//2D. Clipping but not transformation.
   GRAPHICS_RESOLVE_DEFAULT_DC
   I64 res=0,i,k,r=diameter>>1,rr;
+  if (1<=diameter<GR_PEN_BRUSHES_NUM) {GRAPHICS_PEN_TABLES_ENSURE}
   if (diameter>=1)
     switch (n) {
       case 0:
@@ -118,6 +122,7 @@ public I64 GrFillCircle(CDC *dc=GRAPHICS_DEFAULT_DC,I64 cx,I64 cy,I64 z=0,I64 di
 {//2D. Clipping but not transformation.
   GRAPHICS_RESOLVE_DEFAULT_DC
   I64 res=0,i,k,r=diameter>>1,rr;
+  if (1<=diameter<GR_PEN_BRUSHES_NUM) {GRAPHICS_PEN_TABLES_ENSURE}
   if (diameter>=1) {
     if (diameter<GR_PEN_BRUSHES_NUM)
       for (i=0;i<diameter;i++)

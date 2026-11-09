@@ -1,3 +1,6 @@
+#ifndef GRAPHICS_PEN_OWNER
+#define GRAPHICS_PEN_OWNER NULL
+#endif
 //Complete original construction of all four pen arrays and circle bounds.
 U0 GrPenTablesInit()
 {
@@ -16,7 +19,7 @@ U0 GrPenTablesInit()
 	    gr.circle_hi[i][i-y]=x-1-i>>1;
 	}
 
-    dc=DCNew(i,i);
+    dc=DCNew(i,i,GRAPHICS_PEN_OWNER);
     gr.pen_brushes[i]=dc;
     dc->color=COLOR_MONO;
     rr=k*k;
@@ -25,7 +28,7 @@ U0 GrPenTablesInit()
 	if (SqrI64(y*2-k)+SqrI64(x*2-k)<rr)
 	  GrPlot0(dc,x-1,y-1);
 
-    dc=DCNew(i,i);
+    dc=DCNew(i,i,GRAPHICS_PEN_OWNER);
     gr.collision_pen_brushes[i]=dc;
     dc->color=COLOR_INVALID;//Want color that never occurs.
     rr=k*k;
@@ -34,7 +37,7 @@ U0 GrPenTablesInit()
 	if (SqrI64(y*2-k)+SqrI64(x*2-k)<rr)
 	  GrPlot0(dc,x-1,y-1);
 
-    dc=DCNew(i,i);
+    dc=DCNew(i,i,GRAPHICS_PEN_OWNER);
     gr.even_pen_brushes[i]=dc;
     dc->color=COLOR_MONO;
     rr=k*k;
@@ -43,7 +46,7 @@ U0 GrPenTablesInit()
 	if (!(((x-1)^(y-1))&1) && SqrI64(y*2-k)+SqrI64(x*2-k)<rr)
 	  GrPlot0(dc,x-1,y-1);
 
-    dc=DCNew(i,i);
+    dc=DCNew(i,i,GRAPHICS_PEN_OWNER);
     gr.odd_pen_brushes[i]=dc;
     dc->color=COLOR_MONO;
     rr=k*k;

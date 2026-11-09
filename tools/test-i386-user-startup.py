@@ -30,6 +30,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--managed-pointer',action='store_true',help='Require the original standard pointer in every managed welcome/command frame')
     parser.add_argument('--accel',choices=('tcg','kvm'),default='tcg')
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
     args = parser.parse_args()
@@ -45,11 +46,11 @@ def main():
     packaging = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
         source, working, additions={'/UserStartup.HC':FIXTURE.read_bytes()})
     report = dict(result='running', scope='User child startup document, border/menu, flags, callback, welcome bytes and queued execution',
-                  packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
+                  packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib, managed_pointer=args.managed_pointer)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
-            cpu='486,-fpu', accel=args.accel, qmp_stdio=True, welcome=True,
+            cpu='486,-fpu', accel=args.accel, qmp_stdio=True, welcome=True,managed_pointer=args.managed_pointer,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
                            'rejected_answers':['0'],

@@ -73,3 +73,16 @@ uncontrolled render/cursor/output schedule in the current snapshot comparison;
 it does not qualify the native behavior. Preserve strict failures and add
 explicit frame/input barriers before drawing a cursor-parity conclusion.
 See [startup evidence](i386-user-startup.md).
+
+
+The explicit full-refresh diagnostic now has repeatable originals and complete
+native passes at `msg-loop-frames-native-v5` and
+`msg-loop-frames-shift-native-v5`. It keeps the unchanged program and independent
+full message expectations, adds completed document/WinMgr barriers and
+DOCF_DO_FULL_REFRESH to its test document, and compares every screen pixel.
+The baseline matched documents/streams but missed exactly17 arrow pixels;
+shared original pointer drawing repairs those pixels. Both final cases match
+complete documents, streams and all614400 pixels, restore7, then pass fresh42
+and unchanged volumes. Default snapshot failures remain historical evidence;
+this mode does not establish default scheduling or full application/resource
+qualification. See [managed pointer evidence](i386-managed-pointer.md).

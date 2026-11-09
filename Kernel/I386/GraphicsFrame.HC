@@ -109,6 +109,7 @@ Bool NativeGraphicsStart()
   graphics_owner=Fs;
   gr.dc=graphics_persistent=persistent; gr.dc2=graphics_frame=frame;
   gr.text_base=i386_text_base; gr.scrn_zoom=1;
+  gr.fp_draw_ms=&DrawStdMs;
   gr.win_z_buf=graphics_zbuffer=zbuffer; gr.win_uncovered_bitmap=graphics_uncovered=uncovered;
   gr.to_8_bits=graphics_raster_bits;gr.to_8_colors=graphics_raster_colors;
   GrRasterTablesInit;
@@ -130,6 +131,7 @@ U0 NativeGraphicsFinal(CDC *dc)
 {
   DrawProgressBars(dc);
   if(gr.fp_final_scrn_update)(*gr.fp_final_scrn_update)(dc);
+  else if(I386TaskSelf==native_window_worker)DrawMs(dc);
 }
 Bool NativeGraphicsPresentChecked(U0 (*draw)(CDC *dc),Bool blink,Bool (*admit)())
 {//Root-owned storage; managed callers serialize presentation through one lease.
@@ -151,7 +153,7 @@ Bool NativeGraphicsPresentChecked(U0 (*draw)(CDC *dc),Bool blink,Bool (*admit)()
     WinZBufUpdate;
     if(admit && !(*admit)())goto graphics_present_done;
     if(admit && I386TaskSelf==native_window_worker)NativeGraphicsScopeRefreshBegin(&scope);
-    if(NativeProgressVisible || gr.fp_final_scrn_update)final_draw=&NativeGraphicsFinal;
+    if(NativeProgressVisible || gr.fp_final_scrn_update || admit)final_draw=&NativeGraphicsFinal;
     GraphicsFrameCore(gr.dc2,gr.dc,gr.text_base,text.font,blink,
       gr.pan_text_x,gr.pan_text_y,gr.hide_col,gr.hide_row,draw,final_draw);
     GraphicsPlanarSplitCore(graphics_planes,gr.dc2->body);

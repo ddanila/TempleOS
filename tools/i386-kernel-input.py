@@ -66,7 +66,7 @@ def require_unlocked_image(path):
 
 
 def console_pixels(rows, foreground_cells=None, background_cells=None, underline_cells=None,
-                   pixel_colors=None, pointer=None, canvas_color=15):
+                   pixel_colors=None, pointer=None, canvas_color=15, pointer_style='retained'):
     #Read the original font, independently of the native framebuffer implementation.
     source=(ROOT/'Kernel/FontStd.HC').read_bytes()
     glyphs=[int(value,16) for value in re.findall(rb'0x[0-9A-Fa-f]{16}',source)]
@@ -106,10 +106,14 @@ def console_pixels(rows, foreground_cells=None, background_cells=None, underline
         offset=(y*640+x)*3; pixels[offset:offset+3]=palette[color]
     if pointer is not None:
         pointer_x,pointer_y=pointer
-        masks=(0x01,0x03,0x07,0x0f,0x1f,0x3f,0x0f,0x1b,0x31,0x20)
+        if pointer_style=='standard':
+            masks=(0x1f,0x03,0x05,0x09,0x11,0x20,0x40,0x80,0x100);pointer_width=9
+        elif pointer_style=='retained':
+            masks=(0x01,0x03,0x07,0x0f,0x1f,0x3f,0x0f,0x1b,0x31,0x20);pointer_width=8
+        else:raise ValueError('Unknown pointer style')
         palette_index={value:index for index,value in enumerate(palette)}
         for row,mask in enumerate(masks):
-            for column in range(8):
+            for column in range(pointer_width):
                 x=pointer_x+column; y=pointer_y+row
                 if mask&(1<<column) and 0<=x<640 and 0<=y<480:
                     offset=(y*640+x)*3
@@ -180,7 +184,7 @@ def command_rejection(text, start, prefixes):
     return None
 
 
-def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180,qmp_stdio=False,audio_wav=None,keep_window_manager=False,welcome=False):
+def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation=None,snapshot=True,cpu='486',target_disk=None,ram_mib=8,accel='tcg',startup_timeout=180,qmp_stdio=False,audio_wav=None,keep_window_manager=False,welcome=False,managed_pointer=False):
     from PIL import Image
     if groups is not None and (not groups or set(groups)-set(GROUPS)):
         raise ValueError('Select one or more known test groups')
@@ -376,12 +380,15 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                 if welcome_style:
                     colors,underlines=welcome_styles(rows,colors,underlines,
                         startup_check.get('row_styles',{}) if startup_check is not None else None)
-                expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer,canvas_color)
+                pointer_style='retained'
+                if welcome_style and managed_pointer and pointer is None:
+                    pointer=(mouse_host_x,mouse_host_y);pointer_style='standard'
+                expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer,canvas_color,pointer_style)
                 expected_cursor=None
                 if welcome_style and rows and len(rows[-1])<80:
                     x=len(rows[-1])*8;y=(len(rows)-1)*8
                     cursor=dict(pixels or {});cursor.update({(x+dx,y+dy):0 for dy in range(8) for dx in range(8)})
-                    expected_cursor=console_pixels(rows,colors,backgrounds,underlines,cursor,pointer,canvas_color)
+                    expected_cursor=console_pixels(rows,colors,backgrounds,underlines,cursor,pointer,canvas_color,pointer_style)
                 rejected=console_pixels(rejected_rows) if rejected_rows is not None else None
                 path=out/f'{name}.ppm'
                 def matches():

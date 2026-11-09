@@ -14,31 +14,11 @@
 #include "/Adam/Gr/GrMeshCore.HC"
 
 #help_index "Graphics/Misc;Mouse/Ptr"
-public U0 DrawStdMs(CDC *dc,I64 x,I64 y)
-{//This is a callback. See $LK,"::/Demo/Graphics/Grid.HC"$.
-//Called by $LK,"DrawMs",A="MN:DrawMs"$() which is
-  //called by $LK,"WinFinalUpdate",A="MN:WinFinalUpdate"$().
-  dc->thick=1;
-  dc->flags&=~(DCF_TRANSFORMATION|DCF_SYMMETRY);
-  GrArrow3(dc,x+8,y+8,0,x,y,0);
-}
+#include "/Adam/Gr/DrawStdMouseCore.HC"
 
 gr.fp_draw_ms=&DrawStdMs;
 
-public U0 DrawWaitMs(CDC *dc,I64 x,I64 y)
-{//This is a callback. See $LK,"::/Demo/Graphics/Grid.HC"$.
-  I64 old_pen_width=dc->thick;
-  CColorROPU32 old_color=dc->color;
-  dc->thick=3;
-  dc->color=LTRED;
-  GrCircle3(dc,x,y,0,7);
-  GrLine3(dc,x-6,y+6,0,x+6,y-6,0);
-  dc->color=RED;
-  GrCircle(dc,x,y,7);
-  GrLine(dc,x-6,y+6,x+6,y-6);
-  dc->thick=old_pen_width;
-  dc->color=old_color;
-}
+#include "/Adam/Gr/DrawWaitMouseCore.HC"
 
 #help_index "Graphics/GR Files;Graphics/Scrn"
 public Bool GRScrnCaptureRead(U8 *filename,CDC *dc=gr.dc,I64 x=0,I64 y=0)

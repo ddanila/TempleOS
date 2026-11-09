@@ -3,7 +3,7 @@ CMsStateGlbls ms;
 CGridGlbls ms_grid;
 #include "/Kernel/KeyboardStateTypes.HH"
 CKbdStateGlbls native_keyboard;
-class CNativeInputMouse { I64 timestamp; };
+class CNativeInputMouse { I64 timestamp;Bool installed; };
 CNativeInputMouse native_input_mouse;
 F64 (*native_mouse_trunc)(F64 value);
 F64 NativeMouseTrunc(F64 value) { return (*native_mouse_trunc)(value); }
@@ -102,7 +102,8 @@ U0 NativeMouseSync()
 {//Scheduled only. Preserve all packet path effects before coalescing UI motion.
   CI386MouseEvent event;
   U32 irq,slot;
-  if(!console_config || !console_config->mouse || !console_config->mouse->installed)return;
+  native_input_mouse.installed=console_config && console_config->mouse && console_config->mouse->installed;
+  if(!native_input_mouse.installed)return;
   irq=I386IrqSave;NativeMouseDecoderInit;
   ms.has_wheel=(native_mouse_irq_state.protocol_flags&1)!=0;
   if(!native_mouse_synchronized) {

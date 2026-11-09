@@ -29750,3 +29750,30 @@ still fail strict saved-document equality despite exact complete streams and
 restoration7; an original repeat also varies its saved document. A controlled
 render/input schedule remains necessary. Qualification stays2/686; no whole
 milestone is complete. See docs/i386-user-startup.md.
+
+
+### C2/C3/C4: original managed pointer and repeatable MsgLoop frames
+
+A full-refresh test document plus real document/WinMgr frame barriers makes
+both original MsgLoop variants repeat exactly without changing the program or
+its independent18/19-message expectations. The native baseline matches the
+complete documents/streams but misses exactly17 original pointer pixels.
+Managed frames now use shared original DrawMs/DrawStdMs/DrawWaitMs callbacks
+inside the final presentation scope. Default pointer drawing no longer depends
+on root console input. Public bindings, button colors, hide/null/custom/grab
+callbacks and fallback are retained;12 direct pointer/DC-state cases pass.
+
+The wait pointer exposed uninitialized original pen tables. Native thick-point
+and small filled-circle paths now initialize the complete root-owned tables on
+first use, with a guarded shared cache and cleanup of partial published tables.
+Thin-pointer startup does not allocate those tables. Both final MsgLoop variants
+match complete saved documents, exact streams and all614400 screen pixels,
+restore7, then pass fresh42 and unchanged volumes. Stock User startup passes255
+at8MiB with an explicit original17-pixel pointer oracle.
+
+The final ABI272 image is build/i386-managed-pointer-cross-v3/kernel.img;
+source-matching classic rebuilds and386 audit pass, only Kernel/ConsoleRuntime
+change and bare kernel remains458680 bytes. Default scheduling, other overlay/
+desktop/pointer roles, all resource/error paths and native generations remain
+open. Qualification stays2/686; full C1-C5 remain open. See
+ docs/i386-managed-pointer.md.

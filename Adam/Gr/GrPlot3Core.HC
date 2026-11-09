@@ -1,3 +1,6 @@
+#ifndef GRAPHICS_PEN_TABLES_ENSURE
+#define GRAPHICS_PEN_TABLES_ENSURE
+#endif
 #include "/Adam/Gr/GrDefaultContext.HH"
 //Complete original thin and thick 3D point rendering.
 public Bool GrPlot3B(CDC *dc=GRAPHICS_DEFAULT_DC,I64 x,I64 y,I64 z)
@@ -52,6 +55,7 @@ public Bool GrPlot3(CDC *dc=GRAPHICS_DEFAULT_DC,I64 x,I64 y,I64 z)
       goto gr_done;
   }
   w=dc->thick>>1;
+  if(!dc->brush && w>0 && dc->thick<GR_PEN_BRUSHES_NUM) {GRAPHICS_PEN_TABLES_ENSURE}
   dc->db_z=z;
   if (dc->brush || w<=0)
     GrPlot1(dc,x,y);

@@ -5219,7 +5219,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-managed-pointer-and-callbacks",
+          "command": "python3 tools/test-i386-draw-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/draw-mouse-native-v2/result.json",
+          "scope": "Shared exact DrawMs/DrawStdMs/DrawWaitMs bodies restore the original17-pixel managed pointer independently of console input. All12 direct32x32 cases match original pixels and DC/callback state: standard/wait, no/left/right/both buttons, hidden/null/custom callbacks, open/closed grab and fallback. Actual MsgLoop full screens match both original variants. Raw/retained pointers, full final-overlay/menu/grid composition, callback lifetime/error paths and whole-file/C1-C5 remain open. See docs/i386-managed-pointer.md."
+        }
+      ]
     },
     {
       "path": "Adam/Gr/GrDC.HC",
@@ -7173,6 +7181,13 @@
           "result": "pass",
           "evidence": "build/mouse-set-audit-v1/result.json",
           "scope": "Shared exact original MsSet body; 544 state/model values plus 32 actual ScanKey mouse-button bits match original/current-classic/native. Nine synthetic control phases yield six exact original callbacks with transient/simultaneous left priority; managed/raw public message modes each match six records. Source queue/raw API/IF/heap probe 63; audit rejects 755 corruptions. Physical managed/raw controls, wheel, 62 gain phases, five click and five wheel lifetime modes at 255, 8 MiB Help/picker/state pixels, raw API 15 and Budget save/cold 1023/63 pass; 1887 prior files preserved. Console ABI 266 with 693 bindings. Held-click console frame remains identical failure; DocEd remains at 113/95 and 524/609 pixel differences. Not full ms_hard, timing, arbitrary settings, missing devices, queued IRQ/FIFO permutations, legacy views, desktop/raster/resources or full-file/C1-C5 qualification. See docs/i386-mouse-set.md."
+        },
+        {
+          "target": "original-managed-pointer-and-callbacks",
+          "command": "python3 tools/test-i386-draw-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/draw-mouse-native-v2/result.json",
+          "scope": "Shared exact DrawMs/DrawStdMs/DrawWaitMs bodies restore the original17-pixel managed pointer independently of console input. All12 direct32x32 cases match original pixels and DC/callback state: standard/wait, no/left/right/both buttons, hidden/null/custom callbacks, open/closed grab and fallback. Actual MsgLoop full screens match both original variants. Raw/retained pointers, full final-overlay/menu/grid composition, callback lifetime/error paths and whole-file/C1-C5 remain open. See docs/i386-managed-pointer.md."
         }
       ]
     },
@@ -17101,6 +17116,13 @@
           "result": "fail",
           "evidence": "build/msg-loop-user-startup-native-v1/result.json",
           "scope": "Both final normal/Shift variants retain strict saved-document failures with exact complete18/19-record chronological streams and restoration7. An original repeat changes its own saved document with identical stream; controlled render/input scheduling remains required. No application/raster/C1-C5 qualification. See docs/i386-msg-loop.md."
+        },
+        {
+          "target": "full-refresh-msg-loop-raster",
+          "command": "python3 tools/test-i386-msg-loop.py IMAGE --frame-barriers --reference ORIGINAL --out NORMAL; python3 tools/test-i386-msg-loop.py IMAGE --frame-barriers --shift-exit --reference SHIFT_ORIGINAL --out SHIFT",
+          "result": "pass",
+          "evidence": "build/msg-loop-frames-native-v5/result.json",
+          "scope": "Unchanged program and independent18/19-message expectations. Explicit full-refresh test document and real document/WinMgr frame barriers make both original references repeat exactly. Both native variants match complete saved documents including cursor, streams and all614400 pixels, restore7, then fresh42 and unchanged volumes. Default-mode snapshot failures/nondeterminism remain recorded; no entries/pixels excluded or reordered. Whole application/default scheduling/resources/C1-C5 remain unqualified. See docs/i386-managed-pointer.md."
         }
       ]
     },

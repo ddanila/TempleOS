@@ -111,8 +111,8 @@ legacy_present_done:;
 
 U0 NativeWindowWorker(U8 *data)
 {
-  I64 ch,number,mouse_x,mouse_y;
-  Bool completed,pump,graphics_frame;
+  I64 ch,number;
+  Bool completed,pump;
   SetRFlags(GetRFlags|0x200);
   NativeWindowMouseReset;native_window_wheel_z=0;
   DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
@@ -127,15 +127,9 @@ U0 NativeWindowWorker(U8 *data)
       NativeWindowDerived;
       pump=LBtr(&sys_semas[SEMA_JUST_PUMP_MSGS],0);
       if(!pump) {
-        completed=FALSE;graphics_frame=FALSE;
+        completed=FALSE;
         if(NativeWindowNeeded())
-          completed=graphics_frame=NativeGraphicsPresentChecked(&NativeWindowListDraw,FALSE,&NativeWindowAdmit);
-        //The managed frame replaces the raw console's pointer upload. Restore
-        //its visible pointer from the graphics backing after each new frame.
-        if(graphics_frame && native_console_mouse_visible &&
-            native_terminal_root && sys_focus_task==native_terminal_root->task &&
-            NativeLogicalMouseGet(&mouse_x,&mouse_y))
-          NativeDocMouseShowSplit(NativeGraphicsPlanes,mouse_x,mouse_y);
+          completed=NativeGraphicsPresentChecked(&NativeWindowListDraw,FALSE,&NativeWindowAdmit);
         //A shown document can be fully covered by the retained console. The
         //document admission then declines, but its Refresh still needs frames.
         //The legacy presenter rechecks coverage under its own presentation lease.
