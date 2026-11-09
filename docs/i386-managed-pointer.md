@@ -116,3 +116,9 @@ Both default-mode reruns remain strict saved-document failures at
 `msg-loop-pointer-default-shift-native-v1`, with exact streams and restoration7.
 Those runs used the preceding ABI272 checkpoint image. The controlled mode
 supplements them and does not remove the unresolved scheduling requirement.
+
+
+The subsequent ABI273 [constructor recovery](i386-dc-constructor-recovery.md)
+checkpoint closes an unpublished-header leak during forced cancellation of pen
+initialization. It preserves the complete pointer/MsgLoop/pen outputs here and
+adds exact logical-heap and validated physical-backing recovery checks.

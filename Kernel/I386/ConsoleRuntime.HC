@@ -286,6 +286,7 @@ U0 BFieldOrU32(U8 *bit_field,I64 bit,U32 pattern)
 extern U0 Yield();
 extern U8 *Char2KeyName(I64 ch,Bool include_ctrl=TRUE);
 extern Bool NativeLogicalMouseGet(I64 *x,I64 *y,I64 *buttons=0,I64 *packets=0);
+#define I386_DC_NEW_SCOPED 1
 #include "/Kernel/I386/DocumentRuntime.HC"
 #include "/Kernel/I386/InstallTree.HC"
 #include "/Kernel/I386/BuildModuleDispatch.HC"
@@ -457,6 +458,7 @@ U0 NativeTaskWindowDefaults(CTask *task)
 #include "/Kernel/WildMatchCore.HC"
 #include "/Kernel/BlkDev/FilesFindMatchCore.HC"
 #include "/Kernel/I386/RenderScope.HC"
+#include "/Kernel/I386/DCNewScope.HC"
 #include "/Kernel/I386/DerivedScope.HC"
 #include "/Kernel/I386/TaskUpdateScope.HC"
 #include "/Adam/DolDoc/DocRecalcLib.HC"

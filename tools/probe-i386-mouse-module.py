@@ -26,8 +26,9 @@ def main():
     if out.exists():parser.error('Use a fresh output directory')
     out.mkdir(parents=True)
     files=[ROOT/'Kernel/I386/Terminals.HC',ROOT/'Kernel/I386/RenderScope.HC',ROOT/'Kernel/I386/GraphicsScope.HC',ROOT/'Kernel/I386/MousePresent.HC']
+    scope_types=ROOT/'Kernel/I386/RenderScope.HH';files.append(scope_types)
     parts=['#include "/Kernel/Types.HH"\n#define NULL 0\n#define TRUE 1\n#define FALSE 0\n#include "/Kernel/I386/Task.HH"\n#include "/Kernel/I386/TextVga.HH"\npublic _intern 0x15 CTask *Fs();\nextern class CDC;\n']
-    parts += [extract(files[0],'class CNativeTextInput {','};'),extract(files[0],'class CNativeTerminal {','};'),extract(files[1],'class CNativeRenderScope {','};'),extract(files[2],'class CNativeGraphicsScope:', '};')]
+    parts += [extract(files[0],'class CNativeTextInput {','};'),extract(files[0],'class CNativeTerminal {','};'),extract(scope_types,'class CNativeRenderScope {','};'),extract(files[2],'class CNativeGraphicsScope:', '};')]
     parts += ['''CTask *graphics_owner,*sys_focus_task;
 CNativeTerminal *native_terminal_root;
 I64 native_display_epoch;

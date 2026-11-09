@@ -1,14 +1,6 @@
 //One cleanup stack for interleaved document and compositor resources.
-class CNativeRenderScope {
-  CNativeRenderScope *next;
-  CI386Task *task;
-  U0 (*previous_cleanup)(CI386Task *task);
-  U0 (*release)(CNativeRenderScope *scope);
-  U0 (*prepare_exit)(CNativeRenderScope *scope);
-  CI386Task *resource_owner,*window_owner;
-  U8 *resource;
-  Bool retiring_resource,legacy_view;
-};
+#include "/Kernel/I386/RenderScope.HH"
+
 CNativeRenderScope *native_render_scopes;
 extern U0 NativeRenderCleanup(CI386Task *task);
 U0 NativeRenderScopeOpen(CNativeRenderScope *scope,

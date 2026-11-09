@@ -11,6 +11,9 @@ import I64 I386F64Compare(U64 a,U64 b);
 #include "/Kernel/NumericLimits.HH"
 #include "/Kernel/GraphicsTypes.HH"
 #include "/Adam/Gr/GrGlobalsTypes.HH"
+#ifdef I386_DC_NEW_SCOPED
+#include "/Kernel/I386/DCNewScope.HH"
+#endif
 public CGrGlbls gr;
 #include "/Adam/Gr/GrPaletteStd.HC"
 //The original depth reset uses the U32 fill primitive.

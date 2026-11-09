@@ -191,14 +191,22 @@ public CDC *DCAlias(CDC *dc=NULL,CTask *task=NULL)
 #ifndef DC_BODY_CALLOC
 #define DC_BODY_CALLOC CAlloc
 #endif
+#ifndef DC_NEW_SCOPE_LOCAL
+#define DC_NEW_SCOPE_LOCAL
+#define DC_NEW_SCOPE_OPEN
+#define DC_NEW_SCOPE_COMMIT
+#define DC_NEW_SCOPE_CLOSE
+#endif
 public CDC *DCNew(I64 width,I64 height,CTask *task=NULL,Bool null_bitmap=FALSE)
 {//Create new width x height device context.
 //Internally only allows widths which are divisible by 8.
   //Don't forget these $MA-X+PU,"sizeof(CDC)",LM="Find(\"sizeof(CDC)\",\"/*\");View;"$.
-  CDC *res;
+  CDC *res=NULL;
+  DC_NEW_SCOPE_LOCAL;
   if (!task) task=Fs;
-  res=CAlloc(sizeof(CDC),task);
   try {
+    DC_NEW_SCOPE_OPEN;
+    res=CAlloc(sizeof(CDC),task);
     res->win_task=task;
     res->mem_task=task;
     res->width=width;
@@ -211,7 +219,12 @@ public CDC *DCNew(I64 width,I64 height,CTask *task=NULL,Bool null_bitmap=FALSE)
     res->r=MAlloc(16*sizeof(I64),task);
     DCRst(res);
     res->dc_signature=DCS_SIGNATURE_VAL;
-  } catch { Free(res->r); Free(res->body); Free(res); }
+    DC_NEW_SCOPE_COMMIT;
+  } catch {
+    if(res){Free(res->r);Free(res->body);Free(res);res=NULL;}
+    DC_NEW_SCOPE_CLOSE;
+  }
+  DC_NEW_SCOPE_CLOSE;
   return res;
 }
 

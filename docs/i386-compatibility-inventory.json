@@ -5269,8 +5269,8 @@
       ],
       "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": "Reviewed context subset loaded through Adam/Gr/MakeGr.HC: public DCNew/DCFill/DCClear/DCRst/transform/lighting/depth/alias/size/delete workflows in Kernel/I386/GraphicsContextCheck.HC, including selected task ownership, null bitmaps and exact heap recovery. Dependencies: public task heaps/page backing, canonical CDC/color/palette records, matrix and F64 services, actual task retirement. Native cancellation workflow initializes Adam-owned pens from a child, injects allocator failure/Kill and retries. Remaining GrDC services and all lifetime variants are unqualified.",
+      "oracle": "Original-calibrated20 context groups plus native allocation-recovery2; raw allocator-fault records require exact logical owner/caller recovery, validated physical-backing reconciliation, cleared tables/builder/scope chain, allocator entry identity and complete391680-byte geometric pen model on retry. Baseline/fixed receipts and source/helper audits are recorded in docs/i386-dc-constructor-recovery.md. Native construction scopes adapt forced task retirement; these partial workflows do not qualify the complete file or C1-C5.",
       "tests": [
         {
           "target": "native-fixed-graphics",
@@ -5333,6 +5333,13 @@
           "result": "pass",
           "evidence": "build/i386-frame-capture-native-v2/result.json",
           "scope": "Twelve deep-copy, exact crop/pixel, compression and real GR write/read checks with independent bytes and fresh arithmetic. Inputs unchanged; actual compositor recording, all failure cleanup and whole-file qualification remain open."
+        },
+        {
+          "target": "dc-new-unpublished-resource-cancellation",
+          "command": "python3 tools/test-i386-pen-init-recovery.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/pen-init-recovery-fixed-v2/result.json",
+          "scope": "ABI273 scopes the unpublished DCNew header/buffers until construction commits. Actual body allocator throws or yields until Kill at1/33/128/256. Baseline four Kill cases leak392 tracked bytes each; fixed eight cases restore Adam/caller logical heaps exactly, all main bytes/allocations reconcile to validated backing regions, table/builder/scope state clears and actual allocator entry restores. Public retry matches391680 pen bytes; fresh42 and volume unchanged. Existing20 context/two allocation, nested255 retirement and editor/MsgLoop regressions pass. Other allocation/Exit/reentry/DCAlias/all-resource/whole-file/C1-C5 remain open. See docs/i386-dc-constructor-recovery.md."
         }
       ]
     },
@@ -5428,6 +5435,13 @@
           "result": "pass",
           "evidence": "build/graphics-pens-native-v3/result.json",
           "scope": "Native cache is absent initially. Actual child calls public GrFillCircle, completes initialization and is killed; all256 pens retain valid live non-child ownership. Every369152 bitmap byte,8192 circle-bound byte and dimension matches the original and independent integer model. Fresh42 and full volume unchanged. Thin8MiB startup avoids cache allocation. Failed initialization/cancellation/reentry and all-resource/whole-file/C1-C5 remain open. See docs/i386-managed-pointer.md."
+        },
+        {
+          "target": "dc-new-unpublished-resource-cancellation",
+          "command": "python3 tools/test-i386-pen-init-recovery.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/pen-init-recovery-fixed-v2/result.json",
+          "scope": "ABI273 scopes the unpublished DCNew header/buffers until construction commits. Actual body allocator throws or yields until Kill at1/33/128/256. Baseline four Kill cases leak392 tracked bytes each; fixed eight cases restore Adam/caller logical heaps exactly, all main bytes/allocations reconcile to validated backing regions, table/builder/scope state clears and actual allocator entry restores. Public retry matches391680 pen bytes; fresh42 and volume unchanged. Existing20 context/two allocation, nested255 retirement and editor/MsgLoop regressions pass. Other allocation/Exit/reentry/DCAlias/all-resource/whole-file/C1-C5 remain open. See docs/i386-dc-constructor-recovery.md."
         }
       ]
     },

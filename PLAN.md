@@ -29788,3 +29788,29 @@ helpers; both controlled MsgLoop variants,12 pointer cases,8MiB User255 and
 retained-editor614400 pixels pass. Isolated normal8MiB startup is54.422s.
 Default-mode strict snapshot failures remain preserved; failed initialization,
 all resource paths, remaining applications and full C1-C5 stay open at2/686.
+
+
+### C4: reclaim unpublished root-owned graphics contexts on task cancellation
+
+The normal-image pen allocator fault workflow exposes one392-byte tracked
+allocation span leaked per Kill at body-call1/33/128/256. Four ordinary exception
+cases recover correctly. DCNew now owns its unpublished header/assigned buffers
+through a stack render scope, transfers ownership on successful return and
+closes that scope during C exception unwind. The existing base scope record is
+extracted without changing its fields or retirement functions.
+
+All eight fault cases now have zero Adam/caller logical heap deltas. Every
+physical main-heap byte/allocation change is reconciled to validated backing
+regions, accounting for legitimate cache growth/trim. The allocator's actual
+entry pointer restores exactly; a public retry matches all391680 pen bytes,
+fresh42 and unchanged volume. Existing20 context/two allocation checks,
+three255 nested retirement masks, both complete MsgLoop documents/streams and
+614400 pixels, retained-editor614400 pixels and stock User255 at8MiB pass.
+
+The ABI273 full image build/i386-dc-constructor-scope-cross-v1/kernel.img pins
+1868 sources/26 helpers, with source-matching classic rebuilds and386 audit.
+Only Kernel/ConsoleRuntime change; bare kernel remains458680 bytes. Isolated
+normal8MiB startup is54.265s. Other allocation/cancellation/reentry paths,
+default scheduling, remaining apps and native self-host release generations
+remain open. Qualification stays2/686; full C1-C5 remain open. See
+docs/i386-dc-constructor-recovery.md.

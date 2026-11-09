@@ -1,0 +1,54 @@
+{
+  "result": "pass",
+  "source_pins": 1868,
+  "helper_pins": 26,
+  "kernel_bytes": 458680,
+  "changed_modules": [
+    "Kernel",
+    "ConsoleRuntime"
+  ],
+  "checked_receipts": [
+    "pen-init-recovery-before-v3",
+    "pen-init-recovery-fixed-v2",
+    "msg-loop-dc-scope-native-v1",
+    "msg-loop-dc-scope-shift-native-v1",
+    "dc-constructor-control-retirement-v1",
+    "dc-constructor-user-legacy-v1",
+    "dc-constructor-context-v1",
+    "dc-constructor-user-8m-v1",
+    "dc-constructor-startup-8m-v1"
+  ],
+  "metrics": [
+    {
+      "receipt": "pen-init-recovery-before-v3",
+      "adam_deltas": [
+        0,
+        0,
+        0,
+        0,
+        392,
+        392,
+        392,
+        392
+      ],
+      "main_backing_reconciled": true
+    },
+    {
+      "receipt": "pen-init-recovery-fixed-v2",
+      "adam_deltas": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "main_backing_reconciled": true
+    }
+  ],
+  "retry_pen_bytes": 391680,
+  "startup_seconds": 54.26464756205678,
+  "scope": "DCNew unpublished-header cancellation recovery and recorded regressions only. Shared backing is reconciled, not assumed zero-growth; default scheduling/all resources/C1-C5 remain open,2/686."
+}

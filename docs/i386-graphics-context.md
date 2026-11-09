@@ -63,3 +63,14 @@ relative to the previous build. The verified normal preview is refreshed.
 
 These results establish the original context service, not a complete graphics
 startup, native DolDoc editor, strict 386 acceptance or physical-PC validation.
+
+
+## Native cancellation during construction (ABI273)
+
+DCNew now registers its unpublished context with the native render cleanup
+stack. Killing a pen-cache initializer while the body allocator yields used to
+leak one392-byte header allocation span in Adam's heap; all four measured Kill
+cases now recover exactly. Ordinary exceptions, backing-region accounting,
+allocator restoration, full pen retry and the existing20 context/two allocation
+checks pass. See [constructor recovery](i386-dc-constructor-recovery.md) for the
+normal-image fault workflow, evidence and remaining resource gaps.
