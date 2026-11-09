@@ -9717,6 +9717,13 @@
           "result": "pass",
           "evidence": "build/buffer-nested-original-after-v3/result.json",
           "scope": "Actual rebuilt x64 Cmp/internal CmpBuf: nine nested Compiler failures restore caller heaps versus retained old scopes; original accepted unresolved-reference case stays accepted. Counts and full 81920-byte diagnostic buffers identical. Native rejects that unresolved case, an existing assembly/module semantic gap; no whole-assembly equivalence or native backing qualification is inferred."
+        },
+        {
+          "target": "assembly-operand-expression-error-ownership",
+          "command": "python3 tools/test-i386-public-buffer-errors.py IMAGE --operand-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-operand-after-v1/result.json",
+          "scope": "Ten real public CmpBuf operand/data-expression errors preserve source/queue/counts/recovery and restore exact caller/task/backing heaps. Identical fixture on unchanged image retains 24\u2013176 bytes in nine cases. Actual rebuilt original x64 Cmp/internal CmpBuf likewise drops nine 32\u2013128-byte retentions to zero with identical counts and 81920-byte diagnostics. Instruction parsing/selection/encoding body unchanged. OOM, arbitrary exception recovery, interrupted emission and full C1-C5 remain open. See docs/i386-asm-operand-ownership.md."
         }
       ]
     },
@@ -9781,6 +9788,13 @@
           "result": "pass",
           "evidence": "build/i386-public-asm-contract-v5/result.json",
           "scope": "Normal separate four-stage lazy delivery of complete shared PrsAsmBlk/CmpJoin/opcode-table/expression/listing bodies. Twenty-four fields: exact data/instruction bytes, executable forward/local branches, import metadata, eight inline/bare cases including an unreachable block, caller context, canonical types, real 31-form MOV lookup, verified expected warning output with owned document cleanup, fresh normal expression 42 and zero data/code heap deltas. Identical final fixture on unchanged pre-release image retains 992 bytes and emits identical warning bytes. Prior normal success/error, lexer, corpus/bootstrap and functional frame evidence is independently audited; no whole-file/compiler qualification. Complete assembly forms, assembly/backend/body error/OOM/cancellation ownership, Cmp/CmpBuf/file/map workflows and full C1-C5 release qualification remain open. See docs/i386-public-assembly.md."
+        },
+        {
+          "target": "assembly-operand-expression-error-ownership",
+          "command": "python3 tools/test-i386-public-buffer-errors.py IMAGE --operand-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-operand-after-v1/result.json",
+          "scope": "Ten real public CmpBuf operand/data-expression errors preserve source/queue/counts/recovery and restore exact caller/task/backing heaps. Identical fixture on unchanged image retains 24\u2013176 bytes in nine cases. Actual rebuilt original x64 Cmp/internal CmpBuf likewise drops nine 32\u2013128-byte retentions to zero with identical counts and 81920-byte diagnostics. Instruction parsing/selection/encoding body unchanged. OOM, arbitrary exception recovery, interrupted emission and full C1-C5 remain open. See docs/i386-asm-operand-ownership.md."
         }
       ]
     },
@@ -9862,6 +9876,13 @@
           "result": "pass",
           "evidence": "build/buffer-nested-original-after-v3/result.json",
           "scope": "Actual rebuilt x64 Cmp/internal CmpBuf: nine nested Compiler failures restore caller heaps versus retained old scopes; original accepted unresolved-reference case stays accepted. Counts and full 81920-byte diagnostic buffers identical. Native rejects that unresolved case, an existing assembly/module semantic gap; no whole-assembly equivalence or native backing qualification is inferred."
+        },
+        {
+          "target": "assembly-operand-expression-error-ownership",
+          "command": "python3 tools/test-i386-public-buffer-errors.py IMAGE --operand-errors --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-operand-after-v1/result.json",
+          "scope": "Ten real public CmpBuf operand/data-expression errors preserve source/queue/counts/recovery and restore exact caller/task/backing heaps. Identical fixture on unchanged image retains 24\u2013176 bytes in nine cases. Actual rebuilt original x64 Cmp/internal CmpBuf likewise drops nine 32\u2013128-byte retentions to zero with identical counts and 81920-byte diagnostics. Instruction parsing/selection/encoding body unchanged. OOM, arbitrary exception recovery, interrupted emission and full C1-C5 remain open. See docs/i386-asm-operand-ownership.md."
         }
       ]
     },

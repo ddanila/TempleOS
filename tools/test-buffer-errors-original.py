@@ -16,12 +16,15 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--observe-baseline', action='store_true')
     parser.add_argument('--assembly-errors', action='store_true', help='Check failures within nested assembly joins')
+    parser.add_argument('--operand-errors', action='store_true', help='Check partial assembly operand expression ownership')
     args = parser.parse_args()
+    if args.assembly_errors and args.operand_errors:
+        parser.error('Select one error fixture')
     bootstrap, out = args.bootstrap.resolve(), args.out.resolve()
     if out.exists():
         parser.error('Use a fresh output directory')
     out.mkdir(parents=True)
-    fixture = ROOT/'tests/guest/buffer-error-original'/('Assembly.HC' if args.assembly_errors else 'Contract.HC')
+    fixture = ROOT/'tests/guest/buffer-error-original'/('Operands.HC' if args.operand_errors else 'Assembly.HC' if args.assembly_errors else 'Contract.HC')
     paths = [Path(__file__).resolve(), fixture, bootstrap/'result.json',
              bootstrap/'overlay/Compiler/Compiler.BIN', bootstrap/'overlay/0000Boot/0000Kernel.BIN.C',
              ROOT/'tools/build-iso.py', ROOT/'tools/guest-run.py']
@@ -30,6 +33,7 @@ def main():
     report = dict(result='running', input_sha256=pins,
                   scope='Ten actual normal Cmp calls through its internal CmpBuf on generated original x64 compiler/kernel; unchanged source files, queue, error counts, exact caller heap counters and subsequent successful file compilation. Not native backing, OOM, cancellation or arbitrary exception qualification.')
     report['assembly_errors'] = args.assembly_errors
+    report['operand_errors'] = args.operand_errors
     report['expected_error_cases'] = [i != 2 for i in range(10)] if args.assembly_errors else [True]*10
     try:
         manifest = json.loads((bootstrap/'result.json').read_text())

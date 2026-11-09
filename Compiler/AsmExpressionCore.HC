@@ -1,20 +1,23 @@
+#include "/Compiler/AsmNumLifeCore.HC"
 I64 AsmLexExpression(CCmpCtrl *cc)
 {
-  U8 *machine_code;
+  U8 *machine_code=NULL;
   I64 res=0;
   cc->asm_undef_hash=NULL;
   cc->flags&=~(CCF_UNRESOLVED+CCF_LOCAL);
   cc->abs_cnts=0;
-  if (!IsLexExpression2Bin(cc,&machine_code))
-    LexSkipEol(cc);
-  else {
-    if (cc->abs_cnts.externs)
-      LexExcept(cc,"Extern Not Allowed at ");
-    if (cc->flags & CCF_UNRESOLVED)
-      LexExcept(cc,"Undefined sym at ");
-    res=Call(machine_code);
-    Free(machine_code);
-  }
+  try {
+    if (!IsLexExpression2Bin(cc,&machine_code))
+      LexSkipEol(cc);
+    else {
+      if (cc->abs_cnts.externs)
+        LexExcept(cc,"Extern Not Allowed at ");
+      if (cc->flags & CCF_UNRESOLVED)
+        LexExcept(cc,"Undefined sym at ");
+      res=Call(machine_code);
+    }
+  } catch { Free(machine_code);AsmPendingRelease(cc); }
+  Free(machine_code);AsmPendingRelease(cc);
   return res;
 }
 

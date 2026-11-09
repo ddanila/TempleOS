@@ -828,6 +828,7 @@ U0 PrsAsmDefine(CCmpCtrl *cc,I64 U8_cnt)
   num2.U8_cnt=U8_cnt;
 
   while (cc->token && cc->token!=';') {
+    num2.num.machine_code=NULL;
     num2.num.local_asm_undef_hash=NULL;
     num2.num.glbl_asm_undef_hash=NULL;
     if (cc->token==TK_STR) {
@@ -841,6 +842,7 @@ U0 PrsAsmDefine(CCmpCtrl *cc,I64 U8_cnt)
       cc->abs_cnts=0;
       cc->asm_undef_hash=NULL;
       cc->flags&=~(CCF_UNRESOLVED+CCF_LOCAL);
+      try {
       if (!IsLexExpression2Bin(cc,&num2.num.machine_code))
 	LexSkipEol(cc);
       else {
@@ -857,6 +859,7 @@ U0 PrsAsmDefine(CCmpCtrl *cc,I64 U8_cnt)
 	} else {
 	  i=Call(num2.num.machine_code);
 	  Free(num2.num.machine_code);
+	  num2.num.machine_code=NULL;
 	}
       }
       if (cc->token==TK_IDENT && cc->hash_entry) {
@@ -875,9 +878,12 @@ U0 PrsAsmDefine(CCmpCtrl *cc,I64 U8_cnt)
       num2.rel=0;
       num2.imm_flag=TRUE;
       num2.num.abs_cnts=cc->abs_cnts;
+      if (is_dup && (num2.num.local_asm_undef_hash || num2.num.glbl_asm_undef_hash))
+        LexExcept(cc,"Undefined DUP cnt at ");
+      } catch {
+        AsmNumRelease(&num2.num);AsmPendingRelease(cc);
+      }
       if (is_dup) {
-	if (num2.num.local_asm_undef_hash || num2.num.glbl_asm_undef_hash)
-	  LexExcept(cc,"Undefined DUP cnt at ");
 	num2.num.i=dup_val;
 	AsmStoreNum(cc,&num2,i,FALSE);
       } else {
@@ -1022,6 +1028,7 @@ U0 PRS_ASM_BLOCK_IMPL(CCmpCtrl *cc,I64 cmp_flags)
       } else if (cc->hash_entry->type & HTT_OPCODE) {
 	tmpo=cc->hash_entry;
 	Lex(cc); //skip opcode
+        try {
 	argcnt=0;
 	if (tmpo->ins[0].arg1) {
 	  argcnt++;
@@ -1043,6 +1050,10 @@ U0 PRS_ASM_BLOCK_IMPL(CCmpCtrl *cc,I64 cmp_flags)
 	  }
 	}
 	PrsAsmInst(cc,tmpo,argcnt);
+        } catch {
+          AsmNumRelease(&aotc->arg1.num);AsmNumRelease(&aotc->arg2.num);
+          AsmPendingRelease(cc);
+        }
       } else if (cc->hash_entry->type & HTT_EXPORT_SYS_SYM) {
 	if (Btr(&cc->hash_entry->type,HTf_UNRESOLVED)) {
 	  if (cc->hash_entry->type & HTF_LOCAL) {

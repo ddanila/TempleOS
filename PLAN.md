@@ -28988,3 +28988,30 @@ boundary cases and six independent ELF32 packets pass. See
 docs/i386-nested-asm-errors.md and the canonical receipts. No new resource,
 performance, desktop/app or complete native C5 release claim is made. C1-C5 remain
 active; bundled qualification remains 2/686.
+
+### C4: assembly operand preparation owns its temporary expressions
+
+Ten same-input public buffer errors now release unfinished expression symbol
+lists and generated thunks from instruction arguments, ALIGN/ORG and data/DUP
+preparation. Published unresolved records take ownership before argument aliases
+are detached; selected encoder forms retain their borrowed copies. The existing
+instruction parser/selection/encoding bodies and outer join cleanup stay intact.
+
+On unchanged a6c227b2, nine native cases retain 24–176 bytes per data/code counter;
+the candidate restores exact heaps in all ten, preserving counts, inputs, queues,
+fresh recovery and task/global backing. Actual rebuilt original x64 Cmp/internal
+CmpBuf likewise drops nine 32–128-byte retentions to zero, preserving counts and
+all 81,920 captured diagnostic bytes. Both original bootstrap generations pass.
+The complete successful assembly contract and expected warning pass on the new
+native image. See docs/i386-asm-operand-ownership.md and the canonical receipts.
+Allocation failure, arbitrary exception recovery through the outer join,
+interrupted emission and full compiler/desktop/app/release qualification remain
+open. Bundled qualification stays 2/686; C1–C5 remain active.
+
+The final operand audit verifies 1,850 source/26 helper hashes, sixteen modules,
+both original bootstrap generations, raw identical-fixture before/after records
+and original diagnostics. Ordinary/nested errors (including three borrowed caller
+graph boundaries), fourteen successful buffers, 46 earlier compiler errors, ten
+DolDoc cases, six independent ELF32 packets and the original/native 38-assertion
+resolver contract pass. ABI remains Compiler104/Console264/Memory41, with 691
+exports and 22 mask words. These are component checks, not C5 release evidence.

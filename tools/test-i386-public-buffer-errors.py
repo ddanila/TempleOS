@@ -17,12 +17,15 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--baseline-revision', help='Require delivered sources to match this Git revision instead of the checkout')
     parser.add_argument('--assembly-errors', action='store_true', help='Check failures within nested assembly joins')
+    parser.add_argument('--operand-errors', action='store_true', help='Check partial assembly operand expression ownership')
     args = parser.parse_args()
+    if args.assembly_errors and args.operand_errors:
+        parser.error('Select one error fixture')
     source, out = args.disk.resolve(), args.out.resolve()
     if out.exists():
         parser.error('Use a fresh output directory')
     out.mkdir(parents=True)
-    fixture = ROOT/'tests/guest/i386-public-buffer-errors'/('Assembly.HC' if args.assembly_errors else 'Contract.HC')
+    fixture = ROOT/'tests/guest/i386-public-buffer-errors'/('Operands.HC' if args.operand_errors else 'Assembly.HC' if args.assembly_errors else 'Contract.HC')
     paths = [Path(__file__).resolve(), source, fixture, ROOT/'Compiler/OpCodes.DD']
     boundary = ROOT/'tests/guest/i386-public-buffer-errors/Boundary.HC'
     if args.assembly_errors:
@@ -47,6 +50,7 @@ def main():
         report['baseline_revision'] = baseline
         report['baseline_source_sha256'] = {}
     report['assembly_errors'] = args.assembly_errors
+    report['operand_errors'] = args.operand_errors
     guest = None
     try:
         pack = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))

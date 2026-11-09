@@ -1,3 +1,4 @@
+#include "/Compiler/AsmNumLifeCore.HC"
 #ifndef ASM_RESOLVE_IMPL
 #define ASM_RESOLVE_IMPL AsmResolve
 #endif
@@ -244,10 +245,14 @@ U0 ASM_UNRESOLVED_ADD_IMPL(CCmpCtrl *cc,U8 *machine_code,I64 type,I64 rip,I64 re
     tmpu->asm_undef_hash=glbl_asm_undef_hash;
     tmpu->next=cc->aotc->glbl_unresolved;
     cc->aotc->glbl_unresolved=tmpu;
-    if (glbl_asm_undef_hash->hash->type & HTF_IMPORT) {
-      tmpu->str=StrNew(glbl_asm_undef_hash->hash->str);
-      if (glbl_asm_undef_hash->hash->type & HTF_IMM)
-	tmpu->imm_flag=TRUE;
-    }
+  }
+  //Publication transfers ownership before any optional import-name allocation.
+  //Instruction encoding retains separate borrowed copies in its selected form.
+  AsmNumDetach(&cc->aotc->arg1.num,machine_code);
+  AsmNumDetach(&cc->aotc->arg2.num,machine_code);
+  if (!local_asm_undef_hash && glbl_asm_undef_hash->hash->type & HTF_IMPORT) {
+    tmpu->str=StrNew(glbl_asm_undef_hash->hash->str);
+    if (glbl_asm_undef_hash->hash->type & HTF_IMM)
+      tmpu->imm_flag=TRUE;
   }
 }
