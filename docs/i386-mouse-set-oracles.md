@@ -38,3 +38,30 @@ the caller also verifies that MsSet preserves a cleared IF bit.
 Native implementation and comparison are in progress. These workflows do not
 qualify all pending-packet orderings, arbitrary settings, missing-device behavior,
 `ms_hard`, complete window interactions, raster/resource limits or C1–C5.
+
+## Public message delivery and pending-state probes
+
+`tools/test-i386-mouse-set-messages.py` adds eight phases that collect actual
+`ScanMsg` move/button records before the keyboard barrier. It checks no-op and
+transient set/reset behavior, exact window coordinates, requested/actual raw
+mode, IF preservation and caller/heap recovery. No physical mouse events are
+injected. Both `mouse-set-messages-original-v1` and
+`mouse-set-messages-raw-original-v1` pass with the same six messages and mask 7.
+
+On candidate `i386-mouse-set-cross-v2`, the state, corrected control-priority and
+managed message workflows pass (`mouse-set-native-v2`,
+`mouse-set-controls-native-v2`, `mouse-set-messages-native-v2`). The raw message
+workflow remains a strict zero-message failure in
+`mouse-set-messages-raw-native-v2`, despite correct public position/buttons.
+The earlier v1 control candidate retains its strict eight-versus-six callback
+failure. The final candidate is being rebuilt with raw message delivery.
+
+`tools/test-i386-mouse-set-queue.py` compiles the exact delivered native
+`MsHardSet` source into isolated state with clock/init stubs. Fixed numerical
+cases check wrapped pending-packet rebasing, repeated synthetic sets, metadata
+and guard preservation, fractional grid speed and clipping. A separate real
+`MsSet` call checks unchanged raw `MouseGet`, logical position/button/keyboard
+state, masked IF restoration and exact caller heap. `mouse-set-queue-v2` passes
+mask 63 and a fresh 42 with unchanged files/inputs. This is not a live pending
+IRQ-interleaving test. `mouse-set-current-classic-v3` also matches the original
+544 values on the latest source-pinned classic bootstrap.
