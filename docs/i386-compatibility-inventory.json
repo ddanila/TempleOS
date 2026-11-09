@@ -7109,6 +7109,20 @@
           "result": "pass",
           "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
           "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
+        },
+        {
+          "target": "original-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-original-v3/result.json",
+          "scope": "Pinned original: blank credit/debit entry form, changed RENT/CASH selections cancelled, BANK/RENT accepted via real nested menus. Every returned form field/backing value, eleven stable literal actions, absent unsaved transaction/files and final saved records checked; masks 1023/63, same-boot reopen. Original amount bits explicitly 405F600000000002 after formatted round trips. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
+          "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
         }
       ]
     },
@@ -7273,6 +7287,20 @@
           "result": "pass",
           "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
           "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
+        },
+        {
+          "target": "original-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-original-v3/result.json",
+          "scope": "Pinned original: blank credit/debit entry form, changed RENT/CASH selections cancelled, BANK/RENT accepted via real nested menus. Every returned form field/backing value, eleven stable literal actions, absent unsaved transaction/files and final saved records checked; masks 1023/63, same-boot reopen. Original amount bits explicitly 405F600000000002 after formatted round trips. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
+          "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
         }
       ]
     },
@@ -7427,6 +7455,26 @@
           "result": "pass",
           "evidence": "build/budget-pointer-boundary-native-v1/result.json",
           "scope": "Exact twelve-field ABI probe: pointer width, zero extension, negative sentinel comparisons and explicit narrowing. No sentinel dereference. Does not establish nested entry-picker UI qualification."
+        },
+        {
+          "target": "original-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-original-v3/result.json",
+          "scope": "Pinned original: blank credit/debit entry form, changed RENT/CASH selections cancelled, BANK/RENT accepted via real nested menus. Every returned form field/backing value, eleven stable literal actions, absent unsaved transaction/files and final saved records checked; masks 1023/63, same-boot reopen. Original amount bits explicitly 405F600000000002 after formatted round trips. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
+          "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-picker-return-stall",
+          "result": "fail",
+          "evidence": "build/budget-entry-picker-native-v2/result.json",
+          "scope": "All nested picker phase fields pass; accepted entry and all three saved files match successful native runs. Timed out before BP done; final screenshot shows console. Cleanup/observer-join boundary remains unresolved. Other runs return; no full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -7567,6 +7615,26 @@
           "result": "pass",
           "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
           "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
+        },
+        {
+          "target": "original-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-original-v3/result.json",
+          "scope": "Pinned original: blank credit/debit entry form, changed RENT/CASH selections cancelled, BANK/RENT accepted via real nested menus. Every returned form field/backing value, eleven stable literal actions, absent unsaved transaction/files and final saved records checked; masks 1023/63, same-boot reopen. Original amount bits explicitly 405F600000000002 after formatted round trips. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
+          "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-picker-return-stall",
+          "result": "fail",
+          "evidence": "build/budget-entry-picker-native-v2/result.json",
+          "scope": "All nested picker phase fields pass; accepted entry and all three saved files match successful native runs. Timed out before BP done; final screenshot shows console. Cleanup/observer-join boundary remains unresolved. Other runs return; no full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -7758,6 +7826,26 @@
           "result": "pass",
           "evidence": "build/budget-pointer-boundary-native-v1/result.json",
           "scope": "Exact twelve-field ABI probe: pointer width, zero extension, negative sentinel comparisons and explicit narrowing. No sentinel dereference. Does not establish nested entry-picker UI qualification."
+        },
+        {
+          "target": "original-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-original-v3/result.json",
+          "scope": "Pinned original: blank credit/debit entry form, changed RENT/CASH selections cancelled, BANK/RENT accepted via real nested menus. Every returned form field/backing value, eleven stable literal actions, absent unsaved transaction/files and final saved records checked; masks 1023/63, same-boot reopen. Original amount bits explicitly 405F600000000002 after formatted round trips. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
+          "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-picker-return-stall",
+          "result": "fail",
+          "evidence": "build/budget-entry-picker-native-v2/result.json",
+          "scope": "All nested picker phase fields pass; accepted entry and all three saved files match successful native runs. Timed out before BP done; final screenshot shows console. Cleanup/observer-join boundary remains unresolved. Other runs return; no full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -7904,6 +7992,20 @@
           "result": "pass",
           "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
           "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
+        },
+        {
+          "target": "original-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-original-v3/result.json",
+          "scope": "Pinned original: blank credit/debit entry form, changed RENT/CASH selections cancelled, BANK/RENT accepted via real nested menus. Every returned form field/backing value, eleven stable literal actions, absent unsaved transaction/files and final saved records checked; masks 1023/63, same-boot reopen. Original amount bits explicitly 405F600000000002 after formatted round trips. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
+          "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
         }
       ]
     },
@@ -8078,6 +8180,26 @@
           "result": "pass",
           "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
           "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
+        },
+        {
+          "target": "original-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-original-v3/result.json",
+          "scope": "Pinned original: blank credit/debit entry form, changed RENT/CASH selections cancelled, BANK/RENT accepted via real nested menus. Every returned form field/backing value, eleven stable literal actions, absent unsaved transaction/files and final saved records checked; masks 1023/63, same-boot reopen. Original amount bits explicitly 405F600000000002 after formatted round trips. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
+          "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-picker-return-stall",
+          "result": "fail",
+          "evidence": "build/budget-entry-picker-native-v2/result.json",
+          "scope": "All nested picker phase fields pass; accepted entry and all three saved files match successful native runs. Timed out before BP done; final screenshot shows console. Cleanup/observer-join boundary remains unresolved. Other runs return; no full Budget/C1-C5 qualification."
         }
       ]
     },
@@ -8311,6 +8433,20 @@
           "result": "pass",
           "evidence": "build/budget-account-picker-fixed-native-v2/result.json",
           "scope": "Two independent repaired native runs pass keyboard v accept/cancel, exact original reports/menu defaults/literal actions/three saved records, masks 2047/63 and post-return RENT/BANK assertions. Real shutdown/restart/read-only abort preserves all file bytes/attributes/timestamps; 1877 files preserved and fresh arithmetic after both exits. Runtime kernel and sixteen modules unchanged; three application comparisons explicitly cast DOCM_CANCEL to U8 *. Nested credit/debit picker UI, account-file editing, other field changes, templates, mouse, resources and full C1-C5 remain open. See docs/i386-budget-account-picker.md."
+        },
+        {
+          "target": "original-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-original-v3/result.json",
+          "scope": "Pinned original: blank credit/debit entry form, changed RENT/CASH selections cancelled, BANK/RENT accepted via real nested menus. Every returned form field/backing value, eleven stable literal actions, absent unsaved transaction/files and final saved records checked; masks 1023/63, same-boot reopen. Original amount bits explicitly 405F600000000002 after formatted round trips. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-nested-entry-account-pickers",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
+          "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
         }
       ]
     },

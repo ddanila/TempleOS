@@ -629,3 +629,36 @@ pointer probes and seventeen negative oracle checks are audited. Inventory only
 appends component receipts. Nested pickers, account-file editing, other field
 changes, templates, mouse, resource profiles and full Budget/C1–C5 qualification
 remain open; bundled qualification remains 2/686.
+
+## Budget nested entry-form account menus (2026-11-09)
+
+The new `test-i386-budget-entry-picker.py` enters a transaction with blank credit
+and debit accounts. Submitting opens the real credit menu: choose RENT and cancel,
+then choose BANK and accept. The debit menu similarly cancels a changed CASH
+selection and accepts RENT. Read-only observation confirms each selection before
+the keyboard action and every returned form's date, amount, description and
+blank/populated accounts. No transaction or unsaved data/string file exists
+before final form acceptance. Raw data-tag/amount exports cover values omitted
+by ordinary document serialization.
+
+Original build/budget-entry-picker-original-v3 and normal native
+build/budget-entry-picker-capture-native-v1 pass masks 1023/63. Exact original menu
+headers/colors/order/literal identities, final reports and 48-byte saved data,
+twelve strings and 97-byte accounts are checked. Existing numerical policies
+are checked exactly: only saved amount byte 32 differs after formatted original
+round trips. Native actually shuts down/restarts; read-only abort preserves all
+file bytes/attributes/timestamps and fresh arithmetic follows both exits. The
+session preserves 1,877 existing files. Original reopening is same-boot.
+
+See [the workflow and commands](i386-budget-entry-picker.md) and
+build/budget-entry-picker-audit-v1/result.json. The previous pointer-width fixes
+are exercised directly; no additional application/runtime code change is needed.
+Account-file editing, other field changes, templates/periodic entries, mouse,
+resources and full Budget/C1–C5 acceptance remain open. Inventory adds component
+receipts; bundled qualification remains 2/686.
+
+One unchanged-fixture native run (build/budget-entry-picker-native-v2) saves
+all three files but times out before the caller contract completes; its final
+screenshot shows the console. Two capture-wrapper runs return successfully,
+but the cleanup/observer-join boundary remains unresolved. Preserve that failed
+receipt as a C2/C3 issue; passing picker evidence does not close it.

@@ -32,7 +32,9 @@ events rather than application callbacks or injected task messages.
 
 The original reference reopens in the same boot. It is not original cold-boot
 proof. The picker path is the view-account chooser; nested credit/debit pickers
-inside entry forms and mouse selection remain separate work.
+inside entry forms are covered separately by
+[the nested-picker workflow](i386-budget-entry-picker.md); mouse selection remains
+open.
 
 ## Exact oracles
 
@@ -80,7 +82,7 @@ compressed account template is shared with the original control. The normal
 native image runs at 64 MiB with the FPU disabled.
 
 Account-file editing, templates and periodic entries, other entry-field changes,
-nested credit/debit pickers, mouse, resource profiles, full Budget qualification
+mouse, resource profiles, full Budget qualification
 and complete C1–C5 release acceptance remain open.
 
 ## Cancellation defect and pointer-width repair
@@ -131,7 +133,8 @@ console returns render 42. The session preserves 1,877 existing files and change
 only its probe and three explicitly seeded Budget files. All three data files
 match the original exactly. The existing modified-entry/copy cancellation and
 cold-reopen regression also passes in `build/budget-pointer-entry-regression-v1`.
-This does not qualify the nested credit/debit picker UI workflows.
+Nested credit/debit picker UI coverage was added subsequently in
+[the entry-picker workflow](i386-budget-entry-picker.md).
 
 Both original bootstrap generations pass. The repaired build checks 1,850 source
 and 26 helper hashes, sixteen modules and the 96 BIOS/332 protected-mode 386 boot

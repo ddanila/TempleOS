@@ -88,12 +88,12 @@ workflow does not remove any of these paths from C3.
 
 | Original path | Existing executable evidence | Remaining workflow |
 | --- | --- | --- |
-| `n`: new entry | `test-i386-budget-entry.py`; this runner | Alternate dates, amounts and account choices |
+| `n`: new entry | Entry/edit-copy runners plus nested credit/debit accept/cancel in `test-i386-budget-entry-picker.py` | Alternate dates, amounts and other account choices; investigate intermittent save/return stall |
 | Enter: edit entry | This runner changes an existing description | Change date, amount and both accounts; save/reopen |
 | `c`: copy entry | This runner accepts populated copy, checks independent strings and both saved records | Change the copied fields and verify the source remains intact |
 | Ctrl-Y: delete | `test-i386-budget-session.py` selects/deletes/saves, then deletes/aborts after native reboot | Mouse selection and deletion |
 | Escape / Shift-Escape | Entry/session runners cover save, abort and caller restoration; this runner checks edited/copied persistence | Equivalent menu and mouse routes |
-| `v`: view account | Component reports plus real picker accept/cancel and cold reset in `test-i386-budget-account-picker.py` | Nested credit/debit pickers and mouse |
+| `v`: view account | Component reports plus real picker accept/cancel and cold reset in `test-i386-budget-account-picker.py` | Mouse selection |
 | `a`: accounts file | Installation/storage runners check the initial account file | Open its real editor, rename/recolor an account, save/reopen and cancel |
 | `t`: new template | No UI qualification | Create a schedule, expand it, save/reopen, edit and delete it |
 | `p`: periodic entry | No UI qualification | Apply a temporary schedule to an entry and check generated transactions/persistence |
