@@ -114,3 +114,7 @@ heap deltas include other original output allocations and are not an isolated
 That checkpoint retained the failing ownership oracle. The subsequent
 [partial-entry ownership correction](i386-dollar-error-ownership.md) releases
 those payloads and expands the test without adjusting counters.
+
+The failed-buffer ownership contract and preserved failing baseline are described
+in [the C4 failure checkpoint](i386-public-buffer-errors.md). Successful buffer
+coverage above does not qualify that outstanding cleanup path.

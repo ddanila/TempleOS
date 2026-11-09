@@ -28899,3 +28899,23 @@ OOM/cancellation, failures inside binding, missing-bin validation and full
 interchange remain open. Failed CmpBuf control lifetime, desktop/apps and native
 C5 release work also remain open. See docs/i386-dollar-error-ownership.md.
 C1-C5 remain active; bundled qualification remains 2/686.
+
+
+### C4: failed normal CmpBuf ownership baseline
+
+The production API fixture in `tests/guest/i386-public-buffer-errors/Contract.HC`
+and runner `tools/test-i386-public-buffer-errors.py` exercise five compiler-error
+paths after different partial output. The unchanged f03 image baseline v1
+returns NULL with errors, preserves borrowed input/queue, and creates subsequent
+valid packets, but retains 5,888–11,392 bytes in each reported task heap counter.
+Owner-task kill succeeds without exact backing restoration. These are retained
+failures, not qualification passes. See docs/i386-public-buffer-errors.md for
+raw observations, ownership boundaries and required cleanup work. No production
+cleanup correction is included in this checkpoint. C1–C5 remain active;
+bundled qualification remains 2/686.
+
+The strengthened v2 baseline repeats all 48 raw records exactly, then verifies
+rendered arithmetic recovery, fixture-only filesystem changes and the native
+allocation bitmap. Inputs remain unchanged; the overall result is still FAIL
+because the ownership comparisons fail. Inventory checks and all five guards
+pass unchanged. The production cleanup fix remains outstanding.
