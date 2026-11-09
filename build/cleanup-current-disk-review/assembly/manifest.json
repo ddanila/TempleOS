@@ -1,0 +1,103 @@
+{
+  "files": [
+    {
+      "original": "build/i386-document-literal-cross-v1/kernel-assembly.txt",
+      "archive": "build/i386-document-literal-cross-v1/kernel-assembly.txt.zst",
+      "sha256": "f757ed023e3b45006162e196d5b0136f566079cf88d977499bb8c6d1ffc1f6fc",
+      "size": 108359923,
+      "reclaimed_bytes": 99786752,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-document-literal-cross-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-document-literal-cross-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-keyboard-mouse-scan-cross-v1/kernel-assembly.txt",
+      "archive": "build/i386-keyboard-mouse-scan-cross-v1/kernel-assembly.txt.zst",
+      "sha256": "36503d50932747c75ae6a9a040e52a85ad25348faca1eb388e22b1eeb4931179",
+      "size": 108314865,
+      "reclaimed_bytes": 99741696,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-keyboard-mouse-scan-cross-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-keyboard-mouse-scan-cross-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-terminal-scrolls-cross-v1/kernel-assembly.txt",
+      "archive": "build/i386-terminal-scrolls-cross-v1/kernel-assembly.txt.zst",
+      "sha256": "f7b70ce91c28e86925b3f33ddf5f3a2d78b80453bed3bb7566d8e777745fd77f",
+      "size": 108374578,
+      "reclaimed_bytes": 99794944,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-terminal-scrolls-cross-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-terminal-scrolls-cross-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-user-startup-cross-v1/kernel-assembly.txt",
+      "archive": "build/i386-user-startup-cross-v1/kernel-assembly.txt.zst",
+      "sha256": "9b46781dd9f1a650fc17dfb1963e38212137e5d814d8c41d5ad8163ec781ecce",
+      "size": 108358251,
+      "reclaimed_bytes": 99782656,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-user-startup-cross-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-user-startup-cross-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-user-startup-cross-v2/kernel-assembly.txt",
+      "archive": "build/i386-user-startup-cross-v2/kernel-assembly.txt.zst",
+      "sha256": "9b46781dd9f1a650fc17dfb1963e38212137e5d814d8c41d5ad8163ec781ecce",
+      "size": 108358251,
+      "reclaimed_bytes": 99782656,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-user-startup-cross-v2/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-user-startup-cross-v2/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-user-startup-cross-v3/kernel-assembly.txt",
+      "archive": "build/i386-user-startup-cross-v3/kernel-assembly.txt.zst",
+      "sha256": "9b46781dd9f1a650fc17dfb1963e38212137e5d814d8c41d5ad8163ec781ecce",
+      "size": 108358251,
+      "reclaimed_bytes": 99782656,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-user-startup-cross-v3/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-user-startup-cross-v3/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-vga-wide-cross-v1/kernel-assembly.txt",
+      "archive": "build/i386-vga-wide-cross-v1/kernel-assembly.txt.zst",
+      "sha256": "3c8272dfbdf088c4d2ac4097c06d767ddecc6f97438005f6c9d24fcd6155c60e",
+      "size": 108315606,
+      "reclaimed_bytes": 99741696,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-vga-wide-cross-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-vga-wide-cross-v1/kernel-assembly.txt"
+      ]
+    }
+  ],
+  "reclaimed_bytes": 698413056
+}
