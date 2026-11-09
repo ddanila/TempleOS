@@ -85,3 +85,7 @@ but `BP done` never arrives. Its final screenshot shows the console. No CPU/RAM
 capture exists for that run, so the cleanup/observer-join boundary is unresolved.
 The successful runs do not establish that the stall is fixed. It remains a C2/C3
 acceptance issue alongside the remaining application workflows.
+
+[Return diagnostics](i386-budget-return-diagnostics.md) add sixteen successful
+read-only reopen/abort repetitions and a verified stopped CPU/RAM capture path.
+These checks do not reproduce or close the earlier first-close timeout.

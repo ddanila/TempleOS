@@ -29129,3 +29129,29 @@ all three files but times out before the caller contract completes; its final
 screenshot shows the console. Two capture-wrapper runs return successfully,
 but the cleanup/observer-join boundary remains unresolved. Preserve that failed
 receipt as a C2/C3 issue; passing picker evidence does not close it.
+
+### C2/C3: capture and inspect intermittent Budget return stalls
+
+Two additional unchanged-fixture entry-picker commands pass masks 1023/63 with
+actual cold reopening; the earlier first-close timeout does not recur. A new
+read-only return profiler repeats the actual Budget view sixteen times on a
+copy of its saved image. Each keyboard Shift-Escape abort restores caller state,
+checks exact reports/saved fields, preserves all 1,881 files' contents, attributes
+and timestamps, and renders fresh arithmetic. It avoids rereading previous
+sessions' freed export addresses. These are state/return repetitions, not heap
+recovery: the observer retains export buffers in its caller.
+
+Failures now stop QEMU and retain CPU registers and 64 MiB RAM. A deliberate
+host-side exception after BR ready verifies this path without pretending to
+reproduce the guest stall. The task analyzer verifies the captured public layout,
+resolves four live tasks and BudgetEntry/Budget/NativeOriginalView callers,
+bounds stack frames and rejects four malformed class/hash/stack captures.
+Internal compiler builtin IDs are excluded from executable symbol hints.
+
+Source/image provenance, unchanged sixteen runtime modules and 1,850 sources,
+raw/key records, capture hashes and append-only inventory receipts are checked
+in build/budget-return-diagnostics-audit-v1/result.json. See
+docs/i386-budget-return-diagnostics.md. The earlier save/return stall remains
+unresolved; read-only reopen repetitions do not establish a fix for the first
+close after nine popups. No C1–C5 milestone or full Budget qualification closes;
+bundled qualification remains 2/686.

@@ -7123,6 +7123,13 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
           "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-readonly-return-repetition",
+          "command": "python3 tools/profile-i386-budget-return.py SAVED_ENTRY_IMAGE --runs 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-return-repeat-native-v2/result.json",
+          "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
         }
       ]
     },
@@ -7301,6 +7308,13 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
           "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-readonly-return-repetition",
+          "command": "python3 tools/profile-i386-budget-return.py SAVED_ENTRY_IMAGE --runs 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-return-repeat-native-v2/result.json",
+          "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
         }
       ]
     },
@@ -7475,6 +7489,13 @@
           "result": "fail",
           "evidence": "build/budget-entry-picker-native-v2/result.json",
           "scope": "All nested picker phase fields pass; accepted entry and all three saved files match successful native runs. Timed out before BP done; final screenshot shows console. Cleanup/observer-join boundary remains unresolved. Other runs return; no full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "native-budget-readonly-return-repetition",
+          "command": "python3 tools/profile-i386-budget-return.py SAVED_ENTRY_IMAGE --runs 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-return-repeat-native-v2/result.json",
+          "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
         }
       ]
     },
@@ -7635,6 +7656,13 @@
           "result": "fail",
           "evidence": "build/budget-entry-picker-native-v2/result.json",
           "scope": "All nested picker phase fields pass; accepted entry and all three saved files match successful native runs. Timed out before BP done; final screenshot shows console. Cleanup/observer-join boundary remains unresolved. Other runs return; no full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "native-budget-readonly-return-repetition",
+          "command": "python3 tools/profile-i386-budget-return.py SAVED_ENTRY_IMAGE --runs 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-return-repeat-native-v2/result.json",
+          "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
         }
       ]
     },
@@ -7846,6 +7874,13 @@
           "result": "fail",
           "evidence": "build/budget-entry-picker-native-v2/result.json",
           "scope": "All nested picker phase fields pass; accepted entry and all three saved files match successful native runs. Timed out before BP done; final screenshot shows console. Cleanup/observer-join boundary remains unresolved. Other runs return; no full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "native-budget-readonly-return-repetition",
+          "command": "python3 tools/profile-i386-budget-return.py SAVED_ENTRY_IMAGE --runs 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-return-repeat-native-v2/result.json",
+          "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
         }
       ]
     },
@@ -8006,6 +8041,13 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
           "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-readonly-return-repetition",
+          "command": "python3 tools/profile-i386-budget-return.py SAVED_ENTRY_IMAGE --runs 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-return-repeat-native-v2/result.json",
+          "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
         }
       ]
     },
@@ -8200,6 +8242,13 @@
           "result": "fail",
           "evidence": "build/budget-entry-picker-native-v2/result.json",
           "scope": "All nested picker phase fields pass; accepted entry and all three saved files match successful native runs. Timed out before BP done; final screenshot shows console. Cleanup/observer-join boundary remains unresolved. Other runs return; no full Budget/C1-C5 qualification."
+        },
+        {
+          "target": "native-budget-readonly-return-repetition",
+          "command": "python3 tools/profile-i386-budget-return.py SAVED_ENTRY_IMAGE --runs 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-return-repeat-native-v2/result.json",
+          "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
         }
       ]
     },
@@ -8447,6 +8496,13 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-capture-native-v1/result.json",
           "scope": "Native real nested credit/debit picker workflow, masks 1023/63 and actual shutdown/restart/read-only abort. All returned form fields, exact target-specific draft/saved amounts, original menu/report/storage comparison; only saved byte 32 differs per existing F64 policy. All file bytes/attributes/timestamps preserved across cold abort; 1877 existing files preserved, fresh rendered 42 after both returns. No application/runtime change. Another unchanged-fixture run stalled after saving, before return; root cause remains unresolved. Account editor/templates/mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-entry-picker.md."
+        },
+        {
+          "target": "native-budget-readonly-return-repetition",
+          "command": "python3 tools/profile-i386-budget-return.py SAVED_ENTRY_IMAGE --runs 16 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-return-repeat-native-v2/result.json",
+          "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
         }
       ]
     },

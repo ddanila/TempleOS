@@ -662,3 +662,21 @@ all three files but times out before the caller contract completes; its final
 screenshot shows the console. Two capture-wrapper runs return successfully,
 but the cleanup/observer-join boundary remains unresolved. Preserve that failed
 receipt as a C2/C3 issue; passing picker evidence does not close it.
+
+## Budget return repetition and failure captures (2026-11-09)
+
+Two further nested-picker commands pass entry/cold-reopen masks 1023/63, while
+the earlier first-close timeout remains unresolved. The return profiler adds
+sixteen real read-only Budget reopen/abort sessions with exact saved records,
+caller restoration, fresh arithmetic and unchanged contents/attributes/timestamps
+for all 1,881 files. No installation or data reseeding occurs. Retained observer
+exports prevent interpreting this as heap-recovery qualification.
+
+A failure stops QEMU and retains registers plus 64 MiB memory. An explicitly
+induced host exception at the active view verifies capture delivery; it does not
+reproduce the runtime stall. The snapshot analyzer verifies public task metadata,
+bounded Budget callers and four malformed-capture rejections. See
+[return diagnostics and commands](i386-budget-return-diagnostics.md) and
+build/budget-return-diagnostics-audit-v1/result.json. Runtime sources/modules are
+unchanged. The original timeout, other Budget workflows and complete C1–C5
+acceptance remain open; inventory qualification remains 2/686.
