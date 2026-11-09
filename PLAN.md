@@ -29188,3 +29188,40 @@ for source/image, raw/key/state and protocol provenance. Inventory only appends
 component receipts. The account-editor prototype is preserved under build while
 this runtime change is qualified. Full Budget and C1–C5 acceptance remain open;
 bundled qualification stays 2/686.
+
+### C1/C2/C3: original Budget account-file popup editor
+
+The real `a` workflow now cancels a GREEN/BANK + GHOST draft and saves a
+RED/BANK + GIFTS draft, with an independently seeded exact 100.00 transaction.
+Original and native controls check both raw drafts, the intermediate accepted
+file (including its cursor), seed/cancel/final account files, all twelve indexed
+strings and all 48 transaction bytes. Cancellation retains the report and entry
+identity; saving changes the report color without changing the transaction.
+Both returns regenerate the report on the original, so the observer follows
+the current document instead of assuming cancellation preserves its address.
+
+The first unchanged native fixture fails before the Edit identity: native Ed
+uses the standalone VGA editor. Caller-owned synchronous popup edits now enter
+the shared original DocFileEd, retaining its undo flags, directory context,
+border restoration and flagged original DocEd session. An intermediate run then
+reaches Edit but fails at the raw draft: native DocPutKey lacks Ctrl-T dispatch
+and applies standalone movement to visible non-form documents. Original Ctrl-T
+and Shift-Ctrl-T commands are now dispatched; visible WinMgr documents use the
+original boundary/cursor/line navigation, while the standalone VGA editor keeps
+its line mover. No application-specific editor shortcut or Budget source change.
+
+The unchanged final fixture passes original/native masks 1023/63. Native cold
+restart omits Install and reseeding, then read-only reopen/abort preserves every
+file's bytes, attributes and timestamp. It preserves 1877 existing files and
+renders fresh arithmetic after both returns. Both bootstrap generations and the
+386 instruction audit pass; only ConsoleRuntime changes among sixteen modules,
+with unchanged kernel bytes and public ABI versions 104/264/41. The standalone
+parent-search editor/save/restoration regression passes with KVM; its initial
+TCG attempt timed out before startup and is not passing regression evidence.
+
+See docs/i386-budget-accounts-editor.md and
+build/budget-accounts-editor-audit-v1/result.json for original/native/failure
+receipts, exact host oracles, source/image pins and corruption rejection checks.
+Inventory only appends component evidence to twelve relevant entries. Templates,
+periodic entries, mouse, repeated-use resources, broader application coverage
+and full C1–C5 acceptance remain open; qualification stays 2/686.

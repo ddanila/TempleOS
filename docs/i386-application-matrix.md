@@ -705,3 +705,17 @@ public retained transfer receipt. Both bootstraps and the 386 audit pass; only
 FileRuntime changes among sixteen binaries, with public ABIs unchanged.
 Other Budget workflows, resource recovery and complete C1–C5 qualification remain
 open; bundled qualification remains 2/686.
+
+Budget account-file editing now has original/native real-keyboard evidence:
+GREEN/BANK + GHOST cancellation, then RED/BANK + GIFTS save, exact draft and
+intermediate/final files, stable seeded transaction, report color and caller
+restoration. Masks 1023/63 include actual native cold restart/read-only abort,
+unchanged file bytes/attributes/timestamps and fresh arithmetic after both exits.
+The initial native failure exposed standalone Ed routing; the next exposed
+missing Ctrl-T and non-form window navigation. Generic popup file editing now
+uses shared DocFileEd and original visible-document key behavior. Only
+ConsoleRuntime changes; Budget source, kernel, fifteen other modules and public
+ABI remain unchanged. Both bootstraps and a standalone parent-search editor
+regression pass. See [account editor evidence](i386-budget-accounts-editor.md).
+Templates/periodic entries, mouse, resources and complete Budget/C1–C5 acceptance
+remain open; component receipts leave qualification at 2/686.

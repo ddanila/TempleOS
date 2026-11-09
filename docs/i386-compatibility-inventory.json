@@ -2346,6 +2346,32 @@
           "result": "pass",
           "evidence": "build/i386-doc-search-editor-native-v3/result.json",
           "scope": "Six physical Ctrl-F/Shift-Ctrl-F inputs in focused DocEd(DOF_DONT_HOME); exact form identities, edited accept/cancel, replacement ALL/cancel, wizard cancellation and incoming lock. Same thirteen masks and exports as original; files/arithmetic/input hashes independently audited. Full default editor and file-search workflows remain unqualified."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },
@@ -3323,6 +3349,32 @@
           "result": "pass",
           "evidence": "build/i386-pick-file-yield-v1/result.json",
           "scope": "All five actual popup sessions and strict host fixture-byte guard pass in one final-driver run on the yield-corrected image; masks 255, names, caller ownership/restoration, arithmetic and filesystem. Independent terminal audit rechecks pins, original file tuples, directory attributes and exact fixture contents. Not full FileMgr qualification."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },
@@ -3863,6 +3915,32 @@
           "result": "pass",
           "evidence": "build/i386-find-wizard-native-v4/result.json",
           "scope": "Real wizard accept, picker cancel/accept, two recursive quoted-needle case/label/mask-filtered matches and exact original result body after fixture-drive normalization; interactive result arithmetic and closure. Native omits original elapsed/count line and current-directory prompt. Full transcript, replacement, heap and application qualification remain open; see docs/i386-find-wizard.md."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },
@@ -4452,6 +4530,32 @@
           "result": "fail",
           "evidence": "build/i386-default-servant-preloaded-8-v2/result.json",
           "scope": "Normal 8 MiB TCG 486,-fpu boots and executes availability probes, but canonical symbol-header loading records PUBLIC ALLOC EXHAUSTED/OutMem before the fixture and JRContract. No startup/dispatch contract result at this profile; full minimal/resource qualification remains open."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },
@@ -7137,6 +7241,32 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
           "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },
@@ -7329,6 +7459,32 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
           "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },
@@ -7517,6 +7673,32 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
           "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },
@@ -7691,6 +7873,32 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
           "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },
@@ -7916,6 +8124,32 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
           "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },
@@ -8090,6 +8324,32 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
           "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },
@@ -8298,6 +8558,32 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
           "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },
@@ -8559,6 +8845,32 @@
           "result": "pass",
           "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
           "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
+        },
+        {
+          "target": "original-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-original-v6/result.json",
+          "scope": "Pinned original account-file popup editor, GREEN/GHOST draft cancelled then RED/GIFTS saved through real keyboard input. Exact raw drafts, intermediate editor file with cursor, seed/cancel/final accounts, one seeded 48-byte transaction and twelve strings; transaction identity and report color, masks 1023/63, same-boot reopen. This seeds the transaction and does not qualify entry-form creation. See docs/i386-budget-accounts-editor.md."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-popup-route",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v1/result.json",
+          "scope": "Unchanged final fixture reached instructions but timed out waiting for Edit identity: Ed selected standalone VGA editor instead of original popup file editor. Historical pre-fix regression; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor-before-plain-keys",
+          "result": "fail",
+          "evidence": "build/budget-accounts-editor-native-v2/result.json",
+          "scope": "Shared DocFileEd route reaches Edit identity; unchanged fixture then times out waiting for raw draft. Native DocPutKey lacked Ctrl-T dispatch and used standalone movement for visible non-form documents. Historical intermediate failure; not a qualified workflow."
+        },
+        {
+          "target": "native-budget-account-file-editor",
+          "command": "python3 tools/test-i386-budget-accounts-editor.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-accounts-editor-native-v3/result.json",
+          "scope": "Shared original DocFileEd for caller-owned synchronous popup edits; original Ctrl-T commands and visible-window boundary/cursor/line navigation. Exact original draft/file/report/transaction comparison, masks 1023/63, real cold restart without Install/reseed; all file bytes/attributes/timestamps unchanged after read-only abort, 1877 existing files preserved, fresh rendered 42 after both exits. Only ConsoleRuntime changes; kernel and fifteen other modules, public ABI and Budget source unchanged. Standalone parent-search editor regression and both bootstrap generations pass. Templates/periodic entries, mouse, resources and full Budget/C1-C5 remain open. See docs/i386-budget-accounts-editor.md."
         }
       ]
     },

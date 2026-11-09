@@ -1638,6 +1638,7 @@ U0 NativeActionExit() { (*native_action_exit)(); }
 #define PopUpPrint NativePopUpPrint
 #define WinToTop NativeWinToTop
 #include "/Adam/DolDoc/DocEntryRunCore.HC"
+#include "/Adam/DolDoc/DocFileEdCore.HC"
 #include "/Adam/DolDoc/DocMenuCore.HC"
 #include "/Adam/DolDoc/DocMenuPopupCore.HC"
 #include "/Adam/DolDoc/DocButtonPopupCore.HC"

@@ -247,6 +247,14 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
         if(sc&SCF_KEY_DESC)KeyDescSet("Edit/Save");
         else DocWrite(doc);
       }
+    } else if(ch==CH_CTRLT && !(sc&SCF_ALT)) {
+      if(sc&SCF_SHIFT) {
+        if(sc&SCF_KEY_DESC)KeyDescSet("Edit/Single Entry Toggle Plain Text");
+        else if(!(doc->flags&DOCF_FORM))DocEntryToggle(doc);
+      } else {
+        if(sc&SCF_KEY_DESC)KeyDescSet("Edit/Toggle Plain Text Display");
+        else if(!(doc->flags&DOCF_FORM))DocFlagsToggle(doc,DOCF_PLAIN_TEXT);
+      }
     } else if(!ch && sc.u8[0]==SC_F3 && !(sc&(SCF_CTRL|SCF_ALT))) {
       if(sc&SCF_KEY_DESC) {
         if(sc&SCF_SHIFT)KeyDescSet("Edit/Find Last");
@@ -293,7 +301,7 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
       DocUndoRestore(doc);
     else if(!ch && sc.u8[0]==SC_INS && !(sc&(SCF_SHIFT|SCF_CTRL|SCF_ALT|SCF_KEY_DESC)))
       doc->flags^=DOCF_OVERSTRIKE;
-    else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_ALT|SCF_KEY_DESC)) &&
+    else if(NativeDocUsesWindowLayout(doc) && !ch && !(sc&(SCF_ALT|SCF_KEY_DESC)) &&
         (!(sc&SCF_CTRL) && (sc.u8[0]==SC_HOME || sc.u8[0]==SC_END) ||
          sc&SCF_CTRL && (sc.u8[0]==SC_CURSOR_UP || sc.u8[0]==SC_CURSOR_DOWN)))
       DocKeyBoundaryCore(doc,sc,sc.u8[0]==SC_END || sc.u8[0]==SC_CURSOR_DOWN);
@@ -302,15 +310,15 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
     else if(NativeDocUsesWindowLayout(doc) && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
         (sc.u8[0]==SC_PAGE_UP || sc.u8[0]==SC_PAGE_DOWN))
       DocKeyPageCore(doc,sc,sc.u8[0]==SC_PAGE_DOWN);
-    else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_ALT|SCF_KEY_DESC)) &&
+    else if(NativeDocUsesWindowLayout(doc) && !ch && !(sc&(SCF_ALT|SCF_KEY_DESC)) &&
         sc.u8[0]==SC_CURSOR_LEFT) EdCursorLeft(doc,sc);
-    else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_ALT|SCF_KEY_DESC)) &&
+    else if(NativeDocUsesWindowLayout(doc) && !ch && !(sc&(SCF_ALT|SCF_KEY_DESC)) &&
         sc.u8[0]==SC_CURSOR_RIGHT) EdCursorRight(doc,sc);
-    //Original form navigation requires the document layout produced by View.
+    //Original visible document navigation uses the layout produced by View.
     //The retained text editor has a separate renderer and uses its line mover.
-    else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
+    else if(NativeDocUsesWindowLayout(doc) && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
         sc.u8[0]==SC_CURSOR_UP) EdLineUp(doc,sc);
-    else if(doc->flags&DOCF_FORM && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
+    else if(NativeDocUsesWindowLayout(doc) && !ch && !(sc&(SCF_CTRL|SCF_ALT|SCF_KEY_DESC)) &&
         sc.u8[0]==SC_CURSOR_DOWN) EdLineDown(doc,sc);
     else DocBasicEditCore(doc,ch,sc);
   } catch { Free(picker_path);if(unlock) DocUnlock(doc); }
@@ -1756,6 +1764,7 @@ public Bool DocEd(CDoc *doc,I64 flags=0)
 #include "/Kernel/FileFindFlags.HH"
 extern Bool FileFind(U8 *filename,CDirEntry *_de=0,I64 flags=0);
 #include "/Adam/DolDoc/EdLinkTypes.HH"
+extern Bool DocFileEd(I64 type,U8 *filename,U8 *needle,I64 *line,I64 flags);
 public Bool Ed(U8 *filename,I64 flags=0)
 {//File and borrowed-document subset using the original editor-link parser.
   CDoc *doc=NULL;
@@ -1774,6 +1783,12 @@ public Bool Ed(U8 *filename,I64 flags=0)
           link_type!=LK_FILE_FIND && link_type!=LK_FILE_ANCHOR) valid=FALSE;
       if(!resolved) valid=FALSE;
       if(valid) filename=resolved;
+    }
+    //Popup file editing retains the original document identity, directory, undo
+    //and flagged DocEd session used by application callers such as Budget.
+    if(valid && Fs->parent_task && Fs->parent_task->popup_task==Fs) {
+      result=DocFileEd(link_type,filename,needle,&line,flags);
+      Free(resolved);Free(needle);return result;
     }
     if(valid && borrowed) {
       doc=Str2I64(filename,10,NULL);
