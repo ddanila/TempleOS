@@ -53,13 +53,13 @@ registers, the final screenshot and public-task analysis are retained. The activ
 Budget document's cursor remains at the end, with no popup or retirement/I/O
 unwind in progress. Its window manager has completed 276 updates.
 
-The native managed window worker currently synchronizes mouse state and renders
+At this historical baseline the native managed window worker synchronizes mouse state and renders
 windows, but does not call the original WinMgr retained-document click dispatch.
 That is an open C2 implementation gap. Packet/button consumption and default
 click timing must also be checked when integrating the original dispatch; this
 baseline does not infer consumption from host injection alone. The published
 test still requires the complete native workflow and returns failure here.
-There is no passing native mouse or cold-mouse-reopen claim.
+This baseline does not establish native mouse or cold-mouse-reopen behavior.
 
 `build/budget-mouse-audit-v1/result.json` audits that open failure and the passing
 original control, including 188 rejected corruptions. Portable live snapshots
@@ -72,5 +72,29 @@ Earlier original prototypes are retained: v1 had unsupported ternary syntax;
 v2 selected RENT but computed its next target before the regenerated viewport
 settled. Final readiness waits for the application handler and two completed
 render frames before reading that target. No application or runtime source
-changed. Native mouse integration, settled raster fidelity and resources remain
-open; this is an original reference and executable failure baseline.
+changed. This historical control remains an original reference and executable failure
+baseline; the later integration evidence follows below.
+
+## Native document dispatch checkpoint
+
+The unchanged full native workflow now passes 1023/63 in
+`build/budget-mouse-native-v3` on `i386-window-mouse-cross-v3/kernel.img`.
+Scheduled WinMgr dispatch uses the shared original recognizer and document
+cursor/action rules over queued PS/2 edges. The observer handles hardware setup
+after console initialization; initial logical position is synchronized before
+any packet. No Budget-specific runtime handler or direct fixture cursor write
+was added. The unmodified original reference remains the comparison oracle;
+a separate current shared-source classic control also passes 1023/63.
+
+Actual cold boot omits Install/reseeding. All cold-reopen file tuples are
+unchanged, 1884 prior files are preserved and both native returns render fresh
+42. All raw reports, live identities, owned strings, menus, form backing,
+column-two cursors, 112 transaction bytes, fourteen strings and accounts match
+the independent oracle and normalized original. The new audit rejects 188
+corruptions. Intermediate failed startup-observer and inactive-cursor-scope
+receipts remain retained rather than relabeled.
+
+See [dispatch architecture and exact regression evidence](i386-window-mouse-dispatch.md).
+This passes the declared Budget mouse component; mouse entry creation, settled
+framebuffer/pointer fidelity, broad control/window input, repeated-use resources
+and complete Budget/C1–C5 acceptance remain open. Qualification remains 2/686.

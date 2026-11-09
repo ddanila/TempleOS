@@ -792,3 +792,15 @@ viewport shift before cleanup; that wrapping issue remains open. See
 qualify automatic prepass or console input. No runtime/modules/bootstrap inputs
 changed. Native mouse, console input, resources and full C1–C5 remain open;
 qualification remains 2/686.
+
+The later managed document dispatch checkpoint passes the strict unchanged
+Budget mouse workflow natively (1023/63), including cold reopen without Install,
+exact saved state, caller recovery and 1884 preserved prior files. Queued PS/2
+edges use the shared original recognizer/action rules; boot-position and
+callback-Exit cleanup have retained red/green controls. The existing cursor,
+mouse-state and control cleanup regressions pass. The unflagged DocEd comparison
+retains its exact prior 113/95 and 524/609 pixel failure; the 8 MiB functional
+mouse run takes 65.97 seconds and is not a 60-second startup-gate pass.
+See [architecture, receipts and remaining gaps](i386-window-mouse-dispatch.md).
+Control capture, wheel, borders/dragging, top menus, rendering/resources and
+native rebuild generations remain open. Qualification remains 2/686.

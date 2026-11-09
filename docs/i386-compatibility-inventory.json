@@ -684,7 +684,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        }
+      ]
     },
     {
       "path": "Adam/ARegistry.HC",
@@ -7262,6 +7270,13 @@
           "result": "fail",
           "evidence": "build/budget-mouse-native-v1/result.json",
           "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
         }
       ]
     },
@@ -7470,6 +7485,13 @@
           "result": "pass",
           "evidence": "build/budget-templates-native-v1/result.json",
           "scope": "Unchanged original fixture real t/p forms and keyboard, masks 262143/63, exact draft/backing/live ownership checks, generated-row omission from storage and deterministic equal-date order after reconstruction. Native exact binary64 policy differs from original only at saved bytes 32/64/116/148; calendar fractions agree exactly. Actual cold reboot without Install/reseed and read-only abort preserve every file byte/attribute/timestamp; 1877 existing files preserved, fresh rendered 42 after both returns. No runtime or application changes; all 1850 source/26 helper pins and sixteen modules match the current popup-file-editor build. Other recurrence types, template editing/deletion, mouse/resources and full Budget/C1-C5 remain open. See docs/i386-budget-templates.md."
+        },
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
         }
       ]
     },
@@ -7744,6 +7766,13 @@
           "result": "fail",
           "evidence": "build/budget-mouse-native-v1/result.json",
           "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
         }
       ]
     },
@@ -8028,6 +8057,13 @@
           "result": "fail",
           "evidence": "build/budget-mouse-native-v1/result.json",
           "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
         }
       ]
     },
@@ -8270,6 +8306,13 @@
           "result": "fail",
           "evidence": "build/budget-mouse-native-v1/result.json",
           "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
         }
       ]
     },
@@ -8577,6 +8620,13 @@
           "result": "fail",
           "evidence": "build/budget-mouse-native-v1/result.json",
           "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
         }
       ]
     },
@@ -8819,6 +8869,13 @@
           "result": "fail",
           "evidence": "build/budget-mouse-native-v1/result.json",
           "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
         }
       ]
     },
@@ -8893,6 +8950,13 @@
           "result": "pass",
           "evidence": "build/budget-boundaries-native-v2/result.json",
           "scope": "Direct original Budget API over nine constructed schedules in template and periodic-copy modes: month-end overflow, leap day, reversed/equal ranges, Null, half-day intervals and >2050 year mapping. Exact 2872 bytes, dates/fractions/type/flags/amount/ownership/string content/queue links; periodic copies omit first occurrence and own strings, template copies share owner/strings. Entry queue empty after cleanup. Native capture equals original and host oracle exactly; unchanged filesystem/metadata and fresh 42. Constructed inputs, not UI/persistence/heap or full application qualification. See docs/i386-budget-boundaries.md."
+        },
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
         }
       ]
     },
@@ -9180,6 +9244,13 @@
           "result": "fail",
           "evidence": "build/budget-mouse-native-v1/result.json",
           "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
         }
       ]
     },
@@ -9289,6 +9360,13 @@
           "result": "fail",
           "evidence": "build/budget-mouse-native-v1/result.json",
           "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
         }
       ]
     },
@@ -9579,6 +9657,13 @@
           "result": "fail",
           "evidence": "build/budget-mouse-native-v1/result.json",
           "scope": "Unchanged original fixture fails at first retained-document row click: host observes pointer (20,20), injects left down/up, cursor remains at end. Stopped RAM/registers, screenshot, live rows, physical archives and public tasks retained; 276 WinMgr updates, no popup/retirement/I/O unwind. Current managed window worker syncs mouse and renders but lacks original retained-document click dispatch. Button consumption/timing also remains to verify. Published runner still requires full native workflow; no native mouse/cold qualification. Audit preserves all pins and rejects 188 corruptions. See docs/i386-budget-mouse.md."
+        },
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
         }
       ]
     },
@@ -9600,7 +9685,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        }
+      ]
     },
     {
       "path": "Apps/GrModels/BallGen.HC",
@@ -23113,7 +23206,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-managed-document-mouse-dispatch",
+          "command": "python3 tools/test-i386-budget-mouse.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/window-mouse-audit-v1/result.json",
+          "scope": "Unchanged full Budget mouse workflow 1023/63 with real cold reboot, exact reports/live identity/form/menu/storage/cursors, 1884 prior files and caller restoration. Shared recognizer/coordinate/decoder provenance; queue boot-position red/green 255->511; cursor callback-Exit red/green 75/7->255/7; existing cursor/mouse/control regressions pass. Unflagged DocEd stays failing; 8 MiB functional startup 65.97s does not meet isolated 60s gate. Not full controls/window/pointer/raster/resources, complete Budget or C1-C5 qualification. See docs/i386-window-mouse-dispatch.md."
+        }
+      ]
     },
     {
       "path": "Kernel/StrA.HC",

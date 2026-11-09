@@ -1,0 +1,156 @@
+//Original document actions and double-click rules, in the managed WinMgr task.
+#include "/Adam/DolDoc/DocMouseActionCore.HC"
+CMsStateGlbls native_window_mouse,native_window_mouse_old,native_window_mouse_last;
+F64 native_window_mouse_time;
+U32 native_window_mouse_buttons,native_window_mouse_losses;
+CD3I64 native_window_mouse_single;
+Bool native_window_mouse_resync;
+U0 NativeWindowMousePost(CTask *task,I64 code,I64 a,I64 b)
+{NativePostMsg(task,code,a,b,0);}
+#include "/Adam/WinQueIPMsgsCore.HC"
+U0 NativeWindowMousePublish()
+{
+  ms.left_dbl_time=native_window_mouse.left_dbl_time;
+  ms.right_dbl_time=native_window_mouse.right_dbl_time;
+  ms.left_dbl=native_window_mouse.left_dbl;ms.right_dbl=native_window_mouse.right_dbl;
+  ms.left_down_sent=native_window_mouse.left_down_sent;
+  ms.right_down_sent=native_window_mouse.right_down_sent;
+}
+I64 NativeWindowMouseMessages(Bool que)
+{
+  I64 code=WinQueIPMsgsCore(&native_window_mouse,&native_window_mouse_old,
+    &native_window_mouse_last,&native_window_mouse_single,native_window_mouse_time,
+    que,&NativeWindowMousePost);
+  NativeWindowMousePublish;return code;
+}
+U0 NativeWindowMousePosition(I64 x,I64 y)
+{
+  //Do not overwrite public live mouse/button/keyboard state with queued history.
+  MemCpy(&native_window_mouse.scale,&ms.scale,sizeof(CD3));
+  MemCpy(&native_window_mouse.offset,&ms.offset,sizeof(CD3I64));
+  native_window_mouse.dbl_time=ms.dbl_time;
+  MousePositionCore(&native_window_mouse,&ms_grid,x,y,0,text.cols,text.rows);
+}
+class CNativeWindowMouseScope:CNativeRenderScope {
+  CDoc *doc;
+  Bool locked;
+};
+U0 NativeWindowMouseRelease(CNativeRenderScope *base)
+{
+  CNativeWindowMouseScope *scope=base;
+  if(scope->locked) {scope->locked=FALSE;DocUnlock(scope->doc);}
+}
+CTask *NativeWindowMouseTarget(I64 x,I64 y)
+{
+  CTask *task=sys_winmgr_task->last_task;
+  CDoc *doc;
+  while(task!=sys_winmgr_task) {
+    if(!TaskValidate(task))return NULL;
+    if(!NativeRenderOwnerClosing(task) && Bt(&task->display_flags,DISPLAYf_SHOW) &&
+        WinInside(x,y,task) && (doc=DocDisplay(task)) &&
+        !(doc->flags&DOCF_DONT_SHOW) && NativeTerminalDocumentView(task,doc))return task;
+    task=task->last_task;
+  }
+  return NULL;
+}
+U0 NativeWindowMouseDocument(CTask *task,I64 x,I64 y,Bool right,Bool down,Bool dbl)
+{
+  CNativeWindowMouseScope scope;
+  CDoc *doc=DocDisplay(task);
+  CCtrl *c;
+  I64 action=0;
+  if(!doc || NativeLegacyViewActive(task))return;
+  if(Bt(&task->win_inhibit,WIf_SELF_CTRLS)==FALSE &&
+      (!TaskValidate(sys_focus_task) || !Bt(&sys_focus_task->win_inhibit,WIf_FOCUS_TASK_CTRLS))) {
+    //Controls own their hit regions. Their callback/capture path is separate.
+    for(c=task->next_ctrl;c!=&task->next_ctrl;c=c->next)
+      if(CtrlInside(c,x,y))return;
+  }
+  if(right) {
+    if(Bt(&task->win_inhibit,WIf_SELF_MS_R) || TaskValidate(sys_focus_task) &&
+        Bt(&sys_focus_task->win_inhibit,WIf_FOCUS_TASK_MS_R))return;
+  } else if(Bt(&task->win_inhibit,WIf_SELF_MS_L) || TaskValidate(sys_focus_task) &&
+      Bt(&sys_focus_task->win_inhibit,WIf_FOCUS_TASK_MS_L))return;
+  scope.doc=doc;scope.locked=FALSE;
+  try {
+    NativeRenderScopeOpen(&scope,&NativeWindowMouseRelease);
+    NativeRenderScopeBorrow(&scope,doc->mem_task,task,doc);
+    if(WinCursorPosSet(task,x,y,down)!=doc)goto mouse_document_done;
+    if(!TaskValidate(task) || DocDisplay(task)!=doc)goto mouse_document_done;
+    DocLock(doc);scope.locked=TRUE;
+    if(doc->doc_signature==DOC_SIGNATURE_VAL) {
+      if(down)DocMousePressCore(doc,right);
+      else action=DocMouseReleaseCore(doc,right,dbl);
+    }
+    NativeWindowMouseRelease(&scope);
+    if(action)NativePostMsg(task,MSG_KEY_DOWN,action,0,0);
+mouse_document_done:
+    NativeWindowMouseRelease(&scope);
+  } catch {
+    NativeWindowMouseRelease(&scope);NativeRenderScopeClose(&scope);
+  }
+  NativeRenderScopeClose(&scope);
+}
+U0 NativeWindowMouseDispatch(I64 code,U32 previous)
+{
+  CTask *task;
+  I64 x=native_window_mouse.pos.x,y=native_window_mouse.pos.y;
+  U32 buttons=native_window_mouse.lb+2*native_window_mouse.rb;
+  if(!(task=NativeWindowMouseTarget(x,y)))return;
+  if(buttons&1 && !(previous&1))NativeWindowMouseDocument(task,x,y,FALSE,TRUE,FALSE);
+  if(buttons&2 && !(previous&2))NativeWindowMouseDocument(task,x,y,TRUE,TRUE,FALSE);
+  if(code==MSG_MS_L_UP || code==MSG_MS_L_D_UP)
+    NativeWindowMouseDocument(task,x,y,FALSE,FALSE,code==MSG_MS_L_D_UP);
+  if(code==MSG_MS_R_UP || code==MSG_MS_R_D_UP)
+    NativeWindowMouseDocument(task,x,y,TRUE,FALSE,code==MSG_MS_R_D_UP);
+}
+U0 NativeWindowMouseReset()
+{
+  MemSet(&native_window_mouse,0,sizeof(CMsStateGlbls));
+  MemSet(&native_window_mouse_old,0,sizeof(CMsStateGlbls));
+  MemSet(&native_window_mouse_last,0,sizeof(CMsStateGlbls));
+  native_window_mouse_buttons=0;NativeWindowMousePublish;
+}
+U0 NativeWindowMouseCancel()
+{NativeWindowMouseReset;native_window_mouse_resync=TRUE;}
+Bool NativeWindowMouseQueueMessages()
+{
+  CCtrl *c;
+  CTask *focus=sys_focus_task;
+  if(TaskValidate(focus) && !Bt(&focus->win_inhibit,WIf_FOCUS_TASK_CTRLS)) {
+    for(c=focus->next_ctrl;c!=&focus->next_ctrl;c=c->next)
+      if(CtrlInside(c,native_window_mouse.pos.x,native_window_mouse.pos.y))return FALSE;
+  }
+  return TRUE;
+}
+U0 NativeWindowMousePump()
+{
+  CI386MouseEvent event;
+  U32 previous;
+  I64 code;
+  Bool managed=NativeWindowNeeded();
+  if(native_window_mouse_losses!=native_mouse_events.losses) {
+    native_window_mouse_losses=native_mouse_events.losses;NativeWindowMouseCancel;
+    KernelLog("MOUSE input reset\n");
+  }
+  while(NativeMouseEventRead(&event)) {
+    if(!managed){NativeWindowMouseReset;goto mouse_next_event;}
+    if(native_window_mouse_resync) {
+      if(event.buttons&3)goto mouse_next_event;
+      native_window_mouse_resync=FALSE;NativeWindowMouseReset;
+    }
+    previous=native_window_mouse_buttons;
+    NativeWindowMousePosition(event.x,event.y);
+    native_window_mouse.lb=(event.buttons&1)!=0;native_window_mouse.rb=(event.buttons&2)!=0;
+    native_window_mouse_time=event.stamp/1193182.0;
+    code=NativeWindowMouseMessages(NativeWindowMouseQueueMessages);
+    native_window_mouse_buttons=event.buttons;
+    NativeWindowMouseDispatch(code,previous);
+mouse_next_event:;
+  }
+  if(managed && (native_window_mouse.left_dbl_time || native_window_mouse.right_dbl_time)) {
+    native_window_mouse_time=NativeTimeStamp/1193182.0;
+    code=NativeWindowMouseMessages(NativeWindowMouseQueueMessages);
+    NativeWindowMouseDispatch(code,native_window_mouse_buttons);
+  }
+}

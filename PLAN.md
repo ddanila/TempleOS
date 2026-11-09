@@ -29388,3 +29388,44 @@ both existing bootstrap generations remain unchanged. Inventory appends explicit
 original pass/native fail/component cleanup receipts only. Native mouse dispatch,
 console wrapping/input delivery, resources, remaining applications and full
 C1–C5 remain open; bundled qualification remains 2/686.
+
+### C2/C3/C4: queued document mouse dispatch and cursor callback cleanup
+
+The unchanged strict Budget mouse workflow now passes natively (1023/63):
+physical PS/2 row/account selection, original double-click save/abort, exact
+reports/live ownership/cursors/prefilled form/menu/storage and caller recovery.
+Actual cold reboot omits Install/reseeding, preserves all file tuples and renders
+fresh 42 after both returns; 1884 prior files remain unchanged. The unmodified
+original reference remains canonical. An additional shared-source classic
+control passes the same full workflow without replacing that oracle.
+
+The managed worker consumes a private bounded IRQ-decoded queue and shares the
+original coordinate transform, WinQueIPMsgs recognizer and pure document action
+rules. Immutable transition positions/timestamps survive coalesced motion.
+Overflow cancels gestures until button release. Lazy hardware decoder setup and
+initial logical synchronization fix the console-before-PS/2 ordering defect.
+The queue contract red/green is 255 to 511, including fresh boot (320,240)
+hardware/logical agreement. The failed observer-variable-collision receipt is
+retained; independent file comparison and the corrected observer both confirm
+existing file preservation.
+
+Actual callback Exit previously left the parent document locked (75/7). Native
+borrow/lock cleanup now passes 255/7; an intermediate dead-target regression
+(255/6) is retained and fixed by admitting the scope after WinInside. All sixteen
+existing cursor cases and coordinates pass. Mouse-state assertions pass at 64
+and 8 MiB, control retirement passes 255x3 and derived cleanup 63x6. The 8 MiB
+functional run starts in 65.97 seconds under concurrent testing, so it does not
+close the separate isolated 60-second minimal startup gate. Unflagged DocEd
+still fails exactly as before (113/95 and 524/609 client differences).
+
+Both classic bootstrap generations, all 1857 production/26 helper pins and the
+386 instruction audit pass. Only ConsoleRuntime changes among sixteen modules;
+kernel bytes and ABI versions 104/264/41 are unchanged. The retained audit
+rechecks raw captures/files/events and rejects 188 corruptions. These classic
+bootstrap generations do not close C5's two native generations. See
+`docs/i386-window-mouse-dispatch.md` and `build/window-mouse-audit-v1/result.json`.
+
+No milestone is marked complete. Inventory receipts only append; qualification
+stays 2/686. Remaining work includes control callbacks/capture, wheel, border
+move/resize, top menus, full settled raster/pointer parity and resources, the
+normal editor/console input gaps, all remaining applications and full C1–C5.

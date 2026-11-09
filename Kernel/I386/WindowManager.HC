@@ -107,11 +107,14 @@ legacy_present_done:;
   if(borrowed)NativeGraphicsTextUnlock(&scope);
   return result;
 }
+#include "/Kernel/I386/WindowMouse.HC"
+
 U0 NativeWindowWorker(U8 *data)
 {
   I64 ch,number,mouse_x,mouse_y;
   Bool completed,pump,graphics_frame;
   SetRFlags(GetRFlags|0x200);
+  NativeWindowMouseReset;
   DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
   DocStdDefinesInit;
   NativeRunLevelMark(RLf_WINMGR,"winmgr");
@@ -120,6 +123,7 @@ U0 NativeWindowWorker(U8 *data)
     Fs->task_end_cb=&NativeWindowCancel;
     native_window_fault_task=0;pump=FALSE;
     try {
+      NativeWindowMousePump;
       NativeWindowDerived;
       pump=LBtr(&sys_semas[SEMA_JUST_PUMP_MSGS],0);
       if(!pump) {
@@ -142,6 +146,7 @@ U0 NativeWindowWorker(U8 *data)
       }
     } catch {
       ch=Fs->except_ch;number=native_window_fault_task;
+      NativeWindowMouseCancel;
       Fs->catch_except=TRUE;
       if(ch!='WinAbort' && ch!='DocGone') {
         NativeWindowReport(ch,number);

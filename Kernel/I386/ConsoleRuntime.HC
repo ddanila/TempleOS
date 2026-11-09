@@ -1386,7 +1386,7 @@ Bool ConsoleKeyIrq(U8 data,U8 status)
 {//Called with IF clear; request only, never allocate, switch or throw here.
   CI386Task *target;
   if(console_config && !(status&0xC0)) {
-    if(status&0x20) native_input_mouse.timestamp=NativeTimeStamp;
+    if(status&0x20) {native_input_mouse.timestamp=NativeTimeStamp;NativeMouseIRQ(data,status);}
     else {kbd.timestamp=NativeTimeStamp;kbd.irqs_working=TRUE;}
   }
   if(status&0x20)return FALSE;
@@ -1812,6 +1812,7 @@ import I64 CeilI64(I64 num,I64 to);
 
 #include "/Kernel/BlkDev/CdDirEntryCore.HC"
 
+#include "/Kernel/I386/WinCursorScope.HC"
 #include "/Adam/WinCursorPosCore.HC"
 
 #include "/Kernel/LoadFlags.HH"

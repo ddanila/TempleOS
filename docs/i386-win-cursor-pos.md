@@ -51,3 +51,24 @@ unchanged FileMgr now compiles and its three directory-chooser cases pass in
 build/i386-pick-dir-win-cursor-v1. See [chooser evidence](i386-pick-dir.md) for
 restoration checks and the separately observed overlapping-text defect; a
 functional result does not qualify whole-window rendering.
+
+## Callback Exit and cross-task cleanup checkpoint
+
+The shared body now releases acquired locks on invalid signatures and thrown
+errors. Native cleanup scopes additionally borrow the target window/document
+and release only the lock acquired by this call if a recalc callback exits its
+worker. Scope admission follows WinInside, preserving NULL for inactive targets.
+Caller-owned locks stay owned by the caller.
+
+`build/window-cursor-exit-before-v2` fails mask 75 while API checks pass 7:
+the actual worker is reclaimed but leaves the parent document locked. The final
+`build/window-cursor-exit-fixed-v2` passes 255/7, including lock release, continued
+parent DocPrint/DocSave use, child drain, exact caller heap recovery, dead/hidden/
+outside targets, unchanged files and fresh 42. Intermediate fixed-v1 released
+the lock but failed the dead-target check (255/6); that failure is preserved.
+The final image also passes all sixteen existing direct cursor cases and exact
+coordinate details in `build/window-mouse-cursor-regression-v1`.
+
+See [mouse dispatch audit](i386-window-mouse-dispatch.md). This extends component
+cleanup evidence; it does not qualify arbitrary corrupt-document pointers,
+all asynchronous cancellation or complete desktop mouse behavior.
