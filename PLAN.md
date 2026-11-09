@@ -28853,3 +28853,49 @@ without changing the returned error-record semantics, then rerunning that oracle
 Failed CmpBuf controls, OOM/cancellation/concurrency, complete module/file
 workflows, desktop/apps and two complete native C5 release generations remain
 open. See docs/i386-public-buffer.md. C1-C5 remain active; qualification 2/686.
+
+## Partial DolDoc error-entry payload ownership (2026-11-09)
+
+The shared dollar grammar converted a partially built entry to DOCT_ERROR by
+clearing its ownership flags. A tag and other allocated fields then survived
+ordinary DocEntryDel/DocDel. Both explicit parse failures and caught expression
+failures now transfer the owned entry out of the parser slot, detach/release it
+through the unchanged complete DocEntryDel, and allocate a zeroed error record.
+Clearing the slot before release also avoids retaining a freed entry if the
+replacement allocation raises into the enclosing catch. Allocation-fault
+qualification throughout construction remains open.
+
+A BI declaration precedes acquisition of a bin reference. The conversion clears
+HAS_BIN when bin_data is null before calling the normal destructor; actual bound
+references retain their ordinary deletion path. A mechanical comparison proves
+the complete grammar body is unchanged except the two error conversions. No
+reduced parser, special tag-only free or counter adjustment is introduced.
+
+`build/i386-dollar-error-baseline-v2` runs the identical expanded caller fixture
+on the unchanged 4d74cb9c image. Single-tag and unbound-BI error cases retain 16
+bytes on each reported heap; the multi-field cases retain 112. The final normal
+image passes all ten cases in `build/i386-dollar-error-contract-v2`: two valid
+entries, caught/explicit errors, multi-field payloads, a failure before entry
+creation, and two unbound-bin declarations. Every caller delta is zero, returned
+error entries have no orphaned tag/flags, queues and outer controls are preserved,
+and owner-task backing usage/allocation counts recover exactly.
+
+The same complete old/current grammar bodies run on immutable original x64
+scaffolding in `build/i386-dollar-error-x64-before-v3` and `...-x64-after-v3`, with
+real Lex/LexExtStr/scalar evaluation and controlled expression faults. The old
+body retains tags and positive raw totals; every one of the eight final rows is
+[1,1,1,0,0]. These are component ownership oracles, not substitutes for the
+normal native path or complete original document qualification.
+
+`build/i386-dollar-error-cross-v2/final-verification-audit.json` verifies all
+1,847 source/26 helper hashes, sixteen modules, two original x64 bootstrap
+generations, exact grammar/destructor scope and the before/after fixtures. The
+final image also passes the unchanged fourteen-case normal buffer contract,
+all 46 compiler error rows and ten printed-field cycles at 64 MiB KVM. ABI stays
+Compiler104/Console264/Memory41 with 691 console exports. No new 60-second startup,
+8/16 MiB release or complete native-generation qualification is claimed.
+
+OOM/cancellation, failures inside binding, missing-bin validation and full
+interchange remain open. Failed CmpBuf control lifetime, desktop/apps and native
+C5 release work also remain open. See docs/i386-dollar-error-ownership.md.
+C1-C5 remain active; bundled qualification remains 2/686.

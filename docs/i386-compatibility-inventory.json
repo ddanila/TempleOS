@@ -3989,6 +3989,20 @@
           "result": "fail",
           "evidence": "build/i386-public-buffer-doc-boundary-v2/result.json",
           "scope": "Valid and malformed dollar commands restore queued public controls and owner-task backing memory. Existing malformed button error conversion clears ownership flags but keeps a tag, retaining 16 native caller bytes. Error-record semantics match the pinned original; immediate payload cleanup remains an explicit C4 gap."
+        },
+        {
+          "target": "native-partial-dollar-entry-ownership",
+          "command": "python3 tools/test-i386-doc-public-boundary.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dollar-error-contract-v2/result.json",
+          "scope": "Ten normal API cases: valid foreground and six-string button, explicit and caught errors, empty construction and unbound BI declarations. Fresh error records have no orphaned tags/flags; exact caller heap, queue and task backing usage/allocation recovery. Complete entry destructor reused; OOM, binding failures, missing-bin validation and C1-C5 remain open. See docs/i386-dollar-error-ownership.md."
+        },
+        {
+          "target": "shared-x64-partial-dollar-entry-ownership",
+          "command": "python3 tools/test-doc-dollar-error-component.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-dollar-error-x64-after-v3/result.json",
+          "scope": "Complete current grammar on pinned original x64 scaffolding with real Lex/LexExtStr/scalar evaluation and controlled expression faults. Eight zero-heap rows; same fixture with 4d74cb9c grammar retains tags and positive raw totals. Component ownership evidence, not whole original/native document qualification."
         }
       ]
     },

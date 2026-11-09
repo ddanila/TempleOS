@@ -1,3 +1,18 @@
+U0 PrsDollarErrorEntryCore(CDoc *doc,CDocEntry **owned)
+{//Discard the complete partial payload before removing its ownership flags.
+  CDocEntry *entry=*owned;
+  *owned=NULL;
+  if (entry) {
+    //A BI number does not acquire a bin reference until validation/binding.
+    if (!entry->bin_data) entry->de_flags&=~DOCEF_HAS_BIN;
+    QueInit(entry);
+    DocEntryDel(doc,entry);
+  }
+  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
+  entry->type=DOCT_ERROR;
+  *owned=entry;
+}
+
 CDocEntry *PrsDollarCmdCore(CDocDollarServices *services,CCmpCtrl *cc,CDoc *doc,U8 *st)
 {//Uses $LK-UL,"Lex",A="MN:Lex"$() to parse a string and make Doc entries.
   I64 i,j,de_flags,processed_flags,attr=DOC_DFT;
@@ -249,10 +264,7 @@ CDocEntry *PrsDollarCmdCore(CDocDollarServices *services,CCmpCtrl *cc,CDoc *doc,
       }
     } else {
 pd_err:
-      if (!doc_e)
-	doc_e=CAlloc(sizeof(CDocEntry),doc->mem_task);
-      doc_e->type=DOCT_ERROR;
-      doc_e->de_flags=0;
+      PrsDollarErrorEntryCore(doc,&doc_e);
     }
     if (doc_e->de_flags&DOCEF_LST && (doc_e->de_flags&DOCEF_REMALLOC_DATA ||
 	  !(doc_e->de_flags&DOCEF_DEREF_DATA))) {
@@ -261,10 +273,7 @@ pd_err:
     }
   } catch {
     Fs->catch_except=TRUE;
-    if (!doc_e)
-      doc_e=CAlloc(sizeof(CDocEntry),doc->mem_task);
-    doc_e->type=DOCT_ERROR;
-    doc_e->de_flags=0;
+    PrsDollarErrorEntryCore(doc,&doc_e);
   }
   return doc_e;
 }

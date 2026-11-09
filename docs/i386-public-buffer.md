@@ -111,5 +111,6 @@ original probe in `build/i386-public-buffer-doc-error-reference-v1` returns the
 same error type, zero ownership flags and non-null tag. Its whole diagnostic
 heap deltas include other original output allocations and are not an isolated
 16-byte baseline. The shared conversion body is unchanged at this checkpoint.
-Releasing partially built error-entry payloads while preserving the error record
-is the next ownership correction; this test must pass without adjusting counters.
+That checkpoint retained the failing ownership oracle. The subsequent
+[partial-entry ownership correction](i386-dollar-error-ownership.md) releases
+those payloads and expands the test without adjusting counters.
