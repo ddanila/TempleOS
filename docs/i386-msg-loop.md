@@ -86,3 +86,46 @@ complete documents, streams and all614400 pixels, restore7, then pass fresh42
 and unchanged volumes. Default snapshot failures remain historical evidence;
 this mode does not establish default scheduling or full application/resource
 qualification. See [managed pointer evidence](i386-managed-pointer.md).
+
+Default refresh policy with observed input phases
+------------------------------------------------
+
+`--default-frame-barriers` leaves DOCF_DO_FULL_REFRESH clear. Its observer
+checks that flag under DocLock and waits for20 completed document and WinMgr
+updates after each consumed phase. This changes the test's input pacing only;
+it does not call the renderer, move the cursor, alter refresh counters or
+substitute the application's GetMsg/Print paths. The double-click batch still
+uses the original60ms transitions. Key down/up remain separate observed phases.
+
+This separates ordinary periodic document refresh from the previous diagnostic
+that explicitly forces full refresh. The unconstrained original repeats
+`msg-loop-default-{shift-}original-v2/v3` again differ in saved documents while
+both chronological streams match exactly. Those receipts remain intact. The
+new observer is necessary for comparing a defined input/render schedule; it
+does not establish equality across arbitrary uncontrolled interleavings.
+
+Original default-policy references repeat with exact complete documents and
+all307200 pixels in `msg-loop-default-frames-{shift-}original-v1/v2`. Native
+`msg-loop-default-frames-{shift-}native-v1/v2` matches each original, including
+all document bytes/cursor state, complete independent18/19-record streams,
+return flags and every screen pixel. Each restores mask7 with zero net caller
+heap growth, executes fresh42 and preserves the complete native volume. These
+runs use the unchanged ABI273 full-profile image at
+`build/i386-dc-constructor-scope-cross-v1/kernel.img`.
+
+`build/msg-loop-default-cadence-audit-v1/verify.py` checks all four native runs,
+original repetition/nondeterminism, actual input pins, delivered source/volume,
+raw restoration/stream data, all1228800 native pixel comparisons and the
+observed20-update gaps. No output entries or pixels are ignored or reordered.
+Reproduce each original/native pair with:
+
+```sh
+python3 tools/test-i386-msg-loop.py --default-frame-barriers --out ORIGINAL
+python3 tools/test-i386-msg-loop.py IMAGE --default-frame-barriers --reference ORIGINAL --out NATIVE
+```
+
+Add `--shift-exit` to both commands for the other exit. Existing full-refresh
+and unconstrained modes remain distinct. This closes the missing default-refresh
+policy subcase for this paced MsgLoop workflow; unconstrained scheduling,
+complete desktop orchestration, other applications/resources and C5 native
+release generations remain open. Whole-item qualification stays2/686.

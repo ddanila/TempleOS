@@ -17109,7 +17109,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "Load the byte-identical Demo/MsgLoop.HC with CCF_JUST_LOAD and invoke its MsgLoop function once in an actual user document. Dependencies: GetMsg/full public scan codes, Print/DolDoc insertion, WinMgr physical keyboard and mouse queues, window inhibit/scroll state. Type a; move; single/double/simultaneous buttons; wheel without a public wheel message; type b while left is held; normal and Shift-Escape exits. Capture document/stream/pixels and caller restoration. Keep default scheduling and explicitly full-refresh/frame-barrier cases separate.",
-      "oracle": "Independent stream_expected in tools/test-i386-msg-loop.py requires the full quoted-link header and18/19 chronological records with complete64-bit scans. Original full-refresh references repeat byte-identically in msg-loop-frames-{shift-}original-v3/v4; compare entire saved documents, all307200 pixels per variant, return flags, exact heap/restoration7, fresh42 and unchanged native volume. Default snapshots vary on the original and remain a recorded open qualification gap; no sorting, normalization or pixel exclusions. See docs/i386-msg-loop.md and docs/i386-managed-pointer.md.",
+      "oracle": "Independent stream_expected in tools/test-i386-msg-loop.py requires the full quoted-link header and18/19 chronological records with complete64-bit scans. Original full-refresh references repeat byte-identically in msg-loop-frames-{shift-}original-v3/v4; compare entire saved documents, all307200 pixels per variant, return flags, exact heap/restoration7, fresh42 and unchanged native volume. Default snapshots vary on the original and remain a recorded open qualification gap; no sorting, normalization or pixel exclusions. See docs/i386-msg-loop.md and docs/i386-managed-pointer.md. Default refresh policy is now separately checked without DOCF_DO_FULL_REFRESH: twenty real document/WinMgr updates between consumed phases make both originals repeat exactly; msg-loop-default-frames-{shift-}native-v1/v2 matches entire documents, streams and all pixels, restores7 and zero caller growth, then fresh42/unchanged volume. Arbitrary uncontrolled interleavings remain open; this paced subcase does not qualify the whole item.",
       "tests": [
         {
           "target": "unchanged-msg-loop-real-input-stream",
@@ -17145,6 +17145,13 @@
           "result": "pass",
           "evidence": "build/msg-loop-frames-native-v7/result.json",
           "scope": "Unchanged program and independent18/19-message expectations. Explicit full-refresh test document and real document/WinMgr frame barriers make both original references repeat exactly. Both native variants match complete saved documents including cursor, streams and all614400 pixels, restore7, then fresh42 and unchanged volumes. Default-mode snapshot failures/nondeterminism remain recorded; no entries/pixels excluded or reordered. Whole application/default scheduling/resources/C1-C5 remain unqualified. See docs/i386-managed-pointer.md."
+        },
+        {
+          "target": "default-refresh-msg-loop-raster",
+          "command": "python3 tools/test-i386-msg-loop.py IMAGE --default-frame-barriers --reference ORIGINAL --out NORMAL; python3 tools/test-i386-msg-loop.py IMAGE --default-frame-barriers --shift-exit --reference SHIFT_ORIGINAL --out SHIFT",
+          "result": "pass",
+          "evidence": "build/msg-loop-default-cadence-audit-v1/result.json",
+          "scope": "Default document refresh policy with observed20-update input phases; DOCF_DO_FULL_REFRESH stays clear. Both original variants repeat exactly; both native variants repeat exact complete saved documents,18/19 chronological records and all1228800 pixels across four runs. Actual unchanged MsgLoop/GetMsg/Print, real PS/2/keyboard, original60ms double-click batch, restoration7/zero caller growth, fresh42 and unchanged complete volumes. Arbitrary uncontrolled timing, full desktop/resources/whole-item/C1-C5 remain open. See docs/i386-msg-loop.md."
         }
       ]
     },

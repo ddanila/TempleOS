@@ -29842,3 +29842,25 @@ build/pen-retirement-audit-v1/verify.py. These extend recovery qualification on
 the unchanged ABI273 image; they do not qualify default desktop scheduling,
 all allocation/resource paths, remaining applications or native C5 generations.
 Inventory stays2/686; full C1-C5 remain open.
+
+### C2/C3/C4: MsgLoop under the default document refresh policy
+
+Unconstrained original repetitions again change saved insertion/cursor state
+with identical complete output streams. A new explicit observer waits20 real
+DocRecalc/WinMgr updates between consumed input phases without setting
+DOCF_DO_FULL_REFRESH. It checks that flag stays clear, changes no cursor or
+counter state and preserves the original60ms double-click batch. This tests
+the periodic document refresh policy independently of the older forced-full
+refresh diagnostic, while keeping the complete document/raster oracle.
+
+Both original exit variants repeat exactly. All four native runs (Escape and
+Shift-Escape, each twice) match complete documents,18/19-message streams and
+all1228800 pixels, restore7/zero caller growth, execute fresh42 and preserve
+the complete volume. Evidence is msg-loop-default-frames-{shift-}native-v1/v2
+and build/msg-loop-default-cadence-audit-v1/verify.py. The unchanged ABI273 image
+is used; no production code or startup-budget qualification changes.
+
+This qualifies the paced default-refresh subcase, not arbitrary uncontrolled
+interleavings, complete original desktop orchestration or native release
+self-host generations. Inventory remains2/686; full C1-C5 remain open. See
+docs/i386-msg-loop.md.
