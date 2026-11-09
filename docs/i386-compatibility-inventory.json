@@ -7074,6 +7074,20 @@
           "result": "pass",
           "evidence": "build/budget-edit-copy-native-v3/result.json",
           "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
+        },
+        {
+          "target": "original-budget-existing-form-cancellation",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --cancel-existing --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-original-v2/result.json",
+          "scope": "Two matching original controls: read-only observer sees changed live description tags before keyboard Shift-Escape for existing-entry edit and populated copy. Exact document/transaction/string identities and all field values survive; no unsaved data/string files. Mask 2047, accepted edit/copy/save outputs identical to prior workflow, same-boot reopen mask 63. Other field changes and full Budget remain open."
+        },
+        {
+          "target": "native-budget-existing-form-cancellation-cold",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --cancel-existing --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-native-v1/result.json",
+          "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
         }
       ]
     },
@@ -7203,6 +7217,20 @@
           "result": "pass",
           "evidence": "build/budget-edit-copy-native-v3/result.json",
           "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
+        },
+        {
+          "target": "original-budget-existing-form-cancellation",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --cancel-existing --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-original-v2/result.json",
+          "scope": "Two matching original controls: read-only observer sees changed live description tags before keyboard Shift-Escape for existing-entry edit and populated copy. Exact document/transaction/string identities and all field values survive; no unsaved data/string files. Mask 2047, accepted edit/copy/save outputs identical to prior workflow, same-boot reopen mask 63. Other field changes and full Budget remain open."
+        },
+        {
+          "target": "native-budget-existing-form-cancellation-cold",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --cancel-existing --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-native-v1/result.json",
+          "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
         }
       ]
     },
@@ -7308,6 +7336,20 @@
           "result": "pass",
           "evidence": "build/budget-edit-copy-native-v3/result.json",
           "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
+        },
+        {
+          "target": "original-budget-existing-form-cancellation",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --cancel-existing --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-original-v2/result.json",
+          "scope": "Two matching original controls: read-only observer sees changed live description tags before keyboard Shift-Escape for existing-entry edit and populated copy. Exact document/transaction/string identities and all field values survive; no unsaved data/string files. Mask 2047, accepted edit/copy/save outputs identical to prior workflow, same-boot reopen mask 63. Other field changes and full Budget remain open."
+        },
+        {
+          "target": "native-budget-existing-form-cancellation-cold",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --cancel-existing --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-native-v1/result.json",
+          "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
         }
       ]
     },
@@ -7413,6 +7455,20 @@
           "result": "pass",
           "evidence": "build/budget-edit-copy-native-v3/result.json",
           "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
+        },
+        {
+          "target": "original-budget-existing-form-cancellation",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --cancel-existing --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-original-v2/result.json",
+          "scope": "Two matching original controls: read-only observer sees changed live description tags before keyboard Shift-Escape for existing-entry edit and populated copy. Exact document/transaction/string identities and all field values survive; no unsaved data/string files. Mask 2047, accepted edit/copy/save outputs identical to prior workflow, same-boot reopen mask 63. Other field changes and full Budget remain open."
+        },
+        {
+          "target": "native-budget-existing-form-cancellation-cold",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --cancel-existing --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-native-v1/result.json",
+          "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
         }
       ]
     },
@@ -7555,6 +7611,20 @@
           "result": "pass",
           "evidence": "build/budget-edit-copy-native-v3/result.json",
           "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
+        },
+        {
+          "target": "original-budget-existing-form-cancellation",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --cancel-existing --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-original-v2/result.json",
+          "scope": "Two matching original controls: read-only observer sees changed live description tags before keyboard Shift-Escape for existing-entry edit and populated copy. Exact document/transaction/string identities and all field values survive; no unsaved data/string files. Mask 2047, accepted edit/copy/save outputs identical to prior workflow, same-boot reopen mask 63. Other field changes and full Budget remain open."
+        },
+        {
+          "target": "native-budget-existing-form-cancellation-cold",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --cancel-existing --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-native-v1/result.json",
+          "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
         }
       ]
     },
@@ -7666,6 +7736,20 @@
           "result": "pass",
           "evidence": "build/budget-edit-copy-native-v3/result.json",
           "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
+        },
+        {
+          "target": "original-budget-existing-form-cancellation",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --cancel-existing --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-original-v2/result.json",
+          "scope": "Two matching original controls: read-only observer sees changed live description tags before keyboard Shift-Escape for existing-entry edit and populated copy. Exact document/transaction/string identities and all field values survive; no unsaved data/string files. Mask 2047, accepted edit/copy/save outputs identical to prior workflow, same-boot reopen mask 63. Other field changes and full Budget remain open."
+        },
+        {
+          "target": "native-budget-existing-form-cancellation-cold",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --cancel-existing --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-native-v1/result.json",
+          "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
         }
       ]
     },
@@ -7805,6 +7889,20 @@
           "result": "pass",
           "evidence": "build/budget-edit-copy-native-v3/result.json",
           "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
+        },
+        {
+          "target": "original-budget-existing-form-cancellation",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --cancel-existing --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-original-v2/result.json",
+          "scope": "Two matching original controls: read-only observer sees changed live description tags before keyboard Shift-Escape for existing-entry edit and populated copy. Exact document/transaction/string identities and all field values survive; no unsaved data/string files. Mask 2047, accepted edit/copy/save outputs identical to prior workflow, same-boot reopen mask 63. Other field changes and full Budget remain open."
+        },
+        {
+          "target": "native-budget-existing-form-cancellation-cold",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --cancel-existing --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-native-v1/result.json",
+          "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
         }
       ]
     },
@@ -8003,6 +8101,20 @@
           "result": "pass",
           "evidence": "build/budget-edit-copy-native-v3/result.json",
           "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
+        },
+        {
+          "target": "original-budget-existing-form-cancellation",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --cancel-existing --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-original-v2/result.json",
+          "scope": "Two matching original controls: read-only observer sees changed live description tags before keyboard Shift-Escape for existing-entry edit and populated copy. Exact document/transaction/string identities and all field values survive; no unsaved data/string files. Mask 2047, accepted edit/copy/save outputs identical to prior workflow, same-boot reopen mask 63. Other field changes and full Budget remain open."
+        },
+        {
+          "target": "native-budget-existing-form-cancellation-cold",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --cancel-existing --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-existing-cancel-native-v1/result.json",
+          "scope": "Same changed-draft observation, cancellation identities/values and mask 2047 on normal native source, followed by exact accepted edit/copy/save and real shutdown/restart/read-only reopen mask 63. Files retain bytes/attributes/timestamps during cold abort; fresh arithmetic after both exits; 1877 existing files preserved. Key logs prove cancellation follows draft observation. Existing exact target-specific F64 policy remains explicit. Application/runtime source unchanged; other field changes, accounts, templates, mouse, resource and full C1-C5 qualification remain open. See docs/i386-budget-edit-copy.md."
         }
       ]
     },

@@ -575,3 +575,27 @@ checks eleven inventoried files plus the compressed template and unchanged
 runtime source. Edit/copy cancellation and other field changes, account-picker
 and editor interactions, templates, mouse and full Budget qualification remain
 open. No inventory item or C1–C5 milestone closes.
+
+## Budget cancellation of modified existing-entry/copy forms (2026-11-09)
+
+The edit/copy runner's `--cancel-existing` mode now opens each populated form,
+changes its description and waits for the read-only observer to see that changed
+live data tag before sending Shift-Escape. Both cancellations must preserve the
+same document, transaction and three string pointers, exact original values and
+absence of unsaved data/string files. Raw cancelled documents retain the same
+entry IDs; the selected-entry cursor marker is checked explicitly.
+
+Original controls build/budget-existing-cancel-original-v2/v3 pass mask 2047,
+then same-boot reopen mask 63. Native build/budget-existing-cancel-native-v1
+passes both masks through actual shutdown/restart and read-only abort, with exact
+file bytes/attributes/timestamps preserved and fresh arithmetic after both exits.
+Accepted edit/copy/save data still matches the earlier workflow within each
+target's established exact numerical policy; cancelled text never enters the
+saved string table. The session preserves 1,877 existing files.
+
+See [the workflow, commands and remaining paths](i386-budget-edit-copy.md) and
+build/budget-existing-cancel-audit-v1/result.json. Keyboard logs verify the order
+of observed draft changes and cancellation; exact fixtures/raw records, source
+provenance and prior accepted outputs are audited. No application/runtime code
+changed. Other field changes, account-picker/editor, templates, mouse and full
+Budget qualification remain open; no C1–C5 milestone or inventory item closes.

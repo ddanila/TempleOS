@@ -21,9 +21,9 @@ POINTER=re.compile(rb',U=0x([0-9A-F]+)\$')
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
-def verify(records,native=False):
+def verify(records,native=False,cancel_existing=False):
     before,after,mask,data,strings,accounts=records
-    if mask!=struct.pack('<q',511):raise ValueError('Entry/restoration mask differs: '+repr(mask))
+    if mask!=struct.pack('<q',2047 if cancel_existing else 511):raise ValueError('Entry/restoration mask differs: '+repr(mask))
     ids=POINTER.findall(after)
     if len(ids)!=2 or len(set(ids))!=2 or not all(int(v,16) for v in ids):raise ValueError('Missing transaction identity')
     normalized=[POINTER.sub(b',U=<entry>$',v) for v in (before,after)]
@@ -56,8 +56,9 @@ def compare_target_data(actual,reference):
 
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--archive',type=Path);ap.add_argument('--reference',type=Path);ap.add_argument('--out',type=Path,required=True);args=ap.parse_args()
-    out=args.out.resolve();fixture=ROOT/'tests/guest/i386-budget-edit-copy/Contract.HC'
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--archive',type=Path);ap.add_argument('--reference',type=Path);ap.add_argument('--out',type=Path,required=True);ap.add_argument('--cancel-existing',action='store_true',help='Cancel modified existing-entry and copy forms before accepting them');args=ap.parse_args()
+    out=args.out.resolve();fixture=ROOT/'tests/guest/i386-budget-edit-copy'/('Cancellation.HC' if args.cancel_existing else 'Contract.HC')
+    edit_names=EDIT_NAMES+('edit-cancelled.DD','copy-cancelled.DD') if args.cancel_existing else EDIT_NAMES
     if out.exists():ap.error('Use a fresh output directory')
     if args.disk and not args.reference:ap.error('Native requires --reference')
     if not args.disk and not args.archive:ap.error('Original requires --archive')
@@ -65,10 +66,10 @@ def main():
     if args.disk:
         gold=args.reference.resolve();info=json.loads((gold/'result.json').read_text())
         if info.get('result')!='pass' or not info.get('inputs_unchanged') or info.get('fixture_sha256')!=sha(fixture):raise ValueError('Matching original reference required')
-        paths += [args.disk.resolve(),gold/'result.json']+[gold/n for n in NAMES+REOPEN_NAMES+EDIT_NAMES]
+        paths += [args.disk.resolve(),gold/'result.json']+[gold/n for n in NAMES+REOPEN_NAMES+edit_names]
     else:paths.append(args.archive.resolve())
     out.mkdir(parents=True);pins={str(p):sha(p) for p in paths}
-    report=dict(result='running',fixture_sha256=sha(fixture),input_sha256=pins,scope='Full Budget() edit/copy existing transaction after new-entry cancellation: read-only observer, real keyboard description edit and independent copy allocation, save/cold native reopen; new transaction through real popup form and emulated keyboard: fixed date, amount, accounts and description, Escape accept/save, exact records and caller restoration. First cancels a fully typed popup; native cold reboot then read-only Budget reopen/abort, original same-boot reopen. Not full application qualification.')
+    report=dict(result='running',cancel_existing=args.cancel_existing,cancellation_scope='Modified form tags are observed before Shift-Escape; original transaction/document/string identities, exact values and absent unsaved files must survive' if args.cancel_existing else None,fixture_sha256=sha(fixture),input_sha256=pins,scope='Full Budget() edit/copy existing transaction after new-entry cancellation: read-only observer, real keyboard description edit and independent copy allocation, save/cold native reopen; new transaction through real popup form and emulated keyboard: fixed date, amount, accounts and description, Escape accept/save, exact records and caller restoration. First cancels a fully typed popup; native cold reboot then read-only Budget reopen/abort, original same-boot reopen. Not full application qualification.')
     (out/'fixture.HC').write_bytes(fixture.read_bytes())
     (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     guest=None
@@ -109,11 +110,24 @@ def main():
         guest.screenshot('form-filled');guest.press('esc')
         guest.wait('BP entered\n',30);time.sleep(1);guest.screenshot('entered')
         guest.press('home');guest.wait('BP edit selected\n',30);guest.press('ret')
+        if args.cancel_existing:
+            guest.wait('BP edit cancel form\n',30);time.sleep(2)
+            for i in range(4):guest.press('tab')
+            guest.key('ctrl',True);guest.press('right');guest.key('ctrl',False);guest.type('?')
+            guest.wait('BP edit draft changed\n',30);guest.screenshot('edit-cancel-filled');guest.key('shift',True);guest.press('esc');guest.key('shift',False)
+            guest.wait('BP edit cancelled\n',30);guest.screenshot('edit-cancelled');guest.press('home');guest.press('ret')
         guest.wait('BP edit form\n',30);time.sleep(2);guest.screenshot('edit-form')
         for i in range(4):guest.press('tab')
         guest.key('ctrl',True);guest.press('right');guest.key('ctrl',False);guest.type('!')
         guest.screenshot('edit-filled');guest.press('esc');guest.wait('BP edited\n',30)
-        guest.screenshot('edited');guest.press('home');guest.press('c');guest.wait('BP copy form\n',30)
+        guest.screenshot('edited');guest.press('home');guest.press('c')
+        if args.cancel_existing:
+            guest.wait('BP copy cancel form\n',30);time.sleep(2)
+            for i in range(4):guest.press('tab')
+            guest.key('ctrl',True);guest.press('right');guest.key('ctrl',False);guest.type('?')
+            guest.wait('BP copy draft changed\n',30);guest.screenshot('copy-cancel-filled');guest.key('shift',True);guest.press('esc');guest.key('shift',False)
+            guest.wait('BP copy cancelled\n',30);guest.screenshot('copy-cancelled');guest.press('home');guest.press('c')
+        guest.wait('BP copy form\n',30)
         time.sleep(2);guest.screenshot('copy-form');guest.press('esc');guest.wait('BP copied\n',30)
         guest.screenshot('copied');guest.press('esc');guest.wait('BP done\n',30)
         records=[(out/'guest'/n).read_bytes() for n in NAMES]
@@ -127,6 +141,14 @@ def main():
             (out/name).write_bytes(value)
             if args.disk and POINTER.sub(b',U=<entry>$',value)!=POINTER.sub(b',U=<entry>$',(gold/name).read_bytes()):
                 raise ValueError('Original intermediate document differs: '+name)
+        if args.cancel_existing:
+            for name,base_name in [('edit-cancelled.DD','entered.DD'),('copy-cancelled.DD','edited.DD')]:
+                value=(out/'guest'/name).read_bytes();base=(out/base_name).read_bytes()
+                expected_doc=base[:-1].replace(b'$FG,1$$MU',b'$FG,1$\x05$MU')
+                if value!=expected_doc:raise ValueError('Cancelled form changed entry document/identity: '+name+': '+repr(value))
+                (out/name).write_bytes(value)
+                if args.disk and POINTER.sub(b',U=<entry>$',value)!=POINTER.sub(b',U=<entry>$',(gold/name).read_bytes()):
+                    raise ValueError('Original cancellation document differs: '+name)
         if args.disk:
             guest.wait('COMMAND OK\n',start=guest.collect().index('INPUT LINE BudgetEntry;'))
             guest.command('6*7;');guest.result_pixels()
@@ -173,9 +195,9 @@ def main():
             report['changed_files']=sorted(changed);report['preserved_files']=len(set(before)-allowed)
             report['filesystem']=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['verify_mutated_volume'](image)
         for name,value in zip(NAMES,records):(out/name).write_bytes(value)
-        normalized=verify(records,native=bool(args.disk))
+        normalized=verify(records,native=bool(args.disk),cancel_existing=args.cancel_existing)
         if args.disk:
-            reference=verify([(gold/n).read_bytes() for n in NAMES])
+            reference=verify([(gold/n).read_bytes() for n in NAMES],cancel_existing=args.cancel_existing)
             if normalized[:2]+normalized[3:]!=reference[:2]+reference[3:]:raise ValueError('Original account views differ')
             offsets=compare_target_data(normalized[2],reference[2])
             report['numeric_architecture_difference']=dict(original_amount_bits='405F600000000002',native_amount_bits='405F600000000000',differing_data_offsets=offsets,policy='docs/i386-lex-number.md; docs/i386-f64-backend.md')

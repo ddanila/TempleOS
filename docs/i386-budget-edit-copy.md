@@ -76,7 +76,7 @@ python3 tools/test-i386-budget-edit-copy.py --archive build/i386-operand-cross-v
 python3 tools/test-i386-budget-edit-copy.py build/i386-operand-cross-v1/kernel.img --reference OUT_REFERENCE --out OUT_NATIVE
 ```
 
-Editing/copy cancellation, alternate account choices, templates, mouse workflows,
+Other field changes, alternate account choices, templates, mouse workflows,
 full Budget qualification and complete C1–C5 acceptance remain open.
 
 ## Budget workflow coverage map
@@ -88,8 +88,8 @@ workflow does not remove any of these paths from C3.
 | Original path | Existing executable evidence | Remaining workflow |
 | --- | --- | --- |
 | `n`: new entry | `test-i386-budget-entry.py`; this runner | Alternate dates, amounts and account choices |
-| Enter: edit entry | This runner changes an existing description | Cancel edit; change date, amount and both accounts; save/reopen |
-| `c`: copy entry | This runner accepts populated copy, checks independent strings and both saved records | Cancel copy; change the copied fields and verify the source remains intact |
+| Enter: edit entry | This runner changes an existing description | Change date, amount and both accounts; save/reopen |
+| `c`: copy entry | This runner accepts populated copy, checks independent strings and both saved records | Change the copied fields and verify the source remains intact |
 | Ctrl-Y: delete | `test-i386-budget-session.py` selects/deletes/saves, then deletes/aborts after native reboot | Mouse selection and deletion |
 | Escape / Shift-Escape | Entry/session runners cover save, abort and caller restoration; this runner checks edited/copied persistence | Equivalent menu and mouse routes |
 | `v`: view account | `test-i386-budget-views.py` checks reports through component calls | Drive actual account picker; accept and cancel; verify balances and return |
@@ -129,3 +129,47 @@ inventory edits only append test receipts: original reference data and all
 qualification states stay unchanged. Eleven inventoried Budget files plus the
 additional compressed template are checked independently. Inventory guards pass;
 qualification remains 2/686 and C1–C5 stay open.
+
+## Cancel modified existing-entry and copy forms
+
+`--cancel-existing` selects `Cancellation.HC`, leaving the original fixture and
+default workflow available. Before accepting the description edit, it opens the
+existing entry, appends `?` to its populated description and cancels with
+Shift-Escape. Before accepting the copy, it similarly modifies and cancels its
+populated description. The observer locks and reads the live form's data tags;
+the driver waits for the changed text to be observed before sending cancellation.
+
+The new mask bits 512 and 1024 require the same document, transaction and all
+three string pointers, exact date/amount/account/description values, and no
+unsaved data or string-table files after each cancellation. Raw cancelled
+documents must preserve the original entry ID and content; the cursor marker
+moves to the selected first entry as an explicit expected keyboard effect.
+Accepted edit/copy then proceeds, requiring the same exact final reports and
+saved records as the earlier workflow. Cold reopen retains its independent
+mask 63 and exact file-preservation checks.
+
+Reproduce with fresh output directories:
+
+```
+python3 tools/test-i386-budget-edit-copy.py --cancel-existing --archive build/i386-operand-cross-v1/exports/BudgetAccts.DD.Z --out OUT_REFERENCE
+python3 tools/test-i386-budget-edit-copy.py build/i386-operand-cross-v1/kernel.img --cancel-existing --reference OUT_REFERENCE --out OUT_NATIVE
+```
+
+Original controls `build/budget-existing-cancel-original-v2/result.json` and
+`build/budget-existing-cancel-original-v3/result.json` both pass mask 2047 and
+same-boot reopen mask 63. Native
+`build/budget-existing-cancel-native-v1/result.json` passes both masks, including
+an actual shutdown/restart and unchanged file bytes/attributes/timestamps after
+read-only abort. Both exits render fresh 42. The session preserves 1,877 existing
+files; accepted output records match the prior workflow exactly within each
+target's already documented numerical policy.
+
+`build/budget-existing-cancel-audit-v1/result.json` verifies exact fixtures,
+raw exports, cancellation document identities, keyboard Shift-Escape after both
+observed drafts, two rejected missing-flag records, and default-oracle/regression
+agreement with the prior accepted workflow. It checks 1,850 unchanged runtime
+source hashes, eleven inventoried Budget files plus the compressed template,
+matching original repeats and frozen test-time inventory metadata. Later
+inventory edits only append receipts; reference and qualification fields remain
+unchanged. The default `Contract.HC` is untouched. No application/runtime change
+or whole-file/app qualification is inferred; C1–C5 remain open at 2/686.

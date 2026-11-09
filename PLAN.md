@@ -29044,3 +29044,27 @@ docs/i386-application-matrix.md and build/budget-edit-copy-audit-v1/result.json.
 Edit/copy cancellation, other field changes, account choices/editor, templates,
 mouse, resource profiles and complete app/release acceptance remain open.
 Bundled qualification stays 2/686; C1–C5 remain active.
+
+### C1/C3: cancel modified existing-entry and populated-copy Budget forms
+
+The existing edit/copy runner adds --cancel-existing with a separate fixture;
+the default accepted-workflow fixture stays unchanged. Real keyboard input
+changes each populated description, and a read-only observer must see the live
+draft tag before Shift-Escape. Both cancellations require identical document,
+transaction and string pointers, exact original values and absent unsaved files.
+Raw cancelled documents preserve entry IDs and content with the explicit Home
+cursor movement. Accepted edit/copy/save then continues unchanged.
+
+Original v2/v3 controls agree at mask 2047 and same-boot reopen mask 63. Native-v1
+passes both through real shutdown/restart/read-only abort, preserving all file
+bytes/attributes/timestamps and returning fresh 42 after both exits. Its saved
+outputs match the prior accepted workflow exactly within the established
+numerical policies; 1,877 existing files are preserved. No application/runtime
+code changed. The audit checks draft/key-event order, raw identities/records,
+two rejected missing-flag records, 1,850 unchanged runtime source hashes, eleven
+inventoried Budget files plus the template archive and frozen inventory metadata.
+
+See docs/i386-budget-edit-copy.md, docs/i386-application-matrix.md and
+build/budget-existing-cancel-audit-v1/result.json. Other field changes, account
+choices/editor, templates, mouse, resource profiles and full app/release
+acceptance remain open. C1–C5 remain active; qualification remains 2/686.
