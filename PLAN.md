@@ -29466,3 +29466,40 @@ cover raw-focus/non-document controls, custom hit/capture mutation, simultaneous
 buttons, wheel, borders/dragging and menus, plus default hardware motion gain and
 full pointer/frame parity. Normal editor/console input, application/resource
 coverage and C5 native generations/minimal startup remain open.
+
+### C2/C4: raw-focus control input without managed-render admission
+
+The original raw-mode control contract passes all eight phases, while the
+unchanged native image reaches every physical target/input with no callbacks
+and caller/heap mask 15. NativeWindowMousePump formerly discarded input whenever
+NativeWindowNeeded declined rendering. A separate non-yielding control scan now
+admits input for visible control owners or an existing capture. Control-only
+routing selects the frontmost hit window, without requiring a document/control
+on that blocker; it uses existing owner-borrow/callback/capture rules. It does
+not post raw document messages or synthesize document keys. Uncaptured retained
+legacy scopes keep their existing path. Rendering admission/presenter source is
+unchanged; raw drawing and document editing are not qualified by this component.
+
+The fixture adds only optional raw mode (default FALSE) and requested/actual
+mode export. Its original callback oracle, physical steps and deadlines remain
+unchanged. Both raw and managed original/native comparisons pass. Five current
+callback lifetime modes pass 255 and the full unchanged Budget mouse/cold workflow
+passes 1023/63 with 1885 prior files, unchanged cold tuples and both fresh 42 results.
+The existing unflagged editor strictly fails exactly as before (113/95 and
+524/609 client differences); the audit recomputes those counts from captures.
+
+Both classic bootstrap generations and 386 audit pass. All 1858 production/26
+helper pins match. Only the two private WindowMouse sources and ConsoleRuntime
+module change; kernel bytes and ABI 104/264/41 remain unchanged. The retained
+audit rejects 104 callback/identity/IRQ/edge/geometry/restoration/mode corruptions.
+See docs/i386-raw-control-input.md and build/raw-control-audit-v1/result.json.
+No C1–C5 milestone is closed; qualification remains 2/686.
+
+The next input work includes original default hardware motion gain, explicit
+legacy/non-document/raw drawing and document paths, opaque overlap/capture
+transitions, custom hit callbacks, simultaneous buttons, wheel, border moving/
+resizing and menus, then full pointer/frame/resources qualification. Identical
+first relative movement (-188,-134) from (320,240) settles at (226,173) originally
+versus (132,106) natively, confirming the 0.5 versus unit-gain difference rather
+than assuming pointer-target success proves motion parity. Editor/console input,
+remaining applications, resources and C5 native/minimal startup remain open.

@@ -815,3 +815,13 @@ its full mouse/cold pass (1023/63, 1885 prior files). See
 [the control component evidence](i386-control-mouse.md). This does not qualify
 raw-focus controls, default motion gain, wheel/border/menu/raster/resources or
 complete C1–C5. Qualification stays 2/686.
+
+Raw-focus control input now passes the same original eight-phase callback oracle,
+including left/right, border coordinates, held capture/outside release and both
+inhibition flags. The old native image completes inputs with no callbacks; the
+new control-only route leaves managed-render admission unchanged. Managed input,
+five callback-lifetime modes and Budget mouse/cold reopening (1023/63) still pass.
+The strict unflagged editor retains exactly its prior 113/95 and 524/609 client
+failure. See [raw control input](i386-raw-control-input.md). Raw document input,
+raw control drawing/legacy scopes, default hardware motion gain and full C1–C5
+remain open; qualification stays 2/686.

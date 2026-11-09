@@ -8,6 +8,32 @@ U0 NativeWindowControlReset()
   native_window_control_task=0;native_window_control=NULL;
   native_window_control_gestures=0;
 }
+Bool NativeWindowControlNeeded()
+{//Control input does not require replacing a focused raw terminal's surface.
+  CTask *task=sys_winmgr_task;
+  if(!native_window_started || !TaskValidate(task))return FALSE;
+  if(native_window_control)return TRUE;
+  //Retained editor/help/picker scopes still own their existing input path.
+  if(NativeLegacyViewActive(sys_focus_task))return FALSE;
+  do {
+    if(!TaskValidate(task))return FALSE;
+    if(task!=native_window_worker && !NativeRenderOwnerClosing(task) &&
+        Bt(&task->display_flags,DISPLAYf_SHOW) && task->next_ctrl!=&task->next_ctrl)return TRUE;
+    task=task->next_task;
+  } while(task!=sys_winmgr_task);
+  return FALSE;
+}
+CTask *NativeWindowControlTarget(I64 x,I64 y)
+{//An opaque foreground window blocks controls behind it, even without a doc.
+  CTask *task=sys_winmgr_task->last_task;
+  while(task!=sys_winmgr_task) {
+    if(!TaskValidate(task))return NULL;
+    if(!NativeRenderOwnerClosing(task) && Bt(&task->display_flags,DISPLAYf_SHOW) &&
+        WinInside(x,y,task,FONT_WIDTH))return task;
+    task=task->last_task;
+  }
+  return NULL;
+}
 U0 NativeWindowControlRelease(CNativeRenderScope *) {}
 Bool NativeWindowControlMember(CTask *task,CCtrl *control)
 {

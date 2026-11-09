@@ -698,6 +698,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -1573,6 +1580,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -7298,6 +7312,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -7520,6 +7541,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -7808,6 +7836,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -8106,6 +8141,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -8362,6 +8404,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -8683,6 +8732,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -8939,6 +8995,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -9027,6 +9090,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -9328,6 +9398,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -9451,6 +9528,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -9755,6 +9839,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },
@@ -9790,6 +9881,13 @@
           "result": "pass",
           "evidence": "build/control-mouse-audit-v1/result.json",
           "scope": "Strict original/native eight-phase physical PS/2 control comparison: left/right normal/border coordinates, repeated capture/outside release, self/focus inhibition, callback owner/task/IRQ and caller/heap restoration; old native remains strict zero-callback failure. Five native callback lifetime modes pass255; Budget mouse/cold regression1023/63 preserves1885 prior files. Audit rejects102 corruptions. Not raw-focus/custom-hit/capture mutation/simultaneous-button/wheel/border/menu/default-gain/raster/resources or full-file/C1-C5 qualification. See docs/i386-control-mouse.md."
+        },
+        {
+          "target": "native-raw-focus-control-input",
+          "command": "python3 tools/test-i386-control-mouse.py IMAGE --raw --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/raw-control-audit-v1/result.json",
+          "scope": "Strict raw original/native eight-phase callback comparison, requested/actual raw mode, left/right and border coordinates, repeated capture/outside release, inhibition and caller/child/heap. Old native remains zero-callback failure. Managed, five255 lifetime modes and full Budget mouse/cold1023/63 regressions pass;1885 prior files/cold tuples preserved. Unflagged DocEd remains exact113/95 and524/609 failure. Audit rejects104 corruptions. Not raw document input/control drawing/legacy scopes, default hardware gain, overlap/transitions/custom hit/simultaneous buttons/wheel/border/menu/pointer/raster/resources or whole-file/C1-C5 qualification. See docs/i386-raw-control-input.md."
         }
       ]
     },

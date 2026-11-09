@@ -76,8 +76,8 @@ not set DISPLAYf_NOT_RAW, so NativeWindowNeeded rejected managed input while it
 had focus. The final fixture explicitly creates a focused, frontmost managed
 window and exports/checks its flags, inhibition, focus and hit admission before
 every click. A blocking wrapper also keeps the root command active during the
-probe. These changes correct probe setup, not production dispatch. Raw-focus
-controls remain an open C2 case; this probe does not qualify them.
+probe. These changes correct probe setup, not production dispatch. That probe does not qualify raw-focus controls; the later input checkpoint is
+linked below.
 
 ## Build, regression and audit
 
@@ -102,3 +102,11 @@ reuse, simultaneous buttons, wheel input, border moving/resizing, top menus,
 default hardware motion gain, pointer/full-frame rendering and repeated-use
 resources remain open. The existing zero-flag editor/console input gaps and
 isolated 8 MiB/60-second startup gate are unchanged.
+
+## Later raw-focus input checkpoint
+
+Raw-focus control callbacks now have an original/native eight-phase comparison
+and a passing implementation that admits input independently of managed graphics.
+The managed, five lifetime and Budget mouse/cold regressions still pass. See
+[raw input evidence and limits](i386-raw-control-input.md). Raw document input,
+control drawing, explicit legacy-scope controls and complete C2 remain open.

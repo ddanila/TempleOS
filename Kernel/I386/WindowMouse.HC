@@ -92,7 +92,7 @@ mouse_document_done:
   }
   NativeRenderScopeClose(&scope);
 }
-U0 NativeWindowMouseDispatch(I64 code,U32 previous)
+U0 NativeWindowMouseDispatch(I64 code,U32 previous,Bool documents=TRUE)
 {
   CTask *task;
   I64 x=native_window_mouse.pos.x,y=native_window_mouse.pos.y;
@@ -100,22 +100,25 @@ U0 NativeWindowMouseDispatch(I64 code,U32 previous)
   Bool consumed=NativeWindowControlCapture(x,y,buttons),hit;
   if(code==MSG_MS_L_UP || code==MSG_MS_L_D_UP)native_window_control_gestures&=~1;
   if(code==MSG_MS_R_UP || code==MSG_MS_R_D_UP)native_window_control_gestures&=~2;
-  if(consumed || !(task=NativeWindowMouseTarget(x,y)))return;
+  if(consumed)return;
+  if(documents)task=NativeWindowMouseTarget(x,y);
+  else task=NativeWindowControlTarget(x,y);
+  if(!task)return;
   if((buttons^previous)&1) {
     if(buttons&1){native_window_control_gestures&=~1;owned&=~1;}
     hit=NativeWindowControlEdge(task,x,y,FALSE,(buttons&1)!=0);
     if(hit)owned|=1;
-    else if(buttons&1)NativeWindowMouseDocument(task,x,y,FALSE,TRUE,FALSE);
+    else if(documents && buttons&1)NativeWindowMouseDocument(task,x,y,FALSE,TRUE,FALSE);
   }
   if((buttons^previous)&2 && !native_window_control) {
     if(buttons&2){native_window_control_gestures&=~2;owned&=~2;}
     hit=NativeWindowControlEdge(task,x,y,TRUE,(buttons&2)!=0);
     if(hit)owned|=2;
-    else if(buttons&2)NativeWindowMouseDocument(task,x,y,TRUE,TRUE,FALSE);
+    else if(documents && buttons&2)NativeWindowMouseDocument(task,x,y,TRUE,TRUE,FALSE);
   }
-  if(!(owned&1) && (code==MSG_MS_L_UP || code==MSG_MS_L_D_UP))
+  if(documents && !(owned&1) && (code==MSG_MS_L_UP || code==MSG_MS_L_D_UP))
     NativeWindowMouseDocument(task,x,y,FALSE,FALSE,code==MSG_MS_L_D_UP);
-  if(!(owned&2) && (code==MSG_MS_R_UP || code==MSG_MS_R_D_UP))
+  if(documents && !(owned&2) && (code==MSG_MS_R_UP || code==MSG_MS_R_D_UP))
     NativeWindowMouseDocument(task,x,y,TRUE,FALSE,code==MSG_MS_R_D_UP);
 }
 U0 NativeWindowMouseReset()
@@ -140,13 +143,13 @@ U0 NativeWindowMousePump()
   CI386MouseEvent event;
   U32 previous;
   I64 code;
-  Bool managed=NativeWindowNeeded();
+  Bool managed=NativeWindowNeeded(),admitted=managed || NativeWindowControlNeeded();
   if(native_window_mouse_losses!=native_mouse_events.losses) {
     native_window_mouse_losses=native_mouse_events.losses;NativeWindowMouseCancel;
     KernelLog("MOUSE input reset\n");
   }
   while(NativeMouseEventRead(&event)) {
-    if(!managed){NativeWindowMouseReset;goto mouse_next_event;}
+    if(!admitted){NativeWindowMouseReset;goto mouse_next_event;}
     if(native_window_mouse_resync) {
       if(event.buttons&3)goto mouse_next_event;
       native_window_mouse_resync=FALSE;NativeWindowMouseReset;
@@ -155,16 +158,16 @@ U0 NativeWindowMousePump()
     NativeWindowMousePosition(event.x,event.y);
     native_window_mouse.lb=(event.buttons&1)!=0;native_window_mouse.rb=(event.buttons&2)!=0;
     native_window_mouse_time=event.stamp/1193182.0;
-    code=NativeWindowMouseMessages(NativeWindowMouseQueueMessages);
+    code=NativeWindowMouseMessages(managed && NativeWindowMouseQueueMessages);
     native_window_mouse_buttons=event.buttons;
-    NativeWindowMouseDispatch(code,previous);
+    NativeWindowMouseDispatch(code,previous,managed);
 mouse_next_event:;
   }
-  if(managed && native_window_control)
+  if(admitted && native_window_control)
     NativeWindowControlCapture(native_window_mouse.pos.x,native_window_mouse.pos.y,native_window_mouse_buttons);
-  if(managed && (native_window_mouse.left_dbl_time || native_window_mouse.right_dbl_time)) {
+  if(admitted && (native_window_mouse.left_dbl_time || native_window_mouse.right_dbl_time)) {
     native_window_mouse_time=NativeTimeStamp/1193182.0;
-    code=NativeWindowMouseMessages(NativeWindowMouseQueueMessages);
-    NativeWindowMouseDispatch(code,native_window_mouse_buttons);
+    code=NativeWindowMouseMessages(managed && NativeWindowMouseQueueMessages);
+    NativeWindowMouseDispatch(code,native_window_mouse_buttons,managed);
   }
 }

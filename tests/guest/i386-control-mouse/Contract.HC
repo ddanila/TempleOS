@@ -1,5 +1,5 @@
 CTask *cm_parent;
-I64 cm_phase,cm_count,cm_rows[2048][8],cm_geometry[8][7],cm_state[3],cm_mask;
+I64 cm_phase,cm_count,cm_rows[2048][8],cm_geometry[8][7],cm_state[3],cm_mask,cm_mode[2];
 U0 CMLog(U8 *s){while(*s)OutU8(0xE9,*s++);}
 U0 CMExport(U8 *name,U8 *data,I64 size)
 {U8 *s=MStrPrint("EXPORT %s %X %X\n",name,data,size);CMLog(s);Free(s);}
@@ -17,7 +17,7 @@ U0 CMClick(CCtrl *c,I64 x,I64 y,Bool down,I64 side)
 }
 U0 CMLeft(CCtrl *c,I64 x,I64 y,Bool down){CMClick(c,x,y,down,0);}
 U0 CMRight(CCtrl *c,I64 x,I64 y,Bool down){CMClick(c,x,y,down,1);}
-U0 ControlMouseContract()
+U0 ControlMouseContract(Bool raw=FALSE)
 {
   CDoc *put=DocPut,*display=DocDisplay,*doc;
   CTask *focus=sys_focus_task,*tracker,*first=Fs->next_child_task,*last=Fs->last_child_task;
@@ -29,6 +29,8 @@ U0 ControlMouseContract()
   cm_parent=Fs;cm_phase=cm_count=cm_mask=0;MemSet(cm_rows,0,sizeof(cm_rows));
   WinBorder(TRUE);WinHorz(10,65);WinVert(8,48);
   LBts(&Fs->display_flags,DISPLAYf_SHOW);LBts(&Fs->display_flags,DISPLAYf_CHILDREN_NOT_ON_TOP);
+  if(raw)LBtr(&Fs->display_flags,DISPLAYf_NOT_RAW);
+  cm_mode[0]=raw;cm_mode[1]=!Bt(&Fs->display_flags,DISPLAYf_NOT_RAW);
   Fs->win_inhibit&=~(WIF_SELF_CTRLS|WIF_FOCUS_TASK_CTRLS|WIF_SELF_FOCUS);
   doc=DocNew("ControlMouse.DD");doc->flags|=DOCF_NO_SCROLL_BARS;
   DocPrint(doc,"Control callback input\n");DocTop(doc);Fs->put_doc=Fs->display_doc=doc;
@@ -67,6 +69,7 @@ U0 ControlMouseContract()
   if(Fs->put_doc==put&&Fs->display_doc==display&&Fs->win_inhibit==inhibit)cm_mask|=4;
   if(Fs->data_heap->used_u8s==before)cm_mask|=8;
   AutoComplete(old_ac);
+  CMExport("control-mode.bin",cm_mode,sizeof(cm_mode));
   CMExport("control-rows.bin",cm_rows,cm_count*8*8);
   CMExport("control-mask.bin",&cm_mask,8);CMLog("CM DONE\n");
 }
