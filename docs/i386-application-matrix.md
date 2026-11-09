@@ -680,3 +680,28 @@ bounded Budget callers and four malformed-capture rejections. See
 build/budget-return-diagnostics-audit-v1/result.json. Runtime sources/modules are
 unchanged. The original timeout, other Budget workflows and complete C1–C5
 acceptance remain open; inventory qualification remains 2/686.
+
+## Budget late-save deadline and ATA scheduling (2026-11-09)
+
+A full nested-picker repetition captures the late caller in BgtAcctsWrite's
+allocation-bitmap I/O, before its first device-status poll, while WinMgr renders.
+Continued observation completes a save at 44.6 seconds including snapshot cost.
+This establishes a deadline overrun for the reproduced case rather than an
+unbounded observer/settings wait. The original uncaptured failed receipt stays
+preserved.
+
+A private per-channel poll-yield token now allows ready I/O work between
+scheduled yields while admitting IRQs at every callback and preserving FIFO,
+I/O guards, port/status/poll/error and poisoning behavior. Three full nested-
+picker cycles pass unchanged 30-second markers and mask 1023; saves measure
+7.0–7.6 seconds. The canonical command passes masks 1023/63 with real cold
+reopening, unchanged saved files and fresh arithmetic after both returns.
+The raw-write microbenchmark shows no comparable gain, so this is bounded
+workload evidence rather than general storage throughput qualification.
+
+See [the change and exact checks](i386-ata-poll-scheduling.md),
+build/ata-poll-budget-audit-v1/result.json, the expanded two-drive ATA contract and
+public retained transfer receipt. Both bootstraps and the 386 audit pass; only
+FileRuntime changes among sixteen binaries, with public ABIs unchanged.
+Other Budget workflows, resource recovery and complete C1–C5 qualification remain
+open; bundled qualification remains 2/686.

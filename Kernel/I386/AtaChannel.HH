@@ -11,6 +11,8 @@ class CI386AtaChannel {
   U16 io,control;
   CBlkDev *public_device;
   Bool public_unlock;
+  I64 poll_yield_jiffy;
+  Bool poll_yield_valid;
 };
 //One stable gate per physical channel, shared by both drives. Initially zeroed.
 public extern Bool I386AtaChannelInit(CI386AtaChannel *channel,CI386Scheduler *scheduler,I64 number);

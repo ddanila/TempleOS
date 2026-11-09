@@ -367,6 +367,8 @@ def main():
     if args.ata_tasks:
         for name in ('tests/guest/i386-ata-tasks/Target.HC',
                      'tests/guest/i386-ata-tasks/Once.HC',
+                     'tests/guest/i386-ata-tasks/PollBudget.HC',
+                     'Kernel/I386/AtaTask.HC', 'Kernel/I386/AtaTask.HH',
                      'tests/guest/i386-ata-tasks/TaskFiles.HC',
                      'tests/guest/i386-ata-tasks/RedSea.HC',
                      'Kernel/I386/AtaChannel.HC', 'Kernel/I386/AtaChannel.HH',

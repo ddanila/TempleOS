@@ -29155,3 +29155,36 @@ docs/i386-budget-return-diagnostics.md. The earlier save/return stall remains
 unresolved; read-only reopen repetitions do not establish a fix for the first
 close after nine popups. No C1–C5 milestone or full Budget qualification closes;
 bundled qualification remains 2/686.
+
+### C2/C3/C5: bound ready ATA work between scheduler yields
+
+The full nested-picker first-close repetition now reproduces the reported
+30-second deadline failure with stopped CPU/RAM. The caller is in allocation-
+bitmap I/O during BgtAcctsWrite, yielded before its first status poll; WinMgr is
+rendering and the observer has retired. Continued observation completes a save
+at 44.6 seconds including capture overhead. This is a reproduced late save,
+not proof of a settings/observer deadlock; the earlier uncaptured failure remains
+historical evidence.
+
+Private ATA channels now retain a poll-yield timestamp. Workers admit IRQs at
+every callback, mask IRQs for atomic clock reads, and admit scheduled work after
+16 clock units. Recording the timestamp after other tasks run preserves a slice
+for the pending I/O. Tokens persist across commands and reset at close. Root,
+absent-clock fallback, FIFO ownership, I/O guards, poll limits, status checks and
+poisoning retain their contracts. No public ABI or Budget source changes.
+
+Both bootstrap generations and the 386 boot audit pass. Only FileRuntime changes
+among sixteen binaries; kernel bytes and fifteen other modules remain identical.
+The expanded ATA contract passes clock-policy boundaries and the complete prior
+two-drive/IRQ/command/poison/file/publication checks with 32 MiB compared. The old
+callback fails the new probe at code 203. Public retained transfer tests pass.
+Three full unchanged-fixture cycles retain the 30-second deadlines and mask 1023,
+with saves of 7.0–7.6 seconds. The canonical command passes masks 1023/63 through
+real cold reopening. A raw-write benchmark shows no comparable improvement;
+broader I/O/rendering performance remains open.
+
+See docs/i386-ata-poll-scheduling.md and build/ata-poll-budget-audit-v1/result.json
+for source/image, raw/key/state and protocol provenance. Inventory only appends
+component receipts. The account-editor prototype is preserved under build while
+this runtime change is qualified. Full Budget and C1–C5 acceptance remain open;
+bundled qualification stays 2/686.

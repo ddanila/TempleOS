@@ -47,7 +47,7 @@ Reproduce with fresh output directories:
 
 ```
 python3 tools/test-i386-budget-entry-picker.py --archive build/i386-budget-pointer-cross-v1/exports/BudgetAccts.DD.Z --out OUT_REFERENCE
-python3 tools/test-i386-budget-entry-picker.py build/i386-budget-pointer-cross-v1/kernel.img --reference OUT_REFERENCE --out OUT_NATIVE
+python3 tools/test-i386-budget-entry-picker.py build/i386-ata-poll-budget-cross-v2/kernel.img --reference OUT_REFERENCE --out OUT_NATIVE
 ```
 
 The source checker permits only the previously reviewed Budget sort-slot and
@@ -89,3 +89,10 @@ acceptance issue alongside the remaining application workflows.
 [Return diagnostics](i386-budget-return-diagnostics.md) add sixteen successful
 read-only reopen/abort repetitions and a verified stopped CPU/RAM capture path.
 These checks do not reproduce or close the earlier first-close timeout.
+
+The subsequent [ATA scheduling investigation](i386-ata-poll-scheduling.md)
+reproduces a late save inside allocation-bitmap I/O and observes completion
+after the 30-second deadline. Bounded worker poll scheduling reduces the measured
+Budget saves to 7.0–7.6 seconds in three full cycles; the unchanged normal runner
+and cold reopening pass. Historical failures are preserved, and complete
+application/release qualification remains open.

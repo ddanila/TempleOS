@@ -4,10 +4,27 @@ U0 I386AtaTaskPoll(U8 *context)
 {//The protocol calls at the start of a wait and every 64 unsuccessful polls.
   CI386AtaChannel *channel=context;
   CI386Scheduler *scheduler=channel->scheduler;
+  I64 now=0;
   if(scheduler->current==scheduler->root) return;
+  //Admit pending device/timer IRQs, then read the 64-bit clock atomically.
   SetRFlags(GetRFlags|0x200);
-  I386SchedYield(scheduler);
   I386IrqSave;
+  if(scheduler->jiffies)now=*scheduler->jiffies;
+  //At the kernel's 1 kHz clock, allow 16 ms of ready PIO work between yields.
+  //Unconditional phase yields amplify small bitmap reads into compositor frames.
+  if(!scheduler->jiffies || !channel->poll_yield_valid ||
+      (now-channel->poll_yield_jiffy)(U64)>=16) {
+    SetRFlags(GetRFlags|0x200);
+    I386SchedYield(scheduler);
+    I386IrqSave;
+    //Charge other tasks' work to this yield. A slow frame must not immediately
+    //consume the next I/O slice before the pending transaction can progress.
+    if(scheduler->jiffies) {
+      channel->poll_yield_jiffy=*scheduler->jiffies;
+      channel->poll_yield_valid=TRUE;
+    } else channel->poll_yield_valid=FALSE;
+  }
+
 }
 Bool I386AtaTaskOwned(CI386AtaChannel *channel,CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,I64 operation)
 {

@@ -11,7 +11,7 @@ Bool I386AtaChannelInit(CI386AtaChannel *channel,CI386Scheduler *scheduler,I64 n
   U32 flags=I386IrqSave;
   Bool ok=FALSE;
   if(!channel || !scheduler || !scheduler->root || !scheduler->current || number<0 || number>1) goto channel_done;
-  if(channel->poisoned || channel->signature || channel->scheduler || channel->owner || channel->head || channel->tail || channel->public_device || channel->public_unlock) goto channel_done;
+  if(channel->poisoned || channel->signature || channel->scheduler || channel->owner || channel->head || channel->tail || channel->public_device || channel->public_unlock || channel->poll_yield_valid || channel->poll_yield_jiffy) goto channel_done;
   channel->scheduler=scheduler; channel->io=0x1F0; channel->control=0x3F6;
   if(number) { channel->io=0x170; channel->control=0x376; }
   channel->signature=I386_ATA_CHANNEL_MAGIC; ok=TRUE;
@@ -150,6 +150,7 @@ Bool I386AtaChannelClose(CI386AtaChannel *channel)
       I386IrqRestore(flags);return FALSE;
     }
     channel->public_device=0;channel->public_unlock=FALSE;
+    channel->poll_yield_jiffy=0;channel->poll_yield_valid=FALSE;
     channel->signature=0; channel->scheduler=0; channel->io=0; channel->control=0; ok=TRUE;
   }
   I386IrqRestore(flags); return ok;

@@ -57,3 +57,10 @@ are rejected. Internal compiler builtin IDs are excluded from executable symbols
 exports/key logs, all 1,881 unchanged files, capture provenance and analysis,
 1,850 unchanged runtime sources and sixteen unchanged module binaries. Inventory
 additions are component receipts; the original failed return remains recorded.
+
+The subsequent [ATA scheduling investigation](i386-ata-poll-scheduling.md)
+reproduces a late save inside allocation-bitmap I/O and observes completion
+after the 30-second deadline. Bounded worker poll scheduling reduces the measured
+Budget saves to 7.0–7.6 seconds in three full cycles; the unchanged normal runner
+and cold reopening pass. Historical failures are preserved, and complete
+application/release qualification remains open.

@@ -64,6 +64,7 @@ I64 Main(I64 a,I64 b)
   control=a; swap=b;
   return (*control->segments)(&DiskTest);
 }
+#include "T:/PollBudget.HC"
 I64 DiskTest()
 {
   U8 config,data,status,buffer[512];
@@ -92,6 +93,7 @@ I64 DiskTest()
       !I386AtaChannelRelease(&channel) || errors) return 16;
   disks[1].lba=FALSE;
   I386PicInit; control->irq->handler=&OnIrq;
+  i=PollBudgetTest; if(i)return i;
   if(!I386KbcDrain || !I386KbcWrite(TRUE,0x20) || !I386KbcReadWait(&config,&status) ||
       !I386KbcWrite(TRUE,0x60) || !I386KbcWrite(FALSE,(config|1)&~0x10) ||
       !I386KbcWrite(FALSE,0xEE)) return 4;

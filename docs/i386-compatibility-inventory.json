@@ -7130,6 +7130,13 @@
           "result": "pass",
           "evidence": "build/budget-return-repeat-native-v2/result.json",
           "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
+        },
+        {
+          "target": "native-budget-nested-return-pio-slice",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
+          "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
         }
       ]
     },
@@ -7315,6 +7322,13 @@
           "result": "pass",
           "evidence": "build/budget-return-repeat-native-v2/result.json",
           "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
+        },
+        {
+          "target": "native-budget-nested-return-pio-slice",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
+          "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
         }
       ]
     },
@@ -7496,6 +7510,13 @@
           "result": "pass",
           "evidence": "build/budget-return-repeat-native-v2/result.json",
           "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
+        },
+        {
+          "target": "native-budget-nested-return-pio-slice",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
+          "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
         }
       ]
     },
@@ -7663,6 +7684,13 @@
           "result": "pass",
           "evidence": "build/budget-return-repeat-native-v2/result.json",
           "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
+        },
+        {
+          "target": "native-budget-nested-return-pio-slice",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
+          "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
         }
       ]
     },
@@ -7881,6 +7909,13 @@
           "result": "pass",
           "evidence": "build/budget-return-repeat-native-v2/result.json",
           "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
+        },
+        {
+          "target": "native-budget-nested-return-pio-slice",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
+          "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
         }
       ]
     },
@@ -8048,6 +8083,13 @@
           "result": "pass",
           "evidence": "build/budget-return-repeat-native-v2/result.json",
           "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
+        },
+        {
+          "target": "native-budget-nested-return-pio-slice",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
+          "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
         }
       ]
     },
@@ -8249,6 +8291,13 @@
           "result": "pass",
           "evidence": "build/budget-return-repeat-native-v2/result.json",
           "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
+        },
+        {
+          "target": "native-budget-nested-return-pio-slice",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
+          "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
         }
       ]
     },
@@ -8503,6 +8552,13 @@
           "result": "pass",
           "evidence": "build/budget-return-repeat-native-v2/result.json",
           "scope": "Sixteen real Budget reopen/Shift-Escape abort sessions on a copy of a previously saved nested-entry image. Exact caller restoration mask 63, report and saved fields each time; all 1881 file contents/attributes/timestamps unchanged, fresh arithmetic after each return, unchanged inputs. Diagnostic profiler captures stopped CPU/RAM on failure; induced capture separately validated, not a real stall. Observer export buffers retained, so no heap-recovery qualification. The earlier first-close return stall remains unresolved; full Budget/C1-C5 remain open. See docs/i386-budget-return-diagnostics.md."
+        },
+        {
+          "target": "native-budget-nested-return-pio-slice",
+          "command": "python3 tools/test-i386-budget-entry-picker.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-entry-picker-io-budget-native-v1/result.json",
+          "scope": "Bounded ATA worker poll scheduling: canonical masks 1023/63, exact original/numeric-policy menu/form/storage checks and real cold reopening with unchanged files. Three additional full nested-picker cycles pass unchanged 30-second markers; saves 7.0-7.6 s on this host. Old repeated-save reproduction exceeded 30 s in bitmap I/O and completed at 44.6 s after continued observation, including snapshot overhead; no demonstrated deadlock. Only private FileRuntime scheduling changes; application source and public ABI unchanged. Raw-write microbenchmark does not show this improvement. Broader Budget/C1-C5 qualification remains open. See docs/i386-ata-poll-scheduling.md."
         }
       ]
     },
@@ -18359,7 +18415,14 @@
       "tests": [
         "tools/test-i386-original-ata-read.py",
         "tools/test-i386-retained-ata-read.py",
-        "tools/test-i386-retained-ata-transfer.py"
+        "tools/test-i386-retained-ata-transfer.py",
+        {
+          "target": "native-retained-ata-transfer-pio-slice",
+          "command": "python3 tools/test-i386-retained-ata-transfer.py IMAGE --accel kvm --out OUT",
+          "result": "pass",
+          "evidence": "build/ata-poll-budget-retained-transfer-v1/result.json",
+          "scope": "Public ATA direct/chunked reads and writes, guards, counters, zero-count requests, preowned lock, allocated scratch extent and filesystem readback pass with bounded native worker poll scheduling. Source unchanged; not ATAPI/init/failure or full media/release qualification."
+        }
       ]
     },
     {
