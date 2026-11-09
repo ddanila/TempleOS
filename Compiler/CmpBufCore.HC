@@ -13,7 +13,6 @@ CAOT *CMP_BUF_IMPL(U8 *buf,U8 *map_name=NULL,
   if (error_cnt)   *error_cnt=cc->error_cnt;
   if (warning_cnt) *warning_cnt=cc->warning_cnt;
   QueRem(cc);
-  if (res)
-    CmpCtrlDel(cc);
+  CmpCtrlDel(cc);
   return res;
 }

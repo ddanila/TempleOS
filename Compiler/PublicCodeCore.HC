@@ -54,3 +54,27 @@ U0 COCDel(CCmpCtrl *cc,CCodeCtrl *coc)
     LexExcept(cc,"Undefined goto label at ");
 }
 
+
+#include "/Compiler/IntermediateOpcodes.HH"
+#include "/Compiler/CmpAbortPacketCore.HC"
+U0 CmpAbortInstruction(U8 *context,CIntermediateCode *node)
+{
+  CAOT *aot;
+  if(node->ic_code==IC_ASM && (aot=node->ic_data)) {
+    //ORG is forbidden inside functions, so IC_ASM always owns its buffer.
+    node->ic_data=0; QueRem(aot); CmpAbortPacketDel(aot,TRUE);
+  }
+  Free(node);
+}
+U0 CmpCodeAbort(CCmpCtrl *cc,CCodeCtrl *boundary,Bool clear_base)
+{//Unwind only code contexts acquired by this join; preserve an outer caller.
+  CSymbolRelease owner;
+  owner.context=0; owner.release=&COCSystemFree;
+  while(cc->coc.coc_next!=boundary) {
+    if(cc->coc.coc_head.next)
+      COCRelease(cc,&cc->coc,&owner,0,&CmpAbortInstruction);
+    Free(COCRestore(cc));
+  }
+  if(clear_base && cc->coc.coc_head.next)
+    COCRelease(cc,&cc->coc,&owner,0,&CmpAbortInstruction);
+}

@@ -28919,3 +28919,39 @@ rendered arithmetic recovery, fixture-only filesystem changes and the native
 allocation bitmap. Inputs remain unchanged; the overall result is still FAIL
 because the ownership comparisons fail. Inventory checks and all five guards
 pass unchanged. The production cleanup fix remains outstanding.
+
+
+### C4: release failed normal buffer compilation ownership
+
+`CmpBuf` now deletes its owned control after absorbed compiler errors. The
+shared join failure path releases code graphs before their temporary symbols,
+restores saved hash contexts, releases pending streams/unresolved records and
+partial packet ownership. IC_ASM owns its unconsumed packet; surviving consumed
+child headers borrow function/parent ownership and are released as headers,
+matching existing Cmp behavior. Parsing, successful packing, ordinary code/control
+destructors and AOT fixup post-state remain unchanged. A typed internal callback
+reuses the resident graph destructor; opcode definitions are extracted unchanged.
+
+The identical ten-case fixture on the unchanged image retains 5,888–11,792 bytes
+per reported caller counter; the final image restores every caller counter
+exactly, including partial functions, goto, #exe and completed inline assembly.
+Task backing recovery passes after isolating global output ownership. Earlier
+cold backing differences include the kernel-owned 38,400-byte raw screen cache
+plus its 16-byte header; they do not prove task allocations survive exit. The
+fixture records cold/steady cache states, validates every FixSet diagnostic,
+restores its global pointer and verifies Adam's logical heap counter exactly.
+No counter estimates or forced release of escaped literal code are used.
+
+Actual rebuilt x64 Cmp/CmpBuf restores all ten caller heaps with byte-identical
+81,920-byte diagnostic buffers versus the failing baseline. Both original
+bootstrap generations, all sixteen native modules, fourteen successful buffer
+cases, full assembly contract, 46 prior compiler-error rows, ten DolDoc boundary
+cases and six independent ELF32 packets pass. The final audit checks 1,849
+source/26 helper pins; ABI remains Compiler104/Console264/Memory41, 691 exports.
+See docs/i386-public-buffer-errors.md and the retained canonical receipts.
+
+OOM/arbitrary exceptions, setup/map/packing failures, invalid/nested assembly,
+partial headers/optimization/fixup failures, cancellation/concurrency and reuse
+of failed caller-owned joins remain unqualified. Desktop/apps, resource and
+performance gates and complete native C5 release generations remain open.
+C1-C5 remain active; bundled qualification remains 2/686.

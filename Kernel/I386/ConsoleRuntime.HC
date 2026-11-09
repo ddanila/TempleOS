@@ -15,6 +15,7 @@
 #include "/Kernel/I386/ConsoleRuntime.HH"
 #include "/Kernel/I386/JitSupport.HH"
 CI386JitSupport native_jit_support;
+extern U0 CmpCodeAbort(CCmpCtrl *cc,CCodeCtrl *boundary,Bool clear_base);
 #include "/Kernel/I386/ProgressTypes.HH"
 #include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/PortStringRuntime.HC"
@@ -794,7 +795,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   if(!provider || provider->kind!=3 || !provider->val) return FALSE;
   native_adam_task=provider->val;
   native_jit_support.symbols=task->hash_table;native_jit_support.code=NULL;native_jit_support.aot_code=NULL;
-  native_jit_support.resolve=NULL;native_jit_support.locals=NULL;native_jit_support.globals=NULL;native_jit_support.unresolved_add=NULL;native_jit_support.optimize=NULL;native_jit_support.compile=NULL;native_jit_support.poll=config->compiler->break_poll;native_jit_support.lex=NULL;native_jit_support.ext_str=NULL;native_jit_support.lex_stage=0;native_jit_support.expression=NULL;native_jit_support.expression_i64=NULL;native_jit_support.expression_f64=NULL;native_jit_support.expression_bin=NULL;native_jit_support.is_expression_bin=NULL;native_jit_support.stream=NULL;native_jit_support.prs_stage=0;native_jit_support.assembly=NULL;native_jit_support.join=NULL;native_jit_support.asm_stage=0;native_jit_support.buffer=NULL;
+  native_jit_support.resolve=NULL;native_jit_support.locals=NULL;native_jit_support.globals=NULL;native_jit_support.unresolved_add=NULL;native_jit_support.optimize=NULL;native_jit_support.compile=NULL;native_jit_support.poll=config->compiler->break_poll;native_jit_support.lex=NULL;native_jit_support.ext_str=NULL;native_jit_support.lex_stage=0;native_jit_support.expression=NULL;native_jit_support.expression_i64=NULL;native_jit_support.expression_f64=NULL;native_jit_support.expression_bin=NULL;native_jit_support.is_expression_bin=NULL;native_jit_support.stream=NULL;native_jit_support.prs_stage=0;native_jit_support.assembly=NULL;native_jit_support.join=NULL;native_jit_support.asm_stage=0;native_jit_support.buffer=NULL;native_jit_support.abort_code=&CmpCodeAbort;
   for(i=0;i<RT_RTS_NUM;i++)cmp.internal_types[i]=config->types[i];
   provider=HashFind("_YIELD",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!provider || provider->kind!=1 || !provider->val) return FALSE;

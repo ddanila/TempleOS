@@ -11,5 +11,6 @@ class CI386JitSupport {
   U8 *assembly,*join;
   I64 asm_stage;
   U8 *buffer;
+  U0 (*abort_code)(CCmpCtrl *control,CCodeCtrl *saved,Bool clear);
 };
 #endif

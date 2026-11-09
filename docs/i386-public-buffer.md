@@ -118,3 +118,9 @@ those payloads and expands the test without adjusting counters.
 The failed-buffer ownership contract and preserved failing baseline are described
 in [the C4 failure checkpoint](i386-public-buffer-errors.md). Successful buffer
 coverage above does not qualify that outstanding cleanup path.
+
+Ten absorbed compiler-error buffer paths now release their control, code and
+partial packet graphs before returning NULL, with exact caller heap recovery.
+The canonical comparison and output-cache/diagnostic ownership boundaries are
+in [the failure ownership checks](i386-public-buffer-errors.md). Broader failure
+modes and complete C1-C5 qualification remain open.

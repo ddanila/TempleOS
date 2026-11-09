@@ -6,6 +6,7 @@ import hashlib
 import json
 import runpy
 import struct
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -14,6 +15,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--baseline-revision', help='Require delivered sources to match this Git revision instead of the checkout')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     if out.exists():
@@ -32,9 +34,14 @@ def main():
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     pins = {str(p): sha(p) for p in paths}
     report = dict(result='running', input_sha256=pins,
-                  scope='Five actual normal CmpBuf compiler failures after different partial outputs; borrowed input, errors/warnings, control queue, caller heap, fresh successful compilation and owner-task backing reclamation. Not OOM, arbitrary exceptions or cancellation qualification.')
+                  scope='Ten actual normal CmpBuf compiler failures after different partial outputs; borrowed input, errors/warnings, control queue, caller heap, fresh successful compilation and owner-task backing reclamation. Not OOM, arbitrary exceptions or cancellation qualification.')
     (out/'fixture.HC').write_bytes(fixture.read_bytes())
     (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
+    baseline = None
+    if args.baseline_revision:
+        baseline = subprocess.check_output(['git', 'rev-parse', args.baseline_revision+'^{commit}'], cwd=ROOT, text=True).strip()
+        report['baseline_revision'] = baseline
+        report['baseline_source_sha256'] = {}
     guest = None
     try:
         pack = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))
@@ -42,8 +49,13 @@ def main():
         for path in paths:
             if path.is_relative_to(ROOT) and path.suffix in ('.HC', '.HH', '.DD'):
                 name = '/'+str(path.relative_to(ROOT))
-                if name in before and path.read_bytes() != before[name][2]:
-                    raise ValueError('Delivered source differs: '+name)
+                if name in before:
+                    expected_source = path.read_bytes()
+                    if baseline:
+                        expected_source = subprocess.check_output(['git', 'show', baseline+':'+name[1:]], cwd=ROOT)
+                        report['baseline_source_sha256'][name] = hashlib.sha256(expected_source).hexdigest()
+                    if expected_source != before[name][2]:
+                        raise ValueError('Delivered source differs: '+name)
         layouts, layout_hashes = runpy.run_path(str(ROOT/'tools/test-i386-public-task-accounting.py'))['accounting_layouts'](source)
         report['accounting_layout_sha256'] = layout_hashes
         prelude = '\n'.join(text for text, _ in layouts).encode()+b'\n'
@@ -56,9 +68,18 @@ def main():
         guest.wait('PUBLIC BUFFER ERRORS DONE\n')
         data = (guest.out/'buffer-errors.bin').read_bytes()
         (out/'buffer-errors.bin').write_bytes(data)
-        report['records'] = list(struct.unpack('<48q',data))
-        expected = [1,1,1,1,1,0,0,1]*5+[1,1,1]
-        report['ownership_matches'] = report['records'][:43] == expected
+        report['records'] = list(struct.unpack('<217q',data))
+        report['raw_screen_cache'] = report['records'][214:217]
+        report['diagnostic_owner_heap_raw'] = report['records'][210:214]
+        report['diagnostic_warmup_raw'] = report['records'][202:210]
+        report['diagnostic_warmup_stable'] = report['records'][206:210] == report['records'][93:97]
+        report['fix_set_records'] = report['records'][187:197]
+        report['single_user'] = report['records'][197]
+        report['backing_after_fix_restore'] = report['records'][198:202]
+        report['backing_raw'] = report['records'][93:105]
+        report['backing_per_case'] = [report['records'][107+i*8:115+i*8] for i in range(10)]
+        expected = [1,1,1,1,1,0,0,1]*10+[1,1,1]
+        report['ownership_matches'] = report['records'][:83] == expected and report['fix_set_records'] == [1]*10 and report['diagnostic_warmup_stable'] and report['records'][213] == 1 and report['records'][215] == 1
         guest.command('6*7;')
         report['arithmetic_pixels'] = guest.result_pixels()
         guest.close()

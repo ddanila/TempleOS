@@ -1,3 +1,14 @@
+#ifndef CMP_JOIN_CODE_ABORT
+#define CMP_JOIN_CODE_ABORT CmpCodeAbort
+#endif
+U0 CmpJoinUnresolvedDel(CAsmUnresolvedRef *ref)
+{
+  CAsmUnresolvedRef *next;
+  while(ref) {
+    next=ref->next; Free(ref->machine_code); LinkedLstDel(ref->asm_undef_hash);
+    Free(ref->str); Free(ref); ref=next;
+  }
+}
 #ifndef CMP_JOIN_IMPL
 #define CMP_JOIN_IMPL CmpJoin
 #endif
@@ -5,6 +16,12 @@ CAOT *CMP_JOIN_IMPL(CCmpCtrl *cc,I64 cmp_flags,U8 *map_name=NULL,U8 mapfile_drv_
 {
   CAOTCtrl *aotc,*old_aot=cc->aotc;
   I64 i,j,l;
+  CCodeCtrl *code_boundary=cc->coc.coc_next;
+  CHashTable *owned_globals;
+  CHashFun *fun;
+  CLexHashTableContext *nested;
+  CStreamBlk *stream;
+  CAOT *child;
   U8 *buf;
   CAOTBinBlk *tmpbin;
   CAOTImportExport *tmpie;
@@ -31,6 +48,7 @@ CAOT *CMP_JOIN_IMPL(CCmpCtrl *cc,I64 cmp_flags,U8 *map_name=NULL,U8 mapfile_drv_
     cc->htc.glbl_hash_table=HashTableNew(128);
   else
     cc->htc.glbl_hash_table=HashTableNew(1024);
+  owned_globals=cc->htc.glbl_hash_table;
   if (cc->flags&CCF_AOT_COMPILE) {
     cc->htc.define_hash_table=cc->htc.glbl_hash_table;
     if (cc->aot_depth<=1)
@@ -73,8 +91,38 @@ CAOT *CMP_JOIN_IMPL(CCmpCtrl *cc,I64 cmp_flags,U8 *map_name=NULL,U8 mapfile_drv_
   if (!okay) {
     if (cc->error_cnt<1)
       cc->error_cnt=1;
-    cc->aot=res->parent_aot;
-    Free(res);
+    CMP_JOIN_CODE_ABORT(cc,code_boundary,!parent);
+    //A failed #exe can leave borrowed task tables installed above our scope.
+    while(cc->htc.next!=htc->next) {
+      nested=cc->htc.next;
+      MemCpy(&cc->htc,nested,sizeof(CLexHashTableContext)); Free(nested);
+    }
+    CmpJoinUnresolvedDel(aotc->local_unresolved);
+    CmpJoinUnresolvedDel(aotc->glbl_unresolved);
+    //Unresolved function call sites belong to this temporary symbol table.
+    for(i=0;i<=owned_globals->mask;i++) {
+      fun=owned_globals->body[i];
+      while(fun) {
+        if(fun->type&HTT_FUN) { LinkedLstDel(fun->ext_lst); fun->ext_lst=NULL; }
+        fun=fun->next;
+      }
+    }
+    HashTableDel(cc->htc.local_hash_table);
+    HashTableDel(owned_globals);
+    if(!parent) {
+      while(cc->next_stream_blk!=&cc->next_stream_blk) {
+        stream=cc->next_stream_blk; QueRem(stream); Free(stream->body); Free(stream);
+      }
+    }
+    //Code graph destruction unlinks any inline-assembly packets it owns.
+    if(!parent) while(res->next!=res) {
+      //As in Cmp's QueDel: consumed children are borrowed header views.
+      //Their bytes/records have already moved to the function/parent packet.
+      child=res->next; QueRem(child); Free(child);
+    }
+    QueRem(res);
+    res->abss=aotc->abss; res->heap_glbls=aotc->heap_glbls;
+    CmpAbortPacketDel(res,FALSE); //Packing has not allocated a result buffer yet.
     LinkedLstDel(aotc->bin);
     res=NULL;
   } else {

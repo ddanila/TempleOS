@@ -10170,6 +10170,20 @@
           "result": "pass",
           "evidence": "build/i386-public-buffer-elf-v1/result.json",
           "scope": "Six complete unrelocated CmpBuf packets independently execute as ELF32, including internal calls/defaults; no imports/absolute relocation execution or full module qualification."
+        },
+        {
+          "target": "native-normal-buffer-compiler-error-ownership",
+          "command": "python3 tools/test-i386-public-buffer-errors.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-buffer-errors-after-v7/result.json",
+          "scope": "Ten actual CmpBuf compiler errors: first/completed expression, completed/partial function, global/import, pending goto, partial/completed inline assembly and #exe. Exact immediate caller heaps, input/queue/counts/recovery; task backing and diagnostic-owner heap restore exactly after explicit global output isolation. Cold/steady kernel raw-screen cache states recorded. Same fixture fails old image with positive caller deltas. Not OOM, invalid/nested assembly, map/packing/cancellation/concurrency or complete C1-C5 qualification. See docs/i386-public-buffer-errors.md."
+        },
+        {
+          "target": "original-rebuilt-buffer-compiler-error-ownership",
+          "command": "python3 tools/test-buffer-errors-original.py --out OUT",
+          "result": "pass",
+          "evidence": "build/buffer-errors-original-after-v7/result.json",
+          "scope": "Actual rebuilt x64 Cmp calling internal shared CmpBuf, ten failures with normal kernel declarations. Exact caller heap/source-file/queue recovery and subsequent valid file compilation; two-error/zero-warning summaries and full 81920-byte diagnostics identical to old generated compiler baseline. Not native backing or whole original module qualification."
         }
       ]
     },
@@ -11321,6 +11335,20 @@
           "result": "pass",
           "evidence": "build/i386-public-lex-order-forward-v4/result.json",
           "scope": "Forward and reverse v4 receipts: normal lexer/string, optimizer/backend and empty JIT/AOT fixups in one VM, two rounds, eight assertions, exact twelve-word basic trace and zero caller heaps. One publication for each cache and arithmetic/volume/input checks. Tests correct JIT packet consumption ownership; earlier stack-packet fixture failure retained. This is initialization integration, not relocation or full compiler qualification."
+        },
+        {
+          "target": "native-normal-buffer-compiler-error-ownership",
+          "command": "python3 tools/test-i386-public-buffer-errors.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-buffer-errors-after-v7/result.json",
+          "scope": "Ten actual CmpBuf compiler errors: first/completed expression, completed/partial function, global/import, pending goto, partial/completed inline assembly and #exe. Exact immediate caller heaps, input/queue/counts/recovery; task backing and diagnostic-owner heap restore exactly after explicit global output isolation. Cold/steady kernel raw-screen cache states recorded. Same fixture fails old image with positive caller deltas. Not OOM, invalid/nested assembly, map/packing/cancellation/concurrency or complete C1-C5 qualification. See docs/i386-public-buffer-errors.md."
+        },
+        {
+          "target": "original-rebuilt-buffer-compiler-error-ownership",
+          "command": "python3 tools/test-buffer-errors-original.py --out OUT",
+          "result": "pass",
+          "evidence": "build/buffer-errors-original-after-v7/result.json",
+          "scope": "Actual rebuilt x64 Cmp calling internal shared CmpBuf, ten failures with normal kernel declarations. Exact caller heap/source-file/queue recovery and subsequent valid file compilation; two-error/zero-warning summaries and full 81920-byte diagnostics identical to old generated compiler baseline. Not native backing or whole original module qualification."
         }
       ]
     },
@@ -11415,6 +11443,20 @@
           "result": "pass",
           "evidence": "build/i386-public-buffer-contract-v5/result.json",
           "scope": "Fourteen normal cold CmpBuf cases: borrowed sources, queue restoration, native target parameter offsets, executed functions/defaults/globals/loop/imports/literals, exact queued rich-link map/debug bin, metadata bounds and fresh arithmetic. Zero caller deltas except original literal-code policy; owned literal task restores backing usage/allocation counts on termination. Complete failure ownership, module/file flows and C1-C5 remain open. See docs/i386-public-buffer.md."
+        },
+        {
+          "target": "native-normal-buffer-compiler-error-ownership",
+          "command": "python3 tools/test-i386-public-buffer-errors.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-buffer-errors-after-v7/result.json",
+          "scope": "Ten actual CmpBuf compiler errors: first/completed expression, completed/partial function, global/import, pending goto, partial/completed inline assembly and #exe. Exact immediate caller heaps, input/queue/counts/recovery; task backing and diagnostic-owner heap restore exactly after explicit global output isolation. Cold/steady kernel raw-screen cache states recorded. Same fixture fails old image with positive caller deltas. Not OOM, invalid/nested assembly, map/packing/cancellation/concurrency or complete C1-C5 qualification. See docs/i386-public-buffer-errors.md."
+        },
+        {
+          "target": "original-rebuilt-buffer-compiler-error-ownership",
+          "command": "python3 tools/test-buffer-errors-original.py --out OUT",
+          "result": "pass",
+          "evidence": "build/buffer-errors-original-after-v7/result.json",
+          "scope": "Actual rebuilt x64 Cmp calling internal shared CmpBuf, ten failures with normal kernel declarations. Exact caller heap/source-file/queue recovery and subsequent valid file compilation; two-error/zero-warning summaries and full 81920-byte diagnostics identical to old generated compiler baseline. Not native backing or whole original module qualification."
         }
       ]
     },
