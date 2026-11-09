@@ -7060,6 +7060,20 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
           "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-edit-copy-session",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-original-v7/result.json",
+          "scope": "Real keyboard cancellation/new entry, existing description edit, populated copy acceptance and save; read-only observer waits for committed document publication. Exact reports, distinct entry/string identities, 80-byte data, twelve strings and account bytes; caller state mask 511 and same-boot reopen/abort mask 63. Two repeat original controls agree. Original date/amount round trips are recorded, not inferred unchanged. Full Budget remains unqualified. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "native-budget-edit-copy-cold-reopen",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-native-v3/result.json",
+          "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
         }
       ]
     },
@@ -7175,6 +7189,20 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
           "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-edit-copy-session",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-original-v7/result.json",
+          "scope": "Real keyboard cancellation/new entry, existing description edit, populated copy acceptance and save; read-only observer waits for committed document publication. Exact reports, distinct entry/string identities, 80-byte data, twelve strings and account bytes; caller state mask 511 and same-boot reopen/abort mask 63. Two repeat original controls agree. Original date/amount round trips are recorded, not inferred unchanged. Full Budget remains unqualified. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "native-budget-edit-copy-cold-reopen",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-native-v3/result.json",
+          "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
         }
       ]
     },
@@ -7266,6 +7294,20 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
           "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-edit-copy-session",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-original-v7/result.json",
+          "scope": "Real keyboard cancellation/new entry, existing description edit, populated copy acceptance and save; read-only observer waits for committed document publication. Exact reports, distinct entry/string identities, 80-byte data, twelve strings and account bytes; caller state mask 511 and same-boot reopen/abort mask 63. Two repeat original controls agree. Original date/amount round trips are recorded, not inferred unchanged. Full Budget remains unqualified. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "native-budget-edit-copy-cold-reopen",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-native-v3/result.json",
+          "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
         }
       ]
     },
@@ -7357,6 +7399,20 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
           "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-edit-copy-session",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-original-v7/result.json",
+          "scope": "Real keyboard cancellation/new entry, existing description edit, populated copy acceptance and save; read-only observer waits for committed document publication. Exact reports, distinct entry/string identities, 80-byte data, twelve strings and account bytes; caller state mask 511 and same-boot reopen/abort mask 63. Two repeat original controls agree. Original date/amount round trips are recorded, not inferred unchanged. Full Budget remains unqualified. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "native-budget-edit-copy-cold-reopen",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-native-v3/result.json",
+          "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
         }
       ]
     },
@@ -7485,6 +7541,20 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
           "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-edit-copy-session",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-original-v7/result.json",
+          "scope": "Real keyboard cancellation/new entry, existing description edit, populated copy acceptance and save; read-only observer waits for committed document publication. Exact reports, distinct entry/string identities, 80-byte data, twelve strings and account bytes; caller state mask 511 and same-boot reopen/abort mask 63. Two repeat original controls agree. Original date/amount round trips are recorded, not inferred unchanged. Full Budget remains unqualified. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "native-budget-edit-copy-cold-reopen",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-native-v3/result.json",
+          "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
         }
       ]
     },
@@ -7582,6 +7652,20 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
           "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-edit-copy-session",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-original-v7/result.json",
+          "scope": "Real keyboard cancellation/new entry, existing description edit, populated copy acceptance and save; read-only observer waits for committed document publication. Exact reports, distinct entry/string identities, 80-byte data, twelve strings and account bytes; caller state mask 511 and same-boot reopen/abort mask 63. Two repeat original controls agree. Original date/amount round trips are recorded, not inferred unchanged. Full Budget remains unqualified. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "native-budget-edit-copy-cold-reopen",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-native-v3/result.json",
+          "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
         }
       ]
     },
@@ -7707,6 +7791,20 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
           "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-edit-copy-session",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-original-v7/result.json",
+          "scope": "Real keyboard cancellation/new entry, existing description edit, populated copy acceptance and save; read-only observer waits for committed document publication. Exact reports, distinct entry/string identities, 80-byte data, twelve strings and account bytes; caller state mask 511 and same-boot reopen/abort mask 63. Two repeat original controls agree. Original date/amount round trips are recorded, not inferred unchanged. Full Budget remains unqualified. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "native-budget-edit-copy-cold-reopen",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-native-v3/result.json",
+          "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
         }
       ]
     },
@@ -7891,6 +7989,20 @@
           "result": "pass",
           "evidence": "build/i386-budget-entry-cancel-native-v1/result.json",
           "scope": "64 MiB KVM: same cancellation and accepted UI entry, exact original/independent reports and saved records, masks 127/63. Fresh QEMU reopens actual saved image without install/seeding; Shift-Escape return preserves every file byte/attribute/timestamp, 1738 original files preserved, clean filesystem, fresh rendered 42 after both phases, unchanged inputs. Not edit/copy/picker/templates/mouse or whole C1-C5 qualification."
+        },
+        {
+          "target": "original-budget-edit-copy-session",
+          "command": "python3 tools/test-i386-budget-edit-copy.py --archive ARCHIVE --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-original-v7/result.json",
+          "scope": "Real keyboard cancellation/new entry, existing description edit, populated copy acceptance and save; read-only observer waits for committed document publication. Exact reports, distinct entry/string identities, 80-byte data, twelve strings and account bytes; caller state mask 511 and same-boot reopen/abort mask 63. Two repeat original controls agree. Original date/amount round trips are recorded, not inferred unchanged. Full Budget remains unqualified. See docs/i386-budget-edit-copy.md."
+        },
+        {
+          "target": "native-budget-edit-copy-cold-reopen",
+          "command": "python3 tools/test-i386-budget-edit-copy.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-edit-copy-native-v3/result.json",
+          "scope": "Same keyboard workflow, masks 511/63, exact target-specific records and actual shutdown/restart/read-only reopen/abort. File bytes/attributes/timestamps unchanged after cold abort; fresh arithmetic after both exits. Eleven inventoried files retain reviewed source/asset provenance; archive independently checked. Existing native exact-power F64 policy gives amount bits 405F600000000000 versus original 405F600000000002; only saved bytes 32 and 64 differ, each target checked exactly without tolerance. Edit/copy cancellation, other field changes, account-picker/editor, templates, mouse, resources and full C1-C5 remain open."
         }
       ]
     },

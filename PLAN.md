@@ -29015,3 +29015,32 @@ graph boundaries), fourteen successful buffers, 46 earlier compiler errors, ten
 DolDoc cases, six independent ELF32 packets and the original/native 38-assertion
 resolver contract pass. ABI remains Compiler104/Console264/Memory41, with 691
 exports and 22 mask words. These are component checks, not C5 release evidence.
+
+### C1/C3: Budget existing-entry editing, copying and cold persistence
+
+The full Budget keyboard workflow now extends cancellation/new entry with
+existing description editing and populated-copy acceptance. Its read-only
+observer waits for a new document with the Budget handler published, avoiding
+an original two-CPU popup-teardown race. Two entries and independent strings,
+exact reports, saved records and caller restoration are checked.
+
+Three identical-fixture original controls agree (v5/v6 plus current-runner v7).
+The final native-v3 command passes mask 511, then mask 63 after a real QEMU
+shutdown/restart and read-only reopen/abort. All file bytes/attributes/timestamps
+remain unchanged across cold abort; both exits render fresh 42. Only the probe
+and three Budget files change in the session; 1,877 existing files are preserved.
+
+The original two-digit populated date reparses to 2098. Original/native amount
+bits differ according to the already documented numerical policies; only saved
+bytes 32 and 64 may differ, with both targets checked exactly. No tolerance or
+application/runtime change is introduced. The audit verifies raw exports, all
+1,850 unchanged runtime source hashes, eleven inventoried Budget files plus the
+compressed template, preserved reference provenance and seven negative oracle
+checks. Inventory additions are component receipts, with pre-edit metadata
+preserved and source/qualification fields unchanged.
+
+See docs/i386-budget-edit-copy.md, the explicit remaining Budget workflow map,
+docs/i386-application-matrix.md and build/budget-edit-copy-audit-v1/result.json.
+Edit/copy cancellation, other field changes, account choices/editor, templates,
+mouse, resource profiles and complete app/release acceptance remain open.
+Bundled qualification stays 2/686; C1–C5 remain active.

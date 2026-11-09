@@ -545,3 +545,33 @@ save and native cold reopening in one workflow, rather than inferring persistenc
 from the independent preseeded-transaction test. The original reopen is same-boot,
 not original cold-boot evidence. Editing/copying entries, account-picker choices,
 templates, mouse and complete Budget/C1-C5 qualification remain open.
+
+## Budget existing-entry edit/copy and cold reopening (2026-11-09)
+
+A new real-keyboard workflow cancels an unwanted new transaction, enters the
+accepted BANK-to-RENT transaction, edits its description through the populated
+form, accepts a populated copy, saves and reopens both records. The read-only
+observer requires independent entry/string allocations and waits for committed
+Budget document publication, including on the original two-CPU system.
+
+Original controls build/budget-edit-copy-original-v5/v6/v7 pass mask 511 and
+same-boot reopen mask 63 with identical normalized outputs. Native
+build/budget-edit-copy-native-v3 passes both masks through an actual QEMU
+shutdown/restart, restores caller state, returns fresh arithmetic after both
+exits and preserves all file bytes/attributes/timestamps during read-only abort.
+The session changes only its probe and three Budget files; 1,877 existing files
+are preserved.
+
+The original populated date reparses 09/04/98 as 2098, and its amount acquires
+two ULPs from the original numerical approximation. Native retains its existing
+exact-power/binary64 policy. The oracle checks exact target-specific bits and
+requires only bytes 32 and 64 to differ in the 80-byte saved data; reports,
+dates, counts, strings, accounts and every other data byte match. This records
+an existing numerical architecture difference rather than using a tolerance.
+
+See [the workflow and remaining Budget paths](i386-budget-edit-copy.md), its
+reproduction commands and build/budget-edit-copy-audit-v1/result.json. The audit
+checks eleven inventoried files plus the compressed template and unchanged
+runtime source. Edit/copy cancellation and other field changes, account-picker
+and editor interactions, templates, mouse and full Budget qualification remain
+open. No inventory item or C1–C5 milestone closes.
