@@ -25,4 +25,3 @@ U0 DrawMs(CDC *dc)
     }
   }
 }
-

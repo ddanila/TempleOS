@@ -76,8 +76,8 @@ See [startup evidence](i386-user-startup.md).
 
 
 The explicit full-refresh diagnostic now has repeatable originals and complete
-native passes at `msg-loop-frames-native-v5` and
-`msg-loop-frames-shift-native-v5`. It keeps the unchanged program and independent
+native passes at `msg-loop-frames-native-v7` and
+`msg-loop-frames-shift-native-v7`. It keeps the unchanged program and independent
 full message expectations, adds completed document/WinMgr barriers and
 DOCF_DO_FULL_REFRESH to its test document, and compares every screen pixel.
 The baseline matched documents/streams but missed exactly17 arrow pixels;

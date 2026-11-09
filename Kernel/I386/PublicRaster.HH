@@ -30,4 +30,5 @@ public _extern _SPRITE_3ZB U0 Sprite3ZB(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elem
 public _extern _SPRITE_SIZE I64 SpriteSize(U8 *elems);
 public _extern _GR_RECT_B I64 GrRectB(CDC *dc=gr.dc,I64 x1,I64 y1,I64 x2,I64 y2);
 public _extern _GR_BORDER U0 GrBorder(CDC *dc=gr.dc,I64 x1,I64 y1,I64 x2,I64 y2,I64 step=1,I64 start=0);
+public _extern _GR_FILL_CIRCLE I64 GrFillCircle(CDC *dc=gr.dc,I64 cx,I64 cy,I64 z=0,I64 diameter);
 #endif

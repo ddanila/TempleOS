@@ -12,4 +12,3 @@ public U0 DrawWaitMs(CDC *dc,I64 x,I64 y)
   dc->thick=old_pen_width;
   dc->color=old_color;
 }
-

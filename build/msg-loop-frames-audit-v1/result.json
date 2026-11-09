@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "checked_receipts": [
+    "msg-loop-frames-original-v3",
+    "msg-loop-frames-original-v4",
+    "msg-loop-frames-native-v7",
+    "msg-loop-frames-shift-original-v3",
+    "msg-loop-frames-shift-original-v4",
+    "msg-loop-frames-shift-native-v7",
+    "draw-mouse-original-v2",
+    "draw-mouse-native-v4",
+    "graphics-pens-original-v3",
+    "graphics-pens-native-v3",
+    "managed-pointer-user-8m-v6",
+    "managed-pointer-user-legacy-v3",
+    "managed-pointer-startup-8m-v1"
+  ],
+  "pixels": 614400,
+  "source_pins": 1865,
+  "helper_pins": 26,
+  "pen_cache_bytes": 391680,
+  "pen_cases": 256,
+  "legacy_pixels": 614400,
+  "startup_seconds": 54.42195944581181,
+  "scope": "Unchanged MsgLoop with explicitly full-refresh test documents and real frame barriers; exact complete original documents/streams/pixels, actual input and caller heap/restoration. Default-mode snapshot nondeterminism and full C1-C5 remain open."
+}

@@ -59,7 +59,7 @@ The complete pen tables had not previously been initialized natively. The
 standard pointer matched immediately, but the wait pointer exposed103 missing
 thick-circle pixels. Native thick-point and small filled-circle entry paths now
 ensure the complete original tables on first use, including all four64-pen
-arrays and both circle-bound arrays. Allocations belong to the graphics root,
+arrays and both circle-bound arrays. Allocations belong to Adam's persistent root,
 not the caller. A render-scope guard serializes initialization and releases
 partial published tables on failure or task cleanup; successful tables persist
 as a shared cache. Thin-pointer startup does not allocate this cache. Failure
@@ -72,16 +72,16 @@ and the original. The first host model misread HolyC shift precedence in the
 circle-center expression; the original counterexample is retained, and the
 correct model centers at x-1-(i>>1). No actual bytes are rewritten.
 
-The final candidate is `build/i386-managed-pointer-cross-v3/kernel.img` with
+The final candidate is `build/i386-managed-pointer-cross-v5/kernel.img` with
 Console ABI272. Source-matching classic rebuilds and the386 audit pass; only
 Kernel and ConsoleRuntime change from ABI271, and bare kernel remains458680
-bytes. Final controlled MsgLoop tests `msg-loop-frames-native-v5` and
-`msg-loop-frames-shift-native-v5` pass exact saved documents, complete streams,
+bytes. Final controlled MsgLoop tests `msg-loop-frames-native-v7` and
+`msg-loop-frames-shift-native-v7` pass exact saved documents, complete streams,
 restoration7, all614400 screen pixels, fresh42 and unchanged complete volumes.
-All12 direct pointer cases pass at `draw-mouse-native-v2`, including the wait
+All12 direct pointer cases pass at `draw-mouse-native-v4`, including the wait
 pointer and DC state.
 
-Stock User startup passes255 at8MiB (`managed-pointer-user-8m-v4`). Its
+Stock User startup passes255 at8MiB (`managed-pointer-user-8m-v6`). Its
 `--managed-pointer` option requires the calibrated17-pixel original arrow in
 every managed welcome/command screen. The initial old oracle failed solely on
 those17 extra pixels (with its normal cursor alternative); the explicit oracle
@@ -92,6 +92,27 @@ Full default scheduling, original desktop orchestration, raw/retained pointer
 parity, menus/grid/final-overlay integration, all callback lifetimes and native
 self-host generations remain open. Inventory qualification remains2/686.
 
-The native child-cache probe currently stops at the missing public GrFillCircle
-binding on this checkpoint image. Its original391680-byte model passes; native
-first-use/child-retirement qualification is pending the public binding.
+The final public GrFillCircle binding passes the child-cache probe at
+`graphics-pens-native-v3` against `graphics-pens-original-v3`. Native tables are
+absent before the child starts; the child invokes the public fill API, completes
+initialization and is killed. Every pen remains valid with a live non-child
+owner afterward. All256 pens,369152 bitmap bytes and8192 bound bytes match the
+original and independent model, including dimensions. Fresh42 and unchanged
+volume pass. The earlier native probe's missing-public-binding failure remains
+at `graphics-pens-native-v1`; a provisional root-owner expression also failed
+AOT compilation. The final code uses the already bound native Adam provider.
+
+The retained editor regression passes614400 pixels and restores the original
+User document roles at `managed-pointer-user-legacy-v3`; all1894 prior files
+remain intact and fresh42 passes. Isolated normal8MiB KVM486,-fpu startup is
+54.422s, with no other QEMU at invocation, exact welcome/42 pixels including the
+original arrow and live WinMgr (`managed-pointer-startup-8m-v1`). This is only
+the current60-second baseline subgate. The current source image pins1865 sources
+and26 helpers; `build/msg-loop-frames-audit-v1/verify.py` rechecks those pins,
+delivered fixtures, raw outputs, all pixels and original include expansion.
+
+Both default-mode reruns remain strict saved-document failures at
+`msg-loop-pointer-default-native-v1` and
+`msg-loop-pointer-default-shift-native-v1`, with exact streams and restoration7.
+Those runs used the preceding ABI272 checkpoint image. The controlled mode
+supplements them and does not remove the unresolved scheduling requirement.

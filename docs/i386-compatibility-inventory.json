@@ -5224,7 +5224,7 @@
           "target": "original-managed-pointer-and-callbacks",
           "command": "python3 tools/test-i386-draw-mouse.py IMAGE --reference ORIGINAL --out OUT",
           "result": "pass",
-          "evidence": "build/draw-mouse-native-v2/result.json",
+          "evidence": "build/draw-mouse-native-v4/result.json",
           "scope": "Shared exact DrawMs/DrawStdMs/DrawWaitMs bodies restore the original17-pixel managed pointer independently of console input. All12 direct32x32 cases match original pixels and DC/callback state: standard/wait, no/left/right/both buttons, hidden/null/custom callbacks, open/closed grab and fallback. Actual MsgLoop full screens match both original variants. Raw/retained pointers, full final-overlay/menu/grid composition, callback lifetime/error paths and whole-file/C1-C5 remain open. See docs/i386-managed-pointer.md."
         }
       ]
@@ -5421,7 +5421,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "root-owned-original-pen-cache",
+          "command": "python3 tools/test-i386-graphics-pens.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/graphics-pens-native-v3/result.json",
+          "scope": "Native cache is absent initially. Actual child calls public GrFillCircle, completes initialization and is killed; all256 pens retain valid live non-child ownership. Every369152 bitmap byte,8192 circle-bound byte and dimension matches the original and independent integer model. Fresh42 and full volume unchanged. Thin8MiB startup avoids cache allocation. Failed initialization/cancellation/reentry and all-resource/whole-file/C1-C5 remain open. See docs/i386-managed-pointer.md."
+        }
+      ]
     },
     {
       "path": "Adam/Gr/GrMV.HC",
@@ -7186,7 +7194,7 @@
           "target": "original-managed-pointer-and-callbacks",
           "command": "python3 tools/test-i386-draw-mouse.py IMAGE --reference ORIGINAL --out OUT",
           "result": "pass",
-          "evidence": "build/draw-mouse-native-v2/result.json",
+          "evidence": "build/draw-mouse-native-v4/result.json",
           "scope": "Shared exact DrawMs/DrawStdMs/DrawWaitMs bodies restore the original17-pixel managed pointer independently of console input. All12 direct32x32 cases match original pixels and DC/callback state: standard/wait, no/left/right/both buttons, hidden/null/custom callbacks, open/closed grab and fallback. Actual MsgLoop full screens match both original variants. Raw/retained pointers, full final-overlay/menu/grid composition, callback lifetime/error paths and whole-file/C1-C5 remain open. See docs/i386-managed-pointer.md."
         }
       ]
@@ -17086,8 +17094,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": "Load the byte-identical Demo/MsgLoop.HC with CCF_JUST_LOAD and invoke its MsgLoop function once in an actual user document. Dependencies: GetMsg/full public scan codes, Print/DolDoc insertion, WinMgr physical keyboard and mouse queues, window inhibit/scroll state. Type a; move; single/double/simultaneous buttons; wheel without a public wheel message; type b while left is held; normal and Shift-Escape exits. Capture document/stream/pixels and caller restoration. Keep default scheduling and explicitly full-refresh/frame-barrier cases separate.",
+      "oracle": "Independent stream_expected in tools/test-i386-msg-loop.py requires the full quoted-link header and18/19 chronological records with complete64-bit scans. Original full-refresh references repeat byte-identically in msg-loop-frames-{shift-}original-v3/v4; compare entire saved documents, all307200 pixels per variant, return flags, exact heap/restoration7, fresh42 and unchanged native volume. Default snapshots vary on the original and remain a recorded open qualification gap; no sorting, normalization or pixel exclusions. See docs/i386-msg-loop.md and docs/i386-managed-pointer.md.",
       "tests": [
         {
           "target": "unchanged-msg-loop-real-input-stream",
@@ -17121,7 +17129,7 @@
           "target": "full-refresh-msg-loop-raster",
           "command": "python3 tools/test-i386-msg-loop.py IMAGE --frame-barriers --reference ORIGINAL --out NORMAL; python3 tools/test-i386-msg-loop.py IMAGE --frame-barriers --shift-exit --reference SHIFT_ORIGINAL --out SHIFT",
           "result": "pass",
-          "evidence": "build/msg-loop-frames-native-v5/result.json",
+          "evidence": "build/msg-loop-frames-native-v7/result.json",
           "scope": "Unchanged program and independent18/19-message expectations. Explicit full-refresh test document and real document/WinMgr frame barriers make both original references repeat exactly. Both native variants match complete saved documents including cursor, streams and all614400 pixels, restore7, then fresh42 and unchanged volumes. Default-mode snapshot failures/nondeterminism remain recorded; no entries/pixels excluded or reordered. Whole application/default scheduling/resources/C1-C5 remain unqualified. See docs/i386-managed-pointer.md."
         }
       ]

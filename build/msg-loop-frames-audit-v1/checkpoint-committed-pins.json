@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "commit": "08bee302bb182085cab095228b390da2ef9c3cf8",
+  "image": "build/i386-managed-pointer-cross-v3/kernel.img",
+  "source_pins": 1865,
+  "helper_pins": 26,
+  "method": "Every committed blob SHA256 matches tested cross-v3 pins"
+}

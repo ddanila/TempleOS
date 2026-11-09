@@ -29771,9 +29771,20 @@ match complete saved documents, exact streams and all614400 screen pixels,
 restore7, then pass fresh42 and unchanged volumes. Stock User startup passes255
 at8MiB with an explicit original17-pixel pointer oracle.
 
-The final ABI272 image is build/i386-managed-pointer-cross-v3/kernel.img;
+The final ABI272 image is build/i386-managed-pointer-cross-v5/kernel.img;
 source-matching classic rebuilds and386 audit pass, only Kernel/ConsoleRuntime
 change and bare kernel remains458680 bytes. Default scheduling, other overlay/
 desktop/pointer roles, all resource/error paths and native generations remain
 open. Qualification stays2/686; full C1-C5 remain open. See
- docs/i386-managed-pointer.md.
+docs/i386-managed-pointer.md.
+
+
+The follow-up exposes public GrFillCircle and assigns cached pens to Adam's
+persistent root through the existing native provider. A real child first calls
+the API and is killed; all256 pens retain valid live non-child ownership.
+All369152 bitmap bytes and8192 circle bounds match both the original and an
+independent geometric model. The final cross-v5 image pins1865 sources/26
+helpers; both controlled MsgLoop variants,12 pointer cases,8MiB User255 and
+retained-editor614400 pixels pass. Isolated normal8MiB startup is54.422s.
+Default-mode strict snapshot failures remain preserved; failed initialization,
+all resource paths, remaining applications and full C1-C5 stay open at2/686.

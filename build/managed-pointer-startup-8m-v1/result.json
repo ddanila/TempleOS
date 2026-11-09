@@ -1,0 +1,28 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "build/i386-managed-pointer-cross-v5/kernel.img": "16fd70e5d1d7e16662b4634e3f8f54b94079aeae22421f34851a7b96b0c67f26",
+    "tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463",
+    "Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/build/msg-loop-frames-audit-v1/isolated-startup.py": "710e69db31c9ee6b5471f9c4eb126024852cd7f10e55405d09e4d9d16c9375bf"
+  },
+  "other_qemu_processes_before": [],
+  "scope": "Final full-profile image, single test job, 8 MiB KVM 486,-fpu, normal welcome/live WinMgr and fresh42. Startup <=60s is one measured baseline subgate; not original desktop/all-app/full-C5 or dedicated-host benchmarking qualification.",
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 8,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 54.42195944581181,
+    "commands": 1,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "functional_result": "pass",
+  "startup_seconds": 54.42195944581181,
+  "startup_60s_gate": true,
+  "inputs_unchanged": true
+}
