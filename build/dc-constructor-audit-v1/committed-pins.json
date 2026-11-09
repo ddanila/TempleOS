@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "commit": "42ca76db23c0241dd841824e7b77606c92d56b2d",
+  "image": "build/i386-dc-constructor-scope-cross-v1/kernel.img",
+  "source_pins": 1868,
+  "helper_pins": 26,
+  "method": "git cat-file --batch HEAD:path; every committed source/helper SHA256 equals the tested image build pins"
+}
