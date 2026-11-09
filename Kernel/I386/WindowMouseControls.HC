@@ -131,3 +131,29 @@ Bool NativeWindowControlCapture(I64 x,I64 y,U32 buttons)
   } catch {NativeRenderScopeClose(&scope);}
   NativeRenderScopeClose(&scope);return TRUE;
 }
+
+I64 native_window_wheel_z;
+U0 NativeWindowControlWheel()
+{//Like WinMgrTask, retain inhibited deltas and use the first focused wheel control.
+  CTask *task=sys_focus_task;
+  CCtrl *c;
+  CNativeRenderScope scope;
+  if(!ms.has_wheel || native_window_wheel_z==ms.pos.z)return;
+  if(!TaskValidate(task)){native_window_wheel_z=ms.pos.z;return;}
+  if(NativeLegacyViewActive(task) || !NativeWindowControlEnabled(task) ||
+      NativeWindowControlTarget(ms.pos.x,ms.pos.y)!=task)return;
+  try {
+    NativeRenderScopeOpen(&scope,&NativeWindowControlRelease);
+    NativeRenderScopeBorrow(&scope,task,task,NULL);
+    for(c=task->next_ctrl;c!=&task->next_ctrl;c=c->next) {
+      if(c->wheel_chg) {
+        native_window_fault_task=task->task_num;
+        (*c->wheel_chg)(c,ms.pos.z-native_window_wheel_z);
+        native_window_fault_task=0;
+        break;
+      }
+    }
+    native_window_wheel_z=ms.pos.z;
+  } catch {NativeRenderScopeClose(&scope);}
+  NativeRenderScopeClose(&scope);
+}

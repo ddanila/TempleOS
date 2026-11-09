@@ -173,4 +173,5 @@ mouse_next_event:;
     code=NativeWindowMouseMessages(managed && NativeWindowMouseQueueMessages);
     NativeWindowMouseDispatch(code,native_window_mouse_buttons,managed);
   }
+  NativeWindowControlWheel;
 }

@@ -27,6 +27,7 @@ I64 native_mouse_start_x,native_mouse_start_y;
 #include "/Kernel/I386/MouseEventQueue.HC"
 CI386MouseState native_mouse_irq_state;
 CI386MouseEvents native_mouse_packets,native_mouse_events;
+I64 native_mouse_irq_z,native_mouse_packet_z[64];
 class CNativeMousePosition {CD3I64 pos,presnap;};
 CNativeMousePosition native_mouse_positions[64];
 U0 NativeMouseDecoderInit()
@@ -43,9 +44,14 @@ U0 NativeMouseIRQ(U8 data,U8 status)
 {
   NativeMouseDecoderInit;
   if(!NativeMouseIRQDecode(&native_mouse_irq_state,data,status) || native_mouse_irq_state.count)return;
+  if(native_mouse_irq_state.packet_size==4) {
+    if(native_mouse_irq_state.fourth&8)native_mouse_irq_z+=(native_mouse_irq_state.fourth&7)-8;
+    else native_mouse_irq_z+=native_mouse_irq_state.fourth&7;
+  }
   //Offset adjustment depends on the path at edges; do not coalesce raw packets.
   I386MouseEventPush(&native_mouse_packets,native_mouse_irq_state.x,
     native_mouse_irq_state.y,native_mouse_irq_state.buttons,NativeTimeStamp,FALSE);
+  native_mouse_packet_z[(native_mouse_packets.write+63)&63]=native_mouse_irq_z;
 }
 U0 NativeMouseLogicalQueue(I64 stamp,U32 buttons)
 {
@@ -70,20 +76,20 @@ U0 NativeMouseStateInit()
   ms.timestamp=NativeTimeStamp;native_input_mouse.timestamp=ms.timestamp;
   native_mouse_last_stamp=ms.timestamp;GridInit;
 }
-U0 NativeMouseApply(I64 x,I64 y,U32 buttons,I64 stamp,Bool publish)
+U0 NativeMouseApply(I64 x,I64 y,I64 z,U32 buttons,I64 stamp,Bool publish)
 {
-  I64 old_x=native_mouse_hard_position.x,old_y=native_mouse_hard_position.y;
+  I64 old_x=native_mouse_hard_position.x,old_y=native_mouse_hard_position.y,old_z=native_mouse_hard_position.z;
   I64 delta=stamp-native_mouse_last_stamp,dx,dy;
-  native_mouse_hard_prescale.x=x;native_mouse_hard_prescale.y=y;
+  native_mouse_hard_prescale.x=x;native_mouse_hard_prescale.y=y;native_mouse_hard_prescale.z=z;
   MouseHardPositionCore(&native_mouse_hard_prescale,&native_mouse_hard_scale,
     &native_mouse_hard_position,&ms,&ms_grid);
   x=native_mouse_hard_position.x;y=native_mouse_hard_position.y;
-  if(!native_mouse_synchronized || x!=old_x || y!=old_y || buttons!=native_mouse_hard_buttons) {
+  if(!native_mouse_synchronized || x!=old_x || y!=old_y || native_mouse_hard_position.z!=old_z || buttons!=native_mouse_hard_buttons) {
     dx=x-native_mouse_last_x;dy=y-native_mouse_last_y;
     if(native_mouse_synchronized && (dx || dy) && delta>0)
       ms.speed=Sqrt(SqrI64(dx)+SqrI64(dy))*1193182.0/delta;
     native_mouse_last_x=x;native_mouse_last_y=y;native_mouse_last_stamp=stamp;
-    ms.timestamp=stamp;MsUpdate(x,y,0,(buttons&1)!=0,(buttons&2)!=0);
+    ms.timestamp=stamp;MsUpdate(x,y,native_mouse_hard_position.z,(buttons&1)!=0,(buttons&2)!=0);
     native_mouse_hard_buttons=buttons;
     if(publish)NativeMouseLogicalQueue(stamp,buttons);
   }
@@ -91,11 +97,12 @@ U0 NativeMouseApply(I64 x,I64 y,U32 buttons,I64 stamp,Bool publish)
 U0 NativeMouseSync()
 {//Scheduled only. Preserve all packet path effects before coalescing UI motion.
   CI386MouseEvent event;
-  U32 irq;
+  U32 irq,slot;
   if(!console_config || !console_config->mouse || !console_config->mouse->installed)return;
   irq=I386IrqSave;NativeMouseDecoderInit;
+  ms.has_wheel=(native_mouse_irq_state.protocol_flags&1)!=0;
   if(!native_mouse_synchronized) {
-    NativeMouseApply(native_mouse_start_x,native_mouse_start_y,
+    NativeMouseApply(native_mouse_start_x,native_mouse_start_y,0,
       native_mouse_start_buttons,NativeTimeStamp,FALSE);
     native_mouse_synchronized=TRUE;
   }
@@ -104,8 +111,11 @@ U0 NativeMouseSync()
     native_mouse_events.read=native_mouse_events.write=native_mouse_events.count=0;
     native_mouse_events.losses++;
   }
-  while(I386MouseEventPop(&native_mouse_packets,&event))
-    NativeMouseApply(event.x,event.y,event.buttons,event.stamp,TRUE);
+  while(native_mouse_packets.count) {
+    slot=native_mouse_packets.read;
+    if(!I386MouseEventPop(&native_mouse_packets,&event))break;
+    NativeMouseApply(event.x,event.y,native_mouse_packet_z[slot],event.buttons,event.stamp,TRUE);
+  }
   native_mouse_serial=native_mouse_irq_state.serial;
   I386IrqRestore(irq);
 }

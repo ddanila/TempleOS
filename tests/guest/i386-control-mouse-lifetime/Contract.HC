@@ -1,7 +1,7 @@
 CTask *cl_owner,*cl_worker;
 CCtrl *cl_control;
 I64 cl_mode,cl_stage,cl_number,cl_updates,cl_masks[5],cl_mouse[3],cl_target[2],cl_windows[5][4];
-Bool cl_release,cl_entered,cl_returned;
+Bool cl_release,cl_entered,cl_returned,cl_wheel;
 U0 CLLog(U8 *s){while(*s)OutU8(0xE9,*s++);}
 U0 CLExport(U8 *name,U8 *data,I64 size)
 {U8 *s=MStrPrint("EXPORT %s %X %X\n",name,data,size);CLLog(s);Free(s);}
@@ -19,6 +19,7 @@ U0 CLClick(CCtrl *c,I64,I64,Bool down)
   while(TRUE)Yield;
   cl_returned=TRUE;
 }
+U0 CLWheel(CCtrl *c,I64) {CLClick(c,0,0,TRUE);}
 U0 CLOwner(U8 *)
 {
   U8 *s;
@@ -52,7 +53,8 @@ U0 ControlMouseLifetime(U8 *)
     cl_stage=0;cl_entered=cl_returned=cl_release=FALSE;cl_worker=NULL;
     cl_control=CAlloc(sizeof(CCtrl));cl_control->flags=CTRLF_SHOW|CTRLF_CAPTURE_LEFT_MS;
     cl_control->type=CTRLT_GENERIC;cl_control->left=40;cl_control->right=80;
-    cl_control->top=30;cl_control->bottom=60;cl_control->left_click=&CLClick;
+    cl_control->top=30;cl_control->bottom=60;
+    if(cl_wheel)cl_control->wheel_chg=&CLWheel;else cl_control->left_click=&CLClick;
     cl_control->state=0x1234567;
     cl_owner=Spawn(&CLOwner,NULL,"Control lifetime owner",-1,Fs,16384);
     deadline=cnts.jiffies+20000;

@@ -12,11 +12,11 @@ import time
 ROOT=Path(__file__).resolve().parents[1]
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True);args=ap.parse_args()
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True);ap.add_argument('--wheel',action='store_true');args=ap.parse_args()
     out=args.out.resolve();fixture=ROOT/'tests/guest/i386-control-mouse-lifetime/Contract.HC'
     if out.exists():ap.error('Use a fresh output directory')
     paths=[args.disk.resolve(),fixture,Path(__file__).resolve()]+[ROOT/('tools/'+n) for n in ['package-i386-native-image.py','build-i386-kernel.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py']]+[ROOT/'Kernel/FontStd.HC']
-    out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Physical captured-control click: throw, recovering Exit, committed Exit with end callback explicitly cleared, and owner retirement during yielding callbacks with recovering/committed cancellation. Worker recovery/frame progress, child reap, borrowed control detach/canary and exact controller heap recovery. Not arbitrary explicit Free during callbacks or all input lifetime qualification.')
+    out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,input_kind='wheel' if args.wheel else 'left-click',scope='Physical control callback (left-click or wheel): throw, recovering Exit, committed Exit with end callback explicitly cleared, and owner retirement during yielding callbacks with recovering/committed cancellation. Worker recovery/frame progress, child reap, borrowed control detach/canary and exact controller heap recovery. Not arbitrary explicit Free during callbacks or all input lifetime qualification.')
     (out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes());guest=None
     try:
         pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));image=out/'working.img'
@@ -25,7 +25,7 @@ def main():
         Guest=runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest'];guest=Guest(image,out/'guest',True)
         guest.wait('DONE native kernel startup\n')
         guest.command('#include "C:/Probe/ControlMouseLife.HC"')
-        guest.type('ControlMouseLifetimeRun;');guest.press('ret')
+        guest.type(('cl_wheel=TRUE;' if args.wheel else '')+'ControlMouseLifetimeRun;');guest.press('ret')
         for mode in range(5):
             guest.wait(f'CL READY {mode}\n')
             name=f'control-life-target-{mode}.bin';raw=(out/'guest'/name).read_bytes();(out/name).write_bytes(raw)
@@ -42,9 +42,10 @@ def main():
                 # The target is logical; physical gain is not assumed to be one.
                 time.sleep(.75)
             else:raise TimeoutError('Pointer did not reach control')
-            guest.call('input-send-event',events=[{'type':'btn','data':{'button':'left','down':True}}])
+            button='wheel-down' if args.wheel else 'left'
+            guest.call('input-send-event',events=[{'type':'btn','data':{'button':button,'down':True}}])
             guest.wait(f'CL ENTER {mode}\n',30)
-            guest.call('input-send-event',events=[{'type':'btn','data':{'button':'left','down':False}}])
+            guest.call('input-send-event',events=[{'type':'btn','data':{'button':button,'down':False}}])
         guest.wait('CL DONE\n',60)
         raw=(out/'guest/control-life-masks.bin').read_bytes();(out/'control-life-masks.bin').write_bytes(raw)
         if raw!=struct.pack('<5q',255,255,255,255,255):raise ValueError('Control lifetime masks differ: '+repr(struct.unpack('<5q',raw)))

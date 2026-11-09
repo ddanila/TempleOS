@@ -114,7 +114,7 @@ U0 NativeWindowWorker(U8 *data)
   I64 ch,number,mouse_x,mouse_y;
   Bool completed,pump,graphics_frame;
   SetRFlags(GetRFlags|0x200);
-  NativeWindowMouseReset;
+  NativeWindowMouseReset;native_window_wheel_z=0;
   DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
   DocStdDefinesInit;
   NativeRunLevelMark(RLf_WINMGR,"winmgr");
