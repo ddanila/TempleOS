@@ -17037,7 +17037,15 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "unchanged-msg-loop-real-input-stream",
+          "command": "python3 tools/test-i386-msg-loop.py --out ORIGINAL; python3 tools/test-i386-msg-loop.py --shift-exit --out SHIFT_ORIGINAL; python3 tools/test-i386-msg-loop.py IMAGE --reference ORIGINAL --out NATIVE; python3 tools/test-i386-msg-loop.py IMAGE --shift-exit --reference SHIFT_ORIGINAL --out SHIFT_NATIVE",
+          "result": "fail",
+          "evidence": "build/msg-loop-stream-native-v1/result.json",
+          "scope": "Original normal/Shift-Escape pass an independent chronological output model with18/19 records, full scan values, real GetMsg/Print/QMP input and exact heap/caller restoration7. Byte-identical source function loaded without auto-execution then called in one wrapper. Native ABI268 message-record streams match originals exactly and restore7, but both full streams fail because the header link is missing. A non-consuming user_put_s observer supplements strict final document capture; no record reordering. Saved original insertion order varies and pixels remain unqualified. No native full application/files/fresh42 or C1-C5 pass. See docs/i386-msg-loop.md."
+        }
+      ]
     },
     {
       "path": "Demo/MultiCore/Interrupts.HC",
@@ -23473,6 +23481,13 @@
           "result": "pass",
           "evidence": "build/mouse-set-audit-v1/result.json",
           "scope": "Shared exact original MsSet body; 544 state/model values plus 32 actual ScanKey mouse-button bits match original/current-classic/native. Nine synthetic control phases yield six exact original callbacks with transient/simultaneous left priority; managed/raw public message modes each match six records. Source queue/raw API/IF/heap probe 63; audit rejects 755 corruptions. Physical managed/raw controls, wheel, 62 gain phases, five click and five wheel lifetime modes at 255, 8 MiB Help/picker/state pixels, raw API 15 and Budget save/cold 1023/63 pass; 1887 prior files preserved. Console ABI 266 with 693 bindings. Held-click console frame remains identical failure; DocEd remains at 113/95 and 524/609 pixel differences. Not full ms_hard, timing, arbitrary settings, missing devices, queued IRQ/FIFO permutations, legacy views, desktop/raster/resources or full-file/C1-C5 qualification. See docs/i386-mouse-set.md."
+        },
+        {
+          "target": "full-keyboard-mouse-scan-halves",
+          "command": "python3 tools/test-i386-keyboard-mouse-scan.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/keyboard-mouse-scan-audit-v1/result.json",
+          "scope": "Eight actual key-down/up phases under all four synthetic and four physical mouse-button combinations match80 original delivered/public full-scan/state values; host transition acknowledgements, exact IF/caller/heap/mouse restoration mask7, fresh42 and unchanged files. Previous image mask7 has12 rows missing only upper-half mouse flags; audit rejects81 corruptions. Shared public/queued adapter, ABI268,1860+26 pins, two classic generations (not C5 native), 386 audit, MsSet544+32 regression. Not all keys/modifiers, pending IRQ/order/loss/focus/callback behavior, full MsgLoop/desktop/apps/resources or whole-file/C1-C5. See docs/i386-keyboard-mouse-scan.md."
         }
       ]
     },
@@ -23689,6 +23704,13 @@
           "result": "pass",
           "evidence": "build/mouse-first-event-audit-v1/result.json",
           "scope": "Eight original/native managed/raw phases match six messages at the unchanged initial pointer, no-op/transient states and true moves; exact coordinates/order/mode/IF/caller/heap. Retained fixture without diagnostics passes unchanged 600ms observation; previous extra-move and repeated managed missing-right-down failures retained. Oracle rejects54 value corruptions. Aligned four-byte VGA stores pass full/partial four-plane hardware readback/all256 inputs and307200 pixels; managed traces4-5 frames/600ms vs2 before and18 original. MsSet544+32,8MiB picker/state pass. Help passes repeat but initial selection timeout remains intermittent/open. ABI267,1860+26 pins,two classic generations (not C5 native). Not all initial states, timing, physical/queued permutations, desktop/apps/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-first-event.md."
+        },
+        {
+          "target": "full-keyboard-mouse-scan-halves",
+          "command": "python3 tools/test-i386-keyboard-mouse-scan.py IMAGE --reference ORIGINAL --out OUT",
+          "result": "pass",
+          "evidence": "build/keyboard-mouse-scan-audit-v1/result.json",
+          "scope": "Eight actual key-down/up phases under all four synthetic and four physical mouse-button combinations match80 original delivered/public full-scan/state values; host transition acknowledgements, exact IF/caller/heap/mouse restoration mask7, fresh42 and unchanged files. Previous image mask7 has12 rows missing only upper-half mouse flags; audit rejects81 corruptions. Shared public/queued adapter, ABI268,1860+26 pins, two classic generations (not C5 native), 386 audit, MsSet544+32 regression. Not all keys/modifiers, pending IRQ/order/loss/focus/callback behavior, full MsgLoop/desktop/apps/resources or whole-file/C1-C5. See docs/i386-keyboard-mouse-scan.md."
         }
       ]
     },
