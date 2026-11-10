@@ -13843,6 +13843,13 @@
           "result": "pass",
           "evidence": "build/host-stream-fixed-v5/result.json",
           "scope": "x64-to-386 AOT #exe runs with host flags/pointer width and resumes target layout. Pre-fix mask2 versus fixed31; host pointer8 and actual StrLen result6, target pointer allocation4, escaping stream restores both target bits and previous control, fresh module byte-identical. Native statement adapter unchanged. Other statement/compiler/resource paths and whole-file qualification remain open. Full C1-C5 remain open,2/686. See docs/i386-system-build-date.md."
+        },
+        {
+          "target": "source-module-static-zero",
+          "command": "python3 tools/test-i386-module-zero.py --out ORIGINAL; python3 tools/test-i386-module-zero.py IMAGE --out NATIVE; python3 tools/test-i386-variable-init.py IMAGE --out JIT",
+          "result": "pass",
+          "evidence": "build/module-zero-fixed-v1/result.json",
+          "scope": "Original AOT/source-module storage with enabled0xA5 JIT fill: all uninitialized byte/I64/pointer/callback/37-byte array/nine-byte record storage is zero; explicit array/scalar values remain exact. Before-v2 rejects zi_callback at stage5; original-v2 and fixed-v1 match all eight named data models/sizes. Controls restore, fresh42 and prior files survive. Ordinary JIT globals/statics/stack patterns retain mask255. Complete native kernel modules/release generations and other storage/error/resource cases stay open; whole file/C1-C5 unqualified,2/686. See docs/i386-module-zero.md."
         }
       ]
     },

@@ -1286,9 +1286,14 @@ I64 I386FrontendDefine(U8 *context,U8 *name,U8 *list)
 }
 U0 I386FrontendInitialize(U8 *context,U8 *data,I64 bytes)
 {
+  CI386Frontend *state=context;
   I64 i;
   if(bytes<0 || !data && bytes) I386FrontendUnavailable(context);
-  if(sys_var_init_flag)
+  //Source units stage their AOT data through the ordinary declaration parser.
+  //Original AOT storage starts at zero; #exe still runs under the JIT policy.
+  if(state->cc->flags&CCF_MODULE_SOURCE && !(state->cc->flags&CCF_EXE_BLK))
+    for(i=0;i<bytes;i++) data[i]=0;
+  else if(sys_var_init_flag)
     for(i=0;i<bytes;i++) data[i]=sys_var_init_val;
 }
 U0 I386FrontendStatic(U8 *context,CCmpCtrl *cc,CMemberLst *member,I64 pass)

@@ -29913,3 +29913,31 @@ live WinMgr and exact managed welcome/42 pixels (build-date-startup-8m-v1).
 The audit verifies the native packer failure published no output module and
 preserved the complete source/fixture file tree. This remains the existing60-second
 minimal baseline subgate, not complete desktop startup or native C5 qualification.
+
+### C4/C5: source-module static storage follows original AOT zero initialization
+
+The native kernel packer failure now has a small differential baseline. Under
+explicit public JIT fill controls (enabled,0xA5), original 386 AOT zeros all
+uninitialized static storage. The old native source builder instead poisons
+its callback pointer and rejects stage5 at global-pointers zi_callback. Both
+controls restore and the prior file tree/fresh42 survive the strict failure.
+The first test used a C-style partial array initializer rejected by the original;
+that prototype is retained and excluded from the accepted baseline.
+
+I386FrontendInitialize now zeros module-source static storage while retaining
+JIT policy for #exe and ordinary compilation. The source builder deliberately
+uses the declaration parser with CCF_AOT_COMPILE clear; CCF_MODULE_SOURCE supplies
+the correct storage distinction. The change covers storage generally rather than
+special-casing i386_lex_doc_format. Original module-zero-original-v2 and fixed
+module-zero-fixed-v1 match all eight named data models/sizes: byte1,integer8,
+pointer/callback4,array37,record9,explicit array8 and scalar8. The before-v2 image
+returns-1; the fixed builder emits602 bytes. Ordinary variable-init mask255 stays
+intact, as do stock User255 at8MiB and all12 pen throw/Kill/Exit cases.
+
+The candidate i386-module-zero-cross-v1 pins1868 sources/26 helpers and passes
+two classic rebuild generations and the386 audit. Only CompilerRuntime and
+Kernel change; Kernel changes with its build date. Interface ABIs105/274 stay
+unchanged and the bare kernel remains458744 bytes. Complete native kernel
+packing and two native outputs are the next C5 gate; neither installed native
+generations nor full desktop/application qualification is claimed. Inventory
+stays2/686. See docs/i386-module-zero.md.
