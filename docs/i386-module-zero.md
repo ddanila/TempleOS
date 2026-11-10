@@ -361,3 +361,11 @@ managed-pointer pixel checks and fresh42 with unchanged inputs in
 `module-zero-fallback-production-user-8m-v1`. Public stack limits are unchanged.
 These results qualify the integrated cross-image regression repair, while fresh
 native providers/generations, diagnostics and full C1-C5 qualification remain open.
+
+The integrated cross image's16MiB diagnostic run has also passed:
+`build/module-zero-fallback-production-diagnostic-v1/result.json` verifies both
+program-probe phases, exact welcome/42/DocAllocationCheck13 and diagnostic
+load/recovery/unload. Diagnostic image and pinned inputs remain unchanged.
+Concurrent runtime is not a timing-profile claim. Inventory evidence records
+the production cross-image User pass separately from the historical native
+failure; no required item is promoted to fully qualified by this narrow check.

@@ -20059,6 +20059,13 @@
           "result": "fail",
           "evidence": "build/module-zero-gen1-user-8m-v1/result.json",
           "scope": "First all16-native-module generation boots and loads the identical fixture at8MiB, but USCheck fails during actual User task creation with OutMem. Kernel task/stack allocation requests267527 bytes; fallback arena size551936/used543664/largest free6936. No255 result or minimal User qualification. Paired read-only snapshots reproduce cross pass/native fail: primary largest free296688 versus259824, rounded request267528; native total free447856 across263 blocks. Both physical usage/allocation counts restore after the attempted operation; fresh42/files survive. Contiguous shortage is confirmed, not full logical-heap recovery. Public stack size is unchanged and no repair is claimed. Full HomeSys/C1-C5 remain unqualified,2/686."
+        },
+        {
+          "target": "preferred-minimum-production-cross-user-startup-8m",
+          "command": "python3 tools/test-i386-user-startup.py IMAGE --managed-pointer --accel kvm --ram-mib 8 --out OUT",
+          "result": "pass",
+          "evidence": "build/module-zero-fallback-production-user-8m-v1/result.json",
+          "scope": "Current-source full-content cross image with preferred-minimum backing policy: actual User fixture returns255 at8MiB; every managed-pointer pixel checkpoint and fresh42 pass, with unchanged inputs. Production source exactly matches the tested prototype; both focused heap validators and six existing allocator corpora pass. Separate16MiB diagnostic boot completes both program-probe phases and42/DocAllocationCheck13 with unchanged diagnostic image/inputs. This repairs the cross-image case; new native generations and their User/resource/full compatibility suites remain pending. Historical first-native-generation failure is preserved. Full HomeSys/C1-C5 remain unqualified,2/686."
         }
       ]
     },

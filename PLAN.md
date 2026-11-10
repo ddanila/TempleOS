@@ -30262,3 +30262,12 @@ unchanged inputs (module-zero-fallback-production-user-8m-v1). This establishes
 the integrated cross-image repair. Current-source16MiB diagnostics and a fresh
 nine-provider native build are running; repaired native generations and the full
 C1-C5 compatibility/resource qualification remain open,2/686.
+
+The integrated cross image also passes the existing16MiB diagnostic run
+(module-zero-fallback-production-diagnostic-v1): both program-probe phases,
+exact welcome/42/DocAllocationCheck13 and diagnostic load/recovery/unload.
+Diagnostic image and pinned inputs remain unchanged. This concurrent functional
+run makes no startup/timing-profile claim. The inventory adds the cross-image
+User pass alongside the preserved native-baseline failure; its qualification
+count remains2/686. The fresh retained-provider build is live, and a guarded
+queue will start two native generations only after its all-nine passing receipt.
