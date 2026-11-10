@@ -1,0 +1,143 @@
+{
+  "scope": "Concrete required dependencies demonstrating why publishing only the optimize callback is insufficient; not an exhaustive binding contract",
+  "dependencies": {
+    "PrsPush": {
+      "source": "Compiler/PrsExpressionCore.HC",
+      "sha256": "d459afea171389e26813b7390e7a5aa3268ed96149f8a43cd9c75654967f3bb3",
+      "references": [
+        {
+          "line": 162,
+          "text": "PrsPush(ps,tmpc);"
+        },
+        {
+          "line": 163,
+          "text": "PrsPush(ps,stk_op);"
+        },
+        {
+          "line": 164,
+          "text": "PrsPush(ps,cc->coc.coc_head.last->ic_class);"
+        },
+        {
+          "line": 165,
+          "text": "PrsPush(ps,cur_op);"
+        },
+        {
+          "line": 186,
+          "text": "PrsPush(ps,tmpc);"
+        },
+        {
+          "line": 187,
+          "text": "PrsPush(ps,stk_op);"
+        },
+        {
+          "line": 256,
+          "text": "PrsPush(ps,tmpc);"
+        },
+        {
+          "line": 257,
+          "text": "PrsPush(ps,stk_op);"
+        },
+        {
+          "line": 258,
+          "text": "PrsPush(ps,cc->coc.coc_head.last->ic_class);"
+        },
+        {
+          "line": 259,
+          "text": "PrsPush(ps,cur_op);"
+        },
+        {
+          "line": 666,
+          "text": "PrsPush(ps,tmpc);"
+        },
+        {
+          "line": 667,
+          "text": "PrsPush(ps,PREC_UNARY_PRE<<16+i);"
+        }
+      ]
+    },
+    "PrsPop": {
+      "source": "Compiler/PrsExpressionCore.HC",
+      "sha256": "d459afea171389e26813b7390e7a5aa3268ed96149f8a43cd9c75654967f3bb3",
+      "references": [
+        {
+          "line": 152,
+          "text": "stk_op=PrsPop(ps);"
+        },
+        {
+          "line": 153,
+          "text": "tmpc=PrsPop(ps);"
+        },
+        {
+          "line": 232,
+          "text": "stk_op=PrsPop(ps); //pop ops of higher prec"
+        },
+        {
+          "line": 233,
+          "text": "tmpc=PrsPop(ps);"
+        },
+        {
+          "line": 270,
+          "text": "stk_op=PrsPop(ps);"
+        },
+        {
+          "line": 271,
+          "text": "tmpc=PrsPop(ps);"
+        },
+        {
+          "line": 780,
+          "text": "i=PrsPop(ps);"
+        }
+      ]
+    },
+    "OptFree": {
+      "source": "Compiler/PrsExp.HC",
+      "sha256": "9baaf828ec626b7449d415883083859178f19b4b3d2a96c9d601c581ebb78353",
+      "references": [
+        {
+          "line": 28,
+          "text": "U0 PrsHostRetire(U8 *context,CCmpCtrl *cc,CIntermediateCode *node) { OptFree(cc,node); }"
+        }
+      ]
+    },
+    "CmpTargetSize": {
+      "source": "Compiler/PrsDeclarationCore.HC",
+      "sha256": "c3190da215b6ab8469cfbf2656cc7d8507c778c18847f1e556a5a972b6d5a916",
+      "references": [
+        {
+          "line": 136,
+          "text": "i=CmpTargetSize(cc,tmpc2)*tmpm->dim.total_cnt;"
+        },
+        {
+          "line": 168,
+          "text": "i=CmpTargetSize(cc,tmpc2)*tmpm->dim.total_cnt;"
+        }
+      ]
+    },
+    "intermediate_code_table": {
+      "source": "Compiler/PrsExpressionCore.HC",
+      "sha256": "d459afea171389e26813b7390e7a5aa3268ed96149f8a43cd9c75654967f3bb3",
+      "references": [
+        {
+          "line": 174,
+          "text": "if (intermediate_code_table[tmpi->ic_code].type==IST_DEREF)"
+        },
+        {
+          "line": 220,
+          "text": "if (intermediate_code_table[cur_op.u16[0]].type==IST_ASSIGN) {"
+        },
+        {
+          "line": 223,
+          "text": "if (intermediate_code_table[tmpi->ic_code].type!=IST_DEREF ||"
+        },
+        {
+          "line": 244,
+          "text": "if (intermediate_code_table[cur_op.u16[0]].type==IST_CMP &&"
+        },
+        {
+          "line": 245,
+          "text": "intermediate_code_table[stk_op.u16[0]].type==IST_CMP) {"
+        }
+      ]
+    }
+  }
+}

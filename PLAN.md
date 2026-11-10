@@ -30870,3 +30870,13 @@ original declarations are byte-preserved and independently reversible. The
 production optimizer differential passes at 16 MiB. The 8 MiB original-User
 prototype still fails its 80-byte allocation; no resource gate changed. Details
 and pinned receipts: `docs/i386-private-compiler-headers.md`.
+
+### C2/C4: cross-compile the full shared optimizer as a native module
+
+The complete PublicOptSupport body sequence, including original diagnostics,
+now cross-compiles into a 138,522-byte module and passes the 386 instruction
+audit with an exact 19-import contract. The prototype patch, audit and source
+receipts are recorded in `docs/i386-full-optimizer-module.md`. This is not yet
+loaded by the runtime. Later parser stages require exported optimizer helpers
+and metadata as well as the optimize callback; concrete namespace dependencies
+are recorded before integration. The 8 MiB gate remains failing and unchanged.

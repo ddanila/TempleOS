@@ -1,0 +1,184 @@
+{
+  "result": "pass",
+  "scope": "Full shared optimizer cross compile, exact 19-import contract, helper/metadata exports and complete 386 instruction audit only; no provider integration, namespace publication, runtime or resource qualification",
+  "module_bytes": 138522,
+  "code_bytes": 135120,
+  "module_sha256": "35710efdf869b440225162447853109a3f9eb89892c018da22b506af698ebe0a",
+  "input_sha256": {
+    "tools/build-i386-kernel.py": "dd3f5832f1a485070f61af7e66056febbec4ab14e73bcc5962c01dfb8367119c",
+    "tools/test-i386.py": "68c03c3c6617d0dd39cbaaf926b1f3f84a98af33c041c3827fd68264789da58c",
+    "/home/ddanila/fun/TempleOS/build/on-demand-optimizer-v5/exports/OptRuntime.t32m": "35710efdf869b440225162447853109a3f9eb89892c018da22b506af698ebe0a",
+    "/home/ddanila/fun/TempleOS/build/on-demand-optimizer-v5/overlay/Kernel/I386/OptRuntime.HC": "daeecd39bcb7268d2da00a3b1067000e69111d21c87ba878888d60eadd95515c",
+    "build/on-demand-lexer-v9/audit/exports/ExceptContext.t32m": "3457441a64b9e9f02b053b215b338ceb380fa62294e342880b619dc044ec460d",
+    "build/on-demand-lexer-v9/audit/exports/BuildRuntime.t32m": "3134f883c0c637fea96a49bf7270dc660dbfc239457a10564a4bc64acf9977a0",
+    "build/on-demand-lexer-v9/audit/exports/LexRuntime.t32m": "938db2cac33c2846e4fb6966d2ea31f8770369a9ca9676481e6ecfcb403b53e3",
+    "build/on-demand-lexer-v9/audit/exports/ConsoleRuntime.t32m": "f3c6b864f441ca29e64b7783a6d7dfd32483ab57b264d3a43800840f106cb2e0",
+    "build/on-demand-lexer-v9/audit/exports/SysTry.t32m": "c8bd2409a609c65a52fe58d41c53c2031febb8cf13f79f45ded626f673f00d2e",
+    "build/on-demand-lexer-v9/audit/exports/IrqEntry.t32m": "4271e0762b789e13a42ecff399a69b11cf9b08f52e88a6857a41e530b8594695",
+    "build/on-demand-lexer-v9/audit/exports/TaskContext.t32m": "1731c954810c266d8e860dcfadc5004e855bfb2e8a50bdb7fbd2c626ef56ded6",
+    "build/on-demand-lexer-v9/audit/exports/Kernel32.BIN": "e3ad5a9f42971d252b810cfb074b2c699b9b5e3907aecc1a37589a1f51ded3f2",
+    "build/on-demand-lexer-v9/audit/exports/EditorRuntime.t32m": "9c82338f318a3d0290e79bcb8bcc807c15826c980b3d78cd06d687cf13d26230",
+    "build/on-demand-lexer-v9/audit/exports/Kernel.t32m": "138137995978aeff7a5c3d3388c69cbd4d16df5e268bbd9c92f14354d2d953ee",
+    "build/on-demand-lexer-v9/audit/exports/Startup.t32m": "5d523c257fcfa26ed6882a4bcae163946426ece652daf72664de20291409423b",
+    "build/on-demand-lexer-v9/audit/exports/CompilerProgramRuntimeProbe.t32m": "4da01fad2bbd3b621801ea106e451f40cdf2283f16916287f1f60f8e8311b919",
+    "build/on-demand-lexer-v9/audit/exports/CompilerRuntime.t32m": "e218f435cee24526e8dd468a7d361f1fe4134d81e20ebd1e79b76f9495597b29",
+    "build/on-demand-lexer-v9/audit/exports/FileRuntime.t32m": "23ed2c0014082ae65eb39aa583539db9650f8f4ccd84e0e4ef017ffa780fa4ac",
+    "build/on-demand-lexer-v9/audit/exports/CompilerProbe.t32m": "c99513871bca5ebed9b5f5b528def46f814687b588673a567e45a02053527c12",
+    "build/on-demand-lexer-v9/audit/exports/DocDiagnosticRuntime.t32m": "f96db8db10285df64ded906e23dae14d430cc75dd4d7fd4546cce789f984bf3d",
+    "build/on-demand-lexer-v9/audit/exports/MemoryRuntime.t32m": "34aa07c7ab16a922df6b81f0080ae1c15617572e9d2fe010d14703d2e40a0072",
+    "build/on-demand-lexer-v9/audit/exports/ExceptionEntry.t32m": "f44b36d59e4a11800d23edac1afa2c3c33edf1e762dd7990b5efc5f80881ac7b",
+    "Compiler/I386/PublicOptSupport.HC": "3703f528ab21e793ef683d07efd72fb59de310f0d6923e0d0e9a831f94f1997d"
+  },
+  "inputs_unchanged": true,
+  "imports": [
+    "COCMiscNew",
+    "Free",
+    "I386F64Add",
+    "I386F64Compare",
+    "I386F64Div",
+    "I386F64FromI64",
+    "I386F64Mod",
+    "I386F64Mul",
+    "I386F64Sub",
+    "I386F64ToI64",
+    "LexExcept",
+    "LexWarn",
+    "MAlloc",
+    "Print",
+    "PrintErr",
+    "PutChars",
+    "Yield",
+    "cmp",
+    "throw"
+  ],
+  "exports": {
+    "OptFixupBinaryOp1": {
+      "kind": 1,
+      "offset": 37048
+    },
+    "OptFixupBinaryOp2": {
+      "kind": 1,
+      "offset": 41744
+    },
+    "OptLead1": {
+      "kind": 1,
+      "offset": 36368
+    },
+    "OptFixupUnaryOp": {
+      "kind": 1,
+      "offset": 42304
+    },
+    "OptPass012Core": {
+      "kind": 1,
+      "offset": 65944
+    },
+    "OptBrZero": {
+      "kind": 1,
+      "offset": 43576
+    },
+    "OptSetNOP1": {
+      "kind": 1,
+      "offset": 34728
+    },
+    "OptSetNOP2": {
+      "kind": 1,
+      "offset": 35120
+    },
+    "Main": {
+      "kind": 1,
+      "offset": 134808
+    },
+    "CmpTargetSize": {
+      "kind": 1,
+      "offset": 34248
+    },
+    "ICPut": {
+      "kind": 1,
+      "offset": 61272
+    },
+    "OptBrNotZero": {
+      "kind": 1,
+      "offset": 50248
+    },
+    "OptClassFwd": {
+      "kind": 1,
+      "offset": 34592
+    },
+    "OptLag1": {
+      "kind": 1,
+      "offset": 35768
+    },
+    "OptLag2": {
+      "kind": 1,
+      "offset": 36120
+    },
+    "ICInfoInit": {
+      "kind": 1,
+      "offset": 2744
+    },
+    "OptFree": {
+      "kind": 1,
+      "offset": 36936
+    },
+    "ICArgPut": {
+      "kind": 1,
+      "offset": 58856
+    },
+    "PrsPush2": {
+      "kind": 1,
+      "offset": 32952
+    },
+    "ICDetach": {
+      "kind": 1,
+      "offset": 36712
+    },
+    "OptPass012Report": {
+      "kind": 1,
+      "offset": 133576
+    },
+    "OptLabelFwd": {
+      "kind": 1,
+      "offset": 34456
+    },
+    "PrsPop2": {
+      "kind": 1,
+      "offset": 33448
+    },
+    "OptLag": {
+      "kind": 1,
+      "offset": 35520
+    },
+    "ICInfoSet": {
+      "kind": 1,
+      "offset": 2224
+    },
+    "intermediate_code_table": {
+      "kind": 3,
+      "offset": 0
+    },
+    "NativeSystemOptPass012": {
+      "kind": 1,
+      "offset": 134408
+    },
+    "ICClassPut": {
+      "kind": 1,
+      "offset": 57944
+    },
+    "PrsPush": {
+      "kind": 1,
+      "offset": 31984
+    },
+    "PrsPopDeref": {
+      "kind": 1,
+      "offset": 33944
+    },
+    "PrsPop": {
+      "kind": 1,
+      "offset": 32472
+    },
+    "OptFixSizeOf": {
+      "kind": 1,
+      "offset": 56904
+    }
+  }
+}
