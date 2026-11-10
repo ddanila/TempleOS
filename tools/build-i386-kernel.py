@@ -493,12 +493,16 @@ def compiler_probe_layout(module, program=False):
     else:
         expected.remove('I386RedSeaResolve')
         expected.add('I386HashDel')
+        #The saved-header boundary probe places corruption after its target.
+        expected.add('I386HeapAllocHigh')
     if {name for name, _ in imports} != expected:
         raise ValueError('Unexpected compiler-probe import contract')
     required = ('Main','ProbePrograms','ProbeProgramNativeBundle','ProbeProgramNativeLoader','ProbeProgramNativeCreate') if program else ('Main', 'ProbeStorage', 'ProbeTokens', 'ProbeIdent', 'ProbeDefine', 'ProbeConditional', 'ProbeIncludes', 'ProbeIncludePush', 'ProbeDiskIncludes', 'ProbeCompilerUnwind', 'ProbeBranches', 'ProbeOptimize', 'ProbeEmit', 'ProbeBackend')
     for name in required:
         if exports.get(name, (0, 0))[0] != 1:
             raise ValueError(f'Missing compiler-probe function {name}')
+    if not program and exports.get('ProbeCodeHeaderBoundaries', (0, 0))[0] != 1:
+        raise ValueError('Missing saved-header boundary probe')
     if exports.get('compiler_probe_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-probe version')
     version_offset = 32+exports['compiler_probe_version'][1]

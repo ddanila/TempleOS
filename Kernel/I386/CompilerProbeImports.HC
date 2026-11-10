@@ -29,6 +29,7 @@ import U0 KernelLog(U8 *text);
 import U0 KernelHex(U64 value);
 import U0 KernelStop();
 import U8 *I386HeapAlloc(CI386Heap *heap,I64 size,Bool zero=FALSE);
+import U8 *I386HeapAllocHigh(CI386Heap *heap,I64 size,Bool zero=FALSE);
 import I64 I386HeapSize(CI386Heap *heap,U8 *ptr);
 import Bool I386HeapFree(CI386Heap *heap,U8 *ptr);
 import Bool I386HeapValid(CI386Heap *heap);

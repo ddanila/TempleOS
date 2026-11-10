@@ -337,6 +337,63 @@ U0 ProbeDiskIncludes(CI386CompilerProbe *probe)
   KernelLog("DISK INCLUDE "); KernelHex(probe->phase); KernelLog(" "); KernelHex(lines); KernelLog("\n");
 }
 
+class CProbeHeaderRecord {
+  CProbeHeaderRecord *next,*last;
+  CCmpCtrl *control;
+  U8 *allocation;
+  U32 kind;
+};
+class CProbeOwnedHeader { CCodeCtrl header; CProbeHeaderRecord lifetime; };
+U0 ProbeCodeHeaderBoundaries(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *cc)
+{//Public entry points must audit the whole arena before trusting saved views.
+  CCodeCtrl *saved,*fake,*old=cc->coc.coc_next;
+  CProbeOwnedHeader *forged;
+  CI386HeapBlock *block,*guard_block;
+  U8 *storage,*guard;
+  I64 i,kind,bytes=sizeof(CProbeOwnedHeader);
+  U32 irq=I386IrqSave,used=heap->used,allocations=heap->allocations;
+  saved=probe->compiler->code_save(heap,cc);
+  storage=I386HeapAlloc(heap,bytes+64,TRUE);
+  guard=I386HeapAllocHigh(heap,8,TRUE);
+  if(!saved || !storage || !guard || guard(U64)<=saved(U64) ||
+      I386HeapSize(heap,saved)!=bytes)KernelStop;
+  //A coherent-looking owned header and heap prefix inside a real payload.
+  //Checking only ptr-16 would accept it; physical boundary traversal must not.
+  fake=storage+32;forged=fake;
+  for(i=0;i<bytes;i++)fake(U8 *)[i]=saved(U8 *)[i];
+  forged->lifetime.allocation=fake;
+  block=fake(U8 *)-16;block->span=((bytes+7)&~7)+16;
+  block->requested=bytes;block->tag=I386_HEAP_USED;block->reserved=0;
+  if(!I386HeapValid(heap) || probe->compiler->code_free(heap,cc,fake) ||
+      probe->compiler->code_append(heap,cc,fake))KernelStop;
+  cc->coc.coc_next=fake;
+  if(probe->compiler->code_pop(heap,cc) || cc->coc.coc_next!=fake)KernelStop;
+  cc->coc.coc_next=old;
+  guard_block=guard-16;
+  for(kind=0;kind<3;kind++) {
+    if(kind==0)guard_block->reserved=1;
+    else if(kind==1)heap->used+=8;
+    else heap->allocations++;
+    //The target is real and precedes the corrupt block. Early successful
+    //lookup must never skip the later metadata or final accounting checks.
+    if(probe->compiler->code_free(heap,cc,saved) ||
+        probe->compiler->code_append(heap,cc,saved))KernelStop;
+    cc->coc.coc_next=saved;
+    if(probe->compiler->code_pop(heap,cc) || cc->coc.coc_next!=saved)KernelStop;
+    cc->coc.coc_next=old;
+    if(kind==0)guard_block->reserved=0;
+    else if(kind==1)heap->used-=8;
+    else heap->allocations--;
+    if(!I386HeapValid(heap))KernelStop;
+  }
+  if(!probe->compiler->code_free(heap,cc,saved) ||
+      !I386HeapFree(heap,guard) || !I386HeapFree(heap,storage) ||
+      heap->used!=used || heap->allocations!=allocations ||
+      cc->coc.coc_next!=old || !I386HeapValid(heap) || GetRFlags&0x200)KernelStop;
+  I386IrqRestore(irq);
+  KernelLog("CODE HEADER BOUNDARIES ");KernelHex(probe->phase);KernelLog("\n");
+}
+
 U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {//Use the resident exception runtime and recover without ending the compilation.
   CI386Task *task=I386TaskSelf;
@@ -349,6 +406,7 @@ U0 ProbeCompilerUnwind(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer
   U32 flags=GetRFlags;
   child=probe->files->control_new("#include \"C:/Probe/Bad.HC.Z\";",CCF_DONT_FREE_BUF,"Probe/Failure.HC");
   if(!child || !probe->compiler->control_enter(heap,child,0,0)) KernelStop;
+  ProbeCodeHeaderBoundaries(probe,heap,child);
   child->last_line_num=0x100000002; child->pass_trace=1; child->lock_cnt=1;
   if(!probe->compiler->code_add(heap,child,0x0A,0x123456789ABCDEF0,probe->i64_type,0) ||
       !probe->compiler->code_add(heap,child,0x02,0,probe->i64_type,0) ||

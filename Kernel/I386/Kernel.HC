@@ -761,13 +761,16 @@ U0 KernelCompilerLoad()
 }
 U0 KernelCompilerProbeLoad()
 {//Keep load-time temporary buffers ahead of resident console allocations.
-  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)+1];
+  CI386ModuleBinding bindings[sizeof(kernel_probe_bindings)+2];
   I64 used=kernel_heap.used,allocations=kernel_heap.allocations;
   if(kernel_probe_image) KernelStop;
-  KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding)-1);
+  KernelBindings(bindings,kernel_probe_bindings,sizeof(kernel_probe_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding)-2);
   bindings[sizeof(kernel_probe_bindings)].name="I386HashDel";
   bindings[sizeof(kernel_probe_bindings)].kind=I386_MODULE_EXPORT;
   bindings[sizeof(kernel_probe_bindings)].address=(&I386HashDel+0)(U64);
+  bindings[sizeof(kernel_probe_bindings)+1].name="I386HeapAllocHigh";
+  bindings[sizeof(kernel_probe_bindings)+1].kind=I386_MODULE_EXPORT;
+  bindings[sizeof(kernel_probe_bindings)+1].address=(&I386HeapAllocHigh+0)(U64);
   CI386RedSeaEntry file;
   if(I386RedSeaResolve(&kernel_volume,kernel_volume.root,"/Modules/I386/CompilerProbe.t32m",&file)!=1)KernelStop;
   CI386Heap *scratch=I386TaskSelf->memory;

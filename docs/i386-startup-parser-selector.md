@@ -196,3 +196,75 @@ disk and the four focused runtime receipts. Its explicit startup_budget_pass
 is FALSE. This change does not address the dominant control-validation scan
 itself. Full C1-C5 and current-source native-generation qualification remain
 open; compatibility inventory remains2/686.
+
+## Saved-header validation investigation
+
+The private saved-header validator and detached-chain walker now explicitly
+name their known-valid-arena precondition. Their only entry paths are pop,
+header-free and append, each after `I386CmpCodeOwner` under continuous IRQ
+exclusion. They invoke no callbacks and mutate no heap metadata during lookup.
+The initial complete arena audit stays unchanged; subsequent header lookups
+use `I386HeapKnownSize`, which walks actual physical block boundaries before
+checking the exact requested size. Header control/kind/allocation identity and
+the bounded detached-chain/cycle checks remain unchanged. Append still invokes
+the independently validated public header-free boundary after joining graphs.
+
+`ProbeCodeHeaderBoundaries` adds12 rejection checks per diagnostic phase:
+pop/free/append against a forged owned header inside a real payload, and the
+same three entry points against a real earlier header with later-block reserved
+corruption, inconsistent used bytes or inconsistent allocation count. The fake
+includes a plausible heap prefix and matching control/kind/allocation fields,
+so an unchecked ptr-16 size lookup cannot satisfy the probe. It also requires
+the original saved-stack pointer, final arena accounting, complete heap validity
+and IRQ exclusion to survive, then reclaims all temporary resources. Existing
+unwind diagnostics retain positive save/push/pop/append/free coverage.
+
+The first cross run (`code-header-known-build-v1`) rejects the newly used high
+allocator at its strict import-contract check after both classic rebuilds and
+module emission succeed. The check is explicitly extended for that probe-only
+import and now requires the boundary-probe export. The separate program probe
+retains its exact prior import contract. Both emitted module contracts pass the
+updated checker; mutating the boundary export name is confirmed to be rejected.
+The failed v1 build and dependent queues are retained, not counted as runtime
+success. The v2 build passes, along with User and Home-path checks, but diagnostic
+loading correctly rejects the missing guest-side high-allocator binding. That
+binding is now explicit in the diagnostic loader; the program loader is unchanged.
+A v3 cross attempt requires fresh classic source pins after this bare-kernel edit
+and is retained as failed. Fresh classic/cross/runtime evidence is pending under
+`code-header-known-build-v4` and `code-header-known-regressions-v4`. A separate
+queued reference run will test the new probes against the prior ABI105
+CompilerRuntime after timing has ended.
+
+The v4 fresh classic rebuilds, full cross build and complete386 audit now pass.
+Its1869 source and26 helper files are archived and independently hash-checked
+under `i386-code-header-known-cross-v4/pinned-candidate`. User8MiB, original
+Home paths, diagnostics16MiB and configured Home Once/normal desktop geometry/
+bootstrap physical reclamation/fresh42 pass. Both diagnostic phases execute
+the new boundary probe and existing program probes, followed by document
+load/growth-recovery/unload. The stock isolated minimal-content8MiB TCG test
+completes all nine unchanged commands and exact managed-pointer frames with
+zero startup build-provider loads. Startup measures162.2253s and correctly
+fails the unchanged60s target. Its inputs were independently rehashed after
+completion. Receipt SHA256:
+83a235bcfd96d0612e9a64fc9f74226907048376cb8465d7b3e6da818f9bd903.
+This is a single observation, not a paired speedup estimate. The aggregate
+receipt stays failed; the scoped functional audit explicitly records
+startup_budget_pass FALSE.
+C1-C5, current-source native generations and inventory2/686 remain open.
+
+Full disk SHA256:
+ab83883ad4ec2b8e5eb3c47f78cd0732ddcf083b7e00d10557a33ae720085593.
+CompilerRuntime SHA256:
+faec49d6c49c29d3cc4129e180d376564920e4ca35322e7062a643066913fa79.
+
+The prior-runtime comparison now passes in `code-header-known-reference-v4`.
+The same new probe executes24 rejection calls across its two diagnostic phases
+against the preceding ABI105 CompilerRuntime, followed by program and document
+recovery. Every other file was independently compared unchanged in that explicit
+replacement image. The two actual diagnostic images were independently decoded
+to confirm distinct candidate/prior CompilerRuntime hashes. Both complete guest
+logs are byte-identical. This is diagnostic behavioral parity, not qualification
+of the mixed reference image as a current-source or native generation.
+`code-header-known-regressions-v4/header-boundary-parity-audit.json` retains the
+module identities, log hashes and reference receipt hash. Reference receipt:
+df4bfb9673ac03dc931c20e4b1c88472e7958812a24df999ba884fed4f9fff3b.

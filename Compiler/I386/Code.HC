@@ -335,26 +335,26 @@ Bool I386COCPush(CI386Heap *heap,CCmpCtrl *cc)
   if(saved) cc->coc.coc_next=saved;
   I386IrqRestore(irq); return saved!=0;
 }
-Bool I386CodeHeaderValid(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header)
-{
+Bool I386CodeHeaderKnownValid(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header)
+{//Only after CodeOwner audits this unchanged arena, with IRQ exclusion held.
   CI386OwnedCode *saved=header;
-  return header && I386HeapSize(heap,header)==sizeof(CI386OwnedCode) &&
+  return header && I386HeapKnownSize(heap,header,sizeof(CI386OwnedCode)) &&
     saved->lifetime.control==cc && saved->lifetime.kind==3 && saved->lifetime.allocation==header;
 }
 CCodeCtrl *I386COCPopNoFree(CI386Heap *heap,CCmpCtrl *cc)
 {
   U32 irq=I386IrqSave;
   CCodeCtrl *saved=0;
-  if(I386CmpCodeOwner(heap,cc) && I386CodeHeaderValid(heap,cc,cc->coc.coc_next)) saved=COCRestore(cc);
+  if(I386CmpCodeOwner(heap,cc) && I386CodeHeaderKnownValid(heap,cc,cc->coc.coc_next)) saved=COCRestore(cc);
   I386IrqRestore(irq); return saved;
 }
-Bool I386CodeHeaderDetached(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header)
-{
+Bool I386CodeHeaderKnownDetached(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header)
+{//Same validated arena and exclusion as CodeHeaderKnownValid; no mutation.
   CI386CmpCtrl *owned=cc;
   CCodeCtrl *node=cc->coc.coc_next;
   U32 count=0;
   while(node) {
-    if(count++>=owned->code_headers || node==header || !I386CodeHeaderValid(heap,cc,node)) return FALSE;
+    if(count++>=owned->code_headers || node==header || !I386CodeHeaderKnownValid(heap,cc,node)) return FALSE;
     node=node->coc_next;
   }
   return TRUE;
@@ -364,8 +364,8 @@ Bool I386COCHeaderFree(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header)
   U32 irq=I386IrqSave;
   CI386OwnedCode *saved=header;
   CI386CmpRelease state;
-  if(!I386CmpCodeOwner(heap,cc) || !I386CodeHeaderValid(heap,cc,header) ||
-      !I386CodeHeaderDetached(heap,cc,header)) { I386IrqRestore(irq); return FALSE; }
+  if(!I386CmpCodeOwner(heap,cc) || !I386CodeHeaderKnownValid(heap,cc,header) ||
+      !I386CodeHeaderKnownDetached(heap,cc,header)) { I386IrqRestore(irq); return FALSE; }
   state.heap=heap; state.ok=TRUE; state.control=cc;
   I386CodeFree(&state,&saved->lifetime);
   I386IrqRestore(irq); return state.ok;
@@ -374,8 +374,8 @@ Bool I386COCAppend(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header)
 {
   U32 irq=I386IrqSave;
   Bool ok;
-  if(!I386CmpCodeOwner(heap,cc) || !I386CodeHeaderValid(heap,cc,header) ||
-      !I386CodeHeaderDetached(heap,cc,header)) { I386IrqRestore(irq); return FALSE; }
+  if(!I386CmpCodeOwner(heap,cc) || !I386CodeHeaderKnownValid(heap,cc,header) ||
+      !I386CodeHeaderKnownDetached(heap,cc,header)) { I386IrqRestore(irq); return FALSE; }
   COCJoin(cc,header);
   ok=I386COCHeaderFree(heap,cc,header);
   I386IrqRestore(irq); return ok;

@@ -30598,3 +30598,32 @@ The aggregate stays failed; the scoped functional audit explicitly records
 startup_budget_pass FALSE. A single timing observation does not establish a
 precise speedup. C1-C5, full-suite/current-native generations and inventory2/686
 remain open. See `docs/i386-startup-parser-selector.md` for identities/receipts.
+
+### C5 intermediate: validate saved headers without repeated whole-arena scans
+
+Pop/free/append retain their complete CodeOwner heap audit under IRQ exclusion.
+Private saved-header and detached-chain checks then use physical-boundary
+known-size lookup in that unchanged arena, preserving exact size, identity and
+bounded-chain checks. No unchecked ptr-16 header or validity cache is introduced.
+New diagnostics require12 rejection calls per phase for a forged interior header,
+later-block corruption and inconsistent heap counters; final accounting and
+interrupt exclusion must survive. The diagnostic high-allocator import is now
+explicit in both the strict host contract and guest binding table. Failed early
+contract/binding/source-pin attempts are preserved rather than counted as passes.
+
+`code-header-known-build-v4` passes fresh classic self-rebuilds, full cross build
+and complete386 audit. All1869 source/26 helper pins are archived and hash-checked.
+`code-header-known-regressions-v4` passes User8MiB, original Home paths,
+both-phase diagnostics including the new probes and configured normal desktop/
+Home Once/physical bootstrap reclamation/fresh42. All nine stock minimal commands
+and exact frames pass, but startup162.2253s fails the unchanged60s gate. The
+aggregate remains failed; the scoped functional audit records that explicitly.
+
+`code-header-known-reference-v4` passes the same24 rejection calls and subsequent
+program/document recovery against the prior ABI105 CompilerRuntime. Both actual
+diagnostic images were independently decoded to prove distinct runtime identities;
+all other replacement-image files were compared unchanged, and complete guest
+logs match byte-for-byte. This is behavioral parity, not current-source/native
+qualification. No precise timing speedup is claimed from a single observation.
+C1-C5, complete compatibility/native generations and inventory2/686 remain open.
+See `docs/i386-startup-parser-selector.md` for hashes and evidence locations.
