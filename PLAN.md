@@ -30084,3 +30084,24 @@ build RAM. This permits the existing PLAN128MiB full rebuild budget without
 changing the8MiB boot checks or minimal defaults. Provenance guard tests, CLI
 help and syntax checks pass. Both complete native generations and full suite/
 profiles remain open; whole-item qualification remains2/686.
+
+### C5: all nine providers install and boot; complete native chain starts
+
+module-zero-native-install-queue-v1/installation passes: all nine exact emitted
+modules are installed through guest APIs and separately booted at8MiB. Normal
+source startup, arithmetic42, native DocAllocationCheck13, exact final42 pixels
+and one native diagnostic load/recovery/unload pass. The independent file-tree
+audit verifies only the nine installed modules replace canonical files; every
+prior boot file stays exact, with only expected AllocRead.DD added. Source and
+preserved candidate hashes remain unchanged. Kernel/five assembly helpers are
+still cross-built in this installed component image.
+
+The two-generation runner can reuse a passing all-nine installation with
+--retained-install, checking the retained source image against its build hash
+and validating the actual installed disk/module provenance with the existing
+strict guard. Reused inputs are pinned throughout; default fresh installation
+is unchanged. module-zero-native-generations-v1 passes this real preflight and
+the delivered-source audit (1524 files), then starts gen1-selfhost at actual
+128MiB. Both rebuild profiles use the PLAN full budget; dates are explicitly
+normalized only at the declared scope. This running chain is not yet a complete
+native generation result or full C1-C5 suite qualification. Inventory stays2/686.

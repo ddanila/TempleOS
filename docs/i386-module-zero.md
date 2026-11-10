@@ -190,3 +190,26 @@ is selected separately with `--retained-build-ram-mib 128`. All defaults retain
 the existing16MiB minimal rebuild profile, and independent boot checks remain
 at8MiB. Provenance guards, CLI parsing/help and syntax checks pass; running two
 complete installed128MiB rebuild generations remains an open gate.
+
+The all-nine installation now passes at
+`module-zero-native-install-queue-v1/installation`: each exact emitted module
+is installed through the guest filesystem APIs, and a separate8MiB boot passes
+normal source startup, arithmetic42, native DocAllocationCheck13, exact final42
+pixels and one native diagnostic load/recovery/unload. An independent complete
+file-tree audit confirms only the nine installed modules change; the writable
+boot copy preserves all prior files and adds only expected AllocRead.DD.
+The source and preserved candidate hashes remain unchanged. Kernel and the
+five assembly helpers are still cross-built at this point.
+
+The generation runner accepts `--retained-install DIR` to reuse this passing
+all-nine installation for generation one. It verifies the retained source-image
+hash against its passing build receipt, the installation's build/disk chain,
+and all nine actual installed module payloads through the existing provenance
+guard. Reused receipts and candidate images are pinned for the entire run.
+The default still performs a fresh installation.
+
+`module-zero-native-generations-v1` has passed that preflight and the delivered
+source audit (1524 source/document files match), and is running generation one's
+self-host rebuild with actual128MiB QEMU RAM. Both rebuild profiles are128MiB;
+Kernel dates use the explicitly declared comparison scope. No complete native
+generation result, full compatibility suite pass or C1-C5 completion is inferred.

@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import runpy
 import subprocess
 import sys
 
@@ -26,6 +27,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--repository', type=Path, required=True)
     parser.add_argument('--retained-build', type=Path, required=True)
+    parser.add_argument('--retained-install', type=Path,
+                        help='Reuse an already passing all-nine installation directory for generation one, after verifying its provenance')
     parser.add_argument('--stage-listing', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
@@ -60,16 +63,33 @@ def main():
         parser.error('Input must qualify all retained modules')
     if not listing.is_file() or not (retained / 'source.img').is_file():
         parser.error('Missing stage listing or qualified source image')
+    if sha(retained / 'source.img') != ready.get('source_disk_sha256'):
+        parser.error('Retained build image differs from its passing build receipt')
     inputs = {str(p): sha(p) for p in
               (retained / 'result.json', retained / 'source.img', listing, Path(__file__).resolve())}
+    reused_install = args.retained_install.resolve() if args.retained_install else None
+    reused_result = None
+    if reused_install:
+        install_result = reused_install / 'result.json'
+        candidate = reused_install / 'candidate.img'
+        if not install_result.is_file() or not candidate.is_file():
+            parser.error('Reused installation must contain result.json and candidate.img')
+        reused_result = json.loads(install_result.read_text())
+        files = runpy.run_path(str(repo / 'tools/build-i386-kernel.py'))['mutated_file_contents']
+        payloads = files(candidate, {f'/Modules/I386/{name}.t32m' for name in expected})
+        verify = runpy.run_path(str(repo / 'tools/test-i386-selfhost-install.py'))['verify_retained_provenance']
+        verify(ready, reused_result, sha(candidate), payloads)
+        inputs.update({str(p): sha(p) for p in (install_result, candidate)})
     sources = source_identity(repo)
     out.mkdir(parents=True)
     report = {'result': 'running', 'stage': 'preflight', 'repository': str(repo),
+              'scope': 'Two native rebuild/install/boot generations and artifact audits only; full desktop/application compatibility suite and C1-C5 qualification are separate gates.',
               'accel': args.accel, 'cpu': args.cpu, 'qmp_stdio': args.qmp_stdio, 'welcome': args.welcome,
               'build_command_timeout': args.build_command_timeout,
               'retained_build_ram_mib': args.retained_build_ram_mib,
               'flat_build_ram_mib': args.flat_build_ram_mib,
               'allow_kernel_build_date': args.allow_kernel_build_date,
+              'reused_retained_install': str(reused_install) if reused_install else None,
               'input_sha256': inputs,
               'source_sha256': sources, 'stages': {}}
 
@@ -101,9 +121,17 @@ def main():
 
     def generation(number, built):
         prefix = 'gen' + str(number)
-        install = out / (prefix + '-install')
-        run(install.name, 'test-i386-retained-install.py', '--source', built / 'source.img',
-            '--out', install, *runtime)
+        if number == 1 and reused_install:
+            unchanged()
+            install = reused_install
+            report['stages']['gen1-install'] = {
+                'reused': True, 'directory': str(install),
+                'result_sha256': sha(install / 'result.json'), 'result': reused_result}
+            save()
+        else:
+            install = out / (prefix + '-install')
+            run(install.name, 'test-i386-retained-install.py', '--source', built / 'source.img',
+                '--out', install, *runtime)
         native = out / (prefix + '-selfhost')
         result = run(native.name, 'test-i386-selfhost-install.py', '--disk', install / 'candidate.img',
             '--out', native, '--retained-build-result', built / 'result.json',
