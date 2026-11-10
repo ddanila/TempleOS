@@ -30037,3 +30037,25 @@ unchanged. A Startup rebuild using this installed native compiler is running
 separately; no result is inferred yet. The full provider job has advanced to
 CompilerProbe. Remaining providers, full generations and suite/profiles stay
 open; full C1-C5 remain2/686.
+
+### C5 components: emitted native compiler rebuilds Startup and runs both probes
+
+module-zero-native-compiler-startup-v1 passes a Startup rebuild through the
+installed native compiler/console at64MiB:391 bytes, expected export contract,
+one build-provider load, exact fresh42 pixels, complete prior file preservation
+and unchanged input/source/helper hashes. This is an actual next compiler-chain
+step, not another build through the initial cross-built compiler.
+
+Both temporary probes are then replaced by native outputs on the paired native
+compiler/console image. module-zero-native-compiler-probes-diagnostic-v1 passes
+diagnostic boot at16MiB: both program phases complete exactly once, normal
+source startup and exact welcome/42 pixels pass, and the diagnostic image and
+input pins remain exact. The fixture changes only the intended two probe files.
+Other providers/Kernel remain cross-built; no full generation or timing profile
+is inferred from these component checks.
+
+The original job publishes CompilerProbe (567026 bytes,137 named exports) and
+FileRuntime (295839 bytes,158 named exports), both matching all reference export
+names/kinds. It is now building MemoryRuntime. All-nine installation, complete
+native generations, full desktop/application workflows and profiles remain
+open. Whole-item qualification stays2/686.

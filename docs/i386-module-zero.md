@@ -146,3 +146,24 @@ payloads are verified; every other prior file stays unchanged. The boot copy
 adds only expected AllocRead.DD (`read` plus05), while the source and preserved
 candidate hashes remain exact. The full provider job continues at CompilerProbe;
 these two installed native providers do not qualify a complete native generation.
+
+The installed native compiler successfully rebuilds Startup at64MiB
+(`module-zero-native-compiler-startup-v1`):391 bytes, the expected export
+contract, one build-provider load and exact fresh42 pixels. The persisted
+module and full prior file tree are independently checked, with unchanged
+source/helper/input pins. This exercises a build through the emitted native
+compiler, not merely compilation using the preceding cross-built compiler.
+It remains a single-provider rebuild with other cross-built components.
+
+`module-zero-native-compiler-probes-diagnostic-v1` additionally replaces both
+temporary compiler probes with their emitted native modules on the paired
+native compiler/console image. Diagnostic boot at16MiB completes both program
+phases exactly once, then normal source startup and exact welcome/42 pixels.
+Only the intended two probe files change in the fixture; the diagnostic image
+and input pins remain unchanged. Timing with concurrent jobs is not a profile.
+
+The original provider job has also emitted CompilerProbe (567026 bytes,137
+matching named exports) and FileRuntime (295839 bytes,158 matching named
+exports). Their complete installation is still pending, as are MemoryRuntime,
+BuildRuntime, EditorRuntime, DocDiagnosticRuntime and Startup in that job.
+Both complete native generations and full C1-C5 qualification remain open.
