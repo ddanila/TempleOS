@@ -1,0 +1,44 @@
+{
+  "result": "pass",
+  "scope": "Shared core source integrity, unchanged original wrapper/service layout, exact resident packaging and scoped optimizer/User/native diagnostics/callback test receipts",
+  "runs": {
+    "user8": {
+      "result": "pass",
+      "receipt_sha256": "0292734120d71bfb7503c75f88fc870cba19c455a1c84712a4437558110a7236",
+      "ram_mib": 8,
+      "command_sha256": "3d7aae42b64780e98b7625ffbba6ca8e37d9b97bd6cb15b296e9e09b2b1a0ab3"
+    },
+    "optimizer16": {
+      "result": "pass",
+      "receipt_sha256": "55229de3fc0b1561f6771dd90d778bc7ce15dbea4cc7fba464cf2cd4b375feb5",
+      "ram_mib": 16,
+      "command_sha256": "60cc7aa764fd6a8e9a291a68bd6bb13813f6b9d33eee95b4c1e49faa5ac0895c"
+    },
+    "diagnostic16": {
+      "result": "pass",
+      "receipt_sha256": "a3adec81fafe24c502322c674859a8dd75434d11a71ccb28255df7459bf6238f",
+      "ram_mib": 16,
+      "command_sha256": "c0ad61d86198dd852abf58a1d015486481da2fa75647c0d02843f7aac44ebe84"
+    },
+    "policy-dispatch": {
+      "result": "pass",
+      "receipt_sha256": "dc41b23b354fd422b30f075eb7aa7797093fc3bd5f3252f4d19015c320d6fdf1",
+      "ram_mib": 2048,
+      "command_sha256": "7e4621150712c39997146aa67fe4d6ec041b92acea44331e9a9857671ccb6975"
+    }
+  },
+  "capacity_probe": {
+    "result": "expected-fail",
+    "root_reserved_unused_bytes": 26344,
+    "backing_unused_bytes": 3072,
+    "receipt_sha256": "97d4fe0e5599fcd4998576f193f97b0fa47958259b9069b11dad45c878e12e9b",
+    "log_sha256": "d8839aadb0ae448dd46ba3f8de04400ad24bf5d64d849783bd41fbed1b629232",
+    "scope": "Existing reserved capacity only; growth/reclaim into other allocations not tested"
+  },
+  "candidate_sha256": "caaed5765cd4456bffe4d9165ee8f0cb2fddf35cf36bbb963e10d74432406177",
+  "resident_module_delta_bytes": 229,
+  "source_sha256": {
+    "Compiler/OptPass012Core.HC": "75384e7955f97cbceb86dc4ea881a1b973089035d3d4c9d70138ca4d516b0933",
+    "Compiler/OptPass012.HH": "a43156e6144f8714ac5784da73b8bc7ad5ca9dac3a81e0ea505a8f5d898566e4"
+  }
+}

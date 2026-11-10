@@ -21,7 +21,9 @@ logic. 3-Arg comparisons are established.
 
 */
 
-CIntermediateCode *OptPass012Core(CCmpCtrl *cc,COptPass012Services *services)
+CIntermediateCode *OptPass012CorePolicy(CCmpCtrl *cc,COptPass012Services *services,
+  CIntermediateCode *(*branch_zero)(CCmpCtrl *cc,CIntermediateCode *node),
+  CIntermediateCode *(*branch_nonzero)(CCmpCtrl *cc,CIntermediateCode *node))
 {/*Simplify CONST arithmetic.
 Sets the class throughout Expression trees.
 Returns the type of an Expression for use
@@ -1100,11 +1102,11 @@ args.
 	break;
       case IC_BR_ZERO:
         if (cc->flags&CCF_TARGET_I386) break; //Keep portable expression/branch IR.
-	tmpi_push=OptBrZero(cc,tmpi);
+	tmpi_push=(*branch_zero)(cc,tmpi);
 	break;
       case IC_BR_NOT_ZERO:
         if (cc->flags&CCF_TARGET_I386) break;
-	tmpi_push=OptBrNotZero(cc,tmpi);
+	tmpi_push=(*branch_nonzero)(cc,tmpi);
 	break;
       case IC_NOP1:
 	if (tmpi->ic_flags&ICF_PUSH_RES) {
@@ -1302,4 +1304,9 @@ args.
   }
 //This is for determining type conversions for passing args to funs.
   return last_with_class;
+}
+
+CIntermediateCode *OptPass012Core(CCmpCtrl *cc,COptPass012Services *services)
+{//Retain the original entry point and its containing compiler's ownership policy.
+  return OptPass012CorePolicy(cc,services,&OptBrZero,&OptBrNotZero);
 }

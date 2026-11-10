@@ -30892,3 +30892,16 @@ mixed/fallback load markers. The unchanged 8 MiB User test fails the module's
 135,120-byte payload exceeds remaining kernel capacity. Helper/metadata namespace
 publication is still required before parser integration. See
 `docs/i386-optimizer-provider-loader.md` for pinned evidence and open obligations.
+
+### C4: make optimizer branch ownership invocation-local
+
+Added OptPass012CorePolicy with explicit zero/nonzero branch callbacks while
+retaining the existing OptPass012Core ABI and default ownership behavior. The
+complete algorithm body is otherwise byte-preserved. This enables future reuse
+of the already resident core without duplicating its 135 KiB payload or passing
+public controls to private ownership validators. It is not yet selected by the
+public facade. The new resident module (+229 bytes) passes production User8,
+original-reference optimizer16 and both native diagnostic rounds16. A focused
+classic-host fixture captures exact callback/default routing and target-i386
+bypass counters. See `docs/i386-optimizer-policy-core.md` for evidence, capacity
+measurement limits and remaining integration/resource requirements.

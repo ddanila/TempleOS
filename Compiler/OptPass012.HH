@@ -12,4 +12,8 @@ class COptPass012Services {
 };
 //Valid parser-produced graph and an allocated cc->ps. Error reports must not return.
 public extern CIntermediateCode *OptPass012Core(CCmpCtrl *cc,COptPass012Services *services);
+//Explicit invocation-local branch ownership; callbacks must remain live and callable.
+public extern CIntermediateCode *OptPass012CorePolicy(CCmpCtrl *cc,COptPass012Services *services,
+  CIntermediateCode *(*branch_zero)(CCmpCtrl *cc,CIntermediateCode *node),
+  CIntermediateCode *(*branch_nonzero)(CCmpCtrl *cc,CIntermediateCode *node));
 #endif
