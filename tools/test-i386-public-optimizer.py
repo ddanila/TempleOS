@@ -22,9 +22,12 @@ def main():
     ap.add_argument('disk', type=Path, nargs='?')
     ap.add_argument('--reference', type=Path)
     ap.add_argument('--ram-mib', type=int, default=16)
+    ap.add_argument('--optimizer-storage', choices=('source', 'provider'), default='source')
     args = ap.parse_args()
     if args.disk and not args.reference:
         ap.error('Native runs require a passing original --reference')
+    if args.optimizer_storage == 'provider' and not args.disk:
+        ap.error('Provider storage requires a native disk')
     out = args.out.resolve()
     if out.exists():
         ap.error('Use a fresh output directory')
@@ -39,6 +42,7 @@ def main():
     pins = {str(p): sha(p) for p in paths}
     out.mkdir()
     report = dict(result='running', input_sha256=pins, reference_revision=REFERENCE,
+                  ram_mib=args.ram_mib, optimizer_storage=args.optimizer_storage,
                   scope='Complete pinned original optimizer versus normal public optimizer: sixteen manually constructed integer/F64 expression graphs through passes 0/1/2, exact opcode/type/value traces, reusable full parser stacks, canonical type identity and exact caller heap recovery. This does not qualify parsing, COCCompile, diagnostics, branch/pointer rewrites or full compiler delivery.')
     guest = None
     try:
@@ -91,9 +95,13 @@ def main():
             if (out/'optimizer-trace.bin').read_bytes() != (args.reference/'optimizer-trace.bin').read_bytes():
                 raise ValueError('Raw relocation values differ from original')
         if args.disk:
-            report['system_loads'] = guest.collect().count('PUBLIC OPT loaded\n')
-            if report['system_loads']!=1:
-                raise ValueError('Expected one system optimizer load')
+            log = guest.collect()
+            report['source_loads'] = log.count('PUBLIC OPT loaded\n')
+            report['provider_loads'] = log.count('PUBLIC OPT provider\n')
+            expected = (1, 0) if args.optimizer_storage == 'source' else (0, 1)
+            if (report['source_loads'], report['provider_loads']) != expected:
+                raise ValueError('Expected exactly one optimizer load from the selected storage')
+            report['system_loads'] = sum((report['source_loads'], report['provider_loads']))
             guest.command('6*7;')
             report['arithmetic_pixels'] = guest.result_pixels()
         guest.close()

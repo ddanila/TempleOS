@@ -1,0 +1,89 @@
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -2019,18 +2019,65 @@
+   (*add)(cc,code,type,rip,rel_rip,local_refs,global_refs,line_num,U8_avail);
+ }
+ 
++import U8 *I386CompactReadModule(CI386Heap *heap,U8 *file,I64 size,
++  U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count);
++class CI386OptProvider {
++  U32 version,bytes;
++  CIntermediateCode *(*optimize)(CCmpCtrl *cc);
++};
++U8 *native_opt_image;
+ U0 NativeOptSupportLoad()
+-{
+-  CHashTable *saved;
+-  if(!native_jit_support.optimize) {
+-    if(Fs!=adam_task)TaskWait(adam_task);
+-    if(!native_jit_support.optimize) {
+-      saved=adam_task->hash_table;adam_task->hash_table=native_jit_support.symbols;
+-      try{AdamFile("::/Compiler/I386/PublicOptSupport.HC",FALSE);}
+-      catch{adam_task->hash_table=saved;}
+-      adam_task->hash_table=saved;
+-      if(!native_jit_support.optimize)throw('OptLoad',TRUE);
+-    }
++{//Provisional callback-only loader; parser helper publication remains open.
++  U8 *source=NULL,*image=NULL;
++  I64 bytes,loaded_bytes;
++  CI386OptProvider candidate;
++  CI386ModuleHeader *header;
++  CI386ModuleBinding bindings[19];
++  I64 (*entry)(CI386OptProvider *services,I64 bytes);
++  if(native_jit_support.optimize)return;
++  if(Fs!=adam_task) {
++    Adam("Call(0x%X);",&NativeOptSupportLoad);
++    if(!native_jit_support.optimize)throw('OptLoad',TRUE);
++    return;
++  }
++  MemSet(&candidate,0,sizeof(candidate));
++  try {
++    bindings[0].name="COCMiscNew";bindings[0].kind=1;bindings[0].address=(&COCMiscNew+0)(U64);
++    bindings[1].name="Free";bindings[1].kind=1;bindings[1].address=(&Free+0)(U64);
++    bindings[2].name="I386F64Add";bindings[2].kind=1;bindings[2].address=(&I386F64Add+0)(U64);
++    bindings[3].name="I386F64Compare";bindings[3].kind=1;bindings[3].address=(&I386F64Compare+0)(U64);
++    bindings[4].name="I386F64Div";bindings[4].kind=1;bindings[4].address=(&I386F64Div+0)(U64);
++    bindings[5].name="I386F64FromI64";bindings[5].kind=1;bindings[5].address=(&I386F64FromI64+0)(U64);
++    bindings[6].name="I386F64Mod";bindings[6].kind=1;bindings[6].address=(&I386F64Mod+0)(U64);
++    bindings[7].name="I386F64Mul";bindings[7].kind=1;bindings[7].address=(&I386F64Mul+0)(U64);
++    bindings[8].name="I386F64Sub";bindings[8].kind=1;bindings[8].address=(&I386F64Sub+0)(U64);
++    bindings[9].name="I386F64ToI64";bindings[9].kind=1;bindings[9].address=(&I386F64ToI64+0)(U64);
++    bindings[10].name="LexExcept";bindings[10].kind=1;bindings[10].address=(&LexExcept+0)(U64);
++    bindings[11].name="LexWarn";bindings[11].kind=1;bindings[11].address=(&LexWarn+0)(U64);
++    bindings[12].name="MAlloc";bindings[12].kind=1;bindings[12].address=(&MAlloc+0)(U64);
++    bindings[13].name="Print";bindings[13].kind=1;bindings[13].address=(&Print+0)(U64);
++    bindings[14].name="PrintErr";bindings[14].kind=1;bindings[14].address=(&PrintErr+0)(U64);
++    bindings[15].name="PutChars";bindings[15].kind=1;bindings[15].address=(&PutChars+0)(U64);
++    bindings[16].name="Yield";bindings[16].kind=1;bindings[16].address=(&Yield+0)(U64);
++    bindings[17].name="cmp";bindings[17].kind=3;bindings[17].address=(&cmp+0)(U64);
++    bindings[18].name="throw";bindings[18].kind=1;bindings[18].address=(&throw+0)(U64);
++    source=(*console_config->files->read_raw)(console_config->heap,"::/Modules/I386/OptRuntime.t32m",&bytes,0,0);
++    if(!source)throw('OptFile',TRUE);
++    if(bytes<sizeof(CI386ModuleHeader))throw('OptFile',TRUE);
++    header=source;loaded_bytes=8+header->code_size;
++    image=I386CompactReadModule(console_config->heap,source,bytes,"Main",bindings,19);
++    if(!image)throw('OptLoad',TRUE);
++    source=NULL;entry=image;
++    if((*entry)(&candidate,sizeof(candidate))!=1 || candidate.version!=1 ||
++        candidate.bytes!=sizeof(candidate) ||
++        (candidate.optimize+0)(U64)<(image+8+0)(U64) ||
++        (candidate.optimize+0)(U64)>=(image+loaded_bytes+0)(U64))throw('OptABI',TRUE);
++    native_opt_image=image;image=NULL;
++    native_jit_support.optimize=candidate.optimize;
++    KernelLog("PUBLIC OPT provider\n");
++  } catch {
++    if(source && !I386HeapFree(console_config->heap,source))KernelStop;
++    if(image && !I386HeapFree(console_config->heap,image))KernelStop;
+   }
+ }
+ CIntermediateCode *OptPass012(CCmpCtrl *cc)
+@@ -2060,8 +2107,7 @@
+ 
+ #include "/Kernel/I386/LexProvider.HH"
+ #include "/Compiler/LexIncludeCore.HC"
+-import U8 *I386CompactReadModule(CI386Heap *heap,U8 *file,I64 size,
+-  U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count);
++
+ U8 *native_lex_image;
+ U0 NativeLexSupportLoad()
+ {//Adam owns serialized publication; the module and tables live for the system.

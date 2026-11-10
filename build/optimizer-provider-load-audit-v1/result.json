@@ -1,0 +1,36 @@
+{
+  "result": "pass",
+  "scope": "Callback-only optimizer provider/source differential receipts, exact packaging/imports and retained kernel binding coverage; not parser, malformed-module, native generation or resource qualification",
+  "runs": {
+    "provider16": {
+      "result": "pass",
+      "receipt_sha256": "4ccbdf8feed7f5fca1f5cc76bfe2e0187de1339691806ae8dd409e6c0a621c51",
+      "command_sha256": "ec2e964d8ef4d4e94994bab3795baa3875caa8962d4228cc2741197605a0e737"
+    },
+    "source16": {
+      "result": "pass",
+      "receipt_sha256": "66599e695eeab552f54b15dcf15fad2ca9f03b2df3c978ac7b3449d5a5c98053",
+      "command_sha256": "b19facc9fc38c6acbf7ee2fb864a7a4bfda196b73ca80f9e951f28d0d416b98d"
+    },
+    "user8": {
+      "result": "fail",
+      "receipt_sha256": "20cdff1f839453e9f13ed4e2e897fc6b0d121398313d7dd8dd442faf4eb0207b",
+      "log_sha256": "ad337c3a9a6b696924b2264d354331e046d0ac7c3a1b2862e0065fdc6d8d0daa",
+      "command_sha256": "72a03c5245d0e178c73040ab2558a14cd5d3520542a836c8787570e81cd0f733",
+      "failed_raw_read_bytes": 138523
+    }
+  },
+  "candidate_sha256": "620bd25d63cf333692cd7a304068c382a042d78f3a8618c36821844a89c8616a",
+  "changed": [
+    "/Kernel/I386/ConsoleRuntime.HC",
+    "/Modules/I386/ConsoleRuntime.t32m"
+  ],
+  "added": [
+    "/Kernel/I386/OptRuntime.HC",
+    "/Modules/I386/OptRuntime.t32m"
+  ],
+  "new_console_imports": [
+    "I386F64Mod"
+  ],
+  "kernel_unchanged": true
+}

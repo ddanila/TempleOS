@@ -30880,3 +30880,15 @@ receipts are recorded in `docs/i386-full-optimizer-module.md`. This is not yet
 loaded by the runtime. Later parser stages require exported optimizer helpers
 and metadata as well as the optimize callback; concrete namespace dependencies
 are recorded before integration. The 8 MiB gate remains failing and unchanged.
+
+### C2/C4: execute the full optimizer provider callback
+
+A disposable loader now runs the unchanged complete optimizer module through
+public OptPass012. At 16 MiB the exact original-reference folding trace, 18
+contract checks, zero caller heap deltas and fresh arithmetic pass. The new
+storage selector also verifies the production source path passes and rejects
+mixed/fallback load markers. The unchanged 8 MiB User test fails the module's
+138,523-byte kernel-heap read; its largest free block is 20,040 bytes, and the
+135,120-byte payload exceeds remaining kernel capacity. Helper/metadata namespace
+publication is still required before parser integration. See
+`docs/i386-optimizer-provider-loader.md` for pinned evidence and open obligations.
