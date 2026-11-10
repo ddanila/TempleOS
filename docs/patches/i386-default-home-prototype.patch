@@ -1,0 +1,11 @@
+--- a/Kernel/I386/Kernel.HC
++++ b/Kernel/I386/Kernel.HC
+@@ -926,7 +926,7 @@
+   kernel_file_size=I386HeapSize(&kernel_heap,kernel_file_image);
+   if(KernelResidentPublish(kernel_file_image,kernel_file_size,kernel_files.export_at)!=9 ||
+       !HashFind("I386ArcEntryGet",kernel_symbols,HTT_EXPORT_SYS_SYM)) KernelStop;
+-  kernel_paths.cur_dir="/"; kernel_paths.home_dir="C:/";
++  kernel_paths.cur_dir="/"; kernel_paths.home_dir="C:/Home";
+   kernel_paths.cur_drv='C'; kernel_paths.boot_drv='C'; kernel_paths.white_space=char_bmp_white_space;
+   kernel_volumes.letter['C'-'A']=&kernel_volume;
+   if(!kernel_files.init(&kernel_root,&kernel_heap,&kernel_paths,&kernel_volumes)) KernelStop;

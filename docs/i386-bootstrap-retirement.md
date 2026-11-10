@@ -158,3 +158,24 @@ not default Once or original Home path qualification. The reproducibility chain
 above predates this implementation, and new all-native generations/full-suite
 release qualification remain required. See i386-home-path.md for the independent
 original /Home versus native / mismatch and its failing public-path test.
+
+## Reusable normal-boot test also checks physical reaping
+
+`tools/test-i386-desktop-startup.py IMAGE --out FRESH` packages the versioned
+startup profile and configured Once, then boots without host setup commands.
+It captures the original83-word geometry and a screenshot before host commands,
+waits for actual HomeSys return, confirms bootstrap retirement, executes42 and
+captures stopped64MiB physical RAM. The decoder derives loaded task-record and
+heap addresses from the delivered modules, walks bounded task/block chains,
+and requires no bootstrap record and a free block containing its former address.
+
+`build/desktop-startup-tool-production-v1/result.json` passes on production image
+`i386-desktop-handoff-cross-v2/kernel.img`. Bootstrap22621920 has no managed
+record and its former address lies in a95152-byte free block, requested size0.
+Fresh42 is visible and all pinned inputs remain unchanged. Receipt SHA256:
+5cce1ef8b25b4f52d02166a6a9c1b1442785f100fd317c5d6cbdb42b8ed86a1d.
+This closes the earlier lack of physical reaping evidence on that specific
+configured production normal boot. It is not total heap recovery, full default
+Once/home behavior, complete raster/input, or isolated resource/startup-budget
+qualification. The reported300.24-second startup is an observation while another
+VM was running, not an isolated timing acceptance result.

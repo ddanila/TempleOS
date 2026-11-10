@@ -30469,3 +30469,18 @@ Home/Once, full prompt/input/raster, physical reaping on this specific normal
 boot, resource/timing profiles, apps and C1-C5 remain open2/686. A disposable
 /Home Kernel candidate is compiling against the new independently failing
 public home-path test; it is not integrated yet.
+
+### C2/C4: normal-boot physical reaping and Home-path candidate pass
+
+The new reusable tools/test-i386-desktop-startup.py boots the configured profile
+without host setup, checks original geometry, actual HomeSys return, retirement,
+fresh42 and stopped-RAM task/heap state. Production cross image passes: no
+bootstrap record and a95152-byte free block at its former address. This is
+physical reaping on the actual configured normal boot, not total heap recovery
+or complete desktop/resource qualification.
+
+The independently red home-path fixture turns green on the disposable native
+Kernel with C:/Home and configured Home files. Guest linking/install, independent
+boot/date/address/42 and prior-file preservation pass. Its tested source-only
+delta is preserved. Production directory/configuration integration and actual
+HomeSys/Once selection remain next; no additional inventory item is qualified.

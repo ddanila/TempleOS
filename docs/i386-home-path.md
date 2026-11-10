@@ -40,3 +40,16 @@ behavior. A repair needs the original home configuration and installed directory
 then tests for public path semantics and actual HomeSys/Once selection. HomeSet
 and configurable home behavior are separate public-service gaps. Existing
 configured normal-boot tests do not qualify these original default-home services.
+
+The disposable native Kernel candidate now passes. It changes only the default
+home to C:/Home and is installed onto a volume containing configured Home files.
+The542593-byte emitted Kernel SHA256 is
+5a8bb22ff93474d53c88ed560ee80f5da6ccaed14d2c39b66aaa6abe752abc81.
+Guest linking/installation, independent486,-fpu boot/date/address/42 and unchanged
+prior files pass (`home-path-candidate-queue-v1/install`). The same public path
+oracle now matches the original exactly (`home-path-candidate-queue-v1/home-path`),
+receipt SHA256 e9e1c7c12af53670d9b0da0c7652ad55c2b0e28aec85a55c5de8b89ce2c090f4.
+The candidate delta is saved in docs/patches/i386-default-home-prototype.patch.
+Production integration still needs an installed Home directory, current-source
+regressions and actual HomeSys/Once selection checks. Default Once/HomeSet and
+full desktop qualification remain open.
