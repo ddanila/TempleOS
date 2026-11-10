@@ -30438,3 +30438,14 @@ diagnostic queues. Source epochs remain explicit: all2455 pre-integration pins
 are preserved. The tested desktop handoff is now applied to production sources;
 source-pinned classic/cross rebuild and a guarded production regression queue
 are running, before implementation commit. Inventory qualification stays2/686.
+
+### C2/C4 test-first: public home lookup differs from original
+
+The same public fixture now runs under the pinned original and the managed
+native desktop candidate. Original default Cd/DirCur, ~/HomeSys.HC and Cd(~)
+resolve to /Home; native resolves to /. Both execute the complete fixture;
+native fails only the independent drive-normalized path oracle. The current
+Kernel configures C:/ and the canonical image has no /Home directory. The new
+runnable tools/test-i386-home-path.py preserves this red case before repair.
+See docs/i386-home-path.md. This is an open compatibility gap, not an intentional
+architecture difference or a reason to weaken normal desktop acceptance.
