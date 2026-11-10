@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "scope": "Direct JOBT_CALL Console cross compilation only; runtime pending",
+  "receipt_sha256": "14232ef3c74f26a1ed5983b0c8973a9d5f35d28ccbec813480d99086aca4a1f7",
+  "console_sha256": "f70f5287cdfcca712feceac44289c505cef259ff97a18c04b811ef98b46bf25a",
+  "patch_sha256": "accb635473f3ea10b7d9de7a0660e577e3bc3b9cb2996e7ce40f8ca295d3065c",
+  "inputs_unchanged": true
+}

@@ -1,0 +1,68 @@
+--- a/Compiler/I386/LexFileRead.HH
++++ b/Compiler/I386/LexFileRead.HH
+@@ -2,6 +2,8 @@
+ #define I386_LEX_FILE_READ_INCLUDED
+ #include "/Compiler/I386/LexInclude.HH"
+ #include "/Kernel/I386/FileContext.HH"
++//Private opt-in: decoded source includes for generated system declarations only.
++#define I386_CCF_RAW_INCLUDES 0x100000000000
+ //Add the default HC.Z extension, load decoded source and publish an owned child.
+ //Quiescent file service, IF clear. Failure preserves active input and reclaims temporaries.
+ public extern Bool I386LexIncludeFile(CI386Heap *heap,CCmpCtrl *cc,
+--- a/Kernel/I386/TaskFileRead.HC
++++ b/Kernel/I386/TaskFileRead.HC
+@@ -84,7 +84,7 @@
+         if(name) {
+           try {
+             source=task_public_read(heap,name,&size,0);
+-            if(source && callbacks.create && callbacks.destroy) {
++            if(source && callbacks.create && callbacks.destroy && !(cc->flags&I386_CCF_RAW_INCLUDES)) {
+               doc=(*callbacks.create)(name,source,size);
+               if(doc && I386LexIncludeDocTake(heap,cc,name,doc,callbacks.destroy,0)) {
+                 doc=0;result=TRUE;
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -2019,6 +2019,31 @@
+   (*add)(cc,code,type,rip,rel_rip,local_refs,global_refs,line_num,U8_avail);
+ }
+ 
++I64 NativeSystemCompilerHeaders(U8 *unused)
++{
++  return ConsoleSource("#include \"/Compiler/I386/SystemCompilerA.HH\"\n",
++    "SystemCompilerHeaders.HC",0x100000000000|CCF_JUST_LOAD);
++}
++U0 NativeSystemCompilerHeadersLoad()
++{
++  CJob *job=NULL;I64 result=0;U32 irq;
++  if(Fs==adam_task)result=NativeSystemCompilerHeaders(NULL);
++  else {
++    //Publish the call before IRQ restoration can dispatch the queued job.
++    irq=I386IrqSave;
++    try {
++      job=NativeTaskExeOwned(adam_task,Fs,"",0,NULL);
++      if(job) {
++        job->job_code=JOBT_CALL;job->addr=&NativeSystemCompilerHeaders;
++        job->fun_arg=NULL;job->flags|=1<<JOBf_WAKE_MASTER;
++        (*native_user_providers.suspend)(Fs,TRUE);
++      }
++    } catch {I386IrqRestore(irq);}
++    I386IrqRestore(irq);
++    if(job) {(*native_input_yield)();while(!JobResScan(job,&result))(*native_input_yield)();}
++  }
++  if(!result)throw('HdrLoad',TRUE);
++}
+ U0 NativeOptSupportLoad()
+ {
+   CHashTable *saved;
+@@ -2026,7 +2051,10 @@
+     if(Fs!=adam_task)TaskWait(adam_task);
+     if(!native_jit_support.optimize) {
+       saved=adam_task->hash_table;adam_task->hash_table=native_jit_support.symbols;
+-      try{AdamFile("::/Compiler/I386/ResidentOptSupport.HC",FALSE);}
++      try{
++        NativeSystemCompilerHeadersLoad;
++        AdamFile("::/Compiler/I386/ResidentOptSupport.HC",FALSE);
++      }
+       catch{adam_task->hash_table=saved;}
+       adam_task->hash_table=saved;
+       if(!native_jit_support.optimize)throw('OptLoad',TRUE);

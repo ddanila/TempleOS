@@ -30979,3 +30979,14 @@ build/compiler-raw-headers-v2/recovery64. User8 still fails on macro allocation.
 A follow-up cross-built Console variant removes nested ExePutS2 during header
 loading; its User8 job is running under build/compiler-raw-headers-v3 and must
 be inspected before qualification. No milestone is marked complete.
+
+### C2/C4: enter raw header compilation through an existing call job
+
+Two statement-based raw-flag variants still fail User8 and cannot establish the
+flag's timing before include lexing. Implemented a direct JOBT_CALL prototype
+that sets the input flags before ConsoleSource starts and avoids a nested source
+control. Existing owned request, wake, dispatch and reclamation services remain
+in use. The corrected frozen v6 Console cross-build passes; its image/User8 run
+is in flight and must be inspected. Details and rejected builds are recorded in
+docs/i386-public-resident-optimizer.md. Production and all gates are unchanged;
+C1–C5 and original-User8 remain open.

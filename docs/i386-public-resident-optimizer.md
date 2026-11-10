@@ -185,3 +185,26 @@ and physical child reclamation. Its actual QEMU command is KVM 486,-fpu with
 `build/compiler-raw-headers-v2/recovery-audit.json` pins that terminal receipt and
 command. This is scoped recovery evidence, not a passing User8 gate. The patch
 remains a prototype and is not applied to production sources.
+
+## Direct call-job follow-up
+
+The v3/v4 attempts to set the current control's flag from an Adam source
+statement both fail User8 with the same 52-byte macro allocation and one
+reported compiler error. They are not evidence that the flag was active at the
+first include: statement parsing can lex the following token before execution.
+
+`docs/patches/i386-raw-header-call-job-prototype.patch` instead enters
+ConsoleSource through an existing JOBT_CALL callback, with raw-include and
+JUST_LOAD flags set before the first lex. In Adam it calls directly. From a
+worker, it queues an owned empty job under an outer IRQ exclusion, converts it
+to CALL, sets the callback/wake flag and suspends the master before releasing
+IRQs; existing job dispatch completes and wakes the master, and JobResScan
+reclaims the request. It uses retained suspend/yield providers. The complete
+header graph and the subsequent normal resident optimizer load are unchanged.
+
+The v6 Console cross-build passes with frozen inputs; the matching FileRuntime
+is reused from v2. V5's missing Suspend declaration and changed-manifest build
+are excluded. The small cross-audit pins v6's module, receipt and patch. Its
+image packaging and actual 8 MiB startup job are running under
+`build/compiler-raw-headers-v6`; no runtime qualification is claimed yet. This
+is a prototype on the original-User/provider-lexer overlay, not production.
