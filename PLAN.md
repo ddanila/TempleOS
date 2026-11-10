@@ -30126,3 +30126,27 @@ module-zero-native-generations-v3 passes real preflight/source, initial raster
 and command-typing checks, then starts full Kernel compilation through the
 installed native providers at128MiB with WinMgr live. The two complete native
 generations, suite/profiles and full C1-C5 remain unqualified,2/686.
+
+### C5 component: first complete native module generation installs and boots
+
+module-zero-native-generations-v3 passes gen1-selfhost, gen1-audit and
+gen1-source-audit. All16 modules are guest-built: Kernel, five assembly helpers,
+nine retained providers and the temporary program probe. Kernel541825 bytes/
+394 exports reproduces the seed-compiler native Kernel except its fresh eight-
+byte date; the auxiliary probe reproduces its earlier native bytes exactly.
+All nine native provider hashes are preserved.
+
+The guest links466112 flat bytes and installs them onto the blank boot area.
+Independent boot metadata/checksum/padding,386 executable ranges and1524
+source/document files pass. The bootstrap sector/stage are copied from the
+verified seed, not claimed as natively reassembled. Separate8MiB boot with
+live WinMgr passes exact welcome/command pixels,42, DocAllocationCheck13 and
+one native diagnostic load/recovery/unload.
+
+The independent gen1-file-audit verifies unchanged source bytes; only seven
+rebuilt boot/auxiliary modules replace prior target files, plus GuestBoot.bin.
+Every prior boot-copy file remains exact, with only expected AllocRead.DD
+(read plus05) added. This qualifies the first native module-generation chain,
+not full C5. The runner is now rebuilding generation two's providers at128MiB.
+The second installed native generation, complete compatibility suite and
+profiles remain open; full C1-C5 still2/686.

@@ -235,3 +235,27 @@ native providers at128MiB, with WinMgr live. Preflight/source audits pass; both
 prior failures remain separate. Provenance guards and syntax checks pass, and
 all-nine provider artifacts still audit against their archived exact test tools
 and unchanged production sources. Complete generations and C1-C5 remain open.
+
+Generation one's native module chain now passes in
+`module-zero-native-generations-v3`: all16 modules are guest-built (Kernel,
+five assembly helpers, nine retained providers and the temporary program probe).
+The rebuilt Kernel is541825 bytes with394 expected named exports; it matches
+the earlier seed-compiler native Kernel in every byte except its fresh build
+date. The program probe reproduces its earlier native output exactly, and all
+nine installed provider hashes remain unchanged.
+
+The guest links a466112-byte flat image and publishes it through
+I386InstallBootImage onto the target with a blank boot area. The independent
+boot-area oracle, full386 instruction audit and delivered-source audit (1524
+files) pass. Bootstrap sector/stage bytes are copied from the verified seed by
+the installer; this result does not claim their native reassembly. Separate
+8MiB boot with live WinMgr passes exact welcome/command pixels, arithmetic42,
+DocAllocationCheck13 and one native diagnostic load/recovery/unload.
+
+`gen1-file-audit.json` independently verifies that source bytes stay exact,
+only the seven rebuilt boot/auxiliary modules replace prior target files,
+GuestBoot.bin is the only added target file, and every prior boot-copy file
+remains unchanged. The writable boot copy adds only expected AllocRead.DD
+(`read` plus05). This is one complete native module generation, not the full
+C5 suite. Generation two's provider rebuild is now running at128MiB; both
+successive generations, desktop/application suite and profiles remain required.
