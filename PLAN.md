@@ -30577,3 +30577,24 @@ CmpCodeOwner. This identifies the next investigation without treating sampled
 counts as timings. Preserve complete heap corruption detection; cached header
 checks are not an acceptable substitute. See the startup-selector document.
 The169.4702s startup remains over60s; C1-C5 and inventory2/686 remain open.
+
+### C5 intermediate: avoid two redundant parser-record allocation audits
+
+Parser executable-storage and adoption tracking records now reuse the already
+validated arena under continuous IRQ exclusion. Owner validation and adoption
+payload validation are retained. Selection remains last-fit, records remain
+zeroed at their original exact sizes, and executable-storage callbacks occur
+after the record allocation. Exhaustion fallback and rollback are unchanged.
+There is no validity cache across callbacks or returns.
+
+`parser-record-select-build-v1` passes both classic rebuilds, the full cross
+build and complete386 audit. All1869 source/26 helper pins are archived and
+hash-checked in `i386-parser-record-select-cross-v1/pinned-candidate`.
+`parser-record-select-regressions-v1` passes User8MiB, original Home paths,
+diagnostics16MiB in both phases and configured normal Home Once/desktop geometry/
+bootstrap physical reclamation/fresh42. Its stock isolated minimal workload
+passes all9 commands and exact frames but measures165.7311s, failing60s.
+The aggregate stays failed; the scoped functional audit explicitly records
+startup_budget_pass FALSE. A single timing observation does not establish a
+precise speedup. C1-C5, full-suite/current-native generations and inventory2/686
+remain open. See `docs/i386-startup-parser-selector.md` for identities/receipts.

@@ -150,3 +150,49 @@ unchecked header test would weaken corruption detection. Any next optimization
 must retain whole-arena validation at exposed boundaries, actual block-boundary
 checks, and rejection of later-block corruption and inconsistent counters. No
 such validation change is included here. The169.4702s timing failure remains.
+
+## Reuse validation for parser tracking-record allocation
+
+Two additional allocation sites can reuse existing whole-arena validation
+without changing `I386CmpControlValid` or `I386CmpCodeOwner`:
+
+- `I386ParserCodeAlloc` allocates its tracking record after CodeOwner and task
+  heap-owner checks, before invoking the executable-storage callback.
+- `I386ParserTake` allocates its tracking record after CodeOwner, the public
+  payload-size query and duplicate-adoption check.
+
+Both retain IRQ exclusion throughout those checks and the record allocation.
+Neither invokes a callback or mutates the heap between validation and selection.
+They now use the same known-valid last-fit selector as ordinary parser storage.
+The selected record remains zeroed with its exact original requested size.
+Executable allocation/release callbacks, adoption ownership, failure rollback
+and the public allocator's exhaustion fallback remain unchanged. In particular,
+no validity cache survives a callback, yield or return to the caller.
+
+Fresh verification is under `parser-record-select-build-v1` and
+`parser-record-select-regressions-v1`. Both classic self-rebuilds, the full cross
+build and complete386 instruction audit pass. All1869 source and26 helper pins
+were copied and independently hash-checked under the cross run's
+`pinned-candidate` before further edits. User8MiB, original Home paths,
+diagnostics16MiB in both phases and configured Home Once/normal desktop geometry,
+bootstrap physical reclamation and fresh42 all pass. These focused checks do not
+qualify the complete desktop/application suite or native generations.
+
+The current full disk SHA256 is
+05d89c7b400e31dd551de47e94e6c4838c6d86004ac8696e58089d7234ae27fc;
+CompilerRuntime SHA256 is
+8d9ccb7d9fef480a6f2cefac18856e18cccc242b87fe402990a11e51a23b20c6.
+The stock isolated minimal startup test completes all nine unchanged commands
+and exact managed-pointer framebuffer checks, with zero startup build-provider
+loads. Startup measures165.7311s, so the unchanged60s gate correctly fails.
+All timing inputs were independently rehashed after the run. Receipt SHA256:
+8463f7702ca7e4ebe6c3e0c57752a6eb20c6e69aa90c78c68c6b977251533556.
+This single observation is not a paired performance comparison with169.4702s;
+no precise speedup is claimed. The aggregate regression receipt stays failed.
+
+`parser-record-select-regressions-v1/functional-audit.json` separately verifies
+current and archived source/helper pins, all16 emitted modules, flat kernel,
+disk and the four focused runtime receipts. Its explicit startup_budget_pass
+is FALSE. This change does not address the dominant control-validation scan
+itself. Full C1-C5 and current-source native-generation qualification remain
+open; compatibility inventory remains2/686.

@@ -94,7 +94,8 @@ U8 *I386ParserCodeAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes)
   if(owner->task!=owned->task || owner->signature!=I386_TASK_HEAPS_MAGIC ||
       owned->task->code_heap!=&owner->control || !owner->code_allocate ||
       !owner->code_release || !owner->code_capacity) goto done;
-  record=I386HeapAllocHigh(heap,sizeof(CI386ParserAllocation),TRUE);
+  //CodeOwner audited this unchanged arena; no callback has run yet.
+  record=I386ParserHeapAllocKnown(heap,sizeof(CI386ParserAllocation),TRUE,TRUE);
   if(!record) goto exhausted;
   allocation=(*owner->code_allocate)(owner,bytes);
   if(!allocation) { I386HeapFree(heap,record); goto exhausted; }
@@ -138,7 +139,8 @@ Bool I386ParserTake(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
   if(!I386CmpCodeOwner(heap,cc) || !allocation || I386HeapSize(heap,allocation)<1) goto done;
   for(record=owned->parser_next;record!=&owned->parser_next;record=record->next)
     if(record->allocation==allocation) goto done;
-  record=I386HeapAllocHigh(heap,offset(CI386ParserAllocation.requested),TRUE);
+  //Both owner and payload checks precede this allocation under IRQ exclusion.
+  record=I386ParserHeapAllocKnown(heap,offset(CI386ParserAllocation.requested),TRUE,TRUE);
   if(!record) goto done;
   record->allocation=allocation; record->next=&owned->parser_next;
   record->last=owned->parser_last; record->last->next=record; owned->parser_last=record;
