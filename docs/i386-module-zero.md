@@ -369,3 +369,26 @@ load/recovery/unload. Diagnostic image and pinned inputs remain unchanged.
 Concurrent runtime is not a timing-profile claim. Inventory evidence records
 the production cross-image User pass separately from the historical native
 failure; no required item is promoted to fully qualified by this narrow check.
+
+### Preferred-minimum repair: both native generations complete
+
+`build/fallback-minimum-native-generations-v1/result.json` now passes all stages:
+all16 native modules in both selfhost installations, independent8MiB boots,
+complete386 instruction and delivered-source audits, and generation identity.
+All nine generation-two retained providers match their generation-one inputs.
+The final disk SHA256 values are
+`a50baa0b5cfa8ba29e781d7b4432d95d67f3f8f48c54314fd8b7e1e3c5ee111d`
+and `fa7182d2e4bb3a8a7b8c708e20d8813f5ba3eb8918e30b00fa63540b46f97ca9`.
+The466112-byte flat payloads match after excluding only the exported eight-byte
+Kernel build date (normalized SHA256
+`3107f84624aa3762430704d093bcc9f443d420b9ca8fc7ada790d3b08ca391f5`).
+Each actual boot payload/checksum/padding is independently verified. BIOS sector
+and stage still originate in the verified seed; this does not claim native
+assembly of those components.
+
+All2455 source pins were independently checked and copied to that run's
+`pinned-candidate/`, with a passing snapshot-verification receipt, before any
+later production changes. This preserves the exact qualification epoch.
+Generation-one User8MiB and diagnostics16MiB already pass. Generation-two focused
+regressions are separate and still running; full suite, full desktop behavior,
+resource/startup profiles and C1-C5 completion are not established by this chain.

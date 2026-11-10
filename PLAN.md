@@ -30411,3 +30411,15 @@ activation file; its configured full-HomeSys normal-boot experiment is running.
 Full default desktop, prompt/input/raster and complete compatibility/resource
 qualification remain open; inventory remains2/686. See
 `docs/i386-bootstrap-retirement.md` for exact receipts and exclusions.
+
+### C5 repair: both fresh native module generations reproduce
+
+fallback-minimum-native-generations-v1 now passes through final identity:
+all16 native modules in both installations, independent8MiB boots, complete386
+and delivered-source audits. All nine retained providers reproduce exactly.
+Only the exported eight-byte Kernel date is excluded in final comparison;
+actual boot payload/checksum/padding is independently verified. All2455 pinned
+sources are archived and hash-checked under that run's pinned-candidate before
+any subsequent production edits. Generation-two User/diagnostic regressions
+remain live and separate. This is module-chain progress, not the full required
+suite/resource profiles or C1-C5 completion. Inventory stays2/686.
