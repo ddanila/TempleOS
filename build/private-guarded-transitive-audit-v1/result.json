@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "scope": "Reverse all three generated interfaces to byte-identical originals; verify source-only packaging and regression receipts",
+  "original_sha256": {
+    "Kernel/I386/PublicCompiler.HH": "23ad9a6725c6ba5d319e2c1aacda39670830877f1e012ddf4abdec0f16f44777",
+    "Kernel/I386/PublicLoader.HH": "ea3125ae8f6cc1350eb978fa31656164d44406ef3b135d1ced0130bc8e44a279",
+    "Compiler/CompilerA.HH": "285c00ebc51a2b6f4e120834758a6bb8bd91186e25ca108a8c880c1c1d31c985"
+  },
+  "candidates": {
+    "private-guarded-transitive-v1": "3c678383e17240eccf4bebb1ea88d58376192f2ea0551557fdcdc18a165eab93",
+    "private-guarded-transitive-production-v1": "a17d109c9ec8fa784e67a9d34e48b58a3627ab269bdc3c270071740e4de5e730"
+  },
+  "runs": {
+    "private-guarded-transitive-production-v1": {
+      "result": "pass",
+      "ram_mib": 16,
+      "receipt_sha256": "8fdb1a162513b9bd87f2f0ca7c644de0c839fbdb7b63e42a4c11ac7561590011",
+      "command_sha256": "a55eecafa14f1b0ea6f88b564e0a10d2f80d1075c86053932ee5c27780dbd6e8"
+    },
+    "private-guarded-transitive-v1": {
+      "result": "fail",
+      "ram_mib": 8,
+      "receipt_sha256": "9c49863d97d43ba81bd8edd5d02d15720a706aa3b5a9a2b3e1b20f0ebc991cf6",
+      "command_sha256": "1a8fcf1ffc4b713c9ec0fd051164829962111429fa36a5afa82a59eff2b7120b"
+    }
+  }
+}

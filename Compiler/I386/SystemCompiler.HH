@@ -11,7 +11,7 @@
 #include "/Kernel/I386/PublicExpression.HH"
 #endif
 #ifndef COMPILER_A_INCLUDED
-#include "/Compiler/CompilerA.HH"
+#include "/Compiler/I386/SystemCompilerA.HH"
 #endif
 public _extern _OPT_PASS012 CIntermediateCode *OptPass012(CCmpCtrl *cc);
 public _extern _COC_COMPILE U8 *COCCompile(CCmpCtrl *cc,I64 *_code_size,CDbgInfo **_dbg,I64 *_type);

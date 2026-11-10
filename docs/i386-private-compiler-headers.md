@@ -93,3 +93,26 @@ Current candidate identities:
 
 These source-loading checks do not replace the next bootstrap rebuild or the
 full current-source native build/install/resource qualification.
+
+## Transitive compiler interface
+
+The filename trace subsequently reached CompilerA.HH and its opcode dependency.
+The private generator now also mirrors the complete CompilerA.HH interface as
+`Compiler/I386/SystemCompilerA.HH`, guarding its six dependency reads before
+opening them. SystemCompiler.HH selects this mirror. Original public headers,
+all class declarations, defines, help indexes and helper bodies are unchanged.
+The build check covers all three mirrors.
+
+An independent audit under `build/private-guarded-transitive-audit-v1` reverses
+every wrapper and mapped include to recover the byte-identical three original
+interfaces. It verifies the source-only candidates change only SystemCompiler.HH
+and add SystemCompilerA.HH; modules, boot and unrelated files remain unchanged.
+
+The production optimizer comparison against the original system passes at
+16 MiB (`build/private-guarded-transitive-production-v1/optimizer16/result.json`,
+SHA256 8fdb1a162513b9bd87f2f0ca7c644de0c839fbdb7b63e42a4c11ac7561590011).
+The original-User/provider prototype at 8 MiB still fails an 80-byte allocation;
+this change does not resolve that resource failure or qualify native generations.
+Its diagnostic pool usage is 0xFFEF0 of 0x100C00 at failure, with backing storage
+fully used at 0x118400. Both receipts retain actual QEMU memory configurations
+and unchanged input hashes.

@@ -30861,3 +30861,12 @@ See `docs/i386-support-allocation-trace.md` and its diagnostic patch. The fresh
 8 MiB regression deliberately remains FAIL; no resource gate or compatibility
 scope changed. Complete compiler declarations and user DolDoc semantics remain
 required. Production integration, broader inventory and C5 remain open.
+
+### C4: guard transitive private compiler header reads
+
+Added a generated full SystemCompilerA.HH mirror, selected only by the private
+SystemCompiler.HH. All six dependency guards are checked before reads; complete
+original declarations are byte-preserved and independently reversible. The
+production optimizer differential passes at 16 MiB. The 8 MiB original-User
+prototype still fails its 80-byte allocation; no resource gate changed. Details
+and pinned receipts: `docs/i386-private-compiler-headers.md`.
