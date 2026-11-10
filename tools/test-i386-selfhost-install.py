@@ -57,6 +57,8 @@ def main():
                         help='Expect the original welcome document at each prompt')
     parser.add_argument('--qmp-stdio', action='store_true',
                         help='Use QMP stdio and a writable boot copy where sockets and snapshots are blocked')
+    parser.add_argument('--managed-pointer', action='store_true',
+                        help='Use exact managed-pointer welcome checks with live WinMgr')
     parser.add_argument('--command-timeout', type=int, default=2400,
                         help='Seconds allowed for each guest build/install command')
     parser.add_argument('--build-ram-mib', type=int, choices=(16, 64, 128), default=16,
@@ -117,9 +119,11 @@ def main():
     run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
     run_input(source, out / 'build', target_disk=target, snapshot=False,
               ram_mib=args.build_ram_mib, accel=args.accel, cpu=args.cpu,
-              qmp_stdio=args.qmp_stdio, welcome=args.welcome, startup_timeout=180,
+              qmp_stdio=args.qmp_stdio, welcome=args.welcome, managed_pointer=args.managed_pointer,
+              keep_window_manager=args.managed_pointer, startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
                              'command_timeout': args.command_timeout,
+                             'pause_window_manager': not args.managed_pointer,
                              'commands': commands,
                              'rejection_prefixes': ('BUILD MODULE REJECT ',), 'rejected_answers': ['0']})
     if source.read_bytes() != original:
@@ -149,8 +153,10 @@ def main():
         shutil.copyfile(target, boot_disk)
     run_input(boot_disk, out / 'boot', snapshot=not args.qmp_stdio, ram_mib=8,
               accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio,
-              welcome=args.welcome, startup_timeout=180,
+              welcome=args.welcome, managed_pointer=args.managed_pointer,
+              keep_window_manager=args.managed_pointer, startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
+                             'pause_window_manager': not args.managed_pointer,
                              'commands': [('6*7;', ['42']),
                                           ('DocAllocationCheck;', ['13'])]})
     if args.qmp_stdio and target.read_bytes() != installed_bytes:
@@ -168,6 +174,7 @@ def main():
               'cross_build_manifest_sha256': cross_manifest_hash,
               'retained_evidence': retained_evidence,
               'cpu': args.cpu, 'welcome': args.welcome, 'build_ram_mib': args.build_ram_mib, 'boot_ram_mib': 8,
+              'managed_pointer': args.managed_pointer,
               'scope': 'Development flat-kernel build only; not full M7 self-hosting qualification' if args.cross_retained else 'Guest flat-kernel build with supplied guest-built retained modules'}
     (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(result)

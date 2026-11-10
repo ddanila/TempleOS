@@ -24,6 +24,8 @@ def main():
     parser.add_argument('--welcome', action='store_true',
                         help='Expect the original welcome document at each prompt')
     parser.add_argument('--qmp-stdio', action='store_true', help='Use QMP stdio where Unix sockets are blocked')
+    parser.add_argument('--managed-pointer', action='store_true',
+                        help='Use exact managed-pointer welcome checks with live WinMgr')
     parser.add_argument('--keyboard', action='store_true',
                         help='Use paced KVM keyboard commands with live WinMgr')
     parser.add_argument('--module', choices=MODULES, action='append',
@@ -85,8 +87,10 @@ def main():
         keyboard_input(candidate,out/'replace',commands,16)
     else:
         run_input(candidate, out / 'replace', snapshot=False, ram_mib=16,
-                  accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, startup_timeout=180, startup_check={
+                  accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, managed_pointer=args.managed_pointer,
+                  keep_window_manager=args.managed_pointer, startup_timeout=180, startup_check={
                       'status': 'ok', 'answers': [], 'command_timeout': 240,
+                      'pause_window_manager': not args.managed_pointer,
                       'commands': commands})
     installed_paths = {f'/Modules/I386/{name}.t32m' for name in modules}
     installed = files(candidate, installed_paths | source_paths)
@@ -102,8 +106,10 @@ def main():
         keyboard_input(boot_disk,out/'boot',[('6*7;', ['42']),('DocAllocationCheck;', ['13'])],8)
     else:
         run_input(boot_disk, out / 'boot', snapshot=False, ram_mib=8,
-                  accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, startup_timeout=180, startup_check={
+                  accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, managed_pointer=args.managed_pointer,
+                  keep_window_manager=args.managed_pointer, startup_timeout=180, startup_check={
                       'status': 'ok', 'answers': [],
+                      'pause_window_manager': not args.managed_pointer,
                       'commands': [('6*7;', ['42']),
                                    ('DocAllocationCheck;', ['13'])]})
     if sha(candidate) != candidate_hash or sha(args.source) != source_hash:
@@ -120,6 +126,7 @@ def main():
               'source_disk_sha256': source_hash, 'disk_sha256': candidate_hash,
               'module_source_paths': module_paths,
               'cpu': args.cpu, 'accel': args.accel, 'welcome': args.welcome,
+              'managed_pointer': args.managed_pointer,
               'keyboard_harness': args.keyboard,
               'diagnostic_growth_recovery': growth_recovery,
               'module_sha256': {name: hashlib.sha256(built[module_paths[name]]).hexdigest() for name in modules},

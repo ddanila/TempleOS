@@ -77,6 +77,8 @@ def main():
                         help='Expect the original welcome document at the initial prompt')
     parser.add_argument('--qmp-stdio', action='store_true',
                         help='Use QMP stdio where Unix sockets are blocked')
+    parser.add_argument('--managed-pointer', action='store_true',
+                        help='Use exact managed-pointer welcome checks with live WinMgr')
     parser.add_argument('--module', choices=MODULES, action='append', dest='modules')
     parser.add_argument('--command-timeout', type=int, default=3600)
     parser.add_argument('--keyboard', action='store_true',
@@ -123,6 +125,7 @@ def main():
                     for name in selected]
         run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         pending = {'result': 'running', 'cpu': args.cpu, 'ram_mib': args.ram_mib, 'welcome': args.welcome,
+                   'managed_pointer': args.managed_pointer,
                    'module_order': list(selected), 'input_disk_sha256': sha256(source),
                    'scope': 'Selected retained module native builds and persisted export audit',
                    'keyboard_harness': args.keyboard}
@@ -142,9 +145,11 @@ def main():
                     if guest is not None:guest.close()
             else:
                 run_input(source, out / 'qemu', snapshot=False, ram_mib=args.ram_mib, accel=args.accel,
-                          cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome,
+                          cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, managed_pointer=args.managed_pointer,
+                          keep_window_manager=args.managed_pointer,
                           startup_timeout=180, startup_check={
                               'status': 'ok', 'answers': [],
+                              'pause_window_manager': not args.managed_pointer,
                               'command_timeout': args.command_timeout, 'commands': commands,
                               'rejection_prefixes': ('BUILD MODULE REJECT ',), 'rejected_answers': ['0']})
         except Exception as error:
@@ -164,6 +169,7 @@ def main():
               'modules': {}}
     if not args.audit_only:
         result.update(cpu=args.cpu, ram_mib=args.ram_mib, keyboard_harness=args.keyboard)
+        result['managed_pointer'] = args.managed_pointer
     try:
         if not args.audit_only and (args.reference_exports/'BuildRuntime.t32m').is_file():
             log = (out/'qemu/debug.log').read_text()

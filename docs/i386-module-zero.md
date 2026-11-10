@@ -213,3 +213,25 @@ source audit (1524 source/document files match), and is running generation one's
 self-host rebuild with actual128MiB QEMU RAM. Both rebuild profiles are128MiB;
 Kernel dates use the explicitly declared comparison scope. No complete native
 generation result, full compatibility suite pass or C1-C5 completion is inferred.
+
+The first generation-chain attempt failed before any build command: its exact
+welcome oracle omitted the delivered managed pointer. The captured image is
+byte-for-byte equal to the existing standard managed-pointer model; the old
+cursor-on expectation differs by exactly17 pointer pixels. Attempt v2 passes
+that initial oracle but its legacy helper then suspends WinMgr, removing the
+managed pointer and failing the next full-raster check. Both terminal failures,
+images and exact helper sources remain preserved under their output directories.
+Neither is recorded as a compiler or native build failure.
+
+The generation, self-host, retained-build and retained-install tools now accept
+`--managed-pointer`. This explicit profile forwards the existing exact pointer
+oracle, keeps WinMgr running and disables the helper's WinMgr-pause command.
+Default minimal-profile behavior is unchanged. No pixels are ignored and the
+existing framebuffer oracle is unchanged.
+
+`module-zero-native-generations-v3` passes the corrected real initial framebuffer
+and typing checks and is compiling the first full Kernel through the installed
+native providers at128MiB, with WinMgr live. Preflight/source audits pass; both
+prior failures remain separate. Provenance guards and syntax checks pass, and
+all-nine provider artifacts still audit against their archived exact test tools
+and unchanged production sources. Complete generations and C1-C5 remain open.

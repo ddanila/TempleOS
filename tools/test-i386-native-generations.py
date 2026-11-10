@@ -36,6 +36,8 @@ def main():
     parser.add_argument('--welcome', action='store_true',
                         help='Expect the original welcome document at each prompt')
     parser.add_argument('--qmp-stdio', action='store_true')
+    parser.add_argument('--managed-pointer', action='store_true',
+                        help='Use exact managed-pointer welcome checks with live WinMgr')
     parser.add_argument('--build-command-timeout', type=int, default=3600,
                         help='Per-module native rebuild limit in seconds')
     parser.add_argument('--retained-build-ram-mib', type=int, choices=(16, 64, 128), default=16,
@@ -52,6 +54,8 @@ def main():
         runtime.append('--qmp-stdio')
     if args.welcome:
         runtime.append('--welcome')
+    if args.managed_pointer:
+        runtime.append('--managed-pointer')
     repo, retained, listing, out = [p.resolve() for p in
         (args.repository, args.retained_build, args.stage_listing, args.out)]
     if out.exists():
@@ -85,6 +89,7 @@ def main():
     report = {'result': 'running', 'stage': 'preflight', 'repository': str(repo),
               'scope': 'Two native rebuild/install/boot generations and artifact audits only; full desktop/application compatibility suite and C1-C5 qualification are separate gates.',
               'accel': args.accel, 'cpu': args.cpu, 'qmp_stdio': args.qmp_stdio, 'welcome': args.welcome,
+              'managed_pointer': args.managed_pointer,
               'build_command_timeout': args.build_command_timeout,
               'retained_build_ram_mib': args.retained_build_ram_mib,
               'flat_build_ram_mib': args.flat_build_ram_mib,

@@ -30105,3 +30105,24 @@ the delivered-source audit (1524 files), then starts gen1-selfhost at actual
 128MiB. Both rebuild profiles use the PLAN full budget; dates are explicitly
 normalized only at the declared scope. This running chain is not yet a complete
 native generation result or full C1-C5 suite qualification. Inventory stays2/686.
+
+### C5: generation harness follows the delivered managed-pointer profile
+
+Generation attempt v1 terminates before a build command at the old initial
+raster: exactly17 standard pointer pixels differ. Its complete captured screen
+matches the existing managed-pointer oracle. Attempt v2 passes initial pixels
+but suspends WinMgr in the old helper, removing that pointer and failing the
+next full raster. Exact images/receipts/helper sources for both failures remain
+preserved, and neither is called a native compiler/build failure.
+
+--managed-pointer now propagates through all four generation/build/install
+tools and selects the existing exact oracle with live WinMgr, without the old
+pause command. Legacy defaults remain unchanged; no raster masking or oracle
+weakening is introduced. Provenance guards and syntax checks pass. The all-nine
+provider audit still passes using its archived exact driver and unchanged
+production source/helper pins.
+
+module-zero-native-generations-v3 passes real preflight/source, initial raster
+and command-typing checks, then starts full Kernel compilation through the
+installed native providers at128MiB with WinMgr live. The two complete native
+generations, suite/profiles and full C1-C5 remain unqualified,2/686.
