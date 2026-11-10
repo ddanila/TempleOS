@@ -835,6 +835,8 @@ def package_volume(disk, exports, content_profile="minimal"):
             'source': '/Apps/Budget/Accts.DD',
             'source_sha256': hashlib.sha256(template).hexdigest(),
             'archive_sha256': hashlib.sha256(archive).hexdigest()}
+    # Match the original default home, including an empty installed directory.
+    tree.setdefault('Home', {})
     # Required by shared prompt/debugger startup in both content profiles.
     tree['Compiler']['I386']['UAsmTables.DATA'] = (ROOT/'Compiler/I386/UAsmTables.DATA').read_bytes()
     packed = (exports/'IncludeInner.HC.Z').read_bytes()

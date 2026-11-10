@@ -20126,6 +20126,12 @@
           "result": "pass",
           "evidence": "build/desktop-handoff-production-regressions-v3/normal-boot-64m/result.json",
           "scope": "Current seven-file production handoff, full cross-built image: configured normal startup invokes whole HomeSys without host setup commands, direct return marker, original83-word geometry, bootstrap TaskValidate false and fresh42 pixels. Fresh classic two generations/complete386 audit,8MiB User255,16MiB diagnostics pass separately. Default home/Once, original full prompt/input/raster, this boot physical heap recovery, isolated timing/resources and full compatibility remain open."
+        },
+        {
+          "target": "production-default-home-and-once-selection",
+          "result": "pass",
+          "evidence": "build/default-home-production-regressions-v2/functional-audit.json",
+          "scope": "Original public Cd/~ home-path values, actual HOME Once selection before root copy, configured full HomeSys return, original83-word geometry, fresh42 and stopped-RAM bootstrap record absence/free block. Fresh classic/cross/all16-module/386/source identity and User8MiB/diagnostics16MiB pass. Aggregate regression queue fails isolated minimal startup180s timeout;60s gate unqualified. Default Once contents/HomeSet, full prompt/input/raster, all apps and full C1-C5 remain open."
         }
       ]
     },

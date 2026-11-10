@@ -40,3 +40,13 @@ source setup; its compiler screenshot and exclusion receipt are retained. V2
 uses literal0. The tested correction is applied locally for a fresh production
 classic/cross rebuild and full focused regression queue. Production qualification
 is pending; prototype results alone do not establish that gate or C1-C5.
+
+The correction now passes in the fresh production cross image, not only the
+prototype. `default-home-production-regressions-v2/diagnostic-16m/result.json`
+and its independent functional audit verify both packing/memory/program phases
+and document recovery. The receipt SHA256 is
+143b4fe0d662b4fd0e1a8e7ed0a51d6f4c9a8405d3ef70a6d42772120fc8c86e.
+Source/helper and module/image identity are checked and archived. The aggregate
+qualification is still red because isolated minimal startup reaches its180s
+observation timeout; that separate performance failure is not waived by these
+functional diagnostic checks.

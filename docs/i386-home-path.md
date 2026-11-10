@@ -76,3 +76,31 @@ existing startup workload on an independently packaged16MiB minimal-content
 image at8MiB RAM, without another QEMU running. The60-second gate remains intact.
 Default Once contents, HomeSet, full prompt/input/raster and whole-suite resource
 qualification remain open.
+
+## Production functional verification
+
+The second production epoch is now functionally verified. The fresh original
+rebuild, full cross build, complete386 audit and input/output hashes pass.
+`build/default-home-production-regressions-v2/functional-audit.json` independently
+checks1868 source pins,26 helper pins, all16 modules, the flat/disk bytes and four
+passing receipts: User8MiB, public home paths, diagnostics16MiB and configured
+normal desktop64MiB. Both parser-budget/memory/program phases and document
+load/growth recovery/unload are counted independently. All source/helper pins
+are archived in `build/i386-default-home-cross-v2/pinned-candidate/`.
+
+Actual HOME Once selection, original83-word geometry, real HomeSys return,
+fresh42 and physical reaping pass. The full image SHA256 is
+fe5cac8eb01031ffccc3ca405cc1ea71b2ab2cf47b7bef495c932d8a8c08307e.
+The normal desktop receipt SHA256 is
+8195a0d6ebb16f01a640743f2a090656203b634c32aa315c9ad84bfac65a87de.
+
+This is not complete regression/release qualification. The independently
+packaged16MiB minimal-content image preserves the same boot area and has an
+empty installed Home directory. Its isolated TCG486,-fpu/8MiB startup fails to
+finish before the existing180-second observation timeout. The60-second target
+therefore is not qualified. The aggregate v2 regression receipt remains failed;
+no timeout or budget was relaxed. A separate paused CPU/stack profile is running
+under `default-home-minimal-boot-profile-v1`; its times cannot be benchmarks.
+Whether the timing failure predates these Home changes needs direct comparison,
+not an assumption. C5, full default Once/HomeSet, terminal integration and the
+complete application/resource suite remain open.

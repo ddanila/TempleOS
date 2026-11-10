@@ -30506,3 +30506,22 @@ Tested changes are applied locally; second production classic/cross build and
 guarded regressions run before implementation commit. A minimal16MiB-content
 8MiB-RAM isolated startup workload is queued with its unchanged60-second gate.
 All full desktop/application/resource/C1-C5 gates remain open, inventory2/686.
+
+### C2/C4 production Home repair verified; C5 minimal startup is red
+
+Fresh production default-home-cross-v2 passes original rebuild, full cross/386
+and independent1868-source/26-helper/all16-module/flat/image audits. User8MiB,
+public original home paths, both diagnostic/parser-budget/program phases and
+configured64MiB HOME Once/desktop/physical reaping pass. The Home directory is
+installed empty in both package profiles, and actual HomeSys selects its Home
+Once before the root copy. The parser diagnostic retains real-task bulk cleanup
+and the unchanged88-byte packing limit in a controlled arena. Exact source epoch
+is archived; this is verified functional progress for implementation commit.
+
+The full regression queue remains failed: an independently packaged16MiB minimal
+image with identical boot area does not finish isolated TCG486,-fpu/8MiB startup
+before the existing180s observation timeout. Its60-second acceptance is therefore
+unqualified. Keep that target and workload unchanged. Paused CPU/stack profiling
+is live; profiling times are not benchmark evidence. A direct pre-change timing
+comparison remains needed. C5/resource profiles/full terminal/desktop/apps and
+C1-C5 remain open, inventory2/686; no release qualification is claimed.
