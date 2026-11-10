@@ -54,6 +54,9 @@ ConsoleRuntime passes compilation, complete386 instruction audit and guest
 replacement/independent8MiB welcome/42/DocAllocationCheck13
 (`bootstrap-graphics-owner-cross-v1`, `bootstrap-graphics-owner-instruction-v1`,
 `bootstrap-graphics-owner-install-v1`). It is explicitly cross-built, despite
-reusing the functional retained-module installer. The fresh retirement workflow
-is running against that candidate; normal boot, full raster/input, physical
-reaping and resource qualification remain open.
+reusing the functional retained-module installer. The fresh retirement workflow also retires the bootstrap and preserves geometry,
+but still fails visible42 (`bootstrap-retirement-graphics-v1`). This change is
+therefore insufficient for a usable handoff. A separate live-bootstrap User
+control reproduces the clipped result with stored answer42 and horizontal scroll1;
+see [i386-user-scalar-cursor.md](i386-user-scalar-cursor.md). Normal boot, full
+raster/input, physical reaping and resource qualification remain open.

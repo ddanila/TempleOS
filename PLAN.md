@@ -30346,3 +30346,39 @@ Its386 audit, guest replacement and independent8MiB welcome/42/DocAllocationChec
 pass. A new retirement workflow is running. Tested experimental patches and
 precise scope are preserved in docs/i386-bootstrap-retirement.md; production
 startup remains unchanged for the live native qualification chain.
+
+### C5 repair: first fresh native generation passes minimal User and diagnostics
+
+fallback-minimum-native-generations-v1 completes generation-one selfhosting,
+installation, independent8MiB boot and instruction/delivered-source audits.
+Its preserved target SHA256 is
+a50baa0b5cfa8ba29e781d7b4432d95d67f3f8f48c54314fd8b7e1e3c5ee111d.
+The previously red8MiB User255 case now passes on this all16-native-module image,
+with exact managed-pointer frames and fresh42. The16MiB diagnostic run also
+passes both program-probe phases,42/DocAllocationCheck13 and diagnostic
+load/recovery/unload, with unchanged image and source inputs.
+
+User evidence is in fallback-minimum-native-regressions-queue-v1/gen1-user-8m;
+the v1 wrapper then fails an absolute-path setup guard before starting diagnostics.
+The corrected v2 queue reuses that independently passing User receipt only after
+full profile/input-hash checks and records passing diagnostics in gen1-diagnostic-16m.
+Generation two's retained build remains live. Full suite, reproducibility at
+current scope, isolated startup/resource profiles and C1-C5 stay open2/686.
+
+### C2/C4 test-first: User output viewport clipping isolated without retirement
+
+The graphics-owner candidate still fails fresh42 after explicit bootstrap Exit,
+even though retirement and original83-word geometry pass. A simpler User control
+proves the arithmetic value and serialized document both contain42. A narrow
+window with the handoff's helper/conditional history reproduces the glyph failure
+while bootstrap remains alive: horizontal scroll and line_start_col are1, hiding
+leading4. Full-width and a different long-command narrow control both pass.
+
+The tested bounded capture is preserved under tests/guest/i386-user-scalar-cursor.
+The first collector's nonexistent cur_x/cur_y fields are invalid fixture evidence;
+corrected x/y captures are used. Original DocBottom before the prompt is tested
+and insufficient: the same exact case remains scroll1/red. A separate variant
+requests cursor-tracking original layout before adding the next prompt and has
+a guarded cross-build/audit/install/scalar/retirement/minimal-User queue running.
+No production viewport repair or complete prompt/desktop/resource pass is claimed.
+See docs/i386-user-scalar-cursor.md.

@@ -20090,6 +20090,18 @@
           "result": "pass",
           "evidence": "build/bootstrap-graphics-owner-install-v1/result.json",
           "scope": "Disposable source candidate only: native managed-bootstrap Kernel, explicit Raw(FALSE), cross-built ConsoleRuntime with immortal graphics lifetime owner and both views owned by active WinMgr. Complete386 audit and guest replacement/independent8MiB welcome42/DocAllocationCheck13 pass. Functional installer is reused; this ConsoleRuntime is explicitly cross-built, not a native provider qualification. Fresh retirement/raster test, normal boot, physical reaping and full C1-C5 remain pending. Production startup unchanged."
+        },
+        {
+          "target": "preferred-minimum-native-generation-one-user-8m",
+          "result": "pass",
+          "evidence": "build/fallback-minimum-native-regressions-queue-v1/gen1-user-8m/result.json",
+          "scope": "Fresh current-source all16-native-module generation with production preferred-minimum backing: actual User255, every managed-pointer pixel checkpoint and fresh42 pass at8MiB with unchanged inputs. Separate16MiB both-phase diagnostics pass at build/fallback-minimum-native-regressions-queue-v2/gen1-diagnostic-16m/result.json. This repairs the recorded baseline native User regression; generation two, full suite and timing/resource profiles remain pending. No whole HomeSys/C1-C5 qualification."
+        },
+        {
+          "target": "user-scalar-narrow-viewport-control",
+          "result": "fail",
+          "evidence": "build/user-scalar-tiled-before-v2/result.json",
+          "scope": "Valid collector records successful actual6*7, task answer42 and serialized42 line in a39-column User while bootstrap stays alive. Handoff helper/conditional history leaves horizontal scroll and line_start_col1; independent42 glyph check fails. Full-width and a different long-command narrow control pass. Original DocBottom experiment remains red at build/user-scalar-tiled-after-v1/result.json. Invalid first cur_x/cur_y collector is excluded. No production repair or full desktop/raster qualification; see docs/i386-user-scalar-cursor.md."
         }
       ]
     },
