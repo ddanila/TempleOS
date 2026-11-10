@@ -20072,6 +20072,12 @@
           "result": "fail",
           "evidence": "build/fallback-minimum-desktop-layout-native-v2/result.json",
           "scope": "Actual HomeSys StartUpTasks and configured original layout-capture Once execute on the current cross image, but unchanged83-word oracle fails: three visible focusable windows at1..19,21..39,40..60 versus original two at1..39,41..78. All six window-list tasks are exported: bootstrap console remains visible/focusable; hidden Adam also participates at61..78 because self-focus inhibition is clear. Current classic control passes. Inputs unchanged. Explicit preflight, not normal boot, pixel parity or full desktop qualification; production startup unchanged. See docs/i386-home-desktop-layout.md."
+        },
+        {
+          "target": "native-explicit-home-layout-policy-experiment",
+          "result": "pass",
+          "evidence": "build/fallback-minimum-desktop-layout-policy-v1/result.json",
+          "scope": "Disposable runtime policy only: inhibit hidden Adam focus and hide/inhibit bootstrap console before original StartUpTasks. Same six tasks and identical capture Once; exactly two Users remain visible/focusable. All83 layout words are byte-identical to the current classic control. Independent raw-export/input/flag audit passes at build/fallback-minimum-desktop-layout-audit-v1/result.json. Bootstrap task remains allocated; production startup is unchanged. No normal-boot, pixel, interaction, retirement/resource, full HomeSys or C1-C5 qualification."
         }
       ]
     },

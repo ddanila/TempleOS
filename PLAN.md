@@ -30298,3 +30298,13 @@ exact and fresh42 renders. This does not measure every heap or qualify8MiB
 lifetimes. fallback-minimum-repair-audit-v1 verifies all1868 cross-source pins,
 both focused validators, six stock corpora,8MiB User and16MiB diagnostic receipts
 and those three raw recovery cycles. Native qualification remains in progress.
+
+The disposable desktop policy experiment now passes the complete unchanged
+83-word oracle (fallback-minimum-desktop-layout-policy-v1). It sets hidden Adam's
+self-focus inhibition and hides/inhibits the bootstrap console before executing
+StartUpTasks. The same six tasks remain allocated; only the two actual Users are
+visible/focusable and occupy the original rectangles. The successful raw geometry
+export is byte-identical to the classic control. An independent audit rechecks
+all raw exports, identical Once fixtures, inputs and focus/display transitions.
+This isolates the policy cause without claiming normal boot or proper bootstrap
+retirement/resource recovery. The production startup integration remains open.

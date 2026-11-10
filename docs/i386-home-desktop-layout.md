@@ -34,3 +34,27 @@ StartUpTasks. Even a geometry pass there would not qualify normal boot, task
 retirement, full raster parity, Once/home semantics, autocomplete content,
 resource recovery or C1–C5. Production startup remains unchanged while the
 current-source native module chain is pinned.
+
+The disposable experiment now passes all 83 words of the unchanged original
+oracle in `build/fallback-minimum-desktop-layout-policy-v1/result.json`. After
+loading MakeAC/HomeSys as before, its only additional policy commands are:
+
+```c
+Adam("LBts(&Fs->win_inhibit,WIf_SELF_FOCUS);");
+LBts(&Fs->win_inhibit,WIf_SELF_FOCUS);LBtr(&Fs->display_flags,DISPLAYf_SHOW);Adam("StartUpTasks;");
+```
+
+The identical capture Once still exports all six tasks. Exactly the two Users
+remain focusable and visible, at the original rectangles. Adam and the bootstrap
+console have their focus-inhibit bits set; the bootstrap console is hidden.
+The bootstrap task remains allocated. This is a geometry-policy experiment,
+not a production startup or resource-lifetime repair.
+
+`build/fallback-minimum-desktop-layout-audit-v1/verify.py` independently checks
+the three raw geometry exports, identical native capture fixtures, all pinned
+inputs, six-task identity/flags and the transition from four focusable tasks
+(three visible) to two (both visible). The successful native geometry export
+is byte-identical to the classic control, SHA256
+99c748e904d42e8f42885c99a239540aa7a42aa534fd5e91b950213780385ec3.
+Normal startup must still perform the proper bootstrap-to-User transition and
+qualify pixels, interaction, configured Once, autocomplete and resource recovery.
