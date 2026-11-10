@@ -1,5 +1,5 @@
 //Ordered normal shared-parser stage.
-#include "/Kernel/I386/PublicCompiler.HH"
+#include "/Compiler/I386/SystemCompiler.HH"
 #include "/Kernel/I386/PublicCompilerContext.HH"
 #include "/Kernel/I386/PublicLexer.HH"
 #include "/Kernel/I386/PublicMath.HH"

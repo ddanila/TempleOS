@@ -1,5 +1,5 @@
 //Compile the complete shared optimizer in Adam; canonical types are borrowed.
-#include "/Kernel/I386/PublicCompiler.HH"
+#include "/Compiler/I386/SystemCompiler.HH"
 #include "/Kernel/I386/PublicCompilerContext.HH"
 #include "/Compiler/ICInfo.HC"
 #include "/Compiler/PrsStack.HC"

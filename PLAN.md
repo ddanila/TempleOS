@@ -30827,3 +30827,27 @@ Unused private header/metadata duplication is a next investigation; user-visible
 API coverage remains required. See `docs/i386-on-demand-lexer.md` and its separate
 reviewable patch. Production is unchanged, the new provider is not yet in the
 native build/install manifest, and C1-C5/inventory 2/686 remain open.
+
+### C2/C4 private compiler interfaces avoid redundant guarded file reads
+
+A caller-guard diagnostic confirms PublicDocument's guard was already set at the
+8 MiB provider failure. Skipping that read exposes a redundant CompilerTypes
+read next. Private SystemCompiler/SystemLoader mirrors now check dependency
+guards before reading full files, retaining the complete public interfaces,
+original guard names and defaults. User public headers and all helper bodies
+remain unchanged. A byte-preserving generator and required host-build --check
+prevent drift; generated files are available for native source packaging.
+
+The production-source candidate passes the unchanged 8 MiB User regression,
+16 MiB original optimizer trace comparison and original JIT/AOT fixup contracts.
+An independent audit reverses generated wrappers to byte-identical public
+interfaces and include substitutions to unchanged helper bodies, checks exact
+packaged files and actual QEMU RAM profiles. Resident modules/boot/public headers
+are unchanged by this source-loading change.
+
+The current provider variant passes complete 64 MiB prompt/error/physical-break
+recovery and physical retirement. Its 8 MiB gate advances past both large reads,
+then fails an 80-byte public allocation before optimizer publication. That
+allocation still needs profiling. See `docs/i386-private-compiler-headers.md`.
+No interface, case, stack, memory or startup gate was reduced; full C1-C5,
+inventory 2/686 and current-source native generations remain open.

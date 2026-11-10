@@ -1,6 +1,8 @@
 //Loaded in Adam on first use; only complete publication enables the facade.
+#ifndef I386_PUBLIC_DOCUMENT_INCLUDED
 #include "/Kernel/I386/PublicDocument.HH"
-#include "/Kernel/I386/PublicLoader.HH"
+#endif
+#include "/Compiler/I386/SystemLoader.HH"
 #include "/Kernel/I386/PublicCompilerContext.HH"
 #define COC_LABEL_IMPL NativeSystemJITLabelFind
 #define OPT_LABEL_IMPL NativeSystemJITLabelForward

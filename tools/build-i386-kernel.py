@@ -2484,6 +2484,7 @@ def main():
     (out/'result.json').unlink(missing_ok=True)
     run(sys.executable,'tools/check-i386-file-bindings.py')
     run(sys.executable,'tools/gen-compiler-keywords.py','--check')
+    run(sys.executable,'tools/gen-i386-system-headers.py','--check')
     run(sys.executable,'tools/gen-i386-public-math.py','--check')
     run(sys.executable,'tools/gen-i386-date.py','--check')
     bootstrap=json.loads((ROOT/'build/rebuild-test/result.json').read_text())

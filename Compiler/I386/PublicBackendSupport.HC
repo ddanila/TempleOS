@@ -1,5 +1,5 @@
 //The resident shared emitter is stateless: public callbacks own its workspace.
-#include "/Kernel/I386/PublicCompiler.HH"
+#include "/Compiler/I386/SystemCompiler.HH"
 #include "/Kernel/I386/PublicCompilerContext.HH"
 #include "/Compiler/I386/Backend.HH"
 public _extern _I386_BACKEND_CORE U0 PCBEmit(CI386Backend *backend,I64 bytes);

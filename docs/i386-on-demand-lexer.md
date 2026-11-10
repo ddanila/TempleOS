@@ -108,3 +108,10 @@ provider and updated strict build contracts. Two current native generations,
 full desktop/application/API coverage and startup/resource qualification remain
 open. Existing 8 MiB interactive / 16 MiB rebuilding / 60-second startup gates
 are unchanged. C1-C5 and inventory 2/686 remain open.
+
+The later guarded-header investigation confirms that the document interface was
+already loaded. Private generated mirrors now skip its redundant read and the
+following CompilerTypes read while retaining every interface declaration. The
+current guarded provider image still passes 64 MiB recovery/physical retirement,
+but its 8 MiB User failure advances to an 80-byte public allocation. See
+`docs/i386-private-compiler-headers.md` for current receipts and remaining work.
