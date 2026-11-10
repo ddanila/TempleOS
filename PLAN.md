@@ -29966,3 +29966,16 @@ at2/686. See docs/i386-module-zero.md.
 The current candidate also passes isolated normal8MiB startup in54.512s
 (module-zero-startup-8m-v1), with live WinMgr, exact welcome/42 pixels and
 unchanged input pins. This is the existing60-second baseline subgate only.
+
+### C5: declare only the original Kernel build date nondeterministic
+
+The generation audit now has an explicit --allow-kernel-build-date mode,
+forwarded by the two-generation runner. Strict comparison remains the default.
+The exception covers only the unique exported eight-byte date and its flat
+copy; dates must be positive/increasing and each flat value must match its
+module. All other artifact bytes stay exact. Each actual boot area must match
+its independent payload/checksum/padding oracle; normalized boot areas must
+also match, including all unrelated metadata. Five focused checks and four CLI
+integration cases pass, using actual native Kernel modules with derived flat
+fixtures. Corrupt boot metadata and a changed provider byte both reject.
+These fixtures do not qualify full native generations. Full C1-C5 remain open.

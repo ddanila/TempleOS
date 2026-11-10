@@ -76,3 +76,19 @@ python3 tools/test-i386-native-kernel-boot.py IMAGE EMITTED_KERNEL --out BOOT
 The current candidate also passes isolated normal8MiB startup in54.512s
 (module-zero-startup-8m-v1), with live WinMgr, exact welcome/42 pixels and
 unchanged input pins. This is the existing60-second baseline subgate only.
+
+Generation reproducibility can explicitly declare `--allow-kernel-build-date`
+in `tools/test-i386-native-generations.py` or `tools/audit-i386-generations.py`.
+The default still requires exact bytes. The opt-in locates the unique exported
+Kernel date, requires positive/increasing dates and the corresponding exact
+flat-image value, and normalizes only those eight bytes in each artifact.
+All other module/flat bytes remain exact. Each actual installed boot area is
+verified independently, including checksum/padding; normalized boot areas must
+then match, allowing only the date and its derived checksum to differ.
+
+`python3 tools/test-i386-generation-dates.py` passes five focused checks.
+`build/generation-date-audit-v1/result.json` also exercises the CLI with the two
+real native Kernel modules and derived flat-image fixtures: strict comparison
+rejects their dates, declared comparison passes, and corrupted boot metadata
+or a changed resident-provider byte rejects. These are comparator fixtures with
+cross-built resident providers, not completed native generations.

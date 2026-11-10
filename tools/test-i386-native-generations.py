@@ -37,6 +37,8 @@ def main():
                         help='Per-module native rebuild limit in seconds')
     parser.add_argument('--retained-build-ram-mib', type=int, choices=(16, 64, 128), default=16,
                         help='Guest RAM for the generation-two retained build (default: 16 MiB)')
+    parser.add_argument('--allow-kernel-build-date', action='store_true',
+                        help='Declare only the exported eight-byte Kernel date nondeterministic in the generation comparison')
     args = parser.parse_args()
     if args.build_command_timeout <= 0:
         parser.error('Build command timeout must be positive')
@@ -64,6 +66,7 @@ def main():
               'accel': args.accel, 'cpu': args.cpu, 'qmp_stdio': args.qmp_stdio, 'welcome': args.welcome,
               'build_command_timeout': args.build_command_timeout,
               'retained_build_ram_mib': args.retained_build_ram_mib,
+              'allow_kernel_build_date': args.allow_kernel_build_date,
               'input_sha256': inputs,
               'source_sha256': sources, 'stages': {}}
 
@@ -129,7 +132,8 @@ def main():
             '--ram-mib', args.retained_build_ram_mib, *runtime)
         second, _ = generation(2, built)
         run('generation-identity', 'audit-i386-generations.py', '--first', first / 'target.img',
-            '--second', second / 'target.img', '--out', out / 'generation-identity')
+            '--second', second / 'target.img', '--out', out / 'generation-identity',
+            *(['--allow-kernel-build-date'] if args.allow_kernel_build_date else []))
         report.update(result='pass', stage='complete')
     except Exception as error:
         report.update(result='fail', error=str(error))
