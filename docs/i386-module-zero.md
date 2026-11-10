@@ -92,3 +92,17 @@ real native Kernel modules and derived flat-image fixtures: strict comparison
 rejects their dates, declared comparison passes, and corrupted boot metadata
 or a changed resident-provider byte rejects. These are comparator fixtures with
 cross-built resident providers, not completed native generations.
+
+The self-host installer now also rebuilds the delivered temporary
+`CompilerProgramRuntimeProbe` module, alongside the six flat-kernel modules
+and nine previously rebuilt providers. Previously that diagnostic module could
+remain cross-built while generation comparison included its unchanged bytes.
+The installer records its native origin and SHA-256; the generation runner
+requires all three complete module sets before accepting an installed result.
+
+`build/module-zero-native-auxiliary-v1/result.json` verifies the actual public
+native build of that probe at64MiB:393055 bytes, all98 named function/data
+exports match the cross reference, exact fresh42 pixels, unchanged prior file
+tree and unchanged inputs. The probe's diagnostic vectors have not been run by
+this build test. Installation and complete native generations remain separate
+required gates; the nine-provider native build is still in progress.

@@ -29979,3 +29979,21 @@ also match, including all unrelated metadata. Five focused checks and four CLI
 integration cases pass, using actual native Kernel modules with derived flat
 fixtures. Corrupt boot metadata and a changed provider byte both reject.
 These fixtures do not qualify full native generations. Full C1-C5 remain open.
+
+### C5: rebuild the delivered temporary program probe as well
+
+The self-host installer previously rebuilt six boot modules after the nine
+providers but retained the cross-built CompilerProgramRuntimeProbe. It now
+builds that temporary module on the guest too and records its native hash.
+The generation runner requires explicit complete retained, flat and auxiliary
+module sets, rejecting older results that omit a delivered module's native
+origin. This closes a qualification-provenance gap without claiming a complete
+native generation.
+
+The actual public native probe build passes at64MiB in
+module-zero-native-auxiliary-v1:393055 bytes, all98 named function/data exports
+match the reference, fresh42 pixels and all prior files/input pins stay exact.
+This tests building/persisting the probe, not executing its diagnostic vectors.
+The two existing retained-provenance guard tests and syntax checks pass.
+Nine-provider building, full native installation, both complete generations
+and the application/profile suite remain open; full C1-C5 stay2/686.

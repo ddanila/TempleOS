@@ -108,6 +108,11 @@ def main():
             '--command-timeout', args.build_command_timeout, *runtime)
         if result.get('retained_origin') != 'guest-built supplied inputs':
             raise ValueError('Native generation used unqualified retained providers')
+        if (set(result.get('guest_built_retained_modules', [])) != expected or
+                set(result.get('guest_built_flat_modules', [])) !=
+                {'Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry'} or
+                result.get('guest_built_auxiliary_modules') != ['CompilerProgramRuntimeProbe']):
+            raise ValueError('Native generation omitted a guest-built delivered module')
         audit = out / (prefix + '-audit')
         run(audit.name, 'audit-i386-guest-image.py', '--source', native / 'target.img',
             '--installed', native / 'target.img', '--kernel-module-path', '/Modules/I386/Kernel.t32m',

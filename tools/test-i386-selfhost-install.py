@@ -10,6 +10,7 @@ import shutil
 
 ROOT = Path(__file__).resolve().parent.parent
 FLAT = ('Kernel', 'SysTry', 'TaskContext', 'ExceptContext', 'IrqEntry', 'ExceptionEntry')
+AUXILIARY = ('CompilerProgramRuntimeProbe',)
 RETAINED = ('Startup', 'MemoryRuntime', 'FileRuntime', 'ConsoleRuntime',
             'CompilerProbe', 'CompilerRuntime', 'BuildRuntime', 'DocDiagnosticRuntime', 'EditorRuntime')
 BOOT_AREA = 2048 * 512
@@ -106,7 +107,7 @@ def main():
             'install_result_sha256': hashlib.sha256(install_bytes).hexdigest()}
     commands = [(f'I386BuildModule("D:/Kernel/I386/{name}.HC",'
                  f'"D:/Modules/I386/{name}.t32m",TRUE)>0;', ['1'])
-                for name in FLAT]
+                for name in FLAT + AUXILIARY]
     commands += [(
         'I386BuildBootImage("D:/Modules/I386/Kernel.t32m",'
         '"D:/Modules/I386/","D:/Probe/GuestBoot.bin")>0;', ['1']),
@@ -128,6 +129,10 @@ def main():
     flat_modules = files(target, flat_paths)
     if set(flat_modules) != flat_paths:
         raise ValueError('A guest-built flat-kernel module is missing')
+    auxiliary_paths = {f'/Modules/I386/{name}.t32m' for name in AUXILIARY}
+    auxiliary_modules = files(target, auxiliary_paths)
+    if set(auxiliary_modules) != auxiliary_paths:
+        raise ValueError('A guest-built auxiliary module is missing')
     flat = files(target, {'/Probe/GuestBoot.bin'}).get('/Probe/GuestBoot.bin')
     if not flat:
         raise ValueError('Guest-linked boot image is missing or oversized')
@@ -151,6 +156,9 @@ def main():
     result = {'result': 'pass', 'flat_bytes': len(flat),
               'flat_sha256': hashlib.sha256(flat).hexdigest(),
               'guest_built_flat_modules': list(FLAT),
+              'guest_built_auxiliary_modules': list(AUXILIARY),
+              'auxiliary_module_sha256': {name: hashlib.sha256(auxiliary_modules[
+                  f'/Modules/I386/{name}.t32m']).hexdigest() for name in AUXILIARY},
               'guest_built_retained_modules': [] if args.cross_retained else list(RETAINED),
               'retained_origin': 'cross-built development inputs' if args.cross_retained else 'guest-built supplied inputs',
               'source_disk_sha256': hashlib.sha256(original).hexdigest(),
