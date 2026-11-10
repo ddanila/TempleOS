@@ -1,0 +1,32 @@
+{
+  "result": "pass",
+  "scope": "Resident optimizer binding publication and native callback routing, exact packaging, boot/module audits and scoped regression receipts; no public facade reuse or C5 qualification",
+  "runs": {
+    "user8": {
+      "result": "pass",
+      "ram_mib": 8,
+      "receipt_sha256": "224932324a7ef43d978c1bf73f7023b37008ad50b29419ed0b68823177ba1179",
+      "command_sha256": "b3e8f52545b6d775f70dd515488a41cb4e4963867d369f4f7d601e7367c8d521"
+    },
+    "optimizer16": {
+      "result": "pass",
+      "ram_mib": 16,
+      "receipt_sha256": "3c95204d3be1e3572addde0e03e4e837831e4000df6439b89ca25aadaca3d594",
+      "command_sha256": "2ef55fb4c649cc091c27724359d0c28fa980d9b050fb02d96b0bbffd5e90fc31"
+    },
+    "diagnostic16": {
+      "result": "pass",
+      "ram_mib": 16,
+      "receipt_sha256": "e20fb240f464364cc28cfbd1b864173617f98475f98fbff7c4046b46c84e7218",
+      "command_sha256": "2868df9609793de2b3d7f14e09e29b6d169f40937438c83a480360371b2199a3"
+    }
+  },
+  "candidate_sha256": "3c062f8d3885471532295fdbfbbb42f9149089109c7357e419c898e9ec1de893",
+  "native_policy_log_sha256": "586b2a10d3c8b8e27a6c3682453b569da91b146087672ee1c79dd5d4234e5acf",
+  "old_export_indices_preserved": true,
+  "module_delta_bytes": {
+    "Kernel": 0,
+    "CompilerRuntime": 200,
+    "CompilerProgramRuntimeProbe": 5817
+  }
+}

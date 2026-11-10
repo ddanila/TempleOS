@@ -30905,3 +30905,15 @@ original-reference optimizer16 and both native diagnostic rounds16. A focused
 classic-host fixture captures exact callback/default routing and target-i386
 bypass counters. See `docs/i386-optimizer-policy-core.md` for evidence, capacity
 measurement limits and remaining integration/resource requirements.
+
+### C4: publish and invoke the resident optimizer policy binding
+
+Appended `_I386_OPT_CORE_POLICY` at retained compiler export index 6, preserving
+indices 0–5 and service layout. The matching kernel publishes seven checked
+exports. A new reclaimable native program diagnostic resolves and invokes the
+binding with invocation-local branch counters, checks both branch kinds over
+three passes plus the existing target-i386 bypass, and verifies no heap change.
+Both native rounds16, production User8 and the original-reference optimizer16
+pass. See `docs/i386-resident-optimizer-binding.md` for pinned image/source/boot
+checks. The public facade is not switched; helper/metadata semantics, original
+User8 and C5 qualification remain open.

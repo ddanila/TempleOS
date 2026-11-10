@@ -66,10 +66,14 @@ U32 compiler_runtime_version=I386_COMPILER_SERVICES_VERSION;
 extern Bool I386MathBind(CHashTable *symbols);
 extern U0 I386FrontendUndefined();
 extern U0 I386PublicBackendCore(CI386Backend *backend,I64 bytes);
+#include "/Compiler/OptPass012.HH"
 Bool I386CompilerRuntimeExportAt(I64 index,CI386ModuleBinding *binding)
 {
-  if(index<0 || index>5 || !binding) return FALSE;
-  if(index==5) {
+  if(index<0 || index>6 || !binding) return FALSE;
+  if(index==6) {
+    binding->name="_I386_OPT_CORE_POLICY";
+    binding->address=(&OptPass012CorePolicy+0)(U64);
+  } else if(index==5) {
     binding->name="_I386_BACKEND_CORE";
     binding->address=(&I386PublicBackendCore+0)(U64);
   } else if(index==4) {

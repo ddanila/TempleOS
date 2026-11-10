@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "scope": "Existing complete program/compiler diagnostic probes twice, 386 without FPU at 16 MiB; exact boundary/completion markers, DocAllocationCheck and fresh arithmetic",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/resident-opt-binding-v3/candidate.img": "3c062f8d3885471532295fdbfbbb42f9149089109c7357e419c898e9ec1de893",
+    "tools/build-i386-kernel.py": "3d2b35de7a1812449065eaa2227b0b0c42f60f65cc410e8c691a85163d5264ab",
+    "tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463",
+    "Compiler/OptPass012Core.HC": "75384e7955f97cbceb86dc4ea881a1b973089035d3d4c9d70138ca4d516b0933",
+    "Compiler/OptPass012.HH": "a43156e6144f8714ac5784da73b8bc7ad5ca9dac3a81e0ea505a8f5d898566e4"
+  },
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 16,
+    "startup_status": "ok",
+    "boot_mode": "diagnostic",
+    "startup_seconds": 98.79985047783703,
+    "commands": 2,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "diagnostic_image_sha256": "92ee58a818b2ad108bd8f8bfbe3846ccd3d111786aacc48cb7c8dfbcd5322c31",
+  "inputs_unchanged": true
+}
