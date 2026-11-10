@@ -1,0 +1,258 @@
+--- a/Compiler/PublicControlCore.HC
++++ b/Compiler/PublicControlCore.HC
+@@ -43,6 +43,9 @@
+     buf=CAlloc(8);
+   LexFileSeed(tmpf,buf);
+   cc->cur_buf_ptr=buf;
++#ifdef CMP_CTRL_REGISTER
++  CMP_CTRL_REGISTER(cc);
++#endif
+   return cc;
+ }
+ 
+@@ -51,6 +54,9 @@
+   CLexFileRelease owner;
+   owner.context=0; owner.allocation=&LexFileSystemFree; owner.document=&LexFileSystemDocDel;
+   CmpCtrlRelease(cc,&owner);
++#ifdef CMP_CTRL_FORGET
++  CMP_CTRL_FORGET(cc);
++#endif
+ }
+ 
+ I64 CmpCtrlSize(CCmpCtrl *cc)
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -422,11 +422,13 @@
+ #include "/Kernel/BlkDev/DriveReleaseCore.HC"
+ #include "/Kernel/BlkDev/BlockDevReleaseCore.HC"
+ extern U0 NativeRenderOwnerRetire(CI386Task *task);
++extern U0 NativePublicControlOwnerRetire(CI386Task *task);
+ U0 NativeStorageOwnerRetire(CI386Task *task)
+ {
+   if(task!=I386TaskSelf)throw('Task',TRUE);
+   DrvsRelease;BlkDevsRelease;
+   NativeRenderOwnerRetire(task);
++  NativePublicControlOwnerRetire(task);
+ }
+ import U32 char_bmp_filename[16];
+ #include "/Kernel/BlkDev/FileNameCheckCore.HC"
+@@ -1826,6 +1828,102 @@
+ 
+ import U32 char_bmp_alpha_numeric_no_at[16];
+ #define CMP_CTRL_TARGET_FLAGS CCF_TARGET_I386
++//Public controls retain their original allocation size and allocator domain.
++class CNativePublicControlOwner {
++  CNativePublicControlOwner *next;
++  CCmpCtrl *control;
++  CI386Task *task;
++};
++CNativePublicControlOwner *native_public_controls;
++U0 NativePublicControlRegister(CCmpCtrl *cc)
++{
++  CNativePublicControlOwner *record=CAlloc(sizeof(CNativePublicControlOwner));
++  U32 irq=I386IrqSave;
++  record->control=cc;record->task=I386TaskSelf;
++  record->next=native_public_controls;native_public_controls=record;
++  I386IrqRestore(irq);
++}
++U0 NativePublicControlForget(CCmpCtrl *cc)
++{//Called after the ordinary release, without dereferencing the freed control.
++  CNativePublicControlOwner *record,*previous=NULL;
++  U32 irq=I386IrqSave;
++  record=native_public_controls;
++  while(record && record->control!=cc){previous=record;record=record->next;}
++  if(!record)KernelStop;
++  if(previous)previous->next=record->next;else native_public_controls=record->next;
++  I386IrqRestore(irq);Free(record);
++}
++CNativePublicControlOwner *NativePublicControlFind(CCmpCtrl *cc,CI386Task *task)
++{
++  CNativePublicControlOwner *record=native_public_controls;
++  while(record && (record->control!=cc || record->task!=task))record=record->next;
++  return record;
++}
++U0 NativePublicControlOwnerRetire(CI386Task *task)
++{//Committed Exit only, after descendants and render borrowers have retired.
++  CNativePublicControlOwner *record;
++  CCmpCtrl *cc,*scan,*head=&task->next_cc;
++  Bool found;
++  CTask *children=(&task->next_child_task)(U8 *)-offset(CTask.next_sibling_task);
++  I64 public_count=0,queue_count=0,foreign_count=0;
++  U32 irq=I386IrqSave;
++  if(task->next_child_task!=children){I386IrqRestore(irq);return;}
++  for(record=native_public_controls;record;record=record->next)
++    if(record->task==task)public_count++;
++  if(!public_count){I386IrqRestore(irq);return;}
++  if(task!=I386TaskSelf || task->compiler_busy)goto public_control_retire_failed;
++  //Bounded preflight: preserve every owned record if links or native cleanup fail.
++  for(cc=task->next_cc;cc!=head;cc=cc->next) {
++    if(++queue_count>public_count+task->active_controls || !cc ||
++        !cc->next || !cc->last || cc->next->last!=cc || cc->last->next!=cc)
++      goto public_control_retire_failed;
++    if(!NativePublicControlFind(cc,task))foreign_count++;
++  }
++  if(foreign_count!=task->active_controls)goto public_control_retire_failed;
++  //A linked public object must belong to this exact task queue. Do not
++  //detach controls borrowed by another task or linked into an unrelated list.
++  for(record=native_public_controls;record;record=record->next)
++    if(record->task==task) {
++      cc=record->control;
++      if(cc->next!=cc || cc->last!=cc) {
++        found=FALSE;
++        for(scan=task->next_cc;scan!=head;scan=scan->next)
++          if(scan==cc){found=TRUE;break;}
++        if(!found)goto public_control_retire_failed;
++      }
++    }
++  //Remove only explicitly registered public nodes. The native drain then
++  //validates and frees its own domain; public objects remain owned until success.
++  for(record=native_public_controls;record;record=record->next)
++    if(record->task==task) {
++      cc=record->control;
++      if(cc->next!=cc || cc->last!=cc) {
++        if(!cc->next || !cc->last || cc->next->last!=cc || cc->last->next!=cc)
++          goto public_control_retire_failed;
++        QueRem(cc);QueInit(cc);
++      }
++    }
++  I386IrqRestore(irq);
++  if(task->compiler_cleanup && !(*task->compiler_cleanup)(task)) {
++    task->compiler_cleanup_failed=TRUE;return;
++  }
++  if(task->active_controls || task->next_cc!=head || task->last_cc!=head) {
++    task->compiler_cleanup_failed=TRUE;return;
++  }
++  while(TRUE) {
++    irq=I386IrqSave;record=native_public_controls;
++    while(record && record->task!=task)record=record->next;
++    cc=NULL;if(record)cc=record->control;
++    I386IrqRestore(irq);
++    if(!cc)return;
++    CmpCtrlDel(cc);
++  }
++public_control_retire_failed:
++  task->compiler_cleanup_failed=TRUE;I386IrqRestore(irq);
++}
++#define CMP_CTRL_REGISTER NativePublicControlRegister
++#define CMP_CTRL_FORGET NativePublicControlForget
++
+ #include "/Compiler/PublicControlCore.HC"
+ #include "/Compiler/AOTStoreCore.HC"
+ #include "/Compiler/I386DataRangeCore.HC"
+@@ -2059,6 +2157,17 @@
+   NativePrsSupportLoad;invoke=native_jit_support.stream;(*invoke)(cc);
+ }
+ 
++I64 NativeTerminalExecute(CCmpCtrl *cc)
++{
++  CHashFun *entry;
++  I64 (*invoke)(CCmpCtrl *cc);
++  if(!cc || !cc->lex_include_stk)throw('Compiler',TRUE);
++  NativePrsSupportLoad;
++  entry=HashFind("ExeCmdLine",native_jit_support.symbols,HTT_FUN);
++  if(!entry || !entry->exe_addr)throw('CmdLine',TRUE);
++  invoke=entry->exe_addr;return (*invoke)(cc);
++}
++
+ //Assembly is independent of expression publication and loads only when requested.
+ U0 NativeAsmSupportLoad()
+ {
+--- a/Kernel/I386/KeyDevRuntime.HC
++++ b/Kernel/I386/KeyDevRuntime.HC
+@@ -8,8 +8,13 @@
+ }
+ #define KEYDEV_SCAN_CODE (console_config->reader->state.keys.locks)
+ #include "/Kernel/KeyDevOutputCore.HC"
++extern Bool NativeTerminalQueuedKey(CI386KeyEvent *event);
+ I64 ScanMsg(I64 *a=NULL,I64 *b=NULL,I64 mask=~1,CTask *task=NULL)
+ {
++  CI386KeyEvent event;
++  if((!task || task==Fs) && (mask&(1<<MSG_KEY_DOWN)) && NativeTerminalQueuedKey(&event)) {
++    if(a)*a=event.ch;if(b)*b=event.scan;return MSG_KEY_DOWN;
++  }
+   return (*native_public_scan_msg)(a,b,mask,task);
+ }
+ #include "/Kernel/KeyScanCore.HC"
+--- a/Kernel/I386/Terminals.HC
++++ b/Kernel/I386/Terminals.HC
+@@ -338,6 +338,29 @@
+   } while(terminal!=start);
+   return TRUE;
+ }
++extern I64 NativeTerminalExecute(CCmpCtrl *cc);
++U0 NativeOriginalTerminalInput()
++{//Terminal key-input-execute loop.
++  CCmpCtrl *cc;
++  CDoc *doc;
++  Bool cont=TRUE;
++  do {
++    cc=CmpCtrlNew(,CCF_CMD_LINE|CCF_PMT|CCF_QUESTION_HELP);
++    QueIns(cc,Fs->last_cc);
++    try {
++      Lex(cc);
++      NativeTerminalExecute(cc);
++      cont=Bt(&cc->flags,CCf_PMT);
++      QueRem(cc);
++      CmpCtrlDel(cc);
++    } catch {
++      if ((doc=Fs->put_doc) && doc->doc_signature==DOC_SIGNATURE_VAL)
++	DocUnlock(doc);
++      PutExcept;
++    }
++  } while (cont);
++}
++
+ U0 NativeUserTaskCont()
+ {
+   CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
+@@ -347,7 +370,10 @@
+   terminal->running=TRUE;
+   do {
+     retry=FALSE;
+-    try { NativeTerminalInput; }
++    try {
++      if(terminal!=native_terminal_root)NativeOriginalTerminalInput;
++      else NativeTerminalInput;
++    }
+     catch {
+       //Like UserTaskCont, keep the user's task and definitions after a break.
+       I386TaskSelf->catch_except=TRUE;
+@@ -399,9 +425,10 @@
+ U0 NativeUserCmdLine(I64 dummy=0) { NativeUserConsoleStart(FALSE); }
+ U0 NativeUserHotkey(U8 *data) { NativeUserConsoleStart(TRUE); }
+ 
+-I64 NativeTerminalInputKey(CI386KeyEvent *event)
++Bool NativeTerminalQueuedKey(CI386KeyEvent *event)
+ {
+   CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
++  if(!terminal)return FALSE;
+   CNativeTextInput *input;
+   I64 ch;
+   U32 flags;
+@@ -415,11 +442,17 @@
+       if(!terminal->input_head) terminal->input_tail=NULL;
+     } else input=NULL;
+     event->type=MSG_KEY_DOWN; event->ch=ch; event->scan=0;
++    I386TaskSelf->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_AWAITING_MSG);
+     I386IrqRestore(flags);
+     if(input) { Free(input->text); Free(input); }
+     return 1;
+   }
+   I386IrqRestore(flags);
++  return FALSE;
++}
++I64 NativeTerminalInputKey(CI386KeyEvent *event)
++{
++  if(NativeTerminalQueuedKey(event))return 1;
+   return NativeReadKey(console_config->reader,event,FALSE);
+ }
+ U0 NativeTaskWait(CTask *task=NULL,Bool cmd_line_pmt=FALSE)
+@@ -473,7 +506,7 @@
+   if(terminal->input_tail) terminal->input_tail->next=input;
+   else terminal->input_head=input;
+   terminal->input_tail=input;
+-  task->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_CMD_LINE_PMT);
++  task->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_CMD_LINE_PMT|1<<TASKf_AWAITING_MSG);
+   I386SchedWake(task(CI386Task *)->owner,task);
+   I386IrqRestore(irq);
+ }

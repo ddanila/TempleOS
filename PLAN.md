@@ -30737,3 +30737,23 @@ shared decoder's default bootstrap mode. Receipts and reproduction commands
 are in `docs/i386-live-user-prompt.md`. Public compiler-control ownership and
 mixed-queue teardown remain the next implementation gap; clearing task validity
 or queue pointers is insufficient. C1-C5 and inventory 2/686 remain open.
+
+
+### C2 public compiler-control ownership prototype reclaims User storage
+
+A disposable implementation now tracks public CCmpCtrl ownership separately,
+without changing its allocation size/domain. Committed Exit waits for descendants
+and render retirement, preflights exact queue membership, detaches only owned
+public controls, drains validated native controls, then invokes ordinary shared
+public destructors. Validation failure retains ownership and marks cleanup
+failed. Optional hooks preserve shared source behavior outside native compilation.
+
+The corrected V3 cross-build, complete386 audit and packaging checks pass. The
+versioned full prompt plus physical Exit test passes: no child managed record
+remains and its former address lies in a free heap block. All 24 public lexer
+checks pass. The existing 8 MiB User regression still rejects an 80-byte public
+allocation while loading compiler support. The patch is preserved, not applied
+to production. Broader interruption/error/borrowed-control/corrupt-queue coverage
+and minimal-memory support remain required. See
+`docs/i386-public-control-ownership.md` for implementation, failed variant and
+receipt identities. C1-C5, inventory 2/686 and startup qualification remain open.

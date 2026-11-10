@@ -111,3 +111,10 @@ V7 evidence is under `build/original-user-loop-prototype-v7`:
 The next work must resolve memory, public compiler-control lifetime, interruption
 and recovery without replacing the original workflow with formatting-only fixes.
 C1-C5 and inventory2/686 remain open; the production60s startup gate remains red.
+
+
+A later explicit public-control ownership prototype resolves the ordinary Exit
+physical-reclamation failure at 64 MiB while retaining the full prompt oracle
+and all 24 public lexer checks. It still fails the 8 MiB allocation gate. See
+`docs/i386-public-control-ownership.md` and its separate reviewable patch;
+production and compatibility qualification remain unchanged.
