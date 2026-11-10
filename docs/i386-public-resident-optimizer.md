@@ -178,7 +178,10 @@ used/size 0x66F9E8/0x66FA00, largest payload 8 bytes, allocations 0x4C86. The
 reported caller PCs 0x1967AC and 0x19A5CE map to exported functions
 I386LexDefinePublish+0x50C and I386LexNextWithIncludes+0xFD6 using the actual loaded
 CompilerRuntime base plus eight and kind-1 function exports. This moves past the
-previous public Doc allocation but does not qualify original-User8. The 64 MiB
-recovery job was launched separately and has no terminal receipt at this checkpoint;
-its result must be inspected before drawing compatibility conclusions. The patch
+previous public Doc allocation but does not qualify original-User8. The separately run 64 MiB recovery job subsequently passed exact prompt
+documents, throw and undefined-symbol recovery, physical Ctrl+Alt+C, fresh input
+and physical child reclamation. Its actual QEMU command is KVM 486,-fpu with
+64 MiB; inputs are unchanged and exactly one resident optimizer marker occurs.
+`build/compiler-raw-headers-v2/recovery-audit.json` pins that terminal receipt and
+command. This is scoped recovery evidence, not a passing User8 gate. The patch
 remains a prototype and is not applied to production sources.

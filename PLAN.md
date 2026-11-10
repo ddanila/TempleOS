@@ -30967,3 +30967,15 @@ Preserve the patch and build/compiler-raw-headers-v2 evidence; no production
 integration or passing 8 MiB claim. The separately running recovery64 job still
 requires its terminal result. Full C1–C5, inventory and native generations remain
 open. See docs/i386-public-resident-optimizer.md for ownership and exact scope.
+
+### C2/C4: raw declaration prototype passes full original-User recovery64
+
+The previously running raw-header recovery test is terminal PASS: exact prompt
+documents, throw/undefined-symbol/physical Ctrl+Alt+C recovery, fresh input and
+physical child reclamation. Actual QEMU command confirms KVM 486,-fpu at 64 MiB,
+unchanged inputs and one resident optimizer publication. The small recovery audit
+pins the terminal receipt and command; full evidence remains under
+build/compiler-raw-headers-v2/recovery64. User8 still fails on macro allocation.
+A follow-up cross-built Console variant removes nested ExePutS2 during header
+loading; its User8 job is running under build/compiler-raw-headers-v3 and must
+be inspected before qualification. No milestone is marked complete.

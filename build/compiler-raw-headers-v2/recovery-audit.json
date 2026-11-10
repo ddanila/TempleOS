@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "scope": "Original-User raw CompilerA loading recovery at 64 MiB only; not User8 or full milestone qualification",
+  "receipt_sha256": "c7e064372a56cdcb9df26017f0a7ccb6031e834c70949f36fb833d3e676e9cf2",
+  "command_sha256": "ed2c5860875873099062d94b819565d7c15aaf883f9c5fb09c80d4438a95dddf",
+  "image_sha256": "5dc982a84ea8346f8035986ff21e90dad90f35ea8e861c751d2ee03f1cebb5a8",
+  "prompt_documents_pass": true,
+  "recovery_pass": true,
+  "physical_retirement_pass": true,
+  "resident_loads": 1,
+  "ram_mib": 64,
+  "cpu": "486,-fpu"
+}
