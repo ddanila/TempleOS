@@ -115,3 +115,38 @@ The production full image SHA256 is
 This is an intermediate performance improvement with functional verification,
 not startup/release/C1-C5 qualification. A further paused production profile is
 queued only after the isolated run has ended, to identify the remaining costs.
+
+## Production profile attribution
+
+The queued production profile completed with659 samples and both successful
+startup markers. Its retained disk is unchanged. This paused run is statistical
+attribution, not timing or startup-budget acceptance. Reproduce the checked
+comparison from raw samples with:
+
+```sh
+python3 tools/summarize-i386-boot-profile.py build/default-home-minimal-boot-profile-v1/profile build/parser-selector-production-profile-v1/profile
+```
+
+The summarizer reconstructs every phase/symbol and complete captured-stack
+counter and requires exact agreement with each profiler report. It also requires
+successful startup markers and the recorded unchanged-disk check. Input hashes
+are retained in `build/parser-selector-production-profile-v1/comparison.json`.
+An inconsistent sample-count report was independently confirmed to be rejected.
+
+Root-header samples fell from434 to313; startup-source samples from279 to234.
+These counts must not be interpreted as elapsed-time ratios. The new selector
+occupies5 root-header and1 startup-source samples. Remaining root-header costs
+include96 HeapScan,64 HeapFree and54 HeapScanSelect samples. Of the96 HeapScan
+samples,67 have the immediate HeapSize / CmpControlValid / CmpCodeOwner caller
+chain. That chain also accounts for47 of102 startup-source HeapScan samples.
+Thus repeated compiler-control validation is the next concrete investigation,
+alongside free/selection scans; the parser selector itself is no longer the
+dominant sampled loop.
+
+`I386CmpCodeOwner` currently establishes full arena validity through
+`I386CmpControlValid`, then uses boundary-checked known-size lookup for the task
+scope under IRQ exclusion. Replacing that initial validation with a cached or
+unchecked header test would weaken corruption detection. Any next optimization
+must retain whole-arena validation at exposed boundaries, actual block-boundary
+checks, and rejection of later-block corruption and inconsistent counters. No
+such validation change is included here. The169.4702s timing failure remains.

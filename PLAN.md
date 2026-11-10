@@ -30564,3 +30564,16 @@ The180-second observation allowance is unchanged too. The aggregate remains red;
 functional success is not C5 completion. A further paused profile begins only
 after the isolated test ends. Full suite, apps, original terminal integration,
 resource/timing and all C1-C5 remain open2/686.
+
+### C5 production profile: remaining compiler-control validation cost
+
+The queued production profile completed659 samples with successful startup
+markers and unchanged input. Raw phase and full captured-stack counters were
+independently reconstructed by `tools/summarize-i386-boot-profile.py`; retained
+comparison is `build/parser-selector-production-profile-v1/comparison.json`.
+The selector now has only6 samples. Full HeapScan remains prominent:67 root
+header and47 startup-source samples traverse HeapSize/CmpControlValid/
+CmpCodeOwner. This identifies the next investigation without treating sampled
+counts as timings. Preserve complete heap corruption detection; cached header
+checks are not an acceptable substitute. See the startup-selector document.
+The169.4702s startup remains over60s; C1-C5 and inventory2/686 remain open.
