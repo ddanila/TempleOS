@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "scope": "Diagnostic evidence integrity only; expected 8 MiB User startup remains FAIL",
+  "files_sha256": {
+    "result.json": "2953370322f03a5503f4b9ed2ea7b468e08fd942977a3e9ca28813a0dcccdc54",
+    "packaging.json": "86b48a33aa0a121c4d66d16c04344ecc0b919da8e1e8e1d2aee19225a0f5ca09",
+    "user8/result.json": "d71fc733cf588fdb64be31dbefe2e3f8978d6748767bcaf70b0a9dfcb3ef224d",
+    "user8/qemu/debug.log": "14aa4ac158afec409138311301697e581a7afeaf9db8db1e7ad5bcc8d8ac3519"
+  },
+  "last_include": "C:/Compiler/IntermediateOpcodes.HH",
+  "allocation_bytes": 80,
+  "candidate_sha256": "2d131351c78c13c9f922676875771310b988bf250ef7fcb567a448933d0840c4"
+}

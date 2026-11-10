@@ -30851,3 +30851,13 @@ then fails an 80-byte public allocation before optimizer publication. That
 allocation still needs profiling. See `docs/i386-private-compiler-headers.md`.
 No interface, case, stack, memory or startup gate was reduced; full C1-C5,
 inventory 2/686 and current-source native generations remain open.
+
+### C2/C4: locate the remaining original-User 8 MiB document failure
+
+The bounded caller and include-filename diagnostics now identify the 80-byte
+public allocation as DocEntryNewBase under DocLoad, while opening
+Compiler/IntermediateOpcodes.HH through CompilerA.HH during optimizer loading.
+See `docs/i386-support-allocation-trace.md` and its diagnostic patch. The fresh
+8 MiB regression deliberately remains FAIL; no resource gate or compatibility
+scope changed. Complete compiler declarations and user DolDoc semantics remain
+required. Production integration, broader inventory and C5 remain open.

@@ -1,0 +1,50 @@
+[
+  {
+    "ip": "0x2b7a34",
+    "module": "MemoryRuntime",
+    "function": "MemoryAlloc",
+    "offset": "0x44"
+  },
+  {
+    "ip": "0x2b813e",
+    "module": "MemoryRuntime",
+    "function": "MemoryCAlloc",
+    "offset": "0x36"
+  },
+  {
+    "ip": "0x314bac",
+    "module": "ConsoleRuntime",
+    "function": "NativeDocCAlloc",
+    "offset": "0x164"
+  },
+  {
+    "ip": "0x316876",
+    "module": "ConsoleRuntime",
+    "function": "DocEntryNewBase",
+    "offset": "0x4e"
+  },
+  {
+    "ip": "0x3c6860",
+    "module": "ConsoleRuntime",
+    "function": "DocPutS",
+    "offset": "0x1c38"
+  },
+  {
+    "ip": "0x4e8af7",
+    "module": "ConsoleRuntime",
+    "function": "DocLoad",
+    "offset": "0xcf"
+  },
+  {
+    "ip": "0x48b57e",
+    "module": "ConsoleRuntime",
+    "function": "NativeIncludeDocumentCreate",
+    "offset": "0x18e"
+  },
+  {
+    "ip": "0x2e885d",
+    "module": "FileRuntime",
+    "function": "I386LexTaskFileInclude",
+    "offset": "0x645"
+  }
+]

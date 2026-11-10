@@ -1,0 +1,45 @@
+--- a/Kernel/I386/MemoryRuntime.HC
++++ b/Kernel/I386/MemoryRuntime.HC
+@@ -13,6 +13,7 @@
+ #include "/Kernel/I386/Cpu.HH"
+ #include "/Kernel/I386/KernelSymbols.HH"
+ #include "/Kernel/I386/MemoryPublic.HH"
++#include "/Kernel/I386/Frame.HH"
+ #include "/Kernel/I386/HashPublic.HH"
+ #include "/Kernel/TimeTypes.HH"
+ #include "/Kernel/DisplayFlags.HH"
+--- a/Kernel/I386/MemoryPublic.HC
++++ b/Kernel/I386/MemoryPublic.HC
+@@ -72,6 +72,22 @@
+     KernelHex(hc->used_u8s); KernelLog(" "); KernelHex(hc->alloced_u8s);
+     KernelLog(" "); KernelHex(hc->bp->used_u8s); KernelLog(" ");
+     KernelHex(hc->bp->alloced_u8s); KernelLog("\n");
++    CI386Task *trace_task=I386TaskSelf;
++    CI386Frame *trace_frame=GetRBP,*trace_parent;
++    U64 trace_base=(&trace_task->stk->stk_base+0)(U64);
++    U64 trace_end=trace_base+trace_task->stk->stk_size;
++    I64 trace_depth;
++    KernelLog("PUBLIC ALLOC OWNER ");KernelHex(trace_task);KernelLog(" ");KernelHex(hc);KernelLog("\n");
++    KernelLog("PUBLIC ALLOC CALLERS ");
++    for(trace_depth=0;trace_depth<8;trace_depth++) {
++      if(!trace_frame || (trace_frame+0)(U64)&3 ||
++          (trace_frame+0)(U64)<trace_base || (trace_frame+0)(U64)>trace_end-8)break;
++      KernelHex((trace_frame->return_address+0)(U64));KernelLog(" ");
++      trace_parent=trace_frame->parent;
++      if((trace_parent+0)(U64)<(trace_frame+0)(U64)+8)break;
++      trace_frame=trace_parent;
++    }
++    KernelLog("\n");
+ #endif
+     throw('OutMem',TRUE);
+   }
+--- a/Kernel/I386/TaskFileRead.HC
++++ b/Kernel/I386/TaskFileRead.HC
+@@ -85,6 +85,7 @@
+           try {
+             source=task_public_read(heap,name,&size,0);
+             if(source && callbacks.create && callbacks.destroy) {
++              KernelLog("INCLUDE DOC ");KernelLog(name);KernelLog("\n");
+               doc=(*callbacks.create)(name,source,size);
+               if(doc && I386LexIncludeDocTake(heap,cc,name,doc,callbacks.destroy,0)) {
+                 doc=0;result=TRUE;
