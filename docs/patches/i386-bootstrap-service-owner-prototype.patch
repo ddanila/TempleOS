@@ -1,0 +1,23 @@
+--- a/Kernel/I386/WindowManager.HC
++++ b/Kernel/I386/WindowManager.HC
+@@ -180,6 +180,9 @@
+ }
+ Bool NativeWinMgrStart()
+ {
++  //Global service workers must borrow the immortal actor, not the bootstrap.
++  if(Fs!=I386TaskSelf->owner->root)
++    return Adam("Call(0x%X)&255;",&NativeWinMgrStart);
+   if(!NativeGraphicsReady)return FALSE;
+   if(!native_window_started) {
+     native_window_anchor=sys_winmgr_task;native_window_started=TRUE;
+--- a/Kernel/I386/KeyboardMessages.HC
++++ b/Kernel/I386/KeyboardMessages.HC
+@@ -87,6 +87,8 @@
+ {
+   CHashExport *symbol;
+   CTask *task=I386TaskSelf;
++  if(task!=I386TaskSelf->owner->root)
++    return Adam("Call(0x%X)&255;",&NativeKeyboardStart);
+   if(native_keyboard_task) return FALSE;
+   //The boot console is a private scheduler task until its first managed yield.
+   //Enroll its public job queues before NativeReadKey can scan them.

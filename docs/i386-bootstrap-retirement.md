@@ -60,3 +60,42 @@ therefore insufficient for a usable handoff. A separate live-bootstrap User
 control reproduces the clipped result with stored answer42 and horizontal scroll1;
 see [i386-user-scalar-cursor.md](i386-user-scalar-cursor.md). Normal boot, full
 raster/input, physical reaping and resource qualification remain open.
+
+## Cursor and service ownership candidate: physical retirement proved
+
+The cursor-tracking queue now completes (`bootstrap-prompt-cursor-queue-v1`):
+complete386 audit, independent8MiB welcome/42/DocAllocationCheck13, controlled
+narrow User scalar output, explicit retirement/original geometry/fresh42 and
+separate8MiB User255 all pass. This resolves the earlier candidate's visible42
+failure; the production startup remains unchanged.
+
+Two persistent workers had retained their bootstrap creator. The separate
+`docs/patches/i386-bootstrap-service-owner-prototype.patch` dispatches WinMgr and
+keyboard startup through the immortal Adam actor before spawning those workers.
+The recursive entry checks its actual CI386Task owner root. Creator pin safety
+in TaskLifetime is preserved; no reference suppression or forced free is used.
+The v1 source used a nonexistent CTask.owner member and is excluded as invalid
+source setup. The corrected v2 passes compilation, complete386 audit, independent
+minimal boot, controlled scalar output, explicit retirement/geometry/fresh42,
+and separate8MiB User255 (`bootstrap-service-owner-queue-v2`). ConsoleRuntime
+is cross-built; the managed Kernel is native-built. This is not an all-native
+production generation.
+
+`bootstrap-retirement-service-physical-v1` adds stopped64MiB physical snapshots
+before startup and after handoff. Its independent decoder walks the loaded
+MemoryRuntime task records and the actual kernel heap block chain. Before:
+bootstrap22621408 has owned record18472384 and a USED70448-byte allocation.
+After: its record is absent, and that former allocation lies in a coalesced
+FREE80680-byte block, requested size0. Original83-word geometry and fresh42
+also pass. Normal task destruction physically returns the allocation. Total
+heap recovery is not claimed: autocomplete and the two Users add live resources.
+The decoder receipt SHA256 is
+3922703b984a1cb008dff3a35882f398cfb53f15628bf00738fd15d94bd55137.
+
+An optional source-profile startup hook has passed unchanged minimal boot when
+its profile file is absent (`desktop-normal-boot-queue-v1`, stage minimal-complete).
+The next configured normal-boot test includes that file, invokes the unchanged
+whole HomeSys body after keyboard services are ready, and exits the bootstrap
+after the source call returns. No host startup commands are sent. This test is
+separate from default Once, original Home path/prompt/input/raster parity,
+resource profiles and full C1-C5 acceptance; those remain open.

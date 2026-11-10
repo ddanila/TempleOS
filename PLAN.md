@@ -30393,3 +30393,21 @@ welcome/42/DocAllocationCheck13 also pass. The separate source delta is preserve
 as docs/patches/i386-console-prompt-cursor-prototype.patch. The guarded retirement
 and8MiB User checks continue; this is not production/full prompt or C1-C5
 qualification.
+
+### C2 candidate: service ownership permits physical bootstrap destruction
+
+The cursor-tracking candidate finishes its audit/boot/scalar/retirement/User8MiB
+queue successfully. Dispatching global WinMgr and keyboard startup through Adam
+then removes the two bootstrap creator pins without weakening reference safety.
+Corrected service-owner-v2 passes the same checks. A stopped-RAM decoder proves
+the bootstrap task record disappears and its70448-byte allocation becomes part
+of an80680-byte free block. Geometry remains original83 words; fresh42 passes.
+This is physical destruction evidence, not total desktop heap recovery.
+
+The tested actor-dispatch delta is saved alongside the managed/graphics/cursor
+patches. Production source stays pinned for the live second native generation.
+An optional normal desktop startup hook passes the minimal profile with no
+activation file; its configured full-HomeSys normal-boot experiment is running.
+Full default desktop, prompt/input/raster and complete compatibility/resource
+qualification remain open; inventory remains2/686. See
+`docs/i386-bootstrap-retirement.md` for exact receipts and exclusions.
