@@ -21,19 +21,23 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--disk', type=Path, help='Normal native image; omit for pinned original')
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--retirement', action='store_true',
+                        help='After the complete prompt oracle, require physical Exit and native task storage reclamation')
     args = parser.parse_args()
     out = args.out.resolve()
     if out.exists():
         parser.error('Use a fresh output directory')
-    fixture = ROOT/'tests/guest/i386-live-user-prompt/Observer.HC'
+    fixture = ROOT/'tests/guest/i386-live-user-prompt'/('RetiringObserver.HC' if args.retirement else 'Observer.HC')
     oracle_path = ROOT/'tests/i386/live-user-prompt-reference.json'
     oracle = json.loads(oracle_path.read_text())
-    if sha(fixture) != oracle['fixture_sha256']:
+    if sha(fixture) != oracle['retirement_fixture_sha256' if args.retirement else 'fixture_sha256']:
         raise ValueError('Fixture differs from pinned reference oracle')
     paths = [Path(__file__).resolve(), fixture, oracle_path] + [ROOT/'tools'/name for name in (
         'test-i386-autocomplete-interaction.py', 'test-i386-timeclock-welcome.py',
         'test-i386-timeclock-reference.py', 'test-i386-answer-prompt-reference.py',
         'build-iso.py', 'package-i386-native-image.py', 'build-i386-kernel.py')]
+    if args.retirement:
+        paths.append(ROOT/'tools/test-i386-desktop-startup.py')
     if args.disk:
         paths.append(args.disk.resolve())
     out.mkdir()
@@ -41,7 +45,10 @@ def main():
     (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     report = dict(result='running', mode='native' if args.disk else 'pinned-original',
                   scope='Physical keyboard into a normal User child; idle prompt task state and complete serialized documents before input and after integer/float commands. No replacement input/prompt loop. Buffers/parent namespace retained for capture; not cleanup, full raster or complete terminal qualification.',
+                  retirement_required=args.retirement,
                   commands=list(COMMANDS), input_sha256={str(p):sha(p) for p in paths})
+    if args.retirement:
+        report['scope'] += ' Extended retirement mode requires physical Exit, public invalidity and, on native, managed-record absence plus a free containing heap block. Parent observation buffers remain live; not total heap recovery.'
     guest = None
 
     def save():
@@ -127,6 +134,22 @@ def main():
         report['failures'] = failures
         if failures:
             raise ValueError('; '.join(failures))
+        report['prompt_documents_pass'] = True
+        if args.retirement:
+            guest.type('Exit;')
+            guest.press('ret')
+            guest.wait('LIVE USER RETIRED\n', timeout=30)
+            report['public_task_retired'] = True
+            if args.disk:
+                child = struct.unpack('<q', (guest.out/'live-prompt-child.bin').read_bytes())[0]
+                report['child_pointer'] = child
+                guest.call('stop')
+                physical = out/'physical.bin'
+                guest.call('pmemsave', val=0, size=64*1024*1024, filename=str(physical))
+                files = pack['snapshot'](image.read_bytes())[1]
+                report['physical_reaping'] = runpy.run_path(str(ROOT/'tools/test-i386-desktop-startup.py'))['physical_state'](
+                    physical.read_bytes(), files, guest.collect(), child, subject='User child')
+                guest.call('cont')
         report['result'] = 'pass'
     except BaseException as exc:
         report.update(result='fail', error=str(exc))

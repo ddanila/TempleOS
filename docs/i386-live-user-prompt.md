@@ -72,3 +72,36 @@ A disposable original-loop integration now passes this unchanged oracle at64MiB,
 but fails the existing8MiB User and physical reclamation checks. See
 `docs/i386-original-user-loop-prototype.md` and its preserved patch. Production
 is unchanged; the green prompt check alone does not qualify the integration.
+
+The versioned `--retirement` extension uses `RetiringObserver.HC` after the same
+three complete-document checks. It records the child pointer by copying exactly
+`sizeof(child)` bytes into a zeroed I64, sends physical `Exit;`, and requires the
+parent to observe public task invalidity. Native additionally stops the guest
+and independently decodes managed task records and kernel heap blocks: the
+child record must be absent and its former address must lie in a free block.
+The parent and exported observations remain live; this does not claim total
+heap recovery or interruption/error cleanup.
+
+```sh
+python3 tools/test-i386-live-user-prompt.py --retirement --out FRESH_REFERENCE
+python3 tools/test-i386-live-user-prompt.py --retirement --disk IMAGE --out FRESH_NATIVE
+```
+
+The separate fixture hash is pinned in the existing reference oracle. The base
+fixture and all expected prompt documents/state are unchanged. The physical
+checker retains the desktop bootstrap default; its label now identifies a User
+child correctly when this extension fails. Re-decoding the retained passing
+`emitter-known-regressions-v1/desktop-home-once` physical snapshot produces the
+exact existing result.
+
+Current receipts:
+
+- `build/live-user-retirement-reference-v1/result.json`: PASS, SHA256
+  3446b7a5dab057bb0c3accca24a29cebf79b2c710951a2b9d5cccdc978d94867.
+- `build/live-user-retirement-native-v1/result.json`: FAIL on the v2 prototype,
+  SHA256 8ff73eadab01855c06e5ec7ccde86abafcbc25072153f8ea33c9d8e54f5dca5c. Complete prompt documents
+  and public retirement pass; physical decoding reports
+  `User child still has a managed task record`. Inputs remain unchanged.
+
+This versioned failure is the cleanup acceptance test for the prototype. It
+preserves the original requirement for real storage reclamation after Exit.

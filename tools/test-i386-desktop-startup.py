@@ -26,7 +26,7 @@ def symbols(module):
     return result
 
 
-def physical_state(memory, files, log, bootstrap):
+def physical_state(memory, files, log, bootstrap, subject='Bootstrap'):
     """Decode loaded task records and actual heap blocks independently of guest APIs."""
     match = re.search(r'^MEMORY ([0-9A-F]+)', log, re.M)
     if not match:
@@ -43,7 +43,7 @@ def physical_state(memory, files, log, bootstrap):
         records.append(dict(record=pointer, owned=owned))
         pointer = following
     if any(record['owned'] == bootstrap for record in records):
-        raise ValueError('Bootstrap still has a managed task record')
+        raise ValueError(subject+' still has a managed task record')
     kernel = files['/Modules/I386/Kernel.t32m'][2]
     heap_address = 0x100008+symbols(kernel)['kernel_heap']
     start, size, used, peak, allocations, signature = struct.unpack_from('<6I', memory, heap_address)
@@ -58,7 +58,7 @@ def physical_state(memory, files, log, bootstrap):
             containing.append(dict(block=start+offset, span=span, requested=requested, tag=tag))
         offset += span
     if offset != size or len(containing) != 1 or containing[0]['tag'] != 0x46523349:
-        raise ValueError('Former bootstrap address is not in a free heap block')
+        raise ValueError('Former '+subject.lower()+' address is not in a free heap block')
     return dict(result='pass', task_record_count=len(records), bootstrap_records=[],
                 containing_free_block=containing[0], memory_tasks_address=address,
                 kernel_heap_address=heap_address, heap_used=used, heap_peak=peak,

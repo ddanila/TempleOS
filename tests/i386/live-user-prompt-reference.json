@@ -27,5 +27,6 @@
     "2457572b482c31243c656c61707365643e730a3c726f6f743e2f3e24505424362a373b0a2450542424464724244247243c656c61707365643e7320616e733d307830303030303032413d34320a3c726f6f743e2f3e2450542405",
     "2457572b482c31243c656c61707365643e730a3c726f6f743e2f3e24505424362a373b0a2450542424464724244247243c656c61707365643e7320616e733d307830303030303032413d34320a3c726f6f743e2f3e24505424312e352b322e32353b0a2450542424464724244247243c656c61707365643e7320616e73663d202020202020332e373530303030300a3c726f6f743e2f3e2450542405"
   ],
-  "normalization": "Only six-decimal elapsed-time fields and the independently captured drive-root spelling. Original decimal/x87 float bits retain the established exact/+1 ULP allowance; raw bits remain recorded."
+  "normalization": "Only six-decimal elapsed-time fields and the independently captured drive-root spelling. Original decimal/x87 float bits retain the established exact/+1 ULP allowance; raw bits remain recorded.",
+  "retirement_fixture_sha256": "8e6da54e81c2e1e58b0d357d2b5042c1d0070a48f47c41fc2f6c1820bfec8ab2"
 }

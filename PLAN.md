@@ -30722,3 +30722,18 @@ rejects the resident initialization marker; explicit storage-mode verification
 retains strict initialization counts and all behavioral checks. No resource
 gate is waived or new compatibility item qualified. See `docs/i386-original-user-loop-prototype.md`. C1-C5, production
 startup qualification and inventory2/686 remain open.
+
+
+### C2 User Exit physical reclamation regression
+
+`test-i386-live-user-prompt.py --retirement` now preserves the complete original
+prompt oracle and extends it through physical Exit. Its separately pinned
+fixture exports the actual child pointer without a widened lvalue cast. The
+original reference passes. The v2 native original-loop prototype passes all
+prompt documents and public invalidity but fails independent managed-record
+absence: User child still has a managed task record. Re-decoding the retained
+passing desktop physical snapshot gives exactly its prior result with the
+shared decoder's default bootstrap mode. Receipts and reproduction commands
+are in `docs/i386-live-user-prompt.md`. Public compiler-control ownership and
+mixed-queue teardown remain the next implementation gap; clearing task validity
+or queue pointers is insufficient. C1-C5 and inventory 2/686 remain open.
