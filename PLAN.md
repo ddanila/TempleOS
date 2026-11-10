@@ -30931,3 +30931,16 @@ pass. The final original-User prototype passes prompt/recovery/physical retireme
 at64, but still fails an 80-byte public allocation at8. No gate changed.
 See `docs/i386-public-resident-optimizer.md` for pinned evidence, failed exploratory
 variants, the one-document support generator and remaining C1–C5 requirements.
+
+### C2/C4: reject eager compiler-header preload using physical heap evidence
+
+Re-tracing the current original-User 8 MiB candidate identifies the 80-byte
+allocation failure while opening IntermediateOpcodes.HH. Eager raw CompilerA
+header loading avoids that document but regresses both production and original
+User task startup. Physical startup snapshots reconcile both heap block chains:
+live kernel spans grow 78,952 bytes and the largest free payload drops from
+297,272 to 149,648 bytes, below the 267,527-byte task request; the fallback has
+only 2,840 bytes in its largest free block. Full SystemCompiler preload also
+fails. Keep these variants diagnostic-only. Details, receipts and next constraint
+are in docs/i386-public-resident-optimizer.md. Original-User8, full C1–C5,
+inventory and native-generation qualification remain open.

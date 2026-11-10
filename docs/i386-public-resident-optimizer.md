@@ -85,8 +85,8 @@ checks preserve unrelated files and audited boot bytes.
   physical task retirement. Exactly one resident optimizer publication.
 - The same original-User prototype at 8 MiB: FAIL before optimizer publication,
   on an 80-byte public allocation. Pool used/reserved are 0xFFF18/0x100C00;
-  backing storage is fully used at 0x118400. The failure's precise current
-  caller/file has not been re-traced. This is not a passing original-User gate.
+  backing storage is fully used at 0x118400. A matching FileRuntime trace now locates the failure while opening
+  `C:/Compiler/IntermediateOpcodes.HH`. This is not a passing original-User gate.
 
 The standalone public compiler-stream command failed before optimizer loading
 at its undeclared ExeCmdLine dependency; it does not establish a bridge semantic
@@ -106,3 +106,37 @@ The optimizer test defaults to resident storage for native disks and source for
 original-reference runs. Use `--optimizer-storage source` for historical source
 images, or `provider` for that separate experimental module path. Every native
 mode requires exactly its own single publication marker and no fallback marker.
+
+## Rejected early header preload
+
+A diagnostic-only Console variant loads the complete SystemCompilerA.HH through
+raw ConsoleSource before registering rich document callbacks. Both the production
+and original-User variants complete that header load, then fail User startup at
+8 MiB on the 267,527-byte task allocation. These variants are not integrated.
+Loading all SystemCompiler.HH earlier also fails this allocation.
+
+Physical heap snapshots immediately after startup (before user commands), taken
+from the same kernel at 8 MiB, explain why early loading is insufficient:
+
+| Kernel heap measurement (bytes) | Baseline | CompilerA preload |
+| --- | ---: | ---: |
+| Live allocated spans | 6,255,104 | 6,334,056 |
+| Free payload total | 489,408 | 412,584 |
+| Largest free payload | 297,272 | 149,648 |
+| Live allocations | 18,300 | 20,073 |
+
+Both fallback heaps have 547,760 of 551,936 bytes allocated, eight allocations,
+and a largest free payload of 2,840 bytes. The preload adds 78,952 bytes of live
+kernel allocation and leaves neither heap with a contiguous block sufficient
+for the task. Total free payload alone does not establish task feasibility.
+
+`build/preload-heap-comparison/snapshot.py` stops QEMU after the startup marker,
+saves physical memory, validates every block span/tag and reconciles used-byte
+and allocation counters in both heaps. Its addresses are specific to the
+metadata-v2 Kernel image, not a portable heap inspection ABI. Results and memory
+snapshots remain under the baseline/preload subdirectories. The include trace
+is under `build/current-opt-include-trace`; rejected preload overlays, packaging
+receipts and startup logs are under `build/compiler-preload[-original]-v1/v2`.
+These failed experiments do not qualify the original-User 8 MiB gate. The next
+approach must avoid rich include-document pressure without adding these
+permanent declarations before the initial task allocation.

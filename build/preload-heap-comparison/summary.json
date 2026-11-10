@@ -1,0 +1,46 @@
+{
+  "baseline": {
+    "receipt_sha256": "34d0710b43c8a38ed82999d351bed2f84032f1cf39d636b51409a901344dd844",
+    "image_sha256": "047eeae06731ba6b462472d0637519a92acd47875166ad237e5633370d22de4b",
+    "heaps": {
+      "kernel": {
+        "base": 1508352,
+        "size": 6749184,
+        "used": 6255104,
+        "allocations": 18300,
+        "free_payload": 489408,
+        "largest_free": 297272
+      },
+      "fallback": {
+        "base": 69632,
+        "size": 551936,
+        "used": 547760,
+        "allocations": 8,
+        "free_payload": 4112,
+        "largest_free": 2840
+      }
+    }
+  },
+  "preload": {
+    "receipt_sha256": "caa8bb392b2dc89a13c712daef7518ebcf8294a67ba078e8754f01ecfa59ff90",
+    "image_sha256": "ba0f2934a8ab94fb0bdfa199a7c78173ecb98ce453df2ae1e851cb7cd3593857",
+    "heaps": {
+      "kernel": {
+        "base": 1508352,
+        "size": 6749184,
+        "used": 6334056,
+        "allocations": 20073,
+        "free_payload": 412584,
+        "largest_free": 149648
+      },
+      "fallback": {
+        "base": 69632,
+        "size": 551936,
+        "used": 547760,
+        "allocations": 8,
+        "free_payload": 4112,
+        "largest_free": 2840
+      }
+    }
+  }
+}
