@@ -130,3 +130,19 @@ The native console/probe executable ranges also pass the existing386 allowlist
 (`module-zero-native-components-instruction-v1`), among otherwise cross-built
 modules. The other eight native providers and complete installed generations
 remain pending. Inventory remains2/686; full C1-C5 remain open.
+
+CompilerRuntime is now also emitted natively:1342360 bytes and539 named
+exports. Compared with the cross reference, the host assembly's two division
+boundary labels are replaced by the native I386DivTemplate data export. Its
+185 bytes exactly match DivideTemplate.HC; all other named export kinds match.
+`module-zero-native-compiler-instruction-v1` passes the existing386 executable
+allowlist and native division-template data/range checks.
+
+`module-zero-console-compiler-native-install-v1` installs the emitted compiler
+and console through the guest filesystem APIs, then separately boots at8MiB.
+Normal source startup, arithmetic42, DocAllocationCheck13, exact final42 pixels
+and one diagnostic load/growth-recovery/unload pass. Both exact native module
+payloads are verified; every other prior file stays unchanged. The boot copy
+adds only expected AllocRead.DD (`read` plus05), while the source and preserved
+candidate hashes remain exact. The full provider job continues at CompilerProbe;
+these two installed native providers do not qualify a complete native generation.

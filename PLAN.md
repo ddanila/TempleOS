@@ -30019,3 +30019,21 @@ exact. Native console/probe executable ranges pass the existing386 allowlist
 checks remain cross-built, and concurrent-job timing is not a profile claim.
 The original job continues with the other eight providers. Both complete native
 generations, full application/desktop suite and profiles remain open,2/686.
+
+### C5 components: native compiler and console boot together at8MiB
+
+The original provider job publishes CompilerRuntime (1342360 bytes,539 named
+exports). Its intentional native representation replaces the two host assembly
+division labels with I386DivTemplate data; the185 bytes match the source model,
+and all other named export kinds match. Native compiler/console/program-probe
+386 executable audit passes, including division-template data/range validation.
+
+module-zero-console-compiler-native-install-v1 installs both exact emitted
+providers through guest FileDel/FileMove and separately boots at8MiB. Normal
+source startup, arithmetic42, DocAllocationCheck13, fresh42 pixels and one
+diagnostic load/recovery/unload pass. All other prior files stay exact; the
+boot copy adds only expected AllocRead.DD, while source/candidate hashes remain
+unchanged. A Startup rebuild using this installed native compiler is running
+separately; no result is inferred yet. The full provider job has advanced to
+CompilerProbe. Remaining providers, full generations and suite/profiles stay
+open; full C1-C5 remain2/686.
