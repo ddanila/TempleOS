@@ -20120,6 +20120,12 @@
           "result": "pass",
           "evidence": "build/desktop-normal-boot-full-v1/result.json",
           "scope": "Optional startup file in image invokes unchanged whole HomeSys after services ready, no host setup commands. Direct post-source marker, original83-word geometry, retired bootstrap and fresh42 pixels. Complete386 audit/minimal without activation pass separately. Mixed native Kernel/cross Console; native home C:/ and configured Once. Default Once, original home/prompt/input/raster, physical reaping of this specific boot and full resource/compatibility qualification remain open."
+        },
+        {
+          "target": "production-configured-normal-desktop-boot-64m",
+          "result": "pass",
+          "evidence": "build/desktop-handoff-production-regressions-v3/normal-boot-64m/result.json",
+          "scope": "Current seven-file production handoff, full cross-built image: configured normal startup invokes whole HomeSys without host setup commands, direct return marker, original83-word geometry, bootstrap TaskValidate false and fresh42 pixels. Fresh classic two generations/complete386 audit,8MiB User255,16MiB diagnostics pass separately. Default home/Once, original full prompt/input/raster, this boot physical heap recovery, isolated timing/resources and full compatibility remain open."
         }
       ]
     },

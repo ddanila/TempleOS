@@ -30449,3 +30449,23 @@ Kernel configures C:/ and the canonical image has no /Home directory. The new
 runnable tools/test-i386-home-path.py preserves this red case before repair.
 See docs/i386-home-path.md. This is an open compatibility gap, not an intentional
 architecture difference or a reason to weaken normal desktop acceptance.
+
+### C2 production: managed desktop handoff integrated and verified
+
+The seven-file production change passes fresh classic two generations, full
+cross build and independent1868-source/26-helper/all16-module/image/386 audit.
+Current-source8MiB User255 and16MiB two-phase diagnostic/recovery checks pass.
+Configured64MiB normal boot invokes unchanged whole HomeSys without host setup
+commands, observes actual return, matches83-word geometry, retires bootstrap
+and renders fresh42. Production retains minimal startup when no optional
+DesktopStart.HC file is installed. Source/helper epoch is archived.
+
+The first cross attempt exposes unavailable NULL in Kernel context; production
+uses0. The successful corrected build then hits an incorrect wrapper receipt-key
+guard; a separate full input/output/instruction audit verifies its artifacts,
+then v3 executes all runtime gates. Failed evidence remains preserved. No native
+generation from the earlier epoch is attributed to these new sources. Default
+Home/Once, full prompt/input/raster, physical reaping on this specific normal
+boot, resource/timing profiles, apps and C1-C5 remain open2/686. A disposable
+/Home Kernel candidate is compiling against the new independently failing
+public home-path test; it is not integrated yet.

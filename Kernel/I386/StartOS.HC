@@ -18,6 +18,7 @@
 #include "/Kernel/I386/PublicHash.HH"
 
 //Initialize task-owned dictionaries through retained original document code.
+Raw(FALSE);
 ConsoleDocumentStart;
 BibleInit;
 

@@ -56,6 +56,8 @@ CDocEntry *NativeConsolePrompt()
   CDocEntry *marker;
   if(!doc) throw('DocOwner',TRUE);
   doc->cur_entry=doc; doc->cur_col=0;
+  //Track the new-line cursor before adding the next prompt.
+  DocRecalc(doc,RECALCt_NORMAL|RECALCF_HAS_CURSOR);
   NativeConsoleWrite("> ");
   marker=DocEntryNewBase(doc,DOCT_PMT);
   DocInsEntry(doc,marker);

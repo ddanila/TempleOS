@@ -106,7 +106,7 @@ Bool NativeGraphicsStart()
     MSize2(frame)+MSize2(frame->body)+MSize2(frame->r)+plane_bytes+
     MSize2(zbuffer)+MSize2(uncovered));KernelLog("\n");
   persistent->win_task=frame->win_task=Fs;
-  graphics_owner=Fs;
+  graphics_owner=I386TaskSelf->owner->root;
   gr.dc=graphics_persistent=persistent; gr.dc2=graphics_frame=frame;
   gr.text_base=i386_text_base; gr.scrn_zoom=1;
   gr.fp_draw_ms=&DrawStdMs;

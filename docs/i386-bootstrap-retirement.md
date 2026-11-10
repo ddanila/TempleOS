@@ -126,3 +126,35 @@ rebuild/cross build and guarded minimal8MiB User,16MiB diagnostics and configure
 normal64MiB boot queue are running. These current-source results are required
 before treating production integration as verified. Historical prototype results
 and the archived pre-integration native generation are distinct epochs.
+
+## Production integration verified
+
+The seven-file implementation now passes current-source qualification:
+`rebuild-test` completes two original-system rebuilds;
+`i386-desktop-handoff-cross-v2` builds the full64MiB source image;
+`desktop-handoff-production-build-audit-v1` independently verifies1868 source
+pins,26 helper pins, all16 module hashes, the disk hash and reruns complete386
+audit. `desktop-handoff-production-regressions-v3` passes8MiB User255,
+16MiB two-phase diagnostics/load/growth recovery/unload and configured64MiB
+normal HomeSys boot. The latter observes actual source return, original83-word
+geometry, retired bootstrap and fresh42 at column1,row43. Inputs stay unchanged.
+The canonical image SHA256 is
+d29b76acf91ec9a4d1d6502cfb16fcd1883897599e064393a42c48d2e6adf341.
+Source/helper files are preserved under the cross run's pinned-candidate.
+
+The first production cross attempt rejects NULL in the Kernel compilation
+context. Production uses literal0, matching surrounding kernel code; this does
+not change the native prototype's null argument. The corrected build succeeds,
+but its v2 wrapper then incorrectly expects a top-level result key absent from
+the builder schema. That wrapper failure occurs before runtime checks. The
+independent build audit validates the completed artifacts without rerunning the
+successful build, and v3 executes the runtime gates. Both failed wrappers and
+the original compiler diagnostics remain preserved.
+
+Production includes the optional `::/Home/DesktopStart.HC` hook. The minimal
+image has no activation file and retains its interactive startup. The configured
+full test packages the previously tested profile and layout Once; this is still
+not default Once or original Home path qualification. The reproducibility chain
+above predates this implementation, and new all-native generations/full-suite
+release qualification remain required. See i386-home-path.md for the independent
+original /Home versus native / mismatch and its failing public-path test.

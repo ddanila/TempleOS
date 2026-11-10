@@ -87,9 +87,10 @@ Bool NativeKeyboardStart()
 {
   CHashExport *symbol;
   CTask *task=I386TaskSelf;
+  if(task!=I386TaskSelf->owner->root)
+    return Adam("Call(0x%X)&255;",&NativeKeyboardStart);
   if(native_keyboard_task) return FALSE;
-  //The boot console is a private scheduler task until its first managed yield.
-  //Enroll its public job queues before NativeReadKey can scan them.
+  //Initialize the immortal actor's public queues before keyboard scanning.
   if(!I386SchedYield(I386TaskSelf->owner)) return FALSE;
   symbol=HashFind("_SPAWN",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!symbol) return FALSE;

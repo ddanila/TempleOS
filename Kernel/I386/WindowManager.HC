@@ -168,6 +168,7 @@ U0 NativeWinMgrEnsure()
     NativeWindowTaskRemove(worker);NativeWindowTaskInsert(worker,native_window_anchor);
     native_window_worker=worker;sys_winmgr_task=worker;
     gr.dc->win_task=worker;
+    gr.dc2->win_task=worker;
     WinZBufUpdate;
     KernelLog("WINMGR started ");KernelHex(worker->task_num);KernelLog("\n");
   } catch {
@@ -179,6 +180,9 @@ U0 NativeWinMgrEnsure()
 }
 Bool NativeWinMgrStart()
 {
+  //Global service workers must borrow the immortal actor, not the bootstrap.
+  if(Fs!=I386TaskSelf->owner->root)
+    return Adam("Call(0x%X)&255;",&NativeWinMgrStart);
   if(!NativeGraphicsReady)return FALSE;
   if(!native_window_started) {
     native_window_anchor=sys_winmgr_task;native_window_started=TRUE;
