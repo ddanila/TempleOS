@@ -30547,3 +30547,20 @@ the actual frame matches all307200 pixels of the existing standard-pointer oracl
 The tested improvement is applied locally and fresh production build/regressions
 are running. Startup still needs substantial further work; all C1-C5/full-suite
 qualification remains open2/686. See docs/i386-startup-parser-selector.md.
+
+### C5 intermediate implementation: parser traversal integrated;169.47s remains red
+
+The integrated CompilerRuntime exactly matches the timed cross candidate.
+Fresh original/cross/386 and1869-source/26-helper/all16-module/flat/image audits
+pass. Current-source User8MiB, home paths,16MiB diagnostics and configured normal
+HOME Once/geometry/arithmetic/physical reaping pass. The new versioned selector
+mode passes33806 assertions with both validators. All source/helper pins are
+preserved before further work.
+
+The stock minimal16MiB-content/8MiB TCG486,-fpu startup runner now has an opt-in
+strict standard-pointer oracle: all307200 pixels and all nine existing commands
+pass. It measures169.4702s, then correctly fails the unchanged60-second target.
+The180-second observation allowance is unchanged too. The aggregate remains red;
+functional success is not C5 completion. A further paused profile begins only
+after the isolated test ends. Full suite, apps, original terminal integration,
+resource/timing and all C1-C5 remain open2/686.

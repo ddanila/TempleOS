@@ -88,3 +88,30 @@ document load/growth recovery/unload. This is a cross-provider candidate, not a
 native generation. The measured improvement is applied locally for fresh
 production classic/cross, functional and timing checks. Those current-source
 gates are pending. No release or complete C1-C5 qualification is claimed.
+
+## Production integration verified, budget still failed
+
+`build/i386-parser-selector-cross-v1` now contains the integrated source. Its
+CompilerRuntime is byte-identical to the measured prototype:1245618 bytes,
+SHA256 eab38625adb0521f0ef56def4b37822de4bf3e8f873caebe9c9f0333515d1c33.
+Fresh original rebuild, full cross build and complete386 audit pass.
+`parser-selector-production-regressions-v1/functional-audit.json` independently
+checks1869 source pins,26 helper pins, all16 modules, flat/disk identity and
+passing User8MiB, original home paths, diagnostics16MiB and configured normal
+HOME Once/desktop/physical reaping. Source/helper files are archived under that
+cross run's pinned-candidate before further edits.
+
+The stock startup-memory runner, using its new opt-in exact managed-pointer
+oracle, completes all nine unchanged workload commands and exact frames. It
+measures169.4702s on the independently packaged16MiB minimal-content image at
+8MiB TCG486,-fpu. The runner then correctly fails its unchanged60-second target;
+its180-second observation limit also stays unchanged. Receipt SHA256:
+88cc00bd2f7bf9d095990e2711976e426228bdce72e3b98874d7d869b2de1e8a.
+No input changed during the run. The aggregate production regression receipt
+remains failed and is not reclassified by the focused functional audit.
+
+The production full image SHA256 is
+52314aa5e1263724b5ca59dd69bd7973d470b998bd196b2091775d1f5d0a7a6b.
+This is an intermediate performance improvement with functional verification,
+not startup/release/C1-C5 qualification. A further paused production profile is
+queued only after the isolated run has ended, to identify the remaining costs.

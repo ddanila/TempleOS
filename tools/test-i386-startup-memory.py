@@ -28,6 +28,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--managed-pointer', action='store_true',
+                        help='Require the original standard pointer in every managed normal frame')
     parser.add_argument('--diagnostics', action='store_true',
                         help='Use the diagnostic image and require all startup diagnostics')
     parser.add_argument('--ram-mib', type=int, choices=(8, 16), default=8,
@@ -53,7 +55,7 @@ def main():
     shutil.copyfile(disk, working)
     result = dict(status='running', cpu='486,-fpu', ram_mib=args.ram_mib,
                   qualification='diagnostic' if args.diagnostics else 'interactive' if args.ram_mib == 8 else 'resource-probe',
-                  diagnostics=args.diagnostics,
+                  diagnostics=args.diagnostics, managed_pointer=args.managed_pointer,
                   scope='Startup diagnostics, retained static/function/literal behavior and exact VGA restoration; not complete OS acceptance' if args.diagnostics else 'Startup, retained static/function/literal behavior and exact VGA restoration; not complete OS acceptance',
                   input_sha256={str(disk): sha(disk), str(manifest_path): sha(manifest_path),
                                 str(Path(__file__).resolve()): sha(Path(__file__).resolve()),
@@ -62,6 +64,7 @@ def main():
         result['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out, snapshot=False, cpu='486,-fpu', ram_mib=args.ram_mib,
             qmp_stdio=True, diagnostics=args.diagnostics, welcome=True, startup_timeout=180,
+            managed_pointer=args.managed_pointer,
             startup_check={'status': 'ok', 'answers': [], 'commands': COMMANDS,'pause_window_manager':False,
                            'rejection_prefixes': ('INPUT REJECT ',)})
         log = (out/'debug.log').read_text()
