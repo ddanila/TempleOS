@@ -30238,3 +30238,27 @@ files. This preserves the original result without claiming current-source identi
 The baseline8MiB User regression remains red; the full desktop/application suite,
 resource profiles and all C1-C5 acceptance remain open at2/686. The allocator
 repair is being integrated and requires fresh current-source qualification.
+
+### C4/C5 repair: preferred minimum batches integrated and regression-tested
+
+MemoryBacking.HC now applies the exact previously tested five-line candidate.
+When the preferred physical arena fits the requested pages but not the growth
+hint, it supplies the smaller batch before using main memory. Public stack sizes,
+page requests, ownership and existing primary/exhaustion fallbacks are unchanged.
+The production source is byte-identical to the tested prototype (SHA256
+9ea17ad4c49c67f752e2e8616296578708b3606829b9c5a013bda706f3703da6).
+
+The stock test runner exposes --heap --heap-backing-preferred, with
+--heap-source selecting the portable validator. Both integrated runs pass all
+four cases and386 instruction audits; their receipts report the four actual
+cases without inheriting unrelated public-heap counters. The rebuilt classic
+compiler/kernel completes two generations. All six existing production allocator
+corpora pass: public, accounting, reserve, high, cache and window reserve.
+
+The fresh full-content64MiB cross image in i386-fallback-minimum-cross-v1 passes
+its386 instruction audit and the1524-file delivered-source audit. Its8MiB User
+startup test passes255, every managed-pointer pixel checkpoint and fresh42 with
+unchanged inputs (module-zero-fallback-production-user-8m-v1). This establishes
+the integrated cross-image repair. Current-source16MiB diagnostics and a fresh
+nine-provider native build are running; repaired native generations and the full
+C1-C5 compatibility/resource qualification remain open,2/686.

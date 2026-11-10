@@ -212,6 +212,11 @@ Bool I386MemBackingGrow(CI386PublicPool *base_pool,I64 pages)
   //Use validated low memory first, preserving the main arena for the
   //bootstrap compiler and other consumers that cannot use the fallback.
   source=pool->fallback;
+  //Use a smaller batch in the preferred arena before consuming main space.
+  if(!I386MemBackingFits(source,request) && size!=minimum &&
+      I386MemBackingFits(source,minimum+sizeof(CI386BackingRegion)+511)) {
+    size=minimum;request=size+sizeof(CI386BackingRegion)+511;
+  }
   if(!I386MemBackingFits(source,request))source=pool->heap;
   if(!I386MemBackingFits(source,request) && size!=minimum) {
     size=minimum;request=size+sizeof(CI386BackingRegion)+511;

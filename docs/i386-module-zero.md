@@ -342,3 +342,22 @@ under that run's `pinned-candidate/`; all2455 original source pins verify using
 those copies. This completes the baseline module-generation experiment, while
 its8MiB User failure and full C1-C5 suite remain open. Current-source allocator
 integration and qualification supersede neither historical evidence nor that gap.
+
+The preferred-minimum policy is now integrated into production MemoryBacking.HC,
+byte-identical to the tested prototype. The stock harness runs its four cases as:
+
+```
+python3 tools/test-i386.py --heap --heap-backing-preferred --qmp-stdio --out OUT
+python3 tools/test-i386.py --heap --heap-backing-preferred --heap-source --qmp-stdio --out OTHER_OUT
+```
+
+Both modes pass under `module-zero-fallback-integrated-{asm-v1,source-v2}`.
+`module-zero-fallback-stock-production-v1/result.json` records passing unmodified
+public/accounting/reserve/high/cache/window-reserve corpora. A fresh classic
+two-generation rebuild passes. The full-content cross image at
+`build/i386-fallback-minimum-cross-v1/kernel.img` passes the386 build audit and
+1524-file delivered-source audit. The same8MiB User fixture now passes255,
+managed-pointer pixel checks and fresh42 with unchanged inputs in
+`module-zero-fallback-production-user-8m-v1`. Public stack limits are unchanged.
+These results qualify the integrated cross-image regression repair, while fresh
+native providers/generations, diagnostics and full C1-C5 qualification remain open.
