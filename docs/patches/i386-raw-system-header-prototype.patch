@@ -1,0 +1,36 @@
+--- a/Compiler/I386/LexFileRead.HH
++++ b/Compiler/I386/LexFileRead.HH
+@@ -2,6 +2,8 @@
+ #define I386_LEX_FILE_READ_INCLUDED
+ #include "/Compiler/I386/LexInclude.HH"
+ #include "/Kernel/I386/FileContext.HH"
++//Private opt-in: decoded source includes for generated system declarations only.
++#define I386_CCF_RAW_INCLUDES 0x100000000000
+ //Add the default HC.Z extension, load decoded source and publish an owned child.
+ //Quiescent file service, IF clear. Failure preserves active input and reclaims temporaries.
+ public extern Bool I386LexIncludeFile(CI386Heap *heap,CCmpCtrl *cc,
+--- a/Kernel/I386/TaskFileRead.HC
++++ b/Kernel/I386/TaskFileRead.HC
+@@ -84,7 +84,7 @@
+         if(name) {
+           try {
+             source=task_public_read(heap,name,&size,0);
+-            if(source && callbacks.create && callbacks.destroy) {
++            if(source && callbacks.create && callbacks.destroy && !(cc->flags&I386_CCF_RAW_INCLUDES)) {
+               doc=(*callbacks.create)(name,source,size);
+               if(doc && I386LexIncludeDocTake(heap,cc,name,doc,callbacks.destroy,0)) {
+                 doc=0;result=TRUE;
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -2026,7 +2026,10 @@
+     if(Fs!=adam_task)TaskWait(adam_task);
+     if(!native_jit_support.optimize) {
+       saved=adam_task->hash_table;adam_task->hash_table=native_jit_support.symbols;
+-      try{AdamFile("::/Compiler/I386/ResidentOptSupport.HC",FALSE);}
++      try{
++        Adam("ExePutS2(\"#include \\\"/Compiler/I386/SystemCompilerA.HH\\\"\\n\",NULL,0x100000000000);");
++        AdamFile("::/Compiler/I386/ResidentOptSupport.HC",FALSE);
++      }
+       catch{adam_task->hash_table=saved;}
+       adam_task->hash_table=saved;
+       if(!native_jit_support.optimize)throw('OptLoad',TRUE);

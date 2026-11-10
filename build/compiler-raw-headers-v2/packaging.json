@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "source_sha256": "e74a4eb9ef6333f1d18a170d0b5d8343a7e9c947dd6e28ab8af199abe8a52f92",
+  "image_sha256": "5dc982a84ea8346f8035986ff21e90dad90f35ea8e861c751d2ee03f1cebb5a8",
+  "boot_area_sha256": "4ba9f86d14fd02568f80d9277a02b87d698b1f2a60e73e0aa7b72afb01703482",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1905,
+    "owned_sectors": 96292,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1905,
+    "owned_sectors": 96293,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Lazy raw CompilerA declarations with control-local include policy; all public headers retained, other bytes and boot unchanged",
+  "candidate_sha256": "5dc982a84ea8346f8035986ff21e90dad90f35ea8e861c751d2ee03f1cebb5a8",
+  "instruction_audit": "pass",
+  "prototype": true
+}

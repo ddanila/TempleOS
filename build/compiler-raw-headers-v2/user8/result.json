@@ -1,0 +1,69 @@
+{
+  "result": "fail",
+  "scope": "User child startup document, border/menu, flags, callback, welcome bytes and queued execution",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "5dc982a84ea8346f8035986ff21e90dad90f35ea8e861c751d2ee03f1cebb5a8",
+    "image_sha256": "1ab4345d8778e588dd2de05c9627e6a112d0f3b24f4841dd0588ccdf8580486d",
+    "boot_area_sha256": "4ba9f86d14fd02568f80d9277a02b87d698b1f2a60e73e0aa7b72afb01703482",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1905,
+      "owned_sectors": 96293,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1906,
+      "owned_sectors": 96296,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/UserStartup.HC": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2"
+    },
+    "added_attributes": {
+      "/UserStartup.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/compiler-raw-headers-v2/candidate.img": "5dc982a84ea8346f8035986ff21e90dad90f35ea8e861c751d2ee03f1cebb5a8",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-user-startup-reference/UserStartup.HC": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "99b84a62ec9753818b129f12d14d3cb6489654c30e48eb9b68c939b52d68399f",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-user-startup.py": "9e4b58f3cc64847a7b65868ed63bfa88e0b408e91b8d01325b7081c591222837"
+  },
+  "commands": [
+    [
+      "#include \"/Kernel/I386/PublicUser.HH\"",
+      []
+    ],
+    [
+      "U0 Report(U8*s){while(*s)OutU8(0xE9,*s++);}",
+      []
+    ],
+    [
+      "#include \"C:/UserStartup.HC\"",
+      []
+    ],
+    [
+      "USCheck;",
+      [
+        "255"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "ram_mib": 8,
+  "managed_pointer": true,
+  "error": "Guest command rejected: INPUT REJECT exception 72656C69706D6F43 errors 0000000000000000 warnings 0000000000000000",
+  "inputs_unchanged": true
+}

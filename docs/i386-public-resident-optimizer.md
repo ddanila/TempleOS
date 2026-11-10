@@ -151,3 +151,34 @@ This rules out merging those six nested include files alone as a sufficient fix.
 The experiment is not installed in production. Its packaging script and receipts
 pin all seven canonical inputs; runtime failure inputs are unchanged. A scoped
 raw-source delivery path remains to be implemented and qualified.
+
+## Control-local raw declaration prototype
+
+`docs/patches/i386-raw-system-header-prototype.patch` applies on top of the
+original-User/provider-lexer Console overlay (not directly to production Console).
+The private flag I386_CCF_RAW_INCLUDES uses compiler-control bit 44, outside the
+current compiler flag set. TaskFileRead retains decoded public file reads and
+owned lexer buffers, but bypasses rich document creation only for that control.
+Registered callbacks and other controls are unchanged. Before normal resident
+optimizer loading, Adam executes ExePutS2 with this flag to load the complete
+SystemCompilerA graph lazily into the existing system compiler namespace.
+No declarations, cases, stack sizes or gates are removed.
+
+Both ConsoleRuntime and FileRuntime cross-build and pass the current whole-module
+386 instruction/import audit. The source-only flag addition has no structure or
+service-table layout change. Packaging replaces the two modules and their matching
+three source files only; all remaining source/module bytes and boot area are
+checked unchanged against the current original-User candidate. Candidate SHA256:
+`5dc982a84ea8346f8035986ff21e90dad90f35ea8e861c751d2ee03f1cebb5a8`.
+Evidence is under `build/compiler-raw-headers-v2`; v1 lacked prototype include
+files during Console cross compilation and is not a valid runtime candidate.
+
+The actual 8 MiB startup oracle still FAILS, now on a 52-byte kernel-heap request:
+used/size 0x66F9E8/0x66FA00, largest payload 8 bytes, allocations 0x4C86. The
+reported caller PCs 0x1967AC and 0x19A5CE map to exported functions
+I386LexDefinePublish+0x50C and I386LexNextWithIncludes+0xFD6 using the actual loaded
+CompilerRuntime base plus eight and kind-1 function exports. This moves past the
+previous public Doc allocation but does not qualify original-User8. The 64 MiB
+recovery job was launched separately and has no terminal receipt at this checkpoint;
+its result must be inspected before drawing compatibility conclusions. The patch
+remains a prototype and is not applied to production sources.

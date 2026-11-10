@@ -30954,3 +30954,16 @@ leave all modules and other files unchanged. Original-User8 still fails on an
 variant and its seven input hashes under build/compiler-flat-headers-v1; do not
 integrate it. Raw-source delivery needs a scoped implementation rather than
 another eager preload. Full milestones and qualification remain open.
+
+### C2/C4: control-local raw compiler declarations reach macro allocation
+
+Implemented and cross-built a diagnostic-only per-control include policy. It
+loads complete CompilerA declarations lazily in Adam without creating rich
+include documents, retaining public decoded reads and owned lexer buffers.
+Both changed modules pass current 386/import audits and exact image packaging.
+Original-User8 now exhausts the kernel heap on a 52-byte macro allocation
+(I386LexDefinePublish), replacing the earlier public Doc allocation failure.
+Preserve the patch and build/compiler-raw-headers-v2 evidence; no production
+integration or passing 8 MiB claim. The separately running recovery64 job still
+requires its terminal result. Full C1–C5, inventory and native generations remain
+open. See docs/i386-public-resident-optimizer.md for ownership and exact scope.
