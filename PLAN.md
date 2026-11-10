@@ -30654,3 +30654,23 @@ remain queued. The partial audit leaves startup_budget_pass null. Last measured
 startup remains162.2253s/60s on the preceding candidate. No current performance
 or release pass is claimed; C1-C5 and inventory2/686 remain open. Evidence and
 identities: `docs/i386-startup-parser-selector.md`.
+
+### C5 emitter follow-up: focused runtime parity passes,166.52s gate fails
+
+The previously live `emitter-known-regressions-v1` desktop check now passes
+normal Home Once/geometry/physical bootstrap reclamation/fresh42. Stock isolated
+8MiB TCG486,-fpu startup completes all nine commands and exact managed-pointer
+frames with zero build-provider loads, then fails the unchanged60s gate at
+166.5236s. Timing inputs are unchanged. This single observation does not prove a
+speedup over the preceding162.2253s result. The aggregate remains failed; the
+full scoped functional audit records startup_budget_pass FALSE.
+
+`emitter-known-reference-v1` passes the same12 emitter and24 saved-header
+rejection cases per runtime, existing emitter stress and both-phase program/
+document recovery against the prior ABI105 CompilerRuntime. Other image files
+are independently compared unchanged, and actual diagnostic module extraction
+proves distinct candidate/prior identities. `emitter-parity-audit.json` records
+the scope and receipt/log/module hashes. This is functional parity, not mixed
+image/native-generation qualification. C1-C5, startup/resource/full-suite native
+qualification and inventory2/686 remain open. Identities and receipts are in
+`docs/i386-startup-parser-selector.md`.

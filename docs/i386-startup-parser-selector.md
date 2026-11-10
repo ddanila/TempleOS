@@ -315,6 +315,26 @@ Full disk SHA256:
 e9960a654ee1359da47f52173da2ba2940f2cc8b8cdd86737d05b95ef99995b6.
 CompilerRuntime SHA256:
 e218f435cee24526e8dd468a7d361f1fe4134d81e20ebd1e79b76f9495597b29.
-The configured desktop run is live; unchanged isolated startup acceptance and
-`emitter-known-reference-v1` prior-runtime comparison are queued behind it.
-No performance gain, current startup pass or C1-C5 qualification is claimed.
+The configured desktop run now passes original geometry, Home Once selection,
+bootstrap physical reclamation and fresh42. The stock isolated minimal-content
+test at8MiB TCG486,-fpu completes all nine unchanged commands and exact managed
+pointer frames with zero startup build-provider loads. It measures166.5236s,
+then correctly fails the unchanged60s gate. All timing inputs were independently
+rehashed after completion. Receipt SHA256:
+0a9e9ea97f45378a1c928bb4d45f20e28a5d618f1c50187770d55a3f39a9eae9.
+This single observation does not establish a speedup over the prior162.2253s
+observation. The aggregate remains failed; `functional-audit.json` includes all
+four focused receipts and explicitly records startup_budget_pass FALSE.
+
+`emitter-known-reference-v1` also passes the same12 emitter rejection cases,
+existing growth/word/exact-capacity/exhaustion/retry/unwind probes,24 saved-header
+rejections and subsequent program/document recovery against the prior ABI105
+CompilerRuntime. All other replacement-image files were independently compared
+unchanged. The actual candidate and reference diagnostic images were decoded to
+verify their distinct CompilerRuntime identities. This is functional parity,
+not current-source or native-generation qualification of the mixed reference
+image. `emitter-parity-audit.json` retains both module/log identities and the
+reference receipt hash:
+d330934753382392e5cf109e29c531259bcb888800748c30ce7ba9e088a067e1.
+C1-C5, the60s startup gate, current native generations and inventory2/686 remain
+open; no release qualification or measured performance gain is claimed.
