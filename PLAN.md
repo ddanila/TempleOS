@@ -30219,3 +30219,22 @@ checked. The stock harness is reused with an explicit Target overlay; its older
 reserve-corpus counts are not claimed. Production source remains unchanged for
 the live baseline generation chain. Broader allocator checks, integration and
 new qualification remain required; C1-C5 stay open.
+
+### C5 baseline: both complete native module generations reproduce
+
+module-zero-native-generations-v3 has now finished successfully. Both generations
+natively rebuild all16 modules, install and independently boot at8MiB with exact
+managed-pointer welcome/command pixels,42 and DocAllocationCheck13. Both386
+instruction audits and delivered-source audits (1524 files) pass. Generation two's
+nine retained providers reproduce generation one's installed bytes exactly.
+The final16-module/466112-byte flat/boot-area comparison passes with only the
+explicitly declared exported eight-byte Kernel build date and its derived boot
+checksum varying. Each actual boot area is checked independently. Bootstrap
+sector/stage bytes remain copied from the verified seed, not natively assembled.
+
+The baseline's2455 source pins still verify using the archived MemoryBacking.HC
+and test-i386.py in its pinned-candidate directory for the two subsequently edited
+files. This preserves the original result without claiming current-source identity.
+The baseline8MiB User regression remains red; the full desktop/application suite,
+resource profiles and all C1-C5 acceptance remain open at2/686. The allocator
+repair is being integrated and requires fresh current-source qualification.

@@ -328,3 +328,17 @@ under v1 with an explicit invalid-fixture receipt and excluded from policy resul
 This is focused policy coverage, not the stock reserve corpus or a full allocator
 pass. Production integration, broader heap regressions and fresh qualification
 remain pending after the pinned baseline chain finishes.
+
+The unchanged baseline chain has completed: both native generations pass all16
+module builds, installation, independent8MiB boot,386 instruction checks and
+1524-file delivered-source audits. All nine generation-two provider modules match
+the installed first generation byte for byte. The final identity receipt is
+`build/module-zero-native-generations-v3/generation-identity/result.json`; its
+466112-byte flat payload reproduces except for the explicitly declared exported
+eight-byte Kernel date. Actual installed boot payload/checksum/padding are checked
+independently before normalization. BIOS sector/stage assembly is not included
+in the native-build claim. The two subsequently edited source files are preserved
+under that run's `pinned-candidate/`; all2455 original source pins verify using
+those copies. This completes the baseline module-generation experiment, while
+its8MiB User failure and full C1-C5 suite remain open. Current-source allocator
+integration and qualification supersede neither historical evidence nor that gap.
