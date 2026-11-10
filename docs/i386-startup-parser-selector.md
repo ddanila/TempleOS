@@ -268,3 +268,53 @@ of the mixed reference image as a current-source or native generation.
 `code-header-known-regressions-v4/header-boundary-parity-audit.json` retains the
 module identities, log hashes and reference receipt hash. Reference receipt:
 df4bfb9673ac03dc931c20e4b1c88472e7958812a24df999ba884fed4f9fff3b.
+
+## Emitter validation and allocation reuse
+
+`I386OutValid` now holds IRQ exclusion around the unchanged whole-arena owner
+audit and an exact physical-boundary lookup for its output header. This also
+covers the backend caller which enters without exclusion. No proof is cached
+across exclusion. Contiguous reserve retains its outer exclusion and uses a
+known-size lookup for the existing data allocation. Its preceding nonzero
+`I386OutCapacity` result establishes the original signed32-bit capacity bounds
+before converting that exact expected size to the lookup's U32 argument.
+
+Output headers, contiguous growth buffers and segmented chunks now allocate
+through the existing known-valid selector after validation, without intervening
+callbacks or arena mutation. The original first-fit policy, exact requested
+sizes, zeroing policy and public exhaustion fallback remain unchanged. Old-buffer
+and chunk release still use their public validation paths. Segmented reserve
+retains its largest-useful-window search and512-byte chunk maximum.
+
+`ProbeEmitterBoundaries` requires six rejection cases per diagnostic phase:
+delete a forged output header inside a real payload; delete a real earlier
+header while later reserved metadata, used bytes or allocation count is corrupt;
+and reserve with capacity -1 or0x100000040. The last value's low32 bits equal
+the actual64-byte buffer, guarding against an unchecked narrowing conversion.
+The original output bytes/count/data pointer, final heap accounting/validity
+and IRQ exclusion must survive. Existing emitter diagnostics retain64 growth/
+execution cycles, signed-word vectors, exact-capacity emission, exhaustion,
+retry and control-unwind coverage. The strict host contract now requires the
+new probe export; its imports already belong to the previous exact contract.
+
+`emitter-known-build-v1` passes both fresh classic self-rebuilds, the full cross
+build and complete386 audit. Its1869 source and26 helper files are archived and
+hash-checked under `i386-emitter-known-cross-v1/pinned-candidate`. Both exact
+probe import contracts pass, and renaming the emitter export is independently
+confirmed to fail the strict checker.
+
+`emitter-known-regressions-v1` passes User8MiB, original Home paths and16MiB
+diagnostics. Both phases execute the new emitter boundary cases, saved-header
+boundary cases, existing emitter stress probes and complete program probes,
+followed by document load/growth-recovery/unload. Its
+`partial-functional-audit.json` independently checks current/archived pins,
+all16 exported and actually delivered modules, flat kernel and disk, plus the
+three focused receipts. It explicitly leaves startup_budget_pass null.
+
+Full disk SHA256:
+e9960a654ee1359da47f52173da2ba2940f2cc8b8cdd86737d05b95ef99995b6.
+CompilerRuntime SHA256:
+e218f435cee24526e8dd468a7d361f1fe4134d81e20ebd1e79b76f9495597b29.
+The configured desktop run is live; unchanged isolated startup acceptance and
+`emitter-known-reference-v1` prior-runtime comparison are queued behind it.
+No performance gain, current startup pass or C1-C5 qualification is claimed.

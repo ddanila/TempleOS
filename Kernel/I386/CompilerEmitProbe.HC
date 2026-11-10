@@ -1,5 +1,62 @@
 //The probe uses the same byte writer as the production target backend.
 #include "/Compiler/I386/EmitCore.HC"
+class CProbeOwnedOut {
+  CI386Out out;
+  CI386Heap *heap;
+  CCmpCtrl *cc;
+  CProbeHeaderRecord lifetime;
+  U8 *chunks,*last_chunk,*cached_chunk;
+};
+U0 ProbeEmitterBoundaries(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *cc)
+{
+  CI386Out *out,*fake;
+  CProbeOwnedOut *forged;
+  CI386HeapBlock *prefix,*guard_block;
+  U8 *storage,*guard,*data;
+  I64 bytes=sizeof(CProbeOwnedOut),i,kind,bad,accepted;
+  U32 irq=I386IrqSave,used=heap->used,allocations=heap->allocations;
+  out=probe->compiler->out_new(heap,cc);
+  storage=I386HeapAlloc(heap,bytes+64,TRUE);guard=I386HeapAllocHigh(heap,8,TRUE);
+  if(!out || !storage || !guard || guard(U64)<=out(U64) ||
+      I386HeapSize(heap,out)!=bytes)KernelStop;
+  fake=storage+32;forged=fake;
+  for(i=0;i<bytes;i++)fake(U8 *)[i]=out(U8 *)[i];
+  forged->lifetime.allocation=fake;
+  prefix=fake(U8 *)-16;prefix->span=((bytes+7)&~7)+16;
+  prefix->requested=bytes;prefix->tag=I386_HEAP_USED;prefix->reserved=0;
+  if(!I386HeapValid(heap) || probe->compiler->out_del(heap,cc,fake))KernelStop;
+  guard_block=guard-16;
+  for(kind=0;kind<3;kind++) {
+    if(kind==0)guard_block->reserved=1;
+    else if(kind==1)heap->used+=8;
+    else heap->allocations++;
+    if(probe->compiler->out_del(heap,cc,out))KernelStop;
+    if(kind==0)guard_block->reserved=0;
+    else if(kind==1)heap->used-=8;
+    else heap->allocations--;
+    if(!I386HeapValid(heap))KernelStop;
+  }
+  for(i=0;i<64;i++)I386Byte(out,i);
+  data=out->data;
+  if(out->capacity!=64 || out->count!=64)KernelStop;
+  for(kind=0;kind<2;kind++) {
+    bad=-1;if(kind)bad=0x100000040;
+    out->capacity=bad;accepted=0;
+    try {(*out->reserve)(out,65);KernelStop;}
+    catch {
+      if(I386TaskSelf->except_ch!='Compiler' || out->capacity!=bad ||
+          out->count!=64 || out->data!=data)KernelStop;
+      out->capacity=64;I386TaskSelf->catch_except=TRUE;accepted=1;
+    }
+    if(!accepted)KernelStop;
+    for(i=0;i<64;i++)if(data[i]!=i)KernelStop;
+  }
+  if(!probe->compiler->out_del(heap,cc,out) || !I386HeapFree(heap,guard) ||
+      !I386HeapFree(heap,storage) || heap->used!=used ||
+      heap->allocations!=allocations || !I386HeapValid(heap) || GetRFlags&0x200)KernelStop;
+  I386IrqRestore(irq);
+  KernelLog("EMITTER BOUNDARIES ");KernelHex(probe->phase);KernelLog("\n");
+}
 U0 ProbeEmit(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
 {
   CI386Task *task=I386TaskSelf;
@@ -18,6 +75,7 @@ U0 ProbeEmit(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   words[4]=0xFFFFFF80; words[5]=0xFFFFFFFF; words[6]=0x80000000; words[7]=0x7FFFFFFF;
   cc=probe->files->control_new("",CCF_DONT_FREE_BUF,"Probe/Emit.HC");
   if(!cc || !probe->compiler->control_enter(heap,cc,0,0)) KernelStop;
+  ProbeEmitterBoundaries(probe,heap,cc);
   base_used=heap->used; base_allocations=heap->allocations;
   for(round=0;round<64;round++) {
     out=probe->compiler->out_new(heap,cc);

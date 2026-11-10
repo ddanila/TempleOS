@@ -503,6 +503,8 @@ def compiler_probe_layout(module, program=False):
             raise ValueError(f'Missing compiler-probe function {name}')
     if not program and exports.get('ProbeCodeHeaderBoundaries', (0, 0))[0] != 1:
         raise ValueError('Missing saved-header boundary probe')
+    if not program and exports.get('ProbeEmitterBoundaries', (0, 0))[0] != 1:
+        raise ValueError('Missing emitter boundary probe')
     if exports.get('compiler_probe_version', (0, 0))[0] != 3:
         raise ValueError('Missing compiler-probe version')
     version_offset = 32+exports['compiler_probe_version'][1]

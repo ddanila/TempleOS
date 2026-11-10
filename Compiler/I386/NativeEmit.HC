@@ -4,6 +4,8 @@ extern U0 I386ParserFailure(U8 *label,CCmpCtrl *cc);
 //Included after native Control.HC; the containing module supplies throw.
 #include "/Compiler/I386/NativeEmit.HH"
 #include "/Compiler/I386/EmitCore.HC"
+//Implemented later by ParserMemory.HC in this same retained module.
+extern U8 *I386ParserHeapAllocKnown(CI386Heap *heap,I64 bytes,Bool zeroed,Bool high);
 #define I386_OUT_CHUNK_BYTES 512
 class CI386OutChunk {
   CI386OutChunk *next;
@@ -20,9 +22,13 @@ class CI386OwnedOut {
 Bool I386OutValid(CI386Heap *heap,CCmpCtrl *cc,CI386Out *out)
 {
   CI386OwnedOut *owned=out;
-  return I386CmpCodeOwner(heap,cc) && out &&
-    I386HeapSize(heap,out)==sizeof(CI386OwnedOut) && owned->heap==heap && owned->cc==cc &&
+  U32 irq=I386IrqSave;
+  //Some callers enter without exclusion. Keep the owner audit and the actual
+  //physical-boundary size lookup together; cache no proof across exclusion.
+  Bool valid=I386CmpCodeOwner(heap,cc) && out &&
+    I386HeapKnownSize(heap,out,sizeof(CI386OwnedOut)) && owned->heap==heap && owned->cc==cc &&
     owned->lifetime.control==cc && owned->lifetime.allocation==out && (owned->lifetime.kind==5 || owned->lifetime.kind==I386_CODE_SEGMENTED_OUT);
+  I386IrqRestore(irq);return valid;
 }
 U0 I386NativeOutReserve(CI386Out *out,I64 minimum)
 {
@@ -31,11 +37,11 @@ U0 I386NativeOutReserve(CI386Out *out,I64 minimum)
   U8 *next;
   U32 irq=I386IrqSave;
   if(!I386OutValid(owned->heap,owned->cc,out) || !capacity ||
-      (out->data && I386HeapSize(owned->heap,out->data)!=out->capacity)) {
+      (out->data && !I386HeapKnownSize(owned->heap,out->data,out->capacity))) {
     I386IrqRestore(irq); throw('Compiler',TRUE);
   }
   if(capacity<=out->capacity) { I386IrqRestore(irq); return; }
-  next=I386HeapAlloc(owned->heap,capacity,FALSE);
+  next=I386ParserHeapAllocKnown(owned->heap,capacity,FALSE,FALSE);
   if(!next) {
 #ifdef I386_PARSER_FAILURE_TRACE
     I386ParserFailure("EMITTER BUFFER ALLOCATION REJECT ",owned->cc);
@@ -54,7 +60,7 @@ CI386Out *I386OutNew(CI386Heap *heap,CCmpCtrl *cc)
   CI386OwnedOut *owned;
   U32 irq=I386IrqSave;
   if(!I386CmpCodeOwner(heap,cc)) { I386IrqRestore(irq); return 0; }
-  owned=I386HeapAlloc(heap,sizeof(CI386OwnedOut),TRUE);
+  owned=I386ParserHeapAllocKnown(heap,sizeof(CI386OwnedOut),TRUE,FALSE);
   if(!owned) { I386IrqRestore(irq); throw('OutMem',TRUE); }
   owned->heap=heap; owned->cc=cc; owned->out.reserve=&I386NativeOutReserve;
   I386CodeAttach(cc,&owned->lifetime,owned,5);
@@ -87,7 +93,7 @@ U0 I386SegmentedOutReserve(CI386Out *out,I64 minimum)
   wanted=capacity-out->count;
   if(wanted>I386_OUT_CHUNK_BYTES)wanted=I386_OUT_CHUNK_BYTES;
   //OutValid has validated the entire arena; retain IRQ exclusion while finding
-  //the largest useful window. Public allocation validates again before mutation.
+  //the largest useful window and allocating from that unchanged valid arena.
   while(position<owned->heap->size) {
     block=owned->heap->base+position;
     if(block->tag==I386_HEAP_FREE && block->span>16+offset(CI386OutChunk.body)) {
@@ -104,7 +110,7 @@ U0 I386SegmentedOutReserve(CI386Out *out,I64 minimum)
 #endif
     I386IrqRestore(irq);throw('OutMem',TRUE);
   }
-  chunk=I386HeapAlloc(owned->heap,offset(CI386OutChunk.body)+bytes,TRUE);
+  chunk=I386ParserHeapAllocKnown(owned->heap,offset(CI386OutChunk.body)+bytes,TRUE,FALSE);
   if(!chunk) {
 #ifdef I386_PARSER_FAILURE_TRACE
     I386ParserFailure("EMITTER CHUNK ALLOCATION REJECT ",owned->cc);

@@ -30627,3 +30627,30 @@ logs match byte-for-byte. This is behavioral parity, not current-source/native
 qualification. No precise timing speedup is claimed from a single observation.
 C1-C5, complete compatibility/native generations and inventory2/686 remain open.
 See `docs/i386-startup-parser-selector.md` for hashes and evidence locations.
+
+### C5 intermediate: emitter validation and allocation reuse
+
+Output-header validation now holds exclusion around its unchanged whole-arena
+owner audit and exact physical-boundary size lookup, including callers entering
+without exclusion. Existing data-buffer lookup and header/buffer/chunk allocation
+reuse validation only while their outer IRQ exclusion remains held. First-fit,
+exact sizes, zeroing, exhaustion fallback, release and failure rollback stay
+unchanged. The nonzero original capacity calculation still rejects negative or
+wide capacities before the U32 known-size lookup.
+
+The new required emitter probe rejects forged interior output headers, later
+metadata/counter corruption and capacities -1/0x100000040. Both phases require
+original bytes/count/pointer and final accounting/validity/IRQ state to survive.
+Existing64 growth/execution cycles, word vectors, exact capacity, exhaustion,
+retry and unwind probes remain. `emitter-known-build-v1` passes fresh classic
+rebuilds/full cross/complete386 audit. All1869 source/26 helper files are archived
+and hash-checked. `emitter-known-regressions-v1/partial-functional-audit.json`
+verifies source/archive/exported and delivered module/flat/disk identity plus
+passing User8MiB, Home paths and both-phase16MiB diagnostics, including12 new
+emitter rejection cases and subsequent program/document recovery.
+
+Configured desktop is live; stock startup timing and prior-runtime comparison
+remain queued. The partial audit leaves startup_budget_pass null. Last measured
+startup remains162.2253s/60s on the preceding candidate. No current performance
+or release pass is claimed; C1-C5 and inventory2/686 remain open. Evidence and
+identities: `docs/i386-startup-parser-selector.md`.
