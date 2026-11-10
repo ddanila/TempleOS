@@ -30201,3 +30201,21 @@ This remains a candidate, not an applied production repair. Focused policy
 cases, broader allocator regressions, integration and fresh qualification are
 required. The unchanged generation-two baseline continues; full C1-C5 and its
 minimal-memory regression remain open until the production fix is verified.
+
+### C4/C5 candidate: controlled backing-policy red/green coverage
+
+FallbackPreferredTarget.HC adds four isolated cases for the smaller preferred-
+arena request, primary full-batch fallback, primary reduced-batch fallback and
+complete exhaustion. It verifies actual ownership, region size, validators,
+free/trim/destroy reclamation and interrupt-state preservation. In
+module-zero-fallback-policy-v2, the unchanged policy compiles and reaches the
+unique610 preferred-minimum guard (reported low byte62); the prototype passes
+all four cases with both portable and assembly heap validators.
+
+The initial fixture's unsupported C ternary expression entered the original
+compiler debugger. Those v1 timeouts are explicitly invalid setup evidence,
+not policy failures. The corrected fixture and expected failure are independently
+checked. The stock harness is reused with an explicit Target overlay; its older
+reserve-corpus counts are not claimed. Production source remains unchanged for
+the live baseline generation chain. Broader allocator checks, integration and
+new qualification remain required; C1-C5 stay open.

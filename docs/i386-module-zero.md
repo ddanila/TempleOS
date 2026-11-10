@@ -312,3 +312,19 @@ prototype. This is experimental evidence, not a production fix or full C5 pass.
 Focused backing-policy cases, broader allocator regression checks, production
 integration and a new qualification run remain required. The unchanged baseline
 continues generation two so its reproducibility evidence is preserved.
+
+`tests/guest/i386-heap/FallbackPreferredTarget.HC` now defines four controlled
+backing-policy cases: preferred arena fits the minimum but not the hint; preferred
+arena too small while main fits the hint; only a smaller main batch fits; and
+neither arena fits. Each case checks ownership/region size, both heap validators,
+free/trim/destroy reclamation and unchanged interrupt state.
+
+`module-zero-fallback-policy-v2` compiles and executes this fixture in the existing
+protected-mode heap harness. The unchanged policy reaches the unique610 guard
+failure (runner byte62) for the first case. The prototype passes all four cases
+with both portable and assembly physical-heap validators. The first fixture used
+unsupported C ternary syntax; its original-compiler debugger/timeouts are retained
+under v1 with an explicit invalid-fixture receipt and excluded from policy results.
+This is focused policy coverage, not the stock reserve corpus or a full allocator
+pass. Production integration, broader heap regressions and fresh qualification
+remain pending after the pinned baseline chain finishes.
