@@ -32,3 +32,26 @@ Use `--all` to restore all screenshots. Keep the compressed files and
 `screenshots-manifest.jsonl`. The restore helper was tested on one screenshot,
 whose restored SHA-256 matched the manifest; its redundant raw copy was then
 removed again. Every archive was independently verified during compression.
+
+## Follow-up inspection
+
+The filesystem later had 131 GiB free (86% used). This checkout occupied
+196 GiB, including 90 GiB of compressed archives, 28 GiB of disk images,
+and 23 GiB of ISOs. The separate `../money-for-nothing-486` project occupied
+311 GiB and was left untouched.
+
+Losslessly compressed 822 older screenshots and 234 older assembly listings,
+recovering **1,663,709,184 bytes (1.549 GiB)**. Open files, files newer than
+24 hours, and the two previously retained raw kernel listings were excluded.
+Every archive was decompressed and SHA-256 verified before removing its raw
+copy. No unique evidence was discarded. The filesystem then had 132 GiB free.
+
+The follow-up manifest and recovery helper are in
+`build/cleanup-followup-2026-11-10/`. Restore a recorded path with:
+
+```sh
+python3 build/cleanup-followup-2026-11-10/restore.py build/path/original-file
+```
+
+The helper was tested by restoring one file, checking its hash, and removing
+the redundant raw copy again. Work remained directly on `main`.
