@@ -33,7 +33,7 @@ python3 tools/test-i386-home-path.py --out build/home-path-original-NEW
 python3 tools/test-i386-home-path.py IMAGE --out build/home-path-native-NEW
 ```
 
-The current native Kernel explicitly configures `kernel_paths.home_dir="C:/"`.
+The pre-repair native Kernel explicitly configures `kernel_paths.home_dir="C:/"`.
 Its packaged canonical image also lacks a `/Home` directory. Correcting only a
 lookup in HomeSys or adapting the oracle to root would preserve the wrong public
 behavior. A repair needs the original home configuration and installed directory,
@@ -53,3 +53,26 @@ The candidate delta is saved in docs/patches/i386-default-home-prototype.patch.
 Production integration still needs an installed Home directory, current-source
 regressions and actual HomeSys/Once selection checks. Default Once/HomeSet and
 full desktop qualification remain open.
+
+The production repair is now applied locally: Kernel defaults to C:/Home and the
+image builder installs an empty Home directory in both content profiles. Fresh
+classic/cross build and source/module/filesystem/386 audits pass for the first
+Home epoch (`default-home-production-build-v1`), as do8MiB User255 and the public
+path oracle. The configured normal desktop independently passes
+`tools/test-i386-desktop-startup.py --require-home-once`: distinct Home/root
+markers prove that actual HomeSys Cd/include Once selects HOME. Original83-word
+geometry, actual HomeSys return, fresh42, task retirement and physical free-block
+state all pass (`default-home-desktop-independent-v1`), with unchanged inputs.
+The old image selects ROOT and fails this oracle with unchanged inputs
+(`desktop-home-once-before-v2`). V1 is explicitly excluded because a packaging
+helper changed during that run.
+
+The first Home epoch also exposes an invalid fragmentation assumption in a
+parser-memory diagnostic; see i386-parser-batch-budget.md. Its tested correction
+is applied locally. A second classic/cross build and guarded production queue
+are running before implementation commit. The queue includes User8MiB, home
+paths, diagnostics16MiB, actual HOME Once/desktop/physical reaping, then the
+existing startup workload on an independently packaged16MiB minimal-content
+image at8MiB RAM, without another QEMU running. The60-second gate remains intact.
+Default Once contents, HomeSet, full prompt/input/raster and whole-suite resource
+qualification remain open.

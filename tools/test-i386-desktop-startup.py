@@ -70,6 +70,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('image', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--require-home-once', action='store_true',
+                        help='Require actual include Once to select /Home rather than the root copy')
     args = parser.parse_args()
     source, out = args.image.resolve(), args.out.resolve()
     if out.exists():
@@ -80,7 +82,9 @@ def main():
     paths = [source, once, profile, Path(__file__).resolve(), ROOT/'Kernel/FontStd.HC',
              ROOT/'tools/test-i386-autocomplete-interaction.py',
              ROOT/'tools/test-i386-original-desktop-layout.py',
-             ROOT/'tools/package-i386-native-image.py']
+             ROOT/'tools/package-i386-native-image.py', ROOT/'tools/build-i386-kernel.py',
+             ROOT/'tools/test-i386-timeclock-welcome.py',
+             ROOT/'tools/test-i386-timeclock-reference.py']
     report = dict(result='running', ram_mib=64, cpu='486,-fpu', accel='kvm',
                   input_sha256={str(p): sha(p) for p in paths},
                   scope='Configured normal boot invokes whole HomeSys without host startup commands. Original geometry, retirement, fresh42 and physical record/free-block state. Configured Once at root and Home; not default Once, full prompt/input/raster or resource qualification.')
@@ -89,10 +93,15 @@ def main():
         pack = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))
         snapshot, package = pack['snapshot'], pack['package']
         original_files = snapshot(source.read_bytes())[1]
-        replacements = {p: once.read_bytes() for p in ('/Once.HC', '/Home/Once.HC') if p in original_files}
+        def marked_once(location):
+            first, body = once.read_bytes().split(b'\n', 1)
+            return first+b'\nLayoutReport("'+location.encode()+b' ONCE SELECTED\\n");\n'+body
+
+        replacements = {p: marked_once('HOME' if p.startswith('/Home/') else 'ROOT')
+                        for p in ('/Once.HC', '/Home/Once.HC') if p in original_files}
         additions = {'/Home/DesktopStart.HC': profile.read_bytes()}
         if '/Home/Once.HC' not in original_files:
-            additions['/Home/Once.HC'] = once.read_bytes()
+            additions['/Home/Once.HC'] = marked_once('HOME')
 
         def configured(raw):
             tree, files, directories = snapshot(raw)
@@ -120,9 +129,15 @@ def main():
         Guest = runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest']
         started = time.monotonic()
         guest = Guest(out/'working.img', out/'guest', True)
+        guest.wait('DONE original desktop layout\n', 180)
+        text = guest.collect()
+        selected = [name for name in ('HOME', 'ROOT') if name+' ONCE SELECTED\n' in text]
+        report['once_selected'] = selected
+        report['require_home_once'] = args.require_home_once
+        if len(selected) != 1 or args.require_home_once and selected != ['HOME']:
+            raise ValueError('Configured Once did not select the required Home location')
         guest.wait('DONE native desktop startup\n', 900)
         report['observed_startup_seconds'] = time.monotonic()-started
-        guest.wait('DONE original desktop layout\n', 120)
         guest.collect()
         match = re.search(r'DESKTOP BOOTSTRAP retire ([0-9A-Fa-f]+)\n', guest.collect())
         if not match:

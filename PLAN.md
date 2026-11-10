@@ -30484,3 +30484,25 @@ Kernel with C:/Home and configured Home files. Guest linking/install, independen
 boot/date/address/42 and prior-file preservation pass. Its tested source-only
 delta is preserved. Production directory/configuration integration and actual
 HomeSys/Once selection remain next; no additional inventory item is qualified.
+
+### C2/C4: Home selection passes; diagnostic packing assumption corrected
+
+The production Home configuration/directory change passes fresh classic/cross
+build and audits,8MiB User255 and the original public path oracle. An independent
+normal desktop run uses distinct Home/root Once markers and proves actual HOME
+selection, original geometry, actual HomeSys return, arithmetic and physical
+bootstrap reaping. The old image selects ROOT and fails with unchanged inputs.
+
+The diagnostic queue separately fails a live-heap packing assumption. Two traces
+prove one37-byte payload absorbs an unusable8-byte tail: one pair96 bytes, total
+5640 instead of5632, still128 allocations. The candidate retains real-task bulk
+ownership/recovery and moves the unchanged88-byte packing bound to a controlled
+fresh arena, adding an explicit absorbed-tail check. Both diagnostic/program
+phases, document recovery and complete386 audit pass in the prototype. No
+allocator/public API or numerical packing limit is weakened. See
+`docs/i386-parser-batch-budget.md`; invalid NULL-source v1 is excluded.
+
+Tested changes are applied locally; second production classic/cross build and
+guarded regressions run before implementation commit. A minimal16MiB-content
+8MiB-RAM isolated startup workload is queued with its unchanged60-second gate.
+All full desktop/application/resource/C1-C5 gates remain open, inventory2/686.

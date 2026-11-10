@@ -1,0 +1,72 @@
+--- a/Kernel/I386/CompilerParserMemoryProbe.HC
++++ b/Kernel/I386/CompilerParserMemoryProbe.HC
+@@ -1,3 +1,43 @@
++#include "/Kernel/I386/HeapInit.HC"
++U0 ProbeParserBatchBudget(CI386CompilerProbe *probe,CI386Heap *heap)
++{//Measure metadata packing independently from pre-existing heap fragmentation.
++  CI386Heap batch_heap;
++  CI386HeapBlock *block;
++  CCmpCtrl *cc;
++  U8 *arena,*payload,*guard,*batch[64];
++  I64 i,base_used,base_allocations,used=heap->used,allocations=heap->allocations;
++  arena=I386HeapAlloc(heap,16384,TRUE);
++  if(!arena || !I386HeapInit(&batch_heap,arena,16384))KernelStop;
++  //A fitting block may absorb a tail smaller than the minimum24-byte block.
++  payload=I386HeapAlloc(&batch_heap,48,FALSE);
++  guard=I386HeapAlloc(&batch_heap,8,FALSE);
++  if(!payload || !guard || !I386HeapFree(&batch_heap,payload))KernelStop;
++  payload=I386HeapAlloc(&batch_heap,37,TRUE);block=payload-16;
++  if(!payload || block->span!=64 || I386HeapSize(&batch_heap,payload)!=37 ||
++      !I386HeapFree(&batch_heap,payload) || !I386HeapFree(&batch_heap,guard) ||
++      batch_heap.used || batch_heap.allocations || !I386HeapValid(&batch_heap))KernelStop;
++  cc=probe->compiler->control_new(&batch_heap,"",CCF_DONT_FREE_BUF,
++    "Probe/ParserBatch.HC",probe->symbols,char_bmp_alpha_numeric,0);
++  if(!cc)KernelStop;
++  base_used=batch_heap.used;base_allocations=batch_heap.allocations;
++  for(i=0;i<64;i++) {
++    batch[i]=probe->compiler->parser_alloc(&batch_heap,cc,37,TRUE);
++    if(!batch[i] || I386HeapSize(&batch_heap,batch[i])!=37)KernelStop;
++    batch[i][0]=i;batch[i][36]=i^0x5A;
++  }
++  if(batch_heap.used-base_used>64*88 ||
++      batch_heap.allocations-base_allocations!=128)KernelStop;
++  for(i=63;i>=0;i--)
++    if(batch[i][0]!=i || batch[i][36]!=(i^0x5A) ||
++        !probe->compiler->parser_free(&batch_heap,cc,batch[i]))KernelStop;
++  if(batch_heap.used!=base_used || batch_heap.allocations!=base_allocations ||
++      !probe->compiler->control_del(&batch_heap,cc,0,0) ||
++      batch_heap.used || batch_heap.allocations || !I386HeapValid(&batch_heap) ||
++      !I386HeapFree(heap,arena) || heap->used!=used ||
++      heap->allocations!=allocations || !I386HeapValid(heap))KernelStop;
++  KernelLog("PARSER BATCH BUDGET ");KernelHex(probe->phase);KernelLog("\n");
++}
++
+ //Parser allocations preserve exact payload sizes and survive detached graphs.
+ U0 ProbeParserMemory(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
+ {
+@@ -19,15 +59,15 @@
+   if(!value || I386HeapSize(heap,value)!=37 || probe->compiler->parser_free(heap,outer,value)) KernelStop;
+   for(i=0;i<37;i++) if(value[i]) KernelStop;
+   if(!probe->compiler->parser_free(heap,cc,value) || probe->compiler->parser_free(heap,cc,value)) KernelStop;
+-  //Bound metadata overhead for many small declarations, without changing exact
+-  //payload sizes. The previous full ownership records consumed 96 bytes each.
++  //Exercise real task ownership on the existing, possibly fragmented heap.
++  //Packing is measured separately on a fresh arena below.
+   base_used=heap->used; base_allocations=heap->allocations;
+   for(i=0;i<64;i++) {
+     batch[i]=probe->compiler->parser_alloc(heap,cc,37,TRUE);
+     if(!batch[i] || I386HeapSize(heap,batch[i])!=37) KernelStop;
+     batch[i][0]=i; batch[i][36]=i^0x5A;
+   }
+-  if(heap->used-base_used>64*88 || heap->allocations-base_allocations!=128) KernelStop;
++  if(heap->allocations-base_allocations!=128) KernelStop;
+   for(i=63;i>=0;i--) {
+     if(batch[i][0]!=i || batch[i][36]!=(i^0x5A) ||
+         !probe->compiler->parser_free(heap,cc,batch[i])) KernelStop;
+@@ -75,5 +115,6 @@
+         heap->used!=used || heap->allocations!=allocations || !I386HeapValid(heap) ||
+         (GetRFlags&0x200)!=(flags&0x200)) KernelStop;
+   }
++  ProbeParserBatchBudget(probe,heap);
+   KernelLog("PARSER MEMORY PROBE "); KernelHex(probe->phase); KernelLog("\n");
+ }
