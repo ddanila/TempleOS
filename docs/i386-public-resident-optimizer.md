@@ -208,3 +208,19 @@ are excluded. The small cross-audit pins v6's module, receipt and patch. Its
 image packaging and actual 8 MiB startup job are running under
 `build/compiler-raw-headers-v6`; no runtime qualification is claimed yet. This
 is a prototype on the original-User/provider-lexer overlay, not production.
+
+The direct call-job v6 User8 run is now terminal FAIL. The kernel arena is
+completely allocated (0x66FA00/0x66FA00, largest free zero, allocation count
+0x4CBD) when a seven-byte identifier is requested. Caller PCs 0x1938B5 and
+0x192BDB resolve through the matching CompilerRuntime kind-1 exports to
+I386IdentPublish+0xD5 and LexIdentFinish+0x233. No resident optimizer publication
+occurs, and runtime inputs are unchanged. `user8-audit.json` pins the receipt
+and debug log. This does not establish whether the complete raw declaration load
+finished, so it cannot yet be attributed to the subsequent helper stage.
+
+A v7 diagnostic adds begin/end markers around that header ConsoleSource call;
+both its Console cross-build and exact module packaging pass, and its fresh
+User8 run is in flight. The separate v6 recovery64 test is also live and must
+be inspected before extending v2's recovery result to the new job path. Unique
+artifacts remain under their corresponding build directories. Neither variant
+is installed in production or counted as an 8 MiB pass.

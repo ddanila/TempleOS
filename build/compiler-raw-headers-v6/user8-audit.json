@@ -1,0 +1,16 @@
+{
+  "result": "expected-failure-observed",
+  "scope": "Direct header call-job User8 is not qualified",
+  "receipt_sha256": "3baeeda16a05678d2bac343c9566acd018b96871b07db5e40c0002b87a71cc0b",
+  "log_sha256": "55de5ad3e8d8f5c546dbcce3dd801414f4c84860389d2738d7403ce8705c7081",
+  "ram_mib": 8,
+  "request": 7,
+  "heap_used": 6748672,
+  "heap_size": 6748672,
+  "largest_free": 0,
+  "caller_exports": [
+    "I386IdentPublish+0xD5",
+    "LexIdentFinish+0x233"
+  ],
+  "inputs_unchanged": true
+}

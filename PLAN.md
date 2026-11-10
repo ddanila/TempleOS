@@ -30990,3 +30990,14 @@ in use. The corrected frozen v6 Console cross-build passes; its image/User8 run
 is in flight and must be inspected. Details and rejected builds are recorded in
 docs/i386-public-resident-optimizer.md. Production and all gates are unchanged;
 C1–C5 and original-User8 remain open.
+
+### C2/C4: direct header call job reaches complete kernel exhaustion at User8
+
+V6 User8 terminates on a seven-byte identifier request with all 0x66FA00 bytes
+of the kernel arena allocated and no free payload. Matching function exports
+locate I386IdentPublish/LexIdentFinish; no resident optimizer publication occurs.
+Receipt/log pins and unchanged input checks are recorded in user8-audit.json.
+A v7 diagnostic adds header compilation begin/end markers and has passed cross
+compilation and packaging; its User8 run remains live, as does v6 recovery64.
+These outcomes still require inspection; full C1–C5 and original-User8 remain
+open, with no production integration or resource gate change.
