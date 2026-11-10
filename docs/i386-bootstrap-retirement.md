@@ -99,3 +99,30 @@ whole HomeSys body after keyboard services are ready, and exits the bootstrap
 after the source call returns. No host startup commands are sent. This test is
 separate from default Once, original Home path/prompt/input/raster parity,
 resource profiles and full C1-C5 acceptance; those remain open.
+
+## Configured normal-boot prototype passes
+
+`desktop-normal-boot-full-v1/result.json` passes at64MiB KVM486,-fpu. With a
+profile file already in the image, the normal ConsoleKeys startup invokes
+MakeAC and the unchanged whole HomeSys body after keyboard services are ready.
+No host setup commands are issued. The post-source marker proves HomeSys has
+returned, rather than relying on a child COMMAND OK. The original83-word
+geometry matches, bootstrap22621920 is invalid from the surviving User, and
+fresh42 renders at column1,row43. Inputs remain unchanged. The complete386
+instruction audit also passes (`desktop-normal-boot-instruction-v1`).
+
+The optional hook delta is preserved as
+`docs/patches/i386-desktop-startup-profile-prototype.patch`. Its profile is
+`build/desktop-normal-boot-full-v1/DesktopStart.HC`; configured Once is the
+existing layout fixture. This does not qualify the default Once: native home
+is still C:/ rather than original C:/Home, and default Once services, full
+prompt/input/raster and resource/startup budgets remain open. Physical reaping
+is independently proved on the preceding explicit-handoff candidate, not by
+this normal-boot receipt alone.
+
+After both native-generation focused regression sets completed, the seven-file
+tested implementation was applied to production sources. A source-pinned classic
+rebuild/cross build and guarded minimal8MiB User,16MiB diagnostics and configured
+normal64MiB boot queue are running. These current-source results are required
+before treating production integration as verified. Historical prototype results
+and the archived pre-integration native generation are distinct epochs.

@@ -20114,6 +20114,12 @@
           "result": "pass",
           "evidence": "build/bootstrap-retirement-service-physical-v1/physical-audit.json",
           "scope": "Managed native Kernel/cross ConsoleRuntime candidate, explicit host-configured startup: original83-word geometry before/after, bootstrap TaskValidate false, fresh42, physical owned record removed and70448-byte allocation returned to coalesced80680-byte free block. Global services inherit immortal Adam; reference safety retained. Not normal boot, total heap recovery, default Once, full prompt/input/raster or production qualification. See docs/i386-bootstrap-retirement.md."
+        },
+        {
+          "target": "configured-normal-desktop-boot-prototype-64m",
+          "result": "pass",
+          "evidence": "build/desktop-normal-boot-full-v1/result.json",
+          "scope": "Optional startup file in image invokes unchanged whole HomeSys after services ready, no host setup commands. Direct post-source marker, original83-word geometry, retired bootstrap and fresh42 pixels. Complete386 audit/minimal without activation pass separately. Mixed native Kernel/cross Console; native home C:/ and configured Once. Default Once, original home/prompt/input/raster, physical reaping of this specific boot and full resource/compatibility qualification remain open."
         }
       ]
     },

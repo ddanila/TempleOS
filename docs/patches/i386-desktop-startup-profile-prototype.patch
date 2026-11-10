@@ -1,0 +1,19 @@
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -1492,6 +1492,16 @@
+     KernelLog("STARTUP source ok\n");
+   else KernelLog("STARTUP source error\n");
+   if(!NativeKeyboardStart) { KernelLog("KEYBOARD MESSAGE start failed\n"); KernelStop; }
++  //A profile can hand the temporary console over to the original desktop.
++  if(FileFind("::/Home/DesktopStart.HC",NULL,FUF_JUST_FILES)) {
++    if(ConsoleSource("#include \"::/Home/DesktopStart.HC\"\n","DesktopStartup.HC")) {
++      KernelLog("DONE native desktop startup\n");
++      KernelLog("DESKTOP BOOTSTRAP retire ");KernelHex(task);KernelLog("\n");
++      (*native_action_exit)();
++      KernelStop;
++    }
++    KernelLog("DESKTOP source error\n");
++  }
+   KernelLog("DONE native kernel startup\n");
+   NativeUserTaskCont;
+ }

@@ -392,3 +392,16 @@ later production changes. This preserves the exact qualification epoch.
 Generation-one User8MiB and diagnostics16MiB already pass. Generation-two focused
 regressions are separate and still running; full suite, full desktop behavior,
 resource/startup profiles and C1-C5 completion are not established by this chain.
+
+The repaired generation regression queue has now completed:
+`fallback-minimum-native-regressions-queue-v2/result.json` passes for both
+native target disks. Each passes actual8MiB User255 with managed-pointer pixel
+checkpoints/fresh42 and16MiB diagnostics with both program-probe phases,
+42/DocAllocationCheck13 and diagnostic load/growth recovery/unload. Generation-two
+User receipt SHA256 is
+`f4e18af7531f0cfee7efbf16a1c26e81f51a75f1cbaf12653a227773ca78643e`;
+its diagnostic receipt SHA256 is
+`8e387ed9be6a24598e9ecbaa1fca7515fbc4a109bd82e64651535a8ce6e005fd`.
+These are functional regressions, not isolated startup/resource measurements
+or the complete compatibility suite. Subsequent desktop-handoff source changes
+start a new qualification epoch; use pinned-candidate to audit this one.

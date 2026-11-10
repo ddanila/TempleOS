@@ -30423,3 +30423,18 @@ sources are archived and hash-checked under that run's pinned-candidate before
 any subsequent production edits. Generation-two User/diagnostic regressions
 remain live and separate. This is module-chain progress, not the full required
 suite/resource profiles or C1-C5 completion. Inventory stays2/686.
+
+### C2 normal-boot candidate and C5 focused regressions pass
+
+Configured desktop-normal-boot-full-v1 passes without host startup commands:
+normal service initialization invokes the unchanged whole HomeSys, waits for
+its actual return, retires bootstrap, matches original83-word geometry and
+renders fresh42. The no-activation minimal boot and full386 audit also pass.
+Default Once/home path, complete prompt/input/raster and resource budgets remain
+open. This configured prototype does not qualify the entire normal desktop.
+
+Both repaired native generations now pass their separate8MiB User255 and16MiB
+diagnostic queues. Source epochs remain explicit: all2455 pre-integration pins
+are preserved. The tested desktop handoff is now applied to production sources;
+source-pinned classic/cross rebuild and a guarded production regression queue
+are running, before implementation commit. Inventory qualification stays2/686.
