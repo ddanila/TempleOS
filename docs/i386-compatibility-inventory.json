@@ -13849,7 +13849,7 @@
           "command": "python3 tools/test-i386-module-zero.py --out ORIGINAL; python3 tools/test-i386-module-zero.py IMAGE --out NATIVE; python3 tools/test-i386-variable-init.py IMAGE --out JIT",
           "result": "pass",
           "evidence": "build/module-zero-fixed-v1/result.json",
-          "scope": "Original AOT/source-module storage with enabled0xA5 JIT fill: all uninitialized byte/I64/pointer/callback/37-byte array/nine-byte record storage is zero; explicit array/scalar values remain exact. Before-v2 rejects zi_callback at stage5; original-v2 and fixed-v1 match all eight named data models/sizes. Controls restore, fresh42 and prior files survive. Ordinary JIT globals/statics/stack patterns retain mask255. Complete native kernel modules/release generations and other storage/error/resource cases stay open; whole file/C1-C5 unqualified,2/686. See docs/i386-module-zero.md."
+          "scope": "Original AOT/source-module storage with enabled0xA5 JIT fill: all uninitialized byte/I64/pointer/callback/37-byte array/nine-byte record storage is zero; explicit array/scalar values remain exact. Before-v2 rejects zi_callback at stage5; original-v2 and fixed-v1 match all eight named data models/sizes. Controls restore, fresh42 and prior files survive. Ordinary JIT globals/statics/stack patterns retain mask255. Two complete native Kernel modules now reproduce except their fresh eight-byte dates (module-zero-native-kernels-v1); the first links, installs and boots with exact pixels/date/address (module-zero-native-kernel-boot-v1). Resident providers remain cross-built. Complete native release generations and other storage/error/resource cases stay open; whole file/C1-C5 unqualified,2/686. See docs/i386-module-zero.md."
         }
       ]
     },

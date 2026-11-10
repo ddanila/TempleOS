@@ -29941,3 +29941,28 @@ unchanged and the bare kernel remains458744 bytes. Complete native kernel
 packing and two native outputs are the next C5 gate; neither installed native
 generations nor full desktop/application qualification is claimed. Inventory
 stays2/686. See docs/i386-module-zero.md.
+
+### C5 component: two complete native kernel outputs reproduce and one boots
+
+module-zero-native-kernels-v1 passes two full128MiB 486,-fpu kernel builds.
+Both541825-byte modules contain all394 expected export names/kinds; every byte
+matches except each fresh eight-byte build date. The running kernel's public
+date stays fixed, fresh42 passes, and the complete prior file tree is preserved.
+This closes the callback global's stage5 packing failure on the real kernel.
+
+The first emitted module is linked with the five existing boot helpers through
+I386BuildBootImage and published by I386InstallBootImage onto a copied full
+volume with a blank boot area. module-zero-native-kernel-boot-v1 checks every
+boot-area byte against the independent oracle, preserves all prior target files
+except its actual Kernel module, then separately boots the465984-byte native
+flat kernel. Exact managed welcome/command pixels, its own build-date value and
+address0x16D3E8, fresh42 and an unchanged installed image pass.
+
+Both outputs are native module rebuilds; the booted image still uses existing
+cross-built resident providers. These are not two complete installed native
+release generations or full suite/profile qualification. Full C1-C5 stay open
+at2/686. See docs/i386-module-zero.md.
+
+The current candidate also passes isolated normal8MiB startup in54.512s
+(module-zero-startup-8m-v1), with live WinMgr, exact welcome/42 pixels and
+unchanged input pins. This is the existing60-second baseline subgate only.

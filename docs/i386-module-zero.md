@@ -45,9 +45,34 @@ python3 tools/test-i386-variable-init.py IMAGE --out JIT
 python3 tools/test-i386-system-build-date.py IMAGE --native-kernel --out KERNELS
 ```
 
-The native kernel check must still finish and verify two emitted modules. It
-compares all native module bytes except each fresh eight-byte date, validates
-export names/kinds against the cross module, and preserves the running kernel's
-public date and prior files. This component check does not replace installed
-native generations, their complete application/desktop suite, or C5 profiles.
+The native kernel check passes at `module-zero-native-kernels-v1`. Two complete
+native builds at128MiB produce541825-byte modules with all394 expected export
+names/kinds. Every byte matches except each fresh eight-byte build timestamp.
+The running kernel's public date remains unchanged; fresh42 passes and the full
+prior file tree is preserved. This closes the recorded kernel packing failure.
+
+`tools/test-i386-native-kernel-boot.py` links an emitted native Kernel with the
+five existing boot helpers using I386BuildBootImage. It writes that module into
+a copied full volume and publishes its boot area through I386InstallBootImage
+onto a target whose boot area starts blank. The test independently checks all
+boot-area bytes, preserves every prior target file except the replaced Kernel
+module, and boots the installed target in a separate486,-fpu guest. Both public
+build-date value and address must match that native module, with exact managed
+welcome/command pixels and fresh42. Booting must leave the installed image exact.
+
+`module-zero-native-kernel-boot-v1` passes for the first emitted module. The
+linked flat kernel is465984 bytes, and its public build date resides at
+0x16D3E8. The observed first module captured while the second build ran is
+byte-identical to the final first output; the boot test uses those actual bytes.
+This is one native Kernel component installed with existing cross-built resident
+providers, not a fully native OS generation. Two complete installed native
+release generations, the application/desktop suite and C5 profiles remain open.
 Inventory stays2/686; full C1-C5 remain open.
+
+```sh
+python3 tools/test-i386-native-kernel-boot.py IMAGE EMITTED_KERNEL --out BOOT
+```
+
+The current candidate also passes isolated normal8MiB startup in54.512s
+(module-zero-startup-8m-v1), with live WinMgr, exact welcome/42 pixels and
+unchanged input pins. This is the existing60-second baseline subgate only.
