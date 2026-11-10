@@ -78,8 +78,12 @@ U0 NativeKeyboardWorker(U8 *data)
 {
   KernelLog("KEYBOARD MESSAGE worker\n");
   SetRFlags(GetRFlags|512);
+  I64 batch;
   while(TRUE) {
-    NativeKeyboardPump;
+    //Drain a bounded batch before yielding: document work can make a scheduler
+    //turn much longer than a hardware key interval. Preserve per-event IRQ
+    //restoration, ordering and timestamps, and yield under continuous input.
+    for(batch=0;batch<64;batch++)if(!NativeKeyboardPump)break;
     I386SchedYield(I386TaskSelf->owner);
   }
 }

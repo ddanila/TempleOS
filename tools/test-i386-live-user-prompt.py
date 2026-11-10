@@ -17,6 +17,24 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def input_counters(memory, files, log):
+    """Decode software input-loss counters from stopped memory and loaded modules."""
+    symbols=runpy.run_path(str(ROOT/'tools/test-i386-desktop-startup.py'))['symbols']
+    kernel=symbols(files['/Modules/I386/Kernel.t32m'][2])
+    queue=0x100008+kernel['kernel_input']
+    head,count,dropped=struct.unpack_from('<3I',memory,queue)
+    if head>=64 or count>64:raise ValueError('Invalid decoded raw keyboard queue')
+    console=symbols(files['/Modules/I386/ConsoleRuntime.t32m'][2])
+    match=re.search(r'^CONSOLE ([0-9A-F]+)',log,re.M)
+    if not match:raise ValueError('Missing loaded console address')
+    loss_address=int(match[1],16)+8+console['native_keyboard_losses']
+    losses=struct.unpack_from('<q',memory,loss_address)[0]
+    if losses<0:raise ValueError('Invalid decoded keyboard loss counter')
+    return dict(raw_queue_address=queue,raw_head=head,raw_count=count,raw_dropped=dropped,
+                native_keyboard_losses=losses,native_losses_address=loss_address,
+                scope='Stopped software raw ring and decoded/post-loss counters; zero does not rule out earlier controller/IRQ-masking loss.')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--disk', type=Path, help='Normal native image; omit for pinned original')
@@ -25,15 +43,18 @@ def main():
                         help='After the complete prompt oracle, require physical Exit and native task storage reclamation')
     parser.add_argument('--recovery', action='store_true',
                         help='Require exception/compiler-error/physical Ctrl+Alt+C recovery, then physical retirement')
+    parser.add_argument('--document-pressure', action='store_true',
+                        help='Run recovery while concurrently saving the input document; require no native input losses')
     args = parser.parse_args()
+    if args.document_pressure:args.recovery=True
     if args.recovery:args.retirement=True
     out = args.out.resolve()
     if out.exists():
         parser.error('Use a fresh output directory')
-    fixture = ROOT/'tests/guest/i386-live-user-prompt'/('RecoveryObserver.HC' if args.recovery else 'RetiringObserver.HC' if args.retirement else 'Observer.HC')
+    fixture = ROOT/'tests/guest/i386-live-user-prompt'/('PressureObserver.HC' if args.document_pressure else 'RecoveryObserver.HC' if args.recovery else 'RetiringObserver.HC' if args.retirement else 'Observer.HC')
     oracle_path = ROOT/'tests/i386/live-user-prompt-reference.json'
     oracle = json.loads(oracle_path.read_text())
-    recovery_path=ROOT/'tests/i386/live-user-recovery-reference.json'
+    recovery_path=ROOT/'tests/i386'/('live-user-pressure-reference.json' if args.document_pressure else 'live-user-recovery-reference.json')
     recovery=json.loads(recovery_path.read_text()) if args.recovery else None
     if sha(fixture) != (recovery['fixture_sha256'] if args.recovery else oracle['retirement_fixture_sha256' if args.retirement else 'fixture_sha256']):
         raise ValueError('Fixture differs from pinned reference oracle')
@@ -52,7 +73,7 @@ def main():
     (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     report = dict(result='running', mode='native' if args.disk else 'pinned-original',
                   scope='Physical keyboard into a normal User child; idle prompt task state and complete serialized documents before input and after integer/float commands. No replacement input/prompt loop. Buffers/parent namespace retained for capture; not cleanup, full raster or complete terminal qualification.',
-                  retirement_required=args.retirement, recovery_required=args.recovery,
+                  retirement_required=args.retirement, recovery_required=args.recovery, document_pressure=args.document_pressure,
                   commands=list(COMMANDS), input_sha256={str(p):sha(p) for p in paths})
     if args.retirement:
         report['scope'] += ' Extended retirement mode requires physical Exit, public invalidity and, on native, managed-record absence plus a free containing heap block. Parent observation buffers remain live; not total heap recovery.'
@@ -198,10 +219,24 @@ def main():
                 files = pack['snapshot'](image.read_bytes())[1]
                 report['physical_reaping'] = runpy.run_path(str(ROOT/'tools/test-i386-desktop-startup.py'))['physical_state'](
                     physical.read_bytes(), files, guest.collect(), child, subject='User child')
+                if args.document_pressure:
+                    report['input_counters']=input_counters(physical.read_bytes(),files,guest.collect())
+                    if report['input_counters']['raw_dropped'] or report['input_counters']['native_keyboard_losses']:
+                        raise ValueError('Input loss during concurrent document saving')
                 guest.call('cont')
         report['result'] = 'pass'
     except BaseException as exc:
         report.update(result='fail', error=str(exc))
+        if args.document_pressure and args.disk and guest and guest.p.poll() is None:
+            try:
+                guest.call('stop')
+                physical=out/'failure-physical.bin'
+                guest.call('pmemsave',val=0,size=64*1024*1024,filename=str(physical))
+                files=pack['snapshot'](image.read_bytes())[1]
+                report['input_failure_snapshot']=input_counters(physical.read_bytes(),files,guest.collect())
+                report['input_failure_snapshot']['physical_sha256']=sha(physical)
+                guest.call('cont')
+            except Exception as capture_error:report['input_snapshot_error']=str(capture_error)
         if guest and guest.p.poll() is None:
             try:
                 guest.screenshot('failure')

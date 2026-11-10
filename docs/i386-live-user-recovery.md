@@ -88,3 +88,10 @@ This extends the ownership prototype's evidence to these selected exception,
 compiler-error and yielding-loop break paths before Exit. Production remains
 unchanged. Minimal-memory support, input pressure, broader errors and full
 C1-C5/inventory qualification remain open.
+
+
+The later versioned `--document-pressure` regression reproduces the concurrent
+DocSave input-loss case with physical raw-ring drops, then passes with bounded
+keyboard batching and zero loss counters. See
+`docs/i386-keyboard-input-pressure.md`. This qualifies that selected pressure
+case without extending it to all input rates or complete desktop concurrency.

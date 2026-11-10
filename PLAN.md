@@ -30780,3 +30780,27 @@ See `docs/i386-live-user-recovery.md` for receipts and reproduction. The existin
 8 MiB failure, startup budget, broader error/concurrency/lifetime cases, native
 generations and full inventory remain open. Production is unchanged; C1-C5 and
 inventory 2/686 are not qualified by these selected checks.
+
+
+### C2 keyboard batching fixes observed document-save input loss
+
+A versioned continuous-DocSave pressure regression now reproduces the earlier
+shortened-input observation. The original passes; unbatched native submits the
+full host key sequence but loses input before parsing. A stopped physical
+snapshot records raw-ring drops and decoded loss resets (six/two in the initial
+diagnostic, two/two in the versioned run).
+
+Production NativeKeyboardWorker now drains at most 64 decoded events per turn
+before yielding, preserving per-pump IRQ restoration, FIFO order, timestamps and
+existing loss handling. Queue size, public ABI and actor stack are unchanged.
+The batched original-loop image passes the exact prompt, error/break recovery,
+full function echo and physical reclamation workload with zero loss counters.
+An independent audit reconstructs the submitted function from raw key events.
+
+A separate production-only cross candidate differs only in KeyboardMessages;
+its complete386/packaging audits, unchanged 8 MiB managed-pointer User regression
+and configured Home Once/geometry/fresh42/bootstrap reclamation tests pass.
+ConsoleRuntime grows by 136 bytes. See `docs/i386-keyboard-input-pressure.md` for
+receipts and identities. The original-loop memory failure, startup budget,
+broader concurrency, rebuilding profiles, current native generations and full
+inventory remain open. C1-C5 and inventory 2/686 are not complete.
