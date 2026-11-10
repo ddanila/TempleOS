@@ -20102,6 +20102,12 @@
           "result": "fail",
           "evidence": "build/user-scalar-tiled-before-v2/result.json",
           "scope": "Valid collector records successful actual6*7, task answer42 and serialized42 line in a39-column User while bootstrap stays alive. Handoff helper/conditional history leaves horizontal scroll and line_start_col1; independent42 glyph check fails. Full-width and a different long-command narrow control pass. Original DocBottom experiment remains red at build/user-scalar-tiled-after-v1/result.json. Invalid first cur_x/cur_y collector is excluded. No production repair or full desktop/raster qualification; see docs/i386-user-scalar-cursor.md."
+        },
+        {
+          "target": "user-scalar-cursor-layout-experiment",
+          "result": "pass",
+          "evidence": "build/user-scalar-tiled-cursor-v1/result.json",
+          "scope": "Disposable mixed candidate requests original NORMAL|HAS_CURSOR layout at the new-line end cursor before adding prompt. Exact previously failing39-column history keeps answer42/type10, flags, bounds and serialized tail unchanged, resets actual cursor-derived horizontal scroll/line_start_col from1 to0, and matches42 glyphs at column1,row43. Independent raw-state comparison at build/user-scalar-cursor-audit-v1/result.json. Complete386 and8MiB welcome42/DocAllocationCheck13 pass; retirement and User8M checks continue. Not production/full original prompt/raster/resource or C1-C5 qualification."
         }
       ]
     },

@@ -30382,3 +30382,14 @@ requests cursor-tracking original layout before adding the next prompt and has
 a guarded cross-build/audit/install/scalar/retirement/minimal-User queue running.
 No production viewport repair or complete prompt/desktop/resource pass is claimed.
 See docs/i386-user-scalar-cursor.md.
+
+The explicit cursor-tracking candidate now passes the exact controlled User case:
+user-scalar-tiled-cursor-v1 keeps answer42/type10, document flags,39-column bounds
+and serialized command/result tail unchanged; horizontal scroll/line_start_col
+become0 and42 glyphs match at column1,row43. The tested source requests
+DocRecalc(NORMAL|HAS_CURSOR) at the end cursor before adding the prompt, rather
+than assigning a scroll position. Complete386 audit and independent8MiB
+welcome/42/DocAllocationCheck13 also pass. The separate source delta is preserved
+as docs/patches/i386-console-prompt-cursor-prototype.patch. The guarded retirement
+and8MiB User checks continue; this is not production/full prompt or C1-C5
+qualification.

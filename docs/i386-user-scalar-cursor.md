@@ -39,3 +39,20 @@ installation, identical User case, retirement workflow and8MiB User regression
 are queued under `bootstrap-prompt-cursor-queue-v1`. Production source remains
 pinned for native qualification. Full original CmdLinePmt/GetStr integration,
 differential desktop raster/input and resource coverage are separate requirements.
+
+The cursor-tracking variant now passes that identical controlled case
+(`build/user-scalar-tiled-cursor-v1/result.json`). Stored answer/type/document
+flags and39-column geometry remain unchanged; horizontal scroll and
+line_start_col become0 and all42 glyph pixels match at column1,row43. The
+serialized command/result tail is unchanged. The exact tested call is
+DocRecalc(doc,RECALCt_NORMAL|RECALCF_HAS_CURSOR) after setting the end cursor
+and before adding the prompt. It tracks the actual cursor instead of assigning
+a chosen scroll value. Original DocBottom's normal layout call alone was
+insufficient for this case.
+
+The separate tested delta is preserved in
+`docs/patches/i386-console-prompt-cursor-prototype.patch`. Its mixed candidate
+passes complete386 audit and independent8MiB welcome/42/DocAllocationCheck13.
+The full explicit retirement workflow and separate8MiB User case remain running
+under the guarded queue. Production integration, original prompt behavior,
+differential full raster and resource qualification remain open.
