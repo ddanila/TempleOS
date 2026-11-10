@@ -20108,6 +20108,12 @@
           "result": "pass",
           "evidence": "build/user-scalar-tiled-cursor-v1/result.json",
           "scope": "Disposable mixed candidate requests original NORMAL|HAS_CURSOR layout at the new-line end cursor before adding prompt. Exact previously failing39-column history keeps answer42/type10, flags, bounds and serialized tail unchanged, resets actual cursor-derived horizontal scroll/line_start_col from1 to0, and matches42 glyphs at column1,row43. Independent raw-state comparison at build/user-scalar-cursor-audit-v1/result.json. Complete386 and8MiB welcome42/DocAllocationCheck13 pass; retirement and User8M checks continue. Not production/full original prompt/raster/resource or C1-C5 qualification."
+        },
+        {
+          "target": "configured-desktop-candidate-physical-bootstrap-retirement",
+          "result": "pass",
+          "evidence": "build/bootstrap-retirement-service-physical-v1/physical-audit.json",
+          "scope": "Managed native Kernel/cross ConsoleRuntime candidate, explicit host-configured startup: original83-word geometry before/after, bootstrap TaskValidate false, fresh42, physical owned record removed and70448-byte allocation returned to coalesced80680-byte free block. Global services inherit immortal Adam; reference safety retained. Not normal boot, total heap recovery, default Once, full prompt/input/raster or production qualification. See docs/i386-bootstrap-retirement.md."
         }
       ]
     },
