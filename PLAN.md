@@ -30695,3 +30695,30 @@ This establishes the missing normal UserTaskCont/CmdLinePmt/GetStr/ExeCmdLine
 integration check; no compatibility item is newly qualified. Native still uses
 the reduced input/answer loop. See `docs/i386-live-user-prompt.md` for reproduction
 and receipt identities. C1-C5 and inventory2/686 remain open.
+
+### C2 original-loop prototype passes documents, resource gates remain red
+
+The disposable original child-User loop now passes the unchanged versioned live
+prompt oracle at64MiB, using actual original Lex/ExeCmdLine/CmdLinePmt/GetStr
+behavior. It bridges XTalk's queued text into ScanMsg and clears AWAITING_MSG
+when input is published/consumed. A physical snapshot of the first stalled
+candidate proves the awaiting child still had its complete initializer at
+offset0. V2 cross-build/instruction/full-document checks pass; source/module/
+image/patch identities are independently checked.
+
+The existing8MiB User regression fails an80-byte allocation while loading public
+compiler support. A corrected post-prompt physical Exit diagnostic passes on
+the original, but native leaves a managed task record after public validity
+ends. Its public compiler-control queue is not covered by native teardown.
+The invalid initial widened pointer serialization is excluded.
+
+The preserved patch is `docs/patches/i386-original-user-loop-prototype.patch`;
+it is deliberately not applied to production. A full resident shared-lexer
+follow-up, retaining token cases and shared mutable bitmaps, has cross-built
+with an explicit LexIncludeStr dependency. V7 instruction and complete live
+prompt checks pass at 64 MiB; the 8 MiB regression fails the original stack
+allocation. All 24 public-lexer output values match, but its initial harness
+rejects the resident initialization marker; explicit storage-mode verification
+retains strict initialization counts and all behavioral checks. No resource
+gate is waived or new compatibility item qualified. See `docs/i386-original-user-loop-prototype.md`. C1-C5, production
+startup qualification and inventory2/686 remain open.

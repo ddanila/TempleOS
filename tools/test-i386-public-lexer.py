@@ -16,7 +16,8 @@ def expected_bytes(count=24):
     return struct.pack(f"<{count}q",*([1]*count))
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);mode=ap.add_mutually_exclusive_group();mode.add_argument('--attachment',action='store_true',help='Check public document attachment and ownership without character lexing');mode.add_argument('--characters',action='store_true',help='Check raw character, include ownership and document input instead of tokens');ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);ap.add_argument('--ram-mib',type=int,default=16);args=ap.parse_args();out=args.out.resolve()
+    ap=argparse.ArgumentParser(description=__doc__);mode=ap.add_mutually_exclusive_group();mode.add_argument('--attachment',action='store_true',help='Check public document attachment and ownership without character lexing');mode.add_argument('--characters',action='store_true',help='Check raw character, include ownership and document input instead of tokens');ap.add_argument('--lexer-storage',choices=['source','resident'],default='source',help='Require exactly one initialization marker for the selected lexer implementation');ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);ap.add_argument('--ram-mib',type=int,default=16);args=ap.parse_args();out=args.out.resolve()
+    if args.lexer_storage=='resident' and (not args.disk or args.characters or args.attachment):ap.error('Resident storage requires a native token test')
     if out.exists():ap.error('Use a fresh output directory')
     fixture=ROOT/'tests/guest/i386-public-lexer'/('Attachment.HC' if args.attachment else 'Characters.HC' if args.characters else 'Contract.HC')
     includes=sorted(fixture.parent.glob('PublicLexer*.HC'))
@@ -27,6 +28,7 @@ def main():
     if args.characters:report['scope']='Sixteen public raw-character checks: cursor skipping, newline/putback, normalization, EOF, include resumption and ownership, document input and heap cleanup; prompt and error unwind remain separate.'
     if args.attachment:report['scope']='Twelve public LexAttachDoc checks: supplied document/file/entry, cursor bounds, root resumption state, owning/borrowed cleanup and original empty-document ownership.'
     report['target_flags'] = 'CCF_TARGET_I386' if args.disk else '0'
+    report['lexer_storage']=args.lexer_storage
     report['attachment_mode']=args.attachment
     report['character_mode']=args.characters
     (out/'fixture.HC').write_bytes(fixture.read_bytes());(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
@@ -62,8 +64,12 @@ def main():
             if actual!=want:raise ValueError(name+' differs from independent byte oracle')
         if args.disk:
             if not args.characters and not args.attachment:
-                report['system_loads']=g.collect().count('PUBLIC LEX loaded\n')
-                if report['system_loads']!=1:raise ValueError('Expected one normal lexer load')
+                log=g.collect()
+                report['system_loads']=log.count('PUBLIC LEX loaded\n')
+                report['resident_initializations']=log.count('PUBLIC LEX resident\n')
+                expected_loads=(1,0) if args.lexer_storage=='source' else (0,1)
+                if (report['system_loads'],report['resident_initializations'])!=expected_loads:
+                    raise ValueError('Expected exactly one '+args.lexer_storage+' lexer initialization and none for the other storage mode')
             g.command('6*7;');report['arithmetic_pixels']=g.result_pixels()
             g.close();g=None
             after=pack['snapshot'](image.read_bytes())[1]

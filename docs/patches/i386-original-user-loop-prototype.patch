@@ -1,0 +1,121 @@
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -2059,6 +2059,17 @@
+   NativePrsSupportLoad;invoke=native_jit_support.stream;(*invoke)(cc);
+ }
+ 
++I64 NativeTerminalExecute(CCmpCtrl *cc)
++{
++  CHashFun *entry;
++  I64 (*invoke)(CCmpCtrl *cc);
++  if(!cc || !cc->lex_include_stk)throw('Compiler',TRUE);
++  NativePrsSupportLoad;
++  entry=HashFind("ExeCmdLine",native_jit_support.symbols,HTT_FUN);
++  if(!entry || !entry->exe_addr)throw('CmdLine',TRUE);
++  invoke=entry->exe_addr;return (*invoke)(cc);
++}
++
+ //Assembly is independent of expression publication and loads only when requested.
+ U0 NativeAsmSupportLoad()
+ {
+--- a/Kernel/I386/KeyDevRuntime.HC
++++ b/Kernel/I386/KeyDevRuntime.HC
+@@ -8,8 +8,13 @@
+ }
+ #define KEYDEV_SCAN_CODE (console_config->reader->state.keys.locks)
+ #include "/Kernel/KeyDevOutputCore.HC"
++extern Bool NativeTerminalQueuedKey(CI386KeyEvent *event);
+ I64 ScanMsg(I64 *a=NULL,I64 *b=NULL,I64 mask=~1,CTask *task=NULL)
+ {
++  CI386KeyEvent event;
++  if((!task || task==Fs) && (mask&(1<<MSG_KEY_DOWN)) && NativeTerminalQueuedKey(&event)) {
++    if(a)*a=event.ch;if(b)*b=event.scan;return MSG_KEY_DOWN;
++  }
+   return (*native_public_scan_msg)(a,b,mask,task);
+ }
+ #include "/Kernel/KeyScanCore.HC"
+--- a/Kernel/I386/Terminals.HC
++++ b/Kernel/I386/Terminals.HC
+@@ -338,6 +338,29 @@
+   } while(terminal!=start);
+   return TRUE;
+ }
++extern I64 NativeTerminalExecute(CCmpCtrl *cc);
++U0 NativeOriginalTerminalInput()
++{//Terminal key-input-execute loop.
++  CCmpCtrl *cc;
++  CDoc *doc;
++  Bool cont=TRUE;
++  do {
++    cc=CmpCtrlNew(,CCF_CMD_LINE|CCF_PMT|CCF_QUESTION_HELP);
++    QueIns(cc,Fs->last_cc);
++    try {
++      Lex(cc);
++      NativeTerminalExecute(cc);
++      cont=Bt(&cc->flags,CCf_PMT);
++      QueRem(cc);
++      CmpCtrlDel(cc);
++    } catch {
++      if ((doc=Fs->put_doc) && doc->doc_signature==DOC_SIGNATURE_VAL)
++	DocUnlock(doc);
++      PutExcept;
++    }
++  } while (cont);
++}
++
+ U0 NativeUserTaskCont()
+ {
+   CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
+@@ -347,7 +370,10 @@
+   terminal->running=TRUE;
+   do {
+     retry=FALSE;
+-    try { NativeTerminalInput; }
++    try {
++      if(terminal!=native_terminal_root)NativeOriginalTerminalInput;
++      else NativeTerminalInput;
++    }
+     catch {
+       //Like UserTaskCont, keep the user's task and definitions after a break.
+       I386TaskSelf->catch_except=TRUE;
+@@ -399,9 +425,10 @@
+ U0 NativeUserCmdLine(I64 dummy=0) { NativeUserConsoleStart(FALSE); }
+ U0 NativeUserHotkey(U8 *data) { NativeUserConsoleStart(TRUE); }
+ 
+-I64 NativeTerminalInputKey(CI386KeyEvent *event)
+-{
+-  CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
++Bool NativeTerminalQueuedKey(CI386KeyEvent *event)
++{
++  CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
++  if(!terminal)return FALSE;
+   CNativeTextInput *input;
+   I64 ch;
+   U32 flags;
+@@ -415,11 +442,17 @@
+       if(!terminal->input_head) terminal->input_tail=NULL;
+     } else input=NULL;
+     event->type=MSG_KEY_DOWN; event->ch=ch; event->scan=0;
++    I386TaskSelf->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_AWAITING_MSG);
+     I386IrqRestore(flags);
+     if(input) { Free(input->text); Free(input); }
+     return 1;
+   }
+   I386IrqRestore(flags);
++  return FALSE;
++}
++I64 NativeTerminalInputKey(CI386KeyEvent *event)
++{
++  if(NativeTerminalQueuedKey(event))return 1;
+   return NativeReadKey(console_config->reader,event,FALSE);
+ }
+ U0 NativeTaskWait(CTask *task=NULL,Bool cmd_line_pmt=FALSE)
+@@ -473,7 +506,7 @@
+   if(terminal->input_tail) terminal->input_tail->next=input;
+   else terminal->input_head=input;
+   terminal->input_tail=input;
+-  task->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_CMD_LINE_PMT);
++  task->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_CMD_LINE_PMT|1<<TASKf_AWAITING_MSG);
+   I386SchedWake(task(CI386Task *)->owner,task);
+   I386IrqRestore(irq);
+ }

@@ -67,3 +67,8 @@ reduced answer presentation through `NativeUserTaskCont`. Original
 UserTaskCont/CmdLinePmt/GetStr/ExeCmdLine integration, editing, interruption,
 recovery, persistence and broader desktop workflows remain open. Inventory
 stays2/686; C1-C5 are not complete.
+
+A disposable original-loop integration now passes this unchanged oracle at64MiB,
+but fails the existing8MiB User and physical reclamation checks. See
+`docs/i386-original-user-loop-prototype.md` and its preserved patch. Production
+is unchanged; the green prompt check alone does not qualify the integration.
