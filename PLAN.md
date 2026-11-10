@@ -29997,3 +29997,25 @@ This tests building/persisting the probe, not executing its diagnostic vectors.
 The two existing retained-provenance guard tests and syntax checks pass.
 Nine-provider building, full native installation, both complete generations
 and the application/profile suite remain open; full C1-C5 stay2/686.
+
+### C5 components: native ConsoleRuntime installs at8MiB; native program probe runs
+
+ConsoleRuntime completes native packing in the original nine-provider job:
+2747254 bytes and all1625 named exports match the cross contract, including
+1421 functions and204 data exports. The exact first persisted output is saved
+before the remaining builds continue. module-zero-console-native-install-v1
+installs it through guest FileDel/FileMove and separately boots at8MiB with
+live WinMgr. Arithmetic42, DocAllocationCheck13, fresh42 pixels and one
+load/growth-recovery/unload pass. Only ConsoleRuntime changes in the preserved
+candidate's file tree. The writable boot copy preserves every prior file and
+adds only expected AllocRead.DD (read plus05); it is not raw-byte unchanged.
+The source and preserved candidate hashes remain exact.
+
+The temporary native program probe completes both diagnostic phases exactly
+once at16MiB (module-zero-native-auxiliary-diagnostic-v1), then normal source
+startup and exact welcome/42 pixels pass. Its diagnostic image/input pins stay
+exact. Native console/probe executable ranges pass the existing386 allowlist
+(module-zero-native-components-instruction-v1). Other modules in these component
+checks remain cross-built, and concurrent-job timing is not a profile claim.
+The original job continues with the other eight providers. Both complete native
+generations, full application/desktop suite and profiles remain open,2/686.

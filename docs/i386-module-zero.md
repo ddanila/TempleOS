@@ -106,3 +106,27 @@ exports match the cross reference, exact fresh42 pixels, unchanged prior file
 tree and unchanged inputs. The probe's diagnostic vectors have not been run by
 this build test. Installation and complete native generations remain separate
 required gates; the nine-provider native build is still in progress.
+
+The emitted native program probe also executes successfully in diagnostic boot
+at16MiB (`module-zero-native-auxiliary-diagnostic-v1`). Only that module is
+replaced in a disposable image with the existing diagnostic flag enabled.
+Both program-probe phases complete exactly once, then normal source startup,
+exact welcome/command pixels and fresh42 pass. The diagnostic image and all
+inputs remain unchanged. This is functional evidence with other cross-built
+modules, not a native generation or isolated timing profile.
+
+ConsoleRuntime is the first completed provider in the nine-provider build.
+The observed2747254-byte module has all1625 named exports matching the cross
+reference (1421 functions,204 data). `module-zero-console-native-install-v1`
+installs those exact bytes through guest FileDel/FileMove, then boots them
+separately at8MiB with a live WinMgr. Arithmetic42, DocAllocationCheck13,
+exact final42 pixels, and one diagnostic load/growth-recovery/unload pass.
+The preserved candidate differs from the canonical file tree only at the
+ConsoleRuntime module. The writable boot copy preserves every prior file and
+adds only the check's expected `/AllocRead.DD`, containing `read` plus byte05.
+It is not raw-byte unchanged; the source and preserved candidate are unchanged.
+
+The native console/probe executable ranges also pass the existing386 allowlist
+(`module-zero-native-components-instruction-v1`), among otherwise cross-built
+modules. The other eight native providers and complete installed generations
+remain pending. Inventory remains2/686; full C1-C5 remain open.
