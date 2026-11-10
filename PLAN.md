@@ -30525,3 +30525,25 @@ unqualified. Keep that target and workload unchanged. Paused CPU/stack profiling
 is live; profiling times are not benchmark evidence. A direct pre-change timing
 comparison remains needed. C5/resource profiles/full terminal/desktop/apps and
 C1-C5 remain open, inventory2/686; no release qualification is claimed.
+
+### C5 startup investigation: measured parser selector improvement
+
+An isolated paused profile records837 samples; root declarations and startup
+are dominated by checked heap operations and the private known-valid parser
+allocation traversal. A compact386 traversal keeps the same physical first/last
+fit, validation prerequisites, public boundaries, sizes, zeroing and failures.
+Both heap validators pass33806 explicit/differential/read-only/IRQ-state checks.
+The versioned heap-parser-select mode reports only that actual corpus; borrowed
+prototype backing labels do not qualify unrelated tests.
+
+The cross-built compiler candidate passes complete386, guest provider replacement,
+independent8MiB welcome/42/Doc13 and16MiB full diagnostics/recovery. Sequential
+isolated timing with the unchanged nine-command minimal workload and exact
+standard-pointer oracle measures206.3296s before and161.9011s candidate (21.53%
+lower in this pair). The60-second gate remains FALSE, not waived. The older
+no-pointer expectation is independently shown to differ only at17 pointer pixels;
+the actual frame matches all307200 pixels of the existing standard-pointer oracle.
+
+The tested improvement is applied locally and fresh production build/regressions
+are running. Startup still needs substantial further work; all C1-C5/full-suite
+qualification remains open2/686. See docs/i386-startup-parser-selector.md.
