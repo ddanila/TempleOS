@@ -140,3 +140,14 @@ receipts and startup logs are under `build/compiler-preload[-original]-v1/v2`.
 These failed experiments do not qualify the original-User 8 MiB gate. The next
 approach must avoid rich include-document pressure without adding these
 permanent declarations before the initial task allocation.
+
+A subsequent source-only flattening experiment in `build/compiler-flat-headers-v1`
+replaces only SystemCompilerA.HH with the complete recursively expanded canonical
+CompilerA dependency graph (9,541 bytes). Every dependency byte and include guard
+is retained; modules and all other installed files are unchanged. At 8 MiB the
+original-User startup oracle still fails on an 80-byte public allocation before
+optimizer publication (used/reserved 0xFFC80/0x100800, backing 0x118000 fully used).
+This rules out merging those six nested include files alone as a sufficient fix.
+The experiment is not installed in production. Its packaging script and receipts
+pin all seven canonical inputs; runtime failure inputs are unchanged. A scoped
+raw-source delivery path remains to be implemented and qualified.

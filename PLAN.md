@@ -30944,3 +30944,13 @@ only 2,840 bytes in its largest free block. Full SystemCompiler preload also
 fails. Keep these variants diagnostic-only. Details, receipts and next constraint
 are in docs/i386-public-resident-optimizer.md. Original-User8, full C1–C5,
 inventory and native-generation qualification remain open.
+
+### C2/C4: complete CompilerA flattening alone does not recover User8
+
+A source-only candidate expands all six canonical CompilerA dependencies into
+one private header, retaining every declaration/guard. Exact packaging checks
+leave all modules and other files unchanged. Original-User8 still fails on an
+80-byte public allocation before optimizer publication. Preserve this rejected
+variant and its seven input hashes under build/compiler-flat-headers-v1; do not
+integrate it. Raw-source delivery needs a scoped implementation rather than
+another eager preload. Full milestones and qualification remain open.

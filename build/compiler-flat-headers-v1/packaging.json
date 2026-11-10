@@ -1,0 +1,32 @@
+{
+  "result": "pass",
+  "source_sha256": {
+    "Compiler/CompilerA.HH": "285c00ebc51a2b6f4e120834758a6bb8bd91186e25ca108a8c880c1c1d31c985",
+    "Compiler/IntermediateOpcodes.HH": "8695dc8f215dcb3556a372ea527a7f5ee628e25f84446d5effde5f6b413c6bba",
+    "Compiler/Keywords.HH": "33378ed654bc6256420252639b00addb86ffa8e018dd457b7b0e7ed34f58fe59",
+    "Compiler/PrsPrecedence.HH": "b15ccb8b54ffb38955472ecab54159a9e8d87cf85dbd8e47c6d62b7bbec80ac0",
+    "Compiler/PrsFunctionFlags.HH": "677b672a9c12223f0817222e09bc5b08ae4ee05287f2f298e4a40bcfb3f7c076",
+    "Compiler/PrsTypeFlags.HH": "44638f35282469594232a5f5cfea1956306ff059f939218e0da25971449a36ad",
+    "Compiler/PrsCompileFlags.HH": "84c7da568bb29e1e929824acdf8c292d8494f4f3da4f9cf1f60be8a01c7ffaa8"
+  },
+  "image_sha256": "62eacfa215d2b1f2c543f84e09de3a44336b1ece0ce1d649611c5ac9afd63d03",
+  "boot_area_sha256": "4ba9f86d14fd02568f80d9277a02b87d698b1f2a60e73e0aa7b72afb01703482",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1905,
+    "owned_sectors": 96292,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1905,
+    "owned_sectors": 96307,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Complete CompilerA and dependency bodies inline; source-only experiment, modules unchanged",
+  "header_bytes": 9541,
+  "sha256": "62eacfa215d2b1f2c543f84e09de3a44336b1ece0ce1d649611c5ac9afd63d03"
+}
