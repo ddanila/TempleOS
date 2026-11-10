@@ -59,6 +59,8 @@ def main():
                         help='Use QMP stdio and a writable boot copy where sockets and snapshots are blocked')
     parser.add_argument('--command-timeout', type=int, default=2400,
                         help='Seconds allowed for each guest build/install command')
+    parser.add_argument('--build-ram-mib', type=int, choices=(16, 64, 128), default=16,
+                        help='Guest RAM for native rebuilding; default retains the 16 MiB minimal profile')
     args = parser.parse_args()
     if args.cross_build and not args.cross_retained:
         parser.error('--cross-build requires --cross-retained')
@@ -114,7 +116,7 @@ def main():
         ('I386InstallBootImage("C:/","D:/","D:/Probe/GuestBoot.bin");', ['1'])]
     run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
     run_input(source, out / 'build', target_disk=target, snapshot=False,
-              ram_mib=16, accel=args.accel, cpu=args.cpu,
+              ram_mib=args.build_ram_mib, accel=args.accel, cpu=args.cpu,
               qmp_stdio=args.qmp_stdio, welcome=args.welcome, startup_timeout=180,
               startup_check={'status': 'ok', 'answers': [],
                              'command_timeout': args.command_timeout,
@@ -165,7 +167,7 @@ def main():
               'target_disk_sha256': hashlib.sha256(target.read_bytes()).hexdigest(),
               'cross_build_manifest_sha256': cross_manifest_hash,
               'retained_evidence': retained_evidence,
-              'cpu': args.cpu, 'welcome': args.welcome, 'build_ram_mib': 16, 'boot_ram_mib': 8,
+              'cpu': args.cpu, 'welcome': args.welcome, 'build_ram_mib': args.build_ram_mib, 'boot_ram_mib': 8,
               'scope': 'Development flat-kernel build only; not full M7 self-hosting qualification' if args.cross_retained else 'Guest flat-kernel build with supplied guest-built retained modules'}
     (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(result)

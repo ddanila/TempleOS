@@ -30059,3 +30059,28 @@ FileRuntime (295839 bytes,158 named exports), both matching all reference export
 names/kinds. It is now building MemoryRuntime. All-nine installation, complete
 native generations, full desktop/application workflows and profiles remain
 open. Whole-item qualification stays2/686.
+
+### C5: all nine native providers pass; full rebuild profile is selectable
+
+The original module-zero-retained-native-v1 build passes all nine providers at
+128MiB, including the console allocation-wrapper contract. An independent raw
+artifact audit verifies2785 shared named exports and255 named data ranges
+(126969 bytes), with identical kinds, storage sizes and initial bytes versus
+the cross reference. The division-template labels/data exception is explicit.
+All prior file tuples and1868 source/26 helper pins remain exact. Its Startup
+is byte-identical to the rebuild through the separately installed native
+compiler. The guarded all-nine guest installer has started; it is not yet
+qualified.
+
+The emitted native Kernel, nine providers and native temporary program probe
+pass the existing386 instruction/data-range audit, with the actual guest-linked
+native Kernel flat image. Five assembly helpers remain cross-built in this
+component audit; it does not qualify a complete installed native generation.
+
+The self-host installer no longer hard-codes the minimal16MiB rebuild profile:
+--build-ram-mib selects16/64/128, retaining16 by default. The generation runner
+forwards --flat-build-ram-mib to both kernel builds, separately from retained
+build RAM. This permits the existing PLAN128MiB full rebuild budget without
+changing the8MiB boot checks or minimal defaults. Provenance guard tests, CLI
+help and syntax checks pass. Both complete native generations and full suite/
+profiles remain open; whole-item qualification remains2/686.

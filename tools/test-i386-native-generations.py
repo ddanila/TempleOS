@@ -37,6 +37,8 @@ def main():
                         help='Per-module native rebuild limit in seconds')
     parser.add_argument('--retained-build-ram-mib', type=int, choices=(16, 64, 128), default=16,
                         help='Guest RAM for the generation-two retained build (default: 16 MiB)')
+    parser.add_argument('--flat-build-ram-mib', type=int, choices=(16, 64, 128), default=16,
+                        help='Guest RAM for both native flat-kernel rebuilds (default: 16 MiB)')
     parser.add_argument('--allow-kernel-build-date', action='store_true',
                         help='Declare only the exported eight-byte Kernel date nondeterministic in the generation comparison')
     args = parser.parse_args()
@@ -66,6 +68,7 @@ def main():
               'accel': args.accel, 'cpu': args.cpu, 'qmp_stdio': args.qmp_stdio, 'welcome': args.welcome,
               'build_command_timeout': args.build_command_timeout,
               'retained_build_ram_mib': args.retained_build_ram_mib,
+              'flat_build_ram_mib': args.flat_build_ram_mib,
               'allow_kernel_build_date': args.allow_kernel_build_date,
               'input_sha256': inputs,
               'source_sha256': sources, 'stages': {}}
@@ -105,6 +108,7 @@ def main():
         result = run(native.name, 'test-i386-selfhost-install.py', '--disk', install / 'candidate.img',
             '--out', native, '--retained-build-result', built / 'result.json',
             '--retained-install-result', install / 'result.json',
+            '--build-ram-mib', args.flat_build_ram_mib,
             '--command-timeout', args.build_command_timeout, *runtime)
         if result.get('retained_origin') != 'guest-built supplied inputs':
             raise ValueError('Native generation used unqualified retained providers')

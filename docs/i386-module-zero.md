@@ -167,3 +167,26 @@ matching named exports) and FileRuntime (295839 bytes,158 matching named
 exports). Their complete installation is still pending, as are MemoryRuntime,
 BuildRuntime, EditorRuntime, DocDiagnosticRuntime and Startup in that job.
 Both complete native generations and full C1-C5 qualification remain open.
+
+All nine native provider builds now pass at128MiB in
+`module-zero-retained-native-v1`. The independent `provider-audit.json` checks
+2785 shared named exports and255 shared named data ranges (126969 bytes):
+all names/kinds, storage sizes and initial bytes match the cross reference.
+The native division-template representation is the explicit exception described
+above. The complete prior file tree and all1868 source/26 helper pins remain
+exact. Startup is byte-identical to the output from the separately installed
+native compiler, providing a concrete compiler-chain reproducibility check.
+The all-nine guest installer is running; no installation pass is inferred yet.
+
+`module-zero-native-provider-instruction-v1` passes the existing386 allowlist
+for the emitted native Kernel, all nine providers and the native program probe,
+using the previously guest-linked native Kernel flat image. Its five assembly
+boot helpers remain cross-built; this is not a complete installed native image.
+
+The full rebuild profile in PLAN.md is128MiB. `test-i386-selfhost-install.py`
+now accepts `--build-ram-mib 128`, and `test-i386-native-generations.py` forwards
+`--flat-build-ram-mib 128` to both flat-kernel builds. The retained-build profile
+is selected separately with `--retained-build-ram-mib 128`. All defaults retain
+the existing16MiB minimal rebuild profile, and independent boot checks remain
+at8MiB. Provenance guards, CLI parsing/help and syntax checks pass; running two
+complete installed128MiB rebuild generations remains an open gate.
