@@ -30271,3 +30271,30 @@ run makes no startup/timing-profile claim. The inventory adds the cross-image
 User pass alongside the preserved native-baseline failure; its qualification
 count remains2/686. The fresh retained-provider build is live, and a guarded
 queue will start two native generations only after its all-nine passing receipt.
+
+### C2 test-first: original HomeSys geometry exposes bootstrap-task participation
+
+The current classic rebuild passes the existing original83-word desktop layout
+oracle (fallback-minimum-desktop-layout-classic-v1). The native configured-Once
+StartUpTasks preflight reaches both User children and the actual queued capture,
+but fails that unchanged oracle in native-v1 and native-v2: three visible
+focusable windows occupy1..19,21..39 and40..60 instead of the original two at
+1..39 and41..78. All pinned inputs remain unchanged.
+
+Native-v2 additionally captures all six window-list tasks. The bootstrap console
+remains shown/focusable and borderless; hidden Adam is also focusable and tiles
+at61..78. WinMgr and the remaining worker are focus-inhibited. Original shared
+WinTileVertCore therefore counts four participants. This is a concrete normal-
+startup integration gap, not evidence to weaken the original geometry oracle.
+See docs/i386-home-desktop-layout.md. Production startup stays pinned for the
+fresh native chain; a disposable flag-policy experiment is separate from normal
+boot, retirement, pixel/resource and full C1-C5 qualification.
+
+The integrated allocator also passes two warm plus three measured User/Kill
+main-heap lifetime cycles at64MiB (fallback-minimum-user-main-heap-v1). Each
+measured cycle restores physical used bytes/allocation counts exactly; live
+main-heap deltas are347432 bytes, caller data/code sizes stay25440, files remain
+exact and fresh42 renders. This does not measure every heap or qualify8MiB
+lifetimes. fallback-minimum-repair-audit-v1 verifies all1868 cross-source pins,
+both focused validators, six stock corpora,8MiB User and16MiB diagnostic receipts
+and those three raw recovery cycles. Native qualification remains in progress.
