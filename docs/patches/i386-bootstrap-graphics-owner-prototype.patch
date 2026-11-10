@@ -1,0 +1,21 @@
+--- a/Kernel/I386/GraphicsFrame.HC
++++ b/Kernel/I386/GraphicsFrame.HC
+@@ -106,7 +106,7 @@
+     MSize2(frame)+MSize2(frame->body)+MSize2(frame->r)+plane_bytes+
+     MSize2(zbuffer)+MSize2(uncovered));KernelLog("\n");
+   persistent->win_task=frame->win_task=Fs;
+-  graphics_owner=Fs;
++  graphics_owner=I386TaskSelf->owner->root;
+   gr.dc=graphics_persistent=persistent; gr.dc2=graphics_frame=frame;
+   gr.text_base=i386_text_base; gr.scrn_zoom=1;
+   gr.fp_draw_ms=&DrawStdMs;
+--- a/Kernel/I386/WindowManager.HC
++++ b/Kernel/I386/WindowManager.HC
+@@ -168,6 +168,7 @@
+     NativeWindowTaskRemove(worker);NativeWindowTaskInsert(worker,native_window_anchor);
+     native_window_worker=worker;sys_winmgr_task=worker;
+     gr.dc->win_task=worker;
++    gr.dc2->win_task=worker;
+     WinZBufUpdate;
+     KernelLog("WINMGR started ");KernelHex(worker->task_num);KernelLog("\n");
+   } catch {

@@ -54,12 +54,16 @@ single-field comparison is distinct from a whole-image bit-identity claim.
 C5 still requires two complete installed native generations, their full suite
 and declared reproducibility/resource profiles.
 
-The unchanged original StartUpTasks body also completed in a disposable
-integration preflight (`home-startup-preflight-v3`), including its configured
-Once. The fixture installs a small custom Once at the actual lookup path through
-FileWrite. This is exploratory execution evidence, not normal boot, complete
-layout/raster or desktop orchestration qualification. The delivered startup still
-needs those workflows integrated and qualified.
+The disposable integration preflight (`home-startup-preflight-v3`) reaches the
+original StartUpTasks body and its configured Once. That runner's shared
+COMMAND OK marker can come from a child, so it alone does not prove the whole
+Adam job returned. Later `bootstrap-retirement-before-v3` and
+`bootstrap-retirement-candidate-v3` log BOOT EXIT START directly after the
+actual Adam call returns, providing that stronger completion evidence. The
+fixture installs custom Once at the actual lookup path through FileWrite.
+These remain explicit preflights: delivered normal boot, complete raster,
+autocomplete content and resource qualification are separate. See
+[i386-bootstrap-retirement.md](i386-bootstrap-retirement.md).
 
 The candidate is `build/i386-system-build-date-cross-v3/kernel.img`, with1868
 source and26 helper pins. Two source-matching classic rebuild generations and

@@ -20078,6 +20078,18 @@
           "result": "pass",
           "evidence": "build/fallback-minimum-desktop-layout-policy-v1/result.json",
           "scope": "Disposable runtime policy only: inhibit hidden Adam focus and hide/inhibit bootstrap console before original StartUpTasks. Same six tasks and identical capture Once; exactly two Users remain visible/focusable. All83 layout words are byte-identical to the current classic control. Independent raw-export/input/flag audit passes at build/fallback-minimum-desktop-layout-audit-v1/result.json. Bootstrap task remains allocated; production startup is unchanged. No normal-boot, pixel, interaction, retirement/resource, full HomeSys or C1-C5 qualification."
+        },
+        {
+          "target": "managed-bootstrap-explicit-retirement-rendering",
+          "result": "fail",
+          "evidence": "build/bootstrap-retirement-candidate-v3/result.json",
+          "scope": "Disposable managed native Kernel plus explicit non-raw startup. Host-captured bootstrap identity is validated before transition; direct BOOT EXIT START follows actual Adam StartUpTasks return. Surviving User confirms TaskValidate false and exact83-word original geometry before/after, but actual42 does not render. Two inherited references keep finished bootstrap storage pinned. Original kernel rejects directly entered Exit with Task at build/bootstrap-retirement-before-v3/result.json. Earlier v1/v2 fixtures are excluded because they do not demonstrate Exit. Not normal boot, full raster/input or resource qualification. See docs/i386-bootstrap-retirement.md."
+        },
+        {
+          "target": "bootstrap-graphics-owner-install-experiment",
+          "result": "pass",
+          "evidence": "build/bootstrap-graphics-owner-install-v1/result.json",
+          "scope": "Disposable source candidate only: native managed-bootstrap Kernel, explicit Raw(FALSE), cross-built ConsoleRuntime with immortal graphics lifetime owner and both views owned by active WinMgr. Complete386 audit and guest replacement/independent8MiB welcome42/DocAllocationCheck13 pass. Functional installer is reused; this ConsoleRuntime is explicitly cross-built, not a native provider qualification. Fresh retirement/raster test, normal boot, physical reaping and full C1-C5 remain pending. Production startup unchanged."
         }
       ]
     },

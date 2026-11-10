@@ -30308,3 +30308,41 @@ export is byte-identical to the classic control. An independent audit rechecks
 all raw exports, identical Once fixtures, inputs and focus/display transitions.
 This isolates the policy cause without claiming normal boot or proper bootstrap
 retirement/resource recovery. The production startup integration remains open.
+
+### C5 repair: all nine fresh native providers pass
+
+fallback-minimum-retained-native-v1 passes all nine native builds and persisted
+export contracts. All eight unchanged providers reproduce the previous native
+baseline exactly. MemoryRuntime is249418 bytes with SHA256
+aea8be3302c8eefc19cef4a911dfab1bbf8661c68b42e91a41196ca52b1eaf37;
+it exactly matches
+the tested preferred-minimum prototype. The fresh two-generation harness is now
+in gen1-selfhost after all-nine installation. A separate guarded regression
+queue will require each passing native target's exact hash before8MiB User and
+16MiB diagnostic checks. Full desktop/application suite and C1-C5 stay open2/686.
+
+### C2 candidate: managed bootstrap exposes raw-mode and graphics lifetimes
+
+The original64KiB bootstrap is privately spawned and public Exit requires a
+managed task record. A disposable native Kernel candidate uses managed Spawn
+and original Adam/service inhibition. Native compilation and guest installation
+pass, but its first boot stalls in raw welcome output. Retained registers/RAM
+and an independent decoder locate DocType/DocDump/Print/PutS calling through an
+uninitialized keyboard-output ring. Explicit Raw(FALSE) before welcome restores
+exact64MiB boot/42/DocAllocationCheck13;8MiB User255 and the full386 audit pass.
+
+The two early retirement fixtures are excluded: neither proves actual Exit
+execution. The corrected third fixture logs directly after the real Adam
+StartUpTasks call returns, then enters Exit. Original kernel rejects with Task;
+the managed candidate becomes invalid to TaskValidate and retains original
+83-word window geometry, but fresh42 does not render. Bootstrap storage is still
+pinned by two inherited references, so no physical reaping/resource pass is
+claimed. Earlier preflight COMMAND OK can come from a child and does not by
+itself establish complete Adam-job return.
+
+A separate120-byte-larger cross-built ConsoleRuntime candidate assigns graphics
+lifetime to the immortal kernel root and both canvas views to the active manager.
+Its386 audit, guest replacement and independent8MiB welcome/42/DocAllocationCheck13
+pass. A new retirement workflow is running. Tested experimental patches and
+precise scope are preserved in docs/i386-bootstrap-retirement.md; production
+startup remains unchanged for the live native qualification chain.

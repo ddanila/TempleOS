@@ -1,0 +1,59 @@
+--- a/Kernel/I386/Kernel.HC
++++ b/Kernel/I386/Kernel.HC
+@@ -28,6 +28,7 @@
+ #include "/Kernel/I386/Vga.HH"
+ #include "/Kernel/I386/ConsoleRuntime.HH"
+ #include "/Kernel/RunLevelTypes.HH"
++#include "/Kernel/WindowInhibitFlags.HH"
+ #include "/Kernel/I386/KeyboardSetup.HH"
+ #include "/Kernel/I386/KeyboardRead.HH"
+ #include "/Kernel/I386/Mouse.HH"
+@@ -84,7 +85,9 @@
+ U8 kernel_gdt[40],kernel_idt[2048];
+ 
+ CI386OwnedTask *kernel_pulse;
+-CI386OwnedTask *kernel_keys;
++CI386Task *kernel_keys;
++CI386Task *(*kernel_console_spawn)(U0 (*entry)(I64 arg),U8 *data,U8 *name,
++  I64 target_cpu,CI386Task *parent,I64 stack_size,I64 flags);
+ I64 kernel_startup_count;
+ CHashTable *kernel_symbols;
+ CHashClass *kernel_scalars[6];
+@@ -261,6 +264,8 @@
+   KernelCompilerLoad;
+   KernelRunLevelMark(RLF_COMPILER,"compiler");
+   KernelMemoryLoad;
++  //Adam is a service task, not a focusable desktop window.
++  kernel_root.win_inhibit=WIG_TASK_DFT;
+   KernelFileLoad;
+   KernelRunLevelMark(RLF_BLKDEV,"files");
+   //Load the large temporary provider before console allocation fragments RAM.
+@@ -340,10 +345,15 @@
+     } else KernelLog("INSTALL COPY NO TARGET\n");
+     I386IrqRestore(flags);
+   }
+-  kernel_keys=I386TaskSpawn(&kernel_scheduler,&kernel_heap,65536,kernel_console.keys,0,
+-    0x18,0x20,0);
++  //The bootstrap console must use normal task retirement and reaping.
++  root_jobs_symbol=HashFind("_SPAWN",kernel_root.hash_table,HTT_EXPORT_SYS_SYM);
++  if(!root_jobs_symbol || root_jobs_symbol->kind!=1 || !root_jobs_symbol->val)KernelStop;
++  kernel_console_spawn=root_jobs_symbol->val;
++  kernel_keys=(*kernel_console_spawn)(kernel_console.keys,NULL,"Bootstrap",-1,
++    &kernel_root,65536,256);
+   if(!kernel_keys) KernelStop;
+-  kernel_keys->task.memory=&kernel_heap;
++  kernel_keys->memory=&kernel_heap;
++  kernel_keys->win_inhibit=WIG_USER_TASK_DFT;
+   KernelLog("CONSOLE TASK SPAWNED\n");
+   root_jobs_symbol=HashFind("_JOBS_HNDLR",kernel_root.hash_table,HTT_EXPORT_SYS_SYM);
+   if(!root_jobs_symbol || root_jobs_symbol->kind!=1 || !root_jobs_symbol->val)KernelStop;
+--- a/Kernel/I386/StartOS.HC
++++ b/Kernel/I386/StartOS.HC
+@@ -18,6 +18,7 @@
+ #include "/Kernel/I386/PublicHash.HH"
+ 
+ //Initialize task-owned dictionaries through retained original document code.
++Raw(FALSE);
+ ConsoleDocumentStart;
+ BibleInit;
+ 
