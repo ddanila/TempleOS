@@ -356,3 +356,13 @@ cancellation, wide layout and binary persistence. The failed save uses an
 unmounted `Q:` drive, since public file writes create missing parent
 directories on a mounted drive. Complete desktop and application acceptance
 remain open.
+
+## Live User prompt remains incompatible
+
+The versioned physical-input observer now passes the pinned original's actual
+User loop and fails the normal native image after the same integer/float input.
+Native numeric and prompt-state checks pass, but its directory prefix, deferred
+answer/elapsed formatting and complete saved prompt documents differ. The
+earlier direct CmdLinePmt checks do not cover this integration gap. See
+`docs/i386-live-user-prompt.md` for the frozen oracle, command traces, receipts
+and exact scope. Full C2 and inventory2/686 remain open.

@@ -30674,3 +30674,24 @@ the scope and receipt/log/module hashes. This is functional parity, not mixed
 image/native-generation qualification. C1-C5, startup/resource/full-suite native
 qualification and inventory2/686 remain open. Identities and receipts are in
 `docs/i386-startup-parser-selector.md`.
+
+### C2 test-first: actual User prompt differs despite correct execution
+
+`tools/test-i386-live-user-prompt.py` now creates a normal User and observes
+its idle prompt and two physical integer/float inputs. It captures task state
+and complete serialized documents without replacing the input/prompt loop.
+The pinned original passes the frozen provenance/fixture-bound oracle in
+`tests/i386/live-user-prompt-reference.json`. Only elapsed values and independently
+captured drive-root spelling are normalized; all document structure remains.
+The existing explicit original decimal/x87 one-ULP allowance is retained and
+raw bits remain visible.
+
+`live-user-prompt-reference-v1` passes; `live-user-prompt-native-v1` executes both
+commands and passes answer/type/pending/prompt state, but fails directory prefix,
+deferred integer/float answer format, elapsed-field counts and complete document
+comparison. An independent comparison checks input hashes, raw exports and exact
+physical key-event suffixes. Invalid initial fixture drafts are excluded.
+This establishes the missing normal UserTaskCont/CmdLinePmt/GetStr/ExeCmdLine
+integration check; no compatibility item is newly qualified. Native still uses
+the reduced input/answer loop. See `docs/i386-live-user-prompt.md` for reproduction
+and receipt identities. C1-C5 and inventory2/686 remain open.
