@@ -20052,6 +20052,13 @@
           "result": "pass",
           "evidence": "build/system-build-date-native-v3/result.json",
           "scope": "Actual HomeSys loads in Adam with CCF_JUST_LOAD after original MakeAC. Public sys_compile_time value/address match linked kernel metadata and independent calendar/format model while Now advances. Prior image fails at the identifier; fresh42 and unchanged complete volume pass. Separate StartUpTasks/configured-Once preflight executes, but normal boot/full desktop layout, raster, autocomplete content and resources remain unqualified. Full C1-C5 remain open,2/686. See docs/i386-system-build-date.md."
+        },
+        {
+          "target": "native-generation-one-user-startup-8m",
+          "command": "python3 tools/test-i386-user-startup.py IMAGE --managed-pointer --accel kvm --ram-mib 8 --out OUT",
+          "result": "fail",
+          "evidence": "build/module-zero-gen1-user-8m-v1/result.json",
+          "scope": "First all16-native-module generation boots and loads the identical fixture at8MiB, but USCheck fails during actual User task creation with OutMem. Kernel task/stack allocation requests267527 bytes; fallback arena size551936/used543664/largest free6936. No255 result or minimal User qualification. Paired read-only snapshots reproduce cross pass/native fail: primary largest free296688 versus259824, rounded request267528; native total free447856 across263 blocks. Both physical usage/allocation counts restore after the attempted operation; fresh42/files survive. Contiguous shortage is confirmed, not full logical-heap recovery. Public stack size is unchanged and no repair is claimed. Full HomeSys/C1-C5 remain unqualified,2/686."
         }
       ]
     },

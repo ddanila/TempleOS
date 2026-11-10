@@ -259,3 +259,31 @@ remains unchanged. The writable boot copy adds only expected AllocRead.DD
 (`read` plus05). This is one complete native module generation, not the full
 C5 suite. Generation two's provider rebuild is now running at128MiB; both
 successive generations, desktop/application suite and profiles remain required.
+
+The first native generation passes the existing full diagnostic boot at16MiB
+(`module-zero-gen1-diagnostic-v1`): both program-probe phases complete once,
+then exact welcome/42/DocAllocationCheck13 frames and diagnostic load/recovery/
+unload pass. The diagnostic image and all inputs remain unchanged. Concurrent
+execution makes its elapsed time an observation, not a timing-profile claim.
+
+The existing8MiB User regression fails on that generation
+(`module-zero-gen1-user-8m-v1`). The identical fixture loads, but USCheck's
+actual User creation raises OutMem before returning255. The kernel allocator
+requests267527 bytes for the existing task/stack policy; the fallback arena
+has551936 bytes,543664 used, and largest free block6936. The recorded callers
+map to task creation and public Spawn. Five sampled resident module payloads
+grow34616 bytes over the cross image, with another128 bytes in the native
+assembly helpers; this correlation does not yet establish the failure cause.
+The paired read-only physical comparison at the same pre-USCheck point
+(`module-zero-user-heap-comparison-v1`) reproduces cross pass/native fail.
+Largest primary free payload drops from296688 to259824 bytes; the allocation
+needs267528 after rounding. Native total free payload is447856 bytes across
+263 blocks, so aggregate free space does not satisfy the contiguous request.
+Both images have18351 primary allocations and identical fallback state. After
+User/Kill on the cross image or failed creation on the native image, physical
+heap usage/allocation counts return exactly; fresh42 and prior files survive.
+This establishes the contiguous-block shortage, without claiming all logical
+heaps are measured or selecting a repair yet.
+No stack-size reduction, memory-profile waiver or repair is claimed. This
+regression keeps minimal-profile and full C5 qualification open even though the
+native module-generation boot/install gates pass.

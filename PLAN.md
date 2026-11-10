@@ -30150,3 +30150,32 @@ Every prior boot-copy file remains exact, with only expected AllocRead.DD
 not full C5. The runner is now rebuilding generation two's providers at128MiB.
 The second installed native generation, complete compatibility suite and
 profiles remain open; full C1-C5 still2/686.
+
+### C5 regression: native generation passes16MiB diagnostics but8MiB User fails
+
+module-zero-gen1-diagnostic-v1 passes both original program-probe phases on the
+all16-native-module image at16MiB, plus exact welcome/42/DocAllocationCheck13
+frames and one diagnostic load/recovery/unload. Its image/input hashes remain
+exact. Concurrent elapsed time is not a profile qualification.
+
+module-zero-gen1-user-8m-v1 loads the same accepted fixture but fails during
+USCheck's actual User creation with OutMem. Kernel task allocation requests
+267527 bytes under the existing public stack policy. The fallback arena has
+551936 bytes,543664 used and largest free6936; callers identify task creation
+and Spawn. This is a real minimal-workload regression, not a fixture-load or
+pixel-oracle failure. The five sampled module payloads grow34616 bytes, and
+native assembly helpers add128; the paired
+read-only physical comparison now reproduces cross pass/native fail. Primary
+largest free is296688 versus259824 bytes, with267528 needed after rounding.
+Native aggregate free payload447856 over263 blocks cannot satisfy that one
+contiguous request. Both have18351 primary allocations and identical fallback
+state; physical usage/allocation counts restore after User/Kill or rejected
+creation, and fresh42/files survive. No extra guest heap declarations are used.
+This establishes the contiguous-block shortage, not full logical-heap recovery
+or a selected repair. Public stack limits
+remain unchanged. No repair or minimal-profile pass is claimed.
+
+Generation two's provider build continues with the same pinned candidate.
+Its reproducibility result cannot close this resource regression or the full
+compatibility suite. Inventory records the explicit red User case; C1-C5 stay
+open at2/686.
