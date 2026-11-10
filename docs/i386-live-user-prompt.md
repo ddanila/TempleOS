@@ -105,3 +105,10 @@ Current receipts:
 
 This versioned failure is the cleanup acceptance test for the prototype. It
 preserves the original requirement for real storage reclamation after Exit.
+
+
+`--recovery` extends the same oracle with uncaught throw, undefined identifier
+and physical Ctrl+Alt+C recovery, followed by physical retirement. The corrected
+original and ownership-prototype runs pass. See `docs/i386-live-user-recovery.md`
+for synchronization, exact checks, excluded fixtures and remaining input-pressure
+qualification. It does not change the base prompt or retirement modes.

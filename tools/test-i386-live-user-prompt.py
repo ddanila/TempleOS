@@ -23,19 +23,26 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--retirement', action='store_true',
                         help='After the complete prompt oracle, require physical Exit and native task storage reclamation')
+    parser.add_argument('--recovery', action='store_true',
+                        help='Require exception/compiler-error/physical Ctrl+Alt+C recovery, then physical retirement')
     args = parser.parse_args()
+    if args.recovery:args.retirement=True
     out = args.out.resolve()
     if out.exists():
         parser.error('Use a fresh output directory')
-    fixture = ROOT/'tests/guest/i386-live-user-prompt'/('RetiringObserver.HC' if args.retirement else 'Observer.HC')
+    fixture = ROOT/'tests/guest/i386-live-user-prompt'/('RecoveryObserver.HC' if args.recovery else 'RetiringObserver.HC' if args.retirement else 'Observer.HC')
     oracle_path = ROOT/'tests/i386/live-user-prompt-reference.json'
     oracle = json.loads(oracle_path.read_text())
-    if sha(fixture) != oracle['retirement_fixture_sha256' if args.retirement else 'fixture_sha256']:
+    recovery_path=ROOT/'tests/i386/live-user-recovery-reference.json'
+    recovery=json.loads(recovery_path.read_text()) if args.recovery else None
+    if sha(fixture) != (recovery['fixture_sha256'] if args.recovery else oracle['retirement_fixture_sha256' if args.retirement else 'fixture_sha256']):
         raise ValueError('Fixture differs from pinned reference oracle')
     paths = [Path(__file__).resolve(), fixture, oracle_path] + [ROOT/'tools'/name for name in (
         'test-i386-autocomplete-interaction.py', 'test-i386-timeclock-welcome.py',
         'test-i386-timeclock-reference.py', 'test-i386-answer-prompt-reference.py',
         'build-iso.py', 'package-i386-native-image.py', 'build-i386-kernel.py')]
+    if args.recovery:
+        paths.append(recovery_path)
     if args.retirement:
         paths.append(ROOT/'tools/test-i386-desktop-startup.py')
     if args.disk:
@@ -45,10 +52,11 @@ def main():
     (out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     report = dict(result='running', mode='native' if args.disk else 'pinned-original',
                   scope='Physical keyboard into a normal User child; idle prompt task state and complete serialized documents before input and after integer/float commands. No replacement input/prompt loop. Buffers/parent namespace retained for capture; not cleanup, full raster or complete terminal qualification.',
-                  retirement_required=args.retirement,
+                  retirement_required=args.retirement, recovery_required=args.recovery,
                   commands=list(COMMANDS), input_sha256={str(p):sha(p) for p in paths})
     if args.retirement:
         report['scope'] += ' Extended retirement mode requires physical Exit, public invalidity and, on native, managed-record absence plus a free containing heap block. Parent observation buffers remain live; not total heap recovery.'
+    if args.recovery:report['scope'] += ' '+recovery['scope']
     guest = None
 
     def save():
@@ -135,6 +143,47 @@ def main():
         if failures:
             raise ValueError('; '.join(failures))
         report['prompt_documents_pass'] = True
+        if args.recovery:
+            trigger_match=re.search(r'^EXPORT recovery-trigger.bin ([0-9A-Fa-f]+) ',guest.collect(),re.M)
+            if not trigger_match:raise ValueError('Missing recovery trigger export')
+            trigger=int(trigger_match[1],16)
+            if (guest.out/'recovery-trigger.bin').read_bytes()!=bytes(24):
+                raise ValueError('Recovery triggers were not explicitly initialized')
+            markers=[]
+            for phase,command in enumerate(recovery['actions']):
+                mark=len(guest.collect())
+                guest.type(command);guest.press('ret')
+                if phase==2:
+                    guest.wait('RS\n',timeout=60,start=mark)
+                    guest.key('ctrl',True);guest.key('alt',True);guest.press('c');guest.key('alt',False);guest.key('ctrl',False)
+                guest.wait(f'RECOVERY READY {phase}\n',timeout=60)
+                marker=f'*(0x{trigger+phase*8:X})(I64 *)=1;'
+                markers.append(marker)
+                guest.type(marker);guest.press('ret')
+                guest.type('6*7;');guest.press('ret')
+                guest.wait(f'RECOVERY PHASE {phase}\n',timeout=60)
+                guest.screenshot(f'recovery-{phase}')
+            guest.wait('DONE live recovery\n')
+            recovery_state=list(struct.unpack('<12q',(guest.out/'recovery-state.bin').read_bytes()))
+            recovery_docs=[(guest.out/f'recovery-{i}.DD').read_bytes() for i in range(3)]
+            report.update(recovery_state=recovery_state,recovery_documents_hex=[d.hex() for d in recovery_docs])
+            if recovery_state!=recovery['expected_state']:raise ValueError('Recovery task state differs from original')
+            previous=docs[-1]
+            for phase,document in enumerate(recovery_docs):
+                if not previous.endswith(b'\x05') or not document.startswith(previous[:-1]):
+                    raise ValueError('Recovery changed a previously captured document prefix')
+                delta=document[len(previous)-1:]
+                required=recovery['required_fragments'][phase]+[recovery['actions'][phase],markers[phase],'6*7;']
+                if any(fragment.encode() not in delta for fragment in required):
+                    raise ValueError('Missing recovery command or exception witness')
+                if len(re.findall(rb'[0-9]+\.[0-9]{6}s',delta))!=recovery['delta_elapsed_counts'][phase]:
+                    raise ValueError('Recovery elapsed field count differs from original')
+                if not re.search(rb'ans=0x0*1=1\n',delta) or not re.search(rb'ans=0x0*2A=42\n',delta):
+                    raise ValueError('Missing fresh deferred recovery answers')
+                if not document.endswith(cwd+b'>$PT$\x05'):
+                    raise ValueError('Recovery did not restore the original directory prompt')
+                previous=document
+            report['recovery_pass']=True
         if args.retirement:
             guest.type('Exit;')
             guest.press('ret')

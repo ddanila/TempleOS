@@ -1,0 +1,43 @@
+{
+  "fixture_sha256": "bfd6ed4b728453ee54c5b4c7218d6dd10e2dac8e054fb986fafdf4107a828d05",
+  "reference_receipt_sha256": "2242138f2e20d8691edc1ba4cd6c990d82da802cbd1c91e2a592c0301b7be981",
+  "expected_state": [
+    42,
+    10,
+    0,
+    1,
+    42,
+    10,
+    0,
+    1,
+    42,
+    10,
+    0,
+    1
+  ],
+  "actions": [
+    "throw('Recover');",
+    "MissingRecoverySymbol;",
+    "U0 RecoverySpin(){OutU8(0xE9,82);OutU8(0xE9,83);OutU8(0xE9,10);while(TRUE)Yield;}RecoverySpin;"
+  ],
+  "required_fragments": [
+    [
+      "Except:Recover:"
+    ],
+    [
+      "Undefined identifier",
+      "MissingRecoverySymbol",
+      "Except:Compiler:"
+    ],
+    [
+      "Except:Break:"
+    ]
+  ],
+  "delta_elapsed_counts": [
+    2,
+    2,
+    2
+  ],
+  "scope": "Exact initial three prompt documents remain checked by the live-prompt oracle. Recovery uses unchanged prior-document prefix, exception/error witnesses, exact command echoes, two deferred answers, elapsed counts and idle state; stack-link addresses/names are recorded without cross-architecture equality. Physical Ctrl+Alt+C follows an executed loop marker. Exit requires native physical reclamation. Before typing recovery input, the observer requires the case-specific exception witness and a fresh idle prompt, after the compiler error path has flushed messages.",
+  "reference_receipt_sha256_provenance": "Initial observation used uninitialized JIT trigger globals; excluded as acceptance. Expected semantic witnesses retained, corrected fixture explicitly initializes all triggers."
+}

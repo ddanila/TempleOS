@@ -77,3 +77,11 @@ python3 tools/test-i386-live-user-prompt.py --retirement --disk CANDIDATE --out 
 python3 tools/test-i386-public-lexer.py CANDIDATE --ram-mib 64 --out FRESH_LEXER
 python3 tools/test-i386-user-startup.py CANDIDATE --managed-pointer --accel kvm --ram-mib 8 --out FRESH_USER8
 ```
+
+
+The later corrected `--recovery` oracle also passes on this same candidate:
+uncaught throw, compiler error and physical Ctrl+Alt+C during a yielding loop,
+then fresh arithmetic and physical Exit reclamation. See
+`docs/i386-live-user-recovery.md`. This adds selected error/interruption evidence;
+minimal-memory support and broader lifetime/input-pressure qualification remain
+open before production integration.

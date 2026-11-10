@@ -30757,3 +30757,26 @@ to production. Broader interruption/error/borrowed-control/corrupt-queue coverag
 and minimal-memory support remain required. See
 `docs/i386-public-control-ownership.md` for implementation, failed variant and
 receipt identities. C1-C5, inventory 2/686 and startup qualification remain open.
+
+
+### C2/C4 original User error and physical break recovery baseline
+
+The versioned live User oracle now has `--recovery`, preserving all initial
+complete prompt checks and extending through uncaught throw, undefined identifier
+and physical Ctrl+Alt+C after an executed yielding-loop marker. It requires fresh
+deferred answers, unchanged prior document prefixes, error witnesses and restored
+idle prompts, then physical Exit reclamation. Raw stack links are recorded with
+intentional architecture differences rather than compared for exact addresses.
+
+Corrected V4 original/native runs pass on the public-control ownership V3 image.
+An independent audit rehashes every input and verifies the exact physical break
+chord after the loop-entry marker. Early fixtures relying on uninitialized JIT
+trigger globals or typing before FlushMsgs/prompt completion are excluded.
+Continuous document serialization while typing exposed a shortened-input stress
+observation; the baseline observer now waits for the expected exception state
+before serializing. Input delivery under that pressure remains unqualified.
+
+See `docs/i386-live-user-recovery.md` for receipts and reproduction. The existing
+8 MiB failure, startup budget, broader error/concurrency/lifetime cases, native
+generations and full inventory remain open. Production is unchanged; C1-C5 and
+inventory 2/686 are not qualified by these selected checks.
