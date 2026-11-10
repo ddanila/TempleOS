@@ -1,0 +1,673 @@
+--- a/Compiler/LexDispatchCore.HC
++++ b/Compiler/LexDispatchCore.HC
+@@ -262,7 +262,7 @@
+ 	    if (Lex(cc)!=TK_STR)
+ 	      goto lex_end;
+ 	    Free(cc->cur_help_idx);
+-	    cc->cur_help_idx=LexExtStr(cc,,FALSE);
++	    cc->cur_help_idx=LexExtStr(cc,0,FALSE);
+ 	    break;
+ 	  case KW_HELP_FILE:
+ 	    if (Lex(cc)!=TK_STR)
+--- a/Compiler/PublicControlCore.HC
++++ b/Compiler/PublicControlCore.HC
+@@ -43,6 +43,9 @@
+     buf=CAlloc(8);
+   LexFileSeed(tmpf,buf);
+   cc->cur_buf_ptr=buf;
++#ifdef CMP_CTRL_REGISTER
++  CMP_CTRL_REGISTER(cc);
++#endif
+   return cc;
+ }
+ 
+@@ -51,6 +54,9 @@
+   CLexFileRelease owner;
+   owner.context=0; owner.allocation=&LexFileSystemFree; owner.document=&LexFileSystemDocDel;
+   CmpCtrlRelease(cc,&owner);
++#ifdef CMP_CTRL_FORGET
++  CMP_CTRL_FORGET(cc);
++#endif
+ }
+ 
+ I64 CmpCtrlSize(CCmpCtrl *cc)
+--- a/Compiler/I386/ParserMemory.HC
++++ b/Compiler/I386/ParserMemory.HC
+@@ -1,5 +1,6 @@
+ //Included after native control ownership and release helpers.
+ #include "/Compiler/I386/ParserMemory.HH"
++#include "/Compiler/I386/AllocationPolicy.HH"
+ #ifdef I386_PARSER_FAILURE_TRACE
+ U0 I386ParserFailure(U8 *label,CCmpCtrl *cc)
+ {//Allocation failure only; bounded native frame chain and no scratch heap.
+@@ -46,7 +47,7 @@
+   if(!I386CmpCodeOwner(heap,cc) || bytes<1 || bytes>0x7FFFFFFF) {
+     I386IrqRestore(irq); return 0;
+   }
+-  allocation=I386ParserHeapAllocKnown(heap,bytes,zeroed,FALSE);
++  allocation=I386ParserHeapAllocKnown(heap,bytes,zeroed,(cc->flags&I386_CCF_HIGH_ALLOCATIONS)!=0);
+   if(!allocation) {
+ #ifdef I386_PARSER_FAILURE_TRACE
+     I386ParserFailure("PARSER PAYLOAD ALLOCATION REJECT ",cc);
+--- a/Compiler/I386/LexIdent.HC
++++ b/Compiler/I386/LexIdent.HC
+@@ -1,4 +1,5 @@
+ #include "/Compiler/I386/LexIdent.HH"
++#include "/Compiler/I386/AllocationPolicy.HH"
+ #include "/Compiler/LexIdent.HC"
+ I64 I386LexIdentScan(CI386Heap *heap,CCmpCtrl *cc,I64 ch,U8 *buf,I64 capacity,CHash **entry,I64 *compiled_lines)
+ {
+@@ -40,7 +41,11 @@
+ {
+   CI386IdentSink *sink=context; U8 *text;
+   I64 i; Bool valid; U32 flags=I386IrqSave;
+-  text=I386HeapAllocGuarded(sink->heap,length,cc->cur_str,&valid);
++  if(cc->flags&I386_CCF_HIGH_ALLOCATIONS) {
++    valid=!cc->cur_str || I386HeapSize(sink->heap,cc->cur_str)>=1;
++    text=NULL;
++    if(valid)text=I386HeapAllocHigh(sink->heap,length,FALSE);
++  } else text=I386HeapAllocGuarded(sink->heap,length,cc->cur_str,&valid);
+   if(!valid) { I386IrqRestore(flags); return FALSE; }
+   I386IrqRestore(flags);
+   if(!text) { sink->out_of_memory=TRUE; return FALSE; }
+--- a/Compiler/I386/LexDefine.HC
++++ b/Compiler/I386/LexDefine.HC
+@@ -1,12 +1,14 @@
+ #include "/Compiler/I386/LexDefine.HH"
++#include "/Compiler/I386/AllocationPolicy.HH"
+ #include "/Compiler/LexDefine.HC"
+-class CI386LexDefineBuffer { CI386Heap *heap; U8 *text; I64 length; };
++class CI386LexDefineBuffer { CI386Heap *heap; U8 *text; I64 length; Bool high; };
+ Bool I386LexDefineAppend(U8 *context,U8 *text,I64 count)
+ {
+   CI386LexDefineBuffer *buffer=context; U8 *next; I64 i; U32 flags;
+   if(count<1 || buffer->length>0xFFFFFFFF-23-count) return FALSE;
+   flags=I386IrqSave;
+-  next=I386HeapAlloc(buffer->heap,buffer->length+count,FALSE);
++  if(buffer->high)next=I386HeapAllocHigh(buffer->heap,buffer->length+count,FALSE);
++  else next=I386HeapAlloc(buffer->heap,buffer->length+count,FALSE);
+   I386IrqRestore(flags);
+   if(!next) return FALSE;
+   for(i=0;i<buffer->length;i++) next[i]=buffer->text[i];
+@@ -25,6 +27,7 @@
+   native.heap=heap; native.compiled_lines=compiled_lines;
+   source.context=&native; source.read=&I386LexSourceRead;
+   buffer.heap=heap; buffer.text=0; buffer.length=0;
++  buffer.high=(cc->flags&I386_CCF_HIGH_ALLOCATIONS)!=0;
+   sink.context=&buffer; sink.append=&I386LexDefineAppend;
+   if(LexDefineRead(cc,&source,&sink)) return buffer.text;
+   flags=I386IrqSave;
+@@ -43,7 +46,8 @@
+   if(cc->cur_str_len<1 || I386HeapSize(heap,cc->cur_str)!=cc->cur_str_len) {
+     I386IrqRestore(flags); return FALSE;
+   }
+-  entry=I386HeapAlloc(heap,sizeof(CHashDefineStr),TRUE);
++  if(cc->flags&I386_CCF_HIGH_ALLOCATIONS)entry=I386HeapAllocHigh(heap,sizeof(CHashDefineStr),TRUE);
++  else entry=I386HeapAlloc(heap,sizeof(CHashDefineStr),TRUE);
+   I386IrqRestore(flags);
+   if(!entry) return FALSE;
+   name=cc->lex_include_stk->full_name; help=cc->cur_help_idx;
+@@ -52,8 +56,13 @@
+   while(name[length]) { if(length>=0xFFFFFF00) goto define_failed; length++; }
+   if(help) while(help[help_length]) { if(help_length>=0xFFFFFF00) goto define_failed; help_length++; }
+   flags=I386IrqSave;
+-  entry->src_link=I386HeapAlloc(heap,length+count+5,FALSE);
+-  if(help_length) entry->idx=I386HeapAlloc(heap,help_length+1,FALSE);
++  if(cc->flags&I386_CCF_HIGH_ALLOCATIONS) {
++    entry->src_link=I386HeapAllocHigh(heap,length+count+5,FALSE);
++    if(help_length)entry->idx=I386HeapAllocHigh(heap,help_length+1,FALSE);
++  } else {
++    entry->src_link=I386HeapAlloc(heap,length+count+5,FALSE);
++    if(help_length)entry->idx=I386HeapAlloc(heap,help_length+1,FALSE);
++  }
+   I386IrqRestore(flags);
+   if(!entry->src_link || (help_length && !entry->idx)) goto define_failed;
+   entry->src_link[0]='F'; entry->src_link[1]='L'; entry->src_link[2]=':';
+--- /dev/null
++++ b/Compiler/I386/AllocationPolicy.HH
+@@ -0,0 +1,5 @@
++#ifndef I386_ALLOCATION_POLICY_INCLUDED
++#define I386_ALLOCATION_POLICY_INCLUDED
++//Private per-control placement policy; payload layout and ownership are unchanged.
++#define I386_CCF_HIGH_ALLOCATIONS 0x200000000000
++#endif
+--- a/Kernel/I386/PublicLexer.HH
++++ b/Kernel/I386/PublicLexer.HH
+@@ -3,4 +3,5 @@
+ #include "/Kernel/I386/PublicDocument.HH"
+ public _extern _LEX I64 Lex(CCmpCtrl *cc);
+ public _extern _LEX_EXT_STR U8 *LexExtStr(CCmpCtrl *cc,I64 *_size=NULL,Bool lex_next=TRUE);
++public _extern _LEX_INCLUDE_STR U0 LexIncludeStr(CCmpCtrl *cc,U8 *name,U8 *source,Bool actual_file);
+ #endif
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -103,6 +103,7 @@
+ extern U8 * LexExpression2Bin(CCmpCtrl *cc,I64 *_type);
+ extern Bool IsLexExpression2Bin(CCmpCtrl *cc,U8 **_machine_code);
+ extern U0 PrsStreamBlk(CCmpCtrl *cc);
++extern U0 LexIncludeStr(CCmpCtrl *cc,U8 *name,U8 *source,Bool actual_file);
+ 
+ extern U0 AsmResolve(CCmpCtrl *cc,CAsmUnresolvedRef *ref,U8 *label,Bool undefined);
+ extern U0 AOTLocalsResolve(CCmpCtrl *cc);
+@@ -422,11 +423,13 @@
+ #include "/Kernel/BlkDev/DriveReleaseCore.HC"
+ #include "/Kernel/BlkDev/BlockDevReleaseCore.HC"
+ extern U0 NativeRenderOwnerRetire(CI386Task *task);
++extern U0 NativePublicControlOwnerRetire(CI386Task *task);
+ U0 NativeStorageOwnerRetire(CI386Task *task)
+ {
+   if(task!=I386TaskSelf)throw('Task',TRUE);
+   DrvsRelease;BlkDevsRelease;
+   NativeRenderOwnerRetire(task);
++  NativePublicControlOwnerRetire(task);
+ }
+ import U32 char_bmp_filename[16];
+ #include "/Kernel/BlkDev/FileNameCheckCore.HC"
+@@ -635,7 +638,7 @@
+ extern I8 Note2Ona(I64 note,I64 octave=4);
+ extern I8 Ona2Note(I8 ona);
+ extern I8 Ona2Octave(I8 ona);
+-CI386KernelSymbol console_doc_exports[698],*console_doc_export_cursor;
++CI386KernelSymbol console_doc_exports[699],*console_doc_export_cursor;
+ U32 console_doc_data_exports[22]={0x00040000,0x00080002,0x00004060,0x00400000,0x00000000,0x00001000,0x80000000,0x20000008,0x00000020,0x01118000,0x40000000,0xC0003000,0x0007FFFF,0,0x001C0000,0x01C00000,0x00010000,0x80000000,0x0080C001,0x08E00000,0x80000000,0x02000000};
+ #assert sizeof(console_doc_data_exports)*8>=sizeof(console_doc_exports)/sizeof(CI386KernelSymbol)
+ extern U8 *NativeCaller(I64 num=1);
+@@ -746,7 +749,7 @@
+ Bool ConsoleInit(CI386ConsoleConfig *config)
+ {
+   U8 *display_planes;
+-  U8 *export_names="_DOC_LOCK\0_DOC_UNLOCK\0_DOC_PUT\0_DOC_DISPLAY\0_DOC_BORDER\0_DOC_EDITABLE\0_DOC_ENTRY_BASE\0_DOC_ENTRY_TAG\0_DOC_ENTRY_SIZE\0_DOC_ENTRY_COPY\0_DOC_FORM_FWD\0_DOC_FORM_BWD\0_DOC_DEFAULTS_INIT\0_DOC_INIT\0_DOC_DICTIONARY_NEW\0_DOC_DICTIONARY_DEL\0_DOC_GLOBALS_INIT\0_DOC_START\0doldoc\0_DOC_REPORT_LITERAL\0_DOC_BIN_FIND_NUM\0_DOC_BIN_FIND_TAG\0_DOC_BINS_VALIDATE\0_DOC_BIN_DEL\0_DOC_ENTRY_DEL\0_DOC_UNDO_DEL\0_DOC_UNDO_COUNT\0_DOC_REM_SOFT\0_DOC_INS_ENTRY\0_TEXT_CHAR\0_TEXT_LEN_STR\0_TEXT_LEN_ATTR_STR\0_TEXT_LEN_ATTR\0i386_text_base\0_TEXT_BASE_PRESENT\0_TEXT_BASE_RESTORE\0_LIST_SUB\0_LIST_MATCH\0_DEFINE\0_DEFINE_SUB\0_DEFINE_COUNT\0_DEFINE_MATCH\0_YEAR_START_DATE\0_STRUCT_TO_DATE\0_DAY_OF_WEEK\0_DATE_TO_STRUCT\0_FIRST_DAY_MONTH\0_LAST_DAY_MONTH\0_FIRST_DAY_YEAR\0_LAST_DAY_YEAR\0_BCD_TO_BIN\0local_time_offset\0_MAT4X4MULXYZ\0_DCTRANSFORM\0_MAT4X4IDENTEQU\0_MAT4X4IDENTNEW\0_MAT4X4NORMSQR65536\0_DCMAT4X4SET\0_DCLIGHTING\0_DCFILL\0_DCCLEAR\0_DCRST\0_DCEXTENTSINIT\0_DCALIAS\0_DCNEW\0_DCDEL\0_DCSIZE\0_DCDEPTHBUFRST\0_DCDEPTHBUFALLOC\0gr\0gr_palette_std\0_GRAPHICS_START\0_GRAPHICS_PRESENT\0_TEXT_BORDER\0_TEXT_RECT\0_WIN_SCROLL_NULL\0_WIN_SCROLL_RESTORE\0_WIN_DERIVED_VALS_UPDATE\0text\0_TASK_VALIDATE\0_TASK_DERIVED_VALS_UPDATE\0_WIN_HORZ\0_WIN_VERT\0_CTRL_FIND_UNIQUE\0_CTRLS_UPDATE\0_CTRL_INSIDE\0_WIN_Z_BUF_UPDATE\0_WIN_INSIDE\0_DOC_NEW\0_DOC_RST\0_DOC_DEL\0_DOC_SIZE\0_DOC_PUT_KEY\0_DOC_SAVE\0_DOC_WRITE\0_DOC_READ\0_DOC_ED\0_DOC_ALLOCATION_CHECK\0_DOC_EXE\0_DIR_MK\0_ED\0_DIR\0_ED_DIR\0_FILE_DEL\0_FILE_RENAME\0_DIR_DEL\0_FILE_MOVE\0_HELP\0_SND\0_SND_RST\0_MOUSE_GET\0_I386_INSTALL_TREE\0_I386_INSTALL_BOOT\0_I386_BUILD_MODULE\0_I386_BUILD_BOOT_IMAGE\0_I386_INSTALL_BOOT_IMAGE\0_EXE_DOC\0_I386_JOB_SOURCE\0_SYS_FOCUS_TASK\0_DBG\0_DEBUG_GO\0_DBG_MODE\0_IS_DBG_MODE\0_USER_CMD_LINE\0_USER_TASK_CONT\0_WIN_FOCUS\0_IS_RAW\0_STR_PRINT_JOIN\0_STR_PRINT\0_CAT_PRINT\0_MSTR_PRINT\0_USER\0_XTALK\0_TASK_WAIT\0_FILE_WRITE\0_FILE_READ\0_FILE_FIND\0_CD\0_DEBUG_STEP\0_TASK_REG_ADDR\0_BPT_FIND\0_BPT_SET\0_BPT_REMOVE\0_BPT_TOGGLE\0_BPT_CLEAR\0_DEBUG_GO_CLEAR\0_CALLER\0_SYS_MACRO_2_STR\0_SYS_MACRO_STRIP_KEY\0_PRINT\0_PUT_S\0_PUT_CHARS\0_TASK_TEXT\0_IN_STR\0_XTALK_STR_WAIT\0_PLAY_SYS_MACRO\0_STR_SCAN\0_STR_TO_I64\0_STR_TO_F64\0_STR_TO_DATE\0_DOC_DOLLAR\0_DOC_DATA_FMT\0_DOC_DATA_SCAN\0_DOC_PUT_S\0_DOC_PRINT\0_IN\0_JOB_RES_SCAN\0_JOB_DEL\0_TASK_EXE\0_SRV_TASK_CONT\0_SRV_CMD_LINE\0_WIN_TO_TOP\0_SYS_WINMGR_TASK\0_DOC_BORDER_NEW\0_ED_OVERSTRIKE_CB\0_ED_AUTO_SAVE_CB\0_ED_FILTER_CB\0_ED_DOLLAR_CB\0_ED_MORE_CB\0_ED_DOLLAR_TYPE_CB\0_MENU_NEW\0_MENU_FILE\0_MENU_ENTRY_FIND\0_MENU_SUB_ENTRY_FIND\0_MENU_DEL\0_GR_RECT\0_RAND_U16\0_DIST_SQR_I64\0_WIN_SCROLLS_INIT\0_RAW\0_VGA_FLUSH\0_DOC_ENTRY_LINK\0_FILE_NAME_ABS\0_SRC_LINE_NUM\0_SRC_FILE_NAME\0_SRC_ED_LINK\0_EXE_PUTS\0_EXE_PRINT\0_DEFINE_LOAD\0_DEFINE_PRINT\0_BIBLE_INIT\0_ED_LINK_CVT\0_DOC_LINK_FILE\0_DRV_CHECK\0_DRV_TO_LET\0_LET_TO_LET\0_LET_TO_BLOCK_DEV_TYPE\0_DRV_TEXT_ATTR_GET\0_STREAM_PRINT\0_STREAM_DIR\0_NOW\0_DOC_SCAN_LINE\0_PUT_KEY\0_KEY_DEV_ADD\0_KEY_DEV_REM\0_SCAN_KEY\0_GET_KEY\0_DOC_PRINT_PARTIAL\0_DOC_GET_KEY\0_DOC_RECALC\0_DOC_UPDATE_TASK_DOCS\0_DRAW_CTRLS\0_GR_UPDATE_TASK_WIN\0_SYS_TASK_BEING_SCRN_UPDATED\0_WINDOW_PRESENT\0_WINMGR_START\0_REFRESH\0_WINMGR_STATE\0_POP_UP\0_POP_UP_PRINT\0_WIN_MAX\0_DOC_ENTRY_RUN\0_DOC_MENU\0_POP_UP_MENU\0_POP_UP_PICK_LST\0_ED_CUR_U8\0_ED_CURSOR_LEFT\0_ED_CURSOR_RIGHT\0_ED_LINE_UP\0_ED_LINE_DOWN\0_ED_CHAR_DEL\0_ED_CHAR_INS\0_ED_LINE_DEL\0_DOC_TOP\0_DOC_CENTER\0_DOC_BOTTOM\0_DOC_INS_DOC\0_CLIP_DEL\0_CLIP_COPY\0_CLIP_CUT\0_CLIP_PASTE\0_DOC_CUT\0_DOC_COPY\0_SYS_CLIP_DOC\0_DOC_LOAD\0_DOC_2_PLAIN_TEXT\0_GET_TSC\0_DOC_CAPTURE_UNDO\0_DOC_UNDO_RESTORE\0_CHAR_2_KEY_NAME\0_KEY_DESC_SET\0_KEYDEV\0_DOC_COLLAPSE\0_DOC_ENTRY_TOGGLE\0_DOC_FLAGS_TOGGLE\0_STR_FIND\0_ED_FIND_NEXT\0_ED_SEL_ALL\0_ED_FIND_PAIRED\0_ED_GO_TO_FUN\0_ED_SEL_FUN\0_DOC_FORM\0_POP_UP_FORM\0_DOC_SPLIT_TAG\0_DOC_GO_TO_LINE\0_ED_REPLACE\0_STR_OCC\0_STR_FIRST_OCC\0_STR_LAST_OCC\0_STR_FIRST_REM\0_STR_LAST_REM\0_STR_UTIL\0_MSTR_UTIL\0_LET_TO_DRV\0_BLOCK_DEV_CHECK\0_LET_TO_BLOCK_DEV\0_DRV_IS_WRITABLE\0_FILE_NAME_CHK\0_SILENT\0_IS_SILENT\0_BLOCK_DEV_LOCK\0_BLOCK_DEV_UNLOCK\0_DRV_LOCK\0_DRV_UNLOCK\0_DRVS_RELEASE\0_BLOCK_DEVS_RELEASE\0_GET_OUT_OF_DOLLAR\0_PRINT_ERR\0_PRINT_WARN\0_RAW_PUT_CHAR\0RedSeaFreeFreeLst\0_DRV_DEL\0DrvBlkDevDel\0NativeDriveRecords\0NativeBlockRecords\0_BLOCK_DEV_NEXT_FREE_SLOT\0_DRV_MAKE_FREE_SLOT\0_DRV_NEXT_FREE_LET\0NativeDriveMap\0_DRV_MAP\0_GET_STR\0_DOC_GET_STR2\0_FP_GETSTR2\0_DOC_CLEAR\0_DC_2_SPRITE\0_DOC_SPRITE\0_DC_LOAD\0_EXPAND_BUF\0_EXT_DFT\0_GR_READ\0_DOC_GR\0_PORT_NOP\0_HPET\0_BUSY\0_DOC_DUMP\0_DOC_TYPE\0_TYPE\0_POP_UP_TERM_RIGHT\0_WIN_BORDER\0_POST_MSG_WAIT\0_ED_FIND_REPLACE\0_ED_GO_TO_LINE\0_FSIZE\0_CLUS_TO_BLOCK\0I386DskCacheInit\0I386DskCacheAdd\0I386RCache\0I386DskCacheInvalidate2\0I386DskCacheGlobals\0_BIT_FIELD_EXT_U32\0_BIT_FIELD_OR_U32\0_ARC_COMPRESS_BUF\0_ARC_CTRL_DEL\0_ARC_CTRL_NEW\0_ARC_EXPAND_BUF\0_ARC_FINISH_COMPRESSION\0_COMPRESS_BUF\0_MEMSET_U16\0_MEMSET_U32\0_MEMSET_I64\0sys_os_version\0_POP_UP_1\0_POP_UP_2\0_POP_UP_OK\0_POP_UP_NO_YES\0_POP_UP_CANCEL_OK\0_POP_UP_ED\0_DIR_CUR\0_GR_PALETTE_COLOR_SET\0_GR_PALETTE_COLOR_GET\0_GR_PALETTE_GET\0_GR_PALETTE_SET\0_BIRTH_WAIT\0_DEATH_WAIT\0ac\0acd\0I386RawBlocks\0_GET_I64\0_GET_F64\0_GET_DATE\0_GR_PUT_CHAR\0_GR_PUT_S\0_GR_VPUT_S\0_GR_PRINT\0_GR_VPRINT\0_GR_PUT_CHAR3\0_GR_PRINT3\0_GR_VPRINT3\0_GR_TEXT_BOX3\0_GR_TEXT_DIAMOND3\0_SPRITE3\0_GR_LINE\0SYS_PROGRESS1\0SYS_PROGRESS1_MAX\0SYS_PROGRESS1_T0\0SYS_PROGRESS1_TF\0SYS_PROGRESS1_DESC\0SYS_PROGRESS2\0SYS_PROGRESS2_MAX\0SYS_PROGRESS2_T0\0SYS_PROGRESS2_TF\0SYS_PROGRESS2_DESC\0SYS_PROGRESS3\0SYS_PROGRESS3_MAX\0SYS_PROGRESS3_T0\0SYS_PROGRESS3_TF\0SYS_PROGRESS3_DESC\0SYS_PROGRESS4\0SYS_PROGRESS4_MAX\0SYS_PROGRESS4_T0\0SYS_PROGRESS4_TF\0SYS_PROGRESS4_DESC\0SYS_PROGRESSES\0_PROGRESS_BARS_RST\0_DRAW_PROGRESS_BARS\0_STRICMP\0_STRNICMP\0_DOC_CURSOR\0_DOC_HIGHLIGHT_CURSOR\0_DOC_SCROLL\0_TS\0_CHAR_2_SCAN_CODE\0_SCAN_CODE_2_CHAR\0_SCAN_CODE_2_KEY_NAME\0_STRMATCH\0_STRNCMP\0_DOC_MAX\0_REBOOT\0_KEY_MAP_FAMILY\0_KEY_MAP_CTRL_ALT_FAMILY\0_KEY_MAP\0_CTRL_ALT_CB_SET\0_FILES_FIND_MATCH\0_WILD_MATCH\0_FILE_EXT_DOT\0_FILE_EXT_REM\0_EXT_CHG\0_IS_DOT_C\0_IS_DOT_Z\0_TOGGLE_ZOR_NOT_Z\0_DOC_FIND\0_DOC_ANCHOR_FIND\0_PLAIN\0_IN_FILE\0_EXE_FILE\0_ADAM\0_ADAM_FILE\0_EXE_PUTS2\0_EXE_FILE2\0_POP_UP_FILE\0_WIN_TILE_HORZ\0_WIN_TILE_VERT\0_COPY_SINGLE_Z\0_RAND_I16\0_RAND_I32\0_RAND_U32\0_RAND_I64\0_RAND_U64\0_RAND\0_SEED\0_DOC_TREE_FIND\0_DOC_TREE_F_FIND\0_DOC_TREE_MAKE\0_DOC_TREE_WRITE\0_DOC_TREE_APPEND\0_DOC_TREE_F_WRITE\0_DOC_TREE_F_APPEND\0_DOC_TREE_EXE\0_DOC_TREE_F_EXE\0_REG_CACHE\0_REG_DFT\0_REG_EXE\0_REG_WRITE\0_REG_CNT\0_REG_APPEND\0_REG_INIT\0_SYS_REGISTRY_DOC\0_SYS_MSG_FLAGS\0_REGISTRY_VERSION\0_NATIVE_REGISTRY_INIT\0_MAX\0_MIN\0_CLAMP\0_GR_CIRCLE\0_GR_ELLIPSE\0_GR_REG_POLY\0_GR_FLOOD_FILL\0_GR_PLOT0\0_GR_PEEK0\0_SPRITE_INTERPOLATE\0_SPRITE_3B\0_SPRITE_3_MAT4X4B\0_SPRITE_3XB\0_SPRITE_3YB\0_SPRITE_3ZB\0_SPRITE_SIZE\0_D3I32_DIST\0_D3I32_DIST_SQR\0_D3I32_NORM\0_D3I32_NORM_SQR\0_GR_RECT_B\0_GR_BORDER\0_BLINK\0_BEEP\0_HASH_GENERIC_ADD\0_FRAME_PTR\0_FRAME_PTR_ADD\0_FRAME_PTR_SET\0_FRAME_PTR_DEL\0_ONA_2_FREQ\0_NOISE\0_SWEEP\0_MUSIC_GLOBALS\0_MS_GLOBALS\0_MS_GRID_GLOBALS\0_DIR_ENTRY_DEL\0_DIR_ENTRY_DEL2\0_DIR_TREE_DEL\0_DIR_TREE_DEL2\0_DIR_FILES_FLATTEN\0_DIR_FILES_SORT\0_DIR_NAME_ABS\0_CFILE_NAME_TO\0_FAT_NAME_TO\0_FAT_NAME_XSUM\0_FAT_FROM_NAME\0_DIR_LONG_NAME_FILL\0_FAT32_DIR_FILL\0_FAT32_CDIR_FILL\0_REP_IN_U8\0_REP_IN_U16\0_REP_IN_U32\0_REP_OUT_U8\0_REP_OUT_U16\0_REP_OUT_U32\0_ENDIAN_U16\0_ENDIAN_U32\0_ENDIAN_I64\0_BLKDEV\0_DSK_CACHE_INIT\0_DSK_CACHE_ADD\0_R_CACHE\0_DSK_CACHE_INVALIDATE2\0_ATA_READ_BLKS\0_ATA_WRITE_BLKS\0_ATA_INIT\0_ATA_R_BLKS\0_ATA_W_BLKS\0_DRV_TYPE_SET\0_FILE_ATTR\0_CALLEXTSTR\0_BLK_READ\0_BLK_WRITE\0_BLK_WRITE_ZERO\0_BLKDEV_INIT\0_CLUS_NUM_NEXT\0_CLUS_ALLOC\0_CLUS_BLK_READ\0_CLUS_BLK_WRITE\0_CLUS_READ\0_CLUS_WRITE\0_FOPEN\0_FCLOSE\0_FBLK_READ\0_FBLK_WRITE\0_DIR_CONTEXT_NEW\0_DIR_CONTEXT_DEL\0_DIR_NEW\0_DEL\0_DRV\0_DSK_CHG\0_DSK_CACHE_INVALIDATE\0_FILES_FIND\0_IS_DIR\0_COPY_SINGLE\0_COPY\0_MOVE\0_MOUNT_FILE\0_UNMOUNT\0RedSeaFmt\0RedSeaValidate\0FAT32Fmt\0FAT32Init\0_DOC_TERM_NEW\0_KBD_MS_EVT_TIME\0_KBD_GLOBALS\0_SYS_RUN_LEVEL\0_SIZE\0_SCAN_FLAGS\0_HASH_ENTRY_SIZE2\0_HASH_TABLE_SIZE2\0_LINKED_LST_SIZE\0_DOC_VIEW\0_BREAK\0_BREAK_LOCK\0_BREAK_UNLOCK\0_MENU_PUSH\0_MENU_FILE_PUSH\0_MENU_POP\0_PUT_EXCEPT\0_REV_BITS_TABLE\0_SET_BITS_TABLE\0_CLAMP_I64\0_PUT_FILE_LINK\0_POP_UP_PICK_DIR\0_COPY_TREE\0_MUSIC_SETTINGS_RST\0_DEL_TREE\0_TASK_CALLER\0_SCRNCAST\0_SCRN_CAST\0_MUTE\0_IS_MUTE\0_DC_COPY\0_DC_SAVE\0_GR_WRITE\0_DC_EXT\0_DC_DIFF\0_NOTE_2_ONA\0_ONA_2_NOTE\0_ONA_2_OCTAVE\0_SPRITE\0_CMP_CTRL_NEW\0_CMP_CTRL_DEL\0_CMP_CTRL_SIZE\0_LEX_ATTACH_DOC\0_GET_CHAR\0_Y_OR_N\0_ARE_YOU_SURE\0_PRESS_A_KEY\0_FMT\0_REDSEA_ISO\0RedSeaISO9660\0_DVD_IMAGE_READ\0_DVD_IMAGE_WRITE\0_CD_TO_DIR_ENTRY\0_WIN_CURSOR_POS_SET\0_POP_UP_PICK_FILE\0_LEX_GET_CHAR\0_CMP_GLOBALS\0_LEX_ZEROS\0_CHAR_BMP_PRINTABLE\0_HASH_SRC_FILE_SET\0_DOC_PUT_LINE\0_FIX_SET\0_DBG_GLOBALS\0_ADAM_ERR\0_IS_SINGLE_USER\0_LEX_PUT_TOKEN\0_LEX_PUT_LINE\0_LEX_PUT_POS\0_LEX_WARN\0_LEX_EXCEPT\0_IC_ADD\0_COC_INIT\0_COC_PUSH\0_COC_POP_NO_FREE\0_COC_POP\0_COC_APPEND\0_COC_MISC_NEW\0_COC_DEL\0_HASH_ADD_AFTER\0_CALL\0_LINKED_LST_COPY\0_LINKED_LST_DEL\0_LEX_PUSH\0_LEX_POP_RESTORE\0_LEX_POP_NO_RESTORE\0_MEMBER_FIND\0_MEMBER_META_DATA\0_MEMBER_META_FIND\0_QUE_DEL\0_DIR_FILE\0_AOT_STORE_CODE_U8\0_AOT_STORE_CODE_U32\0_AOT_STORE_CODE_U64\0_AOT_STORE_CODE_U8_AT\0_PRS_I386_DATA_RANGE\0_LOAD_ONE_IMPORT\0_SYS_SYM_IMPORTS_RESOLVE\0_CMP_FIX_UP_JIT_ASM\0_NATIVE_JIT_SUPPORT\0_CMP_FIX_UP_AOT_ASM\0_ASM_RESOLVE\0_AOT_LOCALS_RESOLVE\0_AOT_GLBLS_RESOLVE\0_ASM_UNRESOLVED_ADD\0_OPT_PASS012\0_COC_COMPILE\0_COMPILER_BREAK_POLL\0_LEX\0_LEX_EXT_STR\0_LEX_EXPRESSION\0_LEX_EXPRESSION_I64\0_LEX_EXPRESSION_F64\0_LEX_EXPRESSION_BIN\0_IS_LEX_EXPRESSION_BIN\0_PRS_STREAM_BLK\0_PRS_ASM_BLOCK\0_CMP_JOIN\0_CMP_BUF\0_MS_SET\0_GRID_INIT\0_DRAW_MS\0_DRAW_STD_MS\0_DRAW_WAIT_MS\0_GR_FILL_CIRCLE\0sys_compile_time\0";
++  U8 *export_names="_DOC_LOCK\0_DOC_UNLOCK\0_DOC_PUT\0_DOC_DISPLAY\0_DOC_BORDER\0_DOC_EDITABLE\0_DOC_ENTRY_BASE\0_DOC_ENTRY_TAG\0_DOC_ENTRY_SIZE\0_DOC_ENTRY_COPY\0_DOC_FORM_FWD\0_DOC_FORM_BWD\0_DOC_DEFAULTS_INIT\0_DOC_INIT\0_DOC_DICTIONARY_NEW\0_DOC_DICTIONARY_DEL\0_DOC_GLOBALS_INIT\0_DOC_START\0doldoc\0_DOC_REPORT_LITERAL\0_DOC_BIN_FIND_NUM\0_DOC_BIN_FIND_TAG\0_DOC_BINS_VALIDATE\0_DOC_BIN_DEL\0_DOC_ENTRY_DEL\0_DOC_UNDO_DEL\0_DOC_UNDO_COUNT\0_DOC_REM_SOFT\0_DOC_INS_ENTRY\0_TEXT_CHAR\0_TEXT_LEN_STR\0_TEXT_LEN_ATTR_STR\0_TEXT_LEN_ATTR\0i386_text_base\0_TEXT_BASE_PRESENT\0_TEXT_BASE_RESTORE\0_LIST_SUB\0_LIST_MATCH\0_DEFINE\0_DEFINE_SUB\0_DEFINE_COUNT\0_DEFINE_MATCH\0_YEAR_START_DATE\0_STRUCT_TO_DATE\0_DAY_OF_WEEK\0_DATE_TO_STRUCT\0_FIRST_DAY_MONTH\0_LAST_DAY_MONTH\0_FIRST_DAY_YEAR\0_LAST_DAY_YEAR\0_BCD_TO_BIN\0local_time_offset\0_MAT4X4MULXYZ\0_DCTRANSFORM\0_MAT4X4IDENTEQU\0_MAT4X4IDENTNEW\0_MAT4X4NORMSQR65536\0_DCMAT4X4SET\0_DCLIGHTING\0_DCFILL\0_DCCLEAR\0_DCRST\0_DCEXTENTSINIT\0_DCALIAS\0_DCNEW\0_DCDEL\0_DCSIZE\0_DCDEPTHBUFRST\0_DCDEPTHBUFALLOC\0gr\0gr_palette_std\0_GRAPHICS_START\0_GRAPHICS_PRESENT\0_TEXT_BORDER\0_TEXT_RECT\0_WIN_SCROLL_NULL\0_WIN_SCROLL_RESTORE\0_WIN_DERIVED_VALS_UPDATE\0text\0_TASK_VALIDATE\0_TASK_DERIVED_VALS_UPDATE\0_WIN_HORZ\0_WIN_VERT\0_CTRL_FIND_UNIQUE\0_CTRLS_UPDATE\0_CTRL_INSIDE\0_WIN_Z_BUF_UPDATE\0_WIN_INSIDE\0_DOC_NEW\0_DOC_RST\0_DOC_DEL\0_DOC_SIZE\0_DOC_PUT_KEY\0_DOC_SAVE\0_DOC_WRITE\0_DOC_READ\0_DOC_ED\0_DOC_ALLOCATION_CHECK\0_DOC_EXE\0_DIR_MK\0_ED\0_DIR\0_ED_DIR\0_FILE_DEL\0_FILE_RENAME\0_DIR_DEL\0_FILE_MOVE\0_HELP\0_SND\0_SND_RST\0_MOUSE_GET\0_I386_INSTALL_TREE\0_I386_INSTALL_BOOT\0_I386_BUILD_MODULE\0_I386_BUILD_BOOT_IMAGE\0_I386_INSTALL_BOOT_IMAGE\0_EXE_DOC\0_I386_JOB_SOURCE\0_SYS_FOCUS_TASK\0_DBG\0_DEBUG_GO\0_DBG_MODE\0_IS_DBG_MODE\0_USER_CMD_LINE\0_USER_TASK_CONT\0_WIN_FOCUS\0_IS_RAW\0_STR_PRINT_JOIN\0_STR_PRINT\0_CAT_PRINT\0_MSTR_PRINT\0_USER\0_XTALK\0_TASK_WAIT\0_FILE_WRITE\0_FILE_READ\0_FILE_FIND\0_CD\0_DEBUG_STEP\0_TASK_REG_ADDR\0_BPT_FIND\0_BPT_SET\0_BPT_REMOVE\0_BPT_TOGGLE\0_BPT_CLEAR\0_DEBUG_GO_CLEAR\0_CALLER\0_SYS_MACRO_2_STR\0_SYS_MACRO_STRIP_KEY\0_PRINT\0_PUT_S\0_PUT_CHARS\0_TASK_TEXT\0_IN_STR\0_XTALK_STR_WAIT\0_PLAY_SYS_MACRO\0_STR_SCAN\0_STR_TO_I64\0_STR_TO_F64\0_STR_TO_DATE\0_DOC_DOLLAR\0_DOC_DATA_FMT\0_DOC_DATA_SCAN\0_DOC_PUT_S\0_DOC_PRINT\0_IN\0_JOB_RES_SCAN\0_JOB_DEL\0_TASK_EXE\0_SRV_TASK_CONT\0_SRV_CMD_LINE\0_WIN_TO_TOP\0_SYS_WINMGR_TASK\0_DOC_BORDER_NEW\0_ED_OVERSTRIKE_CB\0_ED_AUTO_SAVE_CB\0_ED_FILTER_CB\0_ED_DOLLAR_CB\0_ED_MORE_CB\0_ED_DOLLAR_TYPE_CB\0_MENU_NEW\0_MENU_FILE\0_MENU_ENTRY_FIND\0_MENU_SUB_ENTRY_FIND\0_MENU_DEL\0_GR_RECT\0_RAND_U16\0_DIST_SQR_I64\0_WIN_SCROLLS_INIT\0_RAW\0_VGA_FLUSH\0_DOC_ENTRY_LINK\0_FILE_NAME_ABS\0_SRC_LINE_NUM\0_SRC_FILE_NAME\0_SRC_ED_LINK\0_EXE_PUTS\0_EXE_PRINT\0_DEFINE_LOAD\0_DEFINE_PRINT\0_BIBLE_INIT\0_ED_LINK_CVT\0_DOC_LINK_FILE\0_DRV_CHECK\0_DRV_TO_LET\0_LET_TO_LET\0_LET_TO_BLOCK_DEV_TYPE\0_DRV_TEXT_ATTR_GET\0_STREAM_PRINT\0_STREAM_DIR\0_NOW\0_DOC_SCAN_LINE\0_PUT_KEY\0_KEY_DEV_ADD\0_KEY_DEV_REM\0_SCAN_KEY\0_GET_KEY\0_DOC_PRINT_PARTIAL\0_DOC_GET_KEY\0_DOC_RECALC\0_DOC_UPDATE_TASK_DOCS\0_DRAW_CTRLS\0_GR_UPDATE_TASK_WIN\0_SYS_TASK_BEING_SCRN_UPDATED\0_WINDOW_PRESENT\0_WINMGR_START\0_REFRESH\0_WINMGR_STATE\0_POP_UP\0_POP_UP_PRINT\0_WIN_MAX\0_DOC_ENTRY_RUN\0_DOC_MENU\0_POP_UP_MENU\0_POP_UP_PICK_LST\0_ED_CUR_U8\0_ED_CURSOR_LEFT\0_ED_CURSOR_RIGHT\0_ED_LINE_UP\0_ED_LINE_DOWN\0_ED_CHAR_DEL\0_ED_CHAR_INS\0_ED_LINE_DEL\0_DOC_TOP\0_DOC_CENTER\0_DOC_BOTTOM\0_DOC_INS_DOC\0_CLIP_DEL\0_CLIP_COPY\0_CLIP_CUT\0_CLIP_PASTE\0_DOC_CUT\0_DOC_COPY\0_SYS_CLIP_DOC\0_DOC_LOAD\0_DOC_2_PLAIN_TEXT\0_GET_TSC\0_DOC_CAPTURE_UNDO\0_DOC_UNDO_RESTORE\0_CHAR_2_KEY_NAME\0_KEY_DESC_SET\0_KEYDEV\0_DOC_COLLAPSE\0_DOC_ENTRY_TOGGLE\0_DOC_FLAGS_TOGGLE\0_STR_FIND\0_ED_FIND_NEXT\0_ED_SEL_ALL\0_ED_FIND_PAIRED\0_ED_GO_TO_FUN\0_ED_SEL_FUN\0_DOC_FORM\0_POP_UP_FORM\0_DOC_SPLIT_TAG\0_DOC_GO_TO_LINE\0_ED_REPLACE\0_STR_OCC\0_STR_FIRST_OCC\0_STR_LAST_OCC\0_STR_FIRST_REM\0_STR_LAST_REM\0_STR_UTIL\0_MSTR_UTIL\0_LET_TO_DRV\0_BLOCK_DEV_CHECK\0_LET_TO_BLOCK_DEV\0_DRV_IS_WRITABLE\0_FILE_NAME_CHK\0_SILENT\0_IS_SILENT\0_BLOCK_DEV_LOCK\0_BLOCK_DEV_UNLOCK\0_DRV_LOCK\0_DRV_UNLOCK\0_DRVS_RELEASE\0_BLOCK_DEVS_RELEASE\0_GET_OUT_OF_DOLLAR\0_PRINT_ERR\0_PRINT_WARN\0_RAW_PUT_CHAR\0RedSeaFreeFreeLst\0_DRV_DEL\0DrvBlkDevDel\0NativeDriveRecords\0NativeBlockRecords\0_BLOCK_DEV_NEXT_FREE_SLOT\0_DRV_MAKE_FREE_SLOT\0_DRV_NEXT_FREE_LET\0NativeDriveMap\0_DRV_MAP\0_GET_STR\0_DOC_GET_STR2\0_FP_GETSTR2\0_DOC_CLEAR\0_DC_2_SPRITE\0_DOC_SPRITE\0_DC_LOAD\0_EXPAND_BUF\0_EXT_DFT\0_GR_READ\0_DOC_GR\0_PORT_NOP\0_HPET\0_BUSY\0_DOC_DUMP\0_DOC_TYPE\0_TYPE\0_POP_UP_TERM_RIGHT\0_WIN_BORDER\0_POST_MSG_WAIT\0_ED_FIND_REPLACE\0_ED_GO_TO_LINE\0_FSIZE\0_CLUS_TO_BLOCK\0I386DskCacheInit\0I386DskCacheAdd\0I386RCache\0I386DskCacheInvalidate2\0I386DskCacheGlobals\0_BIT_FIELD_EXT_U32\0_BIT_FIELD_OR_U32\0_ARC_COMPRESS_BUF\0_ARC_CTRL_DEL\0_ARC_CTRL_NEW\0_ARC_EXPAND_BUF\0_ARC_FINISH_COMPRESSION\0_COMPRESS_BUF\0_MEMSET_U16\0_MEMSET_U32\0_MEMSET_I64\0sys_os_version\0_POP_UP_1\0_POP_UP_2\0_POP_UP_OK\0_POP_UP_NO_YES\0_POP_UP_CANCEL_OK\0_POP_UP_ED\0_DIR_CUR\0_GR_PALETTE_COLOR_SET\0_GR_PALETTE_COLOR_GET\0_GR_PALETTE_GET\0_GR_PALETTE_SET\0_BIRTH_WAIT\0_DEATH_WAIT\0ac\0acd\0I386RawBlocks\0_GET_I64\0_GET_F64\0_GET_DATE\0_GR_PUT_CHAR\0_GR_PUT_S\0_GR_VPUT_S\0_GR_PRINT\0_GR_VPRINT\0_GR_PUT_CHAR3\0_GR_PRINT3\0_GR_VPRINT3\0_GR_TEXT_BOX3\0_GR_TEXT_DIAMOND3\0_SPRITE3\0_GR_LINE\0SYS_PROGRESS1\0SYS_PROGRESS1_MAX\0SYS_PROGRESS1_T0\0SYS_PROGRESS1_TF\0SYS_PROGRESS1_DESC\0SYS_PROGRESS2\0SYS_PROGRESS2_MAX\0SYS_PROGRESS2_T0\0SYS_PROGRESS2_TF\0SYS_PROGRESS2_DESC\0SYS_PROGRESS3\0SYS_PROGRESS3_MAX\0SYS_PROGRESS3_T0\0SYS_PROGRESS3_TF\0SYS_PROGRESS3_DESC\0SYS_PROGRESS4\0SYS_PROGRESS4_MAX\0SYS_PROGRESS4_T0\0SYS_PROGRESS4_TF\0SYS_PROGRESS4_DESC\0SYS_PROGRESSES\0_PROGRESS_BARS_RST\0_DRAW_PROGRESS_BARS\0_STRICMP\0_STRNICMP\0_DOC_CURSOR\0_DOC_HIGHLIGHT_CURSOR\0_DOC_SCROLL\0_TS\0_CHAR_2_SCAN_CODE\0_SCAN_CODE_2_CHAR\0_SCAN_CODE_2_KEY_NAME\0_STRMATCH\0_STRNCMP\0_DOC_MAX\0_REBOOT\0_KEY_MAP_FAMILY\0_KEY_MAP_CTRL_ALT_FAMILY\0_KEY_MAP\0_CTRL_ALT_CB_SET\0_FILES_FIND_MATCH\0_WILD_MATCH\0_FILE_EXT_DOT\0_FILE_EXT_REM\0_EXT_CHG\0_IS_DOT_C\0_IS_DOT_Z\0_TOGGLE_ZOR_NOT_Z\0_DOC_FIND\0_DOC_ANCHOR_FIND\0_PLAIN\0_IN_FILE\0_EXE_FILE\0_ADAM\0_ADAM_FILE\0_EXE_PUTS2\0_EXE_FILE2\0_POP_UP_FILE\0_WIN_TILE_HORZ\0_WIN_TILE_VERT\0_COPY_SINGLE_Z\0_RAND_I16\0_RAND_I32\0_RAND_U32\0_RAND_I64\0_RAND_U64\0_RAND\0_SEED\0_DOC_TREE_FIND\0_DOC_TREE_F_FIND\0_DOC_TREE_MAKE\0_DOC_TREE_WRITE\0_DOC_TREE_APPEND\0_DOC_TREE_F_WRITE\0_DOC_TREE_F_APPEND\0_DOC_TREE_EXE\0_DOC_TREE_F_EXE\0_REG_CACHE\0_REG_DFT\0_REG_EXE\0_REG_WRITE\0_REG_CNT\0_REG_APPEND\0_REG_INIT\0_SYS_REGISTRY_DOC\0_SYS_MSG_FLAGS\0_REGISTRY_VERSION\0_NATIVE_REGISTRY_INIT\0_MAX\0_MIN\0_CLAMP\0_GR_CIRCLE\0_GR_ELLIPSE\0_GR_REG_POLY\0_GR_FLOOD_FILL\0_GR_PLOT0\0_GR_PEEK0\0_SPRITE_INTERPOLATE\0_SPRITE_3B\0_SPRITE_3_MAT4X4B\0_SPRITE_3XB\0_SPRITE_3YB\0_SPRITE_3ZB\0_SPRITE_SIZE\0_D3I32_DIST\0_D3I32_DIST_SQR\0_D3I32_NORM\0_D3I32_NORM_SQR\0_GR_RECT_B\0_GR_BORDER\0_BLINK\0_BEEP\0_HASH_GENERIC_ADD\0_FRAME_PTR\0_FRAME_PTR_ADD\0_FRAME_PTR_SET\0_FRAME_PTR_DEL\0_ONA_2_FREQ\0_NOISE\0_SWEEP\0_MUSIC_GLOBALS\0_MS_GLOBALS\0_MS_GRID_GLOBALS\0_DIR_ENTRY_DEL\0_DIR_ENTRY_DEL2\0_DIR_TREE_DEL\0_DIR_TREE_DEL2\0_DIR_FILES_FLATTEN\0_DIR_FILES_SORT\0_DIR_NAME_ABS\0_CFILE_NAME_TO\0_FAT_NAME_TO\0_FAT_NAME_XSUM\0_FAT_FROM_NAME\0_DIR_LONG_NAME_FILL\0_FAT32_DIR_FILL\0_FAT32_CDIR_FILL\0_REP_IN_U8\0_REP_IN_U16\0_REP_IN_U32\0_REP_OUT_U8\0_REP_OUT_U16\0_REP_OUT_U32\0_ENDIAN_U16\0_ENDIAN_U32\0_ENDIAN_I64\0_BLKDEV\0_DSK_CACHE_INIT\0_DSK_CACHE_ADD\0_R_CACHE\0_DSK_CACHE_INVALIDATE2\0_ATA_READ_BLKS\0_ATA_WRITE_BLKS\0_ATA_INIT\0_ATA_R_BLKS\0_ATA_W_BLKS\0_DRV_TYPE_SET\0_FILE_ATTR\0_CALLEXTSTR\0_BLK_READ\0_BLK_WRITE\0_BLK_WRITE_ZERO\0_BLKDEV_INIT\0_CLUS_NUM_NEXT\0_CLUS_ALLOC\0_CLUS_BLK_READ\0_CLUS_BLK_WRITE\0_CLUS_READ\0_CLUS_WRITE\0_FOPEN\0_FCLOSE\0_FBLK_READ\0_FBLK_WRITE\0_DIR_CONTEXT_NEW\0_DIR_CONTEXT_DEL\0_DIR_NEW\0_DEL\0_DRV\0_DSK_CHG\0_DSK_CACHE_INVALIDATE\0_FILES_FIND\0_IS_DIR\0_COPY_SINGLE\0_COPY\0_MOVE\0_MOUNT_FILE\0_UNMOUNT\0RedSeaFmt\0RedSeaValidate\0FAT32Fmt\0FAT32Init\0_DOC_TERM_NEW\0_KBD_MS_EVT_TIME\0_KBD_GLOBALS\0_SYS_RUN_LEVEL\0_SIZE\0_SCAN_FLAGS\0_HASH_ENTRY_SIZE2\0_HASH_TABLE_SIZE2\0_LINKED_LST_SIZE\0_DOC_VIEW\0_BREAK\0_BREAK_LOCK\0_BREAK_UNLOCK\0_MENU_PUSH\0_MENU_FILE_PUSH\0_MENU_POP\0_PUT_EXCEPT\0_REV_BITS_TABLE\0_SET_BITS_TABLE\0_CLAMP_I64\0_PUT_FILE_LINK\0_POP_UP_PICK_DIR\0_COPY_TREE\0_MUSIC_SETTINGS_RST\0_DEL_TREE\0_TASK_CALLER\0_SCRNCAST\0_SCRN_CAST\0_MUTE\0_IS_MUTE\0_DC_COPY\0_DC_SAVE\0_GR_WRITE\0_DC_EXT\0_DC_DIFF\0_NOTE_2_ONA\0_ONA_2_NOTE\0_ONA_2_OCTAVE\0_SPRITE\0_CMP_CTRL_NEW\0_CMP_CTRL_DEL\0_CMP_CTRL_SIZE\0_LEX_ATTACH_DOC\0_GET_CHAR\0_Y_OR_N\0_ARE_YOU_SURE\0_PRESS_A_KEY\0_FMT\0_REDSEA_ISO\0RedSeaISO9660\0_DVD_IMAGE_READ\0_DVD_IMAGE_WRITE\0_CD_TO_DIR_ENTRY\0_WIN_CURSOR_POS_SET\0_POP_UP_PICK_FILE\0_LEX_GET_CHAR\0_CMP_GLOBALS\0_LEX_ZEROS\0_CHAR_BMP_PRINTABLE\0_HASH_SRC_FILE_SET\0_DOC_PUT_LINE\0_FIX_SET\0_DBG_GLOBALS\0_ADAM_ERR\0_IS_SINGLE_USER\0_LEX_PUT_TOKEN\0_LEX_PUT_LINE\0_LEX_PUT_POS\0_LEX_WARN\0_LEX_EXCEPT\0_IC_ADD\0_COC_INIT\0_COC_PUSH\0_COC_POP_NO_FREE\0_COC_POP\0_COC_APPEND\0_COC_MISC_NEW\0_COC_DEL\0_HASH_ADD_AFTER\0_CALL\0_LINKED_LST_COPY\0_LINKED_LST_DEL\0_LEX_PUSH\0_LEX_POP_RESTORE\0_LEX_POP_NO_RESTORE\0_MEMBER_FIND\0_MEMBER_META_DATA\0_MEMBER_META_FIND\0_QUE_DEL\0_DIR_FILE\0_AOT_STORE_CODE_U8\0_AOT_STORE_CODE_U32\0_AOT_STORE_CODE_U64\0_AOT_STORE_CODE_U8_AT\0_PRS_I386_DATA_RANGE\0_LOAD_ONE_IMPORT\0_SYS_SYM_IMPORTS_RESOLVE\0_CMP_FIX_UP_JIT_ASM\0_NATIVE_JIT_SUPPORT\0_CMP_FIX_UP_AOT_ASM\0_ASM_RESOLVE\0_AOT_LOCALS_RESOLVE\0_AOT_GLBLS_RESOLVE\0_ASM_UNRESOLVED_ADD\0_OPT_PASS012\0_COC_COMPILE\0_COMPILER_BREAK_POLL\0_LEX\0_LEX_EXT_STR\0_LEX_EXPRESSION\0_LEX_EXPRESSION_I64\0_LEX_EXPRESSION_F64\0_LEX_EXPRESSION_BIN\0_IS_LEX_EXPRESSION_BIN\0_PRS_STREAM_BLK\0_PRS_ASM_BLOCK\0_CMP_JOIN\0_CMP_BUF\0_MS_SET\0_GRID_INIT\0_DRAW_MS\0_DRAW_STD_MS\0_DRAW_WAIT_MS\0_GR_FILL_CIRCLE\0sys_compile_time\0_LEX_INCLUDE_STR\0";
+   CI386Task *task=I386TaskSelf;
+   I64 i;
+   CI386KernelSymbol *provider;
+@@ -1318,6 +1321,7 @@
+   ConsoleDocExportSet(&DrawMs);ConsoleDocExportSet(&DrawStdMs);ConsoleDocExportSet(&DrawWaitMs);
+   ConsoleDocExportSet(&GrFillCircle);
+   ConsoleDocExportSet(config->compile_time);
++  ConsoleDocExportSet(&LexIncludeStr);
+   if(console_doc_export_cursor!=console_doc_exports+sizeof(console_doc_exports)/sizeof(CI386KernelSymbol))
+     throw('DocExps',TRUE);
+   for(i=0;i<sizeof(console_doc_exports)/sizeof(CI386KernelSymbol);i++) {
+@@ -1411,6 +1415,11 @@
+   if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
+       "RootUserHeaders.HC",I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
+   KernelLog("ROOT USER HEADERS ok\n");
++  //Publish complete compiler declarations before rich include documents exist.
++  KernelLog("ROOT COMPILER HEADERS begin\n");
++  if(!ConsoleSource("#include \"/Compiler/I386/SystemCompilerA.HH\"\n",
++      "RootCompilerHeaders.HC",0x200000000000|I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
++  KernelLog("ROOT COMPILER HEADERS ok\n");
+   console_config->files->public_document(&NativeIncludeDocumentCreate,&NativeIncludeDocumentDestroy,&NativeIncludeDocumentFormat);
+   return TRUE;
+ }
+@@ -1826,6 +1835,102 @@
+ 
+ import U32 char_bmp_alpha_numeric_no_at[16];
+ #define CMP_CTRL_TARGET_FLAGS CCF_TARGET_I386
++//Public controls retain their original allocation size and allocator domain.
++class CNativePublicControlOwner {
++  CNativePublicControlOwner *next;
++  CCmpCtrl *control;
++  CI386Task *task;
++};
++CNativePublicControlOwner *native_public_controls;
++U0 NativePublicControlRegister(CCmpCtrl *cc)
++{
++  CNativePublicControlOwner *record=CAlloc(sizeof(CNativePublicControlOwner));
++  U32 irq=I386IrqSave;
++  record->control=cc;record->task=I386TaskSelf;
++  record->next=native_public_controls;native_public_controls=record;
++  I386IrqRestore(irq);
++}
++U0 NativePublicControlForget(CCmpCtrl *cc)
++{//Called after the ordinary release, without dereferencing the freed control.
++  CNativePublicControlOwner *record,*previous=NULL;
++  U32 irq=I386IrqSave;
++  record=native_public_controls;
++  while(record && record->control!=cc){previous=record;record=record->next;}
++  if(!record)KernelStop;
++  if(previous)previous->next=record->next;else native_public_controls=record->next;
++  I386IrqRestore(irq);Free(record);
++}
++CNativePublicControlOwner *NativePublicControlFind(CCmpCtrl *cc,CI386Task *task)
++{
++  CNativePublicControlOwner *record=native_public_controls;
++  while(record && (record->control!=cc || record->task!=task))record=record->next;
++  return record;
++}
++U0 NativePublicControlOwnerRetire(CI386Task *task)
++{//Committed Exit only, after descendants and render borrowers have retired.
++  CNativePublicControlOwner *record;
++  CCmpCtrl *cc,*scan,*head=&task->next_cc;
++  Bool found;
++  CTask *children=(&task->next_child_task)(U8 *)-offset(CTask.next_sibling_task);
++  I64 public_count=0,queue_count=0,foreign_count=0;
++  U32 irq=I386IrqSave;
++  if(task->next_child_task!=children){I386IrqRestore(irq);return;}
++  for(record=native_public_controls;record;record=record->next)
++    if(record->task==task)public_count++;
++  if(!public_count){I386IrqRestore(irq);return;}
++  if(task!=I386TaskSelf || task->compiler_busy)goto public_control_retire_failed;
++  //Bounded preflight: preserve every owned record if links or native cleanup fail.
++  for(cc=task->next_cc;cc!=head;cc=cc->next) {
++    if(++queue_count>public_count+task->active_controls || !cc ||
++        !cc->next || !cc->last || cc->next->last!=cc || cc->last->next!=cc)
++      goto public_control_retire_failed;
++    if(!NativePublicControlFind(cc,task))foreign_count++;
++  }
++  if(foreign_count!=task->active_controls)goto public_control_retire_failed;
++  //A linked public object must belong to this exact task queue. Do not
++  //detach controls borrowed by another task or linked into an unrelated list.
++  for(record=native_public_controls;record;record=record->next)
++    if(record->task==task) {
++      cc=record->control;
++      if(cc->next!=cc || cc->last!=cc) {
++        found=FALSE;
++        for(scan=task->next_cc;scan!=head;scan=scan->next)
++          if(scan==cc){found=TRUE;break;}
++        if(!found)goto public_control_retire_failed;
++      }
++    }
++  //Remove only explicitly registered public nodes. The native drain then
++  //validates and frees its own domain; public objects remain owned until success.
++  for(record=native_public_controls;record;record=record->next)
++    if(record->task==task) {
++      cc=record->control;
++      if(cc->next!=cc || cc->last!=cc) {
++        if(!cc->next || !cc->last || cc->next->last!=cc || cc->last->next!=cc)
++          goto public_control_retire_failed;
++        QueRem(cc);QueInit(cc);
++      }
++    }
++  I386IrqRestore(irq);
++  if(task->compiler_cleanup && !(*task->compiler_cleanup)(task)) {
++    task->compiler_cleanup_failed=TRUE;return;
++  }
++  if(task->active_controls || task->next_cc!=head || task->last_cc!=head) {
++    task->compiler_cleanup_failed=TRUE;return;
++  }
++  while(TRUE) {
++    irq=I386IrqSave;record=native_public_controls;
++    while(record && record->task!=task)record=record->next;
++    cc=NULL;if(record)cc=record->control;
++    I386IrqRestore(irq);
++    if(!cc)return;
++    CmpCtrlDel(cc);
++  }
++public_control_retire_failed:
++  task->compiler_cleanup_failed=TRUE;I386IrqRestore(irq);
++}
++#define CMP_CTRL_REGISTER NativePublicControlRegister
++#define CMP_CTRL_FORGET NativePublicControlForget
++
+ #include "/Compiler/PublicControlCore.HC"
+ #include "/Compiler/AOTStoreCore.HC"
+ #include "/Compiler/I386DataRangeCore.HC"
+@@ -1958,29 +2063,93 @@
+   compile=native_jit_support.compile;return (*compile)(cc,_code_size,_dbg,_type);
+ }
+ 
++#include "/Kernel/I386/LexProvider.HH"
++#include "/Compiler/LexIncludeCore.HC"
++import U8 *I386CompactReadModule(CI386Heap *heap,U8 *file,I64 size,
++  U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count);
++U8 *native_lex_image;
+ U0 NativeLexSupportLoad()
+-{
+-  CHashTable *saved;I64 stage;U8 *file;
+-  if(!native_jit_support.lex){
+-    if(Fs!=adam_task)TaskWait(adam_task);
+-    if(!native_jit_support.lex){
+-      saved=adam_task->hash_table;adam_task->hash_table=native_jit_support.symbols;
+-      stage=0;file="::/Compiler/I386/PublicLexPrelude.HC\0::/Compiler/I386/PublicLexFiles.HC\0::/Compiler/I386/PublicLexString.HC\0::/Compiler/I386/PublicLexNumber.HC\0::/Compiler/I386/PublicLexChar.HC\0::/Compiler/I386/PublicLexPunct.HC\0::/Compiler/I386/PublicLexIdent.HC\0::/Compiler/I386/PublicLexDefine.HC\0::/Compiler/I386/PublicLexConditional.HC\0::/Compiler/I386/PublicLexTokens.HC\0::/Compiler/I386/PublicLexExtStr.HC\0::/Compiler/I386/PublicLexSupport.HC\0";
+-      try{
+-        while(*file){
+-          stage++;
+-          if(native_jit_support.lex_stage<stage){
+-            AdamFile(file,FALSE);
+-            if(native_jit_support.lex_stage!=stage)throw('LexLoad',TRUE);
+-          }
+-          while(*file++);
+-        }
+-      }catch{adam_task->hash_table=saved;}
+-      adam_task->hash_table=saved;
+-      if(!native_jit_support.lex || !native_jit_support.ext_str || native_jit_support.lex_stage!=stage)throw('LexLoad',TRUE);
++{//Adam owns serialized publication; the module and tables live for the system.
++  U8 *source=NULL,*image=NULL;
++  I64 bytes,loaded_bytes,i;
++  U32 *first=NULL,*second=NULL,*third=NULL,*fields;
++  CI386LexProvider candidate;
++  CI386ModuleHeader *header;
++  CHashExport *non_eol,*space;
++  CI386ModuleBinding bindings[30];
++  I64 (*entry)(CI386LexProvider *services,I64 bytes);
++  if(native_jit_support.lex)return;
++  if(Fs!=adam_task) {
++    Adam("Call(0x%X);",&NativeLexSupportLoad);
++    if(!native_jit_support.lex)throw('LexLoad',TRUE);
++    return;
++  }
++  MemSet(&candidate,0,sizeof(candidate));
++  try {
++    non_eol=HashFind("char_bmp_non_eol",adam_task->hash_table,HTT_EXPORT_SYS_SYM);
++    space=HashFind("char_bmp_non_eol_white_space",adam_task->hash_table,HTT_EXPORT_SYS_SYM);
++    if(!non_eol || !space || !non_eol->val || !space->val)throw('LexBmp',TRUE);
++    bindings[0].name="CAlloc";bindings[0].kind=1;bindings[0].address=(&CAlloc+0)(U64);
++    bindings[1].name="ExtDft";bindings[1].kind=1;bindings[1].address=(&ExtDft+0)(U64);
++    bindings[2].name="FileNameAbs";bindings[2].kind=1;bindings[2].address=(&FileNameAbs+0)(U64);
++    bindings[3].name="FileRead";bindings[3].kind=1;bindings[3].address=(&FileRead+0)(U64);
++    bindings[4].name="Free";bindings[4].kind=1;bindings[4].address=(&Free+0)(U64);
++    bindings[5].name="HashAdd";bindings[5].kind=1;bindings[5].address=(&HashAdd+0)(U64);
++    bindings[6].name="HashFind";bindings[6].kind=1;bindings[6].address=(&HashFind+0)(U64);
++    bindings[7].name="HashSrcFileSet";bindings[7].kind=1;bindings[7].address=(&HashSrcFileSet+0)(U64);
++    bindings[8].name="I386F64FromI64";bindings[8].kind=1;bindings[8].address=(&I386F64FromI64+0)(U64);
++    bindings[9].name="I386F64Mul";bindings[9].kind=1;bindings[9].address=(&I386F64Mul+0)(U64);
++    bindings[10].name="LexAttachDoc";bindings[10].kind=1;bindings[10].address=(&LexAttachDoc+0)(U64);
++    bindings[11].name="LexBackupLastChar";bindings[11].kind=1;bindings[11].address=(&LexBackupLastChar+0)(U64);
++    bindings[12].name="LexExcept";bindings[12].kind=1;bindings[12].address=(&LexExcept+0)(U64);
++    bindings[13].name="LexExpression";bindings[13].kind=1;bindings[13].address=(&LexExpression+0)(U64);
++    bindings[14].name="LexFilePush";bindings[14].kind=1;bindings[14].address=(&LexFilePush+0)(U64);
++    bindings[15].name="LexGetChar";bindings[15].kind=1;bindings[15].address=(&LexGetChar+0)(U64);
++    bindings[16].name="LexWarn";bindings[16].kind=1;bindings[16].address=(&LexWarn+0)(U64);
++    bindings[17].name="MAlloc";bindings[17].kind=1;bindings[17].address=(&MAlloc+0)(U64);
++    bindings[18].name="MemCpy";bindings[18].kind=1;bindings[18].address=(&MemCpy+0)(U64);
++    bindings[19].name="MemberFind";bindings[19].kind=1;bindings[19].address=(&MemberFind+0)(U64);
++    bindings[20].name="Pow10I64";bindings[20].kind=1;bindings[20].address=(&Pow10I64+0)(U64);
++    bindings[21].name="PrsStreamBlk";bindings[21].kind=1;bindings[21].address=(&PrsStreamBlk+0)(U64);
++    bindings[22].name="StrNew";bindings[22].kind=1;bindings[22].address=(&StrNew+0)(U64);
++    bindings[23].name="blkdev";bindings[23].kind=3;bindings[23].address=(console_config->block_globals+0)(U64);
++    bindings[24].name="char_bmp_dec_numeric";bindings[24].kind=3;bindings[24].address=(char_bmp_dec_numeric+0)(U64);
++    bindings[25].name="char_bmp_hex_numeric";bindings[25].kind=3;bindings[25].address=(char_bmp_hex_numeric+0)(U64);
++    bindings[26].name="char_bmp_non_eol";bindings[26].kind=3;bindings[26].address=(non_eol->val+0)(U64);
++    bindings[27].name="char_bmp_non_eol_white_space";bindings[27].kind=3;bindings[27].address=(space->val+0)(U64);
++    bindings[28].name="cmp";bindings[28].kind=3;bindings[28].address=(&cmp+0)(U64);
++    bindings[29].name="sys_run_level";bindings[29].kind=3;bindings[29].address=(console_config->run_level+0)(U64);
++    source=(*console_config->files->read_raw)(console_config->heap,"::/Modules/I386/LexRuntime.t32m",&bytes,0,0);
++    if(!source)throw('LexFile',TRUE);
++    if(bytes<sizeof(CI386ModuleHeader))throw('LexFile',TRUE);
++    header=source;loaded_bytes=8+header->code_size;
++    image=I386CompactReadModule(console_config->heap,source,bytes,"Main",bindings,30);
++    if(!image)throw('LexLoad',TRUE);
++    source=NULL;
++    entry=image;
++    if((*entry)(&candidate,sizeof(candidate))!=1 ||
++        candidate.version!=I386_LEX_PROVIDER_VERSION || candidate.bytes!=sizeof(candidate))throw('LexABI',TRUE);
++    fields=&candidate;
++    for(i=2;i<sizeof(candidate)/4;i++)
++      if(fields[i]<(image+8+0)(U64) || fields[i]>=(image+loaded_bytes+0)(U64))throw('LexABI',TRUE);
++    if(!cmp.dual_U16_tokens1 && !cmp.dual_U16_tokens2 && !cmp.dual_U16_tokens3) {
++      first=CAlloc(sizeof(U32)*TK_TKS_NUM,adam_task);second=CAlloc(sizeof(U32)*TK_TKS_NUM,adam_task);third=CAlloc(sizeof(U32)*TK_TKS_NUM,adam_task);
++      (*candidate.punct_init)(first,second,third);
++      cmp.dual_U16_tokens1=first;cmp.dual_U16_tokens2=second;cmp.dual_U16_tokens3=third;
++      first=second=third=NULL;
+     }
++    if(!cmp.dual_U16_tokens1 || !cmp.dual_U16_tokens2 || !cmp.dual_U16_tokens3)throw('LexLoad',TRUE);
++    native_lex_image=image;image=NULL;
++    native_jit_support.ext_str=candidate.ext_str;native_jit_support.lex=candidate.lex;
++    native_jit_support.lex_stage=12;
++    KernelLog("PUBLIC LEX provider\n");
++  } catch {
++    if(source && !I386HeapFree(console_config->heap,source))KernelStop;
++    Free(first);Free(second);Free(third);
++    if(image && !I386HeapFree(console_config->heap,image))KernelStop;
+   }
+ }
++
+ I64 Lex(CCmpCtrl *cc)
+ {
+   I64 (*lex)(CCmpCtrl *cc);
+@@ -2059,6 +2228,17 @@
+   NativePrsSupportLoad;invoke=native_jit_support.stream;(*invoke)(cc);
+ }
+ 
++I64 NativeTerminalExecute(CCmpCtrl *cc)
++{
++  CHashFun *entry;
++  I64 (*invoke)(CCmpCtrl *cc);
++  if(!cc || !cc->lex_include_stk)throw('Compiler',TRUE);
++  NativePrsSupportLoad;
++  entry=HashFind("ExeCmdLine",native_jit_support.symbols,HTT_FUN);
++  if(!entry || !entry->exe_addr)throw('CmdLine',TRUE);
++  invoke=entry->exe_addr;return (*invoke)(cc);
++}
++
+ //Assembly is independent of expression publication and loads only when requested.
+ U0 NativeAsmSupportLoad()
+ {
+--- /dev/null
++++ b/Kernel/I386/LexRuntime.HC
+@@ -0,0 +1,81 @@
++//Retained task-owned VGA consoles and native command input.
++#include "/Kernel/Types.HH"
++#include "/Kernel/QueueTypes.HH"
++#include "/Kernel/NumericLimits.HH"
++#include "/Kernel/MathConstants.HH"
++#include "/Kernel/DirEntryTypes.HH"
++#include "/Kernel/WindowInhibitFlags.HH"
++#include "/Kernel/RunLevelTypes.HH"
++#include "/Kernel/BlkDev/DriveTypes.HH"
++#include "/Kernel/BlkDev/CFileTypes.HH"
++#define TRUE 1
++#define FALSE 0
++#define ON 1
++#define OFF 0
++
++#define NULL 0
++#include "/Kernel/I386/ConsoleRuntime.HH"
++#include "/Kernel/I386/Intrinsic.HH"
++#include "/Kernel/I386/LexProvider.HH"
++#include "/Compiler/Keywords.HH"
++#include "/Kernel/StringLimits.HH"
++import U64 I386F64Sqrt(U64 value);
++import U64 I386F64Abs(U64 value);
++import U64 I386F64Add(U64 a,U64 b);
++import U64 I386F64Sub(U64 a,U64 b);
++import U64 I386F64Mul(U64 a,U64 b);
++import U64 I386F64Div(U64 a,U64 b);
++import U64 I386F64Mod(U64 a,U64 b);
++import U64 I386F64FromI64(I64 value);
++import I64 I386F64ToI64(U64 value);
++import I64 I386F64Compare(U64 a,U64 b);
++import U32 sys_run_level;
++import CCmpGlbls cmp;
++import CBlkDevGlbls blkdev;
++import U32 char_bmp_hex_numeric[16],char_bmp_dec_numeric[16];
++import U32 char_bmp_non_eol[16],char_bmp_non_eol_white_space[16];
++import U8 *MAlloc(I64 size,CTask *task=NULL);
++import U8 *CAlloc(I64 size,CTask *task=NULL);
++import U0 Free(U8 *allocation);
++import U8 *StrNew(U8 *text,CTask *task=NULL);
++import U8 *MemCpy(U8 *dst,U8 *src,I64 bytes);
++import CLexFile *LexFilePush(CCmpCtrl *cc);
++import I64 LexGetChar(CCmpCtrl *cc);
++import U0 LexBackupLastChar(CCmpCtrl *cc);
++import U0 LexAttachDoc(CCmpCtrl *cc,CLexFile *tmpf=NULL,CDoc *doc=NULL,
++  U8 *abs_filename=NULL,CDocEntry *doc_e=NULL,I64 col=0);
++import U8 *FileNameAbs(U8 *name,I64 flags=0);
++import U8 *FileRead(U8 *name,I64 *size=NULL,I64 *attr=NULL);
++import U8 *ExtDft(U8 *name,U8 *extension);
++import U0 LexExcept(CCmpCtrl *cc,U8 *message=NULL);
++import U0 LexWarn(CCmpCtrl *cc,U8 *message=NULL);
++import I64 LexExpression(CCmpCtrl *cc);
++import U0 PrsStreamBlk(CCmpCtrl *cc);
++import U0 HashAdd(CHash *entry,CHashTable *table);
++import CHash *HashFind(U8 *name,CHashTable *table,I64 mask=HTG_TYPE_MASK,I64 instance=1);
++import U0 HashSrcFileSet(CCmpCtrl *cc,CHashSrcSym *entry,I64 offset=0);
++import CMemberLst *MemberFind(U8 *name,CHashClass *type);
++import F64 Pow10I64(I64 exponent);
++extern I64 NativeProviderLex(CCmpCtrl *cc);
++#define Lex NativeProviderLex
++#define LexExtStr NativeProviderLexExtStr
++#include "/Compiler/LexIncludeCore.HC"
++#include "/Compiler/LexStringSystemCore.HC"
++#include "/Compiler/LexNumber.HC"
++#include "/Compiler/LexChar.HC"
++#include "/Compiler/LexPunct.HC"
++#include "/Compiler/LexIdentSystemCore.HC"
++#include "/Compiler/LexDefineSystemCore.HC"
++#include "/Compiler/LexConditional.HC"
++#define LEX_EXT_STR_IMPL NativeProviderLexExtStr
++#include "/Compiler/LexExtStrCore.HC"
++#define LEX_TOKEN_IMPL NativeProviderLex
++#include "/Compiler/LexDispatchCore.HC"
++#include "/Compiler/LexPunctInit.HC"
++I64 Main(CI386LexProvider *services,I64 bytes)
++{
++  if(!services || bytes!=sizeof(CI386LexProvider))return 0;
++  services->version=I386_LEX_PROVIDER_VERSION;services->bytes=sizeof(CI386LexProvider);
++  services->lex=&NativeProviderLex;services->ext_str=&NativeProviderLexExtStr;
++  services->punct_init=&LexPunctInit;return 1;
++}
+--- a/Kernel/I386/Kernel.HC
++++ b/Kernel/I386/Kernel.HC
+@@ -558,6 +558,14 @@
+ #include "/Kernel/I386/RedSeaRepair.HC"
+ #include "/Kernel/I386/RedSeaMoveIntent.HC"
+ #include "/Kernel/I386/RedSeaWrite.HC"
++
++U8 *I386CompactReadModule(CI386Heap *heap,U8 *file,I64 size,
++  U8 *entry_name,CI386ModuleBinding *bindings,I64 binding_count)
++{//Raw file reads add one NUL; normalize the owned block before existing preflight.
++  if(size<32 || size>=U32_MAX || I386HeapSize(heap,file)!=size+1 ||
++      !I386HeapShrink(heap,file,size))return 0;
++  return I386ModuleCompactOwned(heap,file,size,entry_name,bindings,binding_count,TRUE);
++}
+ 
+ U8 *KernelModuleLoad(U8 *path,CI386ModuleBinding *bindings,I64 count)
+ {//Boot disk ownership is established by the caller.
+@@ -1109,7 +1117,7 @@
+ 
+ U0 KernelConsoleLoad()
+ {
+-  CI386ModuleBinding bindings[67];
++  CI386ModuleBinding bindings[68];
+   U8 *float_names="I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0",*float_name=float_names;
+   U8 *public_names="_MALLOC\0_CALLOC\0_FREE\0_MSIZE2\0_MALLOC_IDENT\0_STR_NEW\0_MEMCPY\0_MEMSET\0_HASH_TABLE_NEW\0_HASH_DEFINE_LIST_ADD\0_DEFINE_LIST_LOAD\0";
+   U8 *local_names="MAlloc\0CAlloc\0Free\0MSize2\0MAllocIdent\0StrNew\0MemCpy\0MemSet\0HashTableNew\0HashDefineLstAdd\0DefineLstLoad\0";
+@@ -1158,8 +1166,10 @@
+   KernelBinding(&bindings[64],"char_bmp_white_space");
+   KernelBinding(&bindings[65],"char_bmp_printable"); bindings[65].name="native_doc_printable";
+   KernelBinding(&bindings[66],"_HASH_SINGLE_TABLE_FIND"); bindings[66].name="HashSingleTableFind";
++  bindings[67].name="I386CompactReadModule";bindings[67].kind=1;
++  bindings[67].address=(&I386CompactReadModule+0)(U64);
+   kernel_console_image=KernelServiceLoad("/Modules/I386/ConsoleRuntime.t32m","CONSOLE ",
+-    bindings,67,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
++    bindings,68,&kernel_console,sizeof(CI386ConsoleServices),I386_CONSOLE_VERSION);
+   kernel_console_config.heap=&kernel_heap; kernel_console_config.compiler=&kernel_compiler;
+   kernel_console_config.files=&kernel_files; kernel_console_config.includes=&kernel_file_include;
+   kernel_console_config.drive_records=kernel_volumes.drives;
+--- /dev/null
++++ b/Kernel/I386/LexProvider.HH
+@@ -0,0 +1,10 @@
++#ifndef I386_LEX_PROVIDER_INCLUDED
++#define I386_LEX_PROVIDER_INCLUDED
++#define I386_LEX_PROVIDER_VERSION 1
++class CI386LexProvider {
++  U32 version,bytes;
++  I64 (*lex)(CCmpCtrl *cc);
++  U8 *(*ext_str)(CCmpCtrl *cc,I64 *size,Bool lex_next);
++  U0 (*punct_init)(U32 *first,U32 *second,U32 *third);
++};
++#endif
+--- a/Kernel/I386/KeyDevRuntime.HC
++++ b/Kernel/I386/KeyDevRuntime.HC
+@@ -8,8 +8,13 @@
+ }
+ #define KEYDEV_SCAN_CODE (console_config->reader->state.keys.locks)
+ #include "/Kernel/KeyDevOutputCore.HC"
++extern Bool NativeTerminalQueuedKey(CI386KeyEvent *event);
+ I64 ScanMsg(I64 *a=NULL,I64 *b=NULL,I64 mask=~1,CTask *task=NULL)
+ {
++  CI386KeyEvent event;
++  if((!task || task==Fs) && (mask&(1<<MSG_KEY_DOWN)) && NativeTerminalQueuedKey(&event)) {
++    if(a)*a=event.ch;if(b)*b=event.scan;return MSG_KEY_DOWN;
++  }
+   return (*native_public_scan_msg)(a,b,mask,task);
+ }
+ #include "/Kernel/KeyScanCore.HC"
+--- a/Kernel/I386/Terminals.HC
++++ b/Kernel/I386/Terminals.HC
+@@ -338,6 +338,29 @@
+   } while(terminal!=start);
+   return TRUE;
+ }
++extern I64 NativeTerminalExecute(CCmpCtrl *cc);
++U0 NativeOriginalTerminalInput()
++{//Terminal key-input-execute loop.
++  CCmpCtrl *cc;
++  CDoc *doc;
++  Bool cont=TRUE;
++  do {
++    cc=CmpCtrlNew(,CCF_CMD_LINE|CCF_PMT|CCF_QUESTION_HELP);
++    QueIns(cc,Fs->last_cc);
++    try {
++      Lex(cc);
++      NativeTerminalExecute(cc);
++      cont=Bt(&cc->flags,CCf_PMT);
++      QueRem(cc);
++      CmpCtrlDel(cc);
++    } catch {
++      if ((doc=Fs->put_doc) && doc->doc_signature==DOC_SIGNATURE_VAL)
++	DocUnlock(doc);
++      PutExcept;
++    }
++  } while (cont);
++}
++
+ U0 NativeUserTaskCont()
+ {
+   CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
+@@ -347,7 +370,10 @@
+   terminal->running=TRUE;
+   do {
+     retry=FALSE;
+-    try { NativeTerminalInput; }
++    try {
++      if(terminal!=native_terminal_root)NativeOriginalTerminalInput;
++      else NativeTerminalInput;
++    }
+     catch {
+       //Like UserTaskCont, keep the user's task and definitions after a break.
+       I386TaskSelf->catch_except=TRUE;
+@@ -399,9 +425,10 @@
+ U0 NativeUserCmdLine(I64 dummy=0) { NativeUserConsoleStart(FALSE); }
+ U0 NativeUserHotkey(U8 *data) { NativeUserConsoleStart(TRUE); }
+ 
+-I64 NativeTerminalInputKey(CI386KeyEvent *event)
+-{
+-  CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
++Bool NativeTerminalQueuedKey(CI386KeyEvent *event)
++{
++  CNativeTerminal *terminal=NativeTerminalFind(I386TaskSelf);
++  if(!terminal)return FALSE;
+   CNativeTextInput *input;
+   I64 ch;
+   U32 flags;
+@@ -415,11 +442,17 @@
+       if(!terminal->input_head) terminal->input_tail=NULL;
+     } else input=NULL;
+     event->type=MSG_KEY_DOWN; event->ch=ch; event->scan=0;
++    I386TaskSelf->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_AWAITING_MSG);
+     I386IrqRestore(flags);
+     if(input) { Free(input->text); Free(input); }
+     return 1;
+   }
+   I386IrqRestore(flags);
++  return FALSE;
++}
++I64 NativeTerminalInputKey(CI386KeyEvent *event)
++{
++  if(NativeTerminalQueuedKey(event))return 1;
+   return NativeReadKey(console_config->reader,event,FALSE);
+ }
+ U0 NativeTaskWait(CTask *task=NULL,Bool cmd_line_pmt=FALSE)
+@@ -473,7 +506,7 @@
+   if(terminal->input_tail) terminal->input_tail->next=input;
+   else terminal->input_head=input;
+   terminal->input_tail=input;
+-  task->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_CMD_LINE_PMT);
++  task->task_flags&=~(1<<TASKf_IDLE|1<<TASKf_CMD_LINE_PMT|1<<TASKf_AWAITING_MSG);
+   I386SchedWake(task(CI386Task *)->owner,task);
+   I386IrqRestore(irq);
+ }

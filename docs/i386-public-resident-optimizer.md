@@ -224,3 +224,38 @@ User8 run is in flight. The separate v6 recovery64 test is also live and must
 be inspected before extending v2's recovery result to the new job path. Unique
 artifacts remain under their corresponding build directories. Neither variant
 is installed in production or counted as an 8 MiB pass.
+
+## Paused checkpoint: terminal results and resume point
+
+At the user's pause/wrap-up request, all outstanding jobs are terminal:
+
+- Direct call-job v6 recovery64: PASS. Exact prompt documents, throw and
+  undefined-symbol recovery, physical Ctrl+Alt+C and physical child reclamation
+  pass with unchanged inputs. The actual QEMU command specifies 64 MiB.
+- V7 User8 stage trace: FAIL. RAW COMPILER A begin precedes heap exhaustion;
+  INPUT REJECT then precedes RAW COMPILER A end. The end marker records return
+  from a failed ConsoleSource, not successful header completion. Thus the heap
+  is exhausted during complete CompilerA declaration loading, before optimizer
+  publication, not during the later optimizer helper body.
+- compiler-high-headers-v1: cross-build FAIL with unchanged inputs. The compiler
+  reports a parse error at `text=NULL` in Compiler/I386/LexIdent.HC, line 46 of
+  its overlay. No candidate image or runtime qualification exists for this idea.
+
+The unfinished high-placement experiment applies a private per-control bit 45
+only to early complete CompilerA loading. It directs parser payloads, macro
+records/body/source links and identifier strings to the high allocator, aiming
+to preserve the contiguous task-stack block lost by the earlier eager preload.
+Its full unapplied candidate.patch, overlay Once.HC, run.py and package.py are
+retained in build/compiler-high-headers-v1. This is an experimental hypothesis;
+allocation ownership, failure behavior and ordinary unflagged paths still need
+review and tests. The first resume step is to correct the bootstrap-incompatible
+NULL token in a fresh frozen overlay, rebuild and audit both CompilerRuntime and
+ConsoleRuntime, then measure the heaps and run the unchanged User8 oracle.
+Do not integrate this allocator policy merely because it cross-compiles.
+
+build/compiler-header-pause-checkpoint/audit.json pins all three terminal
+receipts. Production source files remain unchanged by these experiments. The
+last production optimizer integration remains the resident core implementation;
+original User/provider lexer and raw-header policies remain prototypes. Full
+C1–C5, the 2/686 inventory, original-User8, current native generations and startup
+qualification remain open. Work is paused at the user's request.

@@ -1,0 +1,20 @@
+{
+  "direct_call_recovery64": {
+    "result": "pass",
+    "receipt": "build/compiler-raw-headers-v6/recovery64/result.json",
+    "sha256": "cfac671fef87a128ba51504b66620ee89b843e5015004fa1c6d228b536a4c6c5",
+    "inputs_unchanged": true
+  },
+  "header_trace_user8": {
+    "result": "fail",
+    "receipt": "build/compiler-raw-headers-v7/user8/result.json",
+    "sha256": "d8b0cd9a6c7e5916002d9362d49c29344a10bd6ed558a0a3fbcd128b20756503",
+    "inputs_unchanged": true
+  },
+  "high_header_cross": {
+    "result": "fail",
+    "receipt": "build/compiler-high-headers-v1/result.json",
+    "sha256": "175f92a46e9542e7133f4191347fe4b331e8f4f589aaeca6122fecd56b3a6f9d",
+    "inputs_unchanged": true
+  }
+}

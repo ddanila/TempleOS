@@ -31001,3 +31001,17 @@ A v7 diagnostic adds header compilation begin/end markers and has passed cross
 compilation and packaging; its User8 run remains live, as does v6 recovery64.
 These outcomes still require inspection; full C1–C5 and original-User8 remain
 open, with no production integration or resource gate change.
+
+### User-requested paused checkpoint: compiler header memory work
+
+All pending jobs are terminal. V6 direct call-job recovery64 passes exact prompt,
+error/break recovery and physical retirement. V7's trace locates User8 exhaustion
+inside raw CompilerA loading; its end marker follows failed input and is not a
+success marker. A new per-control high-placement/early-header prototype fails
+cross compilation at LexIdent.HC's NULL token and has no runtime result. Preserve
+its unapplied patch and drivers under build/compiler-high-headers-v1. Resume
+instructions and terminal receipt hashes are documented in
+docs/i386-public-resident-optimizer.md and
+build/compiler-header-pause-checkpoint/audit.json. No production source change,
+resource gate reduction or milestone completion is claimed. C1–C5 are paused
+at the user's request; continue directly on main when resumed.
