@@ -29864,3 +29864,52 @@ This qualifies the paced default-refresh subcase, not arbitrary uncontrolled
 interleavings, complete original desktop orchestration or native release
 self-host generations. Inventory remains2/686; full C1-C5 remain open. See
 docs/i386-msg-loop.md.
+
+### C2/C4: real kernel build date and host execution of cross-compiler streams
+
+The actual HomeSys failed compilation at its sys_compile_time banner reference.
+The native kernel now captures its build date via original #exe/StreamPrint
+semantics and exposes that kernel-lifetime CDate through Console ABI274's
+versioned configuration/data export. It is checked against the exact module,
+flat kernel and source disk at0x100008, stays fixed while Now advances, and
+matches an independent calendar/format model. HomeSys now loads in Adam with
+CCF_JUST_LOAD. Its unchanged StartUpTasks body also completed a disposable
+configured-Once preflight; normal desktop orchestration/raster is not qualified.
+
+This exposed x64 cross-host stream code still carrying the 386 target flags.
+PrsHostExecuteLine now runs #exe on the actual host and restores target bits on
+return and exception. The accepted red/green probe is host-stream-before-v5
+(mask2) / host-stream-fixed-v5 (mask31): host pointer8 and StrLen result6,
+target pointer storage4, escaping-exception/control restoration and a fresh
+byte-identical module. Earlier fixture mistakes remain recorded separately.
+
+The final cross image i386-system-build-date-cross-v3 pins1868 sources/26
+helpers and passes two source-matching classic rebuilds and the386 audit. Only
+Kernel and ConsoleRuntime change from ABI273; bare kernel is458744 bytes.
+The12-case throw/Kill/Exit pen matrix, original complete pen model, stock User255
+at8MiB and both default-refresh MsgLoop documents/streams/all614400 pixels pass.
+Raw metadata, before/after receipts and input provenance are independently
+rechecked by build/system-build-date-audit-v1/verify.py.
+
+### C5 follow-up: complete native kernel reaches packing, pointer global rejects
+
+The128MiB 486,-fpu native build parses the complete current kernel, including
+its new compile-time date, without source errors. It then rejects stage5 at
+MODULE PACK REJECT global-pointers i386_lex_doc_format. The accepted strict
+failure is system-build-date-native-kernel-v2. The reproducibility checker compares two native module outputs, permitting only
+each fresh eight-byte build timestamp to differ, and checks exported names/kinds
+against the cross-built module. Native/cross packing orders differ; no other
+bytes of the two native outputs are normalized. The callback global is zero in the cross-built module. Native
+source-unit static initialization versus ordinary JIT initialization now needs
+a focused original/AOT comparison and repair; no native build pass is claimed.
+
+C1's HomeSys workflow/oracle now explicitly lists both terminals, focus/tile,
+Once, complete autocomplete, banner and recovery requirements. Whole-item
+qualification remains2/686, with normal desktop, other apps/resources and both
+full native release generations still open. See docs/i386-system-build-date.md.
+
+Isolated normal8MiB startup of the ABI274 image is54.262s, with no other QEMU,
+live WinMgr and exact managed welcome/42 pixels (build-date-startup-8m-v1).
+The audit verifies the native packer failure published no output module and
+preserved the complete source/fixture file tree. This remains the existing60-second
+minimal baseline subgate, not complete desktop startup or native C5 qualification.

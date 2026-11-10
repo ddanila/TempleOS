@@ -13836,6 +13836,13 @@
           "result": "pass",
           "evidence": "build/buffer-nested-original-after-v3/result.json",
           "scope": "Actual rebuilt x64 Cmp/internal CmpBuf: nine nested Compiler failures restore caller heaps versus retained old scopes; original accepted unresolved-reference case stays accepted. Counts and full 81920-byte diagnostic buffers identical. Native rejects that unresolved case, an existing assembly/module semantic gap; no whole-assembly equivalence or native backing qualification is inferred."
+        },
+        {
+          "target": "cross-host-stream-execution",
+          "command": "python3 tools/test-i386-host-stream.py --out OUT",
+          "result": "pass",
+          "evidence": "build/host-stream-fixed-v5/result.json",
+          "scope": "x64-to-386 AOT #exe runs with host flags/pointer width and resumes target layout. Pre-fix mask2 versus fixed31; host pointer8 and actual StrLen result6, target pointer allocation4, escaping stream restores both target bits and previous control, fresh module byte-identical. Native statement adapter unchanged. Other statement/compiler/resource paths and whole-file qualification remain open. Full C1-C5 remain open,2/686. See docs/i386-system-build-date.md."
         }
       ]
     },
@@ -19978,19 +19985,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": {
-        "status": "observed-components",
-        "description": "Complete original SrvStartUp default body shared byte-for-byte; actual document/window startup and exactly-once hook/ten-job contract observed, plus real dictionary popup and recovery. Native full HomeSys, UserStartUp, StartUpTasks/autoload/customization, fault and heap coverage remain open."
-      },
-      "oracle": {
-        "tool": "tools/test-i386-servant.py",
-        "checks": [
-          "Actual default hook/body, inhibit before exactly-once startup interposition",
-          "Real terminal/border/menu/right-click/Raw setup and ten TaskExe results42",
-          "Completed flags, idle/title/ring/hook restoration and resumed input; source byte equality",
-          "Real definition popup/navigation/close independently checked by tools/test-i386-autocomplete-popup.py"
-        ]
-      },
+      "reference_workflow": "Execute the original home setup in Adam after desktop services: publish UserStartUp/SrvStartUp, create two User terminals, focus the first and tile vertically, queue Cd/include Once in the first child, initialize the complete source/dictionary autocomplete index under Silent, and print the system/version/build-date banner. Verify terminal documents, focus/order/rectangles, actual Once/home lookup, autocomplete state/content, visible output and recovery. Custom Once is supported configuration; normal boot orchestration remains required.",
+      "oracle": "Original tools/test-i386-original-desktop-layout.py records two focusable windows at1..39 and41..78, both2..58 with borders. StartUpTasks remains byte-identical to repair revision ce055f205fc38536443289fb1cfc73632f6624f4. Build-date values/format are independently decoded from linked metadata by tools/test-i386-system-build-date.py. Current CCF_JUST_LOAD and disposable configured-Once preflight are partial evidence; normal boot/full layout, raster, index content and resource/recovery workflows remain unqualified.",
       "tests": [
         {
           "target": "rebuilt-original-dictionary-popup-workflow",
@@ -20042,6 +20038,13 @@
           "result": "pass",
           "evidence": "build/user-constructor-native-8m-v2/result.json",
           "scope": "ABI271 shares the exact original UserStartUp body and inherited title define; actual task symbol lookup preserves custom hook. Stock fixture passes255 at8/64MiB, custom override63, three control/caller-heap cycles4095, physical main-heap bytes/allocation counts recover exactly over three measured cycles. Compact glyph raster reduces live main-heap use110112 bytes per User; all307200 VGA pixels and614400 native retained-editor transition pixels pass. Root desktop orchestration, general prompt/menu/input/resources/native self-host and whole C1-C5 remain open. See docs/i386-user-startup.md."
+        },
+        {
+          "target": "home-sys-build-date-source-load",
+          "command": "python3 tools/test-i386-system-build-date.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/system-build-date-native-v3/result.json",
+          "scope": "Actual HomeSys loads in Adam with CCF_JUST_LOAD after original MakeAC. Public sys_compile_time value/address match linked kernel metadata and independent calendar/format model while Now advances. Prior image fails at the identifier; fresh42 and unchanged complete volume pass. Separate StartUpTasks/configured-Once preflight executes, but normal boot/full desktop layout, raster, autocomplete content and resources remain unqualified. Full C1-C5 remain open,2/686. See docs/i386-system-build-date.md."
         }
       ]
     },
@@ -22794,6 +22797,13 @@
           "result": "pass",
           "evidence": "build/i386-public-bit-scans-native-v1/result.json",
           "scope": "All 577 vectors and exact original output through normal-startup declarations, without test prototypes. Independently audited inputs/volume/boot bytes; 8/16 MiB welcome and both diagnostic phases pass. Other KernelB interfaces remain unqualified."
+        },
+        {
+          "target": "public-kernel-build-date",
+          "command": "python3 tools/test-i386-system-build-date.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/system-build-date-native-v3/result.json",
+          "scope": "Original CDate sys_compile_time is actual kernel build metadata at0x100008, captured by #exe Now as in KStart16, borrowed through Console ABI274 config and published as data. Exact module/flat/image bytes, address, stable reads with advancing Now, independent calendar/format, HomeSys load, fresh42 and unchanged volume pass. Other declarations, dates/timezones and whole-file qualification remain open. Full C1-C5 remain open,2/686. See docs/i386-system-build-date.md."
         }
       ]
     },

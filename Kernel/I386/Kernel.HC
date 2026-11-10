@@ -1,6 +1,9 @@
 //Native kernel foundation with a retained compiler and source-driven HolyC console.
 #include "/Kernel/Types.HH"
 
+//Capture the kernel build date, as the original KStart16 does.
+#exe {StreamPrint("I64 kernel_compile_time=0x%X;\n",Now);}
+
 #define TRUE 1
 #define FALSE 0
 #define U32_MAX 0xFFFFFFFF
@@ -1163,6 +1166,7 @@ U0 KernelConsoleLoad()
   kernel_console_config.editor_load=&KernelEditorLoad;
   kernel_console_config.drive_cache_handoff=&I386RedSeaCacheHandoffAddress;
   kernel_console_config.run_level=&kernel_run_level;
+  kernel_console_config.compile_time=&kernel_compile_time;
   if(!kernel_console.init(&kernel_console_config)) KernelStop;
 }
 

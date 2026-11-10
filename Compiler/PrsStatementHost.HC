@@ -79,7 +79,14 @@ U0 PrsHostAssembly(U8 *context,CCmpCtrl *cc,I64 flags) { PrsAsmBlk(cc,flags); }
 CAOT *PrsHostJoin(U8 *context,CCmpCtrl *cc,I64 flags) { return CmpJoin(cc,flags); }
 U0 PrsHostFixAssembly(U8 *context,CCmpCtrl *cc,CAOT *aot) { CmpFixUpJITAsm(cc,aot); }
 CHashTable *PrsHostTaskSymbols(U8 *context) { return Fs->hash_table; }
-U0 PrsHostExecuteLine(U8 *context,CCmpCtrl *cc) { ExeCmdLine(cc); }
+U0 PrsHostExecuteLine(U8 *context,CCmpCtrl *cc)
+{//Compile-time stream code runs on this compiler host, even for a 386 AOT.
+  I64 mask=CCF_TARGET_I386|CCF_TARGET_HOST_CONST,flags=cc->flags;
+  cc->flags&=~mask;
+  try { ExeCmdLine(cc); }
+  catch { cc->flags=cc->flags&~mask|flags&mask; }
+  cc->flags=cc->flags&~mask|flags&mask;
+}
 U0 PrsHostInclude(U8 *context,CCmpCtrl *cc,U8 *name,U8 *source,Bool actual_file)
 { LexIncludeStr(cc,name,source,actual_file); }
 U0 PrsHostStatementServices(CPrsStatementServices *services,CPrsGlobalServices *globals)

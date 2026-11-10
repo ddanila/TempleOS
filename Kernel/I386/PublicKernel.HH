@@ -35,8 +35,10 @@ public _extern _BIT_FIELD_OR_U32 U0 BFieldOrU32(U8 *bit_field,I64 bit,U32 patter
 #include "/Kernel/I386/PublicQueue.HH"
 #include "/Kernel/DocTypes.HH"
 #include "/Kernel/TimeTypes.HH"
+#include "/Kernel/DateTypes.HH"
 public extern CCntsGlbls cnts;
 public extern F64 sys_os_version;
+public extern CDate sys_compile_time;
 #include "/Kernel/RunLevelTypes.HH"
 public _extern _SYS_RUN_LEVEL U32 sys_run_level;
 public _extern _GET_TSC I64 GetTSC();
