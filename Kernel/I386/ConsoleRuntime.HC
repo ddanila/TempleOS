@@ -1926,7 +1926,7 @@ U0 NativeOptSupportLoad()
     if(Fs!=adam_task)TaskWait(adam_task);
     if(!native_jit_support.optimize) {
       saved=adam_task->hash_table;adam_task->hash_table=native_jit_support.symbols;
-      try{AdamFile("::/Compiler/I386/PublicOptSupport.HC",FALSE);}
+      try{AdamFile("::/Compiler/I386/ResidentOptSupport.HC",FALSE);}
       catch{adam_task->hash_table=saved;}
       adam_task->hash_table=saved;
       if(!native_jit_support.optimize)throw('OptLoad',TRUE);

@@ -1,7 +1,12 @@
 #ifndef OPT_PASS012_IMPL
 #define OPT_PASS012_IMPL OptPass012
 #endif
+#ifndef OPT_PASS012_CORE_EXTERNAL
+#define OPT_PASS012_CORE_EXTERNAL 0
+#endif
+#if !OPT_PASS012_CORE_EXTERNAL
 #include "/Compiler/OptPass012Core.HC"
+#endif
 U0 OptPass012Report(U8 *context,CCmpCtrl *cc,CIntermediateCode *node,I64 reason)
 {
   switch(reason) {

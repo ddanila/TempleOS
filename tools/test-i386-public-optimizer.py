@@ -22,12 +22,14 @@ def main():
     ap.add_argument('disk', type=Path, nargs='?')
     ap.add_argument('--reference', type=Path)
     ap.add_argument('--ram-mib', type=int, default=16)
-    ap.add_argument('--optimizer-storage', choices=('source', 'provider'), default='source')
+    ap.add_argument('--optimizer-storage', choices=('source', 'provider', 'resident'))
     args = ap.parse_args()
+    if args.optimizer_storage is None:
+        args.optimizer_storage = 'resident' if args.disk else 'source'
     if args.disk and not args.reference:
         ap.error('Native runs require a passing original --reference')
-    if args.optimizer_storage == 'provider' and not args.disk:
-        ap.error('Provider storage requires a native disk')
+    if args.optimizer_storage != 'source' and not args.disk:
+        ap.error('Provider/resident storage requires a native disk')
     out = args.out.resolve()
     if out.exists():
         ap.error('Use a fresh output directory')
@@ -98,10 +100,11 @@ def main():
             log = guest.collect()
             report['source_loads'] = log.count('PUBLIC OPT loaded\n')
             report['provider_loads'] = log.count('PUBLIC OPT provider\n')
-            expected = (1, 0) if args.optimizer_storage == 'source' else (0, 1)
-            if (report['source_loads'], report['provider_loads']) != expected:
+            report['resident_loads'] = log.count('PUBLIC OPT resident\n')
+            expected = {'source': (1, 0, 0), 'provider': (0, 1, 0), 'resident': (0, 0, 1)}[args.optimizer_storage]
+            if (report['source_loads'], report['provider_loads'], report['resident_loads']) != expected:
                 raise ValueError('Expected exactly one optimizer load from the selected storage')
-            report['system_loads'] = sum((report['source_loads'], report['provider_loads']))
+            report['system_loads'] = sum((report['source_loads'], report['provider_loads'], report['resident_loads']))
             guest.command('6*7;')
             report['arithmetic_pixels'] = guest.result_pixels()
         guest.close()

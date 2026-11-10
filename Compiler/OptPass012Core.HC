@@ -21,9 +21,10 @@ logic. 3-Arg comparisons are established.
 
 */
 
-CIntermediateCode *OptPass012CorePolicy(CCmpCtrl *cc,COptPass012Services *services,
+CIntermediateCode *OptPass012CoreMetadata(CCmpCtrl *cc,COptPass012Services *services,
   CIntermediateCode *(*branch_zero)(CCmpCtrl *cc,CIntermediateCode *node),
-  CIntermediateCode *(*branch_nonzero)(CCmpCtrl *cc,CIntermediateCode *node))
+  CIntermediateCode *(*branch_nonzero)(CCmpCtrl *cc,CIntermediateCode *node),
+  U8 *opcodes,I64 opcode_bytes)
 {/*Simplify CONST arithmetic.
 Sets the class throughout Expression trees.
 Returns the type of an Expression for use
@@ -36,17 +37,19 @@ args.
   CIntermediateCode *tmpi,*tmpi1,*tmpi2,*tmpi3,*tmpi_push,
 	*last_with_class=0;
   CCodeMisc *lb,*lb1,*lb2;
+  CIntermediateStruct *code_info,*result_info;
   CPrsStk *ps=cc->ps;
   ps->ptr=0;
   ps->ptr2=0;
   tmpi=cc->coc.coc_head.next;
   while (code=tmpi->ic_code) {
+    code_info=opcodes+code*opcode_bytes;
     tmpc=tmpi->ic_class;
     tmpi->ic_class2=tmpc;
     tmpi_push=tmpi;
     for(i=0;i<3*sizeof(CICArg);i++) (&tmpi->arg1)(U8 *)[i]=0;
     tmpi->arg1_type_pointed_to=0;
-    switch [intermediate_code_table[code].arg_cnt] {
+    switch [code_info->arg_cnt] {
       case IS_V_ARG:
 	ps->ptr-=tmpi->ic_data>>2;
 	break;
@@ -64,7 +67,7 @@ args.
       case IS_0_ARG: //nobound switch
 	break;
     }
-    if (intermediate_code_table[code].not_const)
+    if (code_info->not_const)
       cc->flags|=CCF_NOT_CONST;
     switch [code] {
       case IC_IMM_F64:
@@ -1277,7 +1280,7 @@ args.
       default:
 	(*services->report)(services->context,cc,tmpi,OPT012_ERROR_OPCODE);
     }
-    if (intermediate_code_table[code].arg_cnt==IS_2_ARG) {
+    if (code_info->arg_cnt==IS_2_ARG) {
       if (tmpi_push->ic_precedence&~ASSOC_MASK==PREC_ASSIGN)
 	OptFixSizeOf(cc,tmpi2,tmpi_push,tmpi1->ic_class-1);
       else {
@@ -1285,7 +1288,8 @@ args.
 	OptFixSizeOf(cc,tmpi2,tmpi_push,tmpi1->ic_class);
       }
     }
-    if (intermediate_code_table[tmpi_push->ic_code].res_cnt) {
+    result_info=opcodes+tmpi_push->ic_code*opcode_bytes;
+    if (result_info->res_cnt) {
       PrsPush(ps,tmpi->ic_class2);
       PrsPush(ps,tmpi_push);
     }
@@ -1304,6 +1308,14 @@ args.
   }
 //This is for determining type conversions for passing args to funs.
   return last_with_class;
+}
+
+CIntermediateCode *OptPass012CorePolicy(CCmpCtrl *cc,COptPass012Services *services,
+  CIntermediateCode *(*branch_zero)(CCmpCtrl *cc,CIntermediateCode *node),
+  CIntermediateCode *(*branch_nonzero)(CCmpCtrl *cc,CIntermediateCode *node))
+{//The original policy entry retains this compiler's actual metadata table.
+  return OptPass012CoreMetadata(cc,services,branch_zero,branch_nonzero,
+    intermediate_code_table,sizeof(CIntermediateStruct));
 }
 
 CIntermediateCode *OptPass012Core(CCmpCtrl *cc,COptPass012Services *services)

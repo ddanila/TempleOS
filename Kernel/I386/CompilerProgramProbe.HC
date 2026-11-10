@@ -1202,7 +1202,10 @@ I64 ProbeProgramNativeExpandRun(CI386CompilerProbe *probe,CI386Heap *heap,
       !probe->compiler->export_at(6,&compiler_binding) ||
       compiler_binding.kind!=I386_MODULE_EXPORT ||
       StrCmp(compiler_binding.name,"_I386_OPT_CORE_POLICY") ||
-      probe->compiler->export_at(7,&compiler_binding) ||
+      !probe->compiler->export_at(7,&compiler_binding) ||
+      compiler_binding.kind!=I386_MODULE_EXPORT ||
+      StrCmp(compiler_binding.name,"_I386_OPT_CORE_METADATA") ||
+      probe->compiler->export_at(8,&compiler_binding) ||
       !I386ModuleValid(module,module_bytes) || !resident ||
       !probe->files->export_at(0,&binding) ||
       binding.kind!=I386_MODULE_EXPORT || StrCmp(binding.name,"I386ArcEntryGet") ||
@@ -2210,6 +2213,7 @@ U0 ProbePrograms(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *outer)
   U32 irq,flags=GetRFlags;
   Bool result,recovered;
   ProbeOptimizerResidentPolicy(probe);
+  ProbeOptimizerResidentMetadata(probe);
   for(kind=0;kind<14;kind++) {
     source="I64i DurableData=20;"
       "class DurablePair{I64i a,b;};DurablePair DurablePairData={20,22};"

@@ -1,0 +1,52 @@
+{
+  "result": "pass",
+  "scope": "Resident optimizer production integration: complete algorithm/helpers preserved, caller metadata and callback ABI, native diagnostics, exact original folding, User8 and original-loop recovery64; original-loop8 remains an expected open failure",
+  "runs": {
+    "resident16": {
+      "result": "pass",
+      "ram_mib": 16,
+      "receipt_sha256": "afde51ee5f57620d194477f1cb773c494951a241c1dd9e03a73c2c144fffe1f9",
+      "command_sha256": "05530084abd5e7d1b58bec7518be0776689b911ed7f49ac860ea37356bf49f2f"
+    },
+    "source16": {
+      "result": "pass",
+      "ram_mib": 16,
+      "receipt_sha256": "851c3947bafed49206f37d000a23a16a7198cf1f9195cd8a26d1fed8918f5655",
+      "command_sha256": "1fd8ccc771925934aa580625c938e8e4290ab311605e7dff87001d031c95acda"
+    },
+    "diagnostic16": {
+      "result": "pass",
+      "ram_mib": 16,
+      "receipt_sha256": "1be7ded0d10bcc5462fcb8d66f5e86c2ab07cb1fd39d7050b56d31e7498848f4",
+      "command_sha256": "5dd7cddef07f47063e39520e5f41866693df7c7c35259db29e10a32b160646a5"
+    },
+    "production-user8": {
+      "result": "pass",
+      "ram_mib": 8,
+      "receipt_sha256": "43830a38692d41bf393313f379b23f838c08f18029bf89564de9e1c0a8745323",
+      "command_sha256": "5e05eb9c411b70088056dc3472c66d2a7dfc3e70f398c63346fd6d76c4b116cb"
+    },
+    "host-policy": {
+      "result": "pass",
+      "ram_mib": 2048,
+      "receipt_sha256": "04b52b9d3782c68fb7d7390b3cc1c4efd6fc69b96b77b11aa2e635bedcd19ad4",
+      "command_sha256": "9f76d77aa386c29ed2b9907d322ba76a549a05355455f03679728cf41ca48db2"
+    },
+    "original-recovery64": {
+      "result": "pass",
+      "ram_mib": 64,
+      "receipt_sha256": "a34b25ae6c73620724aff00c3842f5515beb8b864a7c2a4de546ea358a1f4614",
+      "command_sha256": "425e4d4d14e7ca3dbb12bd01d131bafd92f11a5f825f46815f9aabe36a8bcf0a"
+    },
+    "original-user8": {
+      "result": "fail",
+      "ram_mib": 8,
+      "receipt_sha256": "25fab352d9eb135357578f9b436e281927cef2c88d9f0eb856267d2d20d78c66",
+      "command_sha256": "94f5aedf826de2749dbe87cfcea718b13828b2b3ae834026d0f47f82b60f753e"
+    }
+  },
+  "candidate_sha256": "047eeae06731ba6b462472d0637519a92acd47875166ad237e5633370d22de4b",
+  "canonical_support_byte_identical": true,
+  "complete_algorithm_preserved": true,
+  "extra_optimizer_module": false
+}

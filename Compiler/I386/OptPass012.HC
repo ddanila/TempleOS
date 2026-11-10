@@ -3,6 +3,9 @@
 #include "/Compiler/I386/ParserMemory.HH"
 #include "/Kernel/I386/Float.HH"
 #include "/Kernel/I386/Bool.HH"
+#assert offset(CIntermediateStruct.arg_cnt)==0
+#assert offset(CIntermediateStruct.res_cnt)==1
+#assert offset(CIntermediateStruct.not_const)==4
 #include "/Compiler/ICInfo.HC"
 #include "/Compiler/PrsStack.HC"
 #include "/Compiler/TargetSize.HC"

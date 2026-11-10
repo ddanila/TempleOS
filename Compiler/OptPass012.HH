@@ -16,4 +16,10 @@ public extern CIntermediateCode *OptPass012Core(CCmpCtrl *cc,COptPass012Services
 public extern CIntermediateCode *OptPass012CorePolicy(CCmpCtrl *cc,COptPass012Services *services,
   CIntermediateCode *(*branch_zero)(CCmpCtrl *cc,CIntermediateCode *node),
   CIntermediateCode *(*branch_nonzero)(CCmpCtrl *cc,CIntermediateCode *node));
+//Live opcode rows: arg_cnt/res_cnt/not_const at offsets 0/1/4; row size >=5.
+//The caller owns IC_ICS_NUM readable rows throughout this synchronous call.
+public extern CIntermediateCode *OptPass012CoreMetadata(CCmpCtrl *cc,COptPass012Services *services,
+  CIntermediateCode *(*branch_zero)(CCmpCtrl *cc,CIntermediateCode *node),
+  CIntermediateCode *(*branch_nonzero)(CCmpCtrl *cc,CIntermediateCode *node),
+  U8 *opcodes,I64 opcode_bytes);
 #endif

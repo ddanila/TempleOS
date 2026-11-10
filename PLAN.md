@@ -30917,3 +30917,17 @@ Both native rounds16, production User8 and the original-reference optimizer16
 pass. See `docs/i386-resident-optimizer-binding.md` for pinned image/source/boot
 checks. The public facade is not switched; helper/metadata semantics, original
 User8 and C5 qualification remain open.
+
+### C2/C4: public optimizer delegates to the resident full core
+
+The production loader now selects generated, complete resident-core support.
+Public helpers, branch ownership, reports and namespace entry points remain;
+only the full pass body is reused from CompilerRuntime. New per-call live opcode
+metadata and row size preserve the caller's table instead of substituting private
+metadata. Native diagnostics verify compact/padded rows and callback mutation.
+The default resident and legacy source variants match the original folding trace
+at16 with exact heap recovery; production User8 and both native diagnostic rounds16
+pass. The final original-User prototype passes prompt/recovery/physical retirement
+at64, but still fails an 80-byte public allocation at8. No gate changed.
+See `docs/i386-public-resident-optimizer.md` for pinned evidence, failed exploratory
+variants, the one-document support generator and remaining C1–C5 requirements.
