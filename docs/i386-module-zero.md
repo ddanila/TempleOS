@@ -287,3 +287,28 @@ heaps are measured or selecting a repair yet.
 No stack-size reduction, memory-profile waiver or repair is claimed. This
 regression keeps minimal-profile and full C5 qualification open even though the
 native module-generation boot/install gates pass.
+
+A disposable-image allocator prototype restores the8MiB User case without
+changing public stack limits or dropping code. The existing backing policy
+prefers low memory for full batches, but takes an8KiB main-arena batch when
+low memory can satisfy only the actual smaller page request. The prototype
+tries that smaller low-memory batch first, then retains the existing primary
+and exhaustion fallbacks. Quantum is still a growth hint; requested page counts
+and ownership rules are unchanged.
+
+The tested source delta is preserved in
+`docs/patches/i386-fallback-minimum-prototype.patch`; production MemoryBacking.HC
+is unchanged while the baseline generation chain remains pinned. The emitted
+prototype MemoryRuntime grows414 bytes and preserves every export kind/name
+and all initial data. Guest installation/8MiB boot passes DocAllocationCheck13,
+and the identical User fixture returns255 with every pixel checkpoint/fresh42
+passing (`module-zero-fallback-prototype-user-8m-v1`). Its largest primary free
+block becomes268600 bytes versus259824 before; the267528-byte rounded task
+request now fits. Paused physical snapshots verify User/Kill restores both
+heaps' usage/allocation counts, with unchanged files and fresh42.
+
+Both16MiB diagnostic phases and the386 instruction audit also pass for the
+prototype. This is experimental evidence, not a production fix or full C5 pass.
+Focused backing-policy cases, broader allocator regression checks, production
+integration and a new qualification run remain required. The unchanged baseline
+continues generation two so its reproducibility evidence is preserved.

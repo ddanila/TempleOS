@@ -30179,3 +30179,25 @@ Generation two's provider build continues with the same pinned candidate.
 Its reproducibility result cannot close this resource regression or the full
 compatibility suite. Inventory records the explicit red User case; C1-C5 stay
 open at2/686.
+
+### C4/C5 candidate: smaller preferred-arena backing batches restore8MiB User
+
+A disposable-image prototype refines existing low-memory-first backing policy:
+when low memory cannot fit the8KiB hint but can fit the requested page count,
+try that smaller batch before taking main-arena space. Existing primary and
+exhaustion fallbacks remain. Public stacks, requested pages, features and data
+layouts are unchanged. The exact tested delta is recorded in
+/docs/patches/i386-fallback-minimum-prototype.patch; production sources stay
+unchanged during the pinned baseline chain.
+
+The prototype MemoryRuntime grows414 bytes with identical export names/kinds
+and initial data. Guest installation,8MiB boot/DocAllocationCheck13 and the
+same User255/fresh42/full pixel checkpoints pass. Main largest free becomes
+268600 rather than259824, enough for267528 rounded payload bytes. Read-only
+physical snapshots verify User/Kill restores both heaps' usage/allocation counts;
+files remain exact. Both16MiB diagnostic phases and the386 allowlist pass.
+
+This remains a candidate, not an applied production repair. Focused policy
+cases, broader allocator regressions, integration and fresh qualification are
+required. The unchanged generation-two baseline continues; full C1-C5 and its
+minimal-memory regression remain open until the production fix is verified.
