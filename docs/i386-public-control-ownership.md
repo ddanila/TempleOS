@@ -85,3 +85,8 @@ then fresh arithmetic and physical Exit reclamation. See
 `docs/i386-live-user-recovery.md`. This adds selected error/interruption evidence;
 minimal-memory support and broader lifetime/input-pressure qualification remain
 open before production integration.
+
+The on-demand full lexer follow-up retains this ownership implementation and
+passes all 24 lexer cases at 8/64 MiB plus 64 MiB recovery/physical retirement.
+It advances the 8 MiB User failure to compiler-support file loading. See
+`docs/i386-on-demand-lexer.md`; production integration remains unqualified.

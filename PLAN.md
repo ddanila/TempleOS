@@ -30804,3 +30804,26 @@ ConsoleRuntime grows by 136 bytes. See `docs/i386-keyboard-input-pressure.md` fo
 receipts and identities. The original-loop memory failure, startup budget,
 broader concurrency, rebuilding profiles, current native generations and full
 inventory remain open. C1-C5 and inventory 2/686 are not complete.
+
+### C2/C4 on-demand full lexer crosses the minimal lexer gate
+
+A disposable provider now compiles every shared lexer body and loads on first
+use, with 30 explicit bindings to existing system functions/data. Adam serializes
+publication. A private kernel shim reuses the existing validated owned-module
+compactor, avoiding a second executable allocation; raw-file and image ownership
+are transferred once. The general loader overlap policy is unchanged.
+
+Corrected V9 passes complete386/boot/packaging audits, all 24 public lexer cases
+at both 8 and 64 MiB, and complete live prompt/error/physical-break recovery plus
+physical retirement at 64 MiB. Exact initialization counts distinguish source,
+resident and provider modes; the default source regression remains green. An
+independent audit checks raw result words, actual QEMU RAM/CPU arguments and
+source/overlay/bootstrap provenance.
+
+The existing 8 MiB User gate still fails after the provider loads, on a
+12,717-byte copy with only a 10,552-byte largest free block. Its callers and size
+point to private compiler-support header loading (PublicDocument.HH plus NUL).
+Unused private header/metadata duplication is a next investigation; user-visible
+API coverage remains required. See `docs/i386-on-demand-lexer.md` and its separate
+reviewable patch. Production is unchanged, the new provider is not yet in the
+native build/install manifest, and C1-C5/inventory 2/686 remain open.

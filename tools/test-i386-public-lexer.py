@@ -16,15 +16,15 @@ def expected_bytes(count=24):
     return struct.pack(f"<{count}q",*([1]*count))
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);mode=ap.add_mutually_exclusive_group();mode.add_argument('--attachment',action='store_true',help='Check public document attachment and ownership without character lexing');mode.add_argument('--characters',action='store_true',help='Check raw character, include ownership and document input instead of tokens');ap.add_argument('--lexer-storage',choices=['source','resident'],default='source',help='Require exactly one initialization marker for the selected lexer implementation');ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);ap.add_argument('--ram-mib',type=int,default=16);args=ap.parse_args();out=args.out.resolve()
-    if args.lexer_storage=='resident' and (not args.disk or args.characters or args.attachment):ap.error('Resident storage requires a native token test')
+    ap=argparse.ArgumentParser(description=__doc__);mode=ap.add_mutually_exclusive_group();mode.add_argument('--attachment',action='store_true',help='Check public document attachment and ownership without character lexing');mode.add_argument('--characters',action='store_true',help='Check raw character, include ownership and document input instead of tokens');ap.add_argument('--lexer-storage',choices=['source','resident','provider'],default='source',help='Require exactly one initialization marker for the selected lexer implementation');ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--out',type=Path,required=True);ap.add_argument('--ram-mib',type=int,default=16);args=ap.parse_args();out=args.out.resolve()
+    if args.lexer_storage!='source' and (not args.disk or args.characters or args.attachment):ap.error('Resident/provider storage requires a native token test')
     if out.exists():ap.error('Use a fresh output directory')
     fixture=ROOT/'tests/guest/i386-public-lexer'/('Attachment.HC' if args.attachment else 'Characters.HC' if args.characters else 'Contract.HC')
     includes=sorted(fixture.parent.glob('PublicLexer*.HC'))
     paths=includes+[Path(__file__).resolve(),fixture,ROOT/'Kernel/FontStd.HC']+[ROOT/('tools/'+n) for n in ['test-i386-timeclock-reference.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','build-iso.py','package-i386-native-image.py','build-i386-kernel.py']]
     if args.disk:
         paths += [args.disk.resolve(),ROOT/'Kernel/I386/PublicLexer.HH',ROOT/'Compiler/I386/PublicLexSupport.HC',ROOT/'Compiler/LexTokenCore.HC',ROOT/'Compiler/LexExtStrCore.HC',ROOT/'Compiler/LexFilePushCore.HC']
-    out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',input_sha256=pins,scope='Twenty-four public CmpCtrlNew/CmpCtrlDel/Lex/LexExtStr checks: buffer identity, scalar tokens, adjacent strings, borrowing, prompt allocation, flags and heap cleanup. Nested includes and song tokens are checked; full compiler/Psalmody behavior remains separate.');g=None
+    out.mkdir();pins={str(p):sha(p) for p in paths};report=dict(result='running',ram_mib=args.ram_mib,input_sha256=pins,scope='Twenty-four public CmpCtrlNew/CmpCtrlDel/Lex/LexExtStr checks: buffer identity, scalar tokens, adjacent strings, borrowing, prompt allocation, flags and heap cleanup. Nested includes and song tokens are checked; full compiler/Psalmody behavior remains separate.');g=None
     if args.characters:report['scope']='Sixteen public raw-character checks: cursor skipping, newline/putback, normalization, EOF, include resumption and ownership, document input and heap cleanup; prompt and error unwind remain separate.'
     if args.attachment:report['scope']='Twelve public LexAttachDoc checks: supplied document/file/entry, cursor bounds, root resumption state, owning/borrowed cleanup and original empty-document ownership.'
     report['target_flags'] = 'CCF_TARGET_I386' if args.disk else '0'
@@ -67,9 +67,10 @@ def main():
                 log=g.collect()
                 report['system_loads']=log.count('PUBLIC LEX loaded\n')
                 report['resident_initializations']=log.count('PUBLIC LEX resident\n')
-                expected_loads=(1,0) if args.lexer_storage=='source' else (0,1)
-                if (report['system_loads'],report['resident_initializations'])!=expected_loads:
-                    raise ValueError('Expected exactly one '+args.lexer_storage+' lexer initialization and none for the other storage mode')
+                report['provider_initializations']=log.count('PUBLIC LEX provider\n')
+                expected_loads={'source':(1,0,0),'resident':(0,1,0),'provider':(0,0,1)}[args.lexer_storage]
+                if (report['system_loads'],report['resident_initializations'],report['provider_initializations'])!=expected_loads:
+                    raise ValueError('Expected exactly one '+args.lexer_storage+' lexer initialization and none for any other storage mode')
             g.command('6*7;');report['arithmetic_pixels']=g.result_pixels()
             g.close();g=None
             after=pack['snapshot'](image.read_bytes())[1]
