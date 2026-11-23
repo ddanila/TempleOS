@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "box": [
+    40,
+    32,
+    155,
+    65
+  ],
+  "pixels": 3795,
+  "rgb_sha256": "ab642e51ed457fbd6fba3b40f5184c185802fda889ea0d81624ce1b5303e7800",
+  "frames": {
+    "original": {
+      "nonwhite_pixels": 516,
+      "sha256": "837e95dbdcd710d91b8473e8438df1fd4a06c446570569ffcafc30cd2e29fc1e"
+    },
+    "native64": {
+      "nonwhite_pixels": 516,
+      "sha256": "77897de762f5197090f68706e78c8e631275147cd2bcf1497363127876f94dcd"
+    }
+  },
+  "scope": "Original AND design region during typed interactive Logic run"
+}

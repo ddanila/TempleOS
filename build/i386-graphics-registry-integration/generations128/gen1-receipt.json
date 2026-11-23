@@ -1,0 +1,31 @@
+{
+  "result": "pass",
+  "stage_sha256": {
+    "input-source-audit/result.json": "28ac674aeeda3f264063d3a26fcb89360ae2ba5e37239d8862d0808e9ff86c37",
+    "gen1-install/result.json": "11ffe584a6698a819d6ad3cdc804db14012ba066165c1e42d1b126d057e54722",
+    "gen1-selfhost/result.json": "8de4791ad0664a551192357a0129654e899300b09552a14e77d23ec9bcb68ed1",
+    "gen1-selfhost/build/result.json": "6a8bb9e8a493de6c1a9d9ed141f4bba077a7d6bbc4bf6decd60e5d77e4e5fb0d",
+    "gen1-selfhost/boot/result.json": "932b98413aae7a14c6cfeb0bc1759545a57f9798e2cea03defbed50008359525",
+    "gen1-audit/result.json": "141088ad0350ef0b48f55e219c57ebdd233a9d94e2067acedac1f9ca33d5e971",
+    "gen1-source-audit/result.json": "27d6a3ed7436b6f8399b5e42115f7cc05da6a84bf62c0db6b6a1064c60845977"
+  },
+  "flat_bytes": 466936,
+  "flat_sha256": "cca3dbe51ed8c35b3c069ff210be37ec3bc35d67ab3e649927adf7e20de23817",
+  "disk_sha256": "38ca3086150709d33bc9b83f832504ef4491d580a48f0dc1cf7135d08f2c1e8e",
+  "source_files": 1532,
+  "source_identity_sha256": "93ea9647d558d981aa7cc114d46591b1dab6ce65ce38f986fb5c7fc6e90efd3f",
+  "boot": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 8,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 60.54732271301327,
+    "commands": 2,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "startup_budget_60_seconds_pass": false
+}

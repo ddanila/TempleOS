@@ -2726,3 +2726,10 @@ matches both interactive VGA checkpoints and measures 59.68 seconds,
 within the 60-second budget for this installer run. The flat-kernel
 self-host build is underway. See
 `build/i386-graphics-registry-integration/generations128/gen1-install`.
+
+The integrated runtime image's first self-hosted generation passes the flat
+kernel build, 8 MiB boot, payload audit and the 1,532-file delivered-source
+audit. The 466,936-byte kernel passes both exact interactive raster checks.
+The boot took 60.55 seconds, above the 60-second budget for this image.
+Generation two has started rebuilding its retained modules. Stage hashes
+are in `build/i386-graphics-registry-integration/generations128/gen1-receipt.json`.

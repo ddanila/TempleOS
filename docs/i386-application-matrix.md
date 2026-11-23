@@ -996,3 +996,25 @@ the same shot transition after Space. These results are in
 Using a left-button press in place of Space gives the same split. The original
 starts the shot, while the native run records both scores and times out
 waiting for the shot transition. See `build/keepaway-score-mouse-v1`.
+
+The Space-key trace reaches the native Shoot function with possession set
+and no shot active. The function sets active, stopped, and shooting to 1,
+and clears possession. The observer still times out waiting to see the
+active flag. Splitting the chained assignment produces the same timeout,
+so the production assignment is unchanged. See
+`build/keepaway-shot-state-v1` and `build/keepaway-shot-split-v1`.
+
+A trajectory check confirms that the original Space-key shot updates the
+ball's flight deadline after its animation. Native Space and left-button
+input both time out waiting for this persistent update. The original
+animation sample progresses through the shooting frames and updates the
+deadline. The native sampler records only its first sample before timing out.
+See `build/keepaway-shot-trajectory-v1` and `build/keepaway-shot-animation-v1`.
+
+Physical keyboard entry now reproduces an AND synthesis on the original
+and native Logic application. Typing gate AND, inputs F0 and CC, and output
+C0 produces the expected gate and input links. The circuit region matches
+the original across 3,795 pixels. Both sessions return to their caller, and
+the native session renders fresh arithmetic. The native test explicitly
+loads autocomplete and TaskSettings before launching Logic. See
+`build/logic-interaction-return-v1` for the input and raster receipts.

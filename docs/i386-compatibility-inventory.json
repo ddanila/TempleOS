@@ -10563,6 +10563,12 @@
           "result": "pass",
           "evidence": "build/logic-synthesis-current-v1/native64/result.json",
           "scope": "Ten unchanged original gate-synthesis cases pass on native 64 MiB after explicit library loading. Interactive drawing and application launch remain open."
+        },
+        {
+          "target": "original-native-interactive-and-synthesis",
+          "result": "pass",
+          "evidence": "build/logic-interaction-return-v1/raster.json",
+          "scope": "Physical keyboard gate and truth-column entry, exact 3,795-pixel AND design region, caller restoration, and native fresh arithmetic. Native libraries are loaded explicitly."
         }
       ]
     },
