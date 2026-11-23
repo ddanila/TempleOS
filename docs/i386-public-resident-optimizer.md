@@ -436,7 +436,7 @@ This is earlier than the original User task allocation. The audited patch and
 failure receipts are in `build/original-user-stack-reserve-v5`.
 
 Splitting command-prompt startup into four native source transactions advances
-the reserved-stack image from segmented emitter exhaustion to the final code
+the reserved-stack image from segmented emitter exhaustion to a code-backed
 storage allocation while loading the unit containing `Ui`. The splitter
 preserves every byte of the original disassembler across its two source units.
 The image still fails before startup completes. See
@@ -480,8 +480,18 @@ receipts are in `build/original-user-split-prompt-v3` and
 High-placement flags on the split prompt improve the largest free parser
 block at one rejection from 272 to 488 bytes, but startup still fails.
 Reducing the held reservation to 234,759 bytes advances compilation to
-the final code allocation for the `Ui` unit. An allocation-free census
+a code-backed allocation for the `Ui` unit. An allocation-free census
 at that failure records a 2,056-byte code request, 9,864 free bytes in
 the main arena, and a largest contiguous payload of 408 bytes. The guest
 fails before releasing its reservation and before the original User task
 runs. The diagnostic and receipts are in `build/original-user-code-census-v1`.
+
+The measured 2,056-byte request also equals the optimizer's compact scratch
+size. That allocator serves both scratch and emitted code, so the census
+alone cannot identify the caller. With exact backing pages on the smaller
+reservation and high-placement split, startup advances to a 128-byte heap
+request with only 120 contiguous bytes available. A separate experiment
+places the flagged optimizer's compact scratch on the checked native stack
+and fails a 547-byte parser payload allocation. The runs are preserved in
+`build/original-user-exact-code-v2` and
+`build/original-user-optimizer-stack-v1`.

@@ -2686,3 +2686,10 @@ The first and second self-hosted startup measurements remain above the
 separate 60-second budget. Configured desktop verification is running on
 both installed images. Complete desktop and application coverage and C1–C5
 release qualification remain open.
+
+The first self-hosted image also passes the configured 64 MiB desktop
+workflow. Home Once runs through normal startup, all 83 original geometry
+values match, and the bootstrap retires with the expected physical state.
+Fresh arithmetic renders. The observed 215.20 seconds covers the configured
+desktop profile. See
+`build/resident-opt-c5-generations128/gen1-desktop64/result.json`.
