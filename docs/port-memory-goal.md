@@ -2712,3 +2712,10 @@ matched the original and generation one, and the bootstrap retired with
 the expected physical state. Fresh arithmetic rendered and all pinned
 inputs kept their hashes. See
 `build/resident-opt-c5-generations128/gen2-desktop64-rerun/result.json`.
+
+The retained rebuild on the integrated registry, SwapI64 and changed-row VGA
+image now passes all nine module exports at 128 MiB, with one build-provider
+load. Its receipt is in
+`build/i386-graphics-registry-integration/retained128/result.json`.
+The current-image two-generation harness is running. This rebuild input
+predates the KeepAway source changes.

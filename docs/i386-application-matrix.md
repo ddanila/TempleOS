@@ -972,3 +972,10 @@ settings can bind it. The patched loader passes on the original system and
 on a cold 64 MiB native boot with no preparatory library commands. The native
 run passes arena rendering, jump, restart, exit and caller restoration.
 See `build/keepaway-libraries-lazy-v1` for the original and native receipts.
+
+The fresh full image runs the bundled Run.HC twice directly from a cold boot.
+Both launches render the instructions and arena and return to the prompt.
+The second launch reuses the exact autocomplete and task-settings symbols from
+the first. No library commands are needed before either launch. The same image
+passes the 8 MiB User smoke test in 50.43 seconds. The full image audit, launch
+and startup receipts are in `build/keepaway-libraries-lazy-v1`.

@@ -1,0 +1,30 @@
+{
+  "result": "pass",
+  "runs": [
+    {
+      "arena_yellow_pixels": 291462,
+      "border_red_pixels": 4280
+    },
+    {
+      "arena_yellow_pixels": 295055,
+      "border_red_pixels": 4280
+    }
+  ],
+  "input_sha256": {
+    "build/keepaway-libraries-lazy-v1/full/kernel.img": "31b628ce18ccd080c310476bdee2ee596b2b86ca8df4f499dcbb0198ce60dabc",
+    "/home/ddanila/fun/TempleOS/build/keepaway-libraries-lazy-v1/native64/guest/instructions.png": "bbb0d9eb78ff17026ab5e6c4ab3499b1777dba0c74b0380d4676d4f258f42268",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "/home/ddanila/fun/TempleOS/build/keepaway-libraries-lazy-v1/run-entry.py": "53426691f7ba13998451202577d98e1a7bc8dd81e7620f2e29293746ebe20124"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 4,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "library_symbols_reused": true,
+  "inputs_unchanged": true
+}

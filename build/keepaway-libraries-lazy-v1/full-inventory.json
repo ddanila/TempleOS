@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "disk_sha256": "31b628ce18ccd080c310476bdee2ee596b2b86ca8df4f499dcbb0198ce60dabc",
+  "inventory_files_matched": 686,
+  "loader_sha256": "dc3e7ad2c816e1303e9860ac3f3ef790250c21837199bca6052566660a20477b",
+  "build_receipt_sha256": "7d1b599cef5cc528fe218ac868b72ac2f1318086dd557b8a7881e729c21f334e",
+  "scope": "Full image inventory files match current working-tree bytes"
+}

@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "startup_seconds": 50.43290253798477,
+  "budget_seconds": 60,
+  "over_budget_seconds": 0,
+  "evidence": "/home/ddanila/fun/TempleOS/build/keepaway-libraries-lazy-v1/user8/qemu/result.json",
+  "evidence_sha256": "c12370d260931b7d557382b74f699e70784f10dc2252158068748d330227bd6c",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}
