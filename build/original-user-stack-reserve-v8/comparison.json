@@ -1,0 +1,8 @@
+{
+  "result": "fail",
+  "failure": "PARSER PAYLOAD ALLOCATION REJECT C:/Compiler/UAsmCore.HC",
+  "startup_reached": false,
+  "debug_sha256": "d9f663b9a7778cde429845a196330c3a163b79ffa6d906ec67aadca18c73cdbb",
+  "receipt_sha256": "0c56ad1b5bb620cddaeb655fd4646f3f6b0d09963082ffd5c126331e5760453a",
+  "reserve_address": "0x79EAF8"
+}

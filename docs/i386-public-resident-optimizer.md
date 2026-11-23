@@ -447,3 +447,17 @@ kernel's high allocator. It passes the host instruction audit with that
 specific import accounted for, then the native Console loader rejects the
 module before the reservation runs. The failure leaves the high-end placement
 hypothesis untested. See `build/original-user-stack-reserve-v6`.
+
+The high-end reservation resolves the allocator through the existing kernel
+export table. It holds 267,527 bytes from `0x79EAF8`, loads the complete root
+compiler headers, then fails a 528-byte parser payload request in
+`Compiler/UAsmCore.HC`. The largest free payload in that arena at rejection is
+408 bytes. Holding this block at the other end shifts the startup failure to
+parser memory. See `build/original-user-stack-reserve-v8`.
+
+With the reservation released after compiler-header loading, the split
+prompt completes startup. USCheck still fails the 267,527-byte task request.
+A separate boot of that image measures 390,832 free bytes in the main arena
+with a largest free block of 176,480 bytes. The unsplit high-header baseline
+had a largest free block of 202,512 bytes. The comparison and runtime
+receipt are in `build/original-user-split-prompt-v2`.

@@ -1,0 +1,40 @@
+{
+  "result": "pass",
+  "source_sha256": "6601e20344163a6f8b4f52e78284fbe19891fd9ec174a2bfa89c8381894138b7",
+  "image_sha256": "8e1e5a1adc6969e5cf219a3152d1196b1e6223ec385cc93b0fb042c2a257c56b",
+  "boot_area_sha256": "4ba9f86d14fd02568f80d9277a02b87d698b1f2a60e73e0aa7b72afb01703482",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1906,
+    "owned_sectors": 96300,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1910,
+    "owned_sectors": 96335,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {
+    "/Compiler/I386/PromptFinish.HC": "bfca6ba81e9d7e829ec0b6d55a52d8ca21c4b77ed6a606258e816697d9d36ba2",
+    "/Compiler/I386/PromptSetup.HC": "4a4a7e7546a2dd5a0b40670c8359fd091137ce7e576336c462f5bd6cd4497fb4",
+    "/Compiler/I386/PromptUAsmHead.HC": "3385b92251a0e63b03df5a22423dd646c40199121d5a378eb7bba27a3c0af6ef",
+    "/Compiler/I386/PromptUAsmUi.HC": "56c2cf36c8497fc6f714abc1492030a8cdf55237b3afcc135da1bd4f5cc97dbe"
+  },
+  "added_attributes": {
+    "/Compiler/I386/PromptFinish.HC": 2048,
+    "/Compiler/I386/PromptSetup.HC": 2048,
+    "/Compiler/I386/PromptUAsmHead.HC": 2048,
+    "/Compiler/I386/PromptUAsmUi.HC": 2048
+  },
+  "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification",
+  "base_sha256": "6601e20344163a6f8b4f52e78284fbe19891fd9ec174a2bfa89c8381894138b7",
+  "candidate_sha256": "8e1e5a1adc6969e5cf219a3152d1196b1e6223ec385cc93b0fb042c2a257c56b",
+  "partition": [
+    "/Compiler/I386/PromptSetup.HC",
+    "/Compiler/I386/PromptUAsmHead.HC",
+    "/Compiler/I386/PromptUAsmUi.HC",
+    "/Compiler/I386/PromptFinish.HC"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "result": "fail",
+  "failure": "HEAP EXHAUSTED 0000000000041507",
+  "startup_reached": true,
+  "debug_sha256": "bd69369599929dcc492170dda200e06b68e516e32441dab1ccd4a9b5780c8119",
+  "receipt_sha256": "ec3a298131f951db9bee2f7beb8ebe47c6d46db37078a66074d5d412e506c342",
+  "heap_census_sha256": "774b8ee9886df496f8aec6216135553a98f73d7122ac840132d20f4c8d9c333b",
+  "heaps": {
+    "kernel": {
+      "largest_free": 176480,
+      "free_payload": 390832
+    },
+    "fallback": {
+      "largest_free": 2840,
+      "free_payload": 4112
+    }
+  }
+}

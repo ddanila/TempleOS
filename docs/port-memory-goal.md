@@ -2657,3 +2657,10 @@ measurement exceeds the separate 60-second startup target. The verified stage
 hashes and boot receipt are in
 `build/resident-opt-c5-generations128/gen1-receipt.json`. The second generation
 has entered its retained-module build.
+
+The second generation has now rebuilt all nine retained modules at 128 MiB.
+The harness compares their bytes with the first generation's installed modules
+and verifies a single build-provider load. All nine comparisons pass. The
+second installation, flat-kernel rebuild, boot and final reproducibility
+checks are still underway. See
+`build/resident-opt-c5-generations128/gen2-retained-build/result.json`.

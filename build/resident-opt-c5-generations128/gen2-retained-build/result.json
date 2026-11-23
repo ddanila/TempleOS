@@ -1,0 +1,88 @@
+{
+  "result": "pass",
+  "welcome": true,
+  "source_disk_sha256": "aeef8ce3e927f0179abe210b223f0d6c8ebff6566c61b96902a4f7ec37f3408f",
+  "module_order": [
+    "ConsoleRuntime",
+    "CompilerRuntime",
+    "CompilerProbe",
+    "FileRuntime",
+    "MemoryRuntime",
+    "BuildRuntime",
+    "EditorRuntime",
+    "DocDiagnosticRuntime",
+    "Startup"
+  ],
+  "modules": {
+    "ConsoleRuntime": {
+      "bytes": 2748962,
+      "records": 14081,
+      "exports": 1421,
+      "sha256": "4d0d756845c4f85b355c0b2d5477cd709d8901e2dd0e697e6748cd0944f035d3",
+      "reference_sha256": "4d0d756845c4f85b355c0b2d5477cd709d8901e2dd0e697e6748cd0944f035d3"
+    },
+    "CompilerRuntime": {
+      "bytes": 1343145,
+      "records": 4622,
+      "exports": 531,
+      "sha256": "3b6c200b1837258e111163af754fbac70fe0947c73ebd7a3e03ae02068dfd964",
+      "reference_sha256": "3b6c200b1837258e111163af754fbac70fe0947c73ebd7a3e03ae02068dfd964"
+    },
+    "CompilerProbe": {
+      "bytes": 588089,
+      "records": 2349,
+      "exports": 139,
+      "sha256": "08a8045d6edd53bbac6844158f1f0a0588fb26077d2723d3ad1a7a26636c2380",
+      "reference_sha256": "08a8045d6edd53bbac6844158f1f0a0588fb26077d2723d3ad1a7a26636c2380"
+    },
+    "FileRuntime": {
+      "bytes": 295839,
+      "records": 998,
+      "exports": 148,
+      "sha256": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38",
+      "reference_sha256": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38"
+    },
+    "MemoryRuntime": {
+      "bytes": 249418,
+      "records": 1174,
+      "exports": 175,
+      "sha256": "aea8be3302c8eefc19cef4a911dfab1bbf8661c68b42e91a41196ca52b1eaf37",
+      "reference_sha256": "aea8be3302c8eefc19cef4a911dfab1bbf8661c68b42e91a41196ca52b1eaf37"
+    },
+    "BuildRuntime": {
+      "bytes": 97307,
+      "records": 300,
+      "exports": 45,
+      "sha256": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d",
+      "reference_sha256": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d"
+    },
+    "EditorRuntime": {
+      "bytes": 53736,
+      "records": 259,
+      "exports": 49,
+      "sha256": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e",
+      "reference_sha256": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e"
+    },
+    "DocDiagnosticRuntime": {
+      "bytes": 49623,
+      "records": 274,
+      "exports": 29,
+      "sha256": "10ae3b166ccca52dcdfa1ea271c2e7b7973ec2e4a9e91087d96cef6e9544d9e6",
+      "reference_sha256": "10ae3b166ccca52dcdfa1ea271c2e7b7973ec2e4a9e91087d96cef6e9544d9e6"
+    },
+    "Startup": {
+      "bytes": 391,
+      "records": 6,
+      "exports": 1,
+      "sha256": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7",
+      "reference_sha256": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7"
+    }
+  },
+  "cpu": "486,-fpu",
+  "ram_mib": 128,
+  "keyboard_harness": false,
+  "managed_pointer": true,
+  "build_provider_loads": 1,
+  "byte_identical_to_installed": "/home/ddanila/fun/TempleOS/build/resident-opt-c5-generations128/gen1-selfhost/target.img",
+  "installed_disk_sha256": "d794b7b0c39498cdb2d4f00c428587c94fa2179bc489400939b52ac1e36ebe3e"
+}
