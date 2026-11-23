@@ -5,8 +5,14 @@ import subprocess
 root = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
 parser.add_argument('--shared-multiply', action='store_true')
+parser.add_argument('--primary-minimum', action='store_true')
 args = parser.parse_args()
-if args.shared_multiply:
+if args.primary_minimum and not args.shared_multiply:
+    parser.error('--primary-minimum requires --shared-multiply')
+if args.primary_minimum:
+    attempt = root / 'cross-primary-minimum'
+    overlay = attempt / 'overlay'
+elif args.shared_multiply:
     attempt = root / 'cross-shared-multiply'
     overlay = attempt / 'overlay'
 else:
@@ -91,6 +97,22 @@ source = Path(math).read_bytes().replace(b'[27]', b'[28]').replace(b'i<27', b'i<
 source = source.replace(rb'_EXP\0"', rb'_EXP\0I386F64MulToI64\0"')
 source = source.replace(b'  addresses[26]=&Exp;', b'  addresses[26]=&Exp;\n  addresses[27]=&I386F64MulToI64;')
 sources[math] = source
+
+if args.primary_minimum:
+    backing = 'Kernel/I386/MemoryBacking.HC'
+    edit(backing, '\n  if(!I386MemBackingFits(source,request))source=pool->heap;',
+         """
+  if(!I386MemBackingFits(source,request)) {
+    source=pool->heap;
+    if(pool->fallback && pool->owned_count && size!=minimum &&
+        I386MemBackingFits(source,minimum+sizeof(CI386BackingRegion)+511)) {
+      size=minimum;request=size+sizeof(CI386BackingRegion)+511;
+    }
+  }""")
+    edit(backing, '  if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)region=I386HeapAllocHigh(source,request);',
+         """  if(pool->owned_count && (size==I386_NATIVE_BACKING_QUANTUM ||
+      pool->fallback && source==pool->heap && size<I386_NATIVE_BACKING_QUANTUM))
+    region=I386HeapAllocHigh(source,request);""")
 
 for name, source in sources.items():
     output = overlay / name

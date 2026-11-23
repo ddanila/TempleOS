@@ -1245,7 +1245,63 @@
         "-o",
         "build/i386-wide-product-lowering-v1/shared-user8/working.img"
       ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/primary-user8/working.img",
+      "archive": "build/i386-wide-product-lowering-v1/primary-user8/working.img.zst",
+      "sha256": "63e9f38ff869955cb33d0697628b071601d39937f4278ab05a8a78e2feb04827",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/primary-user8/working.img.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/primary-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/heap-base/working.img",
+      "archive": "build/i386-wide-product-lowering-v1/heap-base/working.img.zst",
+      "sha256": "ecd581988907df255eddbe3eb8ff04611f13433136c1abbd976d6aa07f127335",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/heap-base/working.img.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/heap-base/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/heap-shared/working.img",
+      "archive": "build/i386-wide-product-lowering-v1/heap-shared/working.img.zst",
+      "sha256": "325c5237dab4ffb41ff7cb879204d1c5b5b64b636f7abc1e293367198b1c0aee",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/heap-shared/working.img.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/heap-shared/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/heap-primary-minimum/working.img",
+      "archive": "build/i386-wide-product-lowering-v1/heap-primary-minimum/working.img.zst",
+      "sha256": "63e9f38ff869955cb33d0697628b071601d39937f4278ab05a8a78e2feb04827",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/heap-primary-minimum/working.img.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/heap-primary-minimum/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 4408901632
+  "reclaimed_bytes": 4622532608
 }

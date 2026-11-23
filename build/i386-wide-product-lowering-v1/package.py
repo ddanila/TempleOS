@@ -8,13 +8,18 @@ parser = argparse.ArgumentParser()
 parser.add_argument('base', type=Path)
 parser.add_argument('--shared-multiply', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
+parser.add_argument('--primary-minimum', action='store_true')
 args = parser.parse_args()
 args.out.mkdir()
 root = Path(__file__).resolve().parent
 packer = runpy.run_path('tools/package-i386-native-image.py')
 snapshot, package = packer['snapshot'], packer['package']
 builder = runpy.run_path('tools/build-i386-kernel.py')
+if args.primary_minimum and not args.shared_multiply:
+    parser.error('--primary-minimum requires --shared-multiply')
 attempt = root / ('cross-shared-multiply' if args.shared_multiply else 'cross-explicit-branch')
+if args.primary_minimum:
+    attempt = root / 'cross-primary-minimum'
 exports = attempt / 'exports'
 runtime = exports / 'CompilerRuntime.t32m'
 builder['compiler_runtime_layout'](runtime.read_bytes())
@@ -23,6 +28,10 @@ overlay = (attempt if args.shared_multiply else root) / 'overlay'
 replacements = {'/' + str(path.relative_to(overlay)): path.read_bytes()
                 for path in overlay.rglob('*') if path.is_file()}
 replacements['/Modules/I386/CompilerRuntime.t32m'] = runtime.read_bytes()
+if args.primary_minimum:
+    memory = (exports/'MemoryRuntime.t32m').read_bytes()
+    builder['memory_runtime_layout'](memory)
+    replacements['/Modules/I386/MemoryRuntime.t32m'] = memory
 original = args.base.read_bytes()
 reference = snapshot(original)[1]
 

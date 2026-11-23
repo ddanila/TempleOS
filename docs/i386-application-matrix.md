@@ -1748,3 +1748,13 @@ after alignment. Both fallback heaps have a 2,840-byte largest
 payload. The candidate remains an overlay. See the `heap-base`,
 `heap-shared`, `shared-conversion64` and `shared-user8` receipts
 under `build/i386-wide-product-lowering-v1`.
+
+A second memory overlay tries the minimum requested backing batch
+when low memory cannot serve it and the public pool spills to the
+primary arena. It keeps the smaller late batches at the high end.
+The cross-build and instruction audit pass. At the unchanged 8 MiB
+USCheck boundary, primary free payload rises from 452,296 to 457,848
+bytes, but the largest contiguous block stays at 264,024 bytes.
+User creation still fails on the same 267,527-byte request. The
+extra free space does not solve the placement constraint. See
+`build/i386-wide-product-lowering-v1/heap-primary-minimum/result.json`.

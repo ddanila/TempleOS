@@ -391,7 +391,21 @@
         "-o",
         "build/i386-wide-product-lowering-v1/shared-candidate/kernel-assembly.txt"
       ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/primary-candidate/kernel-assembly.txt",
+      "archive": "build/i386-wide-product-lowering-v1/primary-candidate/kernel-assembly.txt.zst",
+      "sha256": "576df3ffa715b4073190a2024624080faaf67d6e78b9f713ccc90f6f61ef9403",
+      "size": 109793505,
+      "reclaimed_bytes": 101101568,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/primary-candidate/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/primary-candidate/kernel-assembly.txt"
+      ]
     }
   ],
-  "reclaimed_bytes": 2841272320
+  "reclaimed_bytes": 2942373888
 }

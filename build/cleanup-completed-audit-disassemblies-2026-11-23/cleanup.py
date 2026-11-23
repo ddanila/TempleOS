@@ -33,6 +33,7 @@ runs = [
     'native-geometry-table-v1/combined-named',
     'i386-wide-product-lowering-v1/candidate',
     'i386-wide-product-lowering-v1/shared-candidate',
+    'i386-wide-product-lowering-v1/primary-candidate',
     'span-production-v1/generations128-resume-install/gen1-audit',
 ]
 
