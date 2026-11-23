@@ -12060,6 +12060,13 @@
           "result": "pass",
           "evidence": "build/tothefront-production-v1/phases64-labeled/result.json",
           "scope": "Fixed-seed Human match through all six phases and the start of turn two. No unit orders entered."
+        },
+        {
+          "target": "tothefront-differential-infantry-movement",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --move [--disk DISK] --out OUT",
+          "result": "pass",
+          "evidence": "build/tothefront-production-v1/move64-positive/result.json",
+          "scope": "Physical infantry drag places unit 16 at row 30, column 1 with two movement points on both guests."
         }
       ]
     },

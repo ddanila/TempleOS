@@ -601,7 +601,35 @@
         "-o",
         "build/tothefront-production-v1/full/compiler.iso"
       ]
+    },
+    {
+      "original": "build/span-production-v1/generations128-resume-install/gen1-selfhost/source.img",
+      "archive": "build/span-production-v1/generations128-resume-install/gen1-selfhost/source.img.zst",
+      "sha256": "8186cbc6a2c77a62955211783e86d06bbbe68d87e1e5f15c5dbfc8be4f5fa540",
+      "size": 67108864,
+      "reclaimed_bytes": 52645888,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/generations128-resume-install/gen1-selfhost/source.img.zst",
+        "-o",
+        "build/span-production-v1/generations128-resume-install/gen1-selfhost/source.img"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/generations128-resume-install/gen2-selfhost/source.img",
+      "archive": "build/span-production-v1/generations128-resume-install/gen2-selfhost/source.img.zst",
+      "sha256": "a2896303a149f26c43005b687eca55fdd79d5bf943d4a37a2f79e19f062eaa23",
+      "size": 67108864,
+      "reclaimed_bytes": 52670464,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/generations128-resume-install/gen2-selfhost/source.img.zst",
+        "-o",
+        "build/span-production-v1/generations128-resume-install/gen2-selfhost/source.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 3741118464
+  "reclaimed_bytes": 3846434816
 }

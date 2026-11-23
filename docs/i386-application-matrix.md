@@ -1883,3 +1883,12 @@ arithmetic. Unit movement, firing orders, and exact framebuffer
 equivalence remain open. See
 `build/tothefront-original-v1/phases-original-labeled/result.json`
 and `build/tothefront-production-v1/phases64-labeled/result.json`.
+
+The fixed-seed ToTheFront comparison now selects an infantry unit
+and physically drags it to a legal adjacent hex during the first
+movement phase. Both guests report unit 16 at row 30, column 1,
+with two movement points remaining. Both finish the same phase
+sequence and exit. Native returns to fresh arithmetic. Firing,
+overrun and exact rendering remain open. See
+`build/tothefront-original-v1/move-original-positive/result.json`
+and `build/tothefront-production-v1/move64-positive/result.json`.

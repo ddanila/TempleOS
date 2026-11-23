@@ -62,6 +62,12 @@ for project in ('native-ode-production-v1', 'span-production-v1', 'tothefront-pr
             continue
         files.extend((str(directory.relative_to('build')), name) for name in names)
 
+for generation in ('gen1-selfhost', 'gen2-selfhost'):
+    directory = Path('build/span-production-v1/generations128-resume-install') / generation
+    receipt = directory / 'result.json'
+    if receipt.is_file() and json.loads(receipt.read_text())['result'] == 'pass':
+        files.append((str(directory.relative_to('build')), 'source.img'))
+
 for run, name in files:
     directory = Path('build') / run
     original = directory / name

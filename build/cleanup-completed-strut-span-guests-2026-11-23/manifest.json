@@ -1721,7 +1721,105 @@
         "-o",
         "build/tothefront-production-v1/user8/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-original-v1/phases-original-settled/original.iso",
+      "archive": "build/tothefront-original-v1/phases-original-settled/original.iso.zst",
+      "sha256": "ee020c4c1809c2377e5017c91b94a27ac2234a61589781f9f584b1c9fc12202a",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/phases-original-settled/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/phases-original-settled/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/phases-original-labeled/original.iso",
+      "archive": "build/tothefront-original-v1/phases-original-labeled/original.iso.zst",
+      "sha256": "3e547990d1c388e1b1d93b1f42205184a3965b7a1d12ffb7dbfbd03a8d52fad3",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/phases-original-labeled/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/phases-original-labeled/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/phases64-labeled/working.img",
+      "archive": "build/tothefront-production-v1/phases64-labeled/working.img.zst",
+      "sha256": "fd9890f6aa09587d269723b392e38ee15de3d2a05f9accdecea4b5b804f50a30",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/phases64-labeled/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/phases64-labeled/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/move-original/original.iso",
+      "archive": "build/tothefront-original-v1/move-original/original.iso.zst",
+      "sha256": "1cd1102afa0b383350a9ec65305de7a82c750ce77cb88dac3c3e9b1572d53b1b",
+      "size": 46157824,
+      "reclaimed_bytes": 33234944,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/move-original/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/move-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/move-original-positive/original.iso",
+      "archive": "build/tothefront-original-v1/move-original-positive/original.iso.zst",
+      "sha256": "e1aeb788d929279cd28ae577bd0ea0b733033d0a8a734ab533b8efa4138864a3",
+      "size": 46157824,
+      "reclaimed_bytes": 33234944,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/move-original-positive/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/move-original-positive/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/move64/working.img",
+      "archive": "build/tothefront-production-v1/move64/working.img.zst",
+      "sha256": "52088df4491825946164c848d46bf6197b4e5c54072358a16a0dee68e6c755f2",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/move64/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/move64/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/move64-positive/working.img",
+      "archive": "build/tothefront-production-v1/move64-positive/working.img.zst",
+      "sha256": "ab2b21e40a7564825cae8f033bfbeb5f9156f413d442df003eab87fa1c8e45ae",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/move64-positive/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/move64-positive/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 6082654208
+  "reclaimed_bytes": 6375825408
 }
