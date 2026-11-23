@@ -109,6 +109,6 @@ except Exception as error:
     raise
 finally:
     report['timer_trace'] = [line for line in guest.collect().splitlines()
-                             if line.startswith(('TTF timer ', 'FAIL TTF '))]
+                             if line.startswith(('TTF timer ', 'FAIL TTF ', 'NOISE step '))]
     guest.close()
     (out/'result.json').write_text(json.dumps(report, indent=2)+'\n')

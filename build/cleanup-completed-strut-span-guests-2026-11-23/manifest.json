@@ -2225,7 +2225,105 @@
         "-o",
         "build/tothefront-production-v1/sound-effects-managed64/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-production-v1/noise-discard-lost-ticks/working.img",
+      "archive": "build/tothefront-production-v1/noise-discard-lost-ticks/working.img.zst",
+      "sha256": "54693fa5da35c40d1eda12a4dd6c45b7b3e6965e8d0fa27d325f9a667a6aec06",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/noise-discard-lost-ticks/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/noise-discard-lost-ticks/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/noise-worker-burst/working.img",
+      "archive": "build/tothefront-production-v1/noise-worker-burst/working.img.zst",
+      "sha256": "3d024627e8f1151c95348288a06972fa6a8f72f332a65d425a91b4837a2aa2ff",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/noise-worker-burst/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/noise-worker-burst/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/noise-worker-burst400/working.img",
+      "archive": "build/tothefront-production-v1/noise-worker-burst400/working.img.zst",
+      "sha256": "69185ddc738315226a0ee9a60d06539484f2c3e6e6000baf91685a1e3492c211",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/noise-worker-burst400/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/noise-worker-burst400/working.img"
+      ]
+    },
+    {
+      "original": "build/native-noise-worker-trace-v1/default/working.img",
+      "archive": "build/native-noise-worker-trace-v1/default/working.img.zst",
+      "sha256": "68e1e3a669d94bb502a33413ab3376454d064da22468a80a93b2248277142b9b",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-noise-worker-trace-v1/default/working.img.zst",
+        "-o",
+        "build/native-noise-worker-trace-v1/default/working.img"
+      ]
+    },
+    {
+      "original": "build/native-noise-worker-trace-v1/userspace/working.img",
+      "archive": "build/native-noise-worker-trace-v1/userspace/working.img.zst",
+      "sha256": "68e1e3a669d94bb502a33413ab3376454d064da22468a80a93b2248277142b9b",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-noise-worker-trace-v1/userspace/working.img.zst",
+        "-o",
+        "build/native-noise-worker-trace-v1/userspace/working.img"
+      ]
+    },
+    {
+      "original": "build/native-noise-worker-trace-v1/delay-default/working.img",
+      "archive": "build/native-noise-worker-trace-v1/delay-default/working.img.zst",
+      "sha256": "d2a4ec5cc8cd3a7560faa3d03dc052915f936f6ab264e10421eaf9437f67b6b5",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-noise-worker-trace-v1/delay-default/working.img.zst",
+        "-o",
+        "build/native-noise-worker-trace-v1/delay-default/working.img"
+      ]
+    },
+    {
+      "original": "build/native-noise-worker-trace-v1/delay-user8/working.img",
+      "archive": "build/native-noise-worker-trace-v1/delay-user8/working.img.zst",
+      "sha256": "e78e40da7b2857307e3b334e349f5cc2fedfd1f06e7506c3e9676fc6a1b1d3da",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-noise-worker-trace-v1/delay-user8/working.img.zst",
+        "-o",
+        "build/native-noise-worker-trace-v1/delay-user8/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 7866650624
+  "reclaimed_bytes": 8240500736
 }

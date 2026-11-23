@@ -30,9 +30,9 @@ U0 SoundEffectTask(CSoundEffectFrame *ns)
 	ona=RandU16%i+ns->ona1;
 	Snd(ona);
 	t=Clamp(3000.0/Ona2Freq(ona),1.0,50.0);
-	if (t+tS>timeout)
-	  t=timeout-tS;
-	Sleep(t);
+	if (t>1000.0*(timeout-tS))
+	  t=1000.0*(timeout-tS);
+	if (t>0) Sleep(ToI64(Ceil(t)));
       }
       break;
     case SE_SWEEP:
@@ -41,9 +41,9 @@ U0 SoundEffectTask(CSoundEffectFrame *ns)
 	ona=(1.0-t)*ns->ona1+t*ns->ona2;
 	Snd(ona);
 	t=Clamp(3000.0/Ona2Freq(ona),1.0,50.0);
-	if (t+tS>timeout)
-	  t=timeout-tS;
-	Sleep(t);
+	if (t>1000.0*(timeout-tS))
+	  t=1000.0*(timeout-tS);
+	if (t>0) Sleep(ToI64(Ceil(t)));
       }
       break;
   }

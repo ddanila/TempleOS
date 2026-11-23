@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "source_sha256": "b9efca2880b1a47157f7ddd6d7a3c8857c63caf589ec7cd6d4efe0fbf162c0d5",
+  "image_sha256": "c7270921246023f7bb26c24580121e907915d0e4144a47257d17f5300515a127",
+  "boot_area_sha256": "738b309bb0a62c02826af55a8a428e3e3e9f3be384cda94b24bd9ab34b94881f",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1925,
+    "owned_sectors": 96199,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1925,
+    "owned_sectors": 96200,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification",
+  "replacements": {
+    "/Modules/I386/ConsoleRuntime.t32m": "9cd5fc60d4545b82211cfb3596a46d85a4d277398158e5fbf9b6fd1604047e2c",
+    "/Adam/Snd/SndEffects.HC": "87006897195159be8466175046c5d5a1c73f0a660e99ca026ad2557e85a995c5"
+  }
+}

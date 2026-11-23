@@ -1957,3 +1957,21 @@ the default lost-tick policy as sufficient causes on this host.
 The exact trigger remains open. See
 `build/tothefront-production-v1/noise-worker-burst400/result.json`
 and `build/tothefront-production-v1/noise-discard-lost-ticks/result.json`.
+
+Tracing the real Noise worker found an existing time-unit mismatch.
+Each nominal millisecond pause was compared with a seconds deadline
+and replaced with at most 0.25 seconds, which was then passed as
+zero milliseconds. The default IRQ-chip trace freezes at one
+jiffy value during this loop. The shared Noise and Sweep paths now
+convert the remaining duration to milliseconds and round a positive
+pause up before Sleep. The first build attempt used the wrong
+integer rounding helper. The verified source uses Ceil on F64.
+
+The rebuilt ConsoleRuntime overlay with those exact source bytes
+passes the standalone Noise timer check and the full staged
+ToTheFront direct-fire comparison under default KVM. The shot and
+phase trace match the original oracle. The same image passes User8
+in 50.85 seconds. Full-image and retained-generation qualification
+for the timing change remain open. See
+`build/native-noise-worker-trace-v1/delay-fire64/result.json`
+and `build/native-noise-worker-trace-v1/delay-user8/result.json`.
