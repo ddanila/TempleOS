@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "fixture_sha256": "07c0d560b4e46a675374460162750153b7ebe155f4371483224bc3992cd2a61b",
+  "input_sha256": "f0865323c9ece4275dfda7e5db7029d5955cee07ead68d7f22fbb916dd534378",
+  "reference_sha256": "b27c9a53eb5bc65969785094e07db3de88a419b3fcb56268715791a02fc343c4",
+  "result_mismatches": [],
+  "cases": 56
+}

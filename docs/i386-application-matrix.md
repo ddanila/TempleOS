@@ -2471,3 +2471,11 @@ The persisted module has all 39 expected named pointer relocations.
 After byte-exact installation it boots at 8 MiB and passes fresh
 arithmetic and document allocation recovery. See the `retained128`
 and `retained-install` receipts under `build/i386-power-table-v6`.
+
+At 64 MiB the installed guest-built compiler matches all 56 finite
+power cases. It loads 688 more compiler payload bytes than the
+cross-built copy. The full User workflow at 8 MiB still fails
+during child creation with a 264,024-byte largest free block and
+no fitting page-aligned task extent. See the `retained-power`,
+`retained-user8` and `retained-heap-user8` receipts under
+`build/i386-power-table-v6`.

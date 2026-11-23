@@ -12,6 +12,7 @@ runs = [
     'xcaliber-native-loader-v1/user8',
     'i386-power-table-v6/retained-power',
     'i386-power-table-v6/retained-user8',
+    'i386-power-table-v6/retained-heap-user8',
     'i386-power-table-v5/heap-user8',
     'i386-power-table-v6/user8',
     'i386-power-table-v6/concurrent',

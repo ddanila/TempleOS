@@ -6523,7 +6523,49 @@
         "-o",
         "build/xcaliber-native-loader-v1/user8/working.img"
       ]
+    },
+    {
+      "original": "build/i386-power-table-v6/retained-power/working.img",
+      "archive": "build/i386-power-table-v6/retained-power/working.img.zst",
+      "sha256": "dff34b101eb0df240dc2714fd5965dc103d34d5272a72b641e4336488024d1bf",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v6/retained-power/working.img.zst",
+        "-o",
+        "build/i386-power-table-v6/retained-power/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v6/retained-user8/working.img",
+      "archive": "build/i386-power-table-v6/retained-user8/working.img.zst",
+      "sha256": "ea536a72a4851e7d6a59c2949666e349bdd638283d3339d7600bc0e0c7f595f7",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v6/retained-user8/working.img.zst",
+        "-o",
+        "build/i386-power-table-v6/retained-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v6/retained-heap-user8/working.img",
+      "archive": "build/i386-power-table-v6/retained-heap-user8/working.img.zst",
+      "sha256": "ea536a72a4851e7d6a59c2949666e349bdd638283d3339d7600bc0e0c7f595f7",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v6/retained-heap-user8/working.img.zst",
+        "-o",
+        "build/i386-power-table-v6/retained-heap-user8/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 22752628736
+  "reclaimed_bytes": 22912790528
 }
