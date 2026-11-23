@@ -1,0 +1,26 @@
+{
+  "native64": {
+    "result": "fail",
+    "error": "Recorded notes differ: (3, 1, 63, 0, 0, 1, 65, 7, 0, 1, 67, 7, 0)",
+    "receipt_sha256": "bac4fd735c880b3b6d0cf20ce05e5e2ea68344d5d693d522c2de803413f38bc3",
+    "record_menu": {
+      "total_ms": 1150,
+      "initial_print_ms": 240,
+      "fill_ms": 10,
+      "after_picker_through_first_button_ms": 270,
+      "final_refresh_ms": 290
+    }
+  },
+  "memset64": {
+    "result": "fail",
+    "error": "Recorded notes differ: (3, 1, 63, 0, 0, 1, 65, 7, 0, 1, 67, 8, 0)",
+    "receipt_sha256": "ff46331bf9960869c532472a58e64d7e0ee6521b8baf528a55651a8077fd062d",
+    "record_menu": {
+      "total_ms": 1050,
+      "initial_print_ms": 150,
+      "fill_ms": 0,
+      "after_picker_through_first_button_ms": 160,
+      "final_refresh_ms": 300
+    }
+  }
+}

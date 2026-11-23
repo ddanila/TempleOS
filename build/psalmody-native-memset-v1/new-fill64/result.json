@@ -1,0 +1,40 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/psalmody-native-memset-v1/bench.py": "1971c3b56680530a979721d263579f5821f59ffea9fe036769b5d2668f1d4fd6",
+    "build/psalmody-native-memset-v1/candidate.img": "a8a6a57dcd06645a39b08e0d177d4512e6f55d38f5d297a45ad3ea22b7e4ba3f",
+    "/home/ddanila/fun/TempleOS/build/psalmody-native-memset-v1/FillBench.HC": "814c28cdd133100faa730d0307ad49e84f10d2462e1fb64d869f23ca5d77b38b",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6"
+  },
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "a8a6a57dcd06645a39b08e0d177d4512e6f55d38f5d297a45ad3ea22b7e4ba3f",
+    "image_sha256": "42ef01f5f46d708d5d2a28fbe9991cfc7286be58b2c7d9c59a32c5702b8574a8",
+    "boot_area_sha256": "a366537fa37d14d0b5763aaeb583d8bc7c10806b063f322c1d985ef6a3bb7edb",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96122,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96124,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/FillBench.HC": "814c28cdd133100faa730d0307ad49e84f10d2462e1fb64d869f23ca5d77b38b"
+    },
+    "added_attributes": {
+      "/Probe/FillBench.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "elapsed_guest_ms": 0,
+  "bytes_per_fill": 307200,
+  "fills": 5,
+  "inputs_unchanged": true
+}

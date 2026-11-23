@@ -115,3 +115,16 @@ check. Its record-menu redraw takes 67 guest ms, with 5 ms before the final
 refresh and 62 ms waiting for two frames. The native measurements at the same
 markers are 750 ms and 300 ms. This puts most of the observed difference in
 the work before the refresh. Both traces are in `build/psalmody-redraw-profile-v1`.
+
+A finer trace bounds the VGA buffer fill at one 10 ms timer tick in the
+baseline record redraw. The initial formatted document output takes 240 ms,
+followed later by 270 ms between the picker draw and the first toolbar button.
+A disposable overlay uses the 386 `REP STOSB` instruction for the public byte
+fill. Both versions pass the focused fill contract for five unaligned
+307,200-byte fills, low-byte truncation, zero and negative counts, end pointers,
+and untouched boundary bytes. The baseline takes one 10 ms guest tick for the
+five fills. The overlay finishes within a tick. The overlay still records a
+zero-duration first note and spends 1,050 ms in record redraw, within the range
+of the previous baseline measurements. The fill is outside the dominant
+redraw cost. See `build/psalmody-redraw-profile-v2` and
+`build/psalmody-native-memset-v1`.

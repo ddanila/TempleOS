@@ -1,0 +1,26 @@
+--- a/Kernel/I386/MemoryPublic.HC
++++ b/Kernel/I386/MemoryPublic.HC
+@@ -169,8 +169,21 @@
+ U8 *MemorySet(U8 *dst,I64 value,I64 count)
+ {
+   I64 i;
+-  asm { CLD }
+-  for(i=0;i<count;i++) dst[i]=value;
++  //The native flat data segment and 32-bit count cover mapped memory.
++  if(0<count<=0xFFFFFFFF) {
++    asm {
++      PUSH EDI
++      CLD
++      MOV EDI,U32 &dst[EBP]
++      MOV EAX,U32 &value[EBP]
++      MOV ECX,U32 &count[EBP]
++      REP_STOSB
++      POP EDI
++    }
++  } else {
++    asm { CLD }
++    for(i=0;i<count;i++) dst[i]=value;
++  }
+   return dst+count;
+ }
+ I64 MemoryStrLen(U8 *src)
