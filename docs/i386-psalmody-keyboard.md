@@ -199,3 +199,19 @@ record-menu redraw takes 740 ms, compared with 700 ms in the changed-row
 control. The immediate-input sequence still records 0, 8, 8. This single
 comparison shows no further redraw improvement. The disposable patch,
 raster receipt and timing comparison are in `build/native-graphics-pack32-v3`.
+
+The early public SwapI64 binding, shared registry popup, and changed-row
+VGA upload are integrated. MemoryRuntime is version 42 and ConsoleRuntime
+is version 275. Two original bootstrap rebuilds and the standard native
+cross-build pass, with 1,532 delivered files audited against the integrated
+source. The integrated image verifies signed 64-bit and same-address swaps
+at 8 MiB, registry popup cancellation and cold suppression, and all six
+changed-row raster comparisons. Psalmody matches the original binary
+records after the record menu has settled. Production User startup passes
+the 60-second budget at 50.52 seconds. The integrated build and receipts are
+in `build/i386-graphics-registry-integration`.
+
+Immediate input during the redraw remains a timing gap. The earlier
+two-generation rebuild receipts refer to their own pinned production sources.
+The integrated source needs its own two native generations and the remaining
+desktop and application qualification.

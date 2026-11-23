@@ -28,6 +28,7 @@ U0 NativeRunLevelMark(I64 bit,U8 *stage)
 #define rev_bits_table native_rev_bits_table
 #define I386_RAW_OUTPUT_IRQ 1
 #include "/Kernel/RawOutputCore.HC"
+Bool native_raw_vga_changed;
 U0 NativeRawPutChar(I64 ch)
 {//Cache belongs to the kernel heap, independent of the calling task lifetime.
   U32 irq=I386IrqSave;
@@ -36,6 +37,8 @@ U0 NativeRawPutChar(I64 ch)
   I386IrqRestore(irq);
   if(!text.raw_scrn_image) throw('OutMem');
   RawPutChar(ch);
+  //Raw output writes VGA independently of the managed backed planes.
+  native_raw_vga_changed=TRUE;
 }
 #define RawPutChar NativeRawPutChar
 #include "/Kernel/KeyRawOutputCore.HC"

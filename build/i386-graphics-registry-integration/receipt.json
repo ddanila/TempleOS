@@ -1,0 +1,30 @@
+{
+  "result": "pass",
+  "scope": "Integrated cross-build and focused native public API, managed raster, Psalmody and 8 MiB startup checks",
+  "image_sha256": "905744d6cfcfae6dac2cd81dfc08009bdd1352ff02c62c558ff0cb47af165bfc",
+  "source_sha256": {
+    "Adam/ARegistry.HC": "7fc39039ba3fa280d77be066556a62d8589a3a93be3766aaf2e11752d96ec6b4",
+    "Kernel/GraphicsPlanarCore.HC": "bf07c971dc5c9a1e4441412d8a8392e44110718b6c134376f2a28a07c3015367",
+    "Kernel/I386/ConsoleRuntime.HC": "f56fd9c474d4f2a37bb7e1ebe877f95db4e50cadd962a61fe346e76c78b16bc9",
+    "Kernel/I386/ConsoleRuntime.HH": "20a50392ab35b8e86530adec7c272f32450eb97c7cada8b9f44bd685169d9cce",
+    "Kernel/I386/GraphicsFrame.HC": "1c6f6832e34d6f750ebf3256abdb4ee80a304a19ecca0731a8bb166a3983953a",
+    "Kernel/I386/MemoryRuntime.HC": "7dd309e0cfcc8e15c5dc4cf14869038f7a3cb8c1ccb5b4b1b27847f866e1d174",
+    "Kernel/I386/MemoryRuntime.HH": "c791de7210f07f1c08d2f1638d196a6d54eee439b1d826d0e303313e176718bd",
+    "Kernel/I386/PublicMemory.HH": "81c32110532c3d9308974bb94eb1da5b8a435ff7672116c1c0db66c108e4557c",
+    "Kernel/I386/PublicRegistry.HH": "0ee9d6de9454c91ed06bf054ef78a1d9e3e76233bd62c5b0bc5f17b030d3f9bf",
+    "Kernel/I386/RawOutputRuntime.HC": "e4dbc08eb513ae45ceb76cf40b0b1312052bbf6f7a0acf4b249be560450ce1da",
+    "Adam/RegistryPopupCore.HC": "3a21431a14a62cbe7fce1d50a2971f9582c2b4f2cedaa773b1fd68e90dbcb161"
+  },
+  "bootstrap_manifest_sha256": "9043bd8ede17ec0e5f731e4217e9b4fa81ec7962c7b0d9f5e99d3d34d40d7e13",
+  "build_manifest_sha256": "d1c9925ec5d49bc09c0597fe3342620b93a9e8f84230a4ff5276231072fdaa2b",
+  "source_identity_sha256": "93ea9647d558d981aa7cc114d46591b1dab6ce65ce38f986fb5c7fc6e90efd3f",
+  "verification_result_sha256": {
+    "user8": "fafe75c890b00f81e85c87191cffce1d12a10bb509f2eb468fac9e11b905b766",
+    "psalmody64": "6c9a23feb1b8ba28a8ff8e04b6b68f0ef1345919d4b8a4c0c2fb1be8579e0b7f",
+    "registry64": "422ee25821fa636395a7c5ef38f4e3b5a29354474210ad6cea5ad46059301b7f",
+    "raster64": "24e90e180cc4896e85559195ccdd320a6f4ac1a9de6ade396c7e3accedc2a99c",
+    "source-audit": "25143f48316b749a13477370ce268226477717d4828aa5552dbd08c66266f4cc",
+    "swap8": "82b75501209661ca5147cc38939a5b963a15cf3f2e9f4242fa3c0d507ca690a5",
+    "startup-budget": "a0035ad0fa89157949feae4c2989dcaeac76fb94a79247258f5d42a07545ab09"
+  }
+}

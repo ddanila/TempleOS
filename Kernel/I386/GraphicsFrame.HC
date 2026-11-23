@@ -133,6 +133,44 @@ U0 NativeGraphicsFinal(CDC *dc)
   if(gr.fp_final_scrn_update)(*gr.fp_final_scrn_update)(dc);
   else if(I386TaskSelf==native_window_worker)DrawMs(dc);
 }
+Bool NativeGraphicsUpload()
+{//Caller holds the presentation lease. Scan complete rows and retain the
+  //logical planes that belong to the currently displayed graphics surface.
+  U8 candidate[320],*split[4],*destination;
+  I64 plane,row,offset,first=480,last=-1;
+  Bool changed,flush=LBtr(&sys_semas[SEMA_FLUSH_VGA_IMAGE],0);
+  if(native_raw_vga_changed || flush || !NativeDisplayViewMatches(graphics_planes)) {
+    GraphicsPlanarSplitCore(graphics_planes,gr.dc2->body);
+    if(I386VgaSplitRows(graphics_planes,0,480)) {
+      native_raw_vga_changed=FALSE;
+      return TRUE;
+    }
+    if(flush)LBts(&sys_semas[SEMA_FLUSH_VGA_IMAGE],0);
+    NativeDisplayViewCommit(NULL);
+    return FALSE;
+  }
+  for(plane=0;plane<4;plane++)split[plane]=candidate+80*plane;
+  for(row=0;row<480;row++) {
+    offset=row*80;
+    GraphicsPlanarSplitCore(split,gr.dc2->body+row*640,80);
+    changed=FALSE;
+    for(plane=0;plane<4;plane++) {
+      destination=graphics_planes[plane]+offset;
+      if(MemCmp(destination,split[plane],80)) {
+        MemCpy(destination,split[plane],80);
+        changed=TRUE;
+      }
+    }
+    if(changed) {
+      if(first==480)first=row;
+      last=row;
+    }
+  }
+  if(last<0)return TRUE;
+  if(I386VgaSplitRows(graphics_planes,first,last-first+1))return TRUE;
+  NativeDisplayViewCommit(NULL);
+  return FALSE;
+}
 Bool NativeGraphicsPresentChecked(U0 (*draw)(CDC *dc),Bool blink,Bool (*admit)())
 {//Root-owned storage; managed callers serialize presentation through one lease.
   Bool result=FALSE;
@@ -156,8 +194,7 @@ Bool NativeGraphicsPresentChecked(U0 (*draw)(CDC *dc),Bool blink,Bool (*admit)()
     if(NativeProgressVisible || gr.fp_final_scrn_update || admit)final_draw=&NativeGraphicsFinal;
     GraphicsFrameCore(gr.dc2,gr.dc,gr.text_base,text.font,blink,
       gr.pan_text_x,gr.pan_text_y,gr.hide_col,gr.hide_row,draw,final_draw);
-    GraphicsPlanarSplitCore(graphics_planes,gr.dc2->body);
-    result=I386VgaSplitRows(graphics_planes,0,480);
+    result=NativeGraphicsUpload;
     if(result) {
       NativeDisplayViewCommit(graphics_planes);
       NativePresentationCommit;

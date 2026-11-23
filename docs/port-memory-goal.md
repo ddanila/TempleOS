@@ -2693,3 +2693,8 @@ values match, and the bootstrap retires with the expected physical state.
 Fresh arithmetic renders. The observed 215.20 seconds covers the configured
 desktop profile. See
 `build/resident-opt-c5-generations128/gen1-desktop64/result.json`.
+
+The second configured desktop run completed Home Once, layout checks and
+physical retirement, but its receipt was rejected after the build helper's
+pinned hash changed during the integration work. A fresh rerun uses the
+same installed generation-two image and stable helper inputs.

@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "startup_seconds": 50.51657495700056,
+  "budget_seconds": 60,
+  "over_budget_seconds": 0,
+  "evidence": "/home/ddanila/fun/TempleOS/build/i386-graphics-registry-integration/user8/qemu/result.json",
+  "evidence_sha256": "95cd86ccffaa7b855aa1d4bea3dbeae20cf0ae759cbdab92db128e364f5106cc",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}
