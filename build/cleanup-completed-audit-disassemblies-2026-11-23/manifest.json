@@ -419,7 +419,35 @@
         "-o",
         "build/i386-wide-product-lowering-v1/small-holes-candidate/kernel-assembly.txt"
       ]
+    },
+    {
+      "original": "build/native-ode-production-v1/full/kernel-assembly.txt",
+      "archive": "build/native-ode-production-v1/full/kernel-assembly.txt.zst",
+      "sha256": "f7dd4411653dbf4b8b1129e5a67cd07c012822257f6022eb6ec89e09fad3bd51",
+      "size": 109721881,
+      "reclaimed_bytes": 101031936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-ode-production-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-ode-production-v1/full/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/full/kernel-assembly.txt",
+      "archive": "build/span-production-v1/full/kernel-assembly.txt.zst",
+      "sha256": "f7dd4411653dbf4b8b1129e5a67cd07c012822257f6022eb6ec89e09fad3bd51",
+      "size": 109721881,
+      "reclaimed_bytes": 101031936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/span-production-v1/full/kernel-assembly.txt"
+      ]
     }
   ],
-  "reclaimed_bytes": 3043549184
+  "reclaimed_bytes": 3245613056
 }

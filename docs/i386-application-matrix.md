@@ -1842,3 +1842,15 @@ unrelated files. The shared-source refactor, full game workflows
 and exact rendering remain open. See
 `build/tothefront-normal-entry-v1/match64/result.json` and
 `build/tothefront-normal-entry-v1/user8/result.json`.
+
+The ToTheFront source overlay now extracts the original geometry,
+sound, popup and key-poll bodies into shared includes. The native
+launcher uses those includes on demand, and the original paths use
+the same bodies at their existing call sites. The fixed-seed Human
+workflow returns on both the original-kernel overlay and the native
+Run.HC path. Native also passes the unchanged 8 MiB User check in
+51.00 seconds. The refactor remains in a source overlay while the
+in-flight Span generation check verifies its pinned sources. See
+`build/tothefront-shared-entry-v1/original/result.json`,
+`build/tothefront-shared-entry-v1/native64/result.json` and
+`build/tothefront-shared-entry-v1/user8/result.json`.
