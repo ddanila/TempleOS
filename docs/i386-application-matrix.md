@@ -1710,3 +1710,15 @@ calls with a 64-bit product significand and all 256 retained native
 calls with a 53-bit significand. This isolates the remaining mesh
 difference to product precision at the integer conversion boundary.
 See `build/grmodels-ball-reference-v1/product-precision-comparison.json`.
+
+A software wide multiply prototype rounds the exact binary64 operand
+product to the original 64-bit significand before truncating to I64.
+The guest differential passed 16 cases, including subnormal operands,
+overflow, invalid inputs and both signs of the BallGen boundary.
+Using the prototype at the eight coordinate expressions in the
+instrumented BallGen run on the retained image reproduced all 256
+original AddVertex arguments and the exact 59-vertex, 128-triangle
+sprite. The compiler still needs to select this behavior for
+unchanged source, and the original public entry point still needs
+qualification. See `build/grmodels-ball-reference-v1/WideProduct.HC`
+and `build/native-geometry-source-v1/GrModels-ball-wide-product/result.json`.

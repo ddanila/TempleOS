@@ -9,11 +9,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--disk', type=Path)
 parser.add_argument('--cosine-steps', action='store_true')
 parser.add_argument('--product-conversion', action='store_true')
+parser.add_argument('--wide-check', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 if args.cosine_steps and not args.disk:
     parser.error('--cosine-steps requires a native --disk')
-if args.cosine_steps and args.product_conversion:
+if sum((args.cosine_steps, args.product_conversion, args.wide_check)) > 1:
     parser.error('Select one math fixture')
 out = args.out.resolve()
 out.mkdir()
@@ -22,7 +23,14 @@ if args.cosine_steps:
     fixture_name, expected_size = 'CosineSteps.HC', 12 * 8
 if args.product_conversion:
     fixture_name, expected_size = 'ProductConversion.HC', 6 * 8
-fixture = Path(__file__).with_name(fixture_name).read_bytes()
+if args.wide_check:
+    fixture_name, expected_size = 'WideProductCheck.HC', 16 * 8
+fixture_path = Path(__file__).with_name(fixture_name)
+fixture = fixture_path.read_bytes()
+if args.wide_check and args.disk:
+    helper = fixture_path.with_name('WideProduct.HC').read_bytes()
+    fixture = helper + b'\n' + fixture.replace(
+        b'return a*b;', b'return BallWideMultiplyToI64(a,b);')
 report = {'fixture_sha256': hashlib.sha256(fixture).hexdigest()}
 if args.disk:
     image = out / 'working.img'

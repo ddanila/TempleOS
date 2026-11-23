@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 import struct
 
 
@@ -38,3 +39,11 @@ def read(directory):
     if len(data) != 256 * 24:
         raise ValueError('Unexpected number of AddVertex calls')
     return list(struct.iter_unpack('<3q', data))
+
+
+def widen_products(source, helper):
+    pattern = rb'(r[12])\*(Cos|Sin)(\(\(2\*i[^\n]+?\)\*d_a2\))'
+    rewritten, count = re.subn(pattern, rb'BallWideMultiplyToI64(\1,\2\3)', source)
+    if count != 8:
+        raise ValueError(f'Expected eight direct BallGen products, got {count}')
+    return helper + b'\n' + rewritten

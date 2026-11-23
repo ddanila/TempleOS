@@ -15,6 +15,7 @@ parser.add_argument('--original-wrap', action='store_true')
 parser.add_argument('--ball-form', action='store_true')
 parser.add_argument('--ball-mesh', action='store_true')
 parser.add_argument('--vertex-trace', action='store_true')
+parser.add_argument('--wide-product', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
 if args.serial_visibility and args.app != 'ToTheFront':
@@ -29,6 +30,8 @@ if (args.ball_form or args.ball_mesh) and args.app != 'GrModels':
     parser.error('--ball-form and --ball-mesh require --app GrModels')
 if args.vertex_trace and not args.ball_mesh:
     parser.error('--vertex-trace requires --ball-mesh')
+if args.wide_product and not args.vertex_trace:
+    parser.error('--wide-product requires --vertex-trace')
 out = args.out.resolve()
 out.mkdir()
 extras={}
@@ -40,6 +43,8 @@ if args.app=='GrModels':
         if args.vertex_trace:
             trace = runpy.run_path(str(ball_ui/'vertex_trace.py'))
             source = Path('Apps/GrModels/BallGen.HC').read_bytes()
+            if args.wide_product:
+                source = trace['widen_products'](source, (ball_ui/'WideProduct.HC').read_bytes())
             extras['/BallGenTrace.HC'] = trace['instrument'](source)
             fixture = trace['observe'](fixture)
         extras['/BallUI.HC'] = fixture
