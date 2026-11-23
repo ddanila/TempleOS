@@ -1,0 +1,53 @@
+{
+  "package": {
+    "result": "pass",
+    "source_sha256": "b9efca2880b1a47157f7ddd6d7a3c8857c63caf589ec7cd6d4efe0fbf162c0d5",
+    "image_sha256": "69185ddc738315226a0ee9a60d06539484f2c3e6e6000baf91685a1e3492c211",
+    "boot_area_sha256": "738b309bb0a62c02826af55a8a428e3e3e9f3be384cda94b24bd9ab34b94881f",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1925,
+      "owned_sectors": 96199,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1926,
+      "owned_sectors": 96201,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/NoiseSleep.HC": "bfafde024dcbe148f49463d4bdac056738f0d1fb8d829cbab5139957c9eeef30"
+    },
+    "added_attributes": {
+      "/NoiseSleep.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "fixture_sha256": "bfafde024dcbe148f49463d4bdac056738f0d1fb8d829cbab5139957c9eeef30",
+  "single_note": false,
+  "note_burst": false,
+  "fixed_noise": false,
+  "poll_parent": false,
+  "worker_burst": true,
+  "machine": "pc",
+  "native_options": [],
+  "result": "pass",
+  "after_sleep": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "timer_trace": [
+    "TTF timer before control",
+    "TTF timer after control",
+    "TTF timer address 103EA0 sleeper 15983E8 noise 15F4010",
+    "TTF timer before active noise",
+    "TTF timer after active noise 400"
+  ]
+}

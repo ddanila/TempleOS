@@ -2169,7 +2169,63 @@
         "-o",
         "build/i386-graphics-registry-integration/generations128/gen2-desktop64/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-production-v1/noise-note-burst/working.img",
+      "archive": "build/tothefront-production-v1/noise-note-burst/working.img.zst",
+      "sha256": "44f90a4edfc47d149e76dbf3622f4acd2d7ef8d2b62a3ecbc84c727cec526cae",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/noise-note-burst/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/noise-note-burst/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/noise-fixed-low/working.img",
+      "archive": "build/tothefront-production-v1/noise-fixed-low/working.img.zst",
+      "sha256": "df7b45dfea7a02a834f7c9d78009e9f5e832c155d6c47cb9804ec30f23249d9c",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/noise-fixed-low/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/noise-fixed-low/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/noise-poll-parent/working.img",
+      "archive": "build/tothefront-production-v1/noise-poll-parent/working.img.zst",
+      "sha256": "640b002216eeb213a0fabb34a6fc15326583338916128fb0f0aa508c460cb225",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/noise-poll-parent/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/noise-poll-parent/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/sound-effects-managed64/working.img",
+      "archive": "build/tothefront-production-v1/sound-effects-managed64/working.img.zst",
+      "sha256": "5d38a57c8530e64769630e43ba2398404bbc66b126a17bd665bfbd61395099ee",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/sound-effects-managed64/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/sound-effects-managed64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 7653023744
+  "reclaimed_bytes": 7866650624
 }

@@ -1946,3 +1946,14 @@ pending or in-service request. This confines the reproduction to
 the varying-note worker in the default IRQ configuration. See the
 `sound-effects-managed64`, `noise-note-burst`, `noise-fixed-low`
 and `noise-poll-parent` receipts under `build/tothefront-production-v1`.
+
+A spawned control worker completes sixteen alternating speaker
+writes with a 15 ms sleep between writes under default KVM. Its
+parent resumes after 400 jiffies and executes fresh arithmetic.
+The varying-note Noise fixture still freezes the timer under
+default KVM with `kvm-pit.lost_tick_policy=discard`. These results
+rule out task spawning, alternating writes at that cadence and
+the default lost-tick policy as sufficient causes on this host.
+The exact trigger remains open. See
+`build/tothefront-production-v1/noise-worker-burst400/result.json`
+and `build/tothefront-production-v1/noise-discard-lost-ticks/result.json`.
