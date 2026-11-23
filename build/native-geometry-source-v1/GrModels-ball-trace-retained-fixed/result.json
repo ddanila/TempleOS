@@ -1,0 +1,68 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "8186cbc6a2c77a62955211783e86d06bbbe68d87e1e5f15c5dbfc8be4f5fa540",
+    "image_sha256": "f6d87383a93975e29c791c2acbb055875c56ba7170043f9e9b231ec1f433bf45",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 97073,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1917,
+      "owned_sectors": 97095,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/BallGenTrace.HC": "6c4cf5f2da2e6423e64b736c4e082ea0942f6773b2ee7075d753930c8071d214",
+      "/BallUI.HC": "426c04c8c75db5043226fd7c508cf57f9a74f7c163965965924cb01ff0e7fa84",
+      "/LightingChooser.HC": "8a20753da001c7e8e21c557162d6ffb601d368442519e66c784ea18f7d53ab75",
+      "/PublicGeometrySource.HC": "158a30b386510728aa55d4c22b061632a55843e5b783c476815a37f7a0e0403c"
+    },
+    "added_attributes": {
+      "/BallGenTrace.HC": 2048,
+      "/BallUI.HC": 2048,
+      "/LightingChooser.HC": 2048,
+      "/PublicGeometrySource.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "completed_commands": [
+    "#include \"C:/PublicGeometrySource.HC\"",
+    "#include \"C:/LightingChooser.HC\"",
+    "#include \"C:/BallGenTrace.HC\""
+  ],
+  "command": "#include \"C:/BallGenTrace.HC\"",
+  "fresh_result": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "ball_mesh": {
+    "vertices": 60,
+    "triangles": 128,
+    "colors": [
+      4
+    ],
+    "mesh_sha256": "bf8d54cd174c1408ef8061964a6ccdf04c164c10e1c2ac0140c1f77ee4eae254"
+  },
+  "vertex_calls": 256,
+  "after_ball": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

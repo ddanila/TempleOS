@@ -1685,3 +1685,18 @@ expressions directly to AddVertex, so the next comparison needs to
 observe that call path. See the cosine receipts under
 `build/grmodels-ball-reference-v1` and
 `build/native-geometry-source-v1/GrModels-ball-mesh-retained/comparison.json`.
+
+The interactive AddVertex trace captures all 256 coordinate triples
+on the pinned original and retained native image. Each traced guest
+produced the same mesh as its uninstrumented run. Twenty-four calls
+received different coordinates before deduplication. The first
+difference is zero-based call 34, with original coordinates
+(10, -9, -14) and native coordinates (10, -10, -14). See
+`build/native-geometry-source-v1/GrModels-ball-trace-retained-fixed/comparison.json`.
+
+An initial trace export requested an invalid size and filled the host
+disk, which interrupted Span's generation-one acceptance screenshot.
+The partial export was discarded and the trace now exports exactly
+6 KiB. The new Span runner verified provenance and reused the passed
+retained installation. Generation-one self-hosting is running again
+under `build/span-production-v1/generations128-resume-install`.

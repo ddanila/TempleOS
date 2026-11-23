@@ -14,6 +14,7 @@ parser.add_argument('--fix-indirect-head', action='store_true')
 parser.add_argument('--original-wrap', action='store_true')
 parser.add_argument('--ball-form', action='store_true')
 parser.add_argument('--ball-mesh', action='store_true')
+parser.add_argument('--vertex-trace', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
 if args.serial_visibility and args.app != 'ToTheFront':
@@ -26,6 +27,8 @@ if args.original_wrap and not args.serial_visibility:
     parser.error('--original-wrap requires --serial-visibility')
 if (args.ball_form or args.ball_mesh) and args.app != 'GrModels':
     parser.error('--ball-form and --ball-mesh require --app GrModels')
+if args.vertex_trace and not args.ball_mesh:
+    parser.error('--vertex-trace requires --ball-mesh')
 out = args.out.resolve()
 out.mkdir()
 extras={}
@@ -33,7 +36,13 @@ fire_units=[]
 ball_ui = Path('build/grmodels-ball-reference-v1')
 if args.app=='GrModels':
     if args.ball_mesh:
-        extras['/BallUI.HC'] = (ball_ui/'Interactive.HC').read_bytes()
+        fixture = (ball_ui/'Interactive.HC').read_bytes()
+        if args.vertex_trace:
+            trace = runpy.run_path(str(ball_ui/'vertex_trace.py'))
+            source = Path('Apps/GrModels/BallGen.HC').read_bytes()
+            extras['/BallGenTrace.HC'] = trace['instrument'](source)
+            fixture = trace['observe'](fixture)
+        extras['/BallUI.HC'] = fixture
     source=Path('Adam/DolDoc/DocGr.HC').read_bytes()
     extras['/LightingChooser.HC']=source[
         source.index(b'public I64 PopUpColorLighting'):source.index(b'class CTransformForm')]
@@ -124,6 +133,8 @@ try:
             path = '/TTFSerialVis.HC' if unit == 'TTFVis' else f'/Apps/ToTheFront/{unit}.HC'
             paths = fire_units if unit == 'TTFFire' and fire_units else [path]
             commands.extend(f'#include "C:{name}"' for name in paths)
+    elif args.vertex_trace:
+        commands.append('#include "C:/BallGenTrace.HC"')
     else:
         commands.append(f'#include "C:/Apps/{args.app}/Load.HC"')
     report['completed_commands'] = []
@@ -139,6 +150,8 @@ try:
         guest.type('BallUIProbe;')
         guest.press('ret')
         report['ball_mesh'] = runpy.run_path(str(ball_ui/'interactive.py'))['exercise'](guest)
+        if args.vertex_trace:
+            report['vertex_calls'] = len(trace['read'](out))
         guest.command('6*7;')
         report['after_ball'] = guest.result_pixels()
     if args.ball_form:

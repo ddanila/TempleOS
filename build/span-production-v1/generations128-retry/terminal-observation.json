@@ -1,0 +1,6 @@
+{
+  "result": "fail",
+  "stage": "gen1-selfhost",
+  "failure": "QEMU acceptance screendump failed with No space left on device",
+  "stage_reused": "passing gen1-install"
+}
