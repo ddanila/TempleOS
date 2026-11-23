@@ -1,0 +1,6 @@
+{
+  "result": "fail",
+  "native": true,
+  "source_sha256": "756bce70fe94e145e4f3aa077e5575087d9d473e6d051721d2f7e420013945d1",
+  "error": "Titanium still shows the instruction frame"
+}

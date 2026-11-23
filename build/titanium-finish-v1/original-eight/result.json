@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "native": false,
+  "application_sha256": "d1832e5a5f984528d9f87ec19aee4af8927ea23bf2f063e86f67b7fa0a426231",
+  "fixture_sha256": "4e1ea2d45643261bd8ab64c5145cd39b8dc2ae9ff5e6fda6c737743ebf5ca4d3",
+  "scores": [
+    [
+      "FINISH",
+      "1915",
+      "1915"
+    ],
+    [
+      "SAVED",
+      "1915",
+      "1915"
+    ]
+  ]
+}
