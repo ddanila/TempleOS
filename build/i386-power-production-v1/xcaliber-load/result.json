@@ -1,0 +1,28 @@
+{
+  "result": "fail",
+  "command": "#include \"C:/Apps/X-Caliber/Load.HC\"",
+  "package": {
+    "result": "pass",
+    "source_sha256": "705431daaecd284cee7227bc4f26fe56c2a67da55749ecfd22ebdbce7b584413",
+    "image_sha256": "705431daaecd284cee7227bc4f26fe56c2a67da55749ecfd22ebdbce7b584413",
+    "boot_area_sha256": "a8f3611361c0c7c31da95ff7403d5e7416b6af7cd9b5ce211fc8d3bbd37a9806",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1926,
+      "owned_sectors": 96248,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1926,
+      "owned_sectors": 96248,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {},
+    "added_attributes": {},
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "loader_sha256": "1d0bc9e4cc18b58cb1f7880bdc59eadcb01c02dbdbdf3b9de6977529795fdbf2",
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 000000000159C7E8 00000000536B7354\nINPUT LINE #include \"C:/Apps/X-Caliber/Load.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid class at  token CMass file C:/Apps/X-Caliber/X-Caliber.HC.Z line 18\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+}

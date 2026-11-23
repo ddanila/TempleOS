@@ -2343,3 +2343,36 @@ returned bits, including the sign of zero and NaN payloads. See
 and `build/i386-power-wide-reference-v1/native-specials-explicit/result.json`.
 The diagnostic calls the helper directly. Compiler lowering and normal
 application loading remain open.
+
+The resident power candidate passes ten original syntax cases through
+the normal command compiler and 32 original signed and exceptional
+cases through the same path. The public COCCompile differential adds
+an IC_POWER graph and passes all 49 state checks and 46 trace values
+with zero net caller heap allocation. The unchanged bundled
+X-Caliber loader reaches the missing CMass type before compiling
+its power expression. See `build/i386-power-production-v1/native-syntax/result.json`,
+`build/i386-power-production-v1/native-specials/result.json`,
+`build/i386-power-production-v1/public-backend-power/result.json`
+and `build/i386-power-production-v1/xcaliber-load/result.json`.
+
+The resident candidate adds 17,710 bytes to the on-disk CompilerRuntime.
+The unchanged 8 MiB User regression boots but raises OutMem during
+child creation. The candidate remains a diagnostic overlay while
+the allocation regression is open. Its integrated source and test
+changes are in `build/i386-power-production-v1/resident-power.patch`.
+The patch and build input hashes are in
+`build/i386-power-production-v1/candidate.json`. See
+`build/i386-power-production-v1/user8/result.json`.
+
+With the existing diagnostic dependency loaders and the X-Caliber
+source split for compilation, the resident candidate keeps the
+original power expression. The level-one workflow turns, fires,
+returns on Escape and executes fresh arithmetic. See
+`build/i386-power-production-v1/xcaliber-operator-play/result.json`.
+
+A heap census at the same User startup boundary measures a 268,120-byte
+largest primary payload on the passing ToTheFront baseline and 247,640
+bytes on the resident power candidate. The fallback largest payload
+stays at 2,840 bytes. The child needs 267,528 bytes after alignment.
+See `build/i386-power-production-v1/heap-baseline-user8/result.json`
+and `build/i386-power-production-v1/heap-user8/result.json`.

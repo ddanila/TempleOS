@@ -1,0 +1,99 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "705431daaecd284cee7227bc4f26fe56c2a67da55749ecfd22ebdbce7b584413",
+    "image_sha256": "65937b9064f417beec3322d8f638e8638f96668af08849ec95398e6eadc9f965",
+    "boot_area_sha256": "a8f3611361c0c7c31da95ff7403d5e7416b6af7cd9b5ce211fc8d3bbd37a9806",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1926,
+      "owned_sectors": 96248,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1941,
+      "owned_sectors": 96365,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Apps/X-Caliber/Probe0.HC": "fc15da8a00bdea3a5503876ad678d53665d559f1c00df207cad0b1854d98843e",
+      "/Apps/X-Caliber/Probe1.HC": "5ed8cffffb1dcf6b1eeafa24ea9f785f58bea9e01c48dddd80c5aeb717d19892",
+      "/Apps/X-Caliber/Probe10.HC": "b2ee07cad988b0401cb25697b276bd9277074e27ad7362cf63570160a5a980c5",
+      "/Apps/X-Caliber/Probe2.HC": "99df131df1bb4853f75f616f3c67a6935ebd9fc6b3873dcb75ffa344831991b9",
+      "/Apps/X-Caliber/Probe3.HC": "ca119ec2666bcbdf726367dab4a401143d339c1f943f1e315e8de299e6c396a1",
+      "/Apps/X-Caliber/Probe4.HC": "fdab867a576e9f22bc5cd287d1bd46c2db312ef061052dfa8bdff868ccf54d1c",
+      "/Apps/X-Caliber/Probe5.HC": "1778cfb90e834a6df6d30f2e9c3a6a3ddf326086a6f089b0d511b9a6fa61d2d9",
+      "/Apps/X-Caliber/Probe6.HC": "b98544f4ec25f28ae4217fe1856dfb506345faaa3ff3ed9f72af4deff70e06ad",
+      "/Apps/X-Caliber/Probe7.HC": "f994014802e3c9eebc4b7f677b2c67b50528dc6561b1bfa38157cb21c52f48e8",
+      "/Apps/X-Caliber/Probe8.HC": "704cbcf549beb6d645a474e7f5faf01ff5da716985b193c943038ec4074105b7",
+      "/Apps/X-Caliber/Probe9.HC": "2c040be3c7ac7b9bfdd21f786afbdb762b01013edb76ef6e07469886984811c6",
+      "/ExtraVectors.HC": "0d4eac4c4156f9daf4e9236950f4fe0b4610aca2548a8335f42c6a4d8c0731d6",
+      "/PublicGeometrySource.HC": "c335b16c5bbcb6c6d122beae9c646d983e29b89240f4429f9856006dc1d5961e",
+      "/XCFrequency.HC": "37805d8791aba5e6f22b9621cadf8d94c7b841fbf5bb7ff467ec4e9fc9484666",
+      "/XCProbe.HC": "02c9c5d8f6ffaf58e60a6df80ba8346281dab6d76224d64d3a2b5281ba3837ef"
+    },
+    "added_attributes": {
+      "/Apps/X-Caliber/Probe0.HC": 2048,
+      "/Apps/X-Caliber/Probe1.HC": 2048,
+      "/Apps/X-Caliber/Probe10.HC": 2048,
+      "/Apps/X-Caliber/Probe2.HC": 2048,
+      "/Apps/X-Caliber/Probe3.HC": 2048,
+      "/Apps/X-Caliber/Probe4.HC": 2048,
+      "/Apps/X-Caliber/Probe5.HC": 2048,
+      "/Apps/X-Caliber/Probe6.HC": 2048,
+      "/Apps/X-Caliber/Probe7.HC": 2048,
+      "/Apps/X-Caliber/Probe8.HC": 2048,
+      "/Apps/X-Caliber/Probe9.HC": 2048,
+      "/ExtraVectors.HC": 2048,
+      "/PublicGeometrySource.HC": 2048,
+      "/XCFrequency.HC": 2048,
+      "/XCProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "machine": "pc",
+  "completed_commands": [
+    "#include \"C:/PublicGeometrySource.HC\"",
+    "AdamFile(\"/Kernel/I386/NativeODE.HC\",FALSE);",
+    "#include \"C:/ExtraVectors.HC\"",
+    "#include \"C:/XCFrequency.HC\"",
+    "Cd(\"C:/Apps/X-Caliber\");",
+    "#include \"C:/Apps/X-Caliber/XCCtrls.HC\"",
+    "#include \"C:/Apps/X-Caliber/Probe0.HC\"",
+    "#include \"C:/Apps/X-Caliber/Probe1.HC\"",
+    "#include \"C:/Apps/X-Caliber/Probe2.HC\"",
+    "#include \"C:/Apps/X-Caliber/Probe3.HC\"",
+    "#include \"C:/Apps/X-Caliber/Probe4.HC\"",
+    "#include \"C:/Apps/X-Caliber/Probe5.HC\"",
+    "#include \"C:/Apps/X-Caliber/Probe6.HC\"",
+    "#include \"C:/Apps/X-Caliber/Probe7.HC\"",
+    "#include \"C:/Apps/X-Caliber/Probe8.HC\"",
+    "#include \"C:/Apps/X-Caliber/Probe9.HC\"",
+    "AdamFile(\"/Adam/AutoComplete/MakeAC.HC\",FALSE);",
+    "AdamFile(\"/Adam/TaskSettings.HC\",FALSE);",
+    "#include \"/Kernel/SerialDev/KeyCharPollCore.HC\"",
+    "#include \"C:/Apps/X-Caliber/Probe10.HC\""
+  ],
+  "command": "#include \"C:/Apps/X-Caliber/Probe10.HC\"",
+  "play": {
+    "fixture_sha256": "02c9c5d8f6ffaf58e60a6df80ba8346281dab6d76224d64d3a2b5281ba3837ef",
+    "level": 1,
+    "enemies": 4,
+    "score": 0,
+    "gun_fired": true,
+    "result": "pass",
+    "returned": true
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

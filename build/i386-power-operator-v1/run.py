@@ -30,6 +30,7 @@ parser.add_argument('--trace-reduction', action='store_true')
 corpus = parser.add_mutually_exclusive_group()
 corpus.add_argument('--edges', action='store_true')
 corpus.add_argument('--specials', action='store_true')
+corpus.add_argument('--syntax', action='store_true')
 parser.add_argument('--reference', type=Path)
 parser.add_argument('--reduction-candidate', action='store_true')
 parser.add_argument('--disk', type=Path)
@@ -39,13 +40,16 @@ if args.wide_power and (not args.disk or args.reduction_candidate or args.replay
     parser.error('--wide-power requires --disk and runs its own candidate')
 if args.wide_reduction and not args.reduction_candidate:
     parser.error('--wide-reduction requires --reduction-candidate')
-if args.reference and (not args.disk or not args.specials):
-    parser.error('--reference requires --disk and --specials')
-if args.specials and args.disk and not args.reference:
-    parser.error('Native --specials requires the original --reference receipt')
-if args.replay_reduction and (not args.reduction_candidate or args.edges or args.specials):
+external_reference = args.specials or args.syntax
+if args.reference and (not args.disk or not external_reference):
+    parser.error('--reference requires --disk and either --specials or --syntax')
+if external_reference and args.disk and not args.reference:
+    parser.error('Native --specials and --syntax require the original --reference receipt')
+if args.syntax and (args.reduction_candidate or args.wide_power):
+    parser.error('--syntax requires the original operator')
+if args.replay_reduction and (not args.reduction_candidate or args.edges or external_reference):
     parser.error('--replay-reduction requires the four-case native candidate')
-if args.trace_reduction and (args.disk or args.edges or args.specials):
+if args.trace_reduction and (args.disk or args.edges or external_reference):
     parser.error('--trace-reduction requires the four-case original workflow')
 if args.reduction_candidate and not args.disk:
     parser.error('--reduction-candidate requires --disk')
@@ -54,14 +58,16 @@ if args.edges:
     name = 'Edges.HC'
 if args.specials:
     name = 'Specials.HC'
+if args.syntax:
+    name = 'Syntax.HC'
 probe = Path(__file__).with_name(name).read_bytes()
 reference_probe = probe
 reference_fixture_sha256 = hashlib.sha256(reference_probe).hexdigest()
 expected = EXPECTED_EDGES if args.edges else EXPECTED
 count = len(expected)
-if args.specials:
+if external_reference:
     expected = None
-    count = reference_probe.count(b'=PowerDynamic(')
+    count = len(re.findall(rb'^  v\[\d+\]=', reference_probe, re.M))
 reference_sha256 = None
 if args.reference:
     reference_bytes = args.reference.read_bytes()
@@ -70,7 +76,7 @@ if args.reference:
             reference['reference_fixture_sha256'] != reference_fixture_sha256 or
             len(reference['values']) != count or
             any(not re.fullmatch(r'[0-9A-F]{16}', value) for value in reference['values'])):
-        raise ValueError('Wrong original specials source')
+        raise ValueError('Wrong original corpus source')
     expected = reference['values']
     reference_sha256 = hashlib.sha256(reference_bytes).hexdigest()
 out = args.out.resolve()

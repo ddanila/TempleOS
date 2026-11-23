@@ -5053,7 +5053,147 @@
         "-o",
         "build/i386-power-production-v1/original-syntax/original.iso"
       ]
+    },
+    {
+      "original": "build/i386-power-production-v1/native-syntax/working.img",
+      "archive": "build/i386-power-production-v1/native-syntax/working.img.zst",
+      "sha256": "b98fbea0947aacd97d91835051342295fd4c871860e949d592de76fc216f2f9f",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/native-syntax/working.img.zst",
+        "-o",
+        "build/i386-power-production-v1/native-syntax/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/native-specials/working.img",
+      "archive": "build/i386-power-production-v1/native-specials/working.img.zst",
+      "sha256": "66bf82dabe4b79b3c85c1084ebe88bd062b3159e1300f933e82100278ebc1a95",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/native-specials/working.img.zst",
+        "-o",
+        "build/i386-power-production-v1/native-specials/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/xcaliber-load/working.img",
+      "archive": "build/i386-power-production-v1/xcaliber-load/working.img.zst",
+      "sha256": "231faa4344295bfc7de57ff6db9e8159618eb491098d0c34600906f09e02e50d",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/xcaliber-load/working.img.zst",
+        "-o",
+        "build/i386-power-production-v1/xcaliber-load/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/public-backend/working.img",
+      "archive": "build/i386-power-production-v1/public-backend/working.img.zst",
+      "sha256": "01282fbb76fc7d90a76b4713944f3a84cd3ec0cf7a35c1cb90826aa3db2c6691",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/public-backend/working.img.zst",
+        "-o",
+        "build/i386-power-production-v1/public-backend/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/public-backend-power-original/original.iso",
+      "archive": "build/i386-power-production-v1/public-backend-power-original/original.iso.zst",
+      "sha256": "6adc7ade2f9d490a57076cac11da33c1701368b4481a6dfbe47930e65d516439",
+      "size": 46172160,
+      "reclaimed_bytes": 33247232,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/public-backend-power-original/original.iso.zst",
+        "-o",
+        "build/i386-power-production-v1/public-backend-power-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/user8/working.img",
+      "archive": "build/i386-power-production-v1/user8/working.img.zst",
+      "sha256": "4da94f2b29bc74a5c56d92ae99167b667c8e8f042019c82fe67cdf5ede0e187f",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/user8/working.img.zst",
+        "-o",
+        "build/i386-power-production-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/public-backend-power/working.img",
+      "archive": "build/i386-power-production-v1/public-backend-power/working.img.zst",
+      "sha256": "d3a9ed54087e5869ffbd66c643545a95348bc1c884511d2a92574886d161504f",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/public-backend-power/working.img.zst",
+        "-o",
+        "build/i386-power-production-v1/public-backend-power/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/heap-baseline-user8/working.img",
+      "archive": "build/i386-power-production-v1/heap-baseline-user8/working.img.zst",
+      "sha256": "2f95fc3c2418f13e9b9824056c231d365c652f804dfc0fd2184101b380e482ce",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/heap-baseline-user8/working.img.zst",
+        "-o",
+        "build/i386-power-production-v1/heap-baseline-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/heap-user8/working.img",
+      "archive": "build/i386-power-production-v1/heap-user8/working.img.zst",
+      "sha256": "4da94f2b29bc74a5c56d92ae99167b667c8e8f042019c82fe67cdf5ede0e187f",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/heap-user8/working.img.zst",
+        "-o",
+        "build/i386-power-production-v1/heap-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/xcaliber-operator-play/working.img",
+      "archive": "build/i386-power-production-v1/xcaliber-operator-play/working.img.zst",
+      "sha256": "4b733933c36a41f5ce43ce17b193ae0944c24640ae8b1450dcc84430dbd3b66e",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/xcaliber-operator-play/working.img.zst",
+        "-o",
+        "build/i386-power-production-v1/xcaliber-operator-play/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 17909719040
+  "reclaimed_bytes": 18423590912
 }

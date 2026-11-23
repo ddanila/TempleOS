@@ -6,6 +6,16 @@ import subprocess
 manifest = Path(__file__).with_name('manifest.json')
 rows = json.loads(manifest.read_text())['files'] if manifest.exists() else []
 runs = [
+    'i386-power-production-v1/heap-baseline-user8',
+    'i386-power-production-v1/heap-user8',
+    'i386-power-production-v1/native-syntax',
+    'i386-power-production-v1/native-specials',
+    'i386-power-production-v1/xcaliber-load',
+    'i386-power-production-v1/public-backend',
+    'i386-power-production-v1/public-backend-power-original',
+    'i386-power-production-v1/public-backend-power',
+    'i386-power-production-v1/user8',
+    'i386-power-production-v1/xcaliber-operator-play',
     'user-legacy-native-v3',
     'user-legacy-native-v2',
     'user-legacy-native-v1',

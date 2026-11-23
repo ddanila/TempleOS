@@ -1,0 +1,18 @@
+{
+  "patch_sha256": "8993d27da1e08244cbd6fcdd0099b7214d4c9487957399561617b0257be9dc9a",
+  "disk_sha256": "705431daaecd284cee7227bc4f26fe56c2a67da55749ecfd22ebdbce7b584413",
+  "source_sha256": {
+    "Compiler/I386/BackendCore.HC": "3fd9496624193dd41e6f688cdaa525ef7582b1f9750072cfc709696a2d1ee599",
+    "Compiler/I386/Frontend.HC": "a30b8e7d2fdf2987b7cf82e79a44d28b49ee179770e53cb607e7917102f1d83b",
+    "Compiler/I386/PublicBackendCore.HC": "0f4b002967d5202740fa4de21a9a1601a0850fae2c28712117b6cbd586f7303d",
+    "Compiler/I386/PublicBackendSupport.HC": "d0e546ed7c79d4c589a96c00bc4fe7ebb4483340ce8fbd51a0db1e86944c1d0a",
+    "Kernel/I386/FloatMath.HC": "3b0ad4ef8bb2841c4e5036de2f974949caf7f59531fd3dfb708dc4d04677a377",
+    "Kernel/I386/FloatPower.HC": "112fb31ce69b02546c4ffd37904abd3616161dde9f86a9233b46bd772b3640af",
+    "Kernel/I386/MathPublic.HC": "6e8b8482dbb10e85bb889715521d6ac7d8542934585cff5a65613e88f1d3e724",
+    "tests/guest/i386-public-backend/Contract.HC": "9d54fbf3eca1a8022770012a4b6039569f42c03312198f56bee5d6d7642a4552",
+    "tools/test-i386-public-backend.py": "38b69faa24d6ad9b5d4b2b1a3c0e8b7c3cc63aa25b76861a242a16aad0f0df3a"
+  },
+  "original_bootstrap": "pass",
+  "boot_instruction_audit": "pass",
+  "verified_disk_files": 1926
+}
