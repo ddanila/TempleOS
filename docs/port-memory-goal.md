@@ -2906,3 +2906,11 @@ passed all nine persisted module audits at 128 MiB on `486,-fpu`.
 The guest loaded the build provider once. Installation and the 8 MiB
 User test are underway on that same source disk. This is the WidePi
 baseline before the 64-slot debug cache change.
+
+All nine WidePi providers installed byte for byte. The fresh 8 MiB boot
+passed arithmetic and document allocation. The separate User workload
+reached `USCheck` and failed with OutMem for the 267,527-byte task
+allocation. See the [install receipt](../build/i386-wide-pi-production-v3/retained128-install/result.json)
+and [User startup receipt](../build/i386-wide-pi-production-v3/retained128-user8/result.json).
+A pre-User heap capture is running to measure this baseline's contiguous
+space before the cache reduction.
