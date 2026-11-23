@@ -1480,3 +1480,17 @@ automatic simulation, and Escape cleanup at 64 MiB. The independent
 Run.HC check matches the instruction pixels and returns to fresh
 console arithmetic. The 128 MiB retained rebuild is in progress.
 See `build/native-ode-production-v1/qualification.json`.
+
+The production Strut entry now has its own inventory workflow and
+the paired Load.HC workflow is qualified. The scope is the observed
+edit, play, exit, and continuation sequence.
+
+Native Span passes that application's independent physical workflow
+on the production ODE image with a cold loader overlay. The first
+guest command includes Span's Load.HC. Mouse input dismisses the
+instructions and adds a mass to the 15-mass bridge. Space starts and
+stops simulation, the ODE clock stays fixed while stopped, and
+Shift+Escape restores the caller and returns to fresh arithmetic.
+The soundtrack adapter is present in the image. A paired recording
+test is running to measure its output. See
+`build/span-native-cold-v1/native64/result.json`.

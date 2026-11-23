@@ -1,0 +1,49 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "607c4381ba559907374f1fb309e90808f65845023f93124b32a038cf69e0bf9f",
+    "image_sha256": "378d03b0d8a1f70c379de611a9c7afe5516bff5a1276da99c1aa6d85b24174c6",
+    "boot_area_sha256": "55f682a4cfeef1507074120ad9d51dd7df5787f062288c5d23a9e800600d5d53",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1908,
+      "owned_sectors": 96182,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1910,
+      "owned_sectors": 96194,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Kernel/I386/NativeSpanServices.HC": "8733e6a04aa12302146af76dd64b86d6ad6db18778c12985d95dedcab6cc7f6e",
+      "/SpanProbe.HC": "8b3aeb0be8b3bc50992b00c224704f75d355ce1d6b0420603ea23d6bee9dd00c"
+    },
+    "added_attributes": {
+      "/Kernel/I386/NativeSpanServices.HC": 2048,
+      "/SpanProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "command": "#include \"C:/SpanProbe.HC\"",
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "observations": [
+    "SPAN instructions 14B04C8",
+    "SPAN editor 14B04C8 initial masses 15",
+    "SPAN placed mass",
+    "SPAN simulation advanced",
+    "SPAN stopped",
+    "SPAN returned"
+  ]
+}

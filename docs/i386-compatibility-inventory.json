@@ -11126,6 +11126,12 @@
           "result": "pass",
           "evidence": "build/span-file-interchange-v1/native64-roundtrip/result.json",
           "scope": "The native overlay opens and rewrites the original 312-byte file exactly. The pinned original preserves a native-generated file in the reverse direction. Interactive native play remains open."
+        },
+        {
+          "target": "native-span-cold-interactive-candidate",
+          "result": "pass",
+          "evidence": "build/span-native-cold-v1/native64/result.json",
+          "scope": "Cold patched Load.HC, physical popup dismissal and mass placement in the 15-mass bridge, automatic simulation, pause, Shift+Escape cleanup, and fresh arithmetic. The chooser, music and loader changes are in an overlay."
         }
       ]
     },
@@ -11247,7 +11253,7 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Load through the original Load.HC entry point, dismiss instructions, place two masses, switch to spring mode and drag between their current screen positions. Start play, observe advancing simulation time, and exit with Escape.",
       "oracle": {
         "tool": "build/strut-projected-drag-v1/run.py",
@@ -11322,9 +11328,21 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Run the bundled entry point, dismiss the instructions, enter the ship editor, and exit with Escape. The Load.HC entry records the paired physical edit and play workflow.",
+      "oracle": {
+        "tool": "build/native-strut-run-entry-v1/run.py",
+        "checks": [
+          "Cold direct Run.HC include renders the checked instruction pixels",
+          "The instruction key enters the editor and Escape returns to fresh console arithmetic"
+        ]
+      },
+      "tests": [
+        {
+          "target": "native-strut-production-run-entry",
+          "result": "pass",
+          "evidence": "build/native-ode-production-v1/strut-run64/result.json"
+        }
+      ]
     },
     {
       "path": "Apps/Strut/Strut.HC",
