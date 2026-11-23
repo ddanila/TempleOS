@@ -2885,3 +2885,11 @@ pre-User heap capture. The disk SHA-256 is
 This failure applies to the mixed-revision image. The same-revision
 nine-module install and separate console-only install are queued behind
 the active native console build.
+
+The mixed image's installed CompilerRuntime lacks `I386F64PiMulDiv`.
+An export-table comparison against the current cross image singled out
+CompilerRuntime among the eight replaced modules. The current kernel
+looks up `I386F64PiMulDiv` while assembling the console bindings, before
+it loads ConsoleRuntime. `KernelBinding` halts when that lookup fails,
+which explains the last run-level marker and the absence of a console
+loader diagnostic. The mixed image cannot serve as a memory baseline.
