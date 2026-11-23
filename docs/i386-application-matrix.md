@@ -1158,3 +1158,19 @@ The production image passes repeated menu selection and cancellation,
 Vocabulary definition dismissal and keyboard-only exit, and the immediate
 Psalmody note-vector comparison. The 8 MiB User smoke test passes in
 50.72 seconds. See `build/native-focus-menu-psalmody-production-v1`.
+
+WordSearch now uses I64 slots for the original QSortI64 comparator, preserving
+pointer values across i386 and x64. A controlled 20-by-20 grid collects words
+in all eight directions. The original and ported native run match all 3,200
+logical strings and the complete zero-padded export. The unchanged native
+pointer-width variant corrupts the sort output. Fresh arithmetic follows the
+ported run. See `build/wordsearch-sort-v1` and
+`build/wordsearch-sort-zeroed-v1`. The dictionary-backed full demo workflow
+remains open.
+
+The Strut ODE failure isolates to ODERK5OneStep after compiling the previous
+23 units. Replacing four positive-base backtick powers with Exp and Ln in a
+scratch single-CPU ODE variant lets the whole library compile. Strut then
+reaches its missing CCtrlBttnState dependency. The original button library
+is under test. See `build/strut-ode-compile-units-v1` and
+`build/strut-ode-power-v1`.

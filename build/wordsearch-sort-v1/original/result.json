@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/wordsearch-sort-v1/Probe.HC": "9a37bab199865708281c288e4e088cea204f01884c130a0bf3bf234748f61991",
+    "Demo/WordSearch.HC": "d0ae8e768eb2d6438105a02cfe603ec7793211dff89c12df32fc6859fc8dc8cc",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/wordsearch-sort-v1/run.py": "fa6c9c940ab3a499132b69d7fa580c2d03a1789412098c6274afc64cf81f2d2a"
+  },
+  "port": false,
+  "scope": "Bundled WordSearch eight-direction collection and fixed-width pointer sort",
+  "words": 3200,
+  "word_sha256": "fded27647fe5a5f08800c546e81004757c58fb2a3305542182a6e9dafe410d66",
+  "inputs_unchanged": true
+}

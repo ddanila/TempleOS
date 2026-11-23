@@ -1,0 +1,52 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/wordsearch-sort-zeroed-v1/Probe.HC": "76193f2bd15d12067f838bf8b5e305e5703fe73bf4bd25b71bd7d1e499b5bc7d",
+    "Demo/WordSearch.HC": "d0ae8e768eb2d6438105a02cfe603ec7793211dff89c12df32fc6859fc8dc8cc",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/wordsearch-sort-zeroed-v1/run.py": "fa6c9c940ab3a499132b69d7fa580c2d03a1789412098c6274afc64cf81f2d2a",
+    "build/native-focus-menu-psalmody-production-v1/full/kernel.img": "1fd1c1b93a04069a4300aa18caf2637aa23c2f804ac5c897fc849618735dfa9b"
+  },
+  "port": true,
+  "scope": "Bundled WordSearch eight-direction collection and fixed-width pointer sort",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "1fd1c1b93a04069a4300aa18caf2637aa23c2f804ac5c897fc849618735dfa9b",
+    "image_sha256": "e8187f203aa4552a2a4f07ee9f14346870d665bb9edf3a476bcef75d79fbec74",
+    "boot_area_sha256": "750bddaf6f6c18c23866a7bccf217fa8ddb7f82ff37778ff16ec940b8a83163f",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96163,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1905,
+      "owned_sectors": 96170,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/WordSearchProbe.HC": "da5a7eb471fb79afc05615720caad3a88ac348b5941021d5e672119ccf154f88"
+    },
+    "added_attributes": {
+      "/WordSearchProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "words": 3200,
+  "word_sha256": "fded27647fe5a5f08800c546e81004757c58fb2a3305542182a6e9dafe410d66",
+  "fresh_result": {
+    "column": 0,
+    "row": 14,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

@@ -71,7 +71,7 @@ U0 SimpleWordSearch()
 
 //************************************
 U8 words[ROWS_NUM*COLS_NUM*8][DIM_MAX+1];
-U8 *word_ptrs[ROWS_NUM*COLS_NUM*8];
+I64 word_ptrs[ROWS_NUM*COLS_NUM*8];
 
 U0 CollectWords(I64 dx,I64 dy,I64 *_n)
 {
@@ -79,7 +79,7 @@ U0 CollectWords(I64 dx,I64 dy,I64 *_n)
   for (y=0;y<ROWS_NUM;y++)
     for (x=0;x<COLS_NUM;x++) {
       GetWord(&words[n],x,y,dx,dy);
-      word_ptrs[n]=&words[n];
+      word_ptrs[n]=(&words[n])(I64);
       n++;
     }
   *_n=n;
@@ -102,7 +102,7 @@ U0 DisplayWords(I64 n)
   U8 *w1,*w2,*dict=acd.word_lst;
   for (i=0;i<n;i++)
     while (*dict) {
-      w1=word_ptrs[i];
+      w1=word_ptrs[i](U8 *);
       w2=dict+1;
       while (*w2 && *w1==ToUpper(*w2)) {
 	w1++;
@@ -113,7 +113,7 @@ U0 DisplayWords(I64 n)
       if (!*w2) {
 	if (StrLen(dict+1)>2) {
 	  k=i;
-	  while (k<n && !StrNICmp(word_ptrs[k++],dict+1,StrLen(dict+1)))
+	  while (k<n && !StrNICmp(word_ptrs[k++](U8 *),dict+1,StrLen(dict+1)))
 	    "%s ",dict+1;
 	}
 	w2=dict+1;

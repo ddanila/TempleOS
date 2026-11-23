@@ -18448,11 +18448,32 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
+      "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Collect strings from a 20-by-20 grid in eight directions and sort them before dictionary lookup."
+      },
+      "oracle": {
+        "tool": "build/wordsearch-sort-zeroed-v1/run.py",
+        "checks": [
+          "All 3,200 sorted strings match independent grid traversal",
+          "Native continuation arithmetic"
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-wordsearch-grid-sort",
+          "result": "pass",
+          "evidence": "build/wordsearch-sort-v1/original/result.json"
+        },
+        {
+          "target": "native-wordsearch-i64-slots",
+          "result": "pass",
+          "evidence": "build/wordsearch-sort-zeroed-v1/native64/result.json",
+          "scope": "Fixed-width pointer sort and native continuation. Full dictionary-backed demo remains open."
+        }
+      ]
     },
     {
       "path": "Doc/AboutTempleOS.DD",
