@@ -1,0 +1,61 @@
+{
+  "result": "pass",
+  "scope": "Two native rebuild/install/boot generations and artifact audits only; full desktop/application compatibility suite and C1-C5 qualification are separate gates.",
+  "run_result_sha256": "a94c47906cac2e2e6263d974afc351419a07afef6175e541f56e0b97d8ade1d7",
+  "stage_result_sha256": {
+    "input-source-audit": "76cf0dab9ae9ad9606ab1b2eadc052581d240d8629be40bfa10057f7ba26c188",
+    "gen1-install": "d14a805fbcd3dc294467e6b6068608581cf0c41843e5ba6721fef986cfbbb540",
+    "gen1-selfhost": "a81b0c52fd2c6d5c3d49057209ff01553fe30f0c57b98510c43a8666285b1716",
+    "gen1-audit": "608b0f28d11019187bbc65faaf09d45a870067c098d0026db60244a58c3b4767",
+    "gen1-source-audit": "b5160bfa36f0587efa994c3b2e7ea933bd3bd07b089d7f84fd316ae93262962b",
+    "gen2-retained-build": "1d0ddbef82aee7437568716af5c15940e2d8c663f19fa996103f67d1a96923df",
+    "gen2-install": "e560d968e3e9c3f26cdb0374e2f312b3dbf18c7cf0c0140ed2e7bbcfab98b5c9",
+    "gen2-selfhost": "e34b5d479de12c2d6542d4c9f519434f521291dcd61ca134b005410b47bf2f7a",
+    "gen2-audit": "08b5492fa83d7c5514c64ea7ad75bc62a709dc8cf26ae6659c60975ac3892ae6",
+    "gen2-source-audit": "cea7e56ef0d901259681cafe09a5c74a57d1f1d09c4100e31c1c9ec468c80f45",
+    "generation-identity": "1c36acbb061eb274a89485a8b8f220340dc39f1add1f5a5672e73db63bdabd68"
+  },
+  "generations": {
+    "1": {
+      "boot_seconds": 60.17059911301476,
+      "disk_sha256": "d794b7b0c39498cdb2d4f00c428587c94fa2179bc489400939b52ac1e36ebe3e",
+      "flat_sha256": "8a72236c970cda9fbf997e44a42181843051b1d4e67f10abf5ce3204461b6a43",
+      "source_identity_sha256": "9b33d55ea947e257911b075b48ae610fd1d2193ae4e69eca21bca1e8cc3f8e0a",
+      "source_files": 1531
+    },
+    "2": {
+      "boot_seconds": 60.26681582099991,
+      "disk_sha256": "16ad3b5c39dcf4e5764ca9526343d5c15e996f6f9e18cd6b347d27903ff5cf81",
+      "flat_sha256": "c70e73bb8e66da45dd40bb180674f4c1783b6d689cc515238ad38d8aab5e868d",
+      "source_identity_sha256": "9b33d55ea947e257911b075b48ae610fd1d2193ae4e69eca21bca1e8cc3f8e0a",
+      "source_files": 1531
+    }
+  },
+  "reproducibility": {
+    "result": "pass",
+    "module_count": 16,
+    "flat_bytes": 466936,
+    "flat_sha256": "8a72236c970cda9fbf997e44a42181843051b1d4e67f10abf5ce3204461b6a43",
+    "boot_area_sha256": "41b8c8630b66460c2cefda0b240a8ea861ee50e6decf3ebfec5e2e2de6683325",
+    "first_volume": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 98067,
+      "bitmap": "matches reachable extents"
+    },
+    "second_volume": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 98067,
+      "bitmap": "matches reachable extents"
+    },
+    "first_disk_sha256": "d794b7b0c39498cdb2d4f00c428587c94fa2179bc489400939b52ac1e36ebe3e",
+    "second_disk_sha256": "16ad3b5c39dcf4e5764ca9526343d5c15e996f6f9e18cd6b347d27903ff5cf81",
+    "comparison_scope": "All artifact bytes except exported eight-byte Kernel date; each actual boot payload/checksum/padding verified independently",
+    "kernel_build_dates": [
+      3179595722772146,
+      3179595946319228
+    ],
+    "normalized_flat_sha256": "bb8653974d59b81f7feb83ae3fd54ba53fa0721962bc3376a37adce34c9c75f0"
+  }
+}

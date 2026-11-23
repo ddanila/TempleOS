@@ -2671,3 +2671,18 @@ interactive raster checkpoints pass. Startup measured 60.61 seconds, above the
 separate 60-second budget. The receipts are in
 `build/resident-opt-c5-generations128/gen2-install`. The second self-hosted
 flat-kernel build is running.
+
+The two-generation rebuild, install, boot and artifact pipeline now passes
+all eleven stages on the pinned production sources. The second self-hosted
+image passes its 8 MiB interactive checks in 60.27 seconds. Both source
+audits match all 1,531 delivered files. The reproducibility comparison
+covers the boot area and all sixteen audited modules. The only
+normalization is the eight-byte exported kernel build date. Each actual
+boot image passes its own payload, checksum, and padding audit.
+The summary and stage hashes are in
+`build/resident-opt-c5-generations128/two-generation-receipt.json`.
+
+The first and second self-hosted startup measurements remain above the
+separate 60-second budget. Configured desktop verification is running on
+both installed images. Complete desktop and application coverage and C1–C5
+release qualification remain open.
