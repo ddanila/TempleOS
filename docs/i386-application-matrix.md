@@ -2025,3 +2025,12 @@ guest exits to fresh arithmetic under default KVM. The shared
 fixture also reproduces the earlier original overrun result.
 See `build/tothefront-original-v1/close-assault-original/result.json`
 and `build/sound-delay-production-v1/close-assault64/result.json`.
+
+The fixed-seed map comparison exports the offscreen terrain raster
+when the first Human artillery phase is published. All 296,960 bytes
+match the pinned original on the native production image. The terrain,
+river and road arrays also match across all 874 hexes. The composed
+screenshots still differ, including pixels below the original system
+status line. Time-dependent overlays and full framebuffer parity remain
+open. See `build/sound-delay-production-v1/map64/comparison.json` and
+`build/tothefront-original-v1/compare_map.py`.

@@ -3,11 +3,13 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import re
 import subprocess
 import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--disk', type=Path)
+parser.add_argument('--map-raster', action='store_true')
 parser.add_argument('--move', action='store_true')
 occupation = parser.add_mutually_exclusive_group()
 occupation.add_argument('--overrun', action='store_true')
@@ -35,6 +37,10 @@ out = args.out.resolve()
 out.mkdir()
 root = Path(__file__).resolve().parent
 fixture = (root/'Phases.HC').read_bytes()
+if args.map_raster:
+    declaration = b'U0 TTFPhaseWatch('
+    fixture = fixture.replace(declaration, (root/'MapRaster.HC').read_bytes() + b'\n' + declaration)
+    fixture = fixture.replace(b'      old_turn=turn;', b'      if (old_turn<0) TTFExportMap;\n      old_turn=turn;')
 if args.move:
     declaration = b'U0 TTFPhaseWatch('
     fixture = fixture.replace(declaration, (root/'Movement.HC').read_bytes() + b'\n' + declaration)
@@ -102,6 +108,21 @@ try:
     if args.disk:
         guest.command('6*7;')
         report['after_match'] = guest.result_pixels()
+    if args.map_raster:
+        log = guest.wait('TTF map exported\n', 10)
+        dimensions = re.search(r'^TTF map size ((?:\d+ ){4}\d+)$', log, re.M)
+        if dimensions is None:
+            raise ValueError('Missing map dimensions')
+        width, height, stride, rows, columns = map(int, dimensions[1].split())
+        sizes = {'map-pixels': stride * height, 'terrain': rows * columns,
+                 'roads': rows * columns, 'rivers': rows * columns}
+        report['map'] = {'width': width, 'height': height, 'stride': stride,
+                         'rows': rows, 'columns': columns}
+        for name, size in sizes.items():
+            data = (guest.out / f'{name}.bin').read_bytes()
+            if len(data) != size:
+                raise ValueError(f'Unexpected {name} byte count')
+            report['map'][name] = hashlib.sha256(data).hexdigest()
     report['result'] = 'pass'
 except Exception as error:
     report.update(result='fail', error=str(error)[:3000])

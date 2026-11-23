@@ -12137,6 +12137,13 @@
           "result": "pass",
           "evidence": "build/sound-delay-production-v1/close-assault64/result.json",
           "scope": "Physical infantry drag attacks a staged armored defender. The attacker occupies row 32, column 1 at full life and zero movement. The defender dies."
+        },
+        {
+          "target": "tothefront-differential-map-raster",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --map-raster [--disk DISK] --out OUT; python3 build/tothefront-original-v1/compare_map.py ORIGINAL_OUT NATIVE_OUT",
+          "result": "pass",
+          "evidence": "build/sound-delay-production-v1/map64/comparison.json",
+          "scope": "Fixed-seed 640 by 464 offscreen map raster and 46 by 19 terrain, river and road arrays match byte-for-byte."
         }
       ]
     },
