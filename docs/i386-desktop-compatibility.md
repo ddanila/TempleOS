@@ -442,3 +442,11 @@ startup oracle at 8 MiB with managed pointer checks and unchanged inputs.
 This run uses the production terminal path. The original User prototype
 still has a separate 8 MiB task allocation failure. The passing receipt
 is in `build/ac-dictionary-direct-copy/production-user8/result.json`.
+
+The configured desktop test on the direct-copy dictionary image passes at
+64 MiB. It selects Home Once, matches all 83 geometry values, accepts fresh
+input and checks bootstrap retirement in the physical heap. The measured
+startup was 201.92 seconds, compared with 287.13 seconds on the prior resident
+optimizer image. The observed difference of 85.20 seconds comes from one
+wall-clock run per image and does not establish a repeatable speedup.
+The full receipt is in `build/ac-dictionary-direct-copy/desktop64/result.json`.
