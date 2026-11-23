@@ -1,0 +1,13 @@
+{
+  "user8": "fail",
+  "reserve_bytes": 32768,
+  "request": 267527,
+  "fallback_largest_free": 496,
+  "fallback_allocations": 12,
+  "sha256": {
+    "result.json": "89a134555c837cca63239a77235d028a5af61b3c88366d0f13f74e8792862084",
+    "packaging.json": "c83bd2f6d8bc00c0862b25afc58b0de6998b5263ea3cedd07905020ef429a192",
+    "user8/result.json": "75e9930be36ec2f6148d25285be1bf36a766ac8280b5f1a90d9a5ec124d05161",
+    "user8/qemu/debug.log": "504494042875c6e3beee559f55e0a1b3ba10de45949d896f0a30a35cf481ecd2"
+  }
+}

@@ -383,3 +383,11 @@ Native startup completes at 8 MiB and USCheck still fails the 267,527-byte
 task request. The fallback largest free payload is 2,696 bytes. The
 experimental reserve and pinned evidence are under
 `build/compiler-backing-reserve-v1`.
+
+Reducing the initial reserve to 32 KiB also passes the cross-build and image
+audit and completes native startup at 8 MiB. USCheck still fails the same
+267,527-byte task request. The fallback then contains twelve allocations
+and its largest free payload is 496 bytes, versus eight allocations and
+2,840 bytes at 128 KiB. Varying the reserve alone has failed over both
+tested directions. The unapplied experiment and pinned receipts are under
+`build/compiler-backing-reserve-v2`.
