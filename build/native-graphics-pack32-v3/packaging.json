@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "source_sha256": "63ff6673074edad8d5b90ca401f71c0b0b9572b137acc184b31f4da3b22ae9bb",
+  "image_sha256": "adc0a39b16c67a8d0e6bbc95e6395021882b9bcca023209d665e0e6e00243aca",
+  "boot_area_sha256": "a366537fa37d14d0b5763aaeb583d8bc7c10806b063f322c1d985ef6a3bb7edb",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1903,
+    "owned_sectors": 96122,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1903,
+    "owned_sectors": 96134,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Native managed graphics dirty row upload",
+  "candidate_sha256": "adc0a39b16c67a8d0e6bbc95e6395021882b9bcca023209d665e0e6e00243aca",
+  "instruction_audit": "pass",
+  "prototype": false
+}

@@ -1,0 +1,10 @@
+{
+  "result": "fail",
+  "reservation_size": 267527,
+  "reservation_address": "0x708CB8",
+  "compiler_headers": "pass",
+  "startup": "pass",
+  "failed_request_bytes": 267527,
+  "fallback_largest_bytes": 2840,
+  "receipt_sha256": "783d871b35b22f75221d1960a8ad2f908d23da0f50109f5ecd3bdb87873d64d0"
+}

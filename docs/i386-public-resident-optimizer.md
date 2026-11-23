@@ -419,3 +419,11 @@ emitter, resident policy and metadata checks. Fresh arithmetic and
 DocAllocationCheck pass, including diagnostic load, recovery and unload.
 The diagnostic image and pinned inputs are unchanged. See
 `build/ac-dictionary-direct-copy/diagnostic16/result.json`.
+
+An 8 MiB original-User overlay reserves the full 267,527-byte task allocation
+before compiling the complete root CompilerA headers. The reservation succeeds
+at `0x708CB8`. The headers load and the contiguous block is returned before
+the remaining startup work. Startup completes, but USCheck still fails the
+same-size allocation. This rules out a reservation limited to the CompilerA
+load as a sufficient fix. The patch, packaging and runtime receipts are in
+`build/original-user-stack-reserve-v4`.

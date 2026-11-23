@@ -1,0 +1,29 @@
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -1401,6 +1401,8 @@
+ }
+ Bool ConsoleRootHeaders()
+ {
++  U8 *reservation;
++  Bool loaded;
+   //Publish the resident reader with root declarations, after early diagnostics.
+   console_config->files->public_reader(&NativeResidentReadBridge);
+   //Publish the core first so its temporary parser arena is gone before the
+@@ -1417,8 +1419,15 @@
+   KernelLog("ROOT USER HEADERS ok\n");
+   //Publish complete compiler declarations before rich include documents exist.
+   KernelLog("ROOT COMPILER HEADERS begin\n");
+-  if(!ConsoleSource("#include \"/Compiler/I386/SystemCompilerA.HH\"\n",
+-      "RootCompilerHeaders.HC",0x200000000000|I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
++  reservation=I386HeapAlloc(console_config->heap,267527,FALSE);
++  KernelLog("ORIGINAL USER RESERVE ");KernelHex(reservation);KernelLog("\n");
++  loaded=ConsoleSource("#include \"/Compiler/I386/SystemCompilerA.HH\"\n",
++      "RootCompilerHeaders.HC",0x200000000000|I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD);
++  if(reservation) {
++    if(!I386HeapFree(console_config->heap,reservation))KernelStop;
++    KernelLog("ORIGINAL USER RESERVE released\n");
++  }
++  if(!loaded) return FALSE;
+   KernelLog("ROOT COMPILER HEADERS ok\n");
+   console_config->files->public_document(&NativeIncludeDocumentCreate,&NativeIncludeDocumentDestroy,&NativeIncludeDocumentFormat);
+   return TRUE;

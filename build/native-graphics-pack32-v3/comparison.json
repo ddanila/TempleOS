@@ -1,0 +1,7 @@
+{
+  "result": "fail",
+  "redraw_ms": 740,
+  "refresh_ms": 190,
+  "duration_error": "Recorded notes differ: (3, 1, 63, 0, 0, 1, 65, 8, 0, 1, 67, 8, 0)",
+  "profile_sha256": "84c6501e57ef99c3fe3c05c2036d972926c2df21567db0278864fd1a399754f3"
+}

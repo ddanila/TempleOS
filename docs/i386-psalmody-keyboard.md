@@ -192,3 +192,10 @@ with the managed pointer and five command/raster checkpoints. Its startup took
 50.85 seconds and passed the existing 60-second budget checker. The
 `user8` receipts under `build/native-graphics-dirty-rows-v2` cover the production
 User path. The separate original User startup gate remains open.
+
+The 32-bit planar converter matches eight full-upload raster checkpoints,
+including a mixed pattern that displays all 16 palette colors. Its profiled
+record-menu redraw takes 740 ms, compared with 700 ms in the changed-row
+control. The immediate-input sequence still records 0, 8, 8. This single
+comparison shows no further redraw improvement. The disposable patch,
+raster receipt and timing comparison are in `build/native-graphics-pack32-v3`.
