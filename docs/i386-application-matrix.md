@@ -894,3 +894,10 @@ The earlier candidate attempt timed out waiting for the initial pointer target.
 The observer receipt records both logical and raw device coordinates and is
 saved with its fixture in `build/application-menu-mouse-observer-v1`. Production
 integration and broader menu behavior remain open.
+
+The same menu patch was rebased onto the integrated changed-row VGA image.
+The ConsoleRuntime instruction audit passes and the physical gesture again
+delivers (1, 2676, 83) at 64 MiB. Build commands, packaging and runtime
+receipts are in `build/application-menu-integrated-v1`.
+The unmodified image reaches both pointer targets but times out waiting for the
+menu command after release. Its receipt is in the same directory.
