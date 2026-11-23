@@ -1,0 +1,59 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "build/native-focus-menu-psalmody-production-v1/full/kernel.img": "1fd1c1b93a04069a4300aa18caf2637aa23c2f804ac5c897fc849618735dfa9b",
+    "/home/ddanila/fun/TempleOS/build/native-ode-task-birth-v1/Probe.HC": "c3967ad7794e52677667082417424249df2bc90b939950120b4398edbde0e5b4",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "/home/ddanila/fun/TempleOS/build/native-ode-task-birth-v1/run.py": "981d08a2b217314009a37673202a3d508a276c3ee8c79082e603eed82bf7143a"
+  },
+  "rings": {
+    "console": {
+      "head": "1597CE8",
+      "next": "0",
+      "last": "0"
+    },
+    "spawn": {
+      "head": "15F1338",
+      "next": "0",
+      "last": "0"
+    }
+  },
+  "package": {
+    "result": "pass",
+    "source_sha256": "1fd1c1b93a04069a4300aa18caf2637aa23c2f804ac5c897fc849618735dfa9b",
+    "image_sha256": "0c51ebb7ebc7d36f1c4adbb7c47b76fe3e29e133278056d0cbb090a55117f51f",
+    "boot_area_sha256": "750bddaf6f6c18c23866a7bccf217fa8ddb7f82ff37778ff16ec940b8a83163f",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96163,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1905,
+      "owned_sectors": 96164,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/ODERingProbe.HC": "c3967ad7794e52677667082417424249df2bc90b939950120b4398edbde0e5b4"
+    },
+    "added_attributes": {
+      "/ODERingProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "error": "Expected a self-linked empty ODE ring in both tasks",
+  "inputs_unchanged": true
+}

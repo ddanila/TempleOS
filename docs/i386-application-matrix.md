@@ -1236,3 +1236,22 @@ entry. The run creates the spring and sends Space, but the observer
 does not reach its play marker after that call becomes eligible. Its
 receipt does not establish whether the updater threw, stalled, or was
 never invoked. See `build/strut-simulation-tick-v1/native64/result.json`.
+
+With the play marker emitted before the diagnostic tick, native Strut
+reaches `ODEsUpdate` with a positive refresh rate and time zero. The
+updater does not return within the observation window. A separate test
+against the production image observes zero next and last ODE links on
+both the fresh console and a newly spawned task. The original task
+constructor initializes these links to the address of the queue head.
+The candidate scheduler patch restores that initialization for root
+and prepared tasks. It applies cleanly and still needs a native build
+and runtime verification. See `build/strut-simulation-update-trace-v1`
+and `build/native-ode-task-birth-v1`.
+
+The same native Strut trace passes when the fixture initializes the two
+zero links before launch. Physical input creates the spring, the explicit
+ODE update returns, simulation time advances, Escape exits, and fresh
+arithmetic renders. This verifies the queue initialization dependency.
+The normal window worker still needs the update phase. The scheduler
+candidate is building in a compiler overlay while the separate production
+retained rebuild continues. See `build/strut-ode-task-ring-v1/native64/result.json`.
