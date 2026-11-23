@@ -1,0 +1,62 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/vocabulary-lazy-init-v1/run.py": "1cad0ce1d72390228680afb5995653123f5fba8c35349103a0bb06ff21515ed7",
+    "/home/ddanila/fun/TempleOS/build/vocabulary-lazy-init-v1/Probe.HC": "4b6ccb801d1efbd78805f31f808b41b56714768b4326c2bbdf87e8f534bf02b7",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/vocabulary-lazy-init-v1/Load.HC": "13a0d4944159f1f271210c9c92606f64a365c6f553c3a78cc4ec502f0a726e87",
+    "Apps/Vocabulary/VocabQuiz.HC": "7ce89ddfe50d7a3305648d146c4d4733b7a44ae047a17c5a36ed3a3e235792f0",
+    "Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "build/logic-lazy-load-v1/full/kernel.img": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c"
+  },
+  "scope": "Vocabulary quiz answer and definition popup using the original dictionary",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c",
+    "image_sha256": "b0157d4420b4a6937c89a76e86485847788405b5ebc1b3a2dc3ea4d82893f77e",
+    "boot_area_sha256": "c63f8ad7779888b6e1647e1528b9279094034fe17746409473e25a5bfa68b11e",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96133,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/VocabularyProbe.HC": "4b6ccb801d1efbd78805f31f808b41b56714768b4326c2bbdf87e8f534bf02b7"
+    },
+    "added_attributes": {
+      "/VocabularyProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "changed_files": [
+    "/Apps/Vocabulary/Load.HC",
+    "/Apps/Vocabulary/VocabQuiz.HC"
+  ],
+  "focus": {
+    "owner": 22631360,
+    "first_question": 22631360,
+    "definition": 23646224,
+    "second_question": 23646224,
+    "after_click": 22631360
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 58,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

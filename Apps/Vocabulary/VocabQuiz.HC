@@ -22,6 +22,8 @@ U0 VocabQuiz()
     "Uncompressed dictionary not present.\n";
     return;
   }
+  if (!acd.num_words)
+    Adam("ACInit;");
   do {
     right_word=RandVocabWord;
     for (i=0;i<4;i++)

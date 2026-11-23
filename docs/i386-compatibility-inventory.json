@@ -12034,7 +12034,7 @@
         "VocabQuiz"
       ],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
+      "source_at_discovery": "modified",
       "compatibility": "unqualified",
       "reference_workflow": "Load the unchanged Vocabulary application sources using its original Load.HC entry point; full interactive application workflow remains to be captured.",
       "oracle": "docs/i386-application-matrix.md: native loader currently rejects missing RandU32 at VocabQuiz.HC line 7; this is not a reference launch or gameplay oracle.",
@@ -12052,6 +12052,12 @@
           "result": "fail",
           "evidence": "build/i386-app-vocabulary-rand-v1/result.json",
           "scope": "RandU32 now resolves; compilation stops at missing ACDDefGet before application execution"
+        },
+        {
+          "target": "native-vocabulary-lazy-init",
+          "result": "pass",
+          "evidence": "build/vocabulary-lazy-init-v1/native64/result.json",
+          "scope": "Cold native quiz initializes the bundled dictionary on demand. Physical answer and definition open pass. A click restores focus before exit."
         }
       ]
     },
@@ -12085,7 +12091,7 @@
       "launch_candidate": false,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
+      "source_at_discovery": "modified",
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
@@ -12117,6 +12123,12 @@
           "result": "pass",
           "evidence": "build/vocabulary-quiz-focus-v1/native64/result.json",
           "scope": "Physical click restores quiz focus after popup dismissal. Escape then returns, and fresh arithmetic renders."
+        },
+        {
+          "target": "native-vocabulary-lazy-init",
+          "result": "pass",
+          "evidence": "build/vocabulary-lazy-init-v1/native64/result.json",
+          "scope": "Cold native quiz initializes the bundled dictionary on demand. Physical answer and definition open pass. A click restores focus before exit."
         }
       ]
     },

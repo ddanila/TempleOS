@@ -1091,3 +1091,11 @@ arithmetic renders. See `build/vocabulary-quiz-focus-v1/native64/result.json`.
 A separate clean boot reaches the same quiz with the bundled dictionary bytes
 alone, after explicit autocomplete load and ACInit. That test adds only the
 probe to the image. See `build/vocabulary-bundled-dictionary-v1`.
+
+Vocabulary now loads autocomplete on demand and initializes the dictionary
+when the quiz starts with an empty word list. A cold 64 MiB run with the
+bundled dictionary and no preparatory library commands reaches the question,
+accepts a choice, and opens the definition. The run uses a click to restore
+quiz focus before exiting. Fresh arithmetic renders. See
+`build/vocabulary-lazy-init-v1/native64/result.json`. Automatic focus
+restoration after the definition still needs a fix.
