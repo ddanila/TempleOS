@@ -1773,3 +1773,12 @@ allocation as the separate wide-product candidates. This independently
 records a resource regression on the rebuilt generation. See
 `build/span-production-v1/gen1-span64/result.json` and
 `build/span-production-v1/gen1-user8/result.json`.
+
+At the User8 allocation boundary, generation one's largest primary
+payload measures 231,256 bytes against the passing bootstrap's
+268,120. The generation-one ConsoleRuntime adds 25,688 bytes of
+resident payload. Exchanging only that module for its bootstrap
+counterpart on a diagnostic copy recovers 24,576 contiguous bytes.
+The resulting 255,832-byte block still falls short of 267,528.
+The boot area and every other file remain intact in the diagnostic
+copy. See `build/span-production-v1/gen1-user8-growth.json`.

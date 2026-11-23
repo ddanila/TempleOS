@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "source_sha256": "74ae57626064f4c6ee1dc85f70d5206a3397970399385c5de97234fc49fb9691",
+  "image_sha256": "de41590d4de42840e6a6cdc7196843f9261abbf7e86a05473be7116f52b52996",
+  "boot_area_sha256": "39ce8cdcbe2100f57a5bc5f13cffcb3634c18800e34606531be007f6c72d3196",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1914,
+    "owned_sectors": 98149,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1914,
+    "owned_sectors": 97580,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification",
+  "transplanted": {
+    "/Modules/I386/ConsoleRuntime.t32m": "a9a3fbff0f5dbe86d6084a2736b89fee2aae1c4dab485667b6602473233549bf"
+  }
+}

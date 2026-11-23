@@ -1,0 +1,90 @@
+{
+  "resident_payload_bytes": {
+    "BuildRuntime": {
+      "bootstrap": 86888,
+      "generation_one": 86968,
+      "growth": 80
+    },
+    "CompilerProbe": {
+      "bootstrap": 521464,
+      "generation_one": 521888,
+      "growth": 424
+    },
+    "CompilerProgramRuntimeProbe": {
+      "bootstrap": 355832,
+      "generation_one": 355912,
+      "growth": 80
+    },
+    "CompilerRuntime": {
+      "bootstrap": 1201872,
+      "generation_one": 1202624,
+      "growth": 752
+    },
+    "ConsoleRuntime": {
+      "bootstrap": 2334920,
+      "generation_one": 2360608,
+      "growth": 25688
+    },
+    "DocDiagnosticRuntime": {
+      "bootstrap": 41592,
+      "generation_one": 41752,
+      "growth": 160
+    },
+    "EditorRuntime": {
+      "bootstrap": 45808,
+      "generation_one": 46504,
+      "growth": 696
+    },
+    "ExceptContext": {
+      "bootstrap": 192,
+      "generation_one": 192,
+      "growth": 0
+    },
+    "ExceptionEntry": {
+      "bootstrap": 216,
+      "generation_one": 288,
+      "growth": 72
+    },
+    "FileRuntime": {
+      "bootstrap": 262568,
+      "generation_one": 262912,
+      "growth": 344
+    },
+    "IrqEntry": {
+      "bootstrap": 104,
+      "generation_one": 152,
+      "growth": 48
+    },
+    "Kernel": {
+      "bootstrap": 459360,
+      "generation_one": 466680,
+      "growth": 7320
+    },
+    "MemoryRuntime": {
+      "bootstrap": 212752,
+      "generation_one": 213864,
+      "growth": 1112
+    },
+    "Startup": {
+      "bootstrap": 192,
+      "generation_one": 192,
+      "growth": 0
+    },
+    "SysTry": {
+      "bootstrap": 80,
+      "generation_one": 88,
+      "growth": 8
+    },
+    "TaskContext": {
+      "bootstrap": 56,
+      "generation_one": 56,
+      "growth": 0
+    }
+  },
+  "largest_primary_payload": {
+    "bootstrap": 268120,
+    "generation_one": 231256,
+    "generation_one_with_cross_console": 255832
+  },
+  "user_aligned_request": 267528
+}
