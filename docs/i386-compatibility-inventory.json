@@ -12095,6 +12095,20 @@
           "result": "pass",
           "evidence": "build/sound-delay-production-v1/indirect64/result.json",
           "scope": "Physical artillery drag queues unit 30 to row 0, column 3. The empty impact hex, drained queue and phase trace through turn two match."
+        },
+        {
+          "target": "original-tothefront-artillery-damage",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --indirect-damage --out OUT",
+          "result": "pass",
+          "evidence": "build/tothefront-original-v1/indirect-damage-original/result.json",
+          "scope": "Physical artillery drag resolves at the shared impact hex. Staged defender 16 falls from 100 life to zero and the opposing live count drops to 31 at the start of turn two."
+        },
+        {
+          "target": "native-tothefront-artillery-damage",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --indirect-damage --disk DISK --out OUT",
+          "result": "pass",
+          "evidence": "build/sound-delay-production-v1/indirect-damage64/result.json",
+          "scope": "Physical artillery drag resolves at the shared impact hex. Staged defender 16 falls from 100 life to zero and the opposing live count drops to 31 at the start of turn two."
         }
       ]
     },

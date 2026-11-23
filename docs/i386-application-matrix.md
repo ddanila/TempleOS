@@ -1994,3 +1994,13 @@ guest exits to fresh arithmetic. Artillery damage, overrun, exact
 rendering and a complete match remain open. See
 `build/tothefront-original-v1/indirect-original/result.json` and
 `build/sound-delay-production-v1/indirect64/result.json`.
+
+The occupied-hex artillery comparison places one unarmored defender
+in the previously empty impact hex before the physical drag. The
+pinned original and the current native production image under default
+KVM both reduce defender 16 from 100 life to zero and report 31 live
+opponents at the start of turn two. The impact, queue and phase traces
+match, and the native guest exits to fresh arithmetic. The fixture
+covers one direct artillery impact against an unarmored unit.
+See `build/tothefront-original-v1/indirect-damage-original/result.json`
+and `build/sound-delay-production-v1/indirect-damage64/result.json`.

@@ -13,9 +13,13 @@ parser.add_argument('--fire', action='store_true')
 parser.add_argument('--trace-fire', action='store_true')
 parser.add_argument('--trace-shot', action='store_true')
 parser.add_argument('--userspace-irqchip', action='store_true')
-parser.add_argument('--indirect', action='store_true')
+indirect = parser.add_mutually_exclusive_group()
+indirect.add_argument('--indirect', action='store_true')
+indirect.add_argument('--indirect-damage', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
+if args.indirect_damage and args.fire:
+    parser.error('--indirect-damage and --fire require separate runs')
 if args.trace_fire and (not args.fire or not args.disk):
     parser.error('--trace-fire needs --fire and a native --disk')
 if args.trace_shot and not args.trace_fire:
@@ -34,9 +38,12 @@ if args.fire:
     declaration = b'U0 TTFPhaseWatch('
     fixture = fixture.replace(declaration, (root/'DirectFire.HC').read_bytes() + b'\n' + declaration)
     fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackFire(owner);\n    Sleep(1);')
-if args.indirect:
+if args.indirect or args.indirect_damage:
     declaration = b'U0 TTFPhaseWatch('
-    fixture = fixture.replace(declaration, (root/'IndirectFire.HC').read_bytes() + b'\n' + declaration)
+    damage = b'1' if args.indirect_damage else b'0'
+    probe = b'#define TTF_ARTILLERY_DAMAGE ' + damage + b'\n'
+    probe += (root/'IndirectFire.HC').read_bytes()
+    fixture = fixture.replace(declaration, probe + b'\n' + declaration)
     fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackIndirect(owner);\n    Sleep(1);')
 if args.disk:
     image = out/'working.img'
@@ -77,7 +84,8 @@ try:
     else:
         guest.wait('TTF original loaded\n', 90)
         time.sleep(6)
-    report.update(exercise(guest, args.move, args.fire, args.indirect))
+    report.update(exercise(guest, args.move, args.fire,
+                           args.indirect or args.indirect_damage, args.indirect_damage))
     if args.disk:
         guest.command('6*7;')
         report['after_match'] = guest.result_pixels()

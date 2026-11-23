@@ -1,5 +1,5 @@
 I64 ttf_indirect_pointer[2];
-I64 ttf_artillery=-1;
+I64 ttf_artillery=-1,ttf_indirect_defender=-1,ttf_indirect_life;
 Bool ttf_order_logged=FALSE,ttf_blast_logged=FALSE,ttf_resolved_logged=FALSE;
 
 Bool TTFSplashEmpty(I64 row,I64 col)
@@ -18,9 +18,9 @@ Bool TTFSplashEmpty(I64 row,I64 col)
 
 U0 TTFAimIndirect(CTask *owner)
 {
-  I64 i,row,col;
+  I64 i,j,row,col;
   F64 sx,sy,ex,ey,radius,dd;
-  Unit *unit;
+  Unit *unit,*defender;
   U8 line[256];
   for (i=0;i<UNITS_NUM;i++) {
     unit=&units[0][i];
@@ -32,6 +32,20 @@ U0 TTFAimIndirect(CTask *owner)
           RowCol2XY(&ex,&ey,row,col);
           dd=Sqr(ex-sx)+Sqr(ey-sy);
           if (dd<Sqr(radius/2) && TTFSplashEmpty(row,col)) {
+            if (TTF_ARTILLERY_DAMAGE) {
+              for (j=0;j<UNITS_NUM;j++)
+                if (units[1][j].life>0 && !units[1][j].armor) break;
+              if (j==UNITS_NUM) {
+                ttf_artillery=-2;
+                TTFPhaseLog("FAIL TTF no unarmored defender\n");
+                return;
+              }
+              defender=&units[1][j];
+              defender->row=row;
+              defender->col=col;
+              ttf_indirect_defender=j;
+              ttf_indirect_life=defender->life;
+            }
             ttf_artillery=i;
             StrPrint(line,"TTF aim indirect %X %d %d %d %d %d %d %d\n",
                 ttf_indirect_pointer,i,ToI64(sx)+x0+owner->pix_left,ToI64(sy)+y0+owner->pix_top,
@@ -66,6 +80,11 @@ U0 TTFTrackIndirect(CTask *owner)
     ttf_blast_logged=TRUE;
   }
   if (ttf_blast_logged && !ttf_resolved_logged && order==&indirect_head) {
+    if (ttf_indirect_defender>=0) {
+      StrPrint(line,"TTF blast damage %d %d %d\n",ttf_indirect_defender,
+               ttf_indirect_life,units[1][ttf_indirect_defender].life);
+      TTFPhaseLog(line);
+    }
     TTFPhaseLog("TTF queue drained\n");
     ttf_resolved_logged=TRUE;
   }

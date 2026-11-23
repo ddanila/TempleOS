@@ -75,7 +75,7 @@ def queue_indirect(guest):
     return unit, row, col
 
 
-def exercise(guest, move=False, fire=False, indirect=False):
+def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=False):
     guest.screenshot('entry')
     guest.type('12345678')
     guest.press('ret')
@@ -88,6 +88,23 @@ def exercise(guest, move=False, fire=False, indirect=False):
     guest.press('esc')
     expected_states = list(EXPECTED)
     for index, state in enumerate(expected_states):
+        if indirect and index == len(EXPECTED) - 1:
+            log = guest.wait('TTF queue drained\n', 35)
+            blast = re.search(r'^TTF blast (-?\d+) (-?\d+)$', log, re.M)
+            if blast is None:
+                raise ValueError('Missing artillery impact')
+            impact = tuple(map(int, blast.groups()))
+            if indirect_damage:
+                damage = re.search(r'^TTF blast damage (\d+) (\d+) (\d+)$', log, re.M)
+                if damage is None:
+                    raise ValueError('Missing artillery defender state')
+                defender, before, after = map(int, damage.groups())
+                if not 0 <= after < before or impact != order[1:]:
+                    raise ValueError('Expected artillery damage at the selected hex')
+                damage_state = dict(defender=defender, life_before=before, life_after=after)
+                if not after:
+                    state = state[:4] + (state[4] - 1,)
+                    expected_states[index] = state
         expected = 'TTF phase ' + ' '.join(map(str, state)) + '\n'
         guest.wait(expected, 25)
         time.sleep(1)
@@ -105,12 +122,6 @@ def exercise(guest, move=False, fire=False, indirect=False):
                     phase[:4] + (phase[4] - 1,) for phase in expected_states[index + 1:]]
         if index + 1 < len(EXPECTED):
             guest.press('spc')
-    if indirect:
-        log = guest.wait('TTF queue drained\n', 25)
-        blast = re.search(r'^TTF blast (-?\d+) (-?\d+)$', log, re.M)
-        if blast is None:
-            raise ValueError('Missing artillery impact')
-        impact = tuple(map(int, blast.groups()))
     guest.press('esc')
     trace = guest.wait('TTF phase workflow returned\n', 25)
     actual = [tuple(map(int, row)) for row in re.findall(
@@ -124,4 +135,6 @@ def exercise(guest, move=False, fire=False, indirect=False):
         result['direct_fire'] = attack
     if indirect:
         result['indirect_fire'] = {'order': order, 'impact': impact, 'queue_drained': True}
+    if indirect_damage:
+        result['indirect_fire']['damage'] = damage_state
     return result
