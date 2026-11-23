@@ -410,3 +410,10 @@ the desktop completion marker, and the full geometry, fresh input and
 physical bootstrap retirement checks passed. Startup took 291.05 seconds
 with the two markers. The terminal receipt is in
 `build/resident-opt-desktop64-trace/run/result.json`.
+
+The ACInit phase trace completed the 64 MiB desktop oracle in 291.46
+seconds. All six markers appeared in order, covering directory traversal,
+dictionary word loading and the initialization flag release. Home Once,
+original geometry, fresh input and physical bootstrap retirement passed
+with pinned inputs preserved. The terminal receipt is in
+`build/resident-opt-desktop64-ac-phases/run/result.json`.
