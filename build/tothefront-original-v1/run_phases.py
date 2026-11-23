@@ -14,7 +14,9 @@ parser.add_argument('--move', action='store_true')
 occupation = parser.add_mutually_exclusive_group()
 occupation.add_argument('--overrun', action='store_true')
 occupation.add_argument('--close-assault', action='store_true')
-parser.add_argument('--fire', action='store_true')
+shooting = parser.add_mutually_exclusive_group()
+shooting.add_argument('--fire', action='store_true')
+shooting.add_argument('--game-over', action='store_true')
 parser.add_argument('--trace-fire', action='store_true')
 parser.add_argument('--trace-shot', action='store_true')
 parser.add_argument('--userspace-irqchip', action='store_true')
@@ -25,6 +27,8 @@ parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 if (args.overrun or args.close_assault) and (args.move or args.fire or args.indirect or args.indirect_damage):
     parser.error('--overrun and --close-assault each require a separate run')
+if args.game_over and (args.move or args.overrun or args.close_assault or args.indirect or args.indirect_damage):
+    parser.error('--game-over requires a separate run')
 if args.indirect_damage and args.fire:
     parser.error('--indirect-damage and --fire require separate runs')
 if args.trace_fire and (not args.fire or not args.disk):
@@ -52,10 +56,17 @@ if args.overrun or args.close_assault:
     probe += (root/'Overrun.HC').read_bytes()
     fixture = fixture.replace(declaration, probe + b'\n' + declaration)
     fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackAssault(owner);\n    Sleep(1);')
-if args.fire:
+if args.fire or args.game_over:
     declaration = b'U0 TTFPhaseWatch('
-    fixture = fixture.replace(declaration, (root/'DirectFire.HC').read_bytes() + b'\n' + declaration)
-    fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackFire(owner);\n    Sleep(1);')
+    probe = (root/'DirectFire.HC').read_bytes()
+    watch = b'    TTFTrackFire(owner);\n'
+    if args.game_over:
+        probe = (root/'GameOver.HC').read_bytes() + b'\n' + probe
+        probe = probe.replace(b'            defender->row=row;', b'            TTFStageLastDefender(j);\n            defender->row=row;')
+        probe = probe.replace(b'ttf_attacker==-1) TTFStageFire', b'ttf_attacker==-1 && !StrCmp(msg_buf,"Player 1 Fire")) TTFStageFire')
+        watch += b'    TTFTrackGameOver;\n'
+    fixture = fixture.replace(declaration, probe + b'\n' + declaration)
+    fixture = fixture.replace(b'    Sleep(1);', watch + b'    Sleep(1);')
 if args.indirect or args.indirect_damage:
     declaration = b'U0 TTFPhaseWatch('
     damage = b'1' if args.indirect_damage else b'0'
@@ -104,7 +115,8 @@ try:
         time.sleep(6)
     report.update(exercise(guest, args.move, args.fire,
                            args.indirect or args.indirect_damage, args.indirect_damage,
-                           'close_assault' if args.close_assault else 'overrun' if args.overrun else None))
+                           'close_assault' if args.close_assault else 'overrun' if args.overrun else None,
+                           args.game_over))
     if args.disk:
         guest.command('6*7;')
         report['after_match'] = guest.result_pixels()

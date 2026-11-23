@@ -2034,3 +2034,14 @@ screenshots still differ, including pixels below the original system
 status line. Time-dependent overlays and full framebuffer parity remain
 open. See `build/sound-delay-production-v1/map64/comparison.json` and
 `build/tothefront-original-v1/compare_map.py`.
+
+The match-ending test stages a single adjacent enemy during the
+first firing phase. The ordinary mouse drag kills that defender,
+and the game publishes its Game Over message with live counts
+32 and zero on both the pinned original and native production image.
+Pressing Enter and reusing the seed restarts turn one with both
+32-unit forces restored. The native guest exits with Escape and
+executes fresh arithmetic. The fixture covers the match-ending
+transition and restart from a staged state. See
+`build/tothefront-original-v1/game-over-original/result.json`
+and `build/sound-delay-production-v1/game-over64/result.json`.

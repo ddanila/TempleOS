@@ -12144,6 +12144,20 @@
           "result": "pass",
           "evidence": "build/sound-delay-production-v1/map64/comparison.json",
           "scope": "Fixed-seed 640 by 464 offscreen map raster and 46 by 19 terrain, river and road arrays match byte-for-byte."
+        },
+        {
+          "target": "original-tothefront-game-over",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --game-over --out OUT",
+          "result": "pass",
+          "evidence": "build/tothefront-original-v1/game-over-original/result.json",
+          "scope": "A physical shot kills the staged last defender. Game Over reports 32 and zero live units. Enter and the same seed restart turn one with both 32-unit forces."
+        },
+        {
+          "target": "native-tothefront-game-over",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --game-over --disk DISK --out OUT",
+          "result": "pass",
+          "evidence": "build/sound-delay-production-v1/game-over64/result.json",
+          "scope": "A physical shot kills the staged last defender. Game Over reports 32 and zero live units. Enter and the same seed restart turn one with both 32-unit forces."
         }
       ]
     },

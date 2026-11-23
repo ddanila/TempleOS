@@ -97,7 +97,7 @@ def occupy_hex(guest):
                 remaining_movement=movement)
 
 
-def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=False, occupation_kind=None):
+def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=False, occupation_kind=None, game_over=False):
     guest.screenshot('entry')
     guest.type('12345678')
     guest.press('ret')
@@ -108,7 +108,7 @@ def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=Fals
         time.sleep(5)
         guest.screenshot(name)
     guest.press('esc')
-    expected_states = list(EXPECTED)
+    expected_states = list(EXPECTED[:5] if game_over else EXPECTED)
     for index, state in enumerate(expected_states):
         if indirect and index == len(EXPECTED) - 1:
             log = guest.wait('TTF queue drained\n', 35)
@@ -143,14 +143,28 @@ def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=Fals
             expected_states[index + 1:] = [
                 state[:3] + (state[3] - (lost_player == 0), state[4] - (lost_player == 1))
                 for state in expected_states[index + 1:]]
-        if fire and index == 4:
+        if (fire or game_over) and index == 4:
             attack = fire_unit(guest)
             guest.screenshot('fired')
             if not attack['life_after']:
                 expected_states[index + 1:] = [
                     phase[:4] + (phase[4] - 1,) for phase in expected_states[index + 1:]]
-        if index + 1 < len(EXPECTED):
+        if index + 1 < len(expected_states):
             guest.press('spc')
+    if game_over:
+        if not attack['hit'] or attack['life_after'] != 0:
+            raise ValueError('The shot must kill the last defender')
+        guest.wait('TTF game over 1 4 32 0\n', 25)
+        guest.screenshot('game-over')
+        start = len(guest.collect())
+        guest.press('ret')
+        time.sleep(3)
+        guest.screenshot('restart-seed')
+        guest.type('12345678')
+        guest.press('ret')
+        guest.wait('TTF phase 1 0 0 32 32\n', 45, start=start)
+        expected_states.append(EXPECTED[0])
+        guest.screenshot('restarted')
     guest.press('esc')
     trace = guest.wait('TTF phase workflow returned\n', 25)
     actual = [tuple(map(int, row)) for row in re.findall(
@@ -162,7 +176,9 @@ def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=Fals
         result['movement'] = movement
     if occupation_kind:
         result[occupation_kind] = occupation
-    if fire:
+    if game_over:
+        result['game_over'] = {'live_counts': [32, 0], 'restart': True}
+    if fire or game_over:
         result['direct_fire'] = attack
     if indirect:
         result['indirect_fire'] = {'order': order, 'impact': impact, 'queue_drained': True}
