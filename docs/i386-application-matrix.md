@@ -2093,3 +2093,21 @@ The sound-timing production image completes all nine retained
 module rebuilds and their persisted export checks at 128 MiB. The
 two-generation qualification is running with that image as input.
 See `build/sound-delay-production-v1/retained128/result.json`.
+
+A fresh full image containing the shared vertical spacing change
+passes the 386 instruction audit and the unchanged 8 MiB User startup
+in 51.09 seconds. The first SimpleAI movement phase and complete
+offscreen map raster match the pinned original on this image.
+The build reuses the two verified original bootstrap generations.
+The build receipt records concurrent changes to local cleanup records.
+The core source audit verifies 1,554 files and the separate inventory
+audit verifies all 686 bundled files against revision 35db7c90.
+See `build/tothefront-center-production-v1/qualification.json`.
+
+The bundled-file audit also verifies the preceding sound-timing image,
+its retained build image and its generation-one installed candidate
+against their source revision. Checking the preceding image against
+the new revision detects the single changed ToTheFront initializer.
+Generation one's native self-build is running.
+See `build/i386-bundled-source-audit-v1/gen1-install.json`
+and `build/i386-bundled-source-audit-v1/pre-fix.json`.

@@ -1,0 +1,13 @@
+{
+  "result": "fail",
+  "disk": "build/sound-delay-production-v1/full/kernel.img",
+  "disk_sha256": "3f11b6cd1822cff1de3f82181f37f72ab2ddb3f99310902c54a661da9bc88f7c",
+  "candidate_revision": "35db7c90000622f369b1bbd6da507c16ab24bb91",
+  "reference_revision": "c26482bb6ad3f80106d28504ec5db3c6a360732c",
+  "inventory_files": 686,
+  "inventory_contents_sha256": "69f35ef53895f5504657e3f0cc4e8fe60b89c024e1483137159afb765524fffb",
+  "missing": [],
+  "changed": [
+    "Apps/ToTheFront/TTFInit.HC"
+  ]
+}

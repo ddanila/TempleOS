@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "disk": "build/tothefront-center-production-v1/full/kernel.img",
+  "disk_sha256": "b89e2239e6b63648be100811597c1209c019f58dd8a9bd864c8b53160361e864",
+  "candidate_revision": "35db7c90000622f369b1bbd6da507c16ab24bb91",
+  "reference_revision": "c26482bb6ad3f80106d28504ec5db3c6a360732c",
+  "inventory_files": 686,
+  "inventory_contents_sha256": "69f35ef53895f5504657e3f0cc4e8fe60b89c024e1483137159afb765524fffb",
+  "missing": [],
+  "changed": []
+}

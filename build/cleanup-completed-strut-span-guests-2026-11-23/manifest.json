@@ -3233,7 +3233,35 @@
         "-o",
         "build/vocabulary-quiz-visible-v1/native64/working.img"
       ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/map-center-shared64/working.img",
+      "archive": "build/sound-delay-production-v1/map-center-shared64/working.img.zst",
+      "sha256": "bcf1425e013a95670833f89a6aefada876066f2983442ebc06696b5e297945fe",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/map-center-shared64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/map-center-shared64/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/simple-ai-center-shared64/working.img",
+      "archive": "build/sound-delay-production-v1/simple-ai-center-shared64/working.img.zst",
+      "sha256": "26dc853439f312c294d3e0363c29d93d7168249eaf48f4ed2e36b29efd7a37a1",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/simple-ai-center-shared64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/simple-ai-center-shared64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 11467186176
+  "reclaimed_bytes": 11574001664
 }

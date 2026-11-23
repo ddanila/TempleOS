@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "disk": "build/sound-delay-production-v1/generations128/gen1-install/candidate.img",
+  "disk_sha256": "04ab5a82ca50b58561c52f52c5d027ea7a66df8234fde86b36dc2050e93eaa2c",
+  "candidate_revision": "c1b4cd92baf5b1ac8f76d95bbc50407ade0285a8",
+  "reference_revision": "c26482bb6ad3f80106d28504ec5db3c6a360732c",
+  "inventory_files": 686,
+  "inventory_contents_sha256": "e028ef346a18f4fa3ae047dcd6562ae589fdfe954fe1176c3a8e600fbd7cf288",
+  "missing": [],
+  "changed": []
+}

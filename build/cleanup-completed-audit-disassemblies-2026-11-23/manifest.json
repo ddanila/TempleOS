@@ -741,7 +741,35 @@
         "-o",
         "build/sound-delay-production-v1/full/compiler.iso"
       ]
+    },
+    {
+      "original": "build/tothefront-center-production-v1/full/kernel-assembly.txt",
+      "archive": "build/tothefront-center-production-v1/full/kernel-assembly.txt.zst",
+      "sha256": "fcf69626561028312626ec2f713adc65c6c136f03a9b81857b7d79b0157606d6",
+      "size": 109725641,
+      "reclaimed_bytes": 101031936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-center-production-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/tothefront-center-production-v1/full/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/tothefront-center-production-v1/full/compiler.iso",
+      "archive": "build/tothefront-center-production-v1/full/compiler.iso.zst",
+      "sha256": "0526208410de5a653d7fbec6580d5b5fddef21e43518a0228e8dd93ed9346faa",
+      "size": 45467648,
+      "reclaimed_bytes": 32563200,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-center-production-v1/full/compiler.iso.zst",
+        "-o",
+        "build/tothefront-center-production-v1/full/compiler.iso"
+      ]
     }
   ],
-  "reclaimed_bytes": 4216979456
+  "reclaimed_bytes": 4350574592
 }

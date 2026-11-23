@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "disk": "build/sound-delay-production-v1/retained128/source.img",
+  "disk_sha256": "fc133ac684369e99feff7248187bf0d00442400c7281161e05f37e6266a42a99",
+  "candidate_revision": "c1b4cd92baf5b1ac8f76d95bbc50407ade0285a8",
+  "reference_revision": "c26482bb6ad3f80106d28504ec5db3c6a360732c",
+  "inventory_files": 686,
+  "inventory_contents_sha256": "e028ef346a18f4fa3ae047dcd6562ae589fdfe954fe1176c3a8e600fbd7cf288",
+  "missing": [],
+  "changed": []
+}

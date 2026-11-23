@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "original": "build/tothefront-original-v1/simple-ai-original/result.json",
+  "native": "build/tothefront-center-production-v1/simple-ai64/result.json",
+  "differences": {
+    "before_movement": [],
+    "after_movement": []
+  }
+}

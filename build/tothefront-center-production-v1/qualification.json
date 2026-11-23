@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "scope": "Full cross-build and selected production regressions",
+  "revision": "35db7c90000622f369b1bbd6da507c16ab24bb91",
+  "disk_sha256": "b89e2239e6b63648be100811597c1209c019f58dd8a9bd864c8b53160361e864",
+  "worktree_dirty": true,
+  "original_bootstrap_rebuilds": 2,
+  "boot_instruction_audit": "pass",
+  "delivered_source_files": 1554,
+  "bundled_inventory_files": 686,
+  "user8_seconds": 51.08526078501018,
+  "simple_ai_movement": "pass",
+  "map_raster": "pass"
+}

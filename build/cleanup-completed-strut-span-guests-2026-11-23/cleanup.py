@@ -20,6 +20,8 @@ runs = [
     'vocabulary-quiz-second-prompt-v1/native64',
     'vocabulary-quiz-v1/native64',
     'vocabulary-quiz-visible-v1/native64',
+    'sound-delay-production-v1/map-center-shared64',
+    'sound-delay-production-v1/simple-ai-center-shared64',
     'sound-delay-production-v1/map-center-candidate64',
     'tothefront-original-v1/simple-ai-second-seed',
     'sound-delay-production-v1/simple-ai-center-second-seed64',
