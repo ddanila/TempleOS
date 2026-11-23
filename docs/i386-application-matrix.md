@@ -1426,3 +1426,28 @@ reaches the missing SndTaskEndCB binding in SongTask. An original music
 player source slice with a native clock adapter is under test together
 with the compiler candidate and the unchanged Span source. See
 `build/span-native-coordinate-locals-v1/native64-typed/result.json`.
+
+The compiler overlay also executes the direct member conversions.
+The probe passes 7.75 and -3.5 to integer parameters and observes
+the combined result 697. The combined compiler and shared ODE image
+passes the 8 MiB KVM User fixture, reaching startup in 51.47 seconds.
+A cold include of Strut's Run.HC on that same image matches the
+instruction pixels, enters the editor, exits with Escape, and
+renders fresh arithmetic. See
+`build/native-implicit-f64-value-v1/native64/result.json`,
+`build/native-implicit-f64-helper-v1/user8-kvm/result.json`, and
+`build/native-strut-run-entry-v1/native64/result.json`.
+
+With the compiler and music adapters, the unchanged Span loader
+compiles. The native serializer writes and reopens a 312-byte file
+with the original record sizes and reconstructed topology. Its
+newly computed bridge differs from the original fixture in six
+floating-point spring fields. The mass records and all other bytes
+match. The original and native tests that reopen and re-encode each
+other's files are running. See
+`build/span-native-music-v1/native64/result.json`.
+
+The pinned original opens the native-generated bridge and reproduces
+all 312 input bytes after a RAM-disk save and readback, restoring the
+anchor and both endpoint links. See
+`build/span-file-interchange-v1/original/result.json`.

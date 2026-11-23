@@ -1,0 +1,44 @@
+{
+  "result": "fail",
+  "expected_sha256": "64cfdeb5fe80f3bdad5995fa934a929eb315eef46b3fe8c049f3a0e15611ebf0",
+  "package": {
+    "result": "pass",
+    "source_sha256": "0c2f7cc979cdb3b9b3f7a1983a6b25d65bfdd7d0ec0ab00963f8ae6a4875e6b3",
+    "image_sha256": "2f3f9185276191f3f99ab154a653d0b5ce32bf4c2887c46b47ac1698115d2737",
+    "boot_area_sha256": "d12c7ff2f2171df75d993a8f52bac1c98dee95395f9b28ab9dc2c49e780ab910",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1908,
+      "owned_sectors": 96331,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1914,
+      "owned_sectors": 96385,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/SpanFileChooser.HC": "53d9575cd4d5e87f850e4de212002245cebcbd92f46cec5bb6eadae36220d9b9",
+      "/SpanMusic.HC": "2481a7efa3f6e91fe924f5a7f6a1b27ee18d5362aefd351be4e2bc363e4cbc19",
+      "/SpanODEScalar.HC": "5a92e2107e61cb05b835600d8d8f2ca423bbc53fa6af1799cfffc764b48673d6",
+      "/SpanODESerial.HC": "d626c788f99b385953a8d35d1823419b3113fef4ec228fd82b8d8a0ada679f21",
+      "/SpanODETypes.HH": "2181b682f44dec99aed91e92022e30cb07efe28d7cd9554bf12f3e380f50b543",
+      "/SpanProbe.HC": "060de1415fd5523651040c6b00012f3497f569378c464ed5d2fc23598624a66e"
+    },
+    "added_attributes": {
+      "/SpanFileChooser.HC": 2048,
+      "/SpanMusic.HC": 2048,
+      "/SpanODEScalar.HC": 2048,
+      "/SpanODESerial.HC": 2048,
+      "/SpanODETypes.HH": 2048,
+      "/SpanProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "command": "#include \"C:/SpanProbe.HC\"",
+  "capture_size": 312,
+  "capture_sha256": "d8b23d2c6b3a0676882a7b642e4083839e9c3c5e40c922e4dcb8844336c6e8e3",
+  "error": "Native Span bridge bytes differ from the pinned original"
+}

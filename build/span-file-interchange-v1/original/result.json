@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "incoming_sha256": "d8b23d2c6b3a0676882a7b642e4083839e9c3c5e40c922e4dcb8844336c6e8e3",
+  "fixture_sha256": "11844030a2ea5313210fe8fd1bd8b1bd0c69ece084b60daf849fc394bf108f83",
+  "source_sha256": {
+    "Apps/Span/Install.HC": "ecc2ea096e3115b6768fd9109369822f23c554393b74445c91b8781205deb2d6",
+    "Apps/Span/Load.HC": "ee13f28dca7f1cf53ff38532f35ce54c2b9aff3de444b850d0bd9e167b8f521a",
+    "Apps/Span/Run.HC": "33b7f152ca1843d4e242d4746b7efcd7758c94d5978926c1d40872c05ab40fd6",
+    "Apps/Span/Span.HH": "4f22e1241dee1f9fef98c691f1d39c374484847d3c23b583cd9d17d57d8f7f4a",
+    "Apps/Span/SpanBridge.HC": "e6e2022dc09863cb52af069162a9708bb0fe758063a6e448898214cee46fcf7b",
+    "Apps/Span/SpanDerive.HC": "a52906aed653ed66485137732e9a4421ed8b7aa21b3f5e12a2b55a2c441e69bd",
+    "Apps/Span/SpanMain.HC": "c09a19303cdb9afe44fc80fef68eb35c7f9e882b867cde21e16755390923a4e2",
+    "Apps/Span/SpanNew.HC": "66b4de3d984045673907e0cb5876af81a51c7c8293022c38078c639081ed8ba7"
+  },
+  "readback_sha256": "d8b23d2c6b3a0676882a7b642e4083839e9c3c5e40c922e4dcb8844336c6e8e3"
+}
