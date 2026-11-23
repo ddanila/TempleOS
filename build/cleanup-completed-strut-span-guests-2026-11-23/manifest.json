@@ -2323,7 +2323,77 @@
         "-o",
         "build/native-noise-worker-trace-v1/delay-user8/working.img"
       ]
+    },
+    {
+      "original": "build/native-noise-worker-trace-v1/delay-fire64/working.img",
+      "archive": "build/native-noise-worker-trace-v1/delay-fire64/working.img.zst",
+      "sha256": "5834ef1059ad73b64cc8102dd16d441dc105efbd10d1cbbf3b41160051c8ddd8",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-noise-worker-trace-v1/delay-fire64/working.img.zst",
+        "-o",
+        "build/native-noise-worker-trace-v1/delay-fire64/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/user8/working.img",
+      "archive": "build/sound-delay-production-v1/user8/working.img.zst",
+      "sha256": "a05806c6dd75b029d0ab27f0987282db250d08b54e55b92fd4117010abca0ca2",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/user8/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/sound64/working.img",
+      "archive": "build/sound-delay-production-v1/sound64/working.img.zst",
+      "sha256": "9640f683c555886216706cade446e349ff19a343ddc7534fc03f1e66ae4dab2d",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/sound64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/sound64/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/fire64/working.img",
+      "archive": "build/sound-delay-production-v1/fire64/working.img.zst",
+      "sha256": "26946c9f879dc944be7fd335493c9a881c6b64d87d5843fcbd81370eaaeab8a2",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/fire64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/fire64/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/span64/working.img",
+      "archive": "build/sound-delay-production-v1/span64/working.img.zst",
+      "sha256": "225f10320d6e9979055a62e0364d7cb159bf5c1a57863614d5e07d873e5ce291",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/span64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/span64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 8240500736
+  "reclaimed_bytes": 8507539456
 }

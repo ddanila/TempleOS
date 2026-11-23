@@ -1,0 +1,38 @@
+{
+  "result": "pass",
+  "tests": {
+    "user8": {
+      "result": "pass",
+      "exit_code": 0,
+      "receipt_sha256": "e290a8f2b143a6108a65b91576a724e2deb24afeca994c63cd087fb4de4bf3bb"
+    },
+    "sound64": {
+      "result": "pass",
+      "exit_code": 0,
+      "receipt_sha256": "1588e4a5c263999040b7c8a90174ad75a48a7b463360a4964ca871889bdd06bb"
+    },
+    "fire64": {
+      "result": "pass",
+      "exit_code": 0,
+      "receipt_sha256": "04d61c90c01d1d25b3ef5b4f66eae7102948977292846d67474f5a2f177d74dc"
+    },
+    "span64": {
+      "result": "pass",
+      "exit_code": 0,
+      "receipt_sha256": "e2f27ac22d3f64f874597aab325a925584d9c055313862c017dfad918a369192"
+    },
+    "source-audit": {
+      "result": "pass",
+      "exit_code": 0,
+      "receipt_sha256": "5fd591420191687d5868a9ae211e450e9c46f5fbf0cb64f491ced3e4ffe97410"
+    },
+    "original_fire_equivalence": {
+      "result": "pass"
+    }
+  },
+  "disk_sha256": "3f11b6cd1822cff1de3f82181f37f72ab2ddb3f99310902c54a661da9bc88f7c",
+  "original_rebuilds": 2,
+  "inventory_files": 686,
+  "user8_seconds": 50.448721422988456,
+  "delivered_source_files": 1554
+}

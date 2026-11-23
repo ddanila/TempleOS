@@ -40,6 +40,7 @@ runs = [
     'span-production-v1/generations128-resume-install/gen1-audit',
     'span-production-v1/generations128-resume-install/gen2-audit',
     'tothefront-production-v1/full',
+    'sound-delay-production-v1/full',
 ]
 
 
@@ -52,7 +53,7 @@ def open_in_guest(path):
 
 
 files = [(run, 'kernel-assembly.txt') for run in runs]
-for project in ('native-ode-production-v1', 'span-production-v1', 'tothefront-production-v1'):
+for project in ('native-ode-production-v1', 'span-production-v1', 'tothefront-production-v1', 'sound-delay-production-v1'):
     for folder, names in (
         ('bootstrap', ('generation-1.iso', 'generation-2.iso')),
         ('full', ('compiler.iso',)),
@@ -67,6 +68,13 @@ for generation in ('gen1-selfhost', 'gen2-selfhost'):
     receipt = directory / 'result.json'
     if receipt.is_file() and json.loads(receipt.read_text())['result'] == 'pass':
         files.append((str(directory.relative_to('build')), 'source.img'))
+
+for candidate in ('candidate', 'delay-ceil-candidate'):
+    directory = Path('build/native-noise-worker-trace-v1') / candidate
+    receipt = directory / 'result.json'
+    if receipt.is_file() and json.loads(receipt.read_text())['result'] == 'pass':
+        files.extend((str(directory.relative_to('build')), name)
+                     for name in ('compiler.iso', 'kernel.img'))
 
 for run, name in files:
     directory = Path('build') / run

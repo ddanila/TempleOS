@@ -12074,6 +12074,13 @@
           "result": "pass",
           "evidence": "build/tothefront-production-v1/fire64-userspace-irqchip/result.json",
           "scope": "Staged adjacent defender. Physical drag, hit state, defender life, opposing live count and turn progression match with QEMU userspace IRQ chip."
+        },
+        {
+          "target": "tothefront-production-direct-fire",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --fire --disk DISK --out OUT",
+          "result": "pass",
+          "evidence": "build/sound-delay-production-v1/fire64/result.json",
+          "scope": "Staged adjacent defender. Physical drag, hit state, defender life, opposing live count and turn progression match the original under default KVM."
         }
       ]
     },

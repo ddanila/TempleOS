@@ -629,7 +629,119 @@
         "-o",
         "build/span-production-v1/generations128-resume-install/gen2-selfhost/source.img"
       ]
+    },
+    {
+      "original": "build/native-noise-worker-trace-v1/candidate/compiler.iso",
+      "archive": "build/native-noise-worker-trace-v1/candidate/compiler.iso.zst",
+      "sha256": "612b353c2996664dfb6bb1c9497365a72bd5c9c5c4029522be7044e73352397d",
+      "size": 45467648,
+      "reclaimed_bytes": 32563200,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-noise-worker-trace-v1/candidate/compiler.iso.zst",
+        "-o",
+        "build/native-noise-worker-trace-v1/candidate/compiler.iso"
+      ]
+    },
+    {
+      "original": "build/native-noise-worker-trace-v1/candidate/kernel.img",
+      "archive": "build/native-noise-worker-trace-v1/candidate/kernel.img.zst",
+      "sha256": "8af46d0c1acde627c20e8f8c220aac02abd262c65c31b76da051ded65ff25a66",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-noise-worker-trace-v1/candidate/kernel.img.zst",
+        "-o",
+        "build/native-noise-worker-trace-v1/candidate/kernel.img"
+      ]
+    },
+    {
+      "original": "build/native-noise-worker-trace-v1/delay-ceil-candidate/compiler.iso",
+      "archive": "build/native-noise-worker-trace-v1/delay-ceil-candidate/compiler.iso.zst",
+      "sha256": "f2cd6870d7d6e5f69bb08dcc3715696e847bbd2679e9566a32b9e88ab76e6c93",
+      "size": 45467648,
+      "reclaimed_bytes": 32563200,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-noise-worker-trace-v1/delay-ceil-candidate/compiler.iso.zst",
+        "-o",
+        "build/native-noise-worker-trace-v1/delay-ceil-candidate/compiler.iso"
+      ]
+    },
+    {
+      "original": "build/native-noise-worker-trace-v1/delay-ceil-candidate/kernel.img",
+      "archive": "build/native-noise-worker-trace-v1/delay-ceil-candidate/kernel.img.zst",
+      "sha256": "c7270921246023f7bb26c24580121e907915d0e4144a47257d17f5300515a127",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-noise-worker-trace-v1/delay-ceil-candidate/kernel.img.zst",
+        "-o",
+        "build/native-noise-worker-trace-v1/delay-ceil-candidate/kernel.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/full/kernel-assembly.txt",
+      "archive": "build/sound-delay-production-v1/full/kernel-assembly.txt.zst",
+      "sha256": "fcf69626561028312626ec2f713adc65c6c136f03a9b81857b7d79b0157606d6",
+      "size": 109725641,
+      "reclaimed_bytes": 101031936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/sound-delay-production-v1/full/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/bootstrap/generation-1.iso",
+      "archive": "build/sound-delay-production-v1/bootstrap/generation-1.iso.zst",
+      "sha256": "da126139a2079635dc16be5095486299d78920ddc1c9b2314d3ff59eeb3e4502",
+      "size": 45342720,
+      "reclaimed_bytes": 32481280,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/bootstrap/generation-1.iso.zst",
+        "-o",
+        "build/sound-delay-production-v1/bootstrap/generation-1.iso"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/bootstrap/generation-2.iso",
+      "archive": "build/sound-delay-production-v1/bootstrap/generation-2.iso.zst",
+      "sha256": "d1c6839ec427ab37b8a15d3e5f7f687aede2885df7ffd133bc71480aeb5f9e8a",
+      "size": 45426688,
+      "reclaimed_bytes": 32530432,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/bootstrap/generation-2.iso.zst",
+        "-o",
+        "build/sound-delay-production-v1/bootstrap/generation-2.iso"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/full/compiler.iso",
+      "archive": "build/sound-delay-production-v1/full/compiler.iso.zst",
+      "sha256": "bb99919a19f64c37f17a36de06ba9b115822575f57ed8a7b0c8a436230c637ce",
+      "size": 45467648,
+      "reclaimed_bytes": 32563200,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/full/compiler.iso.zst",
+        "-o",
+        "build/sound-delay-production-v1/full/compiler.iso"
+      ]
     }
   ],
-  "reclaimed_bytes": 3846434816
+  "reclaimed_bytes": 4216979456
 }

@@ -1975,3 +1975,12 @@ in 50.85 seconds. Full-image and retained-generation qualification
 for the timing change remain open. See
 `build/native-noise-worker-trace-v1/delay-fire64/result.json`
 and `build/native-noise-worker-trace-v1/delay-user8/result.json`.
+
+A fresh production image with the sound-effect timing correction
+passes both original bootstrap rebuilds and the native cross-build
+and instruction audit. Its source audit covers 1,554 files and the
+build checks all 686 inventory entries. Under default KVM, the
+Noise/Sweep lifecycle, ToTheFront direct-fire differential, Span
+physical workflow and unchanged User8 all pass. The new image's
+128 MiB retained rebuild is running. See
+`build/sound-delay-production-v1/qualification.json`.
