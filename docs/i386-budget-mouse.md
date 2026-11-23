@@ -98,3 +98,12 @@ See [dispatch architecture and exact regression evidence](i386-window-mouse-disp
 This passes the declared Budget mouse component; mouse entry creation, settled
 framebuffer/pointer fidelity, broad control/window input, repeated-use resources
 and complete Budget/C1–C5 acceptance remain open. Qualification remains 2/686.
+
+The current direct-copy production image passes the same Budget mouse workflow
+at 64 MiB. The runner uses the original comparison and expects Budget's
+current installed data path under `/Home/Budget`. The exact mouse and
+cold-reopen masks are 1023 and 63. Fresh arithmetic renders in both sessions.
+Only the fixture and the three expected Budget data files change, with 1,902
+prior files preserved. The cold session preserves all file tuples. The harness
+and receipt are in `build/budget-mouse-production-home-v1`. Mouse-driven
+entry creation and full Budget qualification remain open.

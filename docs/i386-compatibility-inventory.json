@@ -8026,6 +8026,13 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "native-budget-mouse-production-home-cold-reopen",
+          "command": "python3 build/budget-mouse-production-home-v1/run.py build/ac-dictionary-direct-copy/candidate.img --reference build/budget-mouse-original-v3 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
+          "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
       ]
     },
@@ -8345,6 +8352,13 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "native-budget-mouse-production-home-cold-reopen",
+          "command": "python3 build/budget-mouse-production-home-v1/run.py build/ac-dictionary-direct-copy/candidate.img --reference build/budget-mouse-original-v3 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
+          "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
       ]
     },
@@ -8622,6 +8636,13 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "native-budget-mouse-production-home-cold-reopen",
+          "command": "python3 build/budget-mouse-production-home-v1/run.py build/ac-dictionary-direct-copy/candidate.img --reference build/budget-mouse-original-v3 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
+          "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
       ]
     },
@@ -8964,6 +8985,13 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "native-budget-mouse-production-home-cold-reopen",
+          "command": "python3 build/budget-mouse-production-home-v1/run.py build/ac-dictionary-direct-copy/candidate.img --reference build/budget-mouse-original-v3 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
+          "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
       ]
     },
@@ -9241,6 +9269,13 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "native-budget-mouse-production-home-cold-reopen",
+          "command": "python3 build/budget-mouse-production-home-v1/run.py build/ac-dictionary-direct-copy/candidate.img --reference build/budget-mouse-original-v3 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
+          "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
       ]
     },
@@ -9678,6 +9713,13 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "native-budget-mouse-production-home-cold-reopen",
+          "command": "python3 build/budget-mouse-production-home-v1/run.py build/ac-dictionary-direct-copy/candidate.img --reference build/budget-mouse-original-v3 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
+          "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
       ]
     },
@@ -9822,6 +9864,13 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "native-budget-mouse-production-home-cold-reopen",
+          "command": "python3 build/budget-mouse-production-home-v1/run.py build/ac-dictionary-direct-copy/candidate.img --reference build/budget-mouse-original-v3 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
+          "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
       ]
     },
@@ -10147,6 +10196,13 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "native-budget-mouse-production-home-cold-reopen",
+          "command": "python3 build/budget-mouse-production-home-v1/run.py build/ac-dictionary-direct-copy/candidate.img --reference build/budget-mouse-original-v3 --out OUT",
+          "result": "pass",
+          "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
+          "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
       ]
     },

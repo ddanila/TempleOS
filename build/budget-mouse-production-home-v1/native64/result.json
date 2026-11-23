@@ -1,0 +1,115 @@
+{
+  "result": "pass",
+  "fixture_sha256": "f091cd942fe0554a3ba0ae99bb146c65e5e9c5f67eb6dfb09a7c3dcc3da7aaeb",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-budget-mouse.py": "fd933f60c1b332d0fa94cb02f11dcb4b005504f68a31c6a3f135558cd73a36b7",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-production-home-v1/run.py": "2c7e7d3122d2e630562003613dc065721cbe6b4000702d7e02d41448c413ea99",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-budget-mouse/Contract.HC": "f091cd942fe0554a3ba0ae99bb146c65e5e9c5f67eb6dfb09a7c3dcc3da7aaeb",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "feabfa181b91082ab6b8cf0ddcf84fdbcba0b5b6b245c75ae0e9acae1c3eac53",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-budget-recurrence.py": "7d72d84b02ee71e96793275fef50b63cf55b5d1e8052bd9dca8fd0b6bb3ca87a",
+    "/home/ddanila/fun/TempleOS/tools/i386-budget-source.py": "3b0c62f74a6ddcc3d6a7ec0fc61b59139e056fe9ab04de8eb7cda15d9069665a",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/guest-run.py": "58e0b848613303f2680594edb6eec7c43823bc2554983d2af4451f11d7d24cd3",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "99b84a62ec9753818b129f12d14d3cb6489654c30e48eb9b68c939b52d68399f",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "/home/ddanila/fun/TempleOS/build/ac-dictionary-direct-copy/candidate.img": "7aed6eb22071330f104c0d563af7567008162c76711f4dd65c5077f04e5e29b7",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/result.json": "2336ad4a249cb319b1f1a63b3e2ec9947f04da9c83e84d0940aad2b5b8e27014",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/before.DD": "12ac1449da7b35242e8bab13df81fa395d330f87e2e4ba82f576a3194436d6c8",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/selected.DD": "b2267e32eed66580583090a845093d80d2d89d4ec82004ecc8fbdf5b4d829822",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/cancelled.DD": "b2267e32eed66580583090a845093d80d2d89d4ec82004ecc8fbdf5b4d829822",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/rent.DD": "79b0d82261df3cc127a5cd3083c385718c03df62be5d8ce6736c7ff5f9db024c",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/first.DD": "094f08cc085af83fb2d418167ab9f845bfa5497db3ed72d2179bc6f575e5278e",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/before.DD.live": "45889f5c555aa15a37282f8c0746bd1a4bf98b7d323d1b841658c1b705b21f44",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/selected.DD.live": "45889f5c555aa15a37282f8c0746bd1a4bf98b7d323d1b841658c1b705b21f44",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/cancelled.DD.live": "45889f5c555aa15a37282f8c0746bd1a4bf98b7d323d1b841658c1b705b21f44",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/rent.DD.live": "45889f5c555aa15a37282f8c0746bd1a4bf98b7d323d1b841658c1b705b21f44",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/first.DD.live": "45889f5c555aa15a37282f8c0746bd1a4bf98b7d323d1b841658c1b705b21f44",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/edit.DD": "280c48f68660845d879efa3607719dd78ae2efdd30f2e5b1047db30916820928",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/edit.fields": "6387e7d553afa5b923a82fc336f625a14606a5e94f6d99104b857eda91c55316",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/edit.state": "08737d5a0fe0fccb2da81144b0f5de807e2cce4c5c5be7fb0a0d39fdf15f8d17",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/accounts-menu.DD": "e3be6f1e2e2fad864130fcb3582cecb271de48bd534d0bedc00dc0582f8570e9",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/selected.DD.position": "0c730b69905c5ef7a4ca5269f72365400bde2dd2c04eaf9bbb3d1c4a265a0131",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/first.DD.position": "c571327cb01ac1de6972713cbf6cc1fc3c2cab8b581ee0bc3fe6d8b56963fd5b",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/second-target.bin": "5fd71213ad5c826bcad5fe158f3dee832de2c81e7879b0b91fe5cfeba77dd9c3",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/rent-target.bin": "4058b961a861bd55eb792ee08402291b88cf6b04689f2aa48696c0c309f60870",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/first-target.bin": "3b414a55d1e68c1ccd806b70c979313647ee6c84fa1c35323f17c33fbe17971e",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/mask.bin": "5ce0fabd6443e12efeb4a11a2be63dafeafcb069702562729672c1ef7449a55a",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/data.bin": "eca67318c12bbc810eab5b09ee392049e6092c2c72373d695e2694fc68ae9389",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/strings.DD": "76dbd6e2c99130f77706403c51e966396eeaf4ad1cd4fd8b62565b69a84665d6",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/accounts.DD": "326a9a7bbe6eacda718c2a97303d0ae72dec52fcd30f68486de59bb358fcf0b4",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/reopen-before.DD": "fad5613091c4c8e5840bdc5b9cb3cf225e2aba15045b2f4d7d9cf928c483602e",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/reopen-before.DD.live": "0507073a207ad641a47ecba3952a6788f133be557b91ec935df20711076bbabe",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/reopen-target.bin": "3b414a55d1e68c1ccd806b70c979313647ee6c84fa1c35323f17c33fbe17971e",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/reopen-mask.bin": "8250ab532e40d24a67c08f58e0cd1d76cef63a045599ae5dc9279472cada42dd",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/reopen-data.bin": "eca67318c12bbc810eab5b09ee392049e6092c2c72373d695e2694fc68ae9389",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/reopen-strings.DD": "76dbd6e2c99130f77706403c51e966396eeaf4ad1cd4fd8b62565b69a84665d6",
+    "/home/ddanila/fun/TempleOS/build/budget-mouse-original-v3/reopen-accounts.DD": "326a9a7bbe6eacda718c2a97303d0ae72dec52fcd30f68486de59bb358fcf0b4"
+  },
+  "scope": "Three constructed/persisted transactions, full Budget: PS/2 select second row, keyboard open/cancel edit, mouse account RENT selection, mouse select first row and double-left-click save. Reopen and double-right-click abort, real cold boot natively. Exact rows/identities/cursors/form/menu/storage, caller restoration and native file/metadata preservation. Not mouse entry creation, whole desktop, settled raster equality or resources qualification.",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "7aed6eb22071330f104c0d563af7567008162c76711f4dd65c5077f04e5e29b7",
+    "image_sha256": "e416a44e6a0b1a9f2d64ac8874fbe115d847eb085784b8c03f7e5b0675e78188",
+    "boot_area_sha256": "a366537fa37d14d0b5763aaeb583d8bc7c10806b063f322c1d985ef6a3bb7edb",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1902,
+      "owned_sectors": 96116,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96131,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/BudgetMouse.HC": "f091cd942fe0554a3ba0ae99bb146c65e5e9c5f67eb6dfb09a7c3dcc3da7aaeb"
+    },
+    "added_attributes": {
+      "/Probe/BudgetMouse.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "commands": [
+    "AdamFile(\"C:/Adam/AutoComplete/MakeAC.HC\",FALSE);",
+    "AdamFile(\"C:/Adam/TaskSettings.HC\",FALSE);",
+    "#include \"C:/Apps/Budget/Load.HC\"",
+    "#include \"C:/Apps/Budget/Install.HC\"",
+    "#include \"C:/Probe/BudgetMouse.HC\""
+  ],
+  "fresh_result": {
+    "column": 0,
+    "row": 21,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "reopen_fresh_result": {
+    "column": 0,
+    "row": 18,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "cold_reopen_files_unchanged": true,
+  "changed_files": [
+    "/Home/Budget/Accts.DD.Z",
+    "/Home/Budget/Bgt.DATA.Z",
+    "/Home/Budget/Strs.DD.Z",
+    "/Probe/BudgetMouse.HC"
+  ],
+  "preserved_files": 1902,
+  "mask": 1023,
+  "reopen_mask": 63,
+  "inputs_unchanged": true
+}
