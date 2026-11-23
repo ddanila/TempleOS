@@ -31025,3 +31025,11 @@ build/compiler-high-headers-v2/cross-audit.json. Audit/packaging and unchanged
 original-User8 qualification follow this build; inspect their terminal receipts
 before drawing conclusions. This remains an unapplied prototype. Full C1–C5,
 inventory, native generations and resource/startup qualification remain open.
+
+### C2/C4 high placement leaves the User8 task allocation unresolved
+
+Audited high-placement v2 at 8 MiB. Complete CompilerA preload succeeds, but
+USCheck fails the same 267,527-byte task request, with a 2,840-byte maximum
+fallback payload. The terminal result is pinned under build/compiler-high-headers-v2.
+A physical startup heap census compares the main arena with the previous preload.
+Full C1–C5 remain open.

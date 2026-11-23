@@ -1,0 +1,11 @@
+{
+  "result": "fail",
+  "ram_mib": 8,
+  "requested_bytes": 267527,
+  "fallback_largest_free": 2840,
+  "hashes": {
+    "user8/qemu/debug.log": "4e93bf759139092f94840febbaf363b66115e72b87833a6c34f64f7065ba6ad5",
+    "user8/result.json": "85fa7caf67b74d3b7628b68759c56676744915f5def6a5d8002ef9ebbd8f86f6",
+    "packaging.json": "6f7727b65dc196a12a48b2d4397e5654beb9b73c8f2b09f1b139446b03c1dfae"
+  }
+}

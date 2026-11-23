@@ -272,3 +272,12 @@ heap fragmentation, startup or broader compatibility. The original-User8 test
 is launched after successful image auditing/packaging and needs its terminal
 receipt before any passing claim. No production source changes are applied.
 The full C1–C5 objective is active again; all prior open gates remain open.
+
+
+High-placement v2 passes the module and image audits. The actual 8 MiB User
+startup test completes CompilerA preload and reaches USCheck, then fails the
+267,527-byte task allocation. The fallback arena's largest free payload is still
+2,840 bytes. The experiment therefore leaves the original-User8 gate open.
+`build/compiler-high-headers-v2/user8-audit.json` pins the runtime and packaging
+receipts. The physical startup heap snapshot under
+`build/preload-heap-comparison/high_v2` measures the effect on the main arena.
