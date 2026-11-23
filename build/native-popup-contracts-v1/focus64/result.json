@@ -1,0 +1,52 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "build/async-popup-focus-retire-v1/candidate.img": "2ee37ed0c3295ef8d52f4664a4b29f410b3421264157ce781bc63794edaba311",
+    "tools/test-i386-popup-lifetime.py": "39b795decd29e80637efece7d7b38c79696d615d980e76f3c45e746e7780560d",
+    "tests/guest/i386-window-order/Popup.HC": "d1f466988cb7f7b47c21054d0e225e9bb7d3f9e4830a9ccb684af399be8cce28",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/native-popup-contracts-v1/run.py": "3a81fe93f862420c00e4eb2cbd845748667529d4345d994e067fb51031ede088"
+  },
+  "scope": "Existing popup state and window-order contracts, with direct result markers",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "2ee37ed0c3295ef8d52f4664a4b29f410b3421264157ce781bc63794edaba311",
+    "image_sha256": "30d9b4c5c69c381a41f0a6f68210b0d76a4be3206f0beaca7b693860ed9b7912",
+    "boot_area_sha256": "5aa85244a30e742429830e2770bcea2fcf34bf207db61cb847921c16e136677e",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96134,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96143,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/PopupContracts.HC": "eea655bc1cee3edab51920647195a5ab2ab19c6918d5f4b77760b2b1ae5b0fe1"
+    },
+    "added_attributes": {
+      "/PopupContracts.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 16,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "observations": [
+    "POPUP LIFETIME 1 1 63 63 255",
+    "POPUP ORDER 255"
+  ],
+  "inputs_unchanged": true
+}

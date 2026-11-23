@@ -1,0 +1,145 @@
+{
+  "files": [
+    {
+      "original": "build/vocabulary-lazy-init-v1/full/kernel-assembly.txt",
+      "archive": "build/vocabulary-lazy-init-v1/full/kernel-assembly.txt.zst",
+      "sha256": "6ddf1c7285009373a69822f1aba24b31655f9877ace226525a48cbb56716cad4",
+      "size": 109455992,
+      "reclaimed_bytes": 100786176,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-lazy-init-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/vocabulary-lazy-init-v1/full/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/logic-lazy-load-v1/full/kernel-assembly.txt",
+      "archive": "build/logic-lazy-load-v1/full/kernel-assembly.txt.zst",
+      "sha256": "6ddf1c7285009373a69822f1aba24b31655f9877ace226525a48cbb56716cad4",
+      "size": 109455992,
+      "reclaimed_bytes": 100786176,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/logic-lazy-load-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/logic-lazy-load-v1/full/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/keepaway-sort-production-v1/full/kernel-assembly.txt",
+      "archive": "build/keepaway-sort-production-v1/full/kernel-assembly.txt.zst",
+      "sha256": "6ddf1c7285009373a69822f1aba24b31655f9877ace226525a48cbb56716cad4",
+      "size": 109455992,
+      "reclaimed_bytes": 100786176,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-sort-production-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/keepaway-sort-production-v1/full/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/keepaway-libraries-lazy-v1/full/kernel-assembly.txt",
+      "archive": "build/keepaway-libraries-lazy-v1/full/kernel-assembly.txt.zst",
+      "sha256": "6ddf1c7285009373a69822f1aba24b31655f9877ace226525a48cbb56716cad4",
+      "size": 109455992,
+      "reclaimed_bytes": 100786176,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-libraries-lazy-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/keepaway-libraries-lazy-v1/full/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/module-zero-fallback-prototype-instruction-v1/kernel-assembly.txt",
+      "archive": "build/module-zero-fallback-prototype-instruction-v1/kernel-assembly.txt.zst",
+      "sha256": "c4a8525eeee7052fad7f61af7b653e7928fd40f35110364299003dbe325f3a7a",
+      "size": 109543198,
+      "reclaimed_bytes": 100909056,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/module-zero-fallback-prototype-instruction-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/module-zero-fallback-prototype-instruction-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/module-zero-native-provider-instruction-v1/kernel-assembly.txt",
+      "archive": "build/module-zero-native-provider-instruction-v1/kernel-assembly.txt.zst",
+      "sha256": "a14b20d593c2ec27aa482d2300ead494229f9d8d794b01d0c7c7fd6e39155510",
+      "size": 109536069,
+      "reclaimed_bytes": 100900864,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/module-zero-native-provider-instruction-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/module-zero-native-provider-instruction-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/module-zero-native-compiler-instruction-v1/kernel-assembly.txt",
+      "archive": "build/module-zero-native-compiler-instruction-v1/kernel-assembly.txt.zst",
+      "sha256": "0c491f03293bfc9506002b112fe2e953169883f1f95b21e2d058b8d45601bd04",
+      "size": 109293092,
+      "reclaimed_bytes": 100679680,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/module-zero-native-compiler-instruction-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/module-zero-native-compiler-instruction-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/module-zero-native-components-instruction-v1/kernel-assembly.txt",
+      "archive": "build/module-zero-native-components-instruction-v1/kernel-assembly.txt.zst",
+      "sha256": "6ff34790d0b92d77583b9c93088827ebe135f332f32e7678086b2d3a6d82d895",
+      "size": 109291248,
+      "reclaimed_bytes": 100675584,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/module-zero-native-components-instruction-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/module-zero-native-components-instruction-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-emitter-known-cross-v1/kernel-assembly.txt",
+      "archive": "build/i386-emitter-known-cross-v1/kernel-assembly.txt.zst",
+      "sha256": "0ab94a5b63c477ba2b8d921f821f214b041d41b0cd7c99e80962d457ae48027e",
+      "size": 109109128,
+      "reclaimed_bytes": 100462592,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-emitter-known-cross-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-emitter-known-cross-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/emitter-known-build-v1/kernel-assembly.txt",
+      "archive": "build/emitter-known-build-v1/kernel-assembly.txt.zst",
+      "sha256": "0ab94a5b63c477ba2b8d921f821f214b041d41b0cd7c99e80962d457ae48027e",
+      "size": 109109128,
+      "reclaimed_bytes": 100462592,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/emitter-known-build-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/emitter-known-build-v1/kernel-assembly.txt"
+      ]
+    }
+  ],
+  "reclaimed_bytes": 1007235072
+}

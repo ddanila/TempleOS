@@ -2744,3 +2744,9 @@ Generation two now passes the retained-module rebuild. All nine exports
 match the first self-hosted generation byte for byte, with one build-provider
 load. The second installation is underway. See
 `build/i386-graphics-registry-integration/generations128/gen2-retained-build/result.json`.
+
+Generation two also passes the nine-module installation and its 8 MiB boot
+with both interactive raster checkpoints. This boot took 60.38 seconds and
+exceeds the 60-second budget. The second self-hosted flat-kernel build is
+underway. See
+`build/i386-graphics-registry-integration/generations128/gen2-install`.

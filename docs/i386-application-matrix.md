@@ -1127,3 +1127,17 @@ original. The 8 MiB User smoke test passes in 50.90 seconds. See
 `build/native-focus-menu-overlay-v1`. Broader popup regressions are still
 running under the managed-pointer profile. The two patches remain overlays
 while the two-generation harness uses its pinned production sources.
+
+The popup lifetime and window-order assertions both pass on the focus-only
+overlay and the combined focus/menu overlay. The observed lifetime values
+are 1, 1, 63, 63 and 255. Window order returns mask 255. The two standard
+screen-driven wrappers stopped at screenshot comparisons earlier in their
+runs. The passing runs package the same assertions and check their direct
+output markers, followed by exact fresh arithmetic glyphs. See
+`build/native-popup-contracts-v1`.
+
+On the combined focus/menu overlay, Psalmody also records all three expected
+notes at the exact original durations when input starts after redraw. The
+recorded and post-backspace files and caller mask match the original bytes.
+See `build/native-focus-menu-overlay-v1/psalmody64/result.json`. The
+immediate-input timing case remains open.
