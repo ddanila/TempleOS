@@ -1,0 +1,243 @@
+{
+  "files": [
+    {
+      "original": "build/compiler-backing-fit-v2/audit/kernel-assembly.txt",
+      "archive": "build/compiler-backing-fit-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "de6bc0a59c449f9cdd3ebb933fdc85e31f571834e45bf73c9fe124a5a3b26cc1",
+      "size": 110946011,
+      "reclaimed_bytes": 102141952,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-backing-fit-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-backing-fit-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-backing-aligned-v1/audit/kernel-assembly.txt",
+      "archive": "build/compiler-backing-aligned-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "27d5e0a065e14d82f03f52fda7e67a99c9ff4bd318c81cc9bdc584b66141e838",
+      "size": 110943256,
+      "reclaimed_bytes": 102141952,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-backing-aligned-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-backing-aligned-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-backing-fit-v1/audit/kernel-assembly.txt",
+      "archive": "build/compiler-backing-fit-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "32e2cc4f63fdbe486d463306bc6017c87c5120390a847f11b572ba47b265bf91",
+      "size": 110942770,
+      "reclaimed_bytes": 102141952,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-backing-fit-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-backing-fit-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-optimizer-stack-v1/audit/kernel-assembly.txt",
+      "archive": "build/original-user-optimizer-stack-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "40be069729794efde3e1f3771944a6a4ce2bb90db20a72b78ad0bbe0c6a33cda",
+      "size": 110931120,
+      "reclaimed_bytes": 102125568,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-optimizer-stack-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-optimizer-stack-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-code-census-v1/audit/kernel-assembly.txt",
+      "archive": "build/original-user-code-census-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "c65622266bd82841b414e595447818a61033d13e5552f8dc1dea8002b02af3f7",
+      "size": 110915287,
+      "reclaimed_bytes": 102113280,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-code-census-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-code-census-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-backing-trace-v2/audit/kernel-assembly.txt",
+      "archive": "build/compiler-backing-trace-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "b5367522d9115955c320f6d54f0582c236df2f903104728b1d0c7ff834463b34",
+      "size": 110895218,
+      "reclaimed_bytes": 102100992,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-backing-trace-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-backing-trace-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-backing-trace-v1/audit/kernel-assembly.txt",
+      "archive": "build/compiler-backing-trace-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "1797d5d45cbbb49e6debb310390a97121a3ec533253ee3bb9609f93011b3b02e",
+      "size": 110892810,
+      "reclaimed_bytes": 102096896,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-backing-trace-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-backing-trace-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-stack-reserve-v9/audit/kernel-assembly.txt",
+      "archive": "build/original-user-stack-reserve-v9/audit/kernel-assembly.txt.zst",
+      "sha256": "078d8f03b665244780671155a3b59e7ce672e45e31c1d32ef2125ebc5f16911d",
+      "size": 110879746,
+      "reclaimed_bytes": 102084608,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-stack-reserve-v9/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-stack-reserve-v9/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-stack-reserve-v8/audit/kernel-assembly.txt",
+      "archive": "build/original-user-stack-reserve-v8/audit/kernel-assembly.txt.zst",
+      "sha256": "c8785b1f81e7e8c9b4dc42678449f5d315d3f83076537bcaf5bad22413926dcd",
+      "size": 110879746,
+      "reclaimed_bytes": 102084608,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-stack-reserve-v8/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-stack-reserve-v8/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-stack-reserve-v10/audit/kernel-assembly.txt",
+      "archive": "build/original-user-stack-reserve-v10/audit/kernel-assembly.txt.zst",
+      "sha256": "bc694bc238da236f76438d969b97287f792b7ec0054cdcbe82c893aaddaac40a",
+      "size": 110879746,
+      "reclaimed_bytes": 102084608,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-stack-reserve-v10/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-stack-reserve-v10/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-exact-code-v2/audit/kernel-assembly.txt",
+      "archive": "build/original-user-exact-code-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "aa20d5cec0bc2310b8d62f7ac596a89839d0b6eaee9923254a6b5e8da79eb1c7",
+      "size": 110879746,
+      "reclaimed_bytes": 102084608,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-exact-code-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-exact-code-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-exact-code-v1/audit/kernel-assembly.txt",
+      "archive": "build/original-user-exact-code-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "0a92cc5d60eddac9225e25eb757448a89771e2a948372769173632794956c18e",
+      "size": 110879746,
+      "reclaimed_bytes": 102084608,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-exact-code-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-exact-code-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-stack-reserve-v6/audit/kernel-assembly.txt",
+      "archive": "build/original-user-stack-reserve-v6/audit/kernel-assembly.txt.zst",
+      "sha256": "9a45b225e656b0a7659e2292ef7fd07eb1e92def81a7b35159754655029e7e23",
+      "size": 110869707,
+      "reclaimed_bytes": 102080512,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-stack-reserve-v6/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-stack-reserve-v6/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-stack-reserve-v5/audit/kernel-assembly.txt",
+      "archive": "build/original-user-stack-reserve-v5/audit/kernel-assembly.txt.zst",
+      "sha256": "9a45b225e656b0a7659e2292ef7fd07eb1e92def81a7b35159754655029e7e23",
+      "size": 110869707,
+      "reclaimed_bytes": 102080512,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-stack-reserve-v5/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-stack-reserve-v5/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-stack-reserve-v4/audit/kernel-assembly.txt",
+      "archive": "build/original-user-stack-reserve-v4/audit/kernel-assembly.txt.zst",
+      "sha256": "84f052b5b1047bc96f984a80e898eff2c99c98154f26a5fd470ba51b3591c2c3",
+      "size": 110868740,
+      "reclaimed_bytes": 102076416,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-stack-reserve-v4/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-stack-reserve-v4/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-backing-large-high-v1/audit/kernel-assembly.txt",
+      "archive": "build/compiler-backing-large-high-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "98759e0ee8d0a2e0e7f434384979b140174310489b0ae2551a191121a398eb36",
+      "size": 110863853,
+      "reclaimed_bytes": 102072320,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-backing-large-high-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-backing-large-high-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-backing-exact-v1/audit/kernel-assembly.txt",
+      "archive": "build/compiler-backing-exact-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "1562fa51daaf1e2f2fe381d889ff60da72264aaa48182be933ac662959044d76",
+      "size": 110862207,
+      "reclaimed_bytes": 102068224,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-backing-exact-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-backing-exact-v1/audit/kernel-assembly.txt"
+      ]
+    }
+  ],
+  "reclaimed_bytes": 1735663616
+}
