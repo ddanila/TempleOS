@@ -1,0 +1,64 @@
+--- a/Kernel/GraphicsPlanarCore.HC
++++ b/Kernel/GraphicsPlanarCore.HC
+@@ -1,8 +1,8 @@
+-U0 GraphicsPlanarSplitCore(U8 **planes,U8 *pixels)
++U0 GraphicsPlanarSplitCore(U8 **planes,U8 *pixels,I64 count=38400)
+ {//Use the same low-bit-left logical planes as the existing VGA driver.
+   I64 i;
+   U64 pixels8,mask=0x0101010101010101,weights=0x0102040810204080;
+-  for(i=0;i<38400;i++) {
++  for(i=0;i<count;i++) {
+     pixels8=(pixels+i*8)(U64 *)[0];
+     //Each byte contributes one bit; no partial sum can carry into another byte.
+     planes[0][i]=((pixels8&mask)*weights)>>56;
+--- a/Kernel/I386/GraphicsFrame.HC
++++ b/Kernel/I386/GraphicsFrame.HC
+@@ -133,6 +133,38 @@
+   if(gr.fp_final_scrn_update)(*gr.fp_final_scrn_update)(dc);
+   else if(I386TaskSelf==native_window_worker)DrawMs(dc);
+ }
++Bool NativeGraphicsUpload()
++{//Caller holds the presentation lease. Scan complete rows and retain the
++  //logical planes that belong to the currently displayed graphics surface.
++  U8 candidate[320],*split[4],*destination;
++  I64 plane,row,offset,first=480,last=-1;
++  Bool changed;
++  if(!NativeDisplayViewMatches(graphics_planes)) {
++    GraphicsPlanarSplitCore(graphics_planes,gr.dc2->body);
++    return I386VgaSplitRows(graphics_planes,0,480);
++  }
++  for(plane=0;plane<4;plane++)split[plane]=candidate+80*plane;
++  for(row=0;row<480;row++) {
++    offset=row*80;
++    GraphicsPlanarSplitCore(split,gr.dc2->body+row*640,80);
++    changed=FALSE;
++    for(plane=0;plane<4;plane++) {
++      destination=graphics_planes[plane]+offset;
++      if(MemCmp(destination,split[plane],80)) {
++        MemCpy(destination,split[plane],80);
++        changed=TRUE;
++      }
++    }
++    if(changed) {
++      if(first==480)first=row;
++      last=row;
++    }
++  }
++  if(last<0)return TRUE;
++  if(I386VgaSplitRows(graphics_planes,first,last-first+1))return TRUE;
++  NativeDisplayViewCommit(NULL);
++  return FALSE;
++}
+ Bool NativeGraphicsPresentChecked(U0 (*draw)(CDC *dc),Bool blink,Bool (*admit)())
+ {//Root-owned storage; managed callers serialize presentation through one lease.
+   Bool result=FALSE;
+@@ -156,8 +188,7 @@
+     if(NativeProgressVisible || gr.fp_final_scrn_update || admit)final_draw=&NativeGraphicsFinal;
+     GraphicsFrameCore(gr.dc2,gr.dc,gr.text_base,text.font,blink,
+       gr.pan_text_x,gr.pan_text_y,gr.hide_col,gr.hide_row,draw,final_draw);
+-    GraphicsPlanarSplitCore(graphics_planes,gr.dc2->body);
+-    result=I386VgaSplitRows(graphics_planes,0,480);
++    result=NativeGraphicsUpload;
+     if(result) {
+       NativeDisplayViewCommit(graphics_planes);
+       NativePresentationCommit;

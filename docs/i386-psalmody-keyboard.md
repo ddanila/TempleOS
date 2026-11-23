@@ -137,3 +137,19 @@ record redraw at 1,020 ms, including 720 ms before the final refresh. The
 experiment leaves the first-note failure in place. The disposable patch and
 receipts are in `build/psalmody-doc-stream-batch-v1` and
 `build/psalmody-redraw-profile-v2/batch64`.
+
+With the stock document scheduling policy, a native-only trace around the
+record menu's first styled string measures 160 ms inside the document update
+and another 90 ms in the final yield. The formatter has already produced the
+string at the start of this measured interval. Lock acquisition and release
+each take less than one 10 ms tick. This separates the stream update from
+waiting on the document lock. See `build/psalmody-doc-stream-trace-v2`.
+
+The changed-row VGA overlay keeps the native framebuffer layout and retains
+a full upload when the display changes backing surfaces. Its profiled redraw
+takes 700 ms, including 200 ms in the last two-frame wait. The corresponding
+full-upload run took 1,150 ms and 290 ms. The first recorded note still has
+duration zero with the strict original input sequence. The overlay, pending
+separate raster verification, remains a disposable candidate. See
+`build/native-graphics-dirty-rows-v1` and
+`build/psalmody-redraw-profile-v2/dirty64`.

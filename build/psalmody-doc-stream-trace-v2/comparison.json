@@ -1,0 +1,74 @@
+{
+  "result": "fail",
+  "segments": {
+    "initial_menu": {
+      "enter_stream_ms": 0,
+      "lock_ms": 0,
+      "insert_ms": 140,
+      "unlock_ms": 0,
+      "final_yield_ms": 0,
+      "total_ms": 140
+    },
+    "record_menu": {
+      "enter_stream_ms": 0,
+      "lock_ms": 0,
+      "insert_ms": 160,
+      "unlock_ms": 0,
+      "final_yield_ms": 90,
+      "total_ms": 250
+    }
+  },
+  "error": "Recorded notes differ: (3, 1, 63, 0, 0, 1, 65, 8, 0, 1, 67, 7, 0)",
+  "debug_sha256": "36def42ee9f4a6194bb5d9365aadd5f5d5822017e06fa69b1b58ad8aad0bc0e6",
+  "receipt_sha256": "79f6decb04ff88fee1bd52ff8afead8cb2508901d5b9453815d657069e6186a0",
+  "points": [
+    [
+      1,
+      119751
+    ],
+    [
+      2,
+      119751
+    ],
+    [
+      3,
+      119751
+    ],
+    [
+      4,
+      119891
+    ],
+    [
+      5,
+      119891
+    ],
+    [
+      6,
+      119891
+    ],
+    [
+      1,
+      123241
+    ],
+    [
+      2,
+      123241
+    ],
+    [
+      3,
+      123241
+    ],
+    [
+      4,
+      123401
+    ],
+    [
+      5,
+      123401
+    ],
+    [
+      6,
+      123491
+    ]
+  ]
+}

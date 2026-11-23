@@ -1,0 +1,29 @@
+{
+  "result": "pass",
+  "source_sha256": "63ff6673074edad8d5b90ca401f71c0b0b9572b137acc184b31f4da3b22ae9bb",
+  "image_sha256": "93c712fca70461955889eef60fbac6ec0e5694de25a80026ec4e529803ac877c",
+  "boot_area_sha256": "a366537fa37d14d0b5763aaeb583d8bc7c10806b063f322c1d985ef6a3bb7edb",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1903,
+    "owned_sectors": 96122,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1904,
+    "owned_sectors": 96129,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {
+    "/Kernel/I386/DocPrintPartialTrace.HC": "3d573dadd7246c01e2efb7fb81a2a12c8ac159a1d6bb81850662c61c78196ba3"
+  },
+  "added_attributes": {
+    "/Kernel/I386/DocPrintPartialTrace.HC": 2048
+  },
+  "scope": "Native document stream profiling overlay",
+  "candidate_sha256": "93c712fca70461955889eef60fbac6ec0e5694de25a80026ec4e529803ac877c",
+  "instruction_audit": "pass",
+  "prototype": false
+}
