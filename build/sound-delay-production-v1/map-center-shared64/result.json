@@ -1,0 +1,77 @@
+{
+  "fixture_sha256": "2f8b11ef13a2fd72e751c8e7b67ba9505aaac46e9cdfa461935e7691d184498b",
+  "input_sha256": "461c9a9efafae95cc42d2363dd20be242b4de5a1075b9f27032994d0554cfcea",
+  "machine": "pc",
+  "phases": [
+    [
+      1,
+      0,
+      0,
+      32,
+      32
+    ],
+    [
+      1,
+      1,
+      1,
+      32,
+      32
+    ],
+    [
+      1,
+      2,
+      0,
+      32,
+      32
+    ],
+    [
+      1,
+      3,
+      1,
+      32,
+      32
+    ],
+    [
+      1,
+      4,
+      0,
+      32,
+      32
+    ],
+    [
+      1,
+      5,
+      1,
+      32,
+      32
+    ],
+    [
+      2,
+      0,
+      1,
+      32,
+      32
+    ]
+  ],
+  "after_match": {
+    "column": 0,
+    "row": 2,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "map": {
+    "width": 640,
+    "height": 464,
+    "stride": 640,
+    "rows": 46,
+    "columns": 19,
+    "map-pixels": "ed3764a9baff6648814ce4f18e7ff2956a243102d5908f74d46fae11e6838507",
+    "terrain": "185ae68b93ae4603d648640db52874a491bffb42eb5db177aaa5ce0e4aeb4270",
+    "roads": "82cd1d3710cf9ad8bda81010db6ecb73b285b11e278e8c8e039d798b7d76250d",
+    "rivers": "e40e3dc29ac85a43014203766fc7e28d822b40b777e02c51a26f9d0686dd2bea"
+  },
+  "result": "pass"
+}

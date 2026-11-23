@@ -2981,7 +2981,259 @@
         "-o",
         "build/sound-delay-production-v1/simple-ai-distance64/working.img"
       ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/simple-ai-center-candidate64/working.img",
+      "archive": "build/sound-delay-production-v1/simple-ai-center-candidate64/working.img.zst",
+      "sha256": "f45c09512286d9e99ece8f2437532bf3f184ccf322c724791ef16188fd9c6586",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/simple-ai-center-candidate64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/simple-ai-center-candidate64/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/map-center-candidate64/working.img",
+      "archive": "build/sound-delay-production-v1/map-center-candidate64/working.img.zst",
+      "sha256": "4dfc9bf4e92a4b7f66dde03fa73545672190aa47d8698e7dd95c51a6c0c65c72",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/map-center-candidate64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/map-center-candidate64/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/simple-ai-second-seed/original.iso",
+      "archive": "build/tothefront-original-v1/simple-ai-second-seed/original.iso.zst",
+      "sha256": "1c69f6824554e808121088319a82fcb8a51a1cf157e4bbc33823603e9fa1f3ea",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/simple-ai-second-seed/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/simple-ai-second-seed/original.iso"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/simple-ai-center-second-seed64/working.img",
+      "archive": "build/sound-delay-production-v1/simple-ai-center-second-seed64/working.img.zst",
+      "sha256": "f45c09512286d9e99ece8f2437532bf3f184ccf322c724791ef16188fd9c6586",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/simple-ai-center-second-seed64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/simple-ai-center-second-seed64/working.img"
+      ]
+    },
+    {
+      "original": "build/wordsearch-dictionary-exact-v1/native64/working.img",
+      "archive": "build/wordsearch-dictionary-exact-v1/native64/working.img.zst",
+      "sha256": "aa8999f54576403e9c8a57c0c3d8941ccb9cd288c1b722a400b0a109fb06e7c5",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/wordsearch-dictionary-exact-v1/native64/working.img.zst",
+        "-o",
+        "build/wordsearch-dictionary-exact-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/wordsearch-dictionary-v1/native64/working.img",
+      "archive": "build/wordsearch-dictionary-v1/native64/working.img.zst",
+      "sha256": "aa8999f54576403e9c8a57c0c3d8941ccb9cd288c1b722a400b0a109fb06e7c5",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/wordsearch-dictionary-v1/native64/working.img.zst",
+        "-o",
+        "build/wordsearch-dictionary-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/wordsearch-sort-v1/native64/working.img",
+      "archive": "build/wordsearch-sort-v1/native64/working.img.zst",
+      "sha256": "d6554309efcd20d6d0fb280513ef2a9d326cdcda42ba510da4fb2798014ca6c0",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/wordsearch-sort-v1/native64/working.img.zst",
+        "-o",
+        "build/wordsearch-sort-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/wordsearch-sort-v1/ported64/working.img",
+      "archive": "build/wordsearch-sort-v1/ported64/working.img.zst",
+      "sha256": "c394dfeab4d842e497d19dfabf416c57ceb7b214bc5849652d976f7003fca148",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/wordsearch-sort-v1/ported64/working.img.zst",
+        "-o",
+        "build/wordsearch-sort-v1/ported64/working.img"
+      ]
+    },
+    {
+      "original": "build/wordsearch-sort-zeroed-v1/native64/working.img",
+      "archive": "build/wordsearch-sort-zeroed-v1/native64/working.img.zst",
+      "sha256": "e8187f203aa4552a2a4f07ee9f14346870d665bb9edf3a476bcef75d79fbec74",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/wordsearch-sort-zeroed-v1/native64/working.img.zst",
+        "-o",
+        "build/wordsearch-sort-zeroed-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/vocabulary-bundled-dictionary-v1/native64/working.img",
+      "archive": "build/vocabulary-bundled-dictionary-v1/native64/working.img.zst",
+      "sha256": "4b0839475dbeeb1e01202f105bd78335dcdef25f33fa31618336394e725c39cb",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-bundled-dictionary-v1/native64/working.img.zst",
+        "-o",
+        "build/vocabulary-bundled-dictionary-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/vocabulary-lazy-init-v1/native64/working.img",
+      "archive": "build/vocabulary-lazy-init-v1/native64/working.img.zst",
+      "sha256": "b0157d4420b4a6937c89a76e86485847788405b5ebc1b3a2dc3ea4d82893f77e",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-lazy-init-v1/native64/working.img.zst",
+        "-o",
+        "build/vocabulary-lazy-init-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/vocabulary-libraries-v1/native64/working.img",
+      "archive": "build/vocabulary-libraries-v1/native64/working.img.zst",
+      "sha256": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-libraries-v1/native64/working.img.zst",
+        "-o",
+        "build/vocabulary-libraries-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/vocabulary-popup-lifetime-v1/native64/working.img",
+      "archive": "build/vocabulary-popup-lifetime-v1/native64/working.img.zst",
+      "sha256": "eb641e8e8c98f3ea0b42964bd197ed41bb9b5c894fdd7c508bcde8fe33665f27",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-popup-lifetime-v1/native64/working.img.zst",
+        "-o",
+        "build/vocabulary-popup-lifetime-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/vocabulary-quiz-dismiss-v1/native64/working.img",
+      "archive": "build/vocabulary-quiz-dismiss-v1/native64/working.img.zst",
+      "sha256": "40b2f385293310db1c7e7af5405696e5abd9a3808fd863c8b7d1f08bc794d4bb",
+      "size": 67108864,
+      "reclaimed_bytes": 52932608,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-quiz-dismiss-v1/native64/working.img.zst",
+        "-o",
+        "build/vocabulary-quiz-dismiss-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/vocabulary-quiz-focus-v1/native64/working.img",
+      "archive": "build/vocabulary-quiz-focus-v1/native64/working.img.zst",
+      "sha256": "67322ace42feb495f6b0d3496e6c6d580000043a5b56a79701fd66789c4e50f1",
+      "size": 67108864,
+      "reclaimed_bytes": 52932608,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-quiz-focus-v1/native64/working.img.zst",
+        "-o",
+        "build/vocabulary-quiz-focus-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/vocabulary-quiz-second-prompt-v1/native64/working.img",
+      "archive": "build/vocabulary-quiz-second-prompt-v1/native64/working.img.zst",
+      "sha256": "40b2f385293310db1c7e7af5405696e5abd9a3808fd863c8b7d1f08bc794d4bb",
+      "size": 67108864,
+      "reclaimed_bytes": 52932608,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-quiz-second-prompt-v1/native64/working.img.zst",
+        "-o",
+        "build/vocabulary-quiz-second-prompt-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/vocabulary-quiz-v1/native64/working.img",
+      "archive": "build/vocabulary-quiz-v1/native64/working.img.zst",
+      "sha256": "40b2f385293310db1c7e7af5405696e5abd9a3808fd863c8b7d1f08bc794d4bb",
+      "size": 67108864,
+      "reclaimed_bytes": 52932608,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-quiz-v1/native64/working.img.zst",
+        "-o",
+        "build/vocabulary-quiz-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/vocabulary-quiz-visible-v1/native64/working.img",
+      "archive": "build/vocabulary-quiz-visible-v1/native64/working.img.zst",
+      "sha256": "40b2f385293310db1c7e7af5405696e5abd9a3808fd863c8b7d1f08bc794d4bb",
+      "size": 67108864,
+      "reclaimed_bytes": 52932608,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-quiz-visible-v1/native64/working.img.zst",
+        "-o",
+        "build/vocabulary-quiz-visible-v1/native64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 10528350208
+  "reclaimed_bytes": 11467186176
 }

@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "original": "build/tothefront-original-v1/simple-ai-second-seed/result.json",
+  "native": "build/sound-delay-production-v1/simple-ai-center-second-seed64/result.json",
+  "differences": {
+    "before_movement": [],
+    "after_movement": []
+  }
+}

@@ -205,7 +205,13 @@ U0 HexCentersCalc()
       x=(2*HEX_SIDE+2*DCOS)*i+HEX_SIDE/2+DCOS;
       if (j&1)
 	x+=HEX_SIDE+DCOS;
-      y=DSIN*(j+1);
+#ifdef I386_PUBLIC_USER_INCLUDED
+      // Match the original decimal literal's binary64 spacing for the default hex size.
+      if (HEX_SIDE==11)
+        y=0x40230D747FBFE4F5(F64)*(j+1);
+      else
+#endif
+        y=DSIN*(j+1);
       hex_centers[j][i].x=x;
       hex_centers[j][i].y=y;
     }

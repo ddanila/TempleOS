@@ -10,6 +10,7 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument('--disk', type=Path)
 parser.add_argument('--simple-ai', action='store_true')
+parser.add_argument('--ai-seed', type=int, default=12345678)
 parser.add_argument('--trace-ai', action='store_true')
 parser.add_argument('--map-raster', action='store_true')
 parser.add_argument('--move', action='store_true')
@@ -29,6 +30,10 @@ parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 if (args.overrun or args.close_assault) and (args.move or args.fire or args.indirect or args.indirect_damage):
     parser.error('--overrun and --close-assault each require a separate run')
+if not 0 < args.ai_seed <= (1 << 63) - 1:
+    parser.error('--ai-seed must be a positive I64')
+if args.ai_seed != 12345678 and not args.simple_ai:
+    parser.error('--ai-seed requires --simple-ai')
 if args.trace_ai and not args.simple_ai:
     parser.error('--trace-ai requires --simple-ai')
 if args.simple_ai and (args.move or args.fire or args.overrun or args.close_assault
@@ -140,7 +145,7 @@ try:
         guest.wait('TTF original loaded\n', 90)
         time.sleep(6)
     if args.simple_ai:
-        report.update(workflows['exercise_simple_ai'](guest))
+        report.update(workflows['exercise_simple_ai'](guest, args.ai_seed))
     else:
         occupation = 'close_assault' if args.close_assault else 'overrun' if args.overrun else None
         report.update(workflows['exercise'](guest, args.move, args.fire,

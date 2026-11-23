@@ -15,6 +15,8 @@ def main():
         raise ValueError('Both guest workflows must finish')
     if original['fixture_sha256'] != native['fixture_sha256']:
         raise ValueError('Guest fixtures differ')
+    if original.get('seed', 12345678) != native.get('seed', 12345678):
+        raise ValueError('Guest seeds differ')
     differences = {}
     for stage in ('before_movement', 'after_movement'):
         differences[stage] = [

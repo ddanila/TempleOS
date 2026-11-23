@@ -2077,3 +2077,19 @@ match the original. The map raster regression is running against the
 experimental disk. Broader seed coverage remains open. See
 `build/sound-delay-production-v1/simple-ai-distance64/distance-comparison.json`
 and `build/sound-delay-production-v1/simple-ai-center-candidate64/comparison.json`.
+
+The shared ToTheFront source now uses the original binary64
+vertical spacing for the default native hex size. On a disk
+repacked with those exact source bytes, all 32 SimpleAI movement
+states and the complete map raster and map arrays match the pinned
+original at seed 12345678. The one-line experimental disk also
+matches all 32 movement states at seed 27182818. A fresh full
+production build, additional seeds and full-match parity remain open.
+See `build/sound-delay-production-v1/simple-ai-center-shared64/comparison.json`,
+`build/sound-delay-production-v1/map-center-shared64/comparison.json`
+and `build/sound-delay-production-v1/simple-ai-center-second-seed64/comparison.json`.
+
+The sound-timing production image completes all nine retained
+module rebuilds and their persisted export checks at 128 MiB. The
+two-generation qualification is running with that image as input.
+See `build/sound-delay-production-v1/retained128/result.json`.

@@ -11969,6 +11969,13 @@
           "result": "fail",
           "evidence": "build/sound-delay-production-v1/simple-ai64/comparison.json",
           "scope": "Both workflows complete and the starting snapshots match. Post-movement positions and remaining movement differ for units 0 and 9."
+        },
+        {
+          "target": "tothefront-shared-source-simple-ai-movement",
+          "command": "python3 build/tothefront-original-v1/build_center_candidate.py --shared-source DISK SHARED_DISK; python3 build/tothefront-original-v1/run_phases.py --simple-ai --disk SHARED_DISK --out OUT; python3 build/tothefront-original-v1/compare_simple_ai.py ORIGINAL_RESULT NATIVE_RESULT",
+          "result": "pass",
+          "evidence": "build/sound-delay-production-v1/simple-ai-center-shared64/comparison.json",
+          "scope": "Default-size original vertical map spacing makes all 32 first-movement unit states match at seed 12345678. The experimental disk also matches at seed 27182818."
         }
       ]
     },

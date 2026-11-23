@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "original": "build/tothefront-original-v1/map-original/result.json",
+  "native": "build/sound-delay-production-v1/map-center-shared64/result.json",
+  "dimensions": {
+    "width": 640,
+    "height": 464,
+    "stride": 640,
+    "rows": 46,
+    "columns": 19
+  },
+  "differing_bytes": {
+    "map-pixels": 0,
+    "terrain": 0,
+    "rivers": 0,
+    "roads": 0
+  }
+}

@@ -188,8 +188,8 @@ def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=Fals
 
 
 
-def exercise_simple_ai(guest):
-    guest.type('12345678')
+def exercise_simple_ai(guest, seed):
+    guest.type(str(seed))
     guest.press('ret')
     time.sleep(8)
     guest.screenshot('player-one')
@@ -221,4 +221,4 @@ def exercise_simple_ai(guest):
         raise ValueError('The computer player did not move any unit')
     guest.press('esc')
     guest.wait('TTF phase workflow returned\n', 25)
-    return {'simple_ai': {'before_movement': before, 'after_movement': after, 'units_moved': moved}}
+    return {'seed': seed, 'simple_ai': {'before_movement': before, 'after_movement': after, 'units_moved': moved}}
