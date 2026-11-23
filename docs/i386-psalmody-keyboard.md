@@ -186,3 +186,9 @@ The unchanged Psalmody keyboard workflow after the redraw independently
 passes a second time with durations 8, 8, 8. These results are mapped to
 the Psalmody loader and application source in the compatibility inventory.
 The candidate and receipts are in `build/native-graphics-dirty-rows-v2`.
+
+The second changed-row overlay passes the 8 MiB production User startup check
+with the managed pointer and five command/raster checkpoints. Its startup took
+50.85 seconds and passed the existing 60-second budget checker. The
+`user8` receipts under `build/native-graphics-dirty-rows-v2` cover the production
+User path. The separate original User startup gate remains open.

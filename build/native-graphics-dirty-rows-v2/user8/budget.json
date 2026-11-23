@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "startup_seconds": 50.846704821975436,
+  "budget_seconds": 60,
+  "over_budget_seconds": 0,
+  "evidence": "/home/ddanila/fun/TempleOS/build/native-graphics-dirty-rows-v2/user8/qemu/result.json",
+  "evidence_sha256": "ec2bb61bc3538211b0e44577d42a26d3d670450f1d3b44b988118c5e59db66eb",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}
