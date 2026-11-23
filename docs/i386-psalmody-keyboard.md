@@ -215,3 +215,17 @@ Immediate input during the redraw remains a timing gap. The earlier
 two-generation rebuild receipts refer to their own pinned production sources.
 The integrated source needs its own two native generations and the remaining
 desktop and application qualification.
+
+## Immediate keyboard recording with queued timestamps
+
+The timing overlay uses the native keyboard queue's arrival jiffies when
+both ends of a note have ordered physical timestamps. It keeps the
+existing dispatch-clock calculation for the original system and messages
+without arrival timestamps. The immediate-input test uses the unchanged
+physical 400 ms holds and sends the first note as soon as the record flag
+changes. The patched original and native runs both produce durations
+8, 8 and 8, an exact post-backspace record, and caller mask 63. The native
+filesystem preserves all 1,904 existing entries and fresh arithmetic
+renders. See `build/psalmody-arrival-duration-v1`. The unchanged-source
+control on the same image is running. Production integration and the
+default runner's source verification still need updating.
