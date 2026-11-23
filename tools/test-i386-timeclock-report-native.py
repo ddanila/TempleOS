@@ -20,6 +20,8 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--welcome', action='store_true', help='Expect the welcome-document startup screen')
+    parser.add_argument('--managed-pointer', action='store_true', help='Expect the standard managed pointer in welcome frames')
+    parser.add_argument('--accel', choices=('tcg', 'kvm'), default='tcg')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     if out.exists():
@@ -46,7 +48,9 @@ def main():
     load_line='After Loading, type PunchIn;, PunchOut; or TimeRep;'
     report_lines=['IN  09/04/98 01:30:00:','start','','OUT 09/04/98 03:00:00:',
                   'finish','','Week Total:01:30:00','1','> ']
-    row_styles={load_line:[(20,28,2),(30,39,2),(43,51,2)],
+    plugin_line='You might want to make PLUGINS for hot keys.'
+    row_styles={load_line:[(0,len(load_line),0),(20,28,2),(30,39,2),(43,51,2)],
+                plugin_line:[(0,len(plugin_line),0)],
                 report_lines[0]:[(0,len(report_lines[0]),4)],
                 report_lines[3]:[(0,len(report_lines[3]),4)],
                 report_lines[6]:[(0,len(report_lines[6]),4)]}
@@ -54,12 +58,15 @@ def main():
         styles={}
         if args.welcome:
             if not reopening:
-                styles[1]={'return_rows':[load_line,'You might want to make PLUGINS for hot keys.','','','> ']}
+                styles[1]={'return_rows':[load_line,plugin_line,'','','> '],
+                           'return_colors':{(4,0):0}}
                 styles[2]={'return_rows':report_lines}
             else:
                 styles[1]={'return_rows':report_lines}
-        return run_input(working,destination,snapshot=False,ram_mib=64,cpu='486,-fpu',accel='tcg',qmp_stdio=True,welcome=args.welcome,
+        return run_input(working,destination,snapshot=False,ram_mib=64,cpu='486,-fpu',accel=args.accel,qmp_stdio=True,welcome=args.welcome,
+                         managed_pointer=args.managed_pointer,keep_window_manager=args.managed_pointer,
                          startup_check={'status':'ok','answers':[],'commands':commands,
+                                        'pause_window_manager':not args.managed_pointer,
                                         'rejected_answers':['0'],'rejection_prefixes':('INPUT REJECT ',),
                                         'command_timeout':120,'row_styles':row_styles,'command_styles':styles})
     try:

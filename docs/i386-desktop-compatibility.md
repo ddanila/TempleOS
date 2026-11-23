@@ -507,3 +507,12 @@ its 1,421 exports against the cross-built reference and the allocation
 wrapper checks. The first-module checkpoint is in
 `build/resident-opt-c5-retained128/console-checkpoint.json`. The full
 nine-provider receipt and both native generations are still pending.
+
+The TimeClock report harness now supports the managed pointer with the
+window manager active, and an explicit KVM option. The previous run passed
+the initial raster and loaded the unchanged fixture. Its next exact raster
+check exposed an oracle mismatch after DocClear. An offline comparison
+matches the captured frame pixel for pixel when the oracle expects black
+ordinary text and prompt, green command names, and the managed pointer.
+The revised harness encodes those expectations. The report creation and
+cold reboot stages still need the terminal result of the fresh run.
