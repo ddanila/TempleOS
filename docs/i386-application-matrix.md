@@ -2627,3 +2627,10 @@ reproduced the oversized allocation and mapped its call stack.
 by `SpriteSize(elems0)` during a window redraw. The capture localizes
 the bad size to the first interpolation operand. A follow-up run
 will capture both operand addresses and their leading bytes.
+
+Fixed seed 1 reproduced the same allocation failure. The
+[operand capture](../build/titanium-finish-v1/seed-1/break.log)
+shows both pointers begin with a mesh record containing 112 vertices
+and 168 triangles. Seeds 2 and 3 finished with 1,915. The seed-1
+replay is collecting the full sprite records to check where the size
+walker leaves the expected mesh boundary.

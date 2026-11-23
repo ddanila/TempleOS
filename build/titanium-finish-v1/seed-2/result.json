@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "native": true,
+  "application_sha256": "ef3c58b27ab67196da8c4957f39c81100b9f8663dbaebe1e0d8dfd5accb118d4",
+  "fixture_sha256": "c7b2556cacc4d7a4de95546ec30e68c6a5a23a5c9ddc511dc3de13eb67f20aee",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "scores": [
+    [
+      "FINISH",
+      "1915",
+      "1915"
+    ],
+    [
+      "SAVED",
+      "1915",
+      "1915"
+    ]
+  ]
+}
