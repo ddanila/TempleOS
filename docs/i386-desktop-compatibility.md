@@ -458,3 +458,10 @@ sources match the repository. It also checks the installed ACInit.HC against
 the committed version. The image hash and per-module evidence are in
 `build/resident-opt-c5-preflight/input.json`. The two current native
 generations still require guest builds, installation, and boot verification.
+
+The retained-build preflight now covers all 1,429 installed HolyC sources
+and headers under Adam, Compiler and Kernel. Every installed file in that
+set matches the checked-out bytes, including the retained providers'
+dependencies. The input receipt records the count and a digest of their
+path and hash map. A 128 MiB retained build is queued behind the serial
+desktop benchmark using the verified image and reference exports.

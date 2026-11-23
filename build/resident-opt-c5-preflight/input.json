@@ -58,5 +58,10 @@
       "records": 61,
       "exports": 49
     }
+  },
+  "source_tree_match": {
+    "count": 1429,
+    "manifest_sha256": "b60390f3af076bb3080f91abad98daa0e553cc2696187d06390abe3258b37fb5",
+    "scope": "All installed HC and HH under Adam, Compiler and Kernel match the checked-out bytes"
   }
 }
