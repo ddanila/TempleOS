@@ -6,6 +6,21 @@ import subprocess
 manifest = Path(__file__).with_name('manifest.json')
 rows = json.loads(manifest.read_text())['files'] if manifest.exists() else []
 runs = [
+    'user-legacy-native-v3',
+    'user-legacy-native-v2',
+    'user-legacy-native-v1',
+    'user-scalar-tiled-service-v2',
+    'user-scalar-tiled-cursor-v1',
+    'user-scalar-tiled-before-v2',
+    'user-scalar-tiled-before-v1',
+    'user-scalar-tiled-after-v1',
+    'user-scalar-document-before-v2',
+    'user-scalar-document-before-v1',
+    'user-main-heap-native-v3',
+    'user-main-heap-native-v2',
+    'user-main-heap-native-v1',
+    'user-main-heap-before-cells-v1',
+    'i386-power-production-v1/original-syntax',
     'i386-power-wide-reference-v1/native-wide-edges',
     'i386-power-wide-reference-v1/native-wide-edges-explicit',
     'i386-power-wide-reference-v1/original-specials',

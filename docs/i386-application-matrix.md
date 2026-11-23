@@ -2240,7 +2240,10 @@ The ToTheFront production image rebuilt nine retained modules in the
 128 MiB no-FPU guest. The persisted export audit passed, and the guest
 returned to the desktop command prompt with one build-provider load.
 See `build/tothefront-center-production-v1/retained128/result.json`.
-The subsequent install and 8 MiB boot check are tracked separately.
+The guest-built copies were installed byte for byte and the resulting
+image booted at 8 MiB. The welcome desktop, fresh arithmetic, and
+document allocation recovery passed. See
+`build/tothefront-center-production-v1/retained-install/result.json`.
 See `build/sound-delay-production-v1/generations128/checkpoint.json`.
 
 X-Caliber reproduces the post-shot Refresh stall with both QEMU IRQ-chip

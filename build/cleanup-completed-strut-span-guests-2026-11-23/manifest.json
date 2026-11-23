@@ -4843,7 +4843,217 @@
         "-o",
         "build/i386-power-wide-reference-v1/native-wide-edges-explicit/working.img"
       ]
+    },
+    {
+      "original": "build/user-legacy-native-v3/working.img",
+      "archive": "build/user-legacy-native-v3/working.img.zst",
+      "sha256": "0255edddbef40e689aeb7fe6fc85bbffba84b1b05cd71d11a6adedce49a0ce0a",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-legacy-native-v3/working.img.zst",
+        "-o",
+        "build/user-legacy-native-v3/working.img"
+      ]
+    },
+    {
+      "original": "build/user-legacy-native-v2/working.img",
+      "archive": "build/user-legacy-native-v2/working.img.zst",
+      "sha256": "14d12d73625f835e0c0ea666d29a13eac316a5f6796d44a337865cbb0ec3775d",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-legacy-native-v2/working.img.zst",
+        "-o",
+        "build/user-legacy-native-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/user-legacy-native-v1/working.img",
+      "archive": "build/user-legacy-native-v1/working.img.zst",
+      "sha256": "c85b6da2b84e92b70225450e31a6059572995273e5188ec4838b3e5640a77537",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-legacy-native-v1/working.img.zst",
+        "-o",
+        "build/user-legacy-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/user-scalar-tiled-service-v2/working.img",
+      "archive": "build/user-scalar-tiled-service-v2/working.img.zst",
+      "sha256": "d4ba662d802fe6fbe0d6c106810eed222e1e6ffb66d0509de10deeb76109c5e6",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-scalar-tiled-service-v2/working.img.zst",
+        "-o",
+        "build/user-scalar-tiled-service-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/user-scalar-tiled-cursor-v1/working.img",
+      "archive": "build/user-scalar-tiled-cursor-v1/working.img.zst",
+      "sha256": "03f5d28ab9181c83404106e99ca1ead553832325ab624578466a952dbf153384",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-scalar-tiled-cursor-v1/working.img.zst",
+        "-o",
+        "build/user-scalar-tiled-cursor-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/user-scalar-tiled-before-v2/working.img",
+      "archive": "build/user-scalar-tiled-before-v2/working.img.zst",
+      "sha256": "f184236b1471effc95476585ffc84df2ca7e8f49f7620f24b219ada9a19984bb",
+      "size": 67108864,
+      "reclaimed_bytes": 53428224,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-scalar-tiled-before-v2/working.img.zst",
+        "-o",
+        "build/user-scalar-tiled-before-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/user-scalar-tiled-before-v1/working.img",
+      "archive": "build/user-scalar-tiled-before-v1/working.img.zst",
+      "sha256": "f184236b1471effc95476585ffc84df2ca7e8f49f7620f24b219ada9a19984bb",
+      "size": 67108864,
+      "reclaimed_bytes": 53424128,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-scalar-tiled-before-v1/working.img.zst",
+        "-o",
+        "build/user-scalar-tiled-before-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/user-scalar-tiled-after-v1/working.img",
+      "archive": "build/user-scalar-tiled-after-v1/working.img.zst",
+      "sha256": "42668ec30dcea22e55ad2c4aaa9177909e880a9aeab009cb1e424293d4599147",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-scalar-tiled-after-v1/working.img.zst",
+        "-o",
+        "build/user-scalar-tiled-after-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/user-scalar-document-before-v2/working.img",
+      "archive": "build/user-scalar-document-before-v2/working.img.zst",
+      "sha256": "5a3333adb5aa82354694d7026e8122b866b2d838b24278ca4494f71c1bedcf19",
+      "size": 67108864,
+      "reclaimed_bytes": 53424128,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-scalar-document-before-v2/working.img.zst",
+        "-o",
+        "build/user-scalar-document-before-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/user-scalar-document-before-v1/working.img",
+      "archive": "build/user-scalar-document-before-v1/working.img.zst",
+      "sha256": "960e01ca29307a7015ef7b4a2874fbdcd5bfaa6ec64bf33f791bc56aa8f5ad95",
+      "size": 67108864,
+      "reclaimed_bytes": 53424128,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-scalar-document-before-v1/working.img.zst",
+        "-o",
+        "build/user-scalar-document-before-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/user-main-heap-native-v3/working.img",
+      "archive": "build/user-main-heap-native-v3/working.img.zst",
+      "sha256": "99168bf0155fa95d7d421b041ccccbc92673d540fd22cf96abe7253334c05171",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-main-heap-native-v3/working.img.zst",
+        "-o",
+        "build/user-main-heap-native-v3/working.img"
+      ]
+    },
+    {
+      "original": "build/user-main-heap-native-v2/working.img",
+      "archive": "build/user-main-heap-native-v2/working.img.zst",
+      "sha256": "99168bf0155fa95d7d421b041ccccbc92673d540fd22cf96abe7253334c05171",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-main-heap-native-v2/working.img.zst",
+        "-o",
+        "build/user-main-heap-native-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/user-main-heap-native-v1/working.img",
+      "archive": "build/user-main-heap-native-v1/working.img.zst",
+      "sha256": "6dac7d6bd7e50c0dbc49b48421f637f00bb58ebd20d45dec256c80894dfa5e4e",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-main-heap-native-v1/working.img.zst",
+        "-o",
+        "build/user-main-heap-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/user-main-heap-before-cells-v1/working.img",
+      "archive": "build/user-main-heap-before-cells-v1/working.img.zst",
+      "sha256": "d6e7c7565435d80619fd96b4e322fffb1262a7e8896b9b3e37be1adb1dd1ab2e",
+      "size": 67108864,
+      "reclaimed_bytes": 35835904,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-main-heap-before-cells-v1/working.img.zst",
+        "-o",
+        "build/user-main-heap-before-cells-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/original-syntax/original.iso",
+      "archive": "build/i386-power-production-v1/original-syntax/original.iso.zst",
+      "sha256": "3fca01ad34234fbbab3299693e900bd12cd4f15fc0ec5a8243f77a6507be7f76",
+      "size": 46163968,
+      "reclaimed_bytes": 33243136,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/original-syntax/original.iso.zst",
+        "-o",
+        "build/i386-power-production-v1/original-syntax/original.iso"
+      ]
     }
   ],
-  "reclaimed_bytes": 17251606528
+  "reclaimed_bytes": 17909719040
 }
