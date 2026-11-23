@@ -6,6 +6,12 @@ import subprocess
 manifest = Path(__file__).with_name('manifest.json')
 rows = json.loads(manifest.read_text())['files'] if manifest.exists() else []
 runs = [
+    'tothefront-original-v1/indirect-original',
+    'tothefront-original-v1/indirect-damage-original',
+    'tothefront-original-v1/overrun-original',
+    'sound-delay-production-v1/indirect64',
+    'sound-delay-production-v1/indirect-damage64',
+    'sound-delay-production-v1/overrun64',
     'native-strut-entry-v1/strut64', 'span-reference-persistence-v1/native64',
     'ac-dictionary-direct-copy/budget-templates-home64',
     'ac-dictionary-direct-copy/budget-templates64',

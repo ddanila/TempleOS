@@ -2015,3 +2015,13 @@ This fixture covers a successful overrun on plains. Failed overruns,
 close assault, exact rendering and a complete match remain open.
 See `build/tothefront-original-v1/overrun-original/result.json`
 and `build/sound-delay-production-v1/overrun64/result.json`.
+
+The close-assault comparison stages an armored defender on adjacent
+plains and physically drags infantry onto it during the first movement
+phase. Both guests kill defender 0 and place attacker 16 at row 32,
+column 1 at full life and zero remaining movement. The phase trace
+matches through the start of turn two, and the native production
+guest exits to fresh arithmetic under default KVM. The shared
+fixture also reproduces the earlier original overrun result.
+See `build/tothefront-original-v1/close-assault-original/result.json`
+and `build/sound-delay-production-v1/close-assault64/result.json`.

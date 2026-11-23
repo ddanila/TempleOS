@@ -1,0 +1,87 @@
+{
+  "fixture_sha256": "2f3d3102dab455de60b15b579feecc8a44764e372d10c22f5c0ab3255343a3a1",
+  "input_sha256": "3f11b6cd1822cff1de3f82181f37f72ab2ddb3f99310902c54a661da9bc88f7c",
+  "machine": "pc",
+  "phases": [
+    [
+      1,
+      0,
+      0,
+      32,
+      32
+    ],
+    [
+      1,
+      1,
+      1,
+      32,
+      32
+    ],
+    [
+      1,
+      2,
+      0,
+      32,
+      32
+    ],
+    [
+      1,
+      3,
+      1,
+      32,
+      31
+    ],
+    [
+      1,
+      4,
+      0,
+      32,
+      31
+    ],
+    [
+      1,
+      5,
+      1,
+      32,
+      31
+    ],
+    [
+      2,
+      0,
+      1,
+      32,
+      31
+    ]
+  ],
+  "close_assault": {
+    "attacker": 16,
+    "defender": 0,
+    "target": [
+      32,
+      1
+    ],
+    "position": [
+      32,
+      1
+    ],
+    "before": [
+      100,
+      100
+    ],
+    "after": [
+      100,
+      0
+    ],
+    "remaining_movement": 0
+  },
+  "after_match": {
+    "column": 0,
+    "row": 15,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "result": "pass"
+}

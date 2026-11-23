@@ -2687,7 +2687,91 @@
         "-o",
         "build/native-focus-menu-psalmody-production-v1/vocabulary64/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-original-v1/indirect-original/original.iso",
+      "archive": "build/tothefront-original-v1/indirect-original/original.iso.zst",
+      "sha256": "9a0ce225ceea7c83eef669396ebb52153d57a77ef173be8ee56d4e7b5ee7b834",
+      "size": 46157824,
+      "reclaimed_bytes": 33234944,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/indirect-original/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/indirect-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/indirect-damage-original/original.iso",
+      "archive": "build/tothefront-original-v1/indirect-damage-original/original.iso.zst",
+      "sha256": "0c5f4a540d0b82fde40513b53fa4a1a7df3da947cfef1eff8de0e88cc0b7e359",
+      "size": 46159872,
+      "reclaimed_bytes": 33234944,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/indirect-damage-original/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/indirect-damage-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/overrun-original/original.iso",
+      "archive": "build/tothefront-original-v1/overrun-original/original.iso.zst",
+      "sha256": "9120eab3488c1c9913e27fee587fa64db30efbe0700da233735b557c9c060180",
+      "size": 46157824,
+      "reclaimed_bytes": 33234944,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/overrun-original/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/overrun-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/indirect64/working.img",
+      "archive": "build/sound-delay-production-v1/indirect64/working.img.zst",
+      "sha256": "f48c8c206880d88f074647e0f6085e56211c8fee6be5243f2c1a122757c9ef5b",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/indirect64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/indirect64/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/indirect-damage64/working.img",
+      "archive": "build/sound-delay-production-v1/indirect-damage64/working.img.zst",
+      "sha256": "c640d10995da8cd778438f188fd773d3b95d80179911212a8b6a8fde5c9c52bf",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/indirect-damage64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/indirect-damage64/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/overrun64/working.img",
+      "archive": "build/sound-delay-production-v1/overrun64/working.img.zst",
+      "sha256": "c7baac0c433b53cdd2e815cabb04934d7bad710661e86904c67f38238d3721a8",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/overrun64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/overrun64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 9628696576
+  "reclaimed_bytes": 9888620544
 }

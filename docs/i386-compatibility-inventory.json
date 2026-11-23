@@ -12123,6 +12123,20 @@
           "result": "pass",
           "evidence": "build/sound-delay-production-v1/overrun64/result.json",
           "scope": "Physical drag of an armored unit onto a staged infantry defender on plains. The attacker occupies row 26, column 1 at full life and zero movement. The defender dies."
+        },
+        {
+          "target": "original-tothefront-close-assault",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --close-assault --out OUT",
+          "result": "pass",
+          "evidence": "build/tothefront-original-v1/close-assault-original/result.json",
+          "scope": "Physical infantry drag attacks a staged armored defender. The attacker occupies row 32, column 1 at full life and zero movement. The defender dies."
+        },
+        {
+          "target": "native-tothefront-close-assault",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --close-assault --disk DISK --out OUT",
+          "result": "pass",
+          "evidence": "build/sound-delay-production-v1/close-assault64/result.json",
+          "scope": "Physical infantry drag attacks a staged armored defender. The attacker occupies row 32, column 1 at full life and zero movement. The defender dies."
         }
       ]
     },
