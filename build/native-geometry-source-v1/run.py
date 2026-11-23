@@ -25,6 +25,7 @@ parser.add_argument('--xcaliber-input-trace', action='store_true')
 parser.add_argument('--xcaliber-play', action='store_true')
 parser.add_argument('--xcaliber-desktop', action='store_true')
 parser.add_argument('--xcaliber-frequency', action='store_true')
+parser.add_argument('--xcaliber-prerequisites', action='store_true')
 parser.add_argument('--xcaliber-square', action='store_true')
 parser.add_argument('--split-xcaliber', action='store_true')
 parser.add_argument('--split-fire', action='store_true')
@@ -65,12 +66,14 @@ if args.xcaliber_no_fire and not args.xcaliber_play:
     parser.error('--xcaliber-no-fire requires --xcaliber-play')
 if args.xcaliber_input_trace and not args.xcaliber_play:
     parser.error('--xcaliber-input-trace requires --xcaliber-play')
-if args.xcaliber_play and not args.xcaliber_desktop:
-    parser.error('--xcaliber-play requires --xcaliber-desktop')
+if args.xcaliber_play and not (args.xcaliber_desktop or args.xcaliber_prerequisites):
+    parser.error('--xcaliber-play requires desktop prerequisites')
 if args.xcaliber_desktop and not args.split_xcaliber:
     parser.error('--xcaliber-desktop requires --split-xcaliber')
-if args.xcaliber_frequency and not args.split_xcaliber:
-    parser.error('--xcaliber-frequency requires --split-xcaliber')
+if args.xcaliber_prerequisites and (args.app!='X-Caliber' or args.split_xcaliber):
+    parser.error('--xcaliber-prerequisites uses the bundled X-Caliber loader')
+if args.xcaliber_frequency and not (args.split_xcaliber or args.xcaliber_prerequisites):
+    parser.error('--xcaliber-frequency requires the split or bundled prerequisite load')
 if args.xcaliber_square and not args.split_xcaliber:
     parser.error('--xcaliber-square requires --split-xcaliber')
 if args.split_xcaliber and args.app != 'X-Caliber':
@@ -186,7 +189,7 @@ if args.app=='X-Caliber':
     extras['/ExtraVectors.HC']=Path('build/xcaliber-vector-load-v1/Vector.HC').read_bytes()
     if args.xcaliber_play:
         extras['/XCProbe.HC'] = Path('build/xcaliber-reference-v1/Probe.HC').read_bytes()
-    if args.xcaliber_frequency:
+    if args.xcaliber_frequency or args.xcaliber_prerequisites:
         misc = Path('Kernel/KMisc.HC').read_bytes()
         extras['/XCFrequency.HC'] = misc[misc.index(b'I8 Freq2Ona('):
                                           misc.index(b'#include "/Kernel/SoundCaptureCore.HC"')]
@@ -293,6 +296,12 @@ try:
     for path in ('/LightingChooser.HC', '/IntegerPrompt.HC', '/ExtraVectors.HC', '/XCFrequency.HC'):
         if path in extras:
             commands.append(f'#include "C:{path}"')
+    if args.xcaliber_prerequisites:
+        commands.extend((
+            'AdamFile("/Adam/AutoComplete/MakeAC.HC",FALSE);',
+            'AdamFile("/Adam/TaskSettings.HC",FALSE);',
+            '#include "/Kernel/SerialDev/KeyCharPollCore.HC"',
+        ))
     if args.serial_visibility:
         if args.original_wrap:
             commands.append('#include "C:/TTFWrap.HC"')

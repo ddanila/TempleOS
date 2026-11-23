@@ -2410,3 +2410,30 @@ shows one rejected duplicate publication. The compact implementation
 remains a diagnostic patch while first-use serialization is open.
 See `build/i386-power-table-v2/concurrent-background/result.json`
 and `build/i386-power-table-v2/compact-power.patch`.
+
+The compact compiler rebuilds in the 128 MiB no-FPU guest with all
+40 named pointer relocations targeting the expected functions.
+The installed guest-built copy boots at 8 MiB and passes fresh
+arithmetic and document allocation recovery. At 64 MiB the installed
+compiler also matches all 56 finite power cases. See the
+`retained128/result.json`, `retained128/table-relocations.json`,
+`retained-install/result.json` and `retained-power/result.json`
+receipts under `build/i386-power-table-v2`.
+
+With the native geometry, vectors, ODE, frequency and desktop
+prerequisites loaded, the compact image compiles X-Caliber through
+its unchanged bundled loader and plays level one. The physical
+workflow turns, fires and returns on Escape with fresh arithmetic
+afterward. The repack adds only the prerequisites and observer.
+Bundled prerequisite loading remains open. See
+`build/i386-power-table-v2/xcaliber-bundled-load/result.json`
+and `build/i386-power-table-v2/xcaliber-bundled-play/result.json`.
+
+Running the readiness check on Adam serializes the two background
+first-use calls. Both produce the expected bits with zero rejected
+publications. The 98 command-compiler cases and the public COCCompile
+differential pass. This candidate adds 448 loaded compiler bytes
+over the passing baseline and the unchanged 8 MiB User check fails
+during child creation. See the `concurrent`, `user8` and compiler
+receipts under `build/i386-power-table-v5`, with source in
+`serialized-power.patch`.

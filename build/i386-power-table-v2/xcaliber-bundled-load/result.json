@@ -1,0 +1,54 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "7d095fe4b989fef5f5f05989a95e848065009ef81d520bc6ca6681819143332a",
+    "image_sha256": "79e9ee77a5ba78c29fc7eb3c8ad796dc4ac1d94583ce8f41972ce3b1a203b7cc",
+    "boot_area_sha256": "615bad584a2a1c62ea0269dd8d0eca674f5875f22f1b392cd66a055de2323847",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1926,
+      "owned_sectors": 96215,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1929,
+      "owned_sectors": 96221,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/ExtraVectors.HC": "0d4eac4c4156f9daf4e9236950f4fe0b4610aca2548a8335f42c6a4d8c0731d6",
+      "/PublicGeometrySource.HC": "c335b16c5bbcb6c6d122beae9c646d983e29b89240f4429f9856006dc1d5961e",
+      "/XCFrequency.HC": "37805d8791aba5e6f22b9621cadf8d94c7b841fbf5bb7ff467ec4e9fc9484666"
+    },
+    "added_attributes": {
+      "/ExtraVectors.HC": 2048,
+      "/PublicGeometrySource.HC": 2048,
+      "/XCFrequency.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "machine": "pc",
+  "completed_commands": [
+    "#include \"C:/PublicGeometrySource.HC\"",
+    "AdamFile(\"/Kernel/I386/NativeODE.HC\",FALSE);",
+    "#include \"C:/ExtraVectors.HC\"",
+    "#include \"C:/XCFrequency.HC\"",
+    "AdamFile(\"/Adam/AutoComplete/MakeAC.HC\",FALSE);",
+    "AdamFile(\"/Adam/TaskSettings.HC\",FALSE);",
+    "#include \"/Kernel/SerialDev/KeyCharPollCore.HC\"",
+    "#include \"C:/Apps/X-Caliber/Load.HC\""
+  ],
+  "command": "#include \"C:/Apps/X-Caliber/Load.HC\"",
+  "fresh_result": {
+    "column": 0,
+    "row": 24,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

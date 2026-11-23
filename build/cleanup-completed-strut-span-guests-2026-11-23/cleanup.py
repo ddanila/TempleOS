@@ -6,12 +6,21 @@ import subprocess
 manifest = Path(__file__).with_name('manifest.json')
 rows = json.loads(manifest.read_text())['files'] if manifest.exists() else []
 runs = [
+    'i386-power-table-v2/retained-power',
+    'i386-power-table-v5/user8',
+    'i386-power-table-v5/concurrent',
+    'i386-power-table-v5/native-wide',
+    'i386-power-table-v5/native-syntax',
+    'i386-power-table-v5/native-specials',
+    'i386-power-table-v5/public-backend',
     'i386-power-table-v2/user8',
     'i386-power-table-v2/native-wide',
     'i386-power-table-v2/public-backend',
     'i386-power-table-v2/concurrent',
     'i386-power-table-v2/concurrent-published',
     'i386-power-table-v2/concurrent-background',
+    'i386-power-table-v2/xcaliber-bundled-load',
+    'i386-power-table-v2/xcaliber-bundled-play',
     'i386-power-table-v2/native-syntax',
     'i386-power-table-v2/native-specials',
     'build-date-msg-loop-shift-native-v1',
@@ -482,11 +491,19 @@ for run in runs:
         archive_file(directory / name)
 
 
-for run in ('i386-power-production-v1', 'i386-power-on-demand-v1', 'i386-power-table-v1'):
+for run in ('i386-power-production-v1', 'i386-power-on-demand-v1', 'i386-power-table-v1', 'i386-power-table-v2'):
     directory = Path('build') / run / 'full'
     receipt = directory / 'result.json'
     if receipt.is_file() and json.loads(receipt.read_text())['boot_instruction_audit']['result'] == 'pass':
         archive_file(directory / 'kernel-assembly.txt')
         archive_file(directory / 'compiler.iso')
+
+for run in ('i386-power-table-v1', 'i386-power-table-v2', 'i386-power-table-v3', 'i386-power-table-v4'):
+    directory = Path('build') / run / 'bootstrap'
+    receipt = directory / 'result.json'
+    if receipt.is_file() and json.loads(receipt.read_text())['result'] == 'pass':
+        for name in ('generation-1.iso', 'generation-2.iso'):
+            archive_file(directory / name)
+
 
 print(len(rows), sum(row['reclaimed_bytes'] for row in rows), 'bytes archived')

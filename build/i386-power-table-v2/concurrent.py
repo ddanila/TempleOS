@@ -11,6 +11,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--single-publication', action='store_true')
     args = parser.parse_args()
     args.out.mkdir()
     source = Path(__file__).with_name('Concurrent.HC').read_bytes()
@@ -29,6 +30,9 @@ def main():
         guest.wait('POWER worker two exact\n', 45)
         guest.command('6*7;')
         report['arithmetic_pixels'] = guest.result_pixels()
+        report['rejected_publications'] = guest.collect().count('TERMINAL publication rejected\n')
+        if args.single_publication and report['rejected_publications']:
+            raise ValueError('Concurrent first use rejected a publication')
         report['result'] = 'pass'
     except Exception as error:
         report['error'] = str(error)
