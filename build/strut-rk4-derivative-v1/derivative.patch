@@ -1,0 +1,11 @@
+--- build/strut-ode-power-v1/SerialODE.HC
++++ build/strut-rk4-derivative-v1/SerialODE.HC
+@@ -385,7 +385,7 @@
+   dym =ode->tmp0;
+   dyt =ode->tmp1;
+   yt  =ode->tmp2;
+-  DstateDt=ode->tmp3;
++  DstateDt=ode->DstateDt;
+   hh  =0.5*ode->h;
+   h6  =ode->h / 6.0;
+   xh  =ode->t + hh;

@@ -1201,3 +1201,17 @@ which part of that assertion failed. See `build/strut-ode-numeric-v1`.
 The 128 MiB retained rebuild of the latest production image is still in
 progress at this checkpoint. The completed C5 generation results above
 apply to the earlier graphics and registry image.
+
+The RK4 routine writes the initial derivative to `ode->DstateDt` and
+reads it through a local pointer initialized to `ode->tmp3`. The original
+Adam source contains the same mismatch. A scratch variant points the
+local at `ode->DstateDt`. The same native analytic probe now emits mask 7
+and the console renders fresh arithmetic. See
+`build/strut-rk4-derivative-v1/native64/result.json`. Reconstruct the
+tested ODE source before running the probe with:
+
+```sh
+patch -o build/strut-rk4-derivative-v1/SerialODE.HC \
+  build/strut-ode-power-v1/SerialODE.HC \
+  < build/strut-rk4-derivative-v1/derivative.patch
+```
