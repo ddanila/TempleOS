@@ -1494,3 +1494,14 @@ Shift+Escape restores the caller and returns to fresh arithmetic.
 The soundtrack adapter is present in the image. A paired recording
 test is running to measure its output. See
 `build/span-native-cold-v1/native64/result.json`.
+
+The pinned original and the native Span overlay capture the same
+first six soundtrack notes through the guest sound recorder. The
+ONA sequence is 67, 65, 67, 65, 58, 65, and both speakers are off
+after Shift+Escape. Native playback uses the Play source from
+Adam/ASnd.HC with a native jiffy adapter. The first fixture used
+C-based offsets and was corrected for TempleOS's A-based note map.
+These checks cover pitch order and exit cleanup. A follow-up build
+selects the chooser and player from files shared with original Adam.
+See `build/span-soundtrack-asnd-v1/original/result.json` and
+`build/span-soundtrack-asnd-v1/native64/result.json`.

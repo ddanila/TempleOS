@@ -1,0 +1,30 @@
+{
+  "result": "pass",
+  "image_sha256": "5b802f61c46c8144db85d66f58f3cc0bd87cc95de616e91640c7c95ab691c0c4",
+  "fixture_sha256": "e32d589a025018c4cec6db9623937c7beca5435a24bb0722d7e831302971ced8",
+  "application_source_sha256": {
+    "Apps/Span/Install.HC": "ecc2ea096e3115b6768fd9109369822f23c554393b74445c91b8781205deb2d6",
+    "Apps/Span/Load.HC": "ee13f28dca7f1cf53ff38532f35ce54c2b9aff3de444b850d0bd9e167b8f521a",
+    "Apps/Span/Run.HC": "33b7f152ca1843d4e242d4746b7efcd7758c94d5978926c1d40872c05ab40fd6",
+    "Apps/Span/Span.HH": "4f22e1241dee1f9fef98c691f1d39c374484847d3c23b583cd9d17d57d8f7f4a",
+    "Apps/Span/SpanBridge.HC": "e6e2022dc09863cb52af069162a9708bb0fe758063a6e448898214cee46fcf7b",
+    "Apps/Span/SpanDerive.HC": "a52906aed653ed66485137732e9a4421ed8b7aa21b3f5e12a2b55a2c441e69bd",
+    "Apps/Span/SpanMain.HC": "c09a19303cdb9afe44fc80fef68eb35c7f9e882b867cde21e16755390923a4e2",
+    "Apps/Span/SpanNew.HC": "66b4de3d984045673907e0cb5876af81a51c7c8293022c38078c639081ed8ba7"
+  },
+  "observations": [
+    "SPAN instructions 6CA8F6B0",
+    "SPAN editor 6CA8F6B0 initial masses 15",
+    "SPAN placed mass",
+    "SPAN simulation advanced",
+    "SPAN stopped",
+    "SPAN note 0 = 67",
+    "SPAN note 1 = 65",
+    "SPAN note 2 = 67",
+    "SPAN note 3 = 65",
+    "SPAN note 4 = 58",
+    "SPAN note 5 = 65",
+    "SPAN speaker off",
+    "SPAN returned"
+  ]
+}

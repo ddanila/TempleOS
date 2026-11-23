@@ -293,7 +293,259 @@
         "-o",
         "build/span-reference-interactive-v1/original/original.iso"
       ]
+    },
+    {
+      "original": "build/span-native-cold-v1/native64/working.img",
+      "archive": "build/span-native-cold-v1/native64/working.img.zst",
+      "sha256": "378d03b0d8a1f70c379de611a9c7afe5516bff5a1276da99c1aa6d85b24174c6",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-native-cold-v1/native64/working.img.zst",
+        "-o",
+        "build/span-native-cold-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-native-interactive-v1/native64/working.img",
+      "archive": "build/span-native-interactive-v1/native64/working.img.zst",
+      "sha256": "a4d3d0064905baf037ff6796fa78c191f91db5a41ce0604028c38a760d4ddc66",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-native-interactive-v1/native64/working.img.zst",
+        "-o",
+        "build/span-native-interactive-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-native-coordinate-locals-v1/native64-typed/working.img",
+      "archive": "build/span-native-coordinate-locals-v1/native64-typed/working.img.zst",
+      "sha256": "d6ee98fd8b49e0d60e790a4fed20c8a5c5e2f19566c1183e598b646d66723093",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-native-coordinate-locals-v1/native64-typed/working.img.zst",
+        "-o",
+        "build/span-native-coordinate-locals-v1/native64-typed/working.img"
+      ]
+    },
+    {
+      "original": "build/span-native-music-v1/native64/working.img",
+      "archive": "build/span-native-music-v1/native64/working.img.zst",
+      "sha256": "e5e467759c34307bc984a17079fae2bb3fbdbacdf5baea54d37bd5bcd9a7b14c",
+      "size": 67108864,
+      "reclaimed_bytes": 53383168,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-native-music-v1/native64/working.img.zst",
+        "-o",
+        "build/span-native-music-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-file-interchange-v1/native64/working.img",
+      "archive": "build/span-file-interchange-v1/native64/working.img.zst",
+      "sha256": "0e717d3a596baafa8bdeab6f72b29d5c0026b100a0c41af7d91b5e92f442f0e0",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-file-interchange-v1/native64/working.img.zst",
+        "-o",
+        "build/span-file-interchange-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-file-interchange-v1/native64-roundtrip/working.img",
+      "archive": "build/span-file-interchange-v1/native64-roundtrip/working.img.zst",
+      "sha256": "d5c8cbb3998874ee2d4965645b21b5060d7e45caba1df8ffd03d393b522b31ed",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-file-interchange-v1/native64-roundtrip/working.img.zst",
+        "-o",
+        "build/span-file-interchange-v1/native64-roundtrip/working.img"
+      ]
+    },
+    {
+      "original": "build/span-file-interchange-v1/original/original.iso",
+      "archive": "build/span-file-interchange-v1/original/original.iso.zst",
+      "sha256": "21941f6a580c9769d3c706cd32f2ece96baa201293a9fa3c0977e5d93ddfa7d6",
+      "size": 46114816,
+      "reclaimed_bytes": 33198080,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-file-interchange-v1/original/original.iso.zst",
+        "-o",
+        "build/span-file-interchange-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/span-soundtrack-v1/reference-original/original.iso",
+      "archive": "build/span-soundtrack-v1/reference-original/original.iso.zst",
+      "sha256": "5ba4b05bc445e35ebd3ff70ddd708124728ed3d993e9fffe4e2faf593284d52a",
+      "size": 46123008,
+      "reclaimed_bytes": 33206272,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-soundtrack-v1/reference-original/original.iso.zst",
+        "-o",
+        "build/span-soundtrack-v1/reference-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/span-soundtrack-v1/native64/working.img",
+      "archive": "build/span-soundtrack-v1/native64/working.img.zst",
+      "sha256": "5cca1620d6a6353fdca4e78bb7cee07f47fe3159da01c68a19a554e8789f1f15",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-soundtrack-v1/native64/working.img.zst",
+        "-o",
+        "build/span-soundtrack-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/filename-popup-differential-v1/native64/working.img",
+      "archive": "build/filename-popup-differential-v1/native64/working.img.zst",
+      "sha256": "b36780e466e942d8f04986c2324dd5985c5b6e0ada226d5032905e84b72cd66e",
+      "size": 67108864,
+      "reclaimed_bytes": 53395456,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/filename-popup-differential-v1/native64/working.img.zst",
+        "-o",
+        "build/filename-popup-differential-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/filename-popup-differential-v1/native64-escape/working.img",
+      "archive": "build/filename-popup-differential-v1/native64-escape/working.img.zst",
+      "sha256": "b36780e466e942d8f04986c2324dd5985c5b6e0ada226d5032905e84b72cd66e",
+      "size": 67108864,
+      "reclaimed_bytes": 53395456,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/filename-popup-differential-v1/native64-escape/working.img.zst",
+        "-o",
+        "build/filename-popup-differential-v1/native64-escape/working.img"
+      ]
+    },
+    {
+      "original": "build/filename-popup-differential-v1/original/original.iso",
+      "archive": "build/filename-popup-differential-v1/original/original.iso.zst",
+      "sha256": "32a841554011b47dcd922b4bd883666cba335b1165625494307bd840c859f7ff",
+      "size": 46112768,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/filename-popup-differential-v1/original/original.iso.zst",
+        "-o",
+        "build/filename-popup-differential-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/filename-popup-differential-v1/original-escape/original.iso",
+      "archive": "build/filename-popup-differential-v1/original-escape/original.iso.zst",
+      "sha256": "32a841554011b47dcd922b4bd883666cba335b1165625494307bd840c859f7ff",
+      "size": 46112768,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/filename-popup-differential-v1/original-escape/original.iso.zst",
+        "-o",
+        "build/filename-popup-differential-v1/original-escape/original.iso"
+      ]
+    },
+    {
+      "original": "build/span-main-units-v1/native64/working.img",
+      "archive": "build/span-main-units-v1/native64/working.img.zst",
+      "sha256": "2359b670921b99c4eb602346b878bde7b97c7ee04b6dc324ca896b5202a2dd51",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-main-units-v1/native64/working.img.zst",
+        "-o",
+        "build/span-main-units-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-draw-spring-default-v1/native64/working.img",
+      "archive": "build/span-draw-spring-default-v1/native64/working.img.zst",
+      "sha256": "8b29da95f8b541ea1bd3f7ee5b12524bd640be0a01d739f186dd8508e580e0ad",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-draw-spring-default-v1/native64/working.img.zst",
+        "-o",
+        "build/span-draw-spring-default-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-draw-spring-minimal-v1/native64/working.img",
+      "archive": "build/span-draw-spring-minimal-v1/native64/working.img.zst",
+      "sha256": "bd8991da21476b3773722ca48ab570ccff4b0b7bae48dcaa9abbbe41b414f0c3",
+      "size": 67108864,
+      "reclaimed_bytes": 53391360,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-draw-spring-minimal-v1/native64/working.img.zst",
+        "-o",
+        "build/span-draw-spring-minimal-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-line-call-v1/native64/working.img",
+      "archive": "build/span-line-call-v1/native64/working.img.zst",
+      "sha256": "fb4fc39b5e0f81547e98a15db243c99d3890b1d613d8d738441e5afa09da6e1c",
+      "size": 67108864,
+      "reclaimed_bytes": 53395456,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-line-call-v1/native64/working.img.zst",
+        "-o",
+        "build/span-line-call-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-line-backend-trace-v1/native64/working.img",
+      "archive": "build/span-line-backend-trace-v1/native64/working.img.zst",
+      "sha256": "ac9fdfa77fd6095e6af761ebbf8d8d45699af1ce355fe3b4c60bec4c6ffbdbb1",
+      "size": 67108864,
+      "reclaimed_bytes": 53395456,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-line-backend-trace-v1/native64/working.img.zst",
+        "-o",
+        "build/span-line-backend-trace-v1/native64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 979984384
+  "reclaimed_bytes": 1860292608
 }
