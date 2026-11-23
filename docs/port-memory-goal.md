@@ -2847,3 +2847,30 @@ as a disk file. The
 [cache qualification](../build/i386-native-cache-footprint-v2/qualification.json)
 pins the source and image. The guest-built console and installed User
 startup remain pending.
+
+### 23 November 2026 handoff
+
+The WidePi guest build persisted ConsoleRuntime with a 2,335,120-byte
+loaded payload. Its cross-built counterpart loads 2,310,960 bytes.
+The 24,160-byte increase matches the earlier frozen null-slot console.
+The [size receipt](../build/i386-wide-pi-production-v3/console-size-comparison.json)
+records both module hashes and distinguishes the loaded payload from
+the on-disk file size. This measurement is from WidePi, before the
+64-slot cache change.
+
+Four retained builds were active at the handoff.
+
+| Source and scope | Output directory | Last observed checkpoint |
+| --- | --- | --- |
+| Frozen null-slot `6eefeedd`, native generation two | `build/i386-console-null-slots-v1/generations128-v4` | First self-host build, boot and audits passed. Generation two was compiling ConsoleRuntime. |
+| WidePi, nine modules | `build/i386-wide-pi-production-v3/retained128` | ConsoleRuntime was persisted and CompilerRuntime was compiling. |
+| Titanium, nine modules | `build/titanium-bundled-loader-v1/retained128` | ConsoleRuntime was compiling. |
+| 64-slot cache, ConsoleRuntime only | `build/i386-native-cache-footprint-v2/retained-console128` | ConsoleRuntime was compiling. |
+
+The next installed-memory checkpoint is to audit the guest-built 64-slot
+ConsoleRuntime, install it with the other retained modules from the same
+source revision, and repeat the 8 MiB User startup and pre-User heap
+capture. The required child allocation was 267,527 bytes on the frozen
+null-slot installation. The cache change has passed the cross-built
+startup check. Installed startup, current-image two-generation
+reproduction and C1–C5 remain open.

@@ -1,0 +1,18 @@
+{
+  "scope": "Persisted ConsoleRuntime payload comparison during the WidePi retained build",
+  "cross": {
+    "disk_path": "build/i386-wide-pi-production-v3/full/kernel.img",
+    "guest_path": "/Modules/I386/ConsoleRuntime.t32m",
+    "file_bytes": 2455948,
+    "loaded_payload_bytes": 2310960,
+    "sha256": "8e6e16b27a838d7312ceb83817467a395664728916383c4b98ee199c620b469e"
+  },
+  "guest": {
+    "disk_path": "build/i386-wide-pi-production-v3/retained128/source.img",
+    "guest_path": "/Probe/RetainedConsoleRuntime.t32m",
+    "file_bytes": 2719663,
+    "loaded_payload_bytes": 2335120,
+    "sha256": "dfe4446d60cfc0a245b8443d27ca9017b53aa4125022f34e1949ffc14eb6ce7d"
+  },
+  "guest_payload_growth_bytes": 24160
+}
