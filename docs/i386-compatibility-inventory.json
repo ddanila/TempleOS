@@ -11108,6 +11108,13 @@
           "scope": "Original serializer with two masses and one steel spring, using a pinned original guest RAM disk. Interactive file dialogs and reboot persistence remain open."
         },
         {
+          "target": "original-span-edit-run-stop",
+          "command": "python3 build/span-reference-mouse-v1/run.py --out OUT",
+          "result": "pass",
+          "evidence": "build/span-reference-mouse-v1/original/result.json",
+          "scope": "Physical popup dismissal and mass placement, Space to start and stop, frozen ODE clock on stop, and Shift+Escape cleanup."
+        },
+        {
           "target": "native-span-bridge-persistence",
           "command": "python3 build/span-reference-persistence-v1/run_native.py IMAGE --out OUT",
           "result": "fail",

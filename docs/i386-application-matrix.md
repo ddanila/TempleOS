@@ -1322,3 +1322,22 @@ dependency on native i386. Adding them moves Span beyond the previous
 compiler exception without a source line. The next probe loads its
 five includes separately to identify the failing source unit. See
 `build/span-native-chooser-v1/native64/result.json`.
+
+Original Span now has a physical-input reference for dismissing the
+instructions, placing a mass on the 15-mass default bridge, starting and
+stopping simulation with Space, and exiting with Shift+Escape. The
+simulation clock stays fixed while paused, and exit restores the caller's
+draw callback and empty ODE queue. The split native loader reaches
+SpanMain.HC before throwing an unlocated compiler exception. The earlier
+four includes compile after supplying the filename chooser. See
+`build/span-reference-mouse-v1/original/result.json` and
+`build/span-native-compile-stages-v1/native64/result.json`.
+
+The cold Strut candidate with the solver linked into ConsoleRuntime
+boots at 8 MiB under KVM, but the original User fixture fails with
+`OutMem` in `USCheck`. The previous production image passes that
+fixture. A smaller Console candidate keeps the update phase and
+loads the solver into Adam only when an ODE app opens. It cross-compiles
+and passes the instruction audit. Its 8 MiB and cold Strut tests are
+running. See `build/native-strut-entry-v1/user8-kvm/result.json` and
+`build/native-ode-on-demand-v1/combined/result.json`.
