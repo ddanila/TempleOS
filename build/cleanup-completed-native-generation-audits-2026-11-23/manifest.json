@@ -1,0 +1,117 @@
+{
+  "files": [
+    {
+      "original": "build/module-zero-native-generations-v3/gen1-audit/kernel-assembly.txt",
+      "archive": "build/module-zero-native-generations-v3/gen1-audit/kernel-assembly.txt.zst",
+      "sha256": "b086b42698a251a51d42c0f38ffaa590dd4cbc2f96ead3428718167158d64d56",
+      "size": 109536071,
+      "reclaimed_bytes": 100900864,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/module-zero-native-generations-v3/gen1-audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/module-zero-native-generations-v3/gen1-audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/module-zero-native-generations-v3/gen2-audit/kernel-assembly.txt",
+      "archive": "build/module-zero-native-generations-v3/gen2-audit/kernel-assembly.txt.zst",
+      "sha256": "b086b42698a251a51d42c0f38ffaa590dd4cbc2f96ead3428718167158d64d56",
+      "size": 109536071,
+      "reclaimed_bytes": 100896768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/module-zero-native-generations-v3/gen2-audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/module-zero-native-generations-v3/gen2-audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/fallback-minimum-native-generations-v1/gen1-audit/kernel-assembly.txt",
+      "archive": "build/fallback-minimum-native-generations-v1/gen1-audit/kernel-assembly.txt.zst",
+      "sha256": "c4a8525eeee7052fad7f61af7b653e7928fd40f35110364299003dbe325f3a7a",
+      "size": 109543198,
+      "reclaimed_bytes": 100909056,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/fallback-minimum-native-generations-v1/gen1-audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/fallback-minimum-native-generations-v1/gen1-audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/fallback-minimum-native-generations-v1/gen2-audit/kernel-assembly.txt",
+      "archive": "build/fallback-minimum-native-generations-v1/gen2-audit/kernel-assembly.txt.zst",
+      "sha256": "c4a8525eeee7052fad7f61af7b653e7928fd40f35110364299003dbe325f3a7a",
+      "size": 109543198,
+      "reclaimed_bytes": 100909056,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/fallback-minimum-native-generations-v1/gen2-audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/fallback-minimum-native-generations-v1/gen2-audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/resident-opt-c5-generations128/gen1-audit/kernel-assembly.txt",
+      "archive": "build/resident-opt-c5-generations128/gen1-audit/kernel-assembly.txt.zst",
+      "sha256": "830530d4442f5e1472022b0e9da10c97f79e254c96cd3dec9519da3af7fb224f",
+      "size": 110235024,
+      "reclaimed_bytes": 101548032,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-c5-generations128/gen1-audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/resident-opt-c5-generations128/gen1-audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/resident-opt-c5-generations128/gen2-audit/kernel-assembly.txt",
+      "archive": "build/resident-opt-c5-generations128/gen2-audit/kernel-assembly.txt.zst",
+      "sha256": "830530d4442f5e1472022b0e9da10c97f79e254c96cd3dec9519da3af7fb224f",
+      "size": 110235024,
+      "reclaimed_bytes": 101548032,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-c5-generations128/gen2-audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/resident-opt-c5-generations128/gen2-audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/application-menu-integrated-v1/audit/kernel-assembly.txt",
+      "archive": "build/application-menu-integrated-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "8edfcb0c7750b0419a24b9506290520e8beeb5f2c44b9b481b1f80876f993e47",
+      "size": 109645508,
+      "reclaimed_bytes": 100962304,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/application-menu-integrated-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/application-menu-integrated-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/application-menu-mouse-native-v2/audit/kernel-assembly.txt",
+      "archive": "build/application-menu-mouse-native-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "d82da3727e9025419c330b2ae521a4fc98409fc33be3693838d7e2e2127e6567",
+      "size": 109571593,
+      "reclaimed_bytes": 100892672,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/application-menu-mouse-native-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/application-menu-mouse-native-v2/audit/kernel-assembly.txt"
+      ]
+    }
+  ],
+  "reclaimed_bytes": 808566784
+}
