@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/application-menu-mouse-v1/MenuProbe.HC": "70391a7da2a185b6b0be998dceeeb8570a6cb07719cf24a569b6e86fca6854d1",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/build/application-menu-mouse-v1/run.py": "8e5ae260cf57000fc339d8a2f21bde9210ee1647550eed1c0ddd2af661314068"
+  },
+  "scope": "Physical PS/2 drag into the original focus task menu and exact MSG_CMD arguments. No direct task message injection.",
+  "response": [
+    1,
+    2676,
+    83
+  ],
+  "inputs_unchanged": true
+}

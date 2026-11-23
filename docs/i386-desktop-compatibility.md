@@ -555,3 +555,12 @@ The installed module hashes match all nine outputs of the retained build,
 and the installed image hash matches its receipt. The guest has started
 self-hosting the flat kernel modules. See
 `build/resident-opt-c5-generations128/gen1-install/result.json`.
+
+The focused application menu now has a physical mouse reference. On original
+TempleOS, dragging from the Edit heading into its NewEntry submenu and
+releasing the left button posts exactly the declared command and two arguments
+to the focused task. The fixture reads pointer position and the delivered
+message. It uses QEMU PS/2 events for the gesture. See
+`build/application-menu-mouse-v1/original/result.json`. This is a menu
+dispatch control. The current native comparison and mouse-driven Budget
+entry creation remain open.
