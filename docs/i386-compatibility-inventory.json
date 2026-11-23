@@ -11982,8 +11982,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": "Launch the bundled Titanium instructions, enter play, hold Right and Space, then exit with Escape.",
-      "oracle": "Instruction title, two rendered play frames with the dithered terrain and return to the caller after Escape.",
+      "reference_workflow": "Launch the bundled Titanium instructions, enter play, hold Right and Space, then exit with Escape. Finish a controlled eight-survivor match and reopen the saved high score on a fresh boot.",
+      "oracle": "Instruction title, two rendered play frames with the dithered terrain and return to the caller after Escape. The staged finish scores 1915 and the cold native boot reopens that score.",
       "tests": [
         {
           "target": "native-titanium-load",
@@ -12001,6 +12001,30 @@
           "result": "pass",
           "evidence": "build/titanium-bundled-loader-v1/qualification.json",
           "scope": "Packaged Run.HC, physical keyboard input, changing play frames and fresh arithmetic after Escape. Full scoring and persistence remain open."
+        },
+        {
+          "target": "native-titanium-repaired-physical-play",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/mesh-repair/play/result.json",
+          "scope": "Packaged entry with the repaired mesh, physical input, firing, redraw and return to arithmetic."
+        },
+        {
+          "target": "original-titanium-staged-finish",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/original-eight/result.json",
+          "scope": "Eight staged survivors, in-game scoring and registry write at 1915."
+        },
+        {
+          "target": "native-titanium-repaired-seed-one-finish",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/mesh-repair/seed-1/result.json",
+          "scope": "Previously failing seed finishes and writes 1915 with the repaired mesh."
+        },
+        {
+          "target": "native-titanium-cold-score-reopen",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/native-eight-reopen/result.json",
+          "scope": "Separate cold boot reopens 1915 through RegExe after the native eight-survivor fixture."
         }
       ]
     },
@@ -12019,8 +12043,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": "Launch the bundled Titanium instructions, enter play, hold Right and Space, then exit with Escape.",
-      "oracle": "Instruction title, two rendered play frames with the dithered terrain and return to the caller after Escape.",
+      "reference_workflow": "Launch the bundled Titanium instructions, enter play, hold Right and Space, then exit with Escape. Finish a controlled eight-survivor match and reopen the saved high score on a fresh boot.",
+      "oracle": "Instruction title, two rendered play frames with the dithered terrain and return to the caller after Escape. The staged finish scores 1915 and the cold native boot reopens that score.",
       "tests": [
         {
           "target": "original-titanium-physical-launch",
@@ -12032,6 +12056,30 @@
           "result": "pass",
           "evidence": "build/titanium-bundled-loader-v1/qualification.json",
           "scope": "Packaged Run.HC, physical keyboard input, changing play frames and fresh arithmetic after Escape. Full scoring and persistence remain open."
+        },
+        {
+          "target": "native-titanium-repaired-physical-play",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/mesh-repair/play/result.json",
+          "scope": "Packaged entry with the repaired mesh, physical input, firing, redraw and return to arithmetic."
+        },
+        {
+          "target": "original-titanium-staged-finish",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/original-eight/result.json",
+          "scope": "Eight staged survivors, in-game scoring and registry write at 1915."
+        },
+        {
+          "target": "native-titanium-repaired-seed-one-finish",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/mesh-repair/seed-1/result.json",
+          "scope": "Previously failing seed finishes and writes 1915 with the repaired mesh."
+        },
+        {
+          "target": "native-titanium-cold-score-reopen",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/native-eight-reopen/result.json",
+          "scope": "Separate cold boot reopens 1915 through RegExe after the native eight-survivor fixture."
         }
       ]
     },
@@ -12048,8 +12096,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": "Launch the bundled Titanium instructions, enter play, hold Right and Space, then exit with Escape.",
-      "oracle": "Instruction title, two rendered play frames with the dithered terrain and return to the caller after Escape.",
+      "reference_workflow": "Launch the bundled Titanium instructions, enter play, hold Right and Space, then exit with Escape. Finish a controlled eight-survivor match and reopen the saved high score on a fresh boot.",
+      "oracle": "Instruction title, two rendered play frames with the dithered terrain and return to the caller after Escape. The staged finish scores 1915 and the cold native boot reopens that score.",
       "tests": [
         {
           "target": "original-titanium-physical-launch",
@@ -12061,6 +12109,30 @@
           "result": "pass",
           "evidence": "build/titanium-bundled-loader-v1/qualification.json",
           "scope": "Packaged Run.HC, physical keyboard input, changing play frames and fresh arithmetic after Escape. Full scoring and persistence remain open."
+        },
+        {
+          "target": "native-titanium-repaired-physical-play",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/mesh-repair/play/result.json",
+          "scope": "Packaged entry with the repaired mesh, physical input, firing, redraw and return to arithmetic."
+        },
+        {
+          "target": "original-titanium-staged-finish",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/original-eight/result.json",
+          "scope": "Eight staged survivors, in-game scoring and registry write at 1915."
+        },
+        {
+          "target": "native-titanium-repaired-seed-one-finish",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/mesh-repair/seed-1/result.json",
+          "scope": "Previously failing seed finishes and writes 1915 with the repaired mesh."
+        },
+        {
+          "target": "native-titanium-cold-score-reopen",
+          "result": "pass",
+          "evidence": "build/titanium-finish-v1/native-eight-reopen/result.json",
+          "scope": "Separate cold boot reopens 1915 through RegExe after the native eight-survivor fixture."
         }
       ]
     },
