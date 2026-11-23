@@ -1984,3 +1984,13 @@ Noise/Sweep lifecycle, ToTheFront direct-fire differential, Span
 physical workflow and unchanged User8 all pass. The new image's
 128 MiB retained rebuild is running. See
 `build/sound-delay-production-v1/qualification.json`.
+
+A physical artillery drag in the fixed-seed Human match queues unit 30
+to row 0, column 3 on both the pinned original and the current native
+production image under default KVM. The order resolves at the same
+hex and the queue empties. The seven affected hexes contain no units,
+and the phase traces match through the start of turn two. The native
+guest exits to fresh arithmetic. Artillery damage, overrun, exact
+rendering and a complete match remain open. See
+`build/tothefront-original-v1/indirect-original/result.json` and
+`build/sound-delay-production-v1/indirect64/result.json`.

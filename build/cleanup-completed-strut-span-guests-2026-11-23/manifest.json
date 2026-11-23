@@ -2393,7 +2393,301 @@
         "-o",
         "build/sound-delay-production-v1/span64/working.img"
       ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/budget-templates-home64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/budget-templates-home64/working.img.zst",
+      "sha256": "b1258f3b3a3c0581d409aeb64e829502fa3459f5815056d6d1c7b07f2b5ef9de",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/budget-templates-home64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/budget-templates-home64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/budget-templates64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/budget-templates64/working.img.zst",
+      "sha256": "1fc6774832c471552386e33ac68ff904c448d2810ed7b8d75664ba5524eaa733",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/budget-templates64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/budget-templates64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/desktop64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/desktop64/working.img.zst",
+      "sha256": "40f1b1fcbd6b2737979076c6f9001fa5e14d91c181786028f5935cd3d6aef4dc",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/desktop64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/desktop64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/native64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/native64/working.img.zst",
+      "sha256": "c3fdde2c889deedd26e80e3d4ca1e3e59db980e5d50bfd2cc50f1ea731ab526c",
+      "size": 67108864,
+      "reclaimed_bytes": 52928512,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/native64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/production-user8/working.img",
+      "archive": "build/ac-dictionary-direct-copy/production-user8/working.img.zst",
+      "sha256": "a07e23d64fd3d657f4cb3e5e5d719fe521f4501669425e6709d1d4fa2c45c6bf",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/production-user8/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/production-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/psalmody-keyboard64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/psalmody-keyboard64/working.img.zst",
+      "sha256": "e25b587bbefef0c032d2b1d229552db4c8e5b49fe3731b806ebae79eead197ed",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/psalmody-keyboard64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/psalmody-keyboard64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/resident-opt16/working.img",
+      "archive": "build/ac-dictionary-direct-copy/resident-opt16/working.img.zst",
+      "sha256": "8535cde38332d2dd595005aad0c8fdcc38b5a405cd03507e2feb747619171250",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/resident-opt16/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/resident-opt16/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/timeclock-keyboard64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/timeclock-keyboard64/working.img.zst",
+      "sha256": "ae6a048ec474a79d5ea5b1bca935f6697e94a6006ad856402aea393476985ec3",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/timeclock-keyboard64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/timeclock-keyboard64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/timeclock-report-active-wm64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/timeclock-report-active-wm64/working.img.zst",
+      "sha256": "7b69338137d51a116443f72a30714ff40f7335ddf4b44d13187c44348b846a61",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/timeclock-report-active-wm64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/timeclock-report-active-wm64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/timeclock-report-colors64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/timeclock-report-colors64/working.img.zst",
+      "sha256": "7b69338137d51a116443f72a30714ff40f7335ddf4b44d13187c44348b846a61",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/timeclock-report-colors64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/timeclock-report-colors64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/timeclock-report-exact64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/timeclock-report-exact64/working.img.zst",
+      "sha256": "9e367f820288f51b6d6fe75bd4cc9d2dd2cefd68e16013db20e7e7e7f7b4f4f2",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/timeclock-report-exact64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/timeclock-report-exact64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/timeclock-report-managed64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/timeclock-report-managed64/working.img.zst",
+      "sha256": "d4ff87524466939c3af2314a398739fd1ccb4709dc950ddcc394067f866d98d1",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/timeclock-report-managed64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/timeclock-report-managed64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/timeclock-report-prompt64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/timeclock-report-prompt64/working.img.zst",
+      "sha256": "7b69338137d51a116443f72a30714ff40f7335ddf4b44d13187c44348b846a61",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/timeclock-report-prompt64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/timeclock-report-prompt64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/timeclock-report-reopen64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/timeclock-report-reopen64/working.img.zst",
+      "sha256": "0871d208fd22228de0f3850e1095bc67b1dba41fb53e49c001b03e87934f1222",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/timeclock-report-reopen64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/timeclock-report-reopen64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/timeclock-report-typed-prompt64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/timeclock-report-typed-prompt64/working.img.zst",
+      "sha256": "9836a4e46360be8d064b338766285cffcdedd8f1b499eb89384cd32b299aa558",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/timeclock-report-typed-prompt64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/timeclock-report-typed-prompt64/working.img"
+      ]
+    },
+    {
+      "original": "build/ac-dictionary-direct-copy/timeclock-report64/working.img",
+      "archive": "build/ac-dictionary-direct-copy/timeclock-report64/working.img.zst",
+      "sha256": "d4ff87524466939c3af2314a398739fd1ccb4709dc950ddcc394067f866d98d1",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/ac-dictionary-direct-copy/timeclock-report64/working.img.zst",
+        "-o",
+        "build/ac-dictionary-direct-copy/timeclock-report64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-focus-menu-psalmody-production-v1/menu64/working.img",
+      "archive": "build/native-focus-menu-psalmody-production-v1/menu64/working.img.zst",
+      "sha256": "f08c3399457a7518544265cac3042e6647a5b5bdfaad1064571da5808cbc9858",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-focus-menu-psalmody-production-v1/menu64/working.img.zst",
+        "-o",
+        "build/native-focus-menu-psalmody-production-v1/menu64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-focus-menu-psalmody-production-v1/psalmody64/working.img",
+      "archive": "build/native-focus-menu-psalmody-production-v1/psalmody64/working.img.zst",
+      "sha256": "cc76df882a338cc96620418b313d84e5e16555a29ed10f2dd12fe694e9908a2b",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-focus-menu-psalmody-production-v1/psalmody64/working.img.zst",
+        "-o",
+        "build/native-focus-menu-psalmody-production-v1/psalmody64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-focus-menu-psalmody-production-v1/user8/working.img",
+      "archive": "build/native-focus-menu-psalmody-production-v1/user8/working.img.zst",
+      "sha256": "fedecc1632764f55fa0337ea27f2e3e8258230796de4b8eb60599e1531481fb9",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-focus-menu-psalmody-production-v1/user8/working.img.zst",
+        "-o",
+        "build/native-focus-menu-psalmody-production-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/native-focus-menu-psalmody-production-v1/user8-recheck/working.img",
+      "archive": "build/native-focus-menu-psalmody-production-v1/user8-recheck/working.img.zst",
+      "sha256": "fedecc1632764f55fa0337ea27f2e3e8258230796de4b8eb60599e1531481fb9",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-focus-menu-psalmody-production-v1/user8-recheck/working.img.zst",
+        "-o",
+        "build/native-focus-menu-psalmody-production-v1/user8-recheck/working.img"
+      ]
+    },
+    {
+      "original": "build/native-focus-menu-psalmody-production-v1/vocabulary64/working.img",
+      "archive": "build/native-focus-menu-psalmody-production-v1/vocabulary64/working.img.zst",
+      "sha256": "759b1716c59bab08c15c7323f1d643029d1d68658f7fd10484d746a672281d05",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-focus-menu-psalmody-production-v1/vocabulary64/working.img.zst",
+        "-o",
+        "build/native-focus-menu-psalmody-production-v1/vocabulary64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 8507539456
+  "reclaimed_bytes": 9628696576
 }

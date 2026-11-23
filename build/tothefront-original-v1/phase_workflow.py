@@ -63,7 +63,19 @@ def fire_unit(guest):
                 life_before=before, life_after=after)
 
 
-def exercise(guest, move=False, fire=False):
+def queue_indirect(guest):
+    log = guest.wait('TTF aim indirect ', 20)
+    match = re.search(r'^TTF aim indirect ([0-9A-F]+)((?: -?\d+){7})$', log, re.M)
+    if match is None:
+        raise ValueError('Missing indirect target selection')
+    address = int(match[1], 16)
+    unit, sx, sy, ex, ey, row, col = map(int, match[2].split())
+    drag(guest, address, (sx, sy), (ex, ey))
+    guest.wait(f'TTF order queued {unit} {row} {col}\n', 25)
+    return unit, row, col
+
+
+def exercise(guest, move=False, fire=False, indirect=False):
     guest.screenshot('entry')
     guest.type('12345678')
     guest.press('ret')
@@ -80,6 +92,8 @@ def exercise(guest, move=False, fire=False):
         guest.wait(expected, 25)
         time.sleep(1)
         guest.screenshot(f'phase-{index}')
+        if indirect and index == 0:
+            order = queue_indirect(guest)
         if move and index == 2:
             movement = move_unit(guest)
             guest.screenshot('moved')
@@ -91,6 +105,12 @@ def exercise(guest, move=False, fire=False):
                     phase[:4] + (phase[4] - 1,) for phase in expected_states[index + 1:]]
         if index + 1 < len(EXPECTED):
             guest.press('spc')
+    if indirect:
+        log = guest.wait('TTF queue drained\n', 25)
+        blast = re.search(r'^TTF blast (-?\d+) (-?\d+)$', log, re.M)
+        if blast is None:
+            raise ValueError('Missing artillery impact')
+        impact = tuple(map(int, blast.groups()))
     guest.press('esc')
     trace = guest.wait('TTF phase workflow returned\n', 25)
     actual = [tuple(map(int, row)) for row in re.findall(
@@ -102,4 +122,6 @@ def exercise(guest, move=False, fire=False):
         result['movement'] = movement
     if fire:
         result['direct_fire'] = attack
+    if indirect:
+        result['indirect_fire'] = {'order': order, 'impact': impact, 'queue_drained': True}
     return result

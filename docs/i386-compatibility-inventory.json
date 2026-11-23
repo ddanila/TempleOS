@@ -12081,6 +12081,20 @@
           "result": "pass",
           "evidence": "build/sound-delay-production-v1/fire64/result.json",
           "scope": "Staged adjacent defender. Physical drag, hit state, defender life, opposing live count and turn progression match the original under default KVM."
+        },
+        {
+          "target": "original-tothefront-indirect-fire",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --indirect --out OUT",
+          "result": "pass",
+          "evidence": "build/tothefront-original-v1/indirect-original/result.json",
+          "scope": "Physical artillery drag queues unit 30 to row 0, column 3. The empty impact hex, drained queue and phase trace through turn two match."
+        },
+        {
+          "target": "native-tothefront-indirect-fire",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --indirect --disk DISK --out OUT",
+          "result": "pass",
+          "evidence": "build/sound-delay-production-v1/indirect64/result.json",
+          "scope": "Physical artillery drag queues unit 30 to row 0, column 3. The empty impact hex, drained queue and phase trace through turn two match."
         }
       ]
     },

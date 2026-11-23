@@ -13,6 +13,7 @@ parser.add_argument('--fire', action='store_true')
 parser.add_argument('--trace-fire', action='store_true')
 parser.add_argument('--trace-shot', action='store_true')
 parser.add_argument('--userspace-irqchip', action='store_true')
+parser.add_argument('--indirect', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 if args.trace_fire and (not args.fire or not args.disk):
@@ -33,6 +34,10 @@ if args.fire:
     declaration = b'U0 TTFPhaseWatch('
     fixture = fixture.replace(declaration, (root/'DirectFire.HC').read_bytes() + b'\n' + declaration)
     fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackFire(owner);\n    Sleep(1);')
+if args.indirect:
+    declaration = b'U0 TTFPhaseWatch('
+    fixture = fixture.replace(declaration, (root/'IndirectFire.HC').read_bytes() + b'\n' + declaration)
+    fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackIndirect(owner);\n    Sleep(1);')
 if args.disk:
     image = out/'working.img'
     packer = runpy.run_path('tools/package-i386-native-image.py')
@@ -72,7 +77,7 @@ try:
     else:
         guest.wait('TTF original loaded\n', 90)
         time.sleep(6)
-    report.update(exercise(guest, args.move, args.fire))
+    report.update(exercise(guest, args.move, args.fire, args.indirect))
     if args.disk:
         guest.command('6*7;')
         report['after_match'] = guest.result_pixels()
