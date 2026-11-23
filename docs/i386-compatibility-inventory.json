@@ -9261,6 +9261,12 @@
       "oracle": null,
       "tests": [
         {
+          "target": "native-home-template-lifecycle",
+          "result": "pass",
+          "evidence": "build/ac-dictionary-direct-copy/budget-templates-home64/result.json",
+          "scope": "Original-reference interval template and periodic copy forms on the dictionary-updated image. Cold read-only reopen at /Home/Budget, expected saved records and unchanged unrelated files pass."
+        },
+        {
           "target": "original-budget-interval-template-periodic",
           "command": "python3 tools/test-i386-budget-templates.py --archive ARCHIVE --out OUT",
           "result": "pass",
