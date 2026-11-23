@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "score": 1915,
+  "completed_disk_sha256": "21f95ac454d798138111a79ed1cac188cb731713f29c81578fef9a040d8dd7d9",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

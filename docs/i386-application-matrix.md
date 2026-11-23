@@ -2611,3 +2611,12 @@ the same image passed. See the
 and [original finish](../build/titanium-finish-v1/original-eight/result.json)
 receipts. Full finish parity and the intermittent render failure
 remain open.
+
+Two further native runs of the eight-survivor finish passed. The
+[allocator breakpoint run](../build/titanium-finish-v1/native-heap-trace/result.json)
+used the same score fixture as the original and produced 1,915.
+The [sprite trace run](../build/titanium-finish-v1/native-sprite-trace/result.json)
+also scored 1,915, and a
+[cold reboot](../build/titanium-finish-v1/native-eight-reopen/result.json)
+read it back from the registry. Neither run reproduced the oversized
+allocation, so the intermittent render failure remains unresolved.
