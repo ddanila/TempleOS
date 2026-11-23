@@ -1,0 +1,72 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/strut-projected-drag-v1/run.py": "f0a2b465fa58e97b573164fe91b34d29aaa4c093d42fac60729d24046ac84eb0",
+    "/home/ddanila/fun/TempleOS/build/strut-projected-drag-v1/Probe.HC": "ea144cfed09167d92a1ad13da1e1ffe4869c169412a68e882156e4b49d058412",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "Kernel/KernelA.HH": "d29532576f1ead273cd83ff1aaa1187b45189f193ea122e1607645373a2adb35",
+    "build/strut-ode-power-v1/SerialODE.HC": "656687d45387342967212638a1a4aa3a03855b827a6d398e7477e4257cbb6722",
+    "build/strut-ode-power-v1/D3.HC": "5a92e2107e61cb05b835600d8d8f2ca423bbc53fa6af1799cfffc764b48673d6",
+    "build/strut-native-raster-bindings-v1/candidate.img": "4775e7f52f10d207bd8df175909edfcef404f0496c5da5738129706da4d8ffd9"
+  },
+  "scope": "Unchanged Strut instructions, physical mass and spring creation, play simulation and exit",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "4775e7f52f10d207bd8df175909edfcef404f0496c5da5738129706da4d8ffd9",
+    "image_sha256": "f9146460bbab82a5b307a7d0779eada475dd7499f887a8618de43763f9127e54",
+    "boot_area_sha256": "750bddaf6f6c18c23866a7bccf217fa8ddb7f82ff37778ff16ec940b8a83163f",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96165,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1908,
+      "owned_sectors": 96209,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/D3.HC": "5a92e2107e61cb05b835600d8d8f2ca423bbc53fa6af1799cfffc764b48673d6",
+      "/Probe/ODETypes.HH": "2181b682f44dec99aed91e92022e30cb07efe28d7cd9554bf12f3e380f50b543",
+      "/Probe/SerialODE.HC": "656687d45387342967212638a1a4aa3a03855b827a6d398e7477e4257cbb6722",
+      "/StrutProbe.HC": "ea144cfed09167d92a1ad13da1e1ffe4869c169412a68e882156e4b49d058412"
+    },
+    "added_attributes": {
+      "/Probe/D3.HC": 2048,
+      "/Probe/ODETypes.HH": 2048,
+      "/Probe/SerialODE.HC": 2048,
+      "/StrutProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "projected_endpoints": [
+    [
+      320,
+      244
+    ],
+    [
+      245,
+      180
+    ]
+  ],
+  "error": "Missing guest marker: STRUT simulation advanced\n",
+  "observations": [
+    "STRUT instructions",
+    "STRUT editor 15AA298",
+    "STRUT first mass",
+    "STRUT second mass",
+    "STRUT input mode=0 button=1 at 245,180",
+    "STRUT input mode=0 button=0 at 245,180",
+    "STRUT input mode=1 button=0 at 245,180",
+    "STRUT input mode=1 button=1 at 320,244",
+    "STRUT input mode=1 button=0 at 245,180",
+    "STRUT spring",
+    "STRUT play"
+  ],
+  "inputs_unchanged": true
+}

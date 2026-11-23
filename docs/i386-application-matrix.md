@@ -1223,3 +1223,16 @@ and drags from the first mass at (320, 244) to the second at (245, 180).
 The pinned original creates the spring, enters play, advances past
 0.01 seconds of simulation time, and returns on Escape. This workflow
 is recorded in the inventory. See `build/strut-projected-drag-v1`.
+
+The native raster overlay reaches the same projected endpoints and
+creates a spring through physical input. Space enters play. The probe
+times out waiting for the simulation clock to pass 0.01 seconds.
+The native window worker pumps input and presents frames, with no ODE
+update phase corresponding to the original window manager. See
+`build/strut-projected-drag-v1/native64/result.json`.
+
+An exploratory native observer calls the serial ODE updater at play
+entry. The run creates the spring and sends Space, but the observer
+does not reach its play marker after that call becomes eligible. Its
+receipt does not establish whether the updater threw, stalled, or was
+never invoked. See `build/strut-simulation-tick-v1/native64/result.json`.

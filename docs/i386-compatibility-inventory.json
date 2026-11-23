@@ -11243,6 +11243,13 @@
           "result": "pass",
           "evidence": "build/strut-projected-drag-v1/original/result.json",
           "scope": "Pinned original input, spring creation, play, advancing simulation clock and exit."
+        },
+        {
+          "target": "native-strut-physical-edit-play",
+          "command": "python3 build/strut-projected-drag-v1/run.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/strut-projected-drag-v1/native64/result.json",
+          "scope": "The raster overlay creates a spring through physical input and enters play. The simulation clock fails to advance past 0.01 seconds."
         }
       ]
     },
