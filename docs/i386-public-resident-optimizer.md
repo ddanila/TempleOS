@@ -328,3 +328,11 @@ window manager and native startup complete, and User startup reaches USCheck.
 It then fails the original 267,527-byte task allocation. The threshold avoids
 the earlier public allocation failure in this run but still leaves User8 open.
 The unapplied policy and pinned evidence are in `build/compiler-backing-fit-v2`.
+
+The aligned high-placement candidate computes the padding from each free
+block's end address for native-size backing batches. It retains the
+conservative arena admission check and reverse-address block preference.
+The module cross-build and image audit pass, and native startup completes at
+8 MiB. USCheck still fails the 267,527-byte task request. The fallback's
+largest free payload increases from 2,840 to 3,496 bytes. The unapplied
+experiment and pinned receipts are under `build/compiler-backing-aligned-v1`.
