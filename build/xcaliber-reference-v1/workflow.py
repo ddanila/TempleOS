@@ -5,7 +5,7 @@ import runpy
 import time
 
 
-def exercise(guest, report, *, fire=True):
+def exercise(guest, report, *, fire=True, turn=False):
     guest.wait('XC ready\n', 90)
     time.sleep(3)
     guest.screenshot('intro')
@@ -27,6 +27,10 @@ def exercise(guest, report, *, fire=True):
     guest.press('ret')
     guest.wait('XC running\n', 20)
     if fire:
+        if turn:
+            guest.key('left', True)
+            time.sleep(0.4)
+            guest.key('left', False)
         guest.press('spc')
         guest.wait('XC gun fired\n', 20)
         report['gun_fired'] = True

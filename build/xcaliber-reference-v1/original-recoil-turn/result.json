@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "fixture_sha256": "02c9c5d8f6ffaf58e60a6df80ba8346281dab6d76224d64d3a2b5281ba3837ef",
+  "app_source_sha256": "fd7c92aa35481075188a24c9222420739adf491fcfb54823eabfbe4e3410bd32",
+  "instrumented_app_sha256": "ac5fdfee19a870223171251ffcbf62691394ce2e071cfe347d40e15305a31138",
+  "level": 1,
+  "enemies": 4,
+  "score": 0,
+  "gun_fired": true,
+  "returned": true,
+  "input_trace": [
+    "XC ready",
+    "XC pointer 6DD83D58",
+    "XC level 1 enemies 4 score 0",
+    "XC running",
+    "XC shot return 6C96B180 queued 6C96B158 values C06690BF996920BA 3FA3333333333334 C06690BF996920BA",
+    "XC gun fired",
+    "XC returned"
+  ]
+}

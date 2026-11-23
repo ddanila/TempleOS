@@ -10,7 +10,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('disk',type=Path)
 parser.add_argument('--app', choices=('GrModels','ToTheFront','X-Caliber'), required=True)
 parser.add_argument('--serial-visibility', action='store_true')
+parser.add_argument('--xcaliber-turn', action='store_true')
 parser.add_argument('--xcaliber-shot-trace', action='store_true')
+parser.add_argument('--xcaliber-shared-shot', action='store_true')
 parser.add_argument('--xcaliber-recoil-reference', action='store_true')
 parser.add_argument('--xcaliber-shot-return', action='store_true')
 parser.add_argument('--xcaliber-coordinate-trace', action='store_true')
@@ -41,8 +43,12 @@ parser.add_argument('--human-match', action='store_true')
 parser.add_argument('--combined-loader', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
+if args.xcaliber_turn and (not args.xcaliber_play or args.xcaliber_no_fire):
+    parser.error('--xcaliber-turn requires a firing workflow')
 if args.xcaliber_shot_trace and not args.xcaliber_input_trace:
     parser.error('--xcaliber-shot-trace requires --xcaliber-input-trace')
+if args.xcaliber_shared_shot and (not args.split_xcaliber or args.xcaliber_shot_return):
+    parser.error('--xcaliber-shared-shot requires a split without --xcaliber-shot-return')
 if args.xcaliber_recoil_reference and not args.xcaliber_shot_return:
     parser.error('--xcaliber-recoil-reference requires --xcaliber-shot-return')
 if args.xcaliber_shot_return and not args.split_xcaliber:
@@ -104,6 +110,7 @@ out = args.out.resolve()
 out.mkdir()
 extras={}
 fire_units=[]
+packer = runpy.run_path('tools/package-i386-native-image.py')
 ball_ui = Path('build/grmodels-ball-reference-v1')
 if args.app=='GrModels':
     if args.ball_mesh:
@@ -184,7 +191,11 @@ if args.app=='X-Caliber':
         extras['/XCFrequency.HC'] = misc[misc.index(b'I8 Freq2Ona('):
                                           misc.index(b'#include "/Kernel/SoundCaptureCore.HC"')]
     if args.split_xcaliber:
-        source = Path('Apps/X-Caliber/X-Caliber.HC').read_bytes()
+        path = '/Apps/X-Caliber/X-Caliber.HC'
+        if args.xcaliber_shared_shot:
+            source = Path(path.lstrip('/')).read_bytes()
+        else:
+            source = packer['snapshot'](args.disk.read_bytes())[1][path][2]
         text, separator, assets = source.partition(b'\0')
         if not separator:
             raise ValueError('X-Caliber is missing its DolDoc binary records')
@@ -205,7 +216,7 @@ if args.app=='X-Caliber':
             text = text.replace(anchor, b'D3MulEqu(&p,tmps->p.DxDt/tmpsp->p[n].mass/100.0);')
         if args.xcaliber_shot_trace:
             trace = runpy.run_path('build/xcaliber-reference-v1/shot_trace.py')
-            text = trace['instrument'](text)
+            text = trace['instrument'](text, reference_recoil=(args.xcaliber_recoil_reference or args.xcaliber_shared_shot))
         declarations = (b'U0 MissileNew(', b'Ship *ShipNew(', b'U0 MissileDel(',
                         b'U0 DrawIt(', b'U0 Explosion(', b'Ship TargetGet(', b'U0 MyDerivative(',
                         b'U0 CheckDamage(', b'U0 SolarFlares(', b'U0 XCaliber(')
@@ -268,7 +279,6 @@ if args.combined_loader:
         '#help_index ""',
     ]
     extras[f'{app}/NativeLoadProbe.HC'] = ('\n'.join(load) + '\n').encode('ascii')
-packer = runpy.run_path('tools/package-i386-native-image.py')
 image = out/'working.img'
 report = {'result':'running','package':packer['package'](args.disk,image,additions=extras)}
 Guest = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Guest']
@@ -338,7 +348,8 @@ try:
         report['play'] = {'fixture_sha256': hashlib.sha256(extras['/XCProbe.HC']).hexdigest()}
         guest.type('#include "C:/XCProbe.HC"')
         guest.press('ret')
-        exercise(guest, report['play'], fire=not args.xcaliber_no_fire)
+        exercise(guest, report['play'], fire=not args.xcaliber_no_fire,
+                 turn=args.xcaliber_turn)
     guest.command('6*7;')
     report['fresh_result']=guest.result_pixels()
     report['result']='pass'

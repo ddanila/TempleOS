@@ -2278,3 +2278,15 @@ original field access is running. See
 `build/native-geometry-source-v1/X-Caliber-sprite-coordinate/result.json`,
 `build/native-geometry-source-v1/X-Caliber-shot-return/result.json`
 and `build/xcaliber-reference-v1/original-shot-mass/result.json`.
+
+An off-axis shot on the pinned original proves that the recoil
+operand is the queued shot's horizontal velocity bit for bit. The
+shared X-Caliber source now returns the allocated shot explicitly and
+reads its horizontal velocity directly. The embedded DolDoc records
+are unchanged. Both the original-kernel overlay and native diagnostic
+built from the shared source turn, fire and return on Escape. Each
+reads the same nonzero operand as its own queued horizontal velocity.
+Native returns to fresh arithmetic. The absolute velocities vary
+with the guest simulation timing. The native diagnostic still
+substitutes Sqr for power. See
+`build/native-geometry-source-v1/X-Caliber-shared-recoil-turn/comparison.json`.

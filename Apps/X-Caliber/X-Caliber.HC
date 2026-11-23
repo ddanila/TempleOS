@@ -1082,6 +1082,7 @@ Shot *ShotNew(I64 type,CD3 *_p,CD3 *_v,F64 r,F64 fuse_time,
   D3Copy(&tmps->p.DxDt,_v);
   QueIns(&tmps->p,ode->last_mass);
   QueIns(tmps,shot_head.last);
+  return tmps;
 }
 
 U0 SolarFlares()
@@ -1117,7 +1118,8 @@ U0 FireOneGun(Ship *tmpsp,I64 n,F64 r,F64 fuse_time)
   D3MulEqu(D3Copy(&p1,&p),r+tmpsp->p[0].radius+5);
   D3AddEqu(D3MulEqu(D3Copy(&v,&p),1000/(r+1)),&tmpsp->p[n].DxDt);
   tmps=ShotNew(MT_ANTIMATTER_BALL,&tmpsp->p[n].x,&v,r,fuse_time,&p1);
-  D3MulEqu(&p,tmps->p.mass/tmpsp->p[n].mass/100.0);
+  //The original implicit return addressed the embedded mass, so recoil read DxDt.
+  D3MulEqu(&p,tmps->p.DxDt/tmpsp->p[n].mass/100.0);
   D3SubEqu(&tmpsp->p[n].DxDt,&p);
   tmpsp->reload_timeout=tS+r/tmpsp->fire_rate;
   ona=Freq2Ona(500/r);

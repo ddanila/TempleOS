@@ -10,6 +10,8 @@ import sys
 
 
 parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--shared-shot', action='store_true')
+parser.add_argument('--turn', action='store_true')
 parser.add_argument('--shot-trace', action='store_true')
 parser.add_argument('--loop-trace', action='store_true')
 parser.add_argument('--input-trace', action='store_true')
@@ -23,16 +25,17 @@ fixture = Path(__file__).with_name('Probe.HC').read_bytes()
 overlay = out / 'overlay'
 reference = runpy.run_path('tools/test-i386-timeclock-reference.py')
 sources = reference['restore_reference'](overlay)
+app = overlay / 'Apps/X-Caliber/X-Caliber.HC'
+if args.shared_shot:
+    app.write_bytes(Path('Apps/X-Caliber/X-Caliber.HC').read_bytes())
 if args.input_trace:
-    app = overlay / 'Apps/X-Caliber/X-Caliber.HC'
     source = app.read_bytes()
     offset = source.index(b'U0 XCaliber(')
     instrument = runpy.run_path(str(Path(__file__).with_name('input_trace.py')))['instrument']
     app.write_bytes(source[:offset] + instrument(source[offset:], loop=args.loop_trace))
 if args.shot_trace:
-    app = overlay / 'Apps/X-Caliber/X-Caliber.HC'
     instrument = runpy.run_path(str(Path(__file__).with_name('shot_trace.py')))['instrument']
-    app.write_bytes(instrument(app.read_bytes()))
+    app.write_bytes(instrument(app.read_bytes(), reference_recoil=args.shared_shot))
 (overlay / 'Once.HC').write_bytes(
     b'while(!Bt(&sys_run_level,RLf_ADAM_SERVER))Yield;\n'
     b'#include "T:/Apps/X-Caliber/Load.HC"\n' + fixture)
@@ -43,11 +46,11 @@ guest_type = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Gues
 guest = guest_type(iso, out / 'guest', False)
 report = dict(result='fail', fixture_sha256=hashlib.sha256(fixture).hexdigest(),
               app_source_sha256=sources['Apps/X-Caliber/X-Caliber.HC'])
-if args.input_trace or args.shot_trace:
+if args.input_trace or args.shot_trace or args.shared_shot:
     report['instrumented_app_sha256'] = hashlib.sha256(app.read_bytes()).hexdigest()
 try:
     exercise = runpy.run_path(str(Path(__file__).with_name('workflow.py')))['exercise']
-    exercise(guest, report)
+    exercise(guest, report, turn=args.turn)
 except Exception as error:
     report['error'] = str(error)
     raise

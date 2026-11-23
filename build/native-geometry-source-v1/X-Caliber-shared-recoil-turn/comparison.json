@@ -1,0 +1,33 @@
+{
+  "result": "pass",
+  "original": {
+    "receipt": "build/xcaliber-reference-v1/original-recoil-turn/result.json",
+    "return_offset": 40,
+    "recoil_bits": "C06690BF996920BA",
+    "queued_mass_bits": "3FA3333333333334",
+    "queued_horizontal_velocity_bits": "C06690BF996920BA"
+  },
+  "portable": [
+    {
+      "receipt": "build/xcaliber-reference-v1/original-shared-recoil-turn/result.json",
+      "return_offset": 0,
+      "recoil_bits": "C06A67F8FA2DD1EA",
+      "queued_mass_bits": "3FA3333333333334",
+      "queued_horizontal_velocity_bits": "C06A67F8FA2DD1EA"
+    },
+    {
+      "receipt": "build/native-geometry-source-v1/X-Caliber-reference-recoil-turn/result.json",
+      "return_offset": 0,
+      "recoil_bits": "C0555BB45BD5A3DF",
+      "queued_mass_bits": "3FA3333333333334",
+      "queued_horizontal_velocity_bits": "C0555BB45BD5A3DF"
+    },
+    {
+      "receipt": "build/native-geometry-source-v1/X-Caliber-shared-recoil-turn/result.json",
+      "return_offset": 0,
+      "recoil_bits": "C043B886A8AA516A",
+      "queued_mass_bits": "3FA3333333333334",
+      "queued_horizontal_velocity_bits": "C043B886A8AA516A"
+    }
+  ]
+}

@@ -12504,6 +12504,13 @@
           "result": "fail",
           "evidence": "build/native-geometry-source-v1/X-Caliber-play/result.json",
           "scope": "With the squared-distance diagnostic and original helpers, native reaches the original level-one state and fires the gun. The Escape return marker is missing."
+        },
+        {
+          "target": "xcaliber-shared-shot-recoil",
+          "command": "python3 build/xcaliber-reference-v1/compare_recoil.py ORIGINAL_RECEIPT PORTABLE_RECEIPTS",
+          "result": "pass",
+          "evidence": "build/native-geometry-source-v1/X-Caliber-shared-recoil-turn/comparison.json",
+          "scope": "Pinned original, shared source on original, and diagnostic native guests turn, fire and return. Each uses its shot horizontal velocity as the recoil operand. Native diagnostics still substitute Sqr for power."
         }
       ]
     },

@@ -4213,7 +4213,175 @@
         "-o",
         "build/sound-delay-production-v1/gen2-user8/working.img"
       ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-raster-stack/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-raster-stack/working.img.zst",
+      "sha256": "f0c75e529736ecab1b34d7f6b56804622960722b56197eb6959ef13fab445fb8",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-raster-stack/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-raster-stack/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-sprite-coordinate/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-sprite-coordinate/working.img.zst",
+      "sha256": "5a8f1945a40a9cdfb9ed5c12828cc93d4bda3eb6ff85e7f2cbfec6d6b0053428",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-sprite-coordinate/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-sprite-coordinate/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-shot-return/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-shot-return/working.img.zst",
+      "sha256": "d57b3f92b7f197ea891236d831a90328c7732b1a823844f62a77abe371361454",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-shot-return/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-shot-return/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-shot-pointer/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-shot-pointer/working.img.zst",
+      "sha256": "6b6c8fbde10e5d0000e8deaee4c5d453a744d3421c26ff75aa7401c573745fac",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-shot-pointer/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-shot-pointer/working.img"
+      ]
+    },
+    {
+      "original": "build/xcaliber-reference-v1/original-shot-trace/original.iso",
+      "archive": "build/xcaliber-reference-v1/original-shot-trace/original.iso.zst",
+      "sha256": "b13e7c6bb085aba3cb6d404b02d787caf2743bb84585ac6fcc7ae873e064c014",
+      "size": 46155776,
+      "reclaimed_bytes": 33234944,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-reference-v1/original-shot-trace/original.iso.zst",
+        "-o",
+        "build/xcaliber-reference-v1/original-shot-trace/original.iso"
+      ]
+    },
+    {
+      "original": "build/xcaliber-reference-v1/original-shot-pointer/original.iso",
+      "archive": "build/xcaliber-reference-v1/original-shot-pointer/original.iso.zst",
+      "sha256": "83fb3de7025d466b6ddf2d19ee55c98800c7324c590a1be7911b615e4911a1a5",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-reference-v1/original-shot-pointer/original.iso.zst",
+        "-o",
+        "build/xcaliber-reference-v1/original-shot-pointer/original.iso"
+      ]
+    },
+    {
+      "original": "build/xcaliber-reference-v1/original-shot-mass/original.iso",
+      "archive": "build/xcaliber-reference-v1/original-shot-mass/original.iso.zst",
+      "sha256": "949be17f2a0810b485fbbb23b84174c7f2a3ec6ccd38b7156247b0f04ed5eb20",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-reference-v1/original-shot-mass/original.iso.zst",
+        "-o",
+        "build/xcaliber-reference-v1/original-shot-mass/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-center-production-v1/fire64/working.img",
+      "archive": "build/tothefront-center-production-v1/fire64/working.img.zst",
+      "sha256": "701b840880acb97c1fbd6d32c9c62b8c5f3b067ca466af2a597ea204e9c97995",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-center-production-v1/fire64/working.img.zst",
+        "-o",
+        "build/tothefront-center-production-v1/fire64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-reference-recoil/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-reference-recoil/working.img.zst",
+      "sha256": "1b006d5973978372730dce1eb335686d1d78aa69b319bab2929484482e2eda48",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-reference-recoil/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-reference-recoil/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-reference-recoil-turn/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-reference-recoil-turn/working.img.zst",
+      "sha256": "88a4adb2eee347c0e828e1b84e2b8dda65724697ffa0d47bf37cd65cf0fcc5ef",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-reference-recoil-turn/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-reference-recoil-turn/working.img"
+      ]
+    },
+    {
+      "original": "build/xcaliber-reference-v1/original-recoil-turn/original.iso",
+      "archive": "build/xcaliber-reference-v1/original-recoil-turn/original.iso.zst",
+      "sha256": "dfcb5e87d84543551cc296dce6fab603c357757b2880af9e92e1aa4215f8616d",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-reference-v1/original-recoil-turn/original.iso.zst",
+        "-o",
+        "build/xcaliber-reference-v1/original-recoil-turn/original.iso"
+      ]
+    },
+    {
+      "original": "build/xcaliber-reference-v1/original-shared-recoil-turn/original.iso",
+      "archive": "build/xcaliber-reference-v1/original-shared-recoil-turn/original.iso.zst",
+      "sha256": "81bbd714a7e5c774a0074f7339765b94d2088990e18e50d0bf2fe267c97e4eeb",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-reference-v1/original-shared-recoil-turn/original.iso.zst",
+        "-o",
+        "build/xcaliber-reference-v1/original-shared-recoil-turn/original.iso"
+      ]
     }
   ],
-  "reclaimed_bytes": 15050055680
+  "reclaimed_bytes": 15590092800
 }
