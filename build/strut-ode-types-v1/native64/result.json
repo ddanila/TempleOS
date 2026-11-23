@@ -1,0 +1,50 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "build/vocabulary-lazy-init-v1/full/kernel.img": "1765e7562ebd5d04daeaf06ffbf6c14c38a7e82a412801eb8a2917f44101c7b7",
+    "Kernel/KernelA.HH": "d29532576f1ead273cd83ff1aaa1187b45189f193ea122e1607645373a2adb35",
+    "Adam/AMathODE.HC": "702ccf50723c83219c1e1dfd4ec33e486fb3f17884107dd0b7fd879404317e99",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/strut-ode-types-v1/run.py": "ef8cabdc116262e816b1d4f3408c2d773688c1de7086a3dac42384b8241b5aae"
+  },
+  "scope": "Original ODE type declarations and bundled Strut load on native i386",
+  "type_slice_sha256": "2181b682f44dec99aed91e92022e30cb07efe28d7cd9554bf12f3e380f50b543",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "1765e7562ebd5d04daeaf06ffbf6c14c38a7e82a412801eb8a2917f44101c7b7",
+    "image_sha256": "27229aaf8598e6edc4fd22f149b1022defdcd203f4602dec9f797e89ff7033a2",
+    "boot_area_sha256": "5aa85244a30e742429830e2770bcea2fcf34bf207db61cb847921c16e136677e",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96136,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/ODETypes.HH": "2181b682f44dec99aed91e92022e30cb07efe28d7cd9554bf12f3e380f50b543"
+    },
+    "added_attributes": {
+      "/Probe/ODETypes.HH": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "application_sha256": {
+    "Apps/Strut/Load.HC": "a549f65b246d1b506d257dcfd27a17d2faacce3d915b02b3356b2160d2fd4772",
+    "Apps/Strut/Run.HC": "c6d7643ad2827c09ee79298f3041d666a4b4799bcaa6673ba1500f99da604525",
+    "Apps/Strut/Strut.HC": "6010f698d19731c4a881f1470c7268a4514ef34ec46fcd72d130721c8b4adb72"
+  },
+  "stages": {
+    "types": "pass"
+  },
+  "stage": "ode",
+  "error": "INPUT LINE #include \"C:/Adam/AMathODE.HC\"\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token mp_cnt file C:/Adam/AMathODE.HC line 74\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n",
+  "inputs_unchanged": true
+}

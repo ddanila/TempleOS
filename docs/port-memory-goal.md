@@ -2750,3 +2750,14 @@ with both interactive raster checkpoints. This boot took 60.38 seconds and
 exceeds the 60-second budget. The second self-hosted flat-kernel build is
 underway. See
 `build/i386-graphics-registry-integration/generations128/gen2-install`.
+
+The integrated registry, SwapI64 and changed-row VGA image completes all
+eleven native pipeline stages. Both self-hosted generations audit all 1,532
+delivered files, and all sixteen modules and boot artifacts reproduce under
+the declared eight-byte build-date normalization. Each actual boot payload,
+checksum and padding passes independently. The second self-hosted 8 MiB
+boot matches both interactive raster checkpoints and takes 60.27 seconds,
+above the 60-second budget. The complete stage hashes are in
+`build/i386-graphics-registry-integration/generations128/two-generation-receipt.json`.
+This pipeline used the earlier pinned image. The latest menu, popup and
+application changes require separate current-image qualification.

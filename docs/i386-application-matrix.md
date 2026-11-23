@@ -1141,3 +1141,11 @@ notes at the exact original durations when input starts after redraw. The
 recorded and post-backspace files and caller mask match the original bytes.
 See `build/native-focus-menu-overlay-v1/psalmody64/result.json`. The
 immediate-input timing case remains open.
+
+The original COrder2D3, CMass, CSpring and CMathODE declarations compile on
+the full native image. The original AMathODE then rejects mp_cnt in ODEDel.
+A scratch single-CPU derivative path advances to the missing D3Norm
+dependency. Adding the needed scalar F64 vector operations advances beyond
+their definitions, but compiling the serial ODE source still throws a
+Compiler exception without a diagnostic location. Strut has yet to load in
+this sequence. See `build/strut-ode-types-v1` and `build/strut-ode-d3-v1`.

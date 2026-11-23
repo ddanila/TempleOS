@@ -1,0 +1,66 @@
+{
+  "result": "pass",
+  "pipeline_sha256": "7be80b91c58ef78653f39d86c25b745de96fd4131fde138e510657f7c261d3b4",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-graphics-registry-integration/retained128/result.json": "5c6be81491950c0bc09450189dbae6728cc93defaed6a36fef4973aa534e0c04",
+    "/home/ddanila/fun/TempleOS/build/i386-graphics-registry-integration/retained128/source.img": "1c8725116bb23f9697fb986546327d2dd1db7be2cbb8505f7c42a61b6261b7f6",
+    "/home/ddanila/fun/TempleOS/build/i386-graphics-registry-integration/native-v2/kernel-stage.lst": "f42f1006480b04822f2a7486e909ba39c4e399d556e63ac0305b8c7158d2b633",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-native-generations.py": "1211ef2faa159895d9ed68a2fa9903f59a8ccaa8ce3f09f2ffcf5f76b76f4b3a"
+  },
+  "source_pin_count": 2470,
+  "source_identity_sha256": "93ea9647d558d981aa7cc114d46591b1dab6ce65ce38f986fb5c7fc6e90efd3f",
+  "delivered_source_files": 1532,
+  "stages": {
+    "input-source-audit": "28ac674aeeda3f264063d3a26fcb89360ae2ba5e37239d8862d0808e9ff86c37",
+    "gen1-install": "11ffe584a6698a819d6ad3cdc804db14012ba066165c1e42d1b126d057e54722",
+    "gen1-selfhost": "8de4791ad0664a551192357a0129654e899300b09552a14e77d23ec9bcb68ed1",
+    "gen1-audit": "141088ad0350ef0b48f55e219c57ebdd233a9d94e2067acedac1f9ca33d5e971",
+    "gen1-source-audit": "27d6a3ed7436b6f8399b5e42115f7cc05da6a84bf62c0db6b6a1064c60845977",
+    "gen2-retained-build": "2cca9fada5693c3d2a771f353cce08cac7d249935a9a95935dce3eacf53815d1",
+    "gen2-install": "e7215d8a766afdd6d051ebcefaa6b3f5b4f6b0afadf7f819aed7fab6dd1040ce",
+    "gen2-selfhost": "aae8066d899fd57ae0118ff8794c78c8f6f540d3a278aa3492b8488b3fe51819",
+    "gen2-audit": "2a51f9dc2b1ece87611c4c2d55c51f22e13381414c5715fcae190969e77622e8",
+    "gen2-source-audit": "a091dd7a2192afaf17d08313ade665ec52bd25531c1b0df31477ba00ec2b7b40",
+    "generation-identity": "37a11847c5daadf228c14405e17f8f22c14f0e05992a28214d483e712dd43634"
+  },
+  "artifact_comparison": {
+    "comparison_scope": "All artifact bytes except exported eight-byte Kernel date; each actual boot payload/checksum/padding verified independently",
+    "module_count": 16,
+    "boot_area_sha256": "86e8edd56119a340d0e0b39d2655e355469a980795f807b42ff05a446eb30274",
+    "normalized_flat_sha256": "d9ea8d30a75afee29df3306ffacc829cd2ae3f0902f38ea8d4b4323a8d50b87d",
+    "kernel_build_dates": [
+      3179596150181044,
+      3179596311391448
+    ],
+    "first_disk_sha256": "38ca3086150709d33bc9b83f832504ef4491d580a48f0dc1cf7135d08f2c1e8e",
+    "second_disk_sha256": "2a5f6a59cc4494ad75ff5ea5306d4d4d7cce89b6a97808cb33e9c455332c5cf6"
+  },
+  "installed_boots": [
+    {
+      "result": "pass",
+      "cpu": "486,-fpu",
+      "ram_mib": 8,
+      "startup_status": "ok",
+      "boot_mode": "interactive",
+      "startup_seconds": 60.54732271301327,
+      "commands": 2,
+      "setup_commands": 0,
+      "window_manager_pause_requested": false,
+      "vga": "all pixels matched at each checkpoint",
+      "interaction_latencies_seconds": {}
+    },
+    {
+      "result": "pass",
+      "cpu": "486,-fpu",
+      "ram_mib": 8,
+      "startup_status": "ok",
+      "boot_mode": "interactive",
+      "startup_seconds": 60.269796398992185,
+      "commands": 2,
+      "setup_commands": 0,
+      "window_manager_pause_requested": false,
+      "vga": "all pixels matched at each checkpoint",
+      "interaction_latencies_seconds": {}
+    }
+  ]
+}
