@@ -65,16 +65,20 @@ public Bool ODEPause(CMathODE *ode,Bool val=ON)
 
 public U0 ODEDel(CMathODE *ode)
 {//Free ODE node, but not masses or springs.
+#ifndef I386_NATIVE_SERIAL_ODE
   I64 i;
+#endif
   if (!ode) return;
   ODEPause(ode);
   Free(ode->state);
   Free(ode->array_base);
+#ifndef I386_NATIVE_SERIAL_ODE
   if (ode->slave_tasks) {
     for (i=0;i<mp_cnt;i++)
       Kill(ode->slave_tasks[i]);
     Free(ode->slave_tasks);
   }
+#endif
   Free(ode);
 }
 
@@ -330,6 +334,7 @@ U0 ODEApplyAccelerationLimit(CMathODE *ode)
   }
 }
 
+#ifndef I386_NATIVE_SERIAL_ODE
 U0 ODEMPTask(CMathODE *ode)
 {
   while (TRUE) {
@@ -367,14 +372,19 @@ U0 ODEMPSleep(CMathODE *ode)
   }
 }
 
+#endif
 U0 ODECallMPDerivative(CMathODE *ode,F64 t,F64 *state,F64 *DstateDt)
 {
+#ifdef I386_NATIVE_SERIAL_ODE
+  (*ode->mp_derive)(ode,t,0,state,DstateDt);
+#else
   ode->mp_t=t;
   ode->mp_state=state;
   ode->mp_DstateDt=DstateDt;
   ode->mp_not_done_flags=1<<mp_cnt-1;
   do Yield;
   while (ode->mp_not_done_flags);
+#endif
 }
 
 U0 ODECallDerivative(CMathODE *ode,F64 t,F64 *state,F64 *DstateDt)
@@ -433,7 +443,11 @@ U0 ODERK4OneStep(CMathODE *ode)
   dym =ode->tmp0;
   dyt =ode->tmp1;
   yt  =ode->tmp2;
+#ifdef I386_NATIVE_SERIAL_ODE
+  DstateDt=ode->DstateDt;
+#else
   DstateDt=ode->tmp3;
+#endif
   hh  =0.5*ode->h;
   h6  =ode->h / 6.0;
   xh  =ode->t + hh;
@@ -547,7 +561,11 @@ U0 ODERK5OneStep(CMathODE *ode)
     }
     errmax/=ode->tolerance_internal;
     if (errmax<=1.0 || ode->h==ode->h_min) break;
+#ifdef I386_NATIVE_SERIAL_ODE
+    tmp=ode->h*SAFETY*Exp(PSHRNK*Ln(errmax));
+#else
     tmp=ode->h*SAFETY*errmax`PSHRNK;
+#endif
     if (tmp<0.1*ode->h)
       ode->h*=0.1;
     else
@@ -555,7 +573,11 @@ U0 ODERK5OneStep(CMathODE *ode)
   }
   ode->t+=ode->h;
   if (errmax>ERRCON)
+#ifdef I386_NATIVE_SERIAL_ODE
+    ode->h*=SAFETY*Exp(PGROW*Ln(errmax));
+#else
     ode->h*=SAFETY*errmax`PGROW;
+#endif
   else
     ode->h*=5.0;
   ode->h=Clamp(ode->h,ode->h_min,ode->h_max);
@@ -609,8 +631,10 @@ it has a timeout.
 	  ode->base_t+=t_desired-ode->t; //Slip
 	else {
 	  if (ode->derive || ode->mp_derive) {
+#ifndef I386_NATIVE_SERIAL_ODE
 	    if (ode->mp_derive)
 	      ODEMPWake(ode);
+#endif
 	    ODEState2Internal(ode);
 	    MemCpy(ode->initial_state,ode->state_internal,
 		  ode->n_internal*sizeof(F64));
@@ -646,8 +670,10 @@ ode_done:
 	    //Convenience call to set vals
 	    ODECallDerivative(ode,ode->t,ode->state_internal,ode->DstateDt);
 
+#ifndef I386_NATIVE_SERIAL_ODE
 	    if (ode->mp_derive)
 	      ODEMPSleep(ode);
+#endif
 	  }
 	}
 	ode->flags&=~ODEF_BUSY;
@@ -674,9 +700,17 @@ ode_done:
       if (!(ode->flags&ODEF_PAUSED) && ode->derive) {
 	if (ode->min_tolerance!=ode->max_tolerance) {
 	  if (d>0)
+#ifdef I386_NATIVE_SERIAL_ODE
+	    ode->tolerance_internal*=Exp(d*Ln(10.0));
+#else
 	    ode->tolerance_internal*=10.0`d;
+#endif
 	  else
+#ifdef I386_NATIVE_SERIAL_ODE
+	    ode->tolerance_internal*=Exp(d*Ln(2.0));
+#else
 	    ode->tolerance_internal*=2.0`d;
+#endif
 	}
 	ode->tolerance_internal=Clamp(ode->tolerance_internal,
 	      ode->min_tolerance,ode->max_tolerance);

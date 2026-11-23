@@ -137,6 +137,7 @@ U0 NativeWindowWorker(U8 *data)
         if(completed) {
           WinMgrRefreshTime(&winmgr,tS);winmgr.updates++;
         }
+        if(native_ode_update)NativeWindowDerived(TRUE);
       }
     } catch {
       ch=Fs->except_ch;number=native_window_fault_task;

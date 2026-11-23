@@ -11298,6 +11298,12 @@
           "result": "pass",
           "evidence": "build/native-strut-entry-v1/strut64/result.json",
           "scope": "Cold direct Load.HC include, resident ODE APIs, physical spring placement, automatic simulation, Escape and fresh arithmetic. The loader and runtime changes are still in an overlay."
+        },
+        {
+          "target": "native-strut-production",
+          "result": "pass",
+          "evidence": "build/native-ode-production-v1/strut64/result.json",
+          "scope": "Cold production Load.HC, on-demand shared ODE, physical spring placement, automatic simulation, Escape and fresh arithmetic. Normal Run.HC also passes its independent launch and exit check."
         }
       ]
     },

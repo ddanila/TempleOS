@@ -24,7 +24,7 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   if (!s || !root || !swap || s->root || root->owner || root->next_task || root->last_task || root->except_top || root->io_locks ||
       root->file_state || root->file_clone || root->file_destroy || root->lifetime_refs ||
       root->hash_table || root->symbol_state || root->symbol_clone || root->symbol_destroy ||
-      root->next_ctrl || root->last_ctrl ||
+      root->next_ctrl || root->last_ctrl || root->next_ode || root->last_ode ||
       root->next_cc || root->last_cc || root->compiler_cleanup || root->active_controls ||
       root->compiler_cleanup_failed || root->compiler_busy || root->wait ||
       I386TaskHeapHooks(root)) return FALSE;
@@ -37,6 +37,7 @@ public Bool I386SchedInit(CI386Scheduler *s,CI386Task *root,
   root->cleanup=0; root->finishing=0;
   root->next_cc=root->last_cc=&root->next_cc;
   root->next_ctrl=root->last_ctrl=&root->next_ctrl;
+  root->next_ode=root->last_ode=&root->next_ode;
   root->messages=0;
   root->except_ch=0; root->catch_except=0; root->except_rbp=0;
   for(i=0;i<I386_EXCEPT_CALLERS;i++) root->except_callers[i]=0;
@@ -51,7 +52,7 @@ public Bool I386SchedPrepare(CI386Scheduler *s,CI386Task *task)
   U32 flags=I386IrqSave;
   I64 i;
   if (!s || !s->root || !task || task->owner || task->next_task || task->last_task || task->except_top || task->io_locks || task->lifetime_refs || !task->context.esp ||
-      task->next_ctrl || task->last_ctrl ||
+      task->next_ctrl || task->last_ctrl || task->next_ode || task->last_ode ||
       task->next_cc || task->last_cc || task->compiler_cleanup || task->active_controls ||
       task->compiler_cleanup_failed || task->compiler_busy || task->wait ||
       (I386TaskHeapHooks(task) && I386TaskHeapHooks(task)!=31) ||
@@ -67,6 +68,7 @@ public Bool I386SchedPrepare(CI386Scheduler *s,CI386Task *task)
   task->cleanup=0; task->finishing=0;
   task->next_cc=task->last_cc=&task->next_cc;
   task->next_ctrl=task->last_ctrl=&task->next_ctrl;
+  task->next_ode=task->last_ode=&task->next_ode;
   task->messages=0;
   task->except_ch=0; task->catch_except=0; task->except_rbp=0;
   for(i=0;i<I386_EXCEPT_CALLERS;i++) task->except_callers[i]=0;

@@ -1468,3 +1468,15 @@ delivered-source audit. The orchestrator and generation-two guest
 stopped during the retained rebuild without a terminal report. The
 interruption receipt preserves the completed stage hashes. See
 `build/native-focus-menu-psalmody-production-v1/generations128/terminal-observation.json`.
+
+The on-demand shared ODE solver, native task queue initialization,
+guarded window update, raster exports, and implicit F64 conversion
+fix are integrated in the production sources. Both original
+bootstrap rebuilds and the native cross-build and 386 instruction
+audit pass. The full image verifies 1,537 delivered source and
+documentation files and 686 inventory files. The 8 MiB KVM User
+fixture passes in 50.62 seconds. Cold Strut passes physical editing,
+automatic simulation, and Escape cleanup at 64 MiB. The independent
+Run.HC check matches the instruction pixels and returns to fresh
+console arithmetic. The 128 MiB retained rebuild is in progress.
+See `build/native-ode-production-v1/qualification.json`.

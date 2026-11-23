@@ -18,7 +18,7 @@ CTask *NativeWindowFind(I64 number)
   } while(task!=anchor);
   return NULL;
 }
-U0 NativeWindowDerived()
+U0 NativeWindowDerived(Bool update_ode=FALSE)
 {//Original predecessor order, including hidden/covered tasks and manager last.
   CNativeWindowListScope scope;
   CTask *task,*anchor=sys_winmgr_task;
@@ -36,14 +36,17 @@ U0 NativeWindowDerived()
     for(i=0;i<count;i++) {
       numbers[i]=task->task_num;task=task->last_task;
     }
+    if(update_ode)winmgr.ode_time=0;
     for(i=0;i<count;i++) {
       task=NativeWindowFind(numbers[i]);
       if(task && !NativeRenderOwnerClosing(task)) {
         native_window_fault_task=task->task_num;
-        TaskDerivedValsUpdate(task,FALSE);
+        if(!update_ode)TaskDerivedValsUpdate(task,FALSE);
+        else if(task->next_ode!=&task->next_ode)NativeWindowUpdateOneODE(task);
         native_window_fault_task=0;
       }
     }
+    if(update_ode)winmgr.last_ode_time=winmgr.ode_time;
     NativeWindowListRelease(&scope);
   } catch {
     NativeWindowListRelease(&scope);

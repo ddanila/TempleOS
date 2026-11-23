@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "disk_sha256": "607c4381ba559907374f1fb309e90808f65845023f93124b32a038cf69e0bf9f",
+  "source_files": 1537,
+  "inventory_files": 686,
+  "startup_seconds": 50.62062913598493,
+  "evidence_sha256": {
+    "bootstrap/result.json": "64068bec056619d3306891a4bd011d1dcb746c80a3e8502e417318a905c03fb4",
+    "full/result.json": "fde334a6e322a8cc578be49b001c55f89ed4873aa0f226134bbf22fad3e44368",
+    "source-audit/result.json": "d2d5d822808c5b4a1dec9062864e2fd553e31d3718c285748607efcdac70a2ef",
+    "user8/result.json": "83556dd5381f3f2efe55808f956992e55c3015713fb7189801609a5b19501da0",
+    "strut64/result.json": "a02f88592b5ba4d6bc34ef106483a72cf17132010fdc3861746524cc4ed46e14",
+    "strut-run64/result.json": "fa6b825ba33c0d58379fe6db6c0a39c0605f4e30ea4bc5e9e049e106368374cd"
+  }
+}

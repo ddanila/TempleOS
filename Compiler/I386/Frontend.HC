@@ -501,7 +501,7 @@ Bool I386FrontendNeedsHelpers(CCmpCtrl *cc,CHashClass *type,CHashClass **types)
   if(I386IsF64(type)) return TRUE;
   for(node=cc->coc.coc_head.next;node!=&cc->coc.coc_head;node=node->next) {
     if(node->ic_code==IC_IMM_F64 || node->ic_code==IC_TO_F64 ||
-        node->ic_code==IC_TO_I64 || node->ic_flags&ICF_RES_TO_F64 ||
+        node->ic_code==IC_TO_I64 || node->ic_flags&(ICF_RES_TO_F64|ICF_RES_TO_INT) ||
         I386IsF64(I386ValueClass(&typer,node))) return TRUE;
   }
   return FALSE;
