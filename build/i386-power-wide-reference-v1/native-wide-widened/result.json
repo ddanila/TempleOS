@@ -1,0 +1,66 @@
+{
+  "result": "fail",
+  "fixture_sha256": "c1dcec4ca8e2a28895908aaed69e10ea6f925ace9015f152f1a4a503065c5f6e",
+  "input_sha256": "b89e2239e6b63648be100811597c1209c019f58dd8a9bd864c8b53160361e864",
+  "reference_sha256": "47aa05016b379d73f314497f6bad302f185ad513177896133f1df47dbe81dfc1",
+  "reduction_mismatches": [],
+  "result_mismatches": [
+    {
+      "index": 9,
+      "native": "3FBAE89F995AD3AE",
+      "original": "3FBAE89F995AD3AD"
+    },
+    {
+      "index": 10,
+      "native": "4002F684BDA12F68",
+      "original": "4002F684BDA12F67"
+    },
+    {
+      "index": 14,
+      "native": "3FD920573DC23D54",
+      "original": "3FD920573DC23D53"
+    },
+    {
+      "index": 17,
+      "native": "3FF1E3779B97F4A8",
+      "original": "3FF1E3779B97F4A7"
+    },
+    {
+      "index": 19,
+      "native": "4000857C2C7BBDB1",
+      "original": "4000857C2C7BBDB0"
+    },
+    {
+      "index": 20,
+      "native": "3FD2F684BDA12F69",
+      "original": "3FD2F684BDA12F68"
+    },
+    {
+      "index": 31,
+      "native": "3FE279A74590331D",
+      "original": "3FE279A74590331C"
+    },
+    {
+      "index": 34,
+      "native": "4041C45A0ED413AC",
+      "original": "4041C45A0ED413AB"
+    },
+    {
+      "index": 36,
+      "native": "3FD5555555555556",
+      "original": "3FD5555555555555"
+    },
+    {
+      "index": 43,
+      "native": "3FEFFD0023FEE007",
+      "original": "3FEFFD0023FEE006"
+    },
+    {
+      "index": 45,
+      "native": "3FF0000000000000",
+      "original": "3FEFFFFFFFFFFFFF"
+    }
+  ],
+  "cases": 56,
+  "error": "Native power corpus differs from original"
+}

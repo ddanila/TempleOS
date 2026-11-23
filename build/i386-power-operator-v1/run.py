@@ -23,6 +23,7 @@ EXPECTED_EDGES = [
 
 
 parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--wide-reduction', action='store_true')
 parser.add_argument('--replay-reduction', type=Path)
 parser.add_argument('--trace-reduction', action='store_true')
 parser.add_argument('--edges', action='store_true')
@@ -30,6 +31,8 @@ parser.add_argument('--reduction-candidate', action='store_true')
 parser.add_argument('--disk', type=Path)
 parser.add_argument('--out', required=True, type=Path)
 args = parser.parse_args()
+if args.wide_reduction and not args.reduction_candidate:
+    parser.error('--wide-reduction requires --reduction-candidate')
 if args.replay_reduction and (not args.reduction_candidate or args.edges):
     parser.error('--replay-reduction requires the four-case native candidate')
 if args.trace_reduction and (args.disk or args.edges):
@@ -44,6 +47,12 @@ if args.reduction_candidate:
     core = Path('Kernel/I386/FloatExp.HC').read_bytes()
     reduced = core[:core.index(b'\nF64 Exp(')]
     experiment = Path('build/i386-power-reduction-v1/Candidate.HC').read_bytes()
+    if args.wide_reduction:
+        fixed = Path('build/i386-power-wide-reference-v1/Fixed.HC').read_bytes()
+        expression = b'Log2(Abs(base))*exponent'
+        if experiment.count(expression) != 1:
+            raise ValueError('Unexpected candidate reduction expression')
+        experiment = fixed + b'\n' + experiment.replace(expression, b'PowerWideReduced(base,exponent)')
     probe = reduced + b'\n' + experiment + b'\n' + probe.replace(
         b'base`2;', b'PowerSoftware(base,2);').replace(
         b'base`exponent;', b'PowerSoftware(base,exponent);')

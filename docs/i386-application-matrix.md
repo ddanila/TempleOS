@@ -2303,3 +2303,16 @@ cases. Compiler lowering and broader rounding parity remain open.
 See `build/i386-power-reduction-v1/original-trace/result.json`,
 `build/i386-power-reduction-v1/native-reduced-trace/result.json`
 and `build/i386-power-reduction-v1/native-range/result.json`.
+
+The wider power probe captures 56 original x87 cases with positive
+finite bases, including the two binary64 values on each side of one.
+The 116-bit fixed-point HolyC reduction matches all 56 original
+round-toward-zero binary64 exponents on the no-FPU i386 guest.
+The current native reconstruction matches 45 of the 56 final
+results. Each of the remaining 11 is one ULP above the original.
+The host Decimal reconstruction matches all 56 original results.
+The wider reduction is a diagnostic candidate. Native reconstruction
+and compiler lowering for the power operator remain open. See
+`build/i386-power-wide-reference-v1/original-wide/result.json`,
+`build/i386-power-wide-reference-v1/original-wide/wide-model.json`,
+and `build/i386-power-wide-reference-v1/native-wide-widened/result.json`.
