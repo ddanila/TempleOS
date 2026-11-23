@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "full_image_sha256": "8e602a69a536b0bd0ad76bb04ad52a726a96f33acd11e4958acaa75b6d9f839e",
+  "build_receipt_sha256": "4fdeb69107c99dba89274ddb442e8f821ac43794a29c75baba20d765fdba9bea",
+  "inventory_files_matched": 686,
+  "keepaway_sha256": "7823c3a522b42ab49c3985c03fc122cc825423cf600fe6f055e4fc9ad299fc9f",
+  "scope": "Full image inventory files match the current source tree byte for byte"
+}

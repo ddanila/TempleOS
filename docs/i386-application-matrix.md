@@ -959,3 +959,9 @@ and 4,280 red border pixels, with no Window Manager exception. Jump, restart,
 exit, caller restoration and fresh arithmetic also pass. Live-game frames
 are timing dependent. See `build/keepaway-sort-production-v1/native64/result.json`.
 Scoring, additional input, and automatic startup library loading remain open.
+
+A fresh full-content cross-build also passes the boot instruction audit and
+ships the repaired KeepAway source. All 686 inventory files match the current
+tree. The full image passes the 64 MiB launch, jump, restart, exit, caller
+restoration and arena raster checks. See `build/keepaway-sort-production-v1`
+for the image identity and runtime receipts.
