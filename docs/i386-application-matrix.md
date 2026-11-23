@@ -2493,3 +2493,9 @@ All 56 finite power cases still match at 64 MiB. See
 `build/i386-console-address-table-v4/qualification.json`.
 The native rebuild of the compact console and full generation
 qualification are in progress.
+
+The compact-console image also passes the Span workflow, the
+ToTheFront direct-fire comparison against the original phase trace,
+and the public COCCompile differential. See the `span64`,
+`fire64` and `public-backend` receipts under
+`build/i386-console-address-table-v4`.

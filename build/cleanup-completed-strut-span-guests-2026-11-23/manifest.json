@@ -6621,7 +6621,49 @@
         "-o",
         "build/i386-console-address-table-v4/guest-compiler-power/working.img"
       ]
+    },
+    {
+      "original": "build/i386-console-address-table-v4/span64/working.img",
+      "archive": "build/i386-console-address-table-v4/span64/working.img.zst",
+      "sha256": "3975f3997af7604943b9f48ff0154ec3a43cd10ab50f308ce22124de8e7c9925",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-console-address-table-v4/span64/working.img.zst",
+        "-o",
+        "build/i386-console-address-table-v4/span64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-console-address-table-v4/fire64/working.img",
+      "archive": "build/i386-console-address-table-v4/fire64/working.img.zst",
+      "sha256": "1f1bd4b898fb3d8c31e5c201d7eec77f23735a4a757a5ce04783fe4ba06c9168",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-console-address-table-v4/fire64/working.img.zst",
+        "-o",
+        "build/i386-console-address-table-v4/fire64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-console-address-table-v4/public-backend/working.img",
+      "archive": "build/i386-console-address-table-v4/public-backend/working.img.zst",
+      "sha256": "43060491acba230c929e2ae4136c1c0eba218bd6b6dd6b8f6711f3cb68b06a0c",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-console-address-table-v4/public-backend/working.img.zst",
+        "-o",
+        "build/i386-console-address-table-v4/public-backend/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 23126380544
+  "reclaimed_bytes": 23286599680
 }

@@ -11,6 +11,10 @@
     "source-audit/result.json": "020c089f571d6febb6eaafe92288548a00ef66ad4d73572e307fcd4cd02674b7",
     "guest-compiler-install/result.json": "5c0a29bf24121856505a9386f0b4087295f1d4eb748b02a84eae2d8e8fc6b038",
     "guest-compiler-user8/result.json": "af25ad7e78d7f18dfa19ae9dcdb0d92f96fdd26faa9d20fecade1e375d2b5010",
-    "guest-compiler-power/result.json": "fd53d6dea862a704e97706e042f956001b19d644a526149fe6a80fc173132cf5"
-  }
+    "guest-compiler-power/result.json": "fd53d6dea862a704e97706e042f956001b19d644a526149fe6a80fc173132cf5",
+    "span64/result.json": "eb8677681d382a0d57a783ebfc0fff317188396bd217745582c564d8092331f9",
+    "fire64/result.json": "2da99e686ad8e9b83da728b2a4bb1c42cab98e41105539a9e98e4f395250a64f",
+    "public-backend/result.json": "c7eba50be17a3161eee6423a555390bb7e13109b28ab9ad2ebf3aabca357e7af"
+  },
+  "original_fire_equivalence": "pass"
 }
