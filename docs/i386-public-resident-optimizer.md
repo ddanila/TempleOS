@@ -406,3 +406,9 @@ payload falls from 202,512 to 150,112 bytes while total free payload rises
 from 386,680 to 388,144 bytes. The 267,527-byte task still cannot fit in the
 captured layout. The pinned census is under
 `build/preload-heap-comparison/large_high_v1/summary.json`.
+
+The production image containing the direct-copy autocomplete dictionary
+also passes the resident optimizer oracle at 16 MiB. The original 48-word
+folding trace matches, heap deltas are zero, fresh arithmetic runs, and
+exactly one resident publication occurs. The result pins unchanged inputs
+in `build/ac-dictionary-direct-copy/resident-opt16/result.json`.
