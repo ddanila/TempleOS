@@ -4829,7 +4829,21 @@
         "-o",
         "build/i386-power-wide-reference-v1/native-specials-explicit/working.img"
       ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/native-wide-edges-explicit/working.img",
+      "archive": "build/i386-power-wide-reference-v1/native-wide-edges-explicit/working.img.zst",
+      "sha256": "fa9796d7aaa867ebb5c01141a9af0ee7415007839c3776364ba612370dc99bc0",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/native-wide-edges-explicit/working.img.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/native-wide-edges-explicit/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 17198202880
+  "reclaimed_bytes": 17251606528
 }
