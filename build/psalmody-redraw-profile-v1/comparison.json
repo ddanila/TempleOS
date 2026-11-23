@@ -32,5 +32,22 @@
         8
       ]
     }
-  }
+  },
+  "original_menu_ms": {
+    "initial_menu": {
+      "clear": 0,
+      "drawing_and_first_sprite": 4,
+      "remaining_menu": 1,
+      "refresh_two_frames": 48,
+      "total": 53
+    },
+    "record_menu": {
+      "clear": 1,
+      "drawing_and_first_sprite": 2,
+      "remaining_menu": 2,
+      "refresh_two_frames": 62,
+      "total": 67
+    }
+  },
+  "original_receipt_sha256": "784a570ce78cbd81c84419dbddacd6b1e9ca67aa4a33a6158af33a1fdf5168be"
 }

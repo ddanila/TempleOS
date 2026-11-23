@@ -874,3 +874,8 @@ the bit and suppresses the popup again. Only the test fixture and
 renders fresh arithmetic. The fixture and receipt are in
 `build/psalmody-registry-modal-v4`. Psalmody's timed keyboard acceptance and
 production integration remain open.
+
+The combined SwapI64 and registry-popup overlay also passes the standalone
+8 MiB production User check at 50.95 seconds with the managed pointer
+and five command/raster checkpoints. The existing 60-second budget checker
+passes on that receipt. See `build/psalmody-registry-popup-v2/user8`.

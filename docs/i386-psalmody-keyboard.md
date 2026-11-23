@@ -109,3 +109,9 @@ refresh wait took another 300 ms. This identifies two costs to investigate
 in the drawing and document paths and leaves the measured dispatch lag after
 redraw open. The strict fixtures and receipts are in
 `build/psalmody-redraw-gate-v1` and `build/psalmody-redraw-profile-v1`.
+
+The same redraw instrumentation on original TempleOS passes the exact note
+check. Its record-menu redraw takes 67 guest ms, with 5 ms before the final
+refresh and 62 ms waiting for two frames. The native measurements at the same
+markers are 750 ms and 300 ms. This puts most of the observed difference in
+the work before the refresh. Both traces are in `build/psalmody-redraw-profile-v1`.

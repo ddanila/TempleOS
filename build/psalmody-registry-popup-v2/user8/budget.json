@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "startup_seconds": 50.95217608299572,
+  "budget_seconds": 60,
+  "over_budget_seconds": 0,
+  "evidence": "/home/ddanila/fun/TempleOS/build/psalmody-registry-popup-v2/user8/qemu/result.json",
+  "evidence_sha256": "a0d441ac8b0c4000e04ccdfbf586113fd0a277111c7df586fa409d725c8b35cc",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}
