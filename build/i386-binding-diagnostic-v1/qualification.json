@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "cross_disk_sha256": "17f6cc9504048ec2fd6b74d496bab3c2d7bd30d8f363f099426b25f222f19bd8",
+  "older_compiler_sha256": "f49aed115fc6d03eb9dde7fd7bbafae12b2b3315057ce73c3fe305119f310b41",
+  "mixed_disk_sha256": "d183b7c75229592048d75c9cf8b283cce7eef781a2a5a73b86c528678bd413a1",
+  "expected_failure_tail": [
+    "BINDING MISSING I386F64PiMulDiv",
+    "FAIL native kernel"
+  ],
+  "positive_receipt_sha256": "d01900096bb480ccfca8182cef6b3f7e77a36f4773d52f8a093dfec28e05dc66"
+}

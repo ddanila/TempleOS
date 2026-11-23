@@ -2893,3 +2893,10 @@ looks up `I386F64PiMulDiv` while assembling the console bindings, before
 it loads ConsoleRuntime. `KernelBinding` halts when that lookup fails,
 which explains the last run-level marker and the absence of a console
 loader diagnostic. The mixed image cannot serve as a memory baseline.
+
+The kernel now names missing required bindings before halting. Replacing
+only CompilerRuntime with the older guest build reproduced
+`BINDING MISSING I386F64PiMulDiv` immediately before `FAIL native kernel`.
+The matching cross-built image passed the 8 MiB User startup workload.
+The [qualification receipt](../build/i386-binding-diagnostic-v1/qualification.json)
+pins both images and the passing startup receipt.

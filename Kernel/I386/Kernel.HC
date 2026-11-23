@@ -718,7 +718,10 @@ U0 KernelBinding(CI386ModuleBinding *binding,U8 *name)
 {
   CI386KernelSymbol *symbol=HashFind(name,kernel_symbols,HTT_EXPORT_SYS_SYM);
   I64 address;
-  if(!symbol) KernelStop;
+  if(!symbol) {
+    KernelLog("BINDING MISSING "); KernelLog(name); KernelLog("\n");
+    KernelStop;
+  }
   address=HashVal(symbol);
   if(address<=0 || address>0xFFFFFFFF) KernelStop;
   binding->name=symbol->str; binding->kind=symbol->kind; binding->address=address;
