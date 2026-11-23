@@ -436,3 +436,9 @@ receipt's source pin refers to the pre-integration worktree, while the
 candidate image contains the same ACInit.HC now committed. The separate
 desktop timing run is in progress. See
 `build/ac-dictionary-direct-copy/native64/result.json`.
+
+The direct-copy dictionary image also passes the normal production User
+startup oracle at 8 MiB with managed pointer checks and unchanged inputs.
+This run uses the production terminal path. The original User prototype
+still has a separate 8 MiB task allocation failure. The passing receipt
+is in `build/ac-dictionary-direct-copy/production-user8/result.json`.
