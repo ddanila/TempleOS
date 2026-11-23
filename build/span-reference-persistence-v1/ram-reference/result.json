@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "image_sha256": "d448fc4cfd6b0fc6ed3f644d041fc5b34a1a1039aca53788e2793f441aebc6df",
+  "fixture_sha256": "e4567c7ca04dff4ac7e4b6bf5c2d64f07eb743a41fe78bd5e575252236c2b898",
+  "source_sha256": {
+    "Apps/Span/Install.HC": "ecc2ea096e3115b6768fd9109369822f23c554393b74445c91b8781205deb2d6",
+    "Apps/Span/Load.HC": "ee13f28dca7f1cf53ff38532f35ce54c2b9aff3de444b850d0bd9e167b8f521a",
+    "Apps/Span/Run.HC": "33b7f152ca1843d4e242d4746b7efcd7758c94d5978926c1d40872c05ab40fd6",
+    "Apps/Span/Span.HH": "4f22e1241dee1f9fef98c691f1d39c374484847d3c23b583cd9d17d57d8f7f4a",
+    "Apps/Span/SpanBridge.HC": "e6e2022dc09863cb52af069162a9708bb0fe758063a6e448898214cee46fcf7b",
+    "Apps/Span/SpanDerive.HC": "a52906aed653ed66485137732e9a4421ed8b7aa21b3f5e12a2b55a2c441e69bd",
+    "Apps/Span/SpanMain.HC": "c09a19303cdb9afe44fc80fef68eb35c7f9e882b867cde21e16755390923a4e2",
+    "Apps/Span/SpanNew.HC": "66b4de3d984045673907e0cb5876af81a51c7c8293022c38078c639081ed8ba7"
+  },
+  "size": 312,
+  "record_bytes": {
+    "header": 16,
+    "mass": 100,
+    "spring": 96
+  },
+  "export_sha256": "64cfdeb5fe80f3bdad5995fa934a929eb315eef46b3fe8c049f3a0e15611ebf0",
+  "version": 1.0,
+  "masses": 2,
+  "springs": 1
+}

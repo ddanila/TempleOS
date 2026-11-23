@@ -1286,3 +1286,18 @@ Strut's dependencies explicitly. The candidate's vector export bitmap
 also needs expansion before those exports are exercised by a cold loader.
 See `build/native-window-ode-v1/combined/result.json` and
 `build/native-window-ode-v1/strut64/result.json`.
+
+The pinned original Span serializer passes a RAM-disk save and reopen
+of a simple steel bridge. The version 1.0 file is 312 bytes, with a
+16-byte header, two 100-byte masses, and one 96-byte spring. Reopening
+restores the fixed anchor and both endpoint links. The in-memory export,
+disk readback, and re-encoding match byte for byte. The original file
+is retained as a native differential oracle. See
+`build/span-reference-persistence-v1/ram-reference`.
+
+The cold Strut loader candidate cross-compiles after moving ODE type
+definitions before their prototypes and giving the enlarged export bitmap
+its full initializer. The combined image passes the instruction audit.
+This candidate loads settings, controls, and autocomplete on demand and
+binds ODE through the resident module. The cold interactive test is
+running. See `build/native-strut-entry-v1`.

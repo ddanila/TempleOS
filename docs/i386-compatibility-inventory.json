@@ -11091,9 +11091,23 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Load the original app, construct a two-mass steel bridge, save it, reopen it into a fresh ODE, and check the endpoint links and fixed mass.",
+      "oracle": {
+        "tool": "build/span-reference-persistence-v1/run.py",
+        "checks": [
+          "File bytes match after writing, reopening, and re-encoding",
+          "The version 1.0 header and record sizes match the captured original"
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-span-bridge-persistence",
+          "command": "python3 build/span-reference-persistence-v1/run.py --out OUT",
+          "result": "pass",
+          "evidence": "build/span-reference-persistence-v1/ram-reference/result.json",
+          "scope": "Original serializer with two masses and one steel spring, using a pinned original guest RAM disk. Interactive file dialogs and reboot persistence remain open."
+        }
+      ]
     },
     {
       "path": "Apps/Span/Run.HC",
