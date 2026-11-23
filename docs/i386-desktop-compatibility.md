@@ -541,3 +541,11 @@ started FileRuntime. The progress auditor checks each persisted module
 against its reference export set and verifies stable bytes across two
 reads of the live build disk. See
 `build/resident-opt-c5-retained128/through-compiler-probe.json`.
+
+The 128 MiB retained build is terminal PASS. All nine guest-built modules
+were read back from disk and their exports audited against the cross-built
+references. The build provider loaded once and the final source image hash
+matches the receipt. The queued generation watcher stopped before it saw
+the passing receipt. After verifying the terminal result, the same
+two-generation harness was started directly with the audited stage listing
+and 128 MiB build profiles. See `build/resident-opt-c5-retained128/result.json`.

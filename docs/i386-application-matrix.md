@@ -837,3 +837,11 @@ group still fails console typing after held click, byte-identically before/after
 unflagged DocEd remains 113/95 with 524/609 client differences. Wheel, full
 ms_hard/MsSet, timing/bursts, remaining desktop/app/resources and native/minimal
 startup acceptance remain open. Qualification remains 2/686.
+
+The current native Psalmody keyboard oracle reaches the unchanged
+PsalmodyMain source and rejects the undefined SwapI64 identifier at line 226,
+before the keyboard workflow runs. The retained failure is in
+`build/ac-dictionary-direct-copy/psalmody-keyboard64/result.json`.
+A candidate publishes the existing native Console swap routine through
+PublicMemory and preserves the source of the application. It cross-builds.
+The native loading and keyboard checks are pending.
