@@ -2535,3 +2535,13 @@ Sixteen of the Man vertices differ by one unit in one coordinate, split
 between the right hand and the left hand. The
 [comparison](../build/grmodels-menu-workflows-v1/comparison.json) records
 the differing coordinates and both raw captures.
+
+The Man angle probe locates the difference before the trig calls. The
+original emits `FLDPI`, multiplies and divides in x87 precision, then stores
+the result as binary64. Native starts with binary64 π and rounds the
+multiply before the division. The four observed angles at ±30° and ±60°
+differ by one ULP. The exact same `180.0` literal and the standalone stored
+`60.0 * π` product appear in both captures. At the affected angles, the
+resulting trig values straddle the Q32 half-scale boundary. The
+[angle comparison](../build/grmodels-menu-workflows-v1/angle-comparison.json)
+links the numeric and emitted-code captures.

@@ -1,0 +1,32 @@
+{
+  "original": {
+    "run": "build/grmodels-menu-workflows-v1/angles-original-code",
+    "angle_bits": [
+      "0xBFF0C152382D7366",
+      "0xBFE0C152382D7366",
+      "0x3FE0C152382D7366",
+      "0x3FF0C152382D7366"
+    ],
+    "decimal_180": "0x4066800000000000",
+    "pow10_minus_1": "0x3FB999999999999A",
+    "stored_sixty_times_pi": "0x40678FDB9EFFEA46",
+    "cosine_q32_at_sixty": 2147483647,
+    "sine_q32_at_thirty": 2147483648,
+    "code_sha256": "66cf581c50b3ae0ab53156b07f57fcaa0b74800c0ab5ac3f892965ec19774cff"
+  },
+  "native": {
+    "run": "build/grmodels-menu-workflows-v1/angles-native-code",
+    "angle_bits": [
+      "0xBFF0C152382D7365",
+      "0xBFE0C152382D7365",
+      "0x3FE0C152382D7365",
+      "0x3FF0C152382D7365"
+    ],
+    "decimal_180": "0x4066800000000000",
+    "pow10_minus_1": "0x3FB999999999999A",
+    "stored_sixty_times_pi": "0x40678FDB9EFFEA46",
+    "cosine_q32_at_sixty": 2147483648,
+    "sine_q32_at_thirty": 2147483647,
+    "code_sha256": "d00bb544163c8821555305ce89581e95932bc0f6b5aba940aea8fc4ba2a6c4b2"
+  }
+}

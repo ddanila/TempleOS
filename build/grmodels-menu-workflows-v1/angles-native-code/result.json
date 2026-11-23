@@ -1,0 +1,31 @@
+{
+  "fixture_sha256": "deb2fb0361ec8e0999c93a1efe3663a019ab3195f5864108e747d868e07a99b9",
+  "package": {
+    "result": "pass",
+    "source_sha256": "fd3b0948a0c22b2c092221095b03fb7c9261968d321855cedcb10386757689f5",
+    "image_sha256": "c5f92543b26bcea3ebf0566fa197052759dcb7c57f32b46b9051122d93bdfe19",
+    "boot_area_sha256": "d3d4f2e14015ad32afeffc7445594964376f7463044ab1277bed51e1b24d1eb8",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 96163,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96166,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/ManAngles.HC": "deb2fb0361ec8e0999c93a1efe3663a019ab3195f5864108e747d868e07a99b9"
+    },
+    "added_attributes": {
+      "/ManAngles.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "result": "pass",
+  "sample_sha256": "8a5821f3f03542f04895f06d8372c35f29c8d6da6d177015be08e1d7dc8057ec"
+}
