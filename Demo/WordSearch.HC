@@ -1,3 +1,6 @@
+if(!HashFind("ACInit",adam_task->hash_table,HTT_FUN))
+  AdamFile("/Adam/AutoComplete/MakeAC.HC",FALSE);;
+
 //Simple and fancy way of searching
 
 //See ::/Apps/Vocabulary/VocabQuiz.HC.Z
@@ -143,6 +146,12 @@ U0 FancyWordSearch()
 //************************************
 U0 WordSearch()
 {
+  if(!acd.num_words)
+    Adam("ACInit;");
+  if(!acd.num_words) {
+    "Dictionary word list not present.\n";
+    return;
+  }
   Init;
   Display;
   '\n';

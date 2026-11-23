@@ -18452,13 +18452,14 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
-        "description": "Collect strings from a 20-by-20 grid in eight directions and sort them before dictionary lookup."
+        "description": "Collect strings from a 20-by-20 grid in eight directions and sort them before dictionary lookup. Use the original dictionary to print both searches for a deterministic grid."
       },
       "oracle": {
         "tool": "build/wordsearch-sort-zeroed-v1/run.py",
         "checks": [
           "All 3,200 sorted strings match independent grid traversal",
-          "Native continuation arithmetic"
+          "Native continuation arithmetic",
+          "Both dictionary result lists and the complete DolDoc output match the original."
         ]
       },
       "tests": [
@@ -18472,6 +18473,12 @@
           "result": "pass",
           "evidence": "build/wordsearch-sort-zeroed-v1/native64/result.json",
           "scope": "Fixed-width pointer sort and native continuation. Full dictionary-backed demo remains open."
+        },
+        {
+          "target": "native-wordsearch-bundled-dictionary",
+          "result": "pass",
+          "evidence": "build/wordsearch-dictionary-exact-v1/native64/result.json",
+          "scope": "Direct demo include from cold boot, no setup library commands. The seeded grid and both result lists match the original DolDoc bytes. Fresh arithmetic renders."
         }
       ]
     },

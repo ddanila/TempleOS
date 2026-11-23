@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/wordsearch-dictionary-v1/Probe.HC": "73f0e6aa33724056a4ec6c54cea074650c9cf76e2c2b8a0000b513428036529a",
+    "Demo/WordSearch.HC": "fa71d8acb4807a55d41c8fbabbadb2c7ed8783fdef1cfe3afa9c5ef151fef0b6",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/i386-autocomplete-archive-original/guest/ACWords.DATA.Z": "649c61e15c401948ac72433cd81114f288222c36eb23c5ddced5a3f89eb4f10d",
+    "/home/ddanila/fun/TempleOS/build/wordsearch-dictionary-v1/run.py": "60b4cee275231c0a51e62034bed0b25f6e74d673140de3e8878b4b79fce8556f"
+  },
+  "scope": "Seeded full WordSearch demo with the bundled dictionary, both searches, prompt recovery",
+  "grid_rows": 20,
+  "output_words": 366,
+  "output_sha256": "98c3f4b00ac993ab2a0ee98e2b00a8f417cb279be6874197fccd9b9f36e3e6db",
+  "inputs_unchanged": true
+}

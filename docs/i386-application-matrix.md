@@ -1174,3 +1174,11 @@ scratch single-CPU ODE variant lets the whole library compile. Strut then
 reaches its missing CCtrlBttnState dependency. The original button library
 is under test. See `build/strut-ode-compile-units-v1` and
 `build/strut-ode-power-v1`.
+
+WordSearch now loads autocomplete and initializes the bundled dictionary on
+demand. Its normal include path passes from a cold 64 MiB boot with no setup
+library commands. With the same seed, the 20-row display and both dictionary
+searches match the original's complete 1,944-byte DolDoc output, including
+all 366 displayed matches. The capture removes only the exact native command
+echo after the output. Fresh arithmetic renders. See
+`build/wordsearch-dictionary-exact-v1/native64/result.json`.
