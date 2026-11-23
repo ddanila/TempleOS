@@ -1,0 +1,55 @@
+{
+  "result": "pass",
+  "module_sha256": "6d9875855fd3d8268874600ea624554a66b1999d6d9cdd0029e295a3f1d93106",
+  "tables": {
+    "math_addresses": {
+      "named_pointer_relocations": 28,
+      "targets": [
+        "Round",
+        "Trunc",
+        "Floor",
+        "Ceil",
+        "Pow10I64",
+        "Ln",
+        "Log10",
+        "Log2",
+        "FloorU64",
+        "CeilU64",
+        "RoundI64",
+        "FloorI64",
+        "CeilI64",
+        "I386F64Sqrt",
+        "I386F64Abs",
+        "I386F64Add",
+        "I386F64Sub",
+        "I386F64Mul",
+        "I386F64Div",
+        "I386F64Mod",
+        "I386F64FromI64",
+        "I386F64ToI64",
+        "I386F64Compare",
+        "Sin",
+        "Cos",
+        "Arg",
+        "Exp",
+        "I386F64Power"
+      ]
+    },
+    "i386_frontend_helper_addresses": {
+      "named_pointer_relocations": 11,
+      "targets": [
+        "I386F64Sqrt",
+        "I386F64Abs",
+        "I386F64Add",
+        "I386F64Sub",
+        "I386F64Mul",
+        "I386F64Div",
+        "I386F64Mod",
+        "I386F64FromI64",
+        "I386F64ToI64",
+        "I386F64Compare",
+        "I386F64Power"
+      ]
+    }
+  }
+}

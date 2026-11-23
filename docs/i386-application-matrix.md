@@ -2425,7 +2425,7 @@ prerequisites loaded, the compact image compiles X-Caliber through
 its unchanged bundled loader and plays level one. The physical
 workflow turns, fires and returns on Escape with fresh arithmetic
 afterward. The repack adds only the prerequisites and observer.
-Bundled prerequisite loading remains open. See
+That diagnostic preloaded the prerequisites separately. See
 `build/i386-power-table-v2/xcaliber-bundled-load/result.json`
 and `build/i386-power-table-v2/xcaliber-bundled-play/result.json`.
 
@@ -2455,3 +2455,19 @@ the first power expression with PowLoad. Restoring the same file
 lets the same expression produce the original bits, and fresh
 arithmetic still executes. See
 `build/i386-power-table-v6/recovery-include/result.json`.
+
+
+X-Caliber's bundled loader now loads its own native prerequisites.
+The frequency function and sprite base sizes share the original
+sources. Level one, turning, firing, Escape and fresh arithmetic pass
+on a fresh boot and after loading the shared graphics and keyboard
+helpers. The repack adds only the existing gameplay observer.
+The full image passes the delivered-source audit and the unchanged
+8 MiB User workflow in 51.20 seconds. See
+`build/xcaliber-native-loader-v1/qualification.json`.
+
+The integrated power compiler rebuilds in the 128 MiB native guest.
+The persisted module has all 39 expected named pointer relocations.
+After byte-exact installation it boots at 8 MiB and passes fresh
+arithmetic and document allocation recovery. See the `retained128`
+and `retained-install` receipts under `build/i386-power-table-v6`.

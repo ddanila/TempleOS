@@ -6,6 +6,12 @@ import subprocess
 manifest = Path(__file__).with_name('manifest.json')
 rows = json.loads(manifest.read_text())['files'] if manifest.exists() else []
 runs = [
+    'xcaliber-auto-load-v1/native',
+    'xcaliber-native-loader-v1/play',
+    'xcaliber-native-loader-v1/warm-play',
+    'xcaliber-native-loader-v1/user8',
+    'i386-power-table-v6/retained-power',
+    'i386-power-table-v6/retained-user8',
     'i386-power-table-v5/heap-user8',
     'i386-power-table-v6/user8',
     'i386-power-table-v6/concurrent',

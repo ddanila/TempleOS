@@ -190,9 +190,7 @@ if args.app=='X-Caliber':
     if args.xcaliber_play:
         extras['/XCProbe.HC'] = Path('build/xcaliber-reference-v1/Probe.HC').read_bytes()
     if args.xcaliber_frequency or args.xcaliber_prerequisites:
-        misc = Path('Kernel/KMisc.HC').read_bytes()
-        extras['/XCFrequency.HC'] = misc[misc.index(b'I8 Freq2Ona('):
-                                          misc.index(b'#include "/Kernel/SoundCaptureCore.HC"')]
+        extras['/XCFrequency.HC'] = Path('Kernel/Freq2OnaCore.HC').read_bytes()
     if args.split_xcaliber:
         path = '/Apps/X-Caliber/X-Caliber.HC'
         if args.xcaliber_shared_shot:
@@ -250,8 +248,7 @@ if args.original_curves:
     extras['/TTFCurves.HC'] = b'\n'.join((
         b'#include "/Adam/PolarCore.HC"', saw, walkers,
         curves[:curves.index(b'public Bool GrRegPoly3(')]))
-sprite=Path('Adam/Gr/SpriteRecordsCore.HC').read_bytes()
-sizes=sprite[:sprite.index(b'\n};')+4]
+sizes=Path('Adam/Gr/SpriteBaseSizes.HC').read_bytes()
 geometry=b"""#include "/Kernel/I386/NativeTTFGeometry.HC"
 #define GR_SCALE (1<<32)
 #include "/Adam/Gr/MatrixRotationCore.HC"

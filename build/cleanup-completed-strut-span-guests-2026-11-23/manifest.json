@@ -6467,7 +6467,63 @@
         "-o",
         "build/i386-power-table-v6/recovery-include/working.img"
       ]
+    },
+    {
+      "original": "build/xcaliber-auto-load-v1/native/working.img",
+      "archive": "build/xcaliber-auto-load-v1/native/working.img.zst",
+      "sha256": "3bd851dff63e62562e7d1a89e66cf729cfcea1730c1d907fbcc4f19e6c7f391c",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-auto-load-v1/native/working.img.zst",
+        "-o",
+        "build/xcaliber-auto-load-v1/native/working.img"
+      ]
+    },
+    {
+      "original": "build/xcaliber-native-loader-v1/play/working.img",
+      "archive": "build/xcaliber-native-loader-v1/play/working.img.zst",
+      "sha256": "2cdd63e6e12b635914d82cc9bdf0dc23dd88c68213e62261296f54fbd84fc3bc",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-native-loader-v1/play/working.img.zst",
+        "-o",
+        "build/xcaliber-native-loader-v1/play/working.img"
+      ]
+    },
+    {
+      "original": "build/xcaliber-native-loader-v1/warm-play/working.img",
+      "archive": "build/xcaliber-native-loader-v1/warm-play/working.img.zst",
+      "sha256": "51b5896ce36ebe01c08391211889d9194957919a2c5b986c383b0b400ed55273",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-native-loader-v1/warm-play/working.img.zst",
+        "-o",
+        "build/xcaliber-native-loader-v1/warm-play/working.img"
+      ]
+    },
+    {
+      "original": "build/xcaliber-native-loader-v1/user8/working.img",
+      "archive": "build/xcaliber-native-loader-v1/user8/working.img.zst",
+      "sha256": "d4a33ae58ea6ad37076297a0cc4cd05122d73bcdd158c490c4a85294a722fb1c",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-native-loader-v1/user8/working.img.zst",
+        "-o",
+        "build/xcaliber-native-loader-v1/user8/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 22539014144
+  "reclaimed_bytes": 22752628736
 }

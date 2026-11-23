@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "disk_sha256": "84bdd73f8d6ead9d3bf3dd126ec5e76e4bc784e85438dc8ffec72456d6cbeca2",
+  "original_rebuilds": 2,
+  "verified_disk_files": 1929,
+  "inventory_files": 686,
+  "source_sha256": {
+    "Adam/Gr/SpriteBaseSizes.HC": "50177a346db13e983748d44ef3e3ec2ea32e9522aa5aaf17cac5a7397feacfe5",
+    "Adam/Gr/SpriteRecordsCore.HC": "18967b1e9aa35b75be3ea5e0b203c184a3c70afcb9fed3fd054c4eb722b2b2a7",
+    "Apps/X-Caliber/Load.HC": "a8cfa46d7e35657af61884944dc3fc90472fd537a75384d96e21a79384651208",
+    "Kernel/Freq2OnaCore.HC": "bb6670035c6e2ab851d7e5c44da7a5fb172814c96d378e0232b0de6718badacb",
+    "Kernel/I386/NativeXCaliber.HC": "7c3b1796ad76fa0fd037c3ecf8e737b2670ec9f037e435c8aabb6632afc6362d",
+    "Kernel/KMisc.HC": "d20df10affc81a99cebbf85bc222acf84581226704772f4d0c238b7ddd69cd74"
+  },
+  "receipt_sha256": {
+    "play": "7cca65d0efd05a1a72447f26ccfa4e2584d7d4c72dc9b8d8fa33b6df69bd2602",
+    "warm-play": "7cca65d0efd05a1a72447f26ccfa4e2584d7d4c72dc9b8d8fa33b6df69bd2602",
+    "user8": "e4a9f22d27524f2277b699867c571fe9c515911e133a61a5fd6826b2a5db586c",
+    "source-audit": "7e862638a7be7a33fb2e6cb5d2b21ab614f2ee9bdb805aed8dd9d84597c28144"
+  }
+}
