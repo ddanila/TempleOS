@@ -1,0 +1,31 @@
+{
+  "disk_sha256": "4a1387b58ea8d489b6832832a83f893506fe9bb425b9b2ee9522b7e3c5de9e3e",
+  "base_revision": "16c9692ecec97e3f331875b721df917f66f5e765",
+  "source_sha256": {
+    "Compiler/I386/BackendCore.HC": "cf4ef509c07069c31f972b32153e1f55facd0f9bb1180e518c9912ce9b18f2a0"
+  },
+  "exact_matches": {
+    "edges/guest/BallVertexMath.bin": {
+      "reference": "build/grmodels-ball-reference-v1/wide-check-original-implicit/guest/BallVertexMath.bin",
+      "bytes": 128,
+      "sha256": "ea3fb3afb4aec15b69a9fe60638547f0a3947003e9ea7141fe211be4040743ad"
+    },
+    "product/guest/BallVertexMath.bin": {
+      "reference": "build/grmodels-ball-reference-v1/product-original/guest/BallVertexMath.bin",
+      "bytes": 48,
+      "sha256": "387793ee4328f77e16be1ef5469ffe8dc2f4802521ae60e6d085f1634c3c8e61"
+    },
+    "ball-mesh/guest/BallInteractive.bin": {
+      "reference": "build/grmodels-ball-reference-v1/interactive-original/guest/BallInteractive.bin",
+      "bytes": 2766,
+      "sha256": "967ad44894167ae85c198f0a3929c01391a217494638a4bd2c95d63db1a6967b"
+    }
+  },
+  "passed_receipts": {
+    "edges/result.json": "a83c1b286c9e64e73588dcb7b9648cdd5c9d7013c7597aac4fc3b5976a0f71d7",
+    "product/result.json": "e4079fc11307ea20941218e97cc8ea4edb369c0c2ae35363e4233bb1c8decb62",
+    "ball-mesh/result.json": "547675c743a354c2bc8d81228a7ca4bba7194673d7920ada411ddc5a32e76569",
+    "public-backend/result.json": "bba1a6f1ae6e99ac8b1983bc17d2b232a9de66cc407a1bc334810b29c10e3506",
+    "user8/result.json": "a3b1c74d2755ab15ede6e8fc403f25b781c5f689a48f9eda8843a1fe8d23fa4b"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "fixture_sha256": "b49c2a9a46c7d04a8205f55551432bd002de4a761a03119ef1ac9eed4a515b32",
+  "package": {
+    "result": "pass",
+    "source_sha256": "4a1387b58ea8d489b6832832a83f893506fe9bb425b9b2ee9522b7e3c5de9e3e",
+    "image_sha256": "e6a3c0097bcdc73078c6ba9af35279a2f389521f9c68705d47b2c0b0a67b3b59",
+    "boot_area_sha256": "0e74e211e99812c449216c25f133cb14e1124c7719db8ac35f1edca99fe94c77",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1929,
+      "owned_sectors": 96160,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1930,
+      "owned_sectors": 96163,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/VertexMath.HC": "b49c2a9a46c7d04a8205f55551432bd002de4a761a03119ef1ac9eed4a515b32"
+    },
+    "added_attributes": {
+      "/VertexMath.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "result": "pass",
+  "sample_sha256": "ea3fb3afb4aec15b69a9fe60638547f0a3947003e9ea7141fe211be4040743ad"
+}

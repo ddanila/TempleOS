@@ -199,3 +199,16 @@ byte-for-byte. The mesh contains 59 vertices and 128 red triangles.
 The [qualification receipt](../build/i386-wide-product-production-v4/qualification.json)
 records the image and comparison hashes. Loading the prerequisites through
 the normal application entry still requires qualification.
+
+## Direct returns
+
+The lowered IR now marks a direct F64 multiply returned as an integer before
+instruction sizing and emission. This selects the wide conversion at the
+multiply and preserves the return value's usual integer width adjustment.
+
+All 16 implicit-return vectors and all six direct-assignment and stored
+product vectors match the original. The full cross-built image passed
+public COCCompile and unchanged 8 MiB User startup. The GrModels harness
+again produced the original mesh bytes. The
+[qualification receipt](../build/i386-wide-product-production-v5/qualification.json)
+records the source, image and output hashes.

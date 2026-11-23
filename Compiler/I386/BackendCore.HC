@@ -411,7 +411,13 @@ U0 I386BackendCore(CI386Backend *backend)
   I386RestorePointerAdds(backend);
   {
     for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
-      if (ic->ic_code==IC_PUSH_CMP) {
+      if (ic->ic_code==IC_RETURN_VAL && !I386IsF64(ic->ic_class) &&
+          ic->t.arg1_tree->ic_code==IC_MUL &&
+          I386IsF64(ic->t.arg1_tree->ic_class) &&
+          I386IsF64(I386ValueClass(backend,ic->t.arg1_tree))) {
+        //A direct F64 product returned as an integer has no binary64 store.
+        ic->t.arg1_tree->ic_flags|=ICF_RES_TO_INT;
+      } else if (ic->ic_code==IC_PUSH_CMP) {
         chain=(*backend->allocate)(backend->context,sizeof(CI386Chain));
         chain->next=backend->chains; backend->chains=chain;
         chain->push=ic;
