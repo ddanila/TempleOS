@@ -366,3 +366,10 @@ answer/elapsed formatting and complete saved prompt documents differ. The
 earlier direct CmdLinePmt checks do not cover this integration gap. See
 `docs/i386-live-user-prompt.md` for the frozen oracle, command traces, receipts
 and exact scope. Full C2 and inventory2/686 remain open.
+
+The resident optimizer image's 64 MiB desktop run reached Home Once and
+exported all 83 geometry values. The captured values match the original
+desktop oracle exactly, and the log shows one Home selection. Desktop startup
+completion, bootstrap retirement and fresh execution still await the terminal
+result from the running harness. The partial receipt is in
+`build/resident-opt-desktop64-current/layout-checkpoint.json`.
