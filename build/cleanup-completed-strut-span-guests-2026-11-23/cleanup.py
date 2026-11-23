@@ -6,6 +6,10 @@ import subprocess
 manifest = Path(__file__).with_name('manifest.json')
 rows = json.loads(manifest.read_text())['files'] if manifest.exists() else []
 runs = [
+    'i386-console-address-table-v4/user8',
+    'i386-console-address-table-v4/xcaliber',
+    'i386-console-address-table-v4/guest-compiler-user8',
+    'i386-console-address-table-v4/guest-compiler-power',
     'xcaliber-auto-load-v1/native',
     'xcaliber-native-loader-v1/play',
     'xcaliber-native-loader-v1/warm-play',

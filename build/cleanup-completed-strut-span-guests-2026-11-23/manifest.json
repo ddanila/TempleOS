@@ -6565,7 +6565,63 @@
         "-o",
         "build/i386-power-table-v6/retained-heap-user8/working.img"
       ]
+    },
+    {
+      "original": "build/i386-console-address-table-v4/user8/working.img",
+      "archive": "build/i386-console-address-table-v4/user8/working.img.zst",
+      "sha256": "66d94cd5fffe35301f2d4849dc5635f2a7ed85cacb55a612d1d2f4d8e44280d1",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-console-address-table-v4/user8/working.img.zst",
+        "-o",
+        "build/i386-console-address-table-v4/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-console-address-table-v4/xcaliber/working.img",
+      "archive": "build/i386-console-address-table-v4/xcaliber/working.img.zst",
+      "sha256": "6ae249e1db57ee138d04ad6be14dc07995d0479c83fcbc71c8badd9ef3b7e81a",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-console-address-table-v4/xcaliber/working.img.zst",
+        "-o",
+        "build/i386-console-address-table-v4/xcaliber/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-console-address-table-v4/guest-compiler-user8/working.img",
+      "archive": "build/i386-console-address-table-v4/guest-compiler-user8/working.img.zst",
+      "sha256": "c68d90f10ee25f0695e400a26f9b18bdcf6219efeab6e970c0883633549d16d0",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-console-address-table-v4/guest-compiler-user8/working.img.zst",
+        "-o",
+        "build/i386-console-address-table-v4/guest-compiler-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-console-address-table-v4/guest-compiler-power/working.img",
+      "archive": "build/i386-console-address-table-v4/guest-compiler-power/working.img.zst",
+      "sha256": "4e38ff937a4ced369684a852a1b88faae2fac221c498547324d1d3daa1c6633b",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-console-address-table-v4/guest-compiler-power/working.img.zst",
+        "-o",
+        "build/i386-console-address-table-v4/guest-compiler-power/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 22912790528
+  "reclaimed_bytes": 23126380544
 }

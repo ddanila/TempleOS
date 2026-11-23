@@ -2479,3 +2479,17 @@ during child creation with a 264,024-byte largest free block and
 no fitting page-aligned task extent. See the `retained-power`,
 `retained-user8` and `retained-heap-user8` receipts under
 `build/i386-power-table-v6`.
+
+The compact console publishes the same 705 bindings through a table
+of 647 local function addresses and 58 runtime address expressions.
+The binary audit checks every slot, including the file and console
+aliases. The loaded console payload falls from 2,335,112 to
+2,311,384 bytes. The cross-built image passes the source audit,
+X-Caliber gameplay and the unchanged 8 MiB User workflow.
+
+Installing the same guest-built power compiler on the compact
+console image restores the 8 MiB User workflow in 52.08 seconds.
+All 56 finite power cases still match at 64 MiB. See
+`build/i386-console-address-table-v4/qualification.json`.
+The native rebuild of the compact console and full generation
+qualification are in progress.

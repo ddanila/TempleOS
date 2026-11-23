@@ -655,7 +655,7 @@ extern I8 Note2Ona(I64 note,I64 octave=4);
 extern I8 Ona2Note(I8 ona);
 extern I8 Ona2Octave(I8 ona);
 extern Bool NativeODEBind(U0 (*update)(CTask *task));
-CI386KernelSymbol console_doc_exports[705],*console_doc_export_cursor;
+CI386KernelSymbol console_doc_exports[705];
 U32 console_doc_data_exports[23]={0x00040000,0x00080002,0x00004060,0x00400000,0x00000000,0x00001000,0x80000000,0x20000008,0x00000020,0x01118000,0x40000000,0xC0003000,0x0007FFFF,0,0x001C0000,0x01C00000,0x00010000,0x80000000,0x0080C001,0x08E00000,0x80000000,0x02000000,0};
 #assert sizeof(console_doc_data_exports)*8>=sizeof(console_doc_exports)/sizeof(CI386KernelSymbol)
 extern U8 *NativeCaller(I64 num=1);
@@ -755,20 +755,81 @@ extern U0 CmpCtrlDel(CCmpCtrl *cc);
 extern I64 CmpCtrlSize(CCmpCtrl *cc);
 extern U0 LexAttachDoc(CCmpCtrl *cc,CLexFile *tmpf=NULL,CDoc *doc=NULL,
   U8 *abs_filename=NULL,CDocEntry *doc_e=NULL,I64 col=0);
-U0 ConsoleDocExportSet(U8 *address)
-{//Initialization supplies bindings in order; share conversion and advancement.
-  if(console_doc_export_cursor>=console_doc_exports+sizeof(console_doc_exports)/sizeof(CI386KernelSymbol))
-    throw('DocExps',TRUE);
-  console_doc_export_cursor->val=(address+0)(U64);
-  console_doc_export_cursor++;
+extern U8 **ConsoleDocAddresses();
+
+U8 *ConsoleDocDynamicAddress(CI386ConsoleConfig *config,I64 index)
+{
+  switch(index) {
+    case 18: return &doldoc; //doldoc
+    case 33: return &i386_text_base; //i386_text_base
+    case 51: return &local_time_offset; //local_time_offset
+    case 69: return &gr; //gr
+    case 70: return &gr_palette_std; //gr_palette_std
+    case 78: return &text; //text
+    case 118: return &sys_focus_task; //_SYS_FOCUS_TASK
+    case 172: return &sys_winmgr_task; //_SYS_WINMGR_TASK
+    case 223: return &sys_task_being_scrn_updated; //_SYS_TASK_BEING_SCRN_UPDATED
+    case 227: return &winmgr; //_WINMGR_STATE
+    case 253: return &sys_clip_doc; //_SYS_CLIP_DOC
+    case 261: return &keydev; //_KEYDEV
+    case 303: return &config->drive_records; //NativeDriveRecords
+    case 304: return &config->block_records; //NativeBlockRecords
+    case 308: return &config->drive_map; //NativeDriveMap
+    case 312: return &fp_getstr2; //_FP_GETSTR2
+    case 350: return &sys_os_version; //sys_os_version
+    case 364: return &ac; //ac
+    case 365: return &acd; //acd
+    case 382: return &sys_progresses[0].val; //SYS_PROGRESS1
+    case 383: return &sys_progresses[0].max; //SYS_PROGRESS1_MAX
+    case 384: return &sys_progresses[0].t0; //SYS_PROGRESS1_T0
+    case 385: return &sys_progresses[0].tf; //SYS_PROGRESS1_TF
+    case 386: return &sys_progresses[0].desc; //SYS_PROGRESS1_DESC
+    case 387: return &sys_progresses[1].val; //SYS_PROGRESS2
+    case 388: return &sys_progresses[1].max; //SYS_PROGRESS2_MAX
+    case 389: return &sys_progresses[1].t0; //SYS_PROGRESS2_T0
+    case 390: return &sys_progresses[1].tf; //SYS_PROGRESS2_TF
+    case 391: return &sys_progresses[1].desc; //SYS_PROGRESS2_DESC
+    case 392: return &sys_progresses[2].val; //SYS_PROGRESS3
+    case 393: return &sys_progresses[2].max; //SYS_PROGRESS3_MAX
+    case 394: return &sys_progresses[2].t0; //SYS_PROGRESS3_T0
+    case 395: return &sys_progresses[2].tf; //SYS_PROGRESS3_TF
+    case 396: return &sys_progresses[2].desc; //SYS_PROGRESS3_DESC
+    case 397: return &sys_progresses[3].val; //SYS_PROGRESS4
+    case 398: return &sys_progresses[3].max; //SYS_PROGRESS4_MAX
+    case 399: return &sys_progresses[3].t0; //SYS_PROGRESS4_T0
+    case 400: return &sys_progresses[3].tf; //SYS_PROGRESS4_TF
+    case 401: return &sys_progresses[3].desc; //SYS_PROGRESS4_DESC
+    case 402: return &sys_progresses; //SYS_PROGRESSES
+    case 466: return &sys_registry_doc; //_SYS_REGISTRY_DOC
+    case 467: return &sys_msg_flags; //_SYS_MSG_FLAGS
+    case 468: return &registry_version; //_REGISTRY_VERSION
+    case 502: return &music; //_MUSIC_GLOBALS
+    case 503: return &ms; //_MS_GLOBALS
+    case 504: return &ms_grid; //_MS_GRID_GLOBALS
+    case 528: return config->block_globals; //_BLKDEV
+    case 575: return &kbd; //_KBD_GLOBALS
+    case 576: return config->run_level; //_SYS_RUN_LEVEL
+    case 590: return &native_rev_bits_table; //_REV_BITS_TABLE
+    case 591: return &native_set_bits_table; //_SET_BITS_TABLE
+    case 599: return &scrncast; //_SCRNCAST
+    case 629: return &cmp; //_CMP_GLOBALS
+    case 630: return &lex_zeros; //_LEX_ZEROS
+    case 631: return native_doc_printable; //_CHAR_BMP_PRINTABLE
+    case 635: return &dbg; //_DBG_GLOBALS
+    case 671: return &native_jit_support; //_NATIVE_JIT_SUPPORT
+    case 697: return config->compile_time; //sys_compile_time
+    default: throw('DocExps',TRUE);
+  }
+  return 0;
 }
 
 Bool ConsoleInit(CI386ConsoleConfig *config)
 {
-  U8 *display_planes;
+  U8 *display_planes,**addresses=ConsoleDocAddresses;
   U8 *export_names="_DOC_LOCK\0_DOC_UNLOCK\0_DOC_PUT\0_DOC_DISPLAY\0_DOC_BORDER\0_DOC_EDITABLE\0_DOC_ENTRY_BASE\0_DOC_ENTRY_TAG\0_DOC_ENTRY_SIZE\0_DOC_ENTRY_COPY\0_DOC_FORM_FWD\0_DOC_FORM_BWD\0_DOC_DEFAULTS_INIT\0_DOC_INIT\0_DOC_DICTIONARY_NEW\0_DOC_DICTIONARY_DEL\0_DOC_GLOBALS_INIT\0_DOC_START\0doldoc\0_DOC_REPORT_LITERAL\0_DOC_BIN_FIND_NUM\0_DOC_BIN_FIND_TAG\0_DOC_BINS_VALIDATE\0_DOC_BIN_DEL\0_DOC_ENTRY_DEL\0_DOC_UNDO_DEL\0_DOC_UNDO_COUNT\0_DOC_REM_SOFT\0_DOC_INS_ENTRY\0_TEXT_CHAR\0_TEXT_LEN_STR\0_TEXT_LEN_ATTR_STR\0_TEXT_LEN_ATTR\0i386_text_base\0_TEXT_BASE_PRESENT\0_TEXT_BASE_RESTORE\0_LIST_SUB\0_LIST_MATCH\0_DEFINE\0_DEFINE_SUB\0_DEFINE_COUNT\0_DEFINE_MATCH\0_YEAR_START_DATE\0_STRUCT_TO_DATE\0_DAY_OF_WEEK\0_DATE_TO_STRUCT\0_FIRST_DAY_MONTH\0_LAST_DAY_MONTH\0_FIRST_DAY_YEAR\0_LAST_DAY_YEAR\0_BCD_TO_BIN\0local_time_offset\0_MAT4X4MULXYZ\0_DCTRANSFORM\0_MAT4X4IDENTEQU\0_MAT4X4IDENTNEW\0_MAT4X4NORMSQR65536\0_DCMAT4X4SET\0_DCLIGHTING\0_DCFILL\0_DCCLEAR\0_DCRST\0_DCEXTENTSINIT\0_DCALIAS\0_DCNEW\0_DCDEL\0_DCSIZE\0_DCDEPTHBUFRST\0_DCDEPTHBUFALLOC\0gr\0gr_palette_std\0_GRAPHICS_START\0_GRAPHICS_PRESENT\0_TEXT_BORDER\0_TEXT_RECT\0_WIN_SCROLL_NULL\0_WIN_SCROLL_RESTORE\0_WIN_DERIVED_VALS_UPDATE\0text\0_TASK_VALIDATE\0_TASK_DERIVED_VALS_UPDATE\0_WIN_HORZ\0_WIN_VERT\0_CTRL_FIND_UNIQUE\0_CTRLS_UPDATE\0_CTRL_INSIDE\0_WIN_Z_BUF_UPDATE\0_WIN_INSIDE\0_DOC_NEW\0_DOC_RST\0_DOC_DEL\0_DOC_SIZE\0_DOC_PUT_KEY\0_DOC_SAVE\0_DOC_WRITE\0_DOC_READ\0_DOC_ED\0_DOC_ALLOCATION_CHECK\0_DOC_EXE\0_DIR_MK\0_ED\0_DIR\0_ED_DIR\0_FILE_DEL\0_FILE_RENAME\0_DIR_DEL\0_FILE_MOVE\0_HELP\0_SND\0_SND_RST\0_MOUSE_GET\0_I386_INSTALL_TREE\0_I386_INSTALL_BOOT\0_I386_BUILD_MODULE\0_I386_BUILD_BOOT_IMAGE\0_I386_INSTALL_BOOT_IMAGE\0_EXE_DOC\0_I386_JOB_SOURCE\0_SYS_FOCUS_TASK\0_DBG\0_DEBUG_GO\0_DBG_MODE\0_IS_DBG_MODE\0_USER_CMD_LINE\0_USER_TASK_CONT\0_WIN_FOCUS\0_IS_RAW\0_STR_PRINT_JOIN\0_STR_PRINT\0_CAT_PRINT\0_MSTR_PRINT\0_USER\0_XTALK\0_TASK_WAIT\0_FILE_WRITE\0_FILE_READ\0_FILE_FIND\0_CD\0_DEBUG_STEP\0_TASK_REG_ADDR\0_BPT_FIND\0_BPT_SET\0_BPT_REMOVE\0_BPT_TOGGLE\0_BPT_CLEAR\0_DEBUG_GO_CLEAR\0_CALLER\0_SYS_MACRO_2_STR\0_SYS_MACRO_STRIP_KEY\0_PRINT\0_PUT_S\0_PUT_CHARS\0_TASK_TEXT\0_IN_STR\0_XTALK_STR_WAIT\0_PLAY_SYS_MACRO\0_STR_SCAN\0_STR_TO_I64\0_STR_TO_F64\0_STR_TO_DATE\0_DOC_DOLLAR\0_DOC_DATA_FMT\0_DOC_DATA_SCAN\0_DOC_PUT_S\0_DOC_PRINT\0_IN\0_JOB_RES_SCAN\0_JOB_DEL\0_TASK_EXE\0_SRV_TASK_CONT\0_SRV_CMD_LINE\0_WIN_TO_TOP\0_SYS_WINMGR_TASK\0_DOC_BORDER_NEW\0_ED_OVERSTRIKE_CB\0_ED_AUTO_SAVE_CB\0_ED_FILTER_CB\0_ED_DOLLAR_CB\0_ED_MORE_CB\0_ED_DOLLAR_TYPE_CB\0_MENU_NEW\0_MENU_FILE\0_MENU_ENTRY_FIND\0_MENU_SUB_ENTRY_FIND\0_MENU_DEL\0_GR_RECT\0_RAND_U16\0_DIST_SQR_I64\0_WIN_SCROLLS_INIT\0_RAW\0_VGA_FLUSH\0_DOC_ENTRY_LINK\0_FILE_NAME_ABS\0_SRC_LINE_NUM\0_SRC_FILE_NAME\0_SRC_ED_LINK\0_EXE_PUTS\0_EXE_PRINT\0_DEFINE_LOAD\0_DEFINE_PRINT\0_BIBLE_INIT\0_ED_LINK_CVT\0_DOC_LINK_FILE\0_DRV_CHECK\0_DRV_TO_LET\0_LET_TO_LET\0_LET_TO_BLOCK_DEV_TYPE\0_DRV_TEXT_ATTR_GET\0_STREAM_PRINT\0_STREAM_DIR\0_NOW\0_DOC_SCAN_LINE\0_PUT_KEY\0_KEY_DEV_ADD\0_KEY_DEV_REM\0_SCAN_KEY\0_GET_KEY\0_DOC_PRINT_PARTIAL\0_DOC_GET_KEY\0_DOC_RECALC\0_DOC_UPDATE_TASK_DOCS\0_DRAW_CTRLS\0_GR_UPDATE_TASK_WIN\0_SYS_TASK_BEING_SCRN_UPDATED\0_WINDOW_PRESENT\0_WINMGR_START\0_REFRESH\0_WINMGR_STATE\0_POP_UP\0_POP_UP_PRINT\0_WIN_MAX\0_DOC_ENTRY_RUN\0_DOC_MENU\0_POP_UP_MENU\0_POP_UP_PICK_LST\0_ED_CUR_U8\0_ED_CURSOR_LEFT\0_ED_CURSOR_RIGHT\0_ED_LINE_UP\0_ED_LINE_DOWN\0_ED_CHAR_DEL\0_ED_CHAR_INS\0_ED_LINE_DEL\0_DOC_TOP\0_DOC_CENTER\0_DOC_BOTTOM\0_DOC_INS_DOC\0_CLIP_DEL\0_CLIP_COPY\0_CLIP_CUT\0_CLIP_PASTE\0_DOC_CUT\0_DOC_COPY\0_SYS_CLIP_DOC\0_DOC_LOAD\0_DOC_2_PLAIN_TEXT\0_GET_TSC\0_DOC_CAPTURE_UNDO\0_DOC_UNDO_RESTORE\0_CHAR_2_KEY_NAME\0_KEY_DESC_SET\0_KEYDEV\0_DOC_COLLAPSE\0_DOC_ENTRY_TOGGLE\0_DOC_FLAGS_TOGGLE\0_STR_FIND\0_ED_FIND_NEXT\0_ED_SEL_ALL\0_ED_FIND_PAIRED\0_ED_GO_TO_FUN\0_ED_SEL_FUN\0_DOC_FORM\0_POP_UP_FORM\0_DOC_SPLIT_TAG\0_DOC_GO_TO_LINE\0_ED_REPLACE\0_STR_OCC\0_STR_FIRST_OCC\0_STR_LAST_OCC\0_STR_FIRST_REM\0_STR_LAST_REM\0_STR_UTIL\0_MSTR_UTIL\0_LET_TO_DRV\0_BLOCK_DEV_CHECK\0_LET_TO_BLOCK_DEV\0_DRV_IS_WRITABLE\0_FILE_NAME_CHK\0_SILENT\0_IS_SILENT\0_BLOCK_DEV_LOCK\0_BLOCK_DEV_UNLOCK\0_DRV_LOCK\0_DRV_UNLOCK\0_DRVS_RELEASE\0_BLOCK_DEVS_RELEASE\0_GET_OUT_OF_DOLLAR\0_PRINT_ERR\0_PRINT_WARN\0_RAW_PUT_CHAR\0RedSeaFreeFreeLst\0_DRV_DEL\0DrvBlkDevDel\0NativeDriveRecords\0NativeBlockRecords\0_BLOCK_DEV_NEXT_FREE_SLOT\0_DRV_MAKE_FREE_SLOT\0_DRV_NEXT_FREE_LET\0NativeDriveMap\0_DRV_MAP\0_GET_STR\0_DOC_GET_STR2\0_FP_GETSTR2\0_DOC_CLEAR\0_DC_2_SPRITE\0_DOC_SPRITE\0_DC_LOAD\0_EXPAND_BUF\0_EXT_DFT\0_GR_READ\0_DOC_GR\0_PORT_NOP\0_HPET\0_BUSY\0_DOC_DUMP\0_DOC_TYPE\0_TYPE\0_POP_UP_TERM_RIGHT\0_WIN_BORDER\0_POST_MSG_WAIT\0_ED_FIND_REPLACE\0_ED_GO_TO_LINE\0_FSIZE\0_CLUS_TO_BLOCK\0I386DskCacheInit\0I386DskCacheAdd\0I386RCache\0I386DskCacheInvalidate2\0I386DskCacheGlobals\0_BIT_FIELD_EXT_U32\0_BIT_FIELD_OR_U32\0_ARC_COMPRESS_BUF\0_ARC_CTRL_DEL\0_ARC_CTRL_NEW\0_ARC_EXPAND_BUF\0_ARC_FINISH_COMPRESSION\0_COMPRESS_BUF\0_MEMSET_U16\0_MEMSET_U32\0_MEMSET_I64\0sys_os_version\0_POP_UP_1\0_POP_UP_2\0_POP_UP_OK\0_POP_UP_NO_YES\0_POP_UP_CANCEL_OK\0_POP_UP_ED\0_DIR_CUR\0_GR_PALETTE_COLOR_SET\0_GR_PALETTE_COLOR_GET\0_GR_PALETTE_GET\0_GR_PALETTE_SET\0_BIRTH_WAIT\0_DEATH_WAIT\0ac\0acd\0I386RawBlocks\0_GET_I64\0_GET_F64\0_GET_DATE\0_GR_PUT_CHAR\0_GR_PUT_S\0_GR_VPUT_S\0_GR_PRINT\0_GR_VPRINT\0_GR_PUT_CHAR3\0_GR_PRINT3\0_GR_VPRINT3\0_GR_TEXT_BOX3\0_GR_TEXT_DIAMOND3\0_SPRITE3\0_GR_LINE\0SYS_PROGRESS1\0SYS_PROGRESS1_MAX\0SYS_PROGRESS1_T0\0SYS_PROGRESS1_TF\0SYS_PROGRESS1_DESC\0SYS_PROGRESS2\0SYS_PROGRESS2_MAX\0SYS_PROGRESS2_T0\0SYS_PROGRESS2_TF\0SYS_PROGRESS2_DESC\0SYS_PROGRESS3\0SYS_PROGRESS3_MAX\0SYS_PROGRESS3_T0\0SYS_PROGRESS3_TF\0SYS_PROGRESS3_DESC\0SYS_PROGRESS4\0SYS_PROGRESS4_MAX\0SYS_PROGRESS4_T0\0SYS_PROGRESS4_TF\0SYS_PROGRESS4_DESC\0SYS_PROGRESSES\0_PROGRESS_BARS_RST\0_DRAW_PROGRESS_BARS\0_STRICMP\0_STRNICMP\0_DOC_CURSOR\0_DOC_HIGHLIGHT_CURSOR\0_DOC_SCROLL\0_TS\0_CHAR_2_SCAN_CODE\0_SCAN_CODE_2_CHAR\0_SCAN_CODE_2_KEY_NAME\0_STRMATCH\0_STRNCMP\0_DOC_MAX\0_REBOOT\0_KEY_MAP_FAMILY\0_KEY_MAP_CTRL_ALT_FAMILY\0_KEY_MAP\0_CTRL_ALT_CB_SET\0_FILES_FIND_MATCH\0_WILD_MATCH\0_FILE_EXT_DOT\0_FILE_EXT_REM\0_EXT_CHG\0_IS_DOT_C\0_IS_DOT_Z\0_TOGGLE_ZOR_NOT_Z\0_DOC_FIND\0_DOC_ANCHOR_FIND\0_PLAIN\0_IN_FILE\0_EXE_FILE\0_ADAM\0_ADAM_FILE\0_EXE_PUTS2\0_EXE_FILE2\0_POP_UP_FILE\0_WIN_TILE_HORZ\0_WIN_TILE_VERT\0_COPY_SINGLE_Z\0_RAND_I16\0_RAND_I32\0_RAND_U32\0_RAND_I64\0_RAND_U64\0_RAND\0_SEED\0_DOC_TREE_FIND\0_DOC_TREE_F_FIND\0_DOC_TREE_MAKE\0_DOC_TREE_WRITE\0_DOC_TREE_APPEND\0_DOC_TREE_F_WRITE\0_DOC_TREE_F_APPEND\0_DOC_TREE_EXE\0_DOC_TREE_F_EXE\0_REG_CACHE\0_REG_DFT\0_REG_EXE\0_REG_WRITE\0_REG_CNT\0_REG_APPEND\0_REG_INIT\0_SYS_REGISTRY_DOC\0_SYS_MSG_FLAGS\0_REGISTRY_VERSION\0_NATIVE_REGISTRY_INIT\0_MAX\0_MIN\0_CLAMP\0_GR_CIRCLE\0_GR_ELLIPSE\0_GR_REG_POLY\0_GR_FLOOD_FILL\0_GR_PLOT0\0_GR_PEEK0\0_SPRITE_INTERPOLATE\0_SPRITE_3B\0_SPRITE_3_MAT4X4B\0_SPRITE_3XB\0_SPRITE_3YB\0_SPRITE_3ZB\0_SPRITE_SIZE\0_D3I32_DIST\0_D3I32_DIST_SQR\0_D3I32_NORM\0_D3I32_NORM_SQR\0_GR_RECT_B\0_GR_BORDER\0_BLINK\0_BEEP\0_HASH_GENERIC_ADD\0_FRAME_PTR\0_FRAME_PTR_ADD\0_FRAME_PTR_SET\0_FRAME_PTR_DEL\0_ONA_2_FREQ\0_NOISE\0_SWEEP\0_MUSIC_GLOBALS\0_MS_GLOBALS\0_MS_GRID_GLOBALS\0_DIR_ENTRY_DEL\0_DIR_ENTRY_DEL2\0_DIR_TREE_DEL\0_DIR_TREE_DEL2\0_DIR_FILES_FLATTEN\0_DIR_FILES_SORT\0_DIR_NAME_ABS\0_CFILE_NAME_TO\0_FAT_NAME_TO\0_FAT_NAME_XSUM\0_FAT_FROM_NAME\0_DIR_LONG_NAME_FILL\0_FAT32_DIR_FILL\0_FAT32_CDIR_FILL\0_REP_IN_U8\0_REP_IN_U16\0_REP_IN_U32\0_REP_OUT_U8\0_REP_OUT_U16\0_REP_OUT_U32\0_ENDIAN_U16\0_ENDIAN_U32\0_ENDIAN_I64\0_BLKDEV\0_DSK_CACHE_INIT\0_DSK_CACHE_ADD\0_R_CACHE\0_DSK_CACHE_INVALIDATE2\0_ATA_READ_BLKS\0_ATA_WRITE_BLKS\0_ATA_INIT\0_ATA_R_BLKS\0_ATA_W_BLKS\0_DRV_TYPE_SET\0_FILE_ATTR\0_CALLEXTSTR\0_BLK_READ\0_BLK_WRITE\0_BLK_WRITE_ZERO\0_BLKDEV_INIT\0_CLUS_NUM_NEXT\0_CLUS_ALLOC\0_CLUS_BLK_READ\0_CLUS_BLK_WRITE\0_CLUS_READ\0_CLUS_WRITE\0_FOPEN\0_FCLOSE\0_FBLK_READ\0_FBLK_WRITE\0_DIR_CONTEXT_NEW\0_DIR_CONTEXT_DEL\0_DIR_NEW\0_DEL\0_DRV\0_DSK_CHG\0_DSK_CACHE_INVALIDATE\0_FILES_FIND\0_IS_DIR\0_COPY_SINGLE\0_COPY\0_MOVE\0_MOUNT_FILE\0_UNMOUNT\0RedSeaFmt\0RedSeaValidate\0FAT32Fmt\0FAT32Init\0_DOC_TERM_NEW\0_KBD_MS_EVT_TIME\0_KBD_GLOBALS\0_SYS_RUN_LEVEL\0_SIZE\0_SCAN_FLAGS\0_HASH_ENTRY_SIZE2\0_HASH_TABLE_SIZE2\0_LINKED_LST_SIZE\0_DOC_VIEW\0_BREAK\0_BREAK_LOCK\0_BREAK_UNLOCK\0_MENU_PUSH\0_MENU_FILE_PUSH\0_MENU_POP\0_PUT_EXCEPT\0_REV_BITS_TABLE\0_SET_BITS_TABLE\0_CLAMP_I64\0_PUT_FILE_LINK\0_POP_UP_PICK_DIR\0_COPY_TREE\0_MUSIC_SETTINGS_RST\0_DEL_TREE\0_TASK_CALLER\0_SCRNCAST\0_SCRN_CAST\0_MUTE\0_IS_MUTE\0_DC_COPY\0_DC_SAVE\0_GR_WRITE\0_DC_EXT\0_DC_DIFF\0_NOTE_2_ONA\0_ONA_2_NOTE\0_ONA_2_OCTAVE\0_SPRITE\0_CMP_CTRL_NEW\0_CMP_CTRL_DEL\0_CMP_CTRL_SIZE\0_LEX_ATTACH_DOC\0_GET_CHAR\0_Y_OR_N\0_ARE_YOU_SURE\0_PRESS_A_KEY\0_FMT\0_REDSEA_ISO\0RedSeaISO9660\0_DVD_IMAGE_READ\0_DVD_IMAGE_WRITE\0_CD_TO_DIR_ENTRY\0_WIN_CURSOR_POS_SET\0_POP_UP_PICK_FILE\0_LEX_GET_CHAR\0_CMP_GLOBALS\0_LEX_ZEROS\0_CHAR_BMP_PRINTABLE\0_HASH_SRC_FILE_SET\0_DOC_PUT_LINE\0_FIX_SET\0_DBG_GLOBALS\0_ADAM_ERR\0_IS_SINGLE_USER\0_LEX_PUT_TOKEN\0_LEX_PUT_LINE\0_LEX_PUT_POS\0_LEX_WARN\0_LEX_EXCEPT\0_IC_ADD\0_COC_INIT\0_COC_PUSH\0_COC_POP_NO_FREE\0_COC_POP\0_COC_APPEND\0_COC_MISC_NEW\0_COC_DEL\0_HASH_ADD_AFTER\0_CALL\0_LINKED_LST_COPY\0_LINKED_LST_DEL\0_LEX_PUSH\0_LEX_POP_RESTORE\0_LEX_POP_NO_RESTORE\0_MEMBER_FIND\0_MEMBER_META_DATA\0_MEMBER_META_FIND\0_QUE_DEL\0_DIR_FILE\0_AOT_STORE_CODE_U8\0_AOT_STORE_CODE_U32\0_AOT_STORE_CODE_U64\0_AOT_STORE_CODE_U8_AT\0_PRS_I386_DATA_RANGE\0_LOAD_ONE_IMPORT\0_SYS_SYM_IMPORTS_RESOLVE\0_CMP_FIX_UP_JIT_ASM\0_NATIVE_JIT_SUPPORT\0_CMP_FIX_UP_AOT_ASM\0_ASM_RESOLVE\0_AOT_LOCALS_RESOLVE\0_AOT_GLBLS_RESOLVE\0_ASM_UNRESOLVED_ADD\0_OPT_PASS012\0_COC_COMPILE\0_COMPILER_BREAK_POLL\0_LEX\0_LEX_EXT_STR\0_LEX_EXPRESSION\0_LEX_EXPRESSION_I64\0_LEX_EXPRESSION_F64\0_LEX_EXPRESSION_BIN\0_IS_LEX_EXPRESSION_BIN\0_PRS_STREAM_BLK\0_PRS_ASM_BLOCK\0_CMP_JOIN\0_CMP_BUF\0_MS_SET\0_GRID_INIT\0_DRAW_MS\0_DRAW_STD_MS\0_DRAW_WAIT_MS\0_GR_FILL_CIRCLE\0sys_compile_time\0_ONE_TIME_POP_UP\0_REG_ONE_TIME_POP_UP\0_MAT4X4_SCALE\0_DC_SYMMETRY3_SET\0_GR_PLOT3\0_GR_LINE3\0_NATIVE_ODE_BIND\0";
   CI386Task *task=I386TaskSelf;
   I64 i;
+  U64 export_bias;
   CI386KernelSymbol *provider;
   if(!task || !task->hash_table || console_config || !config || !config->heap || !config->compiler ||
       config->compiler->version!=I386_COMPILER_SERVICES_VERSION ||
@@ -853,498 +914,16 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   native_public_scan_msg=provider->val;
   if(!I386KeyboardReadInit(config->reader,config->input)) return FALSE;
   I386KeyboardReset(&console_hotkeys);
-  console_doc_export_cursor=console_doc_exports;
-  ConsoleDocExportSet(&I386DocLock);
-  ConsoleDocExportSet(&I386DocUnlock);
-  ConsoleDocExportSet(&DocPut);
-  ConsoleDocExportSet(&DocDisplay);
-  ConsoleDocExportSet(&DocBorder);
-  ConsoleDocExportSet(&IsEditableText);
-  ConsoleDocExportSet(&DocEntryNewBase);
-  ConsoleDocExportSet(&DocEntryNewTag);
-  ConsoleDocExportSet(&DocEntrySize);
-  ConsoleDocExportSet(&DocEntryCopy);
-  ConsoleDocExportSet(&DocFormFwd);
-  ConsoleDocExportSet(&DocFormBwd);
-  ConsoleDocExportSet(&DocDefaultsInit);
-  ConsoleDocExportSet(&DocInit);
-  ConsoleDocExportSet(&DocDictionaryNew);
-  ConsoleDocExportSet(&DocDictionaryDel);
-  ConsoleDocExportSet(&DocGlobalsInit);
-  ConsoleDocExportSet(&ConsoleDocumentStart);
-  ConsoleDocExportSet(&doldoc);
-  ConsoleDocExportSet(&DocReportLiteral);
-  ConsoleDocExportSet(&DocBinFindNum);
-  ConsoleDocExportSet(&DocBinFindTag);
-  ConsoleDocExportSet(&DocBinsValidate);
-  ConsoleDocExportSet(&DocBinDel);
-  ConsoleDocExportSet(&DocEntryDel);
-  ConsoleDocExportSet(&DocUndoDel);
-  ConsoleDocExportSet(&DocUndoCntSet);
-  ConsoleDocExportSet(&DocRemSoftNewLines);
-  ConsoleDocExportSet(&DocInsEntry);
   NativeTextBaseInit;
   NativeRawInit;
-  ConsoleDocExportSet(&TextChar);
-  ConsoleDocExportSet(&TextLenStr);
-  ConsoleDocExportSet(&TextLenAttrStr);
-  ConsoleDocExportSet(&TextLenAttr);
-  ConsoleDocExportSet(&i386_text_base);
-  ConsoleDocExportSet(&NativeTextBasePresent);
-  ConsoleDocExportSet(&NativeTextBaseRestore);
-  ConsoleDocExportSet(&LstSub);
-  ConsoleDocExportSet(&LstMatch);
-  ConsoleDocExportSet(&Define);
-  ConsoleDocExportSet(&DefineSub);
-  ConsoleDocExportSet(&DefineCnt);
-  ConsoleDocExportSet(&DefineMatch);
-  ConsoleDocExportSet(&YearStartDate);
-  ConsoleDocExportSet(&Struct2Date);
-  ConsoleDocExportSet(&DayOfWeek);
-  ConsoleDocExportSet(&Date2Struct);
-  ConsoleDocExportSet(&FirstDayOfMon);
-  ConsoleDocExportSet(&LastDayOfMon);
-  ConsoleDocExportSet(&FirstDayOfYear);
-  ConsoleDocExportSet(&LastDayOfYear);
-  ConsoleDocExportSet(&Bcd2Bin);
-  ConsoleDocExportSet(&local_time_offset);
-  ConsoleDocExportSet(&Mat4x4MulXYZ);
-  ConsoleDocExportSet(&DCTransform);
-  ConsoleDocExportSet(&Mat4x4IdentEqu);
-  ConsoleDocExportSet(&Mat4x4IdentNew);
-  ConsoleDocExportSet(&Mat4x4NormSqr65536);
-  ConsoleDocExportSet(&DCMat4x4Set);
-  ConsoleDocExportSet(&DCLighting);
-  ConsoleDocExportSet(&DCFill);
-  ConsoleDocExportSet(&DCClear);
-  ConsoleDocExportSet(&DCRst);
-  ConsoleDocExportSet(&DCExtentsInit);
-  ConsoleDocExportSet(&DCAlias);
-  ConsoleDocExportSet(&DCNew);
-  ConsoleDocExportSet(&DCDel);
-  ConsoleDocExportSet(&DCSize);
-  ConsoleDocExportSet(&DCDepthBufRst);
-  ConsoleDocExportSet(&DCDepthBufAlloc);
-  ConsoleDocExportSet(&gr);
-  ConsoleDocExportSet(&gr_palette_std);
-  ConsoleDocExportSet(&NativeGraphicsStart);
-  ConsoleDocExportSet(&NativeGraphicsPresent);
-  ConsoleDocExportSet(&TextBorder);
-  ConsoleDocExportSet(&TextRect);
-  ConsoleDocExportSet(&WinScrollNull);
-  ConsoleDocExportSet(&WinScrollRestore);
-  ConsoleDocExportSet(&WinDerivedValsUpdate);
-  ConsoleDocExportSet(&text);
-  ConsoleDocExportSet(&TaskValidate);
-  ConsoleDocExportSet(&TaskDerivedValsUpdate);
-  ConsoleDocExportSet(&WinHorz);
-  ConsoleDocExportSet(&WinVert);
-  ConsoleDocExportSet(&CtrlFindUnique);
-  ConsoleDocExportSet(&CtrlsUpdate);
-  ConsoleDocExportSet(&CtrlInside);
-  ConsoleDocExportSet(&WinZBufUpdate);
-  ConsoleDocExportSet(&WinInside);
-  ConsoleDocExportSet(&DocNew);
-  ConsoleDocExportSet(&DocRst);
-  ConsoleDocExportSet(&DocDel);
-  ConsoleDocExportSet(&DocSize);
-  ConsoleDocExportSet(&DocPutKey);
-  ConsoleDocExportSet(&DocSave);
-  ConsoleDocExportSet(&DocWrite);
-  ConsoleDocExportSet(&DocRead);
-  ConsoleDocExportSet(&DocEd);
-  ConsoleDocExportSet(&DocAllocationCheck);
-  ConsoleDocExportSet(&DocExe);
-  ConsoleDocExportSet(&DirMk);
-  ConsoleDocExportSet(&Ed);
-  ConsoleDocExportSet(&Dir);
-  ConsoleDocExportSet(&EdDir);
-  ConsoleDocExportSet(&FileDel);
-  ConsoleDocExportSet(&FileRename);
-  ConsoleDocExportSet(&DirDel);
-  ConsoleDocExportSet(&FileMove);
-  ConsoleDocExportSet(&Help);
-  ConsoleDocExportSet(&Snd);
-  ConsoleDocExportSet(&SndRst);
-  ConsoleDocExportSet(&MouseGet);
-  ConsoleDocExportSet(&I386InstallTree);
-  ConsoleDocExportSet(&I386InstallBoot);
-  ConsoleDocExportSet(&I386BuildModule);
-  ConsoleDocExportSet(&I386BuildBootImage);
-  ConsoleDocExportSet(&I386InstallBootImage);
-  ConsoleDocExportSet(&ExeDoc);
-  ConsoleDocExportSet(&NativeJobSource);
-  ConsoleDocExportSet(&sys_focus_task);
-  ConsoleDocExportSet(&NativeDebug);
-  ConsoleDocExportSet(&NativeDebugGo);
-  ConsoleDocExportSet(&NativeDebugMode);
-  ConsoleDocExportSet(&NativeIsDebugMode);
-  ConsoleDocExportSet(&NativeUserCmdLine);
-  ConsoleDocExportSet(&NativeUserTaskCont);
-  ConsoleDocExportSet(&NativeWinFocus);
-  ConsoleDocExportSet(&IsRaw);
-  ConsoleDocExportSet(&StrPrintJoin);
-  ConsoleDocExportSet(&StrPrint);
-  ConsoleDocExportSet(&CatPrint);
-  ConsoleDocExportSet(&MStrPrint);
-  ConsoleDocExportSet(&NativeUser);
-  ConsoleDocExportSet(&NativeXTalk);
-  ConsoleDocExportSet(&NativeTaskWait);
-  ConsoleDocExportSet(&FileWrite);
-  ConsoleDocExportSet(&NativePublicFileRead);
-  ConsoleDocExportSet(&FileFind);
-  ConsoleDocExportSet(&Cd);
-  ConsoleDocExportSet(&NativeDebugStep);
-  ConsoleDocExportSet(&TaskRegAddr);
-  ConsoleDocExportSet(&BptFind);
-  ConsoleDocExportSet(&BptS);
-  ConsoleDocExportSet(&BptR);
-  ConsoleDocExportSet(&B);
-  ConsoleDocExportSet(&B2);
-  ConsoleDocExportSet(&NativeDebugGoClear);
-  ConsoleDocExportSet(&NativeCaller);
-  ConsoleDocExportSet(&SysMacro2Str);
-  ConsoleDocExportSet(&SysMacroStripKey);
-  ConsoleDocExportSet(&NativePrint);
-  ConsoleDocExportSet(&NativePutS);
-  ConsoleDocExportSet(&NativePutChars);
-  ConsoleDocExportSet(&NativeTaskText);
-  ConsoleDocExportSet(&InStr);
-  ConsoleDocExportSet(&XTalkStrWait);
-  ConsoleDocExportSet(&PlaySysMacro);
-  ConsoleDocExportSet(&StrScan);
-  ConsoleDocExportSet(&Str2I64);
-  ConsoleDocExportSet(&Str2F64);
-  ConsoleDocExportSet(&Str2Date);
-  ConsoleDocExportSet(&PrsDollarCmd);
-  ConsoleDocExportSet(&DocDataFmt);
-  ConsoleDocExportSet(&DocDataScan);
-  ConsoleDocExportSet(&DocPutS);
-  ConsoleDocExportSet(&DocPrint);
-  ConsoleDocExportSet(&In);
-  ConsoleDocExportSet(&JobResScan);
-  ConsoleDocExportSet(&JobDel);
-  ConsoleDocExportSet(&NativeTaskExe);
-  ConsoleDocExportSet(&NativeSrvTaskCont);
-  ConsoleDocExportSet(&NativeSrvCmdLine);
   sys_winmgr_task=task;
-  ConsoleDocExportSet(&NativeWinToTop);
-  ConsoleDocExportSet(&sys_winmgr_task);
-  ConsoleDocExportSet(&DocBorderNew);
-  ConsoleDocExportSet(&EdOverStrikeCB);
-  ConsoleDocExportSet(&EdAutoSaveCB);
-  ConsoleDocExportSet(&EdFilterCB);
-  ConsoleDocExportSet(&EdDollarCB);
-  ConsoleDocExportSet(&EdMoreCB);
-  ConsoleDocExportSet(&EdDollarTypeCB);
-  ConsoleDocExportSet(&NativeMenuNew);
-  ConsoleDocExportSet(&MenuFile);
-  ConsoleDocExportSet(&MenuEntryFind);
-  ConsoleDocExportSet(&MenuSubEntryFind);
-  ConsoleDocExportSet(&MenuDel);
-  ConsoleDocExportSet(&GrRect);
-  ConsoleDocExportSet(&RandU16);
-  ConsoleDocExportSet(&DistSqrI64);
-  ConsoleDocExportSet(&WinScrollsInit);
-  ConsoleDocExportSet(&Raw);
-  ConsoleDocExportSet(&VGAFlush);
-  ConsoleDocExportSet(&DocEntryLink);
-  ConsoleDocExportSet(&FileNameAbs);
-  ConsoleDocExportSet(&SrcLineNum);
-  ConsoleDocExportSet(&SrcFileName);
-  ConsoleDocExportSet(&SrcEdLink);
-  ConsoleDocExportSet(&ExePutS);ConsoleDocExportSet(&ExePrint);
-  ConsoleDocExportSet(&DefineLoad);
-  ConsoleDocExportSet(&DefinePrint);
-  ConsoleDocExportSet(&BibleInit);
-  ConsoleDocExportSet(&EdLinkCvt);
-  ConsoleDocExportSet(&DocLinkFile);
-  ConsoleDocExportSet(&DrvChk);
-  ConsoleDocExportSet(&Drv2Let);
-  ConsoleDocExportSet(&Let2Let);
-  ConsoleDocExportSet(&Let2BlkDevType);
-  ConsoleDocExportSet(&DrvTextAttrGet);
-  ConsoleDocExportSet(&NativeStreamPrint);
-  ConsoleDocExportSet(&NativeStreamDir);
-  ConsoleDocExportSet(&NativeNow);
-  ConsoleDocExportSet(&DocScanLine);
-  ConsoleDocExportSet(&PutKey);
-  ConsoleDocExportSet(&KeyDevAdd);
-  ConsoleDocExportSet(&KeyDevRem);
-  ConsoleDocExportSet(&ScanKey);
-  ConsoleDocExportSet(&GetKey);
-  ConsoleDocExportSet(&DocPrintPartial);
-  ConsoleDocExportSet(&DocGetKey);
-  ConsoleDocExportSet(&DocRecalc);
-  ConsoleDocExportSet(&DocUpdateTaskDocs);
-  ConsoleDocExportSet(&DrawCtrls);
-  ConsoleDocExportSet(&GrUpdateTaskWin);
-  ConsoleDocExportSet(&sys_task_being_scrn_updated);
-  ConsoleDocExportSet(&NativeWindowPresent);
-  ConsoleDocExportSet(&NativeWinMgrStart);
-  ConsoleDocExportSet(&Refresh);
-  ConsoleDocExportSet(&winmgr);
-  ConsoleDocExportSet(&NativePopUp);
-  ConsoleDocExportSet(&NativePopUpPrint);
-  ConsoleDocExportSet(&WinMax);
-  ConsoleDocExportSet(&DocEntryRun);
-  ConsoleDocExportSet(&DocMenu);
-  ConsoleDocExportSet(&PopUpMenu);
-  ConsoleDocExportSet(&PopUpPickLst);
-  ConsoleDocExportSet(&EdCurU8);
-  ConsoleDocExportSet(&EdCursorLeft);
-  ConsoleDocExportSet(&EdCursorRight);
-  ConsoleDocExportSet(&EdLineUp);
-  ConsoleDocExportSet(&EdLineDown);
-  ConsoleDocExportSet(&EdCharDel);
-  ConsoleDocExportSet(&EdCharIns);
-  ConsoleDocExportSet(&EdLineDel);
-  ConsoleDocExportSet(&DocTop);
-  ConsoleDocExportSet(&DocCenter);
-  ConsoleDocExportSet(&DocBottom);
-  ConsoleDocExportSet(&DocInsDoc);
-  ConsoleDocExportSet(&ClipDel);
-  ConsoleDocExportSet(&ClipCopy);
-  ConsoleDocExportSet(&ClipCut);
-  ConsoleDocExportSet(&ClipPaste);
-  ConsoleDocExportSet(&DocCut);
-  ConsoleDocExportSet(&DocCopy);
-  ConsoleDocExportSet(&sys_clip_doc);
-  ConsoleDocExportSet(&DocLoad);
-  ConsoleDocExportSet(&Doc2PlainText);
-  ConsoleDocExportSet(&NativeTimeStamp);
-  ConsoleDocExportSet(&DocCaptureUndo);
-  ConsoleDocExportSet(&DocUndoRestore);
-  ConsoleDocExportSet(&Char2KeyName);
-  ConsoleDocExportSet(&KeyDescSet);
-  ConsoleDocExportSet(&keydev);
-  ConsoleDocExportSet(&DocCollapse);
-  ConsoleDocExportSet(&DocEntryToggle);
-  ConsoleDocExportSet(&DocFlagsToggle);
-  ConsoleDocExportSet(&StrFind);
-  ConsoleDocExportSet(&EdFindNext);
-  ConsoleDocExportSet(&EdSelAll);
-  ConsoleDocExportSet(&EdFindPaired);
-  ConsoleDocExportSet(&EdGoToFun);
-  ConsoleDocExportSet(&EdSelFun);
-  ConsoleDocExportSet(&DocForm);
-  ConsoleDocExportSet(&PopUpForm);
-  ConsoleDocExportSet(&DocSplitTag);
-  ConsoleDocExportSet(&DocGoToLine);
-  ConsoleDocExportSet(&EdReplace);
-  ConsoleDocExportSet(&StrOcc);
-  ConsoleDocExportSet(&StrFirstOcc);
-  ConsoleDocExportSet(&StrLastOcc);
-  ConsoleDocExportSet(&StrFirstRem);
-  ConsoleDocExportSet(&StrLastRem);
-  ConsoleDocExportSet(&StrUtil);
-  ConsoleDocExportSet(&MStrUtil);
-  ConsoleDocExportSet(&Let2Drv);
-  ConsoleDocExportSet(&BlkDevChk);
-  ConsoleDocExportSet(&Let2BlkDev);
-  ConsoleDocExportSet(&DrvIsWritable);
-  ConsoleDocExportSet(&FileNameChk);
-  ConsoleDocExportSet(&Silent);
-  ConsoleDocExportSet(&IsSilent);
-  ConsoleDocExportSet(&BlkDevLock);ConsoleDocExportSet(&BlkDevUnlock);
-  ConsoleDocExportSet(&DrvLock);ConsoleDocExportSet(&DrvUnlock);
-  ConsoleDocExportSet(&DrvsRelease);ConsoleDocExportSet(&BlkDevsRelease);
-  ConsoleDocExportSet(&GetOutOfDollar);ConsoleDocExportSet(&PrintErr);ConsoleDocExportSet(&PrintWarn);
-  ConsoleDocExportSet(&RawPutChar);
-  ConsoleDocExportSet(&RedSeaFreeFreeLst);ConsoleDocExportSet(&DrvDel);
-  ConsoleDocExportSet(&DrvBlkDevDel);ConsoleDocExportSet(&config->drive_records);ConsoleDocExportSet(&config->block_records);ConsoleDocExportSet(&BlkDevNextFreeSlot);
-  ConsoleDocExportSet(&DrvMakeFreeSlot);ConsoleDocExportSet(&DrvNextFreeLet);
-  ConsoleDocExportSet(&config->drive_map);ConsoleDocExportSet(&DrvMap);
-  ConsoleDocExportSet(&GetStr);ConsoleDocExportSet(&DocGetStr2);ConsoleDocExportSet(&fp_getstr2);ConsoleDocExportSet(&DocClear);
-  ConsoleDocExportSet(&DC2Sprite);ConsoleDocExportSet(&DocSprite);
-  ConsoleDocExportSet(&DCLoad);ConsoleDocExportSet(&ExpandBuf);
-  ConsoleDocExportSet(&ExtDft);ConsoleDocExportSet(&GRRead);ConsoleDocExportSet(&DocGR);
-  ConsoleDocExportSet(&PortNop);ConsoleDocExportSet(&HPET);ConsoleDocExportSet(&Busy);
-  ConsoleDocExportSet(&DocDump);ConsoleDocExportSet(&DocType);ConsoleDocExportSet(&Type);
-  ConsoleDocExportSet(&PopUpTermRight);
-  ConsoleDocExportSet(&WinBorder);
-  ConsoleDocExportSet(&PostMsgWait);
-  ConsoleDocExportSet(&EdFindReplace);ConsoleDocExportSet(&EdGoToLine);
-  ConsoleDocExportSet(&FSize);ConsoleDocExportSet(&Clus2Blk);
-  ConsoleDocExportSet(&DskCacheInit);ConsoleDocExportSet(&DskCacheAdd);
-  ConsoleDocExportSet(&RCache);ConsoleDocExportSet(&DskCacheInvalidate2);
-  ConsoleDocExportSet(&DskCacheGlobals);ConsoleDocExportSet(&BFieldExtU32);
-  ConsoleDocExportSet(&BFieldOrU32);
-  ConsoleDocExportSet(&ArcCompressBuf);ConsoleDocExportSet(&ArcCtrlDel);
-  ConsoleDocExportSet(&ArcCtrlNew);ConsoleDocExportSet(&ArcExpandBuf);
-  ConsoleDocExportSet(&ArcFinishCompression);ConsoleDocExportSet(&CompressBuf);
-  ConsoleDocExportSet(&MemSetU16);ConsoleDocExportSet(&MemSetU32);ConsoleDocExportSet(&MemSetI64);
-  ConsoleDocExportSet(&sys_os_version);
-  ConsoleDocExportSet(&PopUp1);ConsoleDocExportSet(&PopUp2);
-  ConsoleDocExportSet(&PopUpOk);ConsoleDocExportSet(&PopUpNoYes);ConsoleDocExportSet(&PopUpCancelOk);
-  ConsoleDocExportSet(&PopUpEd);ConsoleDocExportSet(&DirCur);
-  ConsoleDocExportSet(&GrPaletteColorSet);ConsoleDocExportSet(&GrPaletteColorGet);
-  ConsoleDocExportSet(&GrPaletteGet);ConsoleDocExportSet(&GrPaletteSet);
-  ConsoleDocExportSet(&BirthWait);ConsoleDocExportSet(&DeathWait);
-  ConsoleDocExportSet(&ac);ConsoleDocExportSet(&acd);ConsoleDocExportSet(&I386RawBlocks);
-  ConsoleDocExportSet(&GetI64);ConsoleDocExportSet(&GetF64);ConsoleDocExportSet(&GetDate);
-  ConsoleDocExportSet(&GrPutChar);ConsoleDocExportSet(&GrPutS);ConsoleDocExportSet(&GrVPutS);
-  ConsoleDocExportSet(&GrPrint);ConsoleDocExportSet(&GrVPrint);ConsoleDocExportSet(&GrPutChar3);
-  ConsoleDocExportSet(&GrPrint3);ConsoleDocExportSet(&GrVPrint3);
-  ConsoleDocExportSet(&GrTextBox3);ConsoleDocExportSet(&GrTextDiamond3);
-  ConsoleDocExportSet(&Sprite3);ConsoleDocExportSet(&GrLine);
-  ConsoleDocExportSet(&sys_progresses[0].val);
-  ConsoleDocExportSet(&sys_progresses[0].max);
-  ConsoleDocExportSet(&sys_progresses[0].t0);
-  ConsoleDocExportSet(&sys_progresses[0].tf);
-  ConsoleDocExportSet(&sys_progresses[0].desc);
-  ConsoleDocExportSet(&sys_progresses[1].val);
-  ConsoleDocExportSet(&sys_progresses[1].max);
-  ConsoleDocExportSet(&sys_progresses[1].t0);
-  ConsoleDocExportSet(&sys_progresses[1].tf);
-  ConsoleDocExportSet(&sys_progresses[1].desc);
-  ConsoleDocExportSet(&sys_progresses[2].val);
-  ConsoleDocExportSet(&sys_progresses[2].max);
-  ConsoleDocExportSet(&sys_progresses[2].t0);
-  ConsoleDocExportSet(&sys_progresses[2].tf);
-  ConsoleDocExportSet(&sys_progresses[2].desc);
-  ConsoleDocExportSet(&sys_progresses[3].val);
-  ConsoleDocExportSet(&sys_progresses[3].max);
-  ConsoleDocExportSet(&sys_progresses[3].t0);
-  ConsoleDocExportSet(&sys_progresses[3].tf);
-  ConsoleDocExportSet(&sys_progresses[3].desc);
-  ConsoleDocExportSet(&sys_progresses);
-  ConsoleDocExportSet(&ProgressBarsRst);
-  ConsoleDocExportSet(&DrawProgressBars);
-  ConsoleDocExportSet(&StrICmp);ConsoleDocExportSet(&StrNICmp);
-  ConsoleDocExportSet(&DocCursor);ConsoleDocExportSet(&DocHighlightCursor);ConsoleDocExportSet(&DocScroll);
-  ConsoleDocExportSet(&tS);
-  ConsoleDocExportSet(&Char2ScanCode);ConsoleDocExportSet(&ScanCode2Char);ConsoleDocExportSet(&ScanCode2KeyName);
-  ConsoleDocExportSet(&NativeDocStrMatch);ConsoleDocExportSet(&NativeScanStrNCmp);
-  ConsoleDocExportSet(&DocMax);ConsoleDocExportSet(&Reboot);
-  ConsoleDocExportSet(&KeyMapFamily);ConsoleDocExportSet(&KeyMapCtrlAltFamily);ConsoleDocExportSet(&KeyMap);
-  ConsoleDocExportSet(&CtrlAltCBSet);
-  ConsoleDocExportSet(&FilesFindMatch);ConsoleDocExportSet(&WildMatch);
-  ConsoleDocExportSet(&FileExtDot);ConsoleDocExportSet(&FileExtRem);ConsoleDocExportSet(&ExtChg);
-  ConsoleDocExportSet(&IsDotC);ConsoleDocExportSet(&IsDotZ);ConsoleDocExportSet(&ToggleZorNotZ);
-  ConsoleDocExportSet(&DocFind);ConsoleDocExportSet(&DocAnchorFind);ConsoleDocExportSet(&Plain);
-  ConsoleDocExportSet(&InFile);ConsoleDocExportSet(&ExeFile);
-  ConsoleDocExportSet(&Adam);ConsoleDocExportSet(&AdamFile);
-  ConsoleDocExportSet(&ExePutS2);ConsoleDocExportSet(&ExeFile2);
-  ConsoleDocExportSet(&PopUpFile);
-  ConsoleDocExportSet(&WinTileHorz);ConsoleDocExportSet(&WinTileVert);
-  ConsoleDocExportSet(&CopySingleZ);
-  ConsoleDocExportSet(&RandI16);ConsoleDocExportSet(&RandI32);ConsoleDocExportSet(&RandU32);
-  ConsoleDocExportSet(&RandI64);ConsoleDocExportSet(&RandU64);ConsoleDocExportSet(&Rand);
-  ConsoleDocExportSet(&Seed);
-  ConsoleDocExportSet(&DocTreeFind);ConsoleDocExportSet(&DocTreeFFind);ConsoleDocExportSet(&DocTreeMake);
-  ConsoleDocExportSet(&DocTreeWrite);ConsoleDocExportSet(&DocTreeAppend);
-  ConsoleDocExportSet(&DocTreeFWrite);ConsoleDocExportSet(&DocTreeFAppend);
-  ConsoleDocExportSet(&DocTreeExe);ConsoleDocExportSet(&DocTreeFExe);
-  ConsoleDocExportSet(&RegCache);ConsoleDocExportSet(&RegDft);ConsoleDocExportSet(&RegExe);
-  ConsoleDocExportSet(&RegWrite);ConsoleDocExportSet(&RegCnt);ConsoleDocExportSet(&RegAppend);
-  ConsoleDocExportSet(&RegInit);ConsoleDocExportSet(&sys_registry_doc);
-  ConsoleDocExportSet(&sys_msg_flags);ConsoleDocExportSet(&registry_version);
-  ConsoleDocExportSet(&NativeRegistryInit);
-  ConsoleDocExportSet(&Max);ConsoleDocExportSet(&Min);ConsoleDocExportSet(&Clamp);
-  ConsoleDocExportSet(&GrCircle);ConsoleDocExportSet(&GrEllipse);ConsoleDocExportSet(&GrRegPoly);
-  ConsoleDocExportSet(&GrFloodFill);ConsoleDocExportSet(&GrPlot0);ConsoleDocExportSet(&GrPeek0);
-  ConsoleDocExportSet(&SpriteInterpolate);ConsoleDocExportSet(&Sprite3B);ConsoleDocExportSet(&Sprite3Mat4x4B);
-  ConsoleDocExportSet(&Sprite3XB);ConsoleDocExportSet(&Sprite3YB);ConsoleDocExportSet(&Sprite3ZB);ConsoleDocExportSet(&SpriteSize);
-  ConsoleDocExportSet(&D3I32Dist);ConsoleDocExportSet(&D3I32DistSqr);
-  ConsoleDocExportSet(&D3I32Norm);ConsoleDocExportSet(&D3I32NormSqr);
-  ConsoleDocExportSet(&GrRectB);ConsoleDocExportSet(&GrBorder);ConsoleDocExportSet(&Blink);ConsoleDocExportSet(&Beep);
-  ConsoleDocExportSet(&HashGenericAdd);ConsoleDocExportSet(&FramePtr);ConsoleDocExportSet(&FramePtrAdd);
-  ConsoleDocExportSet(&FramePtrSet);ConsoleDocExportSet(&FramePtrDel);
-  ConsoleDocExportSet(&Ona2Freq);ConsoleDocExportSet(&Noise);ConsoleDocExportSet(&Sweep);ConsoleDocExportSet(&music);
-  ConsoleDocExportSet(&ms);ConsoleDocExportSet(&ms_grid);
-  ConsoleDocExportSet(&DirEntryDel);ConsoleDocExportSet(&DirEntryDel2);
-  ConsoleDocExportSet(&DirTreeDel);ConsoleDocExportSet(&DirTreeDel2);
-  ConsoleDocExportSet(&DirFilesFlatten);ConsoleDocExportSet(&DirFilesSort);
-  ConsoleDocExportSet(&DirNameAbs);ConsoleDocExportSet(&CFileNameTo);
-  ConsoleDocExportSet(&FATNameTo);ConsoleDocExportSet(&FATNameXSum);ConsoleDocExportSet(&FATFromName);
-  ConsoleDocExportSet(&DirLongNameFill);ConsoleDocExportSet(&FAT32DirFill);
-  ConsoleDocExportSet(&FAT32CDirFill);
-  ConsoleDocExportSet(&RepInU8);ConsoleDocExportSet(&RepInU16);ConsoleDocExportSet(&RepInU32);ConsoleDocExportSet(&RepOutU8);ConsoleDocExportSet(&RepOutU16);ConsoleDocExportSet(&RepOutU32);
-  ConsoleDocExportSet(&EndianU16);ConsoleDocExportSet(&EndianU32);ConsoleDocExportSet(&EndianI64);
-  ConsoleDocExportSet(config->block_globals);
-  ConsoleDocExportSet(&DskCacheInit);ConsoleDocExportSet(&DskCacheAdd);
-  ConsoleDocExportSet(&RCache);ConsoleDocExportSet(&DskCacheInvalidate2);
-  ConsoleDocExportSet(&ATAReadBlks);ConsoleDocExportSet(&ATAWriteBlks);
-  ConsoleDocExportSet(&ATAInit);ConsoleDocExportSet(&ATARBlks);ConsoleDocExportSet(&ATAWBlks);
-  ConsoleDocExportSet(&DrvTypeSet);ConsoleDocExportSet(&FileAttr);ConsoleDocExportSet(&CallExtStr);
-  ConsoleDocExportSet(&BlkRead);ConsoleDocExportSet(&BlkWrite);ConsoleDocExportSet(&BlkWriteZero);ConsoleDocExportSet(&BlkDevInit);ConsoleDocExportSet(&ClusNumNext);ConsoleDocExportSet(&ClusAlloc);ConsoleDocExportSet(&ClusBlkRead);ConsoleDocExportSet(&ClusBlkWrite);ConsoleDocExportSet(&ClusRead);ConsoleDocExportSet(&ClusWrite);ConsoleDocExportSet(&FOpen);ConsoleDocExportSet(&FClose);ConsoleDocExportSet(&FBlkRead);ConsoleDocExportSet(&FBlkWrite);ConsoleDocExportSet(&DirContextNew);ConsoleDocExportSet(&DirContextDel);ConsoleDocExportSet(&DirNew);ConsoleDocExportSet(&Del);ConsoleDocExportSet(&Drv);ConsoleDocExportSet(&DskChg);ConsoleDocExportSet(&DskCacheInvalidate);
-  ConsoleDocExportSet(&FilesFind);ConsoleDocExportSet(&IsDir);ConsoleDocExportSet(&CopySingle);ConsoleDocExportSet(&Copy);ConsoleDocExportSet(&Move);
-  ConsoleDocExportSet(&MountFile);ConsoleDocExportSet(&Unmount);ConsoleDocExportSet(&RedSeaFmt);ConsoleDocExportSet(&RedSeaValidate);
-  ConsoleDocExportSet(&FAT32Fmt);ConsoleDocExportSet(&FAT32Init);
-  ConsoleDocExportSet(&DocTermNew);
-  ConsoleDocExportSet(&KbdMsEvtTime);ConsoleDocExportSet(&kbd);
-  ConsoleDocExportSet(config->run_level);
-  ConsoleDocExportSet(&Size);
-  ConsoleDocExportSet(&ScanFlags);
-  ConsoleDocExportSet(&HashEntrySize2);ConsoleDocExportSet(&HashTableSize2);
-  ConsoleDocExportSet(&LinkedLstSize);
-  ConsoleDocExportSet(&NativeOriginalView);
-  ConsoleDocExportSet(&NativeBreak);
-  ConsoleDocExportSet(&NativeBreakLock);ConsoleDocExportSet(&NativeBreakUnlock);
-  ConsoleDocExportSet(&MenuPush);ConsoleDocExportSet(&MenuFilePush);ConsoleDocExportSet(&MenuPop);
-  ConsoleDocExportSet(&PutExcept);
-  ConsoleDocExportSet(&native_rev_bits_table);ConsoleDocExportSet(&native_set_bits_table);
-  ConsoleDocExportSet(&NativeSourceClampI64);
-  ConsoleDocExportSet(&PutFileLink);
-  ConsoleDocExportSet(&PopUpPickDir);
-  ConsoleDocExportSet(&CopyTree);
-  ConsoleDocExportSet(&MusicSettingsRst);
-  ConsoleDocExportSet(&DelTree);
-  ConsoleDocExportSet(&NativeTaskCaller);
-  ConsoleDocExportSet(&scrncast);
-  ConsoleDocExportSet(&ScrnCast);
-  ConsoleDocExportSet(&Mute);
-  ConsoleDocExportSet(&IsMute);
-  ConsoleDocExportSet(&DCCopy);
-  ConsoleDocExportSet(&DCSave);
-  ConsoleDocExportSet(&GRWrite);
-  ConsoleDocExportSet(&DCExt);
-  ConsoleDocExportSet(&DCDiff);
-  ConsoleDocExportSet(&Note2Ona);
-  ConsoleDocExportSet(&Ona2Note);
-  ConsoleDocExportSet(&Ona2Octave);
-  ConsoleDocExportSet(&Sprite);
-  ConsoleDocExportSet(&CmpCtrlNew);ConsoleDocExportSet(&CmpCtrlDel);ConsoleDocExportSet(&CmpCtrlSize);ConsoleDocExportSet(&LexAttachDoc);
-  ConsoleDocExportSet(&GetChar);ConsoleDocExportSet(&YorN);
-  ConsoleDocExportSet(&AreYouSure);ConsoleDocExportSet(&PressAKey);
-  ConsoleDocExportSet(&Fmt);
-  ConsoleDocExportSet(&RedSeaISO);ConsoleDocExportSet(&RedSeaISO9660);
-  ConsoleDocExportSet(&DVDImageRead);ConsoleDocExportSet(&DVDImageWrite);
-  ConsoleDocExportSet(&Cd2DirEntry);
-  ConsoleDocExportSet(&WinCursorPosSet);
-  ConsoleDocExportSet(&PopUpPickFile);
-  ConsoleDocExportSet(&LexGetChar);ConsoleDocExportSet(&cmp);
-  ConsoleDocExportSet(&lex_zeros);ConsoleDocExportSet(native_doc_printable);
-  ConsoleDocExportSet(&HashSrcFileSet);
-  ConsoleDocExportSet(&DocPutLine);
-  ConsoleDocExportSet(&FixSet);ConsoleDocExportSet(&dbg);
-  ConsoleDocExportSet(&AdamErr);ConsoleDocExportSet(&IsSingleUser);
-  ConsoleDocExportSet(&LexPutToken);ConsoleDocExportSet(&LexPutLine);
-  ConsoleDocExportSet(&LexPutPos);ConsoleDocExportSet(&LexWarn);ConsoleDocExportSet(&LexExcept);
-  ConsoleDocExportSet(&ICAdd);ConsoleDocExportSet(&COCInit);ConsoleDocExportSet(&COCPush);
-  ConsoleDocExportSet(&COCPopNoFree);ConsoleDocExportSet(&COCPop);ConsoleDocExportSet(&COCAppend);
-  ConsoleDocExportSet(&COCMiscNew);ConsoleDocExportSet(&COCDel);
-  ConsoleDocExportSet(&HashAddAfter);
-  ConsoleDocExportSet(&Call);
-  ConsoleDocExportSet(&LinkedLstCopy);ConsoleDocExportSet(&LinkedLstDel);
-  ConsoleDocExportSet(&LexPush);ConsoleDocExportSet(&LexPopRestore);ConsoleDocExportSet(&LexPopNoRestore);
-  ConsoleDocExportSet(&MemberFind);ConsoleDocExportSet(&MemberMetaData);ConsoleDocExportSet(&MemberMetaFind);
-  ConsoleDocExportSet(&QueDel);ConsoleDocExportSet(&DirFile);
-  ConsoleDocExportSet(&AOTStoreCodeU8);ConsoleDocExportSet(&AOTStoreCodeU32);ConsoleDocExportSet(&AOTStoreCodeU64);ConsoleDocExportSet(&AOTStoreCodeU8At);ConsoleDocExportSet(&PrsI386DataRange);
-  ConsoleDocExportSet(&LoadOneImport);ConsoleDocExportSet(&SysSymImportsResolve);ConsoleDocExportSet(&CmpFixUpJITAsm);ConsoleDocExportSet(&native_jit_support);ConsoleDocExportSet(&CmpFixUpAOTAsm);
-  ConsoleDocExportSet(&AsmResolve);ConsoleDocExportSet(&AOTLocalsResolve);ConsoleDocExportSet(&AOTGlblsResolve);ConsoleDocExportSet(&AsmUnresolvedAdd);ConsoleDocExportSet(&OptPass012);ConsoleDocExportSet(&COCCompile);ConsoleDocExportSet(&I386DocBreakPoll);ConsoleDocExportSet(&Lex);ConsoleDocExportSet(&LexExtStr);ConsoleDocExportSet(&LexExpression);ConsoleDocExportSet(&LexExpressionI64);ConsoleDocExportSet(&LexExpressionF64);ConsoleDocExportSet(&LexExpression2Bin);ConsoleDocExportSet(&IsLexExpression2Bin);ConsoleDocExportSet(&PrsStreamBlk);ConsoleDocExportSet(&PrsAsmBlk);ConsoleDocExportSet(&CmpJoin);ConsoleDocExportSet(&CmpBuf);
-  ConsoleDocExportSet(&MsSet);ConsoleDocExportSet(&GridInit);
-  ConsoleDocExportSet(&DrawMs);ConsoleDocExportSet(&DrawStdMs);ConsoleDocExportSet(&DrawWaitMs);
-  ConsoleDocExportSet(&GrFillCircle);
-  ConsoleDocExportSet(config->compile_time);
-  ConsoleDocExportSet(&OneTimePopUp);ConsoleDocExportSet(&RegOneTimePopUp);
-  ConsoleDocExportSet(&Mat4x4Scale);ConsoleDocExportSet(&DCSymmetry3Set);
-  ConsoleDocExportSet(&GrPlot3);ConsoleDocExportSet(&GrLine3);
-  ConsoleDocExportSet(&NativeODEBind);
-  if(console_doc_export_cursor!=console_doc_exports+sizeof(console_doc_exports)/sizeof(CI386KernelSymbol))
-    throw('DocExps',TRUE);
+  //Cross-built slots contain local offsets. Native relocation already rebases them.
+  export_bias=(&I386DocLock-addresses[0])(U64);
   for(i=0;i<sizeof(console_doc_exports)/sizeof(CI386KernelSymbol);i++) {
+    if(addresses[i]!=0xFFFFFFFF(U8 *))
+      console_doc_exports[i].val=(addresses[i]+0)(U64)+export_bias;
+    else
+      console_doc_exports[i].val=(ConsoleDocDynamicAddress(config,i)+0)(U64);
     console_doc_exports[i].str=export_names;
     while(*export_names)export_names++;
     export_names++;
@@ -2130,4 +1709,246 @@ CAOT *CmpBuf(U8 *buf,U8 *map_name=0,I64 *errors=0,I64 *warnings=0,U8 map_drive=0
   CAOT *(*invoke)(U8 *buf,U8 *map_name,I64 *errors,I64 *warnings,U8 map_drive);
   NativeAsmSupportLoad;invoke=native_jit_support.buffer;
   return (*invoke)(buf,map_name,errors,warnings,map_drive);
+}
+
+U8 *console_doc_addresses[705]={
+  &I386DocLock,&I386DocUnlock,&DocPut,&DocDisplay,
+  &DocBorder,&IsEditableText,&DocEntryNewBase,&DocEntryNewTag,
+  &DocEntrySize,&DocEntryCopy,&DocFormFwd,&DocFormBwd,
+  &DocDefaultsInit,&DocInit,&DocDictionaryNew,&DocDictionaryDel,
+  &DocGlobalsInit,&ConsoleDocumentStart,
+  0xFFFFFFFF, //doldoc
+  &DocReportLiteral,&DocBinFindNum,&DocBinFindTag,&DocBinsValidate,
+  &DocBinDel,&DocEntryDel,&DocUndoDel,&DocUndoCntSet,
+  &DocRemSoftNewLines,&DocInsEntry,&TextChar,&TextLenStr,
+  &TextLenAttrStr,&TextLenAttr,
+  0xFFFFFFFF, //i386_text_base
+  &NativeTextBasePresent,&NativeTextBaseRestore,&LstSub,&LstMatch,
+  &Define,&DefineSub,&DefineCnt,&DefineMatch,
+  &YearStartDate,&Struct2Date,&DayOfWeek,&Date2Struct,
+  &FirstDayOfMon,&LastDayOfMon,&FirstDayOfYear,&LastDayOfYear,
+  &Bcd2Bin,
+  0xFFFFFFFF, //local_time_offset
+  &Mat4x4MulXYZ,&DCTransform,&Mat4x4IdentEqu,&Mat4x4IdentNew,
+  &Mat4x4NormSqr65536,&DCMat4x4Set,&DCLighting,&DCFill,
+  &DCClear,&DCRst,&DCExtentsInit,&DCAlias,
+  &DCNew,&DCDel,&DCSize,&DCDepthBufRst,
+  &DCDepthBufAlloc,
+  0xFFFFFFFF, //gr
+  0xFFFFFFFF, //gr_palette_std
+  &NativeGraphicsStart,&NativeGraphicsPresent,&TextBorder,&TextRect,
+  &WinScrollNull,&WinScrollRestore,&WinDerivedValsUpdate,
+  0xFFFFFFFF, //text
+  &TaskValidate,&TaskDerivedValsUpdate,&WinHorz,&WinVert,
+  &CtrlFindUnique,&CtrlsUpdate,&CtrlInside,&WinZBufUpdate,
+  &WinInside,&DocNew,&DocRst,&DocDel,
+  &DocSize,&DocPutKey,&DocSave,&DocWrite,
+  &DocRead,&DocEd,&DocAllocationCheck,&DocExe,
+  &DirMk,&Ed,&Dir,&EdDir,
+  &FileDel,&FileRename,&DirDel,&FileMove,
+  &Help,&Snd,&SndRst,&MouseGet,
+  &I386InstallTree,&I386InstallBoot,&I386BuildModule,&I386BuildBootImage,
+  &I386InstallBootImage,&ExeDoc,&NativeJobSource,
+  0xFFFFFFFF, //_SYS_FOCUS_TASK
+  &NativeDebug,&NativeDebugGo,&NativeDebugMode,&NativeIsDebugMode,
+  &NativeUserCmdLine,&NativeUserTaskCont,&NativeWinFocus,&IsRaw,
+  &StrPrintJoin,&StrPrint,&CatPrint,&MStrPrint,
+  &NativeUser,&NativeXTalk,&NativeTaskWait,&FileWrite,
+  &NativePublicFileRead,&FileFind,&Cd,&NativeDebugStep,
+  &TaskRegAddr,&BptFind,&BptS,&BptR,
+  &B,&B2,&NativeDebugGoClear,&NativeCaller,
+  &SysMacro2Str,&SysMacroStripKey,&NativePrint,&NativePutS,
+  &NativePutChars,&NativeTaskText,&InStr,&XTalkStrWait,
+  &PlaySysMacro,&StrScan,&Str2I64,&Str2F64,
+  &Str2Date,&PrsDollarCmd,&DocDataFmt,&DocDataScan,
+  &DocPutS,&DocPrint,&In,&JobResScan,
+  &JobDel,&NativeTaskExe,&NativeSrvTaskCont,&NativeSrvCmdLine,
+  &NativeWinToTop,
+  0xFFFFFFFF, //_SYS_WINMGR_TASK
+  &DocBorderNew,&EdOverStrikeCB,&EdAutoSaveCB,&EdFilterCB,
+  &EdDollarCB,&EdMoreCB,&EdDollarTypeCB,&NativeMenuNew,
+  &MenuFile,&MenuEntryFind,&MenuSubEntryFind,&MenuDel,
+  &GrRect,&RandU16,&DistSqrI64,&WinScrollsInit,
+  &Raw,&VGAFlush,&DocEntryLink,&FileNameAbs,
+  &SrcLineNum,&SrcFileName,&SrcEdLink,&ExePutS,
+  &ExePrint,&DefineLoad,&DefinePrint,&BibleInit,
+  &EdLinkCvt,&DocLinkFile,&DrvChk,&Drv2Let,
+  &Let2Let,&Let2BlkDevType,&DrvTextAttrGet,&NativeStreamPrint,
+  &NativeStreamDir,&NativeNow,&DocScanLine,&PutKey,
+  &KeyDevAdd,&KeyDevRem,&ScanKey,&GetKey,
+  &DocPrintPartial,&DocGetKey,&DocRecalc,&DocUpdateTaskDocs,
+  &DrawCtrls,&GrUpdateTaskWin,
+  0xFFFFFFFF, //_SYS_TASK_BEING_SCRN_UPDATED
+  &NativeWindowPresent,&NativeWinMgrStart,&Refresh,
+  0xFFFFFFFF, //_WINMGR_STATE
+  &NativePopUp,&NativePopUpPrint,&WinMax,&DocEntryRun,
+  &DocMenu,&PopUpMenu,&PopUpPickLst,&EdCurU8,
+  &EdCursorLeft,&EdCursorRight,&EdLineUp,&EdLineDown,
+  &EdCharDel,&EdCharIns,&EdLineDel,&DocTop,
+  &DocCenter,&DocBottom,&DocInsDoc,&ClipDel,
+  &ClipCopy,&ClipCut,&ClipPaste,&DocCut,
+  &DocCopy,
+  0xFFFFFFFF, //_SYS_CLIP_DOC
+  &DocLoad,&Doc2PlainText,&NativeTimeStamp,&DocCaptureUndo,
+  &DocUndoRestore,&Char2KeyName,&KeyDescSet,
+  0xFFFFFFFF, //_KEYDEV
+  &DocCollapse,&DocEntryToggle,&DocFlagsToggle,&StrFind,
+  &EdFindNext,&EdSelAll,&EdFindPaired,&EdGoToFun,
+  &EdSelFun,&DocForm,&PopUpForm,&DocSplitTag,
+  &DocGoToLine,&EdReplace,&StrOcc,&StrFirstOcc,
+  &StrLastOcc,&StrFirstRem,&StrLastRem,&StrUtil,
+  &MStrUtil,&Let2Drv,&BlkDevChk,&Let2BlkDev,
+  &DrvIsWritable,&FileNameChk,&Silent,&IsSilent,
+  &BlkDevLock,&BlkDevUnlock,&DrvLock,&DrvUnlock,
+  &DrvsRelease,&BlkDevsRelease,&GetOutOfDollar,&PrintErr,
+  &PrintWarn,&RawPutChar,&RedSeaFreeFreeLst,&DrvDel,
+  &DrvBlkDevDel,
+  0xFFFFFFFF, //NativeDriveRecords
+  0xFFFFFFFF, //NativeBlockRecords
+  &BlkDevNextFreeSlot,&DrvMakeFreeSlot,&DrvNextFreeLet,
+  0xFFFFFFFF, //NativeDriveMap
+  &DrvMap,&GetStr,&DocGetStr2,
+  0xFFFFFFFF, //_FP_GETSTR2
+  &DocClear,&DC2Sprite,&DocSprite,&DCLoad,
+  &ExpandBuf,&ExtDft,&GRRead,&DocGR,
+  &PortNop,&HPET,&Busy,&DocDump,
+  &DocType,&Type,&PopUpTermRight,&WinBorder,
+  &PostMsgWait,&EdFindReplace,&EdGoToLine,&FSize,
+  &Clus2Blk,&DskCacheInit,&DskCacheAdd,&RCache,
+  &DskCacheInvalidate2,&DskCacheGlobals,&BFieldExtU32,&BFieldOrU32,
+  &ArcCompressBuf,&ArcCtrlDel,&ArcCtrlNew,&ArcExpandBuf,
+  &ArcFinishCompression,&CompressBuf,&MemSetU16,&MemSetU32,
+  &MemSetI64,
+  0xFFFFFFFF, //sys_os_version
+  &PopUp1,&PopUp2,&PopUpOk,&PopUpNoYes,
+  &PopUpCancelOk,&PopUpEd,&DirCur,&GrPaletteColorSet,
+  &GrPaletteColorGet,&GrPaletteGet,&GrPaletteSet,&BirthWait,
+  &DeathWait,
+  0xFFFFFFFF, //ac
+  0xFFFFFFFF, //acd
+  &I386RawBlocks,&GetI64,&GetF64,&GetDate,
+  &GrPutChar,&GrPutS,&GrVPutS,&GrPrint,
+  &GrVPrint,&GrPutChar3,&GrPrint3,&GrVPrint3,
+  &GrTextBox3,&GrTextDiamond3,&Sprite3,&GrLine,
+  0xFFFFFFFF, //SYS_PROGRESS1
+  0xFFFFFFFF, //SYS_PROGRESS1_MAX
+  0xFFFFFFFF, //SYS_PROGRESS1_T0
+  0xFFFFFFFF, //SYS_PROGRESS1_TF
+  0xFFFFFFFF, //SYS_PROGRESS1_DESC
+  0xFFFFFFFF, //SYS_PROGRESS2
+  0xFFFFFFFF, //SYS_PROGRESS2_MAX
+  0xFFFFFFFF, //SYS_PROGRESS2_T0
+  0xFFFFFFFF, //SYS_PROGRESS2_TF
+  0xFFFFFFFF, //SYS_PROGRESS2_DESC
+  0xFFFFFFFF, //SYS_PROGRESS3
+  0xFFFFFFFF, //SYS_PROGRESS3_MAX
+  0xFFFFFFFF, //SYS_PROGRESS3_T0
+  0xFFFFFFFF, //SYS_PROGRESS3_TF
+  0xFFFFFFFF, //SYS_PROGRESS3_DESC
+  0xFFFFFFFF, //SYS_PROGRESS4
+  0xFFFFFFFF, //SYS_PROGRESS4_MAX
+  0xFFFFFFFF, //SYS_PROGRESS4_T0
+  0xFFFFFFFF, //SYS_PROGRESS4_TF
+  0xFFFFFFFF, //SYS_PROGRESS4_DESC
+  0xFFFFFFFF, //SYS_PROGRESSES
+  &ProgressBarsRst,&DrawProgressBars,&StrICmp,&StrNICmp,
+  &DocCursor,&DocHighlightCursor,&DocScroll,&tS,
+  &Char2ScanCode,&ScanCode2Char,&ScanCode2KeyName,&NativeDocStrMatch,
+  &NativeScanStrNCmp,&DocMax,&Reboot,&KeyMapFamily,
+  &KeyMapCtrlAltFamily,&KeyMap,&CtrlAltCBSet,&FilesFindMatch,
+  &WildMatch,&FileExtDot,&FileExtRem,&ExtChg,
+  &IsDotC,&IsDotZ,&ToggleZorNotZ,&DocFind,
+  &DocAnchorFind,&Plain,&InFile,&ExeFile,
+  &Adam,&AdamFile,&ExePutS2,&ExeFile2,
+  &PopUpFile,&WinTileHorz,&WinTileVert,&CopySingleZ,
+  &RandI16,&RandI32,&RandU32,&RandI64,
+  &RandU64,&Rand,&Seed,&DocTreeFind,
+  &DocTreeFFind,&DocTreeMake,&DocTreeWrite,&DocTreeAppend,
+  &DocTreeFWrite,&DocTreeFAppend,&DocTreeExe,&DocTreeFExe,
+  &RegCache,&RegDft,&RegExe,&RegWrite,
+  &RegCnt,&RegAppend,&RegInit,
+  0xFFFFFFFF, //_SYS_REGISTRY_DOC
+  0xFFFFFFFF, //_SYS_MSG_FLAGS
+  0xFFFFFFFF, //_REGISTRY_VERSION
+  &NativeRegistryInit,&Max,&Min,&Clamp,
+  &GrCircle,&GrEllipse,&GrRegPoly,&GrFloodFill,
+  &GrPlot0,&GrPeek0,&SpriteInterpolate,&Sprite3B,
+  &Sprite3Mat4x4B,&Sprite3XB,&Sprite3YB,&Sprite3ZB,
+  &SpriteSize,&D3I32Dist,&D3I32DistSqr,&D3I32Norm,
+  &D3I32NormSqr,&GrRectB,&GrBorder,&Blink,
+  &Beep,&HashGenericAdd,&FramePtr,&FramePtrAdd,
+  &FramePtrSet,&FramePtrDel,&Ona2Freq,&Noise,
+  &Sweep,
+  0xFFFFFFFF, //_MUSIC_GLOBALS
+  0xFFFFFFFF, //_MS_GLOBALS
+  0xFFFFFFFF, //_MS_GRID_GLOBALS
+  &DirEntryDel,&DirEntryDel2,&DirTreeDel,&DirTreeDel2,
+  &DirFilesFlatten,&DirFilesSort,&DirNameAbs,&CFileNameTo,
+  &FATNameTo,&FATNameXSum,&FATFromName,&DirLongNameFill,
+  &FAT32DirFill,&FAT32CDirFill,&RepInU8,&RepInU16,
+  &RepInU32,&RepOutU8,&RepOutU16,&RepOutU32,
+  &EndianU16,&EndianU32,&EndianI64,
+  0xFFFFFFFF, //_BLKDEV
+  &DskCacheInit,&DskCacheAdd,&RCache,&DskCacheInvalidate2,
+  &ATAReadBlks,&ATAWriteBlks,&ATAInit,&ATARBlks,
+  &ATAWBlks,&DrvTypeSet,&FileAttr,&CallExtStr,
+  &BlkRead,&BlkWrite,&BlkWriteZero,&BlkDevInit,
+  &ClusNumNext,&ClusAlloc,&ClusBlkRead,&ClusBlkWrite,
+  &ClusRead,&ClusWrite,&FOpen,&FClose,
+  &FBlkRead,&FBlkWrite,&DirContextNew,&DirContextDel,
+  &DirNew,&Del,&Drv,&DskChg,
+  &DskCacheInvalidate,&FilesFind,&IsDir,&CopySingle,
+  &Copy,&Move,&MountFile,&Unmount,
+  &RedSeaFmt,&RedSeaValidate,&FAT32Fmt,&FAT32Init,
+  &DocTermNew,&KbdMsEvtTime,
+  0xFFFFFFFF, //_KBD_GLOBALS
+  0xFFFFFFFF, //_SYS_RUN_LEVEL
+  &Size,&ScanFlags,&HashEntrySize2,&HashTableSize2,
+  &LinkedLstSize,&NativeOriginalView,&NativeBreak,&NativeBreakLock,
+  &NativeBreakUnlock,&MenuPush,&MenuFilePush,&MenuPop,
+  &PutExcept,
+  0xFFFFFFFF, //_REV_BITS_TABLE
+  0xFFFFFFFF, //_SET_BITS_TABLE
+  &NativeSourceClampI64,&PutFileLink,&PopUpPickDir,&CopyTree,
+  &MusicSettingsRst,&DelTree,&NativeTaskCaller,
+  0xFFFFFFFF, //_SCRNCAST
+  &ScrnCast,&Mute,&IsMute,&DCCopy,
+  &DCSave,&GRWrite,&DCExt,&DCDiff,
+  &Note2Ona,&Ona2Note,&Ona2Octave,&Sprite,
+  &CmpCtrlNew,&CmpCtrlDel,&CmpCtrlSize,&LexAttachDoc,
+  &GetChar,&YorN,&AreYouSure,&PressAKey,
+  &Fmt,&RedSeaISO,&RedSeaISO9660,&DVDImageRead,
+  &DVDImageWrite,&Cd2DirEntry,&WinCursorPosSet,&PopUpPickFile,
+  &LexGetChar,
+  0xFFFFFFFF, //_CMP_GLOBALS
+  0xFFFFFFFF, //_LEX_ZEROS
+  0xFFFFFFFF, //_CHAR_BMP_PRINTABLE
+  &HashSrcFileSet,&DocPutLine,&FixSet,
+  0xFFFFFFFF, //_DBG_GLOBALS
+  &AdamErr,&IsSingleUser,&LexPutToken,&LexPutLine,
+  &LexPutPos,&LexWarn,&LexExcept,&ICAdd,
+  &COCInit,&COCPush,&COCPopNoFree,&COCPop,
+  &COCAppend,&COCMiscNew,&COCDel,&HashAddAfter,
+  &Call,&LinkedLstCopy,&LinkedLstDel,&LexPush,
+  &LexPopRestore,&LexPopNoRestore,&MemberFind,&MemberMetaData,
+  &MemberMetaFind,&QueDel,&DirFile,&AOTStoreCodeU8,
+  &AOTStoreCodeU32,&AOTStoreCodeU64,&AOTStoreCodeU8At,&PrsI386DataRange,
+  &LoadOneImport,&SysSymImportsResolve,&CmpFixUpJITAsm,
+  0xFFFFFFFF, //_NATIVE_JIT_SUPPORT
+  &CmpFixUpAOTAsm,&AsmResolve,&AOTLocalsResolve,&AOTGlblsResolve,
+  &AsmUnresolvedAdd,&OptPass012,&COCCompile,&I386DocBreakPoll,
+  &Lex,&LexExtStr,&LexExpression,&LexExpressionI64,
+  &LexExpressionF64,&LexExpression2Bin,&IsLexExpression2Bin,&PrsStreamBlk,
+  &PrsAsmBlk,&CmpJoin,&CmpBuf,&MsSet,
+  &GridInit,&DrawMs,&DrawStdMs,&DrawWaitMs,
+  &GrFillCircle,
+  0xFFFFFFFF, //sys_compile_time
+  &OneTimePopUp,&RegOneTimePopUp,&Mat4x4Scale,&DCSymmetry3Set,
+  &GrPlot3,&GrLine3,&NativeODEBind
+};
+#assert sizeof(console_doc_addresses)/sizeof(U8 *)==sizeof(console_doc_exports)/sizeof(CI386KernelSymbol)
+
+U8 **ConsoleDocAddresses()
+{
+  return console_doc_addresses;
 }

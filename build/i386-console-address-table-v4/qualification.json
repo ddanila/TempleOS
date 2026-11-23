@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "cross_disk_sha256": "44bf770d1e25c238c1e663e430ab320b692870440159f37cbc476c2246e2dc23",
+  "installed_disk_sha256": "83e583e9dcf6e0be3a234195264556a56ab5059e20b2e52a381e7bff1fa18830",
+  "console_source_sha256": "72e913bea88774990ad50e537d2dc82119acb82617b2c3efcca428dda54c80a5",
+  "boot_instruction_audit": "pass",
+  "receipt_sha256": {
+    "table-audit.json": "1289624703364fafaa2f2067e98ee33c951bbf75c69ae49c59a424d6b58ac412",
+    "user8/result.json": "bd01afd31632011e36b6727c9fe0a81f4274a4d9bd475b77bf0322a401a9ca16",
+    "xcaliber/result.json": "cc21706aed5e201f9570c7ca1815eccd8651ff1b9bbdcc98347d16e5702b7885",
+    "source-audit/result.json": "020c089f571d6febb6eaafe92288548a00ef66ad4d73572e307fcd4cd02674b7",
+    "guest-compiler-install/result.json": "5c0a29bf24121856505a9386f0b4087295f1d4eb748b02a84eae2d8e8fc6b038",
+    "guest-compiler-user8/result.json": "af25ad7e78d7f18dfa19ae9dcdb0d92f96fdd26faa9d20fecade1e375d2b5010",
+    "guest-compiler-power/result.json": "fd53d6dea862a704e97706e042f956001b19d644a526149fe6a80fc173132cf5"
+  }
+}
