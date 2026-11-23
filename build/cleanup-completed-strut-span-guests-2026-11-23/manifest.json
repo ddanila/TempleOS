@@ -4381,7 +4381,273 @@
         "-o",
         "build/xcaliber-reference-v1/original-shared-recoil-turn/original.iso"
       ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-shared-recoil-turn/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-shared-recoil-turn/working.img.zst",
+      "sha256": "a9528ef8c618ebc6ecc30122f59f5d41de302d07a07d2af28ff2498ee01e108c",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-shared-recoil-turn/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-shared-recoil-turn/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-reduction-v1/native64/working.img",
+      "archive": "build/i386-power-reduction-v1/native64/working.img.zst",
+      "sha256": "11f6bdc6f8efdb015a851969af95d72ca6e24827f9ff79090fbdafbb37ff3225",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-reduction-v1/native64/working.img.zst",
+        "-o",
+        "build/i386-power-reduction-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-reduction-v1/original-edges/original.iso",
+      "archive": "build/i386-power-reduction-v1/original-edges/original.iso.zst",
+      "sha256": "3384ac7846156c3b2605c059dbb3b814681c527dd3851dc7e129250490814038",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-reduction-v1/original-edges/original.iso.zst",
+        "-o",
+        "build/i386-power-reduction-v1/original-edges/original.iso"
+      ]
+    },
+    {
+      "original": "build/i386-power-reduction-v1/original-trace/original.iso",
+      "archive": "build/i386-power-reduction-v1/original-trace/original.iso.zst",
+      "sha256": "69470ed7bd23c24919ac4af1cbcff0349e6253f5a1006f7f0db22849b0315bf1",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-reduction-v1/original-trace/original.iso.zst",
+        "-o",
+        "build/i386-power-reduction-v1/original-trace/original.iso"
+      ]
+    },
+    {
+      "original": "build/native-focus-menu-overlay-v1/menu-raster64/working.img",
+      "archive": "build/native-focus-menu-overlay-v1/menu-raster64/working.img.zst",
+      "sha256": "9b3642d3400236f708f26caf3a1856872123d8150c823abe947f236718a2d23b",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-focus-menu-overlay-v1/menu-raster64/working.img.zst",
+        "-o",
+        "build/native-focus-menu-overlay-v1/menu-raster64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-focus-menu-overlay-v1/menu64/working.img",
+      "archive": "build/native-focus-menu-overlay-v1/menu64/working.img.zst",
+      "sha256": "a8cfeb100ffb04ab26de75f7585e9de4dac33d3ce2cffddeb5bd612d768aac06",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-focus-menu-overlay-v1/menu64/working.img.zst",
+        "-o",
+        "build/native-focus-menu-overlay-v1/menu64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-focus-menu-overlay-v1/popup64/working.img",
+      "archive": "build/native-focus-menu-overlay-v1/popup64/working.img.zst",
+      "sha256": "c3648fd47473baa21c04d022bcf9a8c4f22d51cd426d0468aeb3e792ccccac56",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-focus-menu-overlay-v1/popup64/working.img.zst",
+        "-o",
+        "build/native-focus-menu-overlay-v1/popup64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-focus-menu-overlay-v1/psalmody64/working.img",
+      "archive": "build/native-focus-menu-overlay-v1/psalmody64/working.img.zst",
+      "sha256": "f2eb445b32301cb502005583c195fb24ee8f4da27692d510f1a44b9f7b403745",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-focus-menu-overlay-v1/psalmody64/working.img.zst",
+        "-o",
+        "build/native-focus-menu-overlay-v1/psalmody64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-focus-menu-overlay-v1/user8/working.img",
+      "archive": "build/native-focus-menu-overlay-v1/user8/working.img.zst",
+      "sha256": "957f23a590d68591c44f06e153cf1d58e3c109ee4ab0a92d6a39a9c313f1e0f4",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-focus-menu-overlay-v1/user8/working.img.zst",
+        "-o",
+        "build/native-focus-menu-overlay-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/native-focus-menu-overlay-v1/vocabulary64/working.img",
+      "archive": "build/native-focus-menu-overlay-v1/vocabulary64/working.img.zst",
+      "sha256": "194371131f1daca9cfc8ee1c1efb670ad57031cb72c88fee0ab76bda4ba4f374",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-focus-menu-overlay-v1/vocabulary64/working.img.zst",
+        "-o",
+        "build/native-focus-menu-overlay-v1/vocabulary64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-bindings-v1/ToTheFront/working.img",
+      "archive": "build/native-geometry-bindings-v1/ToTheFront/working.img.zst",
+      "sha256": "692a9ae4c9bbc6ad90a463b56b4d77a3dd83aac9c0131a22519d893bd06df677",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-bindings-v1/ToTheFront/working.img.zst",
+        "-o",
+        "build/native-geometry-bindings-v1/ToTheFront/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/GrModels-ball-chooser/working.img",
+      "archive": "build/native-geometry-source-v1/GrModels-ball-chooser/working.img.zst",
+      "sha256": "61dfe38b13dc2ddc67052f7494317b5e0da077c2456cf18986777a0a4019aee7",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/GrModels-ball-chooser/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/GrModels-ball-chooser/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/GrModels-ball-form/working.img",
+      "archive": "build/native-geometry-source-v1/GrModels-ball-form/working.img.zst",
+      "sha256": "61dfe38b13dc2ddc67052f7494317b5e0da077c2456cf18986777a0a4019aee7",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/GrModels-ball-form/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/GrModels-ball-form/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/GrModels-ball-trace-retained/working.img",
+      "archive": "build/native-geometry-source-v1/GrModels-ball-trace-retained/working.img.zst",
+      "sha256": "ac3f661416ca9d2e8fb34797fa9ad2fac502907108ff8f63d25a2221472be3ae",
+      "size": 67108864,
+      "reclaimed_bytes": 53317632,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/GrModels-ball-trace-retained/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/GrModels-ball-trace-retained/working.img"
+      ]
+    },
+    {
+      "original": "build/native-graphics-dirty-rows-v1/persistent64/working.img",
+      "archive": "build/native-graphics-dirty-rows-v1/persistent64/working.img.zst",
+      "sha256": "b594f3ae72230e8d7b0a29b60ad202186c9d5a0c1bcdf131cc5762f9cd5bbf4e",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-graphics-dirty-rows-v1/persistent64/working.img.zst",
+        "-o",
+        "build/native-graphics-dirty-rows-v1/persistent64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-graphics-dirty-rows-v1/psalmody-ready64/working.img",
+      "archive": "build/native-graphics-dirty-rows-v1/psalmody-ready64/working.img.zst",
+      "sha256": "5f32c4709e6d4661c24895cbf3c29732763639682484c85bd05999dc542d5c55",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-graphics-dirty-rows-v1/psalmody-ready64/working.img.zst",
+        "-o",
+        "build/native-graphics-dirty-rows-v1/psalmody-ready64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-graphics-dirty-rows-v2/psalmody-ready64/working.img",
+      "archive": "build/native-graphics-dirty-rows-v2/psalmody-ready64/working.img.zst",
+      "sha256": "b9bc7aa4a458ecc0c5e2f3c419c3296ccb72748037e6b38c64dcfa7e232a0fcd",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-graphics-dirty-rows-v2/psalmody-ready64/working.img.zst",
+        "-o",
+        "build/native-graphics-dirty-rows-v2/psalmody-ready64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-graphics-dirty-rows-v2/user8/working.img",
+      "archive": "build/native-graphics-dirty-rows-v2/user8/working.img.zst",
+      "sha256": "ff302eadd70f95395cbf6b20826318672406703526f45681d405ba852a0e1f32",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-graphics-dirty-rows-v2/user8/working.img.zst",
+        "-o",
+        "build/native-graphics-dirty-rows-v2/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/native-implicit-f64-helper-v1/native64/working.img",
+      "archive": "build/native-implicit-f64-helper-v1/native64/working.img.zst",
+      "sha256": "379761babb0f57d4863796e15db9d1200fc16585fd122ddaaf4564c11e517c72",
+      "size": 67108864,
+      "reclaimed_bytes": 53395456,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-implicit-f64-helper-v1/native64/working.img.zst",
+        "-o",
+        "build/native-implicit-f64-helper-v1/native64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 15590092800
+  "reclaimed_bytes": 16564445184
 }

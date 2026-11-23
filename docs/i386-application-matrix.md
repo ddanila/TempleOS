@@ -2290,3 +2290,16 @@ Native returns to fresh arithmetic. The absolute velocities vary
 with the guest simulation timing. The native diagnostic still
 substitutes Sqr for power. See
 `build/native-geometry-source-v1/X-Caliber-shared-recoil-turn/comparison.json`.
+
+The power probe now captures the original x87 product at its
+round-toward-zero binary64 store. For the dynamic base 3 and
+literal exponent 2, that store produces 40095C01A39FBD68. Native
+Log2 and multiplication produce 40095C01A39FBD69. Replaying the four
+original stored products through the native reconstruction reproduces
+all four original outputs. The full software calculation still
+differs on the square. The prototype with direct exponent scaling
+matches ten additional signed-base, zero, overflow and underflow
+cases. Compiler lowering and broader rounding parity remain open.
+See `build/i386-power-reduction-v1/original-trace/result.json`,
+`build/i386-power-reduction-v1/native-reduced-trace/result.json`
+and `build/i386-power-reduction-v1/native-range/result.json`.

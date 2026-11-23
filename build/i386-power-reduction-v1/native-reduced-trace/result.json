@@ -1,0 +1,19 @@
+{
+  "result": "fail",
+  "reference_fixture_sha256": "6667b1f34d6cebb5ab90d22d34a5a35540c217334a8486571134735b9b02cea7",
+  "fixture_sha256": "4c4e8c79a8f257225bc9cf33fdf22f90049e0c48b4de00f8257b9785c96dfa33",
+  "input_sha256": "b89e2239e6b63648be100811597c1209c019f58dd8a9bd864c8b53160361e864",
+  "values": [
+    "4022000000000001",
+    "4020000000000000",
+    "4007FFFFFFFFFFFF",
+    "3FD0000000000000"
+  ],
+  "native_reduced": [
+    "40095C01A39FBD69",
+    "4008000000000000",
+    "3FF95C01A39FBD68",
+    "C000000000000000"
+  ],
+  "error": "Power values differ from the pinned original"
+}

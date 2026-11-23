@@ -22904,6 +22904,13 @@
           "result": "fail",
           "evidence": "build/i386-power-operator-v1/native64/result.json",
           "scope": "The native compiler rejects the power fixture before evaluation."
+        },
+        {
+          "target": "native-holyc-power-reduction-prototype",
+          "command": "python3 build/i386-power-operator-v1/run.py --disk DISK --reduction-candidate --out OUT",
+          "result": "fail",
+          "evidence": "build/i386-power-reduction-v1/native-reduced-trace/result.json",
+          "scope": "Three basic results match. The square diverges at the logarithmic reduction and output. Replaying the measured original reductions reproduces all four outputs."
         }
       ]
     },

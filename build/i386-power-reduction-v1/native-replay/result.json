@@ -1,0 +1,12 @@
+{
+  "result": "pass",
+  "reference_fixture_sha256": "6667b1f34d6cebb5ab90d22d34a5a35540c217334a8486571134735b9b02cea7",
+  "fixture_sha256": "075521de58d807cc4b08159922a5cea2162cf77567a8e5bcabf63601f5000dc2",
+  "input_sha256": "b89e2239e6b63648be100811597c1209c019f58dd8a9bd864c8b53160361e864",
+  "values": [
+    "4021FFFFFFFFFFFF",
+    "4020000000000000",
+    "4007FFFFFFFFFFFF",
+    "3FD0000000000000"
+  ]
+}
