@@ -10370,9 +10370,35 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Load the original application, dismiss its instructions, jump with J, restart with Enter, then exit with Escape and verify caller state restoration."
+      },
+      "oracle": {
+        "tool": "build/keepaway-play-v1/run.py",
+        "checks": [
+          "Instructions dialog",
+          "live animation task",
+          "positive jump velocity",
+          "new game deadline and cleared score",
+          "restored caller tasks, draw callback and menu",
+          "visible yellow arena with red border"
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-launch-jump-restart-exit",
+          "result": "pass",
+          "evidence": "build/keepaway-play-v1/original/result.json",
+          "scope": "Original instructions, keyboard jump, restart, exit and caller restoration."
+        },
+        {
+          "target": "native-integrated-gameplay-raster",
+          "result": "fail",
+          "evidence": "build/keepaway-play-v1/gameplay-raster.json",
+          "gap": "Input and caller-state checks pass after explicit library loading. The Window Manager reports OutMem and the arena is absent."
+        }
+      ]
     },
     {
       "path": "Apps/KeepAway/Load.HC",
@@ -11208,6 +11234,13 @@
       },
       "tests": [
         {
+          "target": "native-integrated-keyboard-punch-cold-reboot",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-graphics-registry-integration/timeclock-keyboard64/result.json",
+          "scope": "Four physical PS/2 punch records, multiline descriptions, cancellation and byte-identical cold reopen on the integrated 64 MiB image."
+        },
+        {
           "target": "original-reference",
           "command": "python3 tools/test-i386-timeclock-reference.py --out OUT",
           "result": "pass",
@@ -11356,6 +11389,13 @@
         "report_reboot": "docs/i386-timeclock-native.md: compare exact original typed-record and DolDoc report bytes across cold reboot; a separately scoped historical 64 MiB run checks report VGA cells with WinMgr suspended. Full desktop and application qualification remain open."
       },
       "tests": [
+        {
+          "target": "native-integrated-keyboard-punch-cold-reboot",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-graphics-registry-integration/timeclock-keyboard64/result.json",
+          "scope": "Four physical PS/2 punch records, multiline descriptions, cancellation and byte-identical cold reopen on the integrated 64 MiB image."
+        },
         {
           "target": "original-reference",
           "command": "python3 tools/test-i386-timeclock-reference.py --out OUT",
@@ -11506,6 +11546,13 @@
         "report_reboot": "docs/i386-timeclock-native.md: compare exact original typed-record and DolDoc report bytes across cold reboot; a separately scoped historical 64 MiB run checks report VGA cells with WinMgr suspended. Full desktop and application qualification remain open."
       },
       "tests": [
+        {
+          "target": "native-integrated-keyboard-punch-cold-reboot",
+          "command": "python3 tools/test-i386-timeclock-keyboard.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-graphics-registry-integration/timeclock-keyboard64/result.json",
+          "scope": "Four physical PS/2 punch records, multiline descriptions, cancellation and byte-identical cold reopen on the integrated 64 MiB image."
+        },
         {
           "target": "native-managed-report-and-cold-reboot-current",
           "result": "pass",

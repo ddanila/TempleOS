@@ -929,3 +929,22 @@ files match the original and fresh arithmetic executes afterward. The
 `keepaway-libraries64` receipt records this 64 MiB KVM session. Normal startup
 still requires library integration for this launch path, and gameplay remains
 open.
+
+The integrated image passes the unchanged TimeClock physical keyboard run.
+Four punch records encode the original multiline, accepted, and cancelled
+descriptions. The cold boot reads them back byte for byte. The receipt is
+in `build/i386-graphics-registry-integration/timeclock-keyboard64/result.json`.
+
+KeepAway now has an original launch, jump, restart and exit oracle. With
+the explicit libraries, the 64 MiB integrated image reproduces the state
+transitions and restores the caller. Its render fails. The native frame has
+zero arena-yellow pixels, compared with 291,658 on the original. The Window
+Manager reports OutMem after a 536,461,778-byte allocation request.
+See `build/keepaway-play-v1` for the fixture, captures and separate gameplay
+render check. Gameplay qualification remains open.
+
+The compiled KeepAway frame table matches the original on all 30 entries.
+Each selected sprite reports a length of 4,042 bytes, and every 32-byte
+prefix hash matches. This comparison is in `build/keepaway-sprites-v1`.
+The live draw path still needs diagnosis, including which frame data reaches
+interpolation when the allocation fails.

@@ -1,0 +1,223 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/keepaway-sprites-v1/run.py": "127d231b7bafbe4aca3ec5cad0eb94ec5e43fa0601298b35dcc382d57a0cf8ab",
+    "/home/ddanila/fun/TempleOS/build/keepaway-sprites-v1/Probe.HC": "a361e89c1367c39fddb9f2d70fb2cd36659086c526d4f7c29ee79055cb2a1ca2",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/i386-graphics-registry-integration/native-v2/kernel.img": "905744d6cfcfae6dac2cd81dfc08009bdd1352ff02c62c558ff0cb47af165bfc"
+  },
+  "scope": "Compiled KeepAway frame-table sprite sizes and 32-byte prefixes",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "905744d6cfcfae6dac2cd81dfc08009bdd1352ff02c62c558ff0cb47af165bfc",
+    "image_sha256": "e5950aa459f452ff16687ad40e857169db58e070821144e2e0b6b57d01650126",
+    "boot_area_sha256": "bb893582cccb23231d413e6a0fca83bd83379c0d5cdcdbdb733920cf79b949aa",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96133,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/KeepAwayProbe.HC": "a361e89c1367c39fddb9f2d70fb2cd36659086c526d4f7c29ee79055cb2a1ca2"
+    },
+    "added_attributes": {
+      "/KeepAwayProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "sprite_sizes": [
+    [
+      0,
+      0,
+      4042
+    ],
+    [
+      0,
+      1,
+      4042
+    ],
+    [
+      1,
+      0,
+      4042
+    ],
+    [
+      1,
+      1,
+      4042
+    ],
+    [
+      2,
+      0,
+      4042
+    ],
+    [
+      2,
+      1,
+      4042
+    ],
+    [
+      3,
+      0,
+      4042
+    ],
+    [
+      3,
+      1,
+      4042
+    ],
+    [
+      4,
+      0,
+      4042
+    ],
+    [
+      4,
+      1,
+      4042
+    ],
+    [
+      5,
+      0,
+      4042
+    ],
+    [
+      5,
+      1,
+      4042
+    ],
+    [
+      6,
+      0,
+      4042
+    ],
+    [
+      6,
+      1,
+      4042
+    ],
+    [
+      7,
+      0,
+      4042
+    ],
+    [
+      7,
+      1,
+      4042
+    ],
+    [
+      8,
+      0,
+      4042
+    ],
+    [
+      8,
+      1,
+      4042
+    ],
+    [
+      9,
+      0,
+      4042
+    ],
+    [
+      9,
+      1,
+      4042
+    ],
+    [
+      10,
+      0,
+      4042
+    ],
+    [
+      10,
+      1,
+      4042
+    ],
+    [
+      11,
+      0,
+      4042
+    ],
+    [
+      11,
+      1,
+      4042
+    ],
+    [
+      12,
+      0,
+      4042
+    ],
+    [
+      12,
+      1,
+      4042
+    ],
+    [
+      13,
+      0,
+      4042
+    ],
+    [
+      13,
+      1,
+      4042
+    ],
+    [
+      14,
+      0,
+      4042
+    ],
+    [
+      14,
+      1,
+      4042
+    ]
+  ],
+  "sprite_prefix_sha256": {
+    "frame-00-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-00-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-01-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-01-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-02-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-02-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-03-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-03-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-04-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-04-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-05-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-05-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-06-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-06-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-07-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-07-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-08-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-08-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-09-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-09-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-10-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-10-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-11-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-11-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-12-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-12-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-13-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-13-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-14-0.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b",
+    "frame-14-1.bin": "d2b3329b1f24d3a5d10e0724892eda1ba3a9c86677974df15e51652a4242446b"
+  },
+  "inputs_unchanged": true
+}
