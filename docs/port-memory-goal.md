@@ -2823,3 +2823,14 @@ at the same fully occupied 8 KiB public backing region in both images,
 while its lower boundary moves 28,672 bytes upward with the installed
 modules. Neither capture has an empty unheld backing region. Normal
 backing trim therefore has no empty region to release at this point.
+
+Generation one passed its self-host build and boot. The host instruction
+auditor initially rejected its valid version-4 CompilerRuntime and
+ConsoleRuntime headers. It now recognizes named relocations and checks
+their zero storage, bounded strings, nonoverlapping sites and placement
+inside data ranges. Three mutations of the saved CompilerRuntime were
+rejected. The [corrected audit](../build/i386-console-null-slots-v1/gen1-audit-v4/result.json)
+passes on all 467,576 linked bytes. The updated generation runner
+verified the saved first image against the build and installation
+receipts, reran its source and instruction audits, and entered the second
+retained-module build on the same frozen source archive.

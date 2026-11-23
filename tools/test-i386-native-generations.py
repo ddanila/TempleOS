@@ -30,6 +30,8 @@ def main():
     parser.add_argument('--retained-build', type=Path, required=True)
     parser.add_argument('--retained-install', type=Path,
                         help='Reuse an already passing all-nine installation directory for generation one, after verifying its provenance')
+    parser.add_argument('--first-selfhost', type=Path,
+                        help='Reuse a passing generation-one self-host image and rerun its audits')
     parser.add_argument('--stage-listing', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
@@ -77,6 +79,8 @@ def main():
               (retained / 'result.json', retained / 'source.img', listing, Path(__file__).resolve())}
     reused_install = args.retained_install.resolve() if args.retained_install else None
     reused_result = None
+    reused_first = args.first_selfhost.resolve() if args.first_selfhost else None
+    first_result = None
     if reused_install:
         install_result = reused_install / 'result.json'
         candidate = reused_install / 'candidate.img'
@@ -88,6 +92,28 @@ def main():
         verify = runpy.run_path(str(repo / 'tools/test-i386-selfhost-install.py'))['verify_retained_provenance']
         verify(ready, reused_result, sha(candidate), payloads)
         inputs.update({str(p): sha(p) for p in (install_result, candidate)})
+    if reused_first:
+        if not reused_install:
+            parser.error('--first-selfhost requires --retained-install')
+        first_receipt = reused_first / 'result.json'
+        first_target = reused_first / 'target.img'
+        first_result = json.loads(first_receipt.read_text())
+        expected_first = {
+            'result': 'pass',
+            'cpu': args.cpu,
+            'build_ram_mib': args.flat_build_ram_mib,
+            'managed_pointer': args.managed_pointer,
+            'welcome': args.welcome,
+            'source_disk_sha256': inputs[str(candidate)],
+            'target_disk_sha256': sha(first_target),
+            'retained_evidence': {
+                'build_result_sha256': inputs[str(retained / 'result.json')],
+                'install_result_sha256': inputs[str(install_result)],
+            },
+        }
+        if any(first_result.get(key) != value for key, value in expected_first.items()):
+            parser.error('First self-host image or receipt differs from the requested provenance')
+        inputs.update({str(p): sha(p) for p in (first_receipt, first_target)})
     sources = source_identity(repo)
     out.mkdir(parents=True)
     report = {'result': 'running', 'stage': 'preflight', 'repository': str(repo),
@@ -141,12 +167,20 @@ def main():
             install = out / (prefix + '-install')
             run(install.name, 'test-i386-retained-install.py', '--source', built / 'source.img',
                 '--out', install, *runtime)
-        native = out / (prefix + '-selfhost')
-        result = run(native.name, 'test-i386-selfhost-install.py', '--disk', install / 'candidate.img',
-            '--out', native, '--retained-build-result', built / 'result.json',
-            '--retained-install-result', install / 'result.json',
-            '--build-ram-mib', args.flat_build_ram_mib,
-            '--command-timeout', args.build_command_timeout, *runtime)
+        if number == 1 and reused_first:
+            unchanged()
+            native, result = reused_first, first_result
+            report['stages']['gen1-selfhost'] = {
+                'reused': True, 'directory': str(native),
+                'result_sha256': inputs[str(native / 'result.json')], 'result': result}
+            save()
+        else:
+            native = out / (prefix + '-selfhost')
+            result = run(native.name, 'test-i386-selfhost-install.py', '--disk', install / 'candidate.img',
+                '--out', native, '--retained-build-result', built / 'result.json',
+                '--retained-install-result', install / 'result.json',
+                '--build-ram-mib', args.flat_build_ram_mib,
+                '--command-timeout', args.build_command_timeout, *runtime)
         if result.get('retained_origin') != 'guest-built supplied inputs':
             raise ValueError('Native generation used unqualified retained providers')
         if (set(result.get('guest_built_retained_modules', [])) != expected or

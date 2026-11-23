@@ -1,0 +1,5 @@
+{
+  "nonzero_pointer_payload": "Invalid CompilerRuntime stored pointer",
+  "name_outside_string_pool": "Invalid CompilerRuntime named stored pointer",
+  "overlapping_sites": "Invalid CompilerRuntime stored-pointer data range"
+}

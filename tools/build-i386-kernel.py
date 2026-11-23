@@ -609,15 +609,17 @@ def audit(exports, out, guest_compiler_template=False):
     for index, name in enumerate(DISK_MODULES):
         module = (exports/f'{name}.t32m').read_bytes()
         magic, version, cpu, pointer, abi, total, size, count, records, strings = struct.unpack_from('<IHBB6I', module)
-        if version not in (2,3) or (magic,cpu,pointer,abi,total,records,strings) != (
+        if version not in (2,3,4) or (magic,cpu,pointer,abi,total,records,strings) != (
                 0x4D323354,3,4,1,len(module),32+size,32+size+16*count):
             raise ValueError(f'Invalid {name} module header')
+        if strings>total:
+            raise ValueError(f'Truncated {name} module records')
         resident = index < len(MODULES)
         code = image[base:base+size] if resident else module[32:32+size]
         if len(code)!=size:
             raise ValueError('Truncated kernel')
         if index==0 or not resident:
-            starts, data = [], []
+            starts, data, pointers = [], [], []
             template_markers = {}
             template_data = []
             for i in range(count):
@@ -633,11 +635,30 @@ def audit(exports, out, guest_compiler_template=False):
                 elif kind==3 and name == 'CompilerRuntime':
                     symbol = module[name_offset:name_offset+length].decode('ascii')
                     if symbol == 'I386DivTemplate': template_data.append(offset)
-                elif kind==6:
-                    if version!=3 or length or offset>size-4 or name_offset>=size or struct.unpack_from('<I',module,32+offset)[0]:
+                elif kind in (6,7):
+                    if offset>size-4 or struct.unpack_from('<I',module,32+offset)[0]:
                         raise ValueError(f'Invalid {name} stored pointer')
-                    if resident and struct.unpack_from('<I',code,offset)[0]!=0x100000+base+name_offset:
-                        raise ValueError('Flat kernel pointer uses the wrong load address')
+                    if kind==6:
+                        if version not in (3,4) or length or name_offset>=size:
+                            raise ValueError(f'Invalid {name} local stored pointer')
+                        if resident and struct.unpack_from('<I',code,offset)[0]!=0x100000+base+name_offset:
+                            raise ValueError('Flat kernel pointer uses the wrong load address')
+                    elif (version!=4 or not 1<=length<=255 or
+                          not strings<=name_offset<total-length or
+                          module[name_offset+length] or b'\0' in module[name_offset:name_offset+length]):
+                        raise ValueError(f'Invalid {name} named stored pointer')
+                    elif resident:
+                        raise ValueError(f'Unexpected {name} named pointer in the flat kernel')
+                    pointers.append((offset,kind,name_offset))
+            if version==4 and not any(kind==7 for _,kind,_ in pointers):
+                raise ValueError(f'Missing {name} named stored pointer')
+            end_of_previous=0
+            for offset,kind,target in sorted(pointers):
+                if (offset<end_of_previous or
+                    not any(begin<=offset and offset+4<=begin+length for begin,length in data) or
+                    kind==6 and not any(begin<=target<begin+length for begin,length in data)):
+                    raise ValueError(f'Invalid {name} stored-pointer data range')
+                end_of_previous=offset+4
             template = None
             if name == 'CompilerRuntime':
                 if guest_compiler_template:
