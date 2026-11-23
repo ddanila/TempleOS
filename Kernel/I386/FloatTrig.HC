@@ -26,7 +26,8 @@ F64 I386TrigKernelCos(F64 x,F64 y)
   if(ix<0x3E400000)return 1.0;
   z=x*x;r=z*(c1+z*(c2+z*(c3+z*(c4+z*(c5+z*c6)))));
   if(ix<0x3FD33333)return 1.0-(0.5*z-(z*r-x*y));
-  if(ix>0x3FE90000)qx=0.28125;
+  //9/32 exactly, independent of bootstrap decimal parsing.
+  if(ix>0x3FE90000)qx=0x3FD2000000000000(F64);
   else {bits=(ix-0x00200000)<<32;qx=bits(F64);}
   hz=0.5*z-qx;a=1.0-qx;
   return a-(hz-(z*r-x*y));

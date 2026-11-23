@@ -1,0 +1,30 @@
+{
+  "disk_sha256": "23127dff3a7e078a3d0137fab248173362999e05416c43c89255ec76cdff6420",
+  "base_revision": "82495c05b3bc49dd67cee788b66b2464495cfbb8",
+  "source_sha256": {
+    "Kernel/I386/FloatTrig.HC": "20dacb970d1e9b3c202dc30e424e1ae1fd31603c233365aef0bb9b56e428c0ff"
+  },
+  "exact_matches": {
+    "cosine/guest/BallVertexMath.bin": {
+      "reference": "build/grmodels-ball-reference-v1/cosine-retained/guest/BallVertexMath.bin",
+      "bytes": 96,
+      "sha256": "9ea74c6f2e5fcfb832b75b8cc0acae56e8416ce4fac5a0b3a986d919ca5039ff"
+    },
+    "ball-trace/guest/BallVertexCalls.bin": {
+      "reference": "build/grmodels-ball-reference-v1/trace-original-fixed/guest/BallVertexCalls.bin",
+      "bytes": 6144,
+      "sha256": "4df526791dc55b2c92f54c7b7a464398dd5e71fad99bfcefa507385a5ebd222f"
+    },
+    "ball-trace/guest/BallInteractive.bin": {
+      "reference": "build/grmodels-ball-reference-v1/trace-original-fixed/guest/BallInteractive.bin",
+      "bytes": 2766,
+      "sha256": "967ad44894167ae85c198f0a3929c01391a217494638a4bd2c95d63db1a6967b"
+    },
+    "ball-mesh/guest/BallInteractive.bin": {
+      "reference": "build/grmodels-ball-reference-v1/interactive-original/guest/BallInteractive.bin",
+      "bytes": 2766,
+      "sha256": "967ad44894167ae85c198f0a3929c01391a217494638a4bd2c95d63db1a6967b"
+    }
+  },
+  "user8": "pass"
+}

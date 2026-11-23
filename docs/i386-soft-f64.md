@@ -185,3 +185,17 @@ Seven completed probe disk images were compressed in place. Each archive
 was decompressed and checked against the original SHA-256 before the raw
 image was removed. The [cleanup manifest](../build/i386-wide-product-production-v2/cleanup.json)
 records the restoration paths and 373,821,440 allocated bytes recovered.
+
+## Cross-built cosine and GrModels mesh
+
+The cosine kernel now encodes 9/32 with its exact binary64 bits. On the
+rebuilt full image, all 12 cosine probe samples match the retained native
+reference. The unchanged 8 MiB User startup check passes.
+
+The GrModels harness ran the bundled loader and BallGen with the geometry
+and lighting chooser prerequisites supplied by the harness. The 256 vertex
+calls and both the traced and uninstrumented meshes match the original
+byte-for-byte. The mesh contains 59 vertices and 128 red triangles.
+The [qualification receipt](../build/i386-wide-product-production-v4/qualification.json)
+records the image and comparison hashes. Loading the prerequisites through
+the normal application entry still requires qualification.

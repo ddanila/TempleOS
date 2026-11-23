@@ -1,0 +1,66 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "23127dff3a7e078a3d0137fab248173362999e05416c43c89255ec76cdff6420",
+    "image_sha256": "86b18bbe2251096466e86841bb8f63c3bb113e7dad18157b9ae50e8c5e75641f",
+    "boot_area_sha256": "a1b633e2cd40b6ae0f997f2362139bca4910bedeec947f035063574931dde743",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1929,
+      "owned_sectors": 96158,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96166,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/BallUI.HC": "a472d3be6a8d8aad95f06aaa707052fca634bc30f0e88cf2773a021e3c9dc0db",
+      "/LightingChooser.HC": "8a20753da001c7e8e21c557162d6ffb601d368442519e66c784ea18f7d53ab75",
+      "/PublicGeometrySource.HC": "c335b16c5bbcb6c6d122beae9c646d983e29b89240f4429f9856006dc1d5961e"
+    },
+    "added_attributes": {
+      "/BallUI.HC": 2048,
+      "/LightingChooser.HC": 2048,
+      "/PublicGeometrySource.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "machine": "pc",
+  "completed_commands": [
+    "#include \"C:/PublicGeometrySource.HC\"",
+    "#include \"C:/LightingChooser.HC\"",
+    "#include \"C:/Apps/GrModels/Load.HC\""
+  ],
+  "command": "#include \"C:/Apps/GrModels/Load.HC\"",
+  "fresh_result": {
+    "column": 0,
+    "row": 14,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "ball_mesh": {
+    "vertices": 59,
+    "triangles": 128,
+    "colors": [
+      4
+    ],
+    "mesh_sha256": "967ad44894167ae85c198f0a3929c01391a217494638a4bd2c95d63db1a6967b"
+  },
+  "after_ball": {
+    "column": 0,
+    "row": 14,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
