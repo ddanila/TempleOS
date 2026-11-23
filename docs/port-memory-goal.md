@@ -3040,3 +3040,12 @@ reached mask 255. The standalone task corpus returned 142 during
 scheduler preparation on both the candidate and the committed baseline,
 before exercising task allocation. The changed ConsoleRuntime and
 MemoryRuntime guest builds are underway to test the installed margin.
+
+The [frozen two-generation completion receipt](../build/i386-console-null-slots-v1/generations128-v4/completion-receipt.json)
+records all eleven completed stages for `6eefeedd`. The second flat
+image built in the guest and booted at 8 MiB. Both generations match
+across sixteen audited modules and the 467,576-byte flat image with
+the declared eight-byte build-date normalization. Each actual boot
+payload, checksum and padding passed separately. This is frozen
+reproduction evidence. The current source and full C1–C5 compatibility
+suite still require qualification.
