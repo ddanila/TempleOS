@@ -1301,7 +1301,63 @@
         "-o",
         "build/i386-wide-product-lowering-v1/heap-primary-minimum/working.img"
       ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/small-holes-user8/working.img",
+      "archive": "build/i386-wide-product-lowering-v1/small-holes-user8/working.img.zst",
+      "sha256": "bff6f1163e0373fc9c8215151ee5c9644e53df007c85bff43509b698a2079919",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/small-holes-user8/working.img.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/small-holes-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/heap-small-holes/working.img",
+      "archive": "build/i386-wide-product-lowering-v1/heap-small-holes/working.img.zst",
+      "sha256": "bff6f1163e0373fc9c8215151ee5c9644e53df007c85bff43509b698a2079919",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/heap-small-holes/working.img.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/heap-small-holes/working.img"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/gen1-user8/working.img",
+      "archive": "build/span-production-v1/gen1-user8/working.img.zst",
+      "sha256": "1332cc9f6f40c6f4383c610c3c8f6b560cd6b49199bf631f4688d9872988ca7a",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/gen1-user8/working.img.zst",
+        "-o",
+        "build/span-production-v1/gen1-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/gen1-span64/working.img",
+      "archive": "build/span-production-v1/gen1-span64/working.img.zst",
+      "sha256": "d047a7bf1e4777a03fd0a3fad55330a1feee05e74f20982f87ec94625a9912f4",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/gen1-span64/working.img.zst",
+        "-o",
+        "build/span-production-v1/gen1-span64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 4622532608
+  "reclaimed_bytes": 4835909632
 }

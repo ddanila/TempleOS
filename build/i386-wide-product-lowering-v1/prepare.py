@@ -6,10 +6,16 @@ root = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
 parser.add_argument('--shared-multiply', action='store_true')
 parser.add_argument('--primary-minimum', action='store_true')
+parser.add_argument('--reuse-small-holes', action='store_true')
 args = parser.parse_args()
+if args.reuse_small_holes and not args.primary_minimum:
+    parser.error('--reuse-small-holes requires --primary-minimum')
 if args.primary_minimum and not args.shared_multiply:
     parser.error('--primary-minimum requires --shared-multiply')
-if args.primary_minimum:
+if args.reuse_small_holes:
+    attempt = root / 'cross-small-holes'
+    overlay = attempt / 'overlay'
+elif args.primary_minimum:
     attempt = root / 'cross-primary-minimum'
     overlay = attempt / 'overlay'
 elif args.shared_multiply:
@@ -113,6 +119,31 @@ if args.primary_minimum:
          """  if(pool->owned_count && (size==I386_NATIVE_BACKING_QUANTUM ||
       pool->fallback && source==pool->heap && size<I386_NATIVE_BACKING_QUANTUM))
     region=I386HeapAllocHigh(source,request);""")
+
+if args.reuse_small_holes:
+    edit(backing, '#include "/Kernel/I386/MemoryBackingConfig.HH"',
+         '#include "/Kernel/I386/MemoryBackingConfig.HH"\n#include "/Kernel/I386/HeapAllocateBlock.HC"')
+    edit(backing, 'Bool I386MemBackingGrow(CI386PublicPool *base_pool,I64 pages)',
+         """U8 *I386MemBackingAlloc(CI386Heap *heap,I64 request)
+{//Grow has validated both arenas and holds IRQ exclusion.
+  CI386HeapBlock *block,*best=0;
+  U32 offset=0,need=((request+7)&~7)+sizeof(CI386HeapBlock),limit=need*2;
+  while(offset<heap->size) {
+    block=heap->base+offset;
+    if(block->tag==I386_HEAP_FREE && block->span>=need && block->span<=limit) {
+      best=block;limit=block->span;
+    }
+    offset+=block->span;
+  }
+  if(best)return I386HeapAllocateBlock(heap,best,request,need,FALSE,TRUE);
+  return I386HeapAllocHigh(heap,request);
+}
+Bool I386MemBackingGrow(CI386PublicPool *base_pool,I64 pages)""")
+    edit(backing, '    region=I386HeapAllocHigh(source,request);',
+         """    if(pool->fallback && source==pool->heap)
+      region=I386MemBackingAlloc(source,request);
+    else
+      region=I386HeapAllocHigh(source,request);""")
 
 for name, source in sources.items():
     output = overlay / name

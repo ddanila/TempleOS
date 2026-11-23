@@ -9,16 +9,21 @@ parser.add_argument('base', type=Path)
 parser.add_argument('--shared-multiply', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 parser.add_argument('--primary-minimum', action='store_true')
+parser.add_argument('--reuse-small-holes', action='store_true')
 args = parser.parse_args()
 args.out.mkdir()
 root = Path(__file__).resolve().parent
 packer = runpy.run_path('tools/package-i386-native-image.py')
 snapshot, package = packer['snapshot'], packer['package']
 builder = runpy.run_path('tools/build-i386-kernel.py')
+if args.reuse_small_holes and not args.primary_minimum:
+    parser.error('--reuse-small-holes requires --primary-minimum')
 if args.primary_minimum and not args.shared_multiply:
     parser.error('--primary-minimum requires --shared-multiply')
 attempt = root / ('cross-shared-multiply' if args.shared_multiply else 'cross-explicit-branch')
-if args.primary_minimum:
+if args.reuse_small_holes:
+    attempt = root / 'cross-small-holes'
+elif args.primary_minimum:
     attempt = root / 'cross-primary-minimum'
 exports = attempt / 'exports'
 runtime = exports / 'CompilerRuntime.t32m'

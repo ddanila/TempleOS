@@ -1758,3 +1758,18 @@ bytes, but the largest contiguous block stays at 264,024 bytes.
 User creation still fails on the same 267,527-byte request. The
 extra free space does not solve the placement constraint. See
 `build/i386-wide-product-lowering-v1/heap-primary-minimum/result.json`.
+
+Reusing small primary-heap holes for late backing batches still
+fails the 8 MiB User workload. The largest contiguous payload fell
+to 236,368 bytes from 264,024 with minimum batches alone. This
+placement policy stays in the overlay. See
+`build/i386-wide-product-lowering-v1/heap-small-holes/result.json`.
+
+The Span generation-one self-hosted image passed the physical
+64 MiB Span check, including mass placement, simulation, pause,
+six soundtrack notes, speaker shutdown and return to the console.
+Its unchanged 8 MiB User fixture failed the same contiguous task
+allocation as the separate wide-product candidates. This independently
+records a resource regression on the rebuilt generation. See
+`build/span-production-v1/gen1-span64/result.json` and
+`build/span-production-v1/gen1-user8/result.json`.
