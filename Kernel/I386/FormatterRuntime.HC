@@ -19,7 +19,8 @@ import U0 i386_idle();
 #define SYS_IDLE_PT (&i386_idle)
 extern U8 *MStrPrint(U8 *fmt,...);
 extern U8 *StrPrint(U8 *dst,U8 *fmt,...);
-CFunSegCache native_fun_seg_cache[FUN_SEG_CACHE_SIZE];
+#define FUN_SEG_CACHE_SLOTS 64
+CFunSegCache native_fun_seg_cache[FUN_SEG_CACHE_SLOTS];
 #include "/Kernel/DebugGlobalsTypes.HH"
 CDbgGlbls dbg;
 I64 NativeJiffies()

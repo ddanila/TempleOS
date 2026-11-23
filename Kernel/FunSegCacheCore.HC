@@ -1,3 +1,7 @@
+#ifndef FUN_SEG_CACHE_SLOTS
+#define FUN_SEG_CACHE_SLOTS FUN_SEG_CACHE_SIZE
+#endif
+
 U0 FunSegCacheAdd(CHash *tmps,U8 *addr)
 {
   I64 i;
@@ -6,7 +10,7 @@ U0 FunSegCacheAdd(CHash *tmps,U8 *addr)
   if (tmps && tmps->type&HTT_FUN &&
 	(dbg_info=tmps(CHashFun *)->dbg_info)) {
     lock i=dbg.fun_seg_cache_index++;
-    tmpfsc=&dbg.fun_seg_cache[i&(FUN_SEG_CACHE_SIZE-1)];
+    tmpfsc=&dbg.fun_seg_cache[i&(FUN_SEG_CACHE_SLOTS-1)];
     tmpfsc->base=dbg_info->body[0];
     if (addr<tmpfsc->base)
       tmpfsc->base=addr;
@@ -30,7 +34,7 @@ U8 *FunSegCacheFind(U8 *addr,I64 *_offset)
     return "SYS_IDLE_PT";
   } else {
     timeout=tS+8.0;
-    for (i=0;i<FUN_SEG_CACHE_SIZE;i++,tmpfsc++)
+    for (i=0;i<FUN_SEG_CACHE_SLOTS;i++,tmpfsc++)
       if (tmpfsc->base<=addr<tmpfsc->limit &&
 	    tmpfsc->time_stamp>timeout) {
 	*_offset=addr-tmpfsc->base;
@@ -39,4 +43,3 @@ U8 *FunSegCacheFind(U8 *addr,I64 *_offset)
     return NULL;
   }
 }
-

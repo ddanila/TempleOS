@@ -1,0 +1,39 @@
+{
+  "package": {
+    "result": "pass",
+    "source_sha256": "3a48655b5950dfc187fe2f9cfe32d36e31fc1ba222825ce551eff9acaef4fed8",
+    "image_sha256": "2ef0c082bbb8615c9f4e61f085cd24126269faea7201ef2454c075b9b824cc98",
+    "boot_area_sha256": "b9e518feb87f61183043b754cb08d77aad5c3508f4ea1946fc06cd02a33b4511",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 96165,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96167,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/RectDebugMap.HC": "4a5fc3454f604a8ca713b6cf895841203084598eef92209a4fa6894445674e8f"
+    },
+    "added_attributes": {
+      "/RectDebugMap.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "fixture_sha256": "4a5fc3454f604a8ca713b6cf895841203084598eef92209a4fa6894445674e8f",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "result": "pass"
+}

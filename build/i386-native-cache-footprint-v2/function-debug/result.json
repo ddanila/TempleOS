@@ -1,0 +1,48 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-function-debug.py": "95099c8848f3f87de2c947a8c118a3ac9400622d04a52b765e6ae36c60cfca7f",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-function-debug/Contract.HC": "82f2cbb0ca2c4b00d2c32c168e42af90f4c67eded3eebb22231146b239fbe5b2",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "9c96e317209ea0dba1ab36e9168b47cf448794cafe33285ee6dfb0bba233e101",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "012006ef047331de91aa9a3788751abeee3ff66f655319486185269ae4b30a40",
+    "/home/ddanila/fun/TempleOS/build/i386-native-cache-footprint-v2/full/kernel.img": "3a48655b5950dfc187fe2f9cfe32d36e31fc1ba222825ce551eff9acaef4fed8"
+  },
+  "explicit_shared_types": false,
+  "scope": "Two actual return PCs mapped to their source lines, and extern completion identity/debug publication. Not TaskCaller or whole Psalmody qualification.",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "3a48655b5950dfc187fe2f9cfe32d36e31fc1ba222825ce551eff9acaef4fed8",
+    "image_sha256": "198deaee0913a250772f3a070bc4fb34f30561426398497329066c0e55407485",
+    "boot_area_sha256": "b9e518feb87f61183043b754cb08d77aad5c3508f4ea1946fc06cd02a33b4511",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 96165,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96169,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/FunctionDebug.HC": "82f2cbb0ca2c4b00d2c32c168e42af90f4c67eded3eebb22231146b239fbe5b2"
+    },
+    "added_attributes": {
+      "/Probe/FunctionDebug.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "cases_checked": 1,
+  "table_sha256": {
+    "debug.bin": "4bceb969a21579c6bc5a0fcbb54aa78d88778821db0846e1b49a71df6ed1f0f0"
+  },
+  "inputs_unchanged": true
+}

@@ -1,0 +1,127 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "3a48655b5950dfc187fe2f9cfe32d36e31fc1ba222825ce551eff9acaef4fed8",
+    "image_sha256": "5517ad204b3c0da515a584e3ca6bc7bbbf8628ea9f9c4f2839d5cba9ae7a3046",
+    "boot_area_sha256": "b9e518feb87f61183043b754cb08d77aad5c3508f4ea1946fc06cd02a33b4511",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 96165,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96168,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/UserStartup.HC": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2"
+    },
+    "added_attributes": {
+      "/UserStartup.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "snapshots": {
+    "before-user": {
+      "capacity": 6748672,
+      "used": 6264304,
+      "largest_free": 292728,
+      "allocations": 18487,
+      "failure_callers": [],
+      "stopped_callers": [
+        {
+          "frame": 7417228,
+          "return_address": 2938839,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryJobsHndlr",
+              "offset": 22
+            }
+          ]
+        },
+        {
+          "frame": 7417288,
+          "return_address": 2939962,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryScanTimed",
+              "offset": 345
+            }
+          ]
+        },
+        {
+          "frame": 7417380,
+          "return_address": 4944259,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeReadKey",
+              "offset": 634
+            }
+          ]
+        },
+        {
+          "frame": 7417472,
+          "return_address": 4967887,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeTerminalInputKey",
+              "offset": 1390
+            }
+          ]
+        },
+        {
+          "frame": 7417540,
+          "return_address": 4749019,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeTerminalInput",
+              "offset": 562
+            }
+          ]
+        },
+        {
+          "frame": 7417728,
+          "return_address": 4963759,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeUserTaskCont",
+              "offset": 430
+            }
+          ]
+        },
+        {
+          "frame": 7417756,
+          "return_address": 4747928,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:ConsoleKeys",
+              "offset": 1511
+            }
+          ]
+        },
+        {
+          "frame": 7417792,
+          "return_address": 2912664,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryTaskEntry",
+              "offset": 343
+            }
+          ]
+        },
+        {
+          "frame": 7417836,
+          "return_address": 2919096,
+          "symbols": []
+        }
+      ],
+      "memory_sha256": "a507e844b3a35b55281ec4f1f9ef25db5f6839f8d9c93f9394e0cdad95033be9"
+    }
+  },
+  "fixture_sha256": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2"
+}

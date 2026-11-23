@@ -1,0 +1,12 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-source-debug-map.py": "00a46259ec20ff0564331287e6613523171ee498ee5a573212841e35db82302c",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-source-links/DebugMap.HC": "4a5fc3454f604a8ca713b6cf895841203084598eef92209a4fa6894445674e8f",
+    "/home/ddanila/fun/TempleOS/build/i386-native-cache-footprint-v2/full/kernel.img": "3a48655b5950dfc187fe2f9cfe32d36e31fc1ba222825ce551eff9acaef4fed8",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "012006ef047331de91aa9a3788751abeee3ff66f655319486185269ae4b30a40"
+  },
+  "scope": "Actual compiled function with controlled sparse debug map: first line, interpolation at interior address, exact filename/link, all-zero map and caller heap recovery; not compiler-generated maps or cross-task ownership",
+  "error": "Console check timed out; inspect /home/ddanila/fun/TempleOS/build/i386-native-cache-footprint-v2/debug-map/behavior"
+}

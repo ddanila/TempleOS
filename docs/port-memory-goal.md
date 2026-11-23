@@ -2834,3 +2834,16 @@ passes on all 467,576 linked bytes. The updated generation runner
 verified the saved first image against the build and installation
 receipts, reran its source and instruction audits, and entered the second
 retained-module build on the same frozen source archive.
+
+The native console now reserves 64 function-segment cache entries. The
+shared cache code uses the same configured slot count for wrapping and
+searching, and x86-64 keeps its 256-entry default. The cross-built
+console payload shrank by 12,288 bytes. Before User starts, the largest
+cross-built free block grew from 280,440 to 292,728 bytes. The 8 MiB
+User workload and native debugger checks passed. The TCG source-map
+driver timed out at the initial console check. The same six-point map
+contract completed at 8 MiB KVM with the identical fixture delivered
+as a disk file. The
+[cache qualification](../build/i386-native-cache-footprint-v2/qualification.json)
+pins the source and image. The guest-built console and installed User
+startup remain pending.

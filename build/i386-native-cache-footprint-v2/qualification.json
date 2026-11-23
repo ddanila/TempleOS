@@ -1,0 +1,20 @@
+{
+  "disk_sha256": "3a48655b5950dfc187fe2f9cfe32d36e31fc1ba222825ce551eff9acaef4fed8",
+  "base_revision": "cfb35b7b2344703b62cc8206935c5633d0836f66",
+  "source_sha256": {
+    "Kernel/FunSegCacheCore.HC": "d0fa748a7303926394925a765d7fdbe334eff764609ce19a525dbb598cbf61bf",
+    "Kernel/I386/FormatterRuntime.HC": "8c9f414044e03b37640511ef2565e5edb8b78e6cfab6b31c6f5b55185b59bbe9"
+  },
+  "passed_receipts": {
+    "user8/result.json": "4e9e0bdc3f9e4b929c08557b82fa37835189a5bd800aa2b7e033aaf09497f7e6",
+    "user8-profile/result.json": "003bb2a2f1dee99747a401cb4a4213fe2e8447696961656b51289bb1e46d9906",
+    "previous-user8-profile/result.json": "98eda5de517a3e2a05d7041e138107ff5c612fb9b9faa8f7d1d2e1d43647c7c4",
+    "debug-map-kvm/result.json": "ce743545c44a74fba373a5525a79fa38c692ff9e2da7a57ddb88af10a3545c3b",
+    "function-debug/result.json": "de656a5fc700ba2d6f94ab0a631e5ada500d8f5b54829cc24a5e48433b8223ce"
+  },
+  "cache_before_bytes": 16384,
+  "cache_after_bytes": 4096,
+  "console_payload_difference_bytes": 12288,
+  "prior_cross_largest_free": 280440,
+  "new_cross_largest_free": 292728
+}
