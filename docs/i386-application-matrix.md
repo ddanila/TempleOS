@@ -1301,3 +1301,17 @@ its full initializer. The combined image passes the instruction audit.
 This candidate loads settings, controls, and autocomplete on demand and
 binds ODE through the resident module. The cold interactive test is
 running. See `build/native-strut-entry-v1`.
+
+The cold Strut loader candidate passes the interactive workflow. The
+first guest command includes the app's Load.HC. The fixture then starts
+Strut, places two masses and a spring, enters play, observes the native
+window worker advance simulation time, and exits with Escape. Fresh
+arithmetic renders. The app acquires its dependencies on demand and
+uses resident ODE bindings. See
+`build/native-strut-entry-v1/strut64/result.json`.
+
+The native Span persistence comparison reaches the original loader and
+stops at the missing `PopUpFileName` service in SpanNew.HC. The trial
+compiles the serial ODE variant and the original button library before encountering
+this gap. The file comparison remains open. See
+`build/span-reference-persistence-v1/native64/result.json`.

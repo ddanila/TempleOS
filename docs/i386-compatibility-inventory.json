@@ -11106,6 +11106,13 @@
           "result": "pass",
           "evidence": "build/span-reference-persistence-v1/ram-reference/result.json",
           "scope": "Original serializer with two masses and one steel spring, using a pinned original guest RAM disk. Interactive file dialogs and reboot persistence remain open."
+        },
+        {
+          "target": "native-span-bridge-persistence",
+          "command": "python3 build/span-reference-persistence-v1/run_native.py IMAGE --out OUT",
+          "result": "fail",
+          "evidence": "build/span-reference-persistence-v1/native64/result.json",
+          "scope": "Compilation stops at the missing PopUpFileName service in SpanNew.HC before the comparison can run."
         }
       ]
     },
@@ -11271,6 +11278,13 @@
           "result": "pass",
           "evidence": "build/native-window-ode-v1/strut64/result.json",
           "scope": "Combined scheduler and window-worker overlay. The unchanged app advances simulation automatically after explicit dependency loads, and Escape returns to fresh console arithmetic."
+        },
+        {
+          "target": "native-strut-cold-loader-candidate",
+          "command": "python3 build/native-strut-entry-v1/run.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/native-strut-entry-v1/strut64/result.json",
+          "scope": "Cold direct Load.HC include, resident ODE APIs, physical spring placement, automatic simulation, Escape and fresh arithmetic. The loader and runtime changes are still in an overlay."
         }
       ]
     },
