@@ -404,3 +404,9 @@ first two FileRead and ACSingleFileAdd pairs have returned. This establishes
 forward progress inside traversal rather than a wait for the directory
 listing to return. The markers do not measure time per call. The trace and
 checkpoint are under `build/resident-opt-desktop64-ac-files`.
+
+The HomeSys-bracketed 64 MiB run is terminal PASS. ACInit returned before
+the desktop completion marker, and the full geometry, fresh input and
+physical bootstrap retirement checks passed. Startup took 291.05 seconds
+with the two markers. The terminal receipt is in
+`build/resident-opt-desktop64-trace/run/result.json`.
