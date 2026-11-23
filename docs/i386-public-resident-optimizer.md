@@ -375,3 +375,11 @@ The audited image completes native startup at 8 MiB, then USCheck fails
 the same 267,527-byte task request. The fallback largest free payload is
 2,768 bytes. The experiment and pinned receipts are under
 `build/compiler-backing-exact-v1`. All five inventory guard tests also pass.
+
+Increasing the initial public backing reserve from 128 to 192 KiB on the
+high-header candidate reduces the fallback allocation count from eight to
+seven at the failing task request. The cross-build and image audit pass.
+Native startup completes at 8 MiB and USCheck still fails the 267,527-byte
+task request. The fallback largest free payload is 2,696 bytes. The
+experimental reserve and pinned evidence are under
+`build/compiler-backing-reserve-v1`.
