@@ -2545,3 +2545,16 @@ differ by one ULP. The exact same `180.0` literal and the standalone stored
 resulting trig values straddle the Q32 half-scale boundary. The
 [angle comparison](../build/grmodels-menu-workflows-v1/angle-comparison.json)
 links the numeric and emitted-code captures.
+
+The [wide π arithmetic prototype](../build/i386-wide-pi-ratio-v1/PiRatio.HC)
+rounds the product and quotient to a 64-bit significand before the
+binary64 store. An integer host implementation matched 100,169 results
+from the original x87 instruction sequence. The HolyC implementation
+matched all 297 guest vectors, including subnormals, signed zeros and
+infinities. The oracle excludes NaN operands.
+
+Replacing the three radians expressions in the Man test overlay recovered
+the original document mesh byte-for-byte through the same physical menu
+workflow. The [mesh receipt](../build/i386-wide-pi-ratio-v1/man/result.json)
+records the result. The bundled source and production compiler still use
+the current lowering.

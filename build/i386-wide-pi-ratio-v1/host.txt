@@ -1,0 +1,1 @@
+100169 binary64 pairs matched the x87 FLDPI pipeline

@@ -1,0 +1,43 @@
+{
+  "fixture_sha256": "78ad75f8ae3a82428d38a2a248e3b09b1b1ccfeaf25276adeb0ad9e9c7db7262",
+  "scope": "Experimental ManGen angle lowering in an observer overlay",
+  "package": {
+    "result": "pass",
+    "source_sha256": "fd3b0948a0c22b2c092221095b03fb7c9261968d321855cedcb10386757689f5",
+    "image_sha256": "2272132ef772b94f2e2bf8fde6eb93942350de8209b681e7d71e0776d9bd4b95",
+    "boot_area_sha256": "d3d4f2e14015ad32afeffc7445594964376f7463044ab1277bed51e1b24d1eb8",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 96163,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96188,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/WidePiMan.HC": "78ad75f8ae3a82428d38a2a248e3b09b1b1ccfeaf25276adeb0ad9e9c7db7262"
+    },
+    "added_attributes": {
+      "/WidePiMan.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "mesh": {
+    "vertices": 112,
+    "triangles": 168,
+    "colors": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "sha256": "4f87974453492199cc40f1d50fad9c18f45ebb0acece354f9d39dfef5381e8a0"
+  },
+  "exact": true,
+  "result": "pass"
+}

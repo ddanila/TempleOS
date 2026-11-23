@@ -1,0 +1,32 @@
+{
+  "samples": 297,
+  "fixture_sha256": "30e8c11a58938b24237b6cc525388d38a2febc2d55b413debd02aa2bdb16d77c",
+  "package": {
+    "result": "pass",
+    "source_sha256": "fd3b0948a0c22b2c092221095b03fb7c9261968d321855cedcb10386757689f5",
+    "image_sha256": "6d5d67b4e7d4642d3dcb280ea0f59349943c613395deff7ae7c82d240dce5a85",
+    "boot_area_sha256": "d3d4f2e14015ad32afeffc7445594964376f7463044ab1277bed51e1b24d1eb8",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 96163,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96193,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/PiRatio.HC": "30e8c11a58938b24237b6cc525388d38a2febc2d55b413debd02aa2bdb16d77c"
+    },
+    "added_attributes": {
+      "/PiRatio.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "result": "pass",
+  "sample_sha256": "9ff0fd041f6f92775a0fafe0034b466d2e913d10c929deb0ee17a0fb1675540a"
+}
