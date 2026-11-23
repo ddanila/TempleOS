@@ -2788,3 +2788,10 @@ uses the null-slot image. Native packaging, installed 8 MiB startup and the
 two native generations still need terminal results.
 The null-slot cross-built image also passes the unchanged
 [8 MiB User startup check](../build/i386-console-null-slots-v1/user8/result.json).
+
+The [null-slot all-nine rebuild](../build/i386-console-null-slots-v1/retained128/result.json)
+passed on the frozen image at 128 MiB. The native packer wrote
+ConsoleRuntime with 1,436 exports, and its persisted export set and document
+allocation wrapper calls passed the audit. The same guest rebuilt and audited
+the other eight retained modules with a single load of the build provider.
+Installation and fresh 8 MiB boot are separate checks.
