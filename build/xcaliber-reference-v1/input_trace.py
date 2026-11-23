@@ -1,6 +1,6 @@
 """Trace the real X-Caliber key loop and teardown."""
 
-def instrument(source, *, loop=False):
+def instrument(source, *, loop=False, refresh=False):
     helper = b'''U0 XCInputLog(U8 *p)
 {
   while (*p) OutU8(0xE9,*p++);
@@ -37,4 +37,16 @@ U0 XCInputKey(I64 code,I64 ch,I64 sc)
                 raise ValueError(f'Missing unique X-Caliber loop location {marker!r}')
             trace = f'      if (ch==CH_ESC) XCInputLog("XC {label}\\n");'.encode()
             source = source.replace(marker, trace + b'\n' + marker)
+    if refresh:
+        helper += b"""U0 XCRefreshPointers()
+{
+  U8 line[160];
+  StrPrint(line,"XC refresh pointers %X %X %X\\n",
+      &cnts.jiffies,&winmgr.updates,&sys_semas[SEMA_REFRESH_IN_PROGRESS]);
+  XCInputLog(line);
+}
+
+"""
+        marker = b'      Refresh; //msgs are only qued by winmgr'
+        source = source.replace(marker, b'      if (ch==CH_ESC) XCRefreshPointers;\n' + marker)
     return helper + source

@@ -2214,3 +2214,18 @@ A finer trace of the simulation and refresh calls is running.
 See `build/xcaliber-reference-v1/original-input-trace/result.json`,
 `build/native-geometry-source-v1/X-Caliber-input-trace/result.json`
 and `build/native-geometry-source-v1/X-Caliber-no-fire/result.json`.
+
+After firing and receiving Escape, native X-Caliber completes its
+AI, solar flare, expiry and damage calls. It enters Refresh and
+does not reach the following marker. The pinned original returns
+from Refresh, exits the loop and completes teardown. QMP timer and
+window-manager counter sampling, plus a userspace IRQ-chip control,
+are running. See `build/native-geometry-source-v1/X-Caliber-loop-trace/result.json`
+and `build/xcaliber-reference-v1/original-loop-trace/result.json`.
+
+Generation two of the sound-timing image completes the nine
+retained rebuilds and installs them. Both stage images preserve all
+686 bundled files against the sound-timing revision. The native
+flat-kernel self-build is running. See
+`build/i386-bundled-source-audit-v1/gen2-retained.json`
+and `build/i386-bundled-source-audit-v1/gen2-install.json`.

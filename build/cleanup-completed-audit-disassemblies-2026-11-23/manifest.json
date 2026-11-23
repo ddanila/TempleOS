@@ -825,7 +825,35 @@
         "-o",
         "build/i386-primary-backing-batch-v1/small-public/kernel-assembly.txt"
       ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/generations128/gen1-audit/kernel-assembly.txt",
+      "archive": "build/sound-delay-production-v1/generations128/gen1-audit/kernel-assembly.txt.zst",
+      "sha256": "5e077ad626d456f07c0572fd4167ea991629b857d02bda1a619ac138cc0cd3f7",
+      "size": 110590469,
+      "reclaimed_bytes": 101871616,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/generations128/gen1-audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/sound-delay-production-v1/generations128/gen1-audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/generations128/gen1-selfhost/source.img",
+      "archive": "build/sound-delay-production-v1/generations128/gen1-selfhost/source.img.zst",
+      "sha256": "04ab5a82ca50b58561c52f52c5d027ea7a66df8234fde86b36dc2050e93eaa2c",
+      "size": 67108864,
+      "reclaimed_bytes": 52645888,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/generations128/gen1-selfhost/source.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/generations128/gen1-selfhost/source.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 4617785344
+  "reclaimed_bytes": 4772302848
 }

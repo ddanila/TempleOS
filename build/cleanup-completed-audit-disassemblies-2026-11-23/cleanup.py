@@ -41,6 +41,7 @@ runs = [
     'span-production-v1/generations128-resume-install/gen2-audit',
     'tothefront-production-v1/full',
     'sound-delay-production-v1/full',
+    'sound-delay-production-v1/generations128/gen1-audit',
     'tothefront-center-production-v1/full',
 ]
 
@@ -69,6 +70,11 @@ for generation in ('gen1-selfhost', 'gen2-selfhost'):
     receipt = directory / 'result.json'
     if receipt.is_file() and json.loads(receipt.read_text())['result'] == 'pass':
         files.append((str(directory.relative_to('build')), 'source.img'))
+
+directory = Path('build/sound-delay-production-v1/generations128/gen1-selfhost')
+receipt = directory / 'result.json'
+if receipt.is_file() and json.loads(receipt.read_text())['result'] == 'pass':
+    files.append((str(directory.relative_to('build')), 'source.img'))
 
 for candidate in ('candidate', 'delay-ceil-candidate'):
     directory = Path('build/native-noise-worker-trace-v1') / candidate

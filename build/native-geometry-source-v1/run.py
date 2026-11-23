@@ -10,6 +10,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('disk',type=Path)
 parser.add_argument('--app', choices=('GrModels','ToTheFront','X-Caliber'), required=True)
 parser.add_argument('--serial-visibility', action='store_true')
+parser.add_argument('--xcaliber-refresh-state', action='store_true')
+parser.add_argument('--userspace-irqchip', action='store_true')
 parser.add_argument('--xcaliber-loop-trace', action='store_true')
 parser.add_argument('--xcaliber-no-fire', action='store_true')
 parser.add_argument('--xcaliber-input-trace', action='store_true')
@@ -34,6 +36,8 @@ parser.add_argument('--human-match', action='store_true')
 parser.add_argument('--combined-loader', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
+if args.xcaliber_refresh_state and not args.xcaliber_loop_trace:
+    parser.error('--xcaliber-refresh-state requires --xcaliber-loop-trace')
 if args.xcaliber_loop_trace and not args.xcaliber_input_trace:
     parser.error('--xcaliber-loop-trace requires --xcaliber-input-trace')
 if args.xcaliber_no_fire and not args.xcaliber_play:
@@ -184,7 +188,8 @@ if args.app=='X-Caliber':
             unit = text[start:end]
             if args.xcaliber_input_trace and unit.startswith(b'U0 XCaliber('):
                 trace = runpy.run_path('build/xcaliber-reference-v1/input_trace.py')
-                unit = trace['instrument'](unit, loop=args.xcaliber_loop_trace)
+                unit = trace['instrument'](unit, loop=args.xcaliber_loop_trace,
+                                           refresh=args.xcaliber_refresh_state)
             extras[path] = unit + separator + assets
             xcaliber_units.append(path)
 math=Path('Adam/Gr/GrMath.HC').read_bytes()
@@ -232,7 +237,9 @@ packer = runpy.run_path('tools/package-i386-native-image.py')
 image = out/'working.img'
 report = {'result':'running','package':packer['package'](args.disk,image,additions=extras)}
 Guest = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Guest']
-guest = Guest(image,out/'guest',True)
+machine = 'pc,kernel-irqchip=off' if args.userspace_irqchip else 'pc'
+report['machine'] = machine
+guest = Guest(image, out/'guest', True, native_machine=machine)
 try:
     guest.wait('DONE native kernel startup\n')
     commands=['#include "C:/PublicGeometrySource.HC"']
@@ -347,6 +354,9 @@ try:
 
 except Exception as exc:
     report.update(result='fail',error=str(exc))
+    if args.xcaliber_refresh_state and guest.p.poll() is None:
+        collect = runpy.run_path('build/xcaliber-reference-v1/refresh_state.py')['collect']
+        report['refresh_state'] = collect(guest)
     raise
 finally:
     if args.xcaliber_input_trace:

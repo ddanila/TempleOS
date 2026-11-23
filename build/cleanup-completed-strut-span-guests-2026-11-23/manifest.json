@@ -3849,7 +3849,77 @@
         "-o",
         "build/native-geometry-source-v1/X-Caliber-play/working.img"
       ]
+    },
+    {
+      "original": "build/xcaliber-reference-v1/original-input-trace/original.iso",
+      "archive": "build/xcaliber-reference-v1/original-input-trace/original.iso.zst",
+      "sha256": "6c643b6e59ae2d471bf5cebfff04271d3a8e450ae89366733f2ae5440da85d08",
+      "size": 46155776,
+      "reclaimed_bytes": 33234944,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-reference-v1/original-input-trace/original.iso.zst",
+        "-o",
+        "build/xcaliber-reference-v1/original-input-trace/original.iso"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-input-trace/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-input-trace/working.img.zst",
+      "sha256": "7e24cbd5abf2807c6d20fc0c99ce7963a3073bc97109b49f4fa507dd0e718f3f",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-input-trace/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-input-trace/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-no-fire/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-no-fire/working.img.zst",
+      "sha256": "ea51286c31eb7228c373e142790e586a5bf9fe872d6ae3f136878be508a9d0c5",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-no-fire/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-no-fire/working.img"
+      ]
+    },
+    {
+      "original": "build/xcaliber-reference-v1/original-loop-trace/original.iso",
+      "archive": "build/xcaliber-reference-v1/original-loop-trace/original.iso.zst",
+      "sha256": "0766385d8841992d24abe0365879871a2d1567e295652e11c4a76451107225b4",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-reference-v1/original-loop-trace/original.iso.zst",
+        "-o",
+        "build/xcaliber-reference-v1/original-loop-trace/original.iso"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-loop-trace/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-loop-trace/working.img.zst",
+      "sha256": "260a1b6e8c0f3e254219fd745066f005c0a0065b1ea7e4da5dcfb63f6b959e0b",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-loop-trace/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-loop-trace/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 13735383040
+  "reclaimed_bytes": 13962072064
 }

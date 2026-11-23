@@ -10,9 +10,12 @@ import sys
 
 
 parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--loop-trace', action='store_true')
 parser.add_argument('--input-trace', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
+if args.loop_trace and not args.input_trace:
+    parser.error('--loop-trace requires --input-trace')
 out = args.out.resolve()
 out.mkdir()
 fixture = Path(__file__).with_name('Probe.HC').read_bytes()
@@ -24,7 +27,7 @@ if args.input_trace:
     source = app.read_bytes()
     offset = source.index(b'U0 XCaliber(')
     instrument = runpy.run_path(str(Path(__file__).with_name('input_trace.py')))['instrument']
-    app.write_bytes(source[:offset] + instrument(source[offset:]))
+    app.write_bytes(source[:offset] + instrument(source[offset:], loop=args.loop_trace))
 (overlay / 'Once.HC').write_bytes(
     b'while(!Bt(&sys_run_level,RLf_ADAM_SERVER))Yield;\n'
     b'#include "T:/Apps/X-Caliber/Load.HC"\n' + fixture)

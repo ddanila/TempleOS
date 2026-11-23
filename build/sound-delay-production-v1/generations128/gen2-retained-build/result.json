@@ -1,0 +1,88 @@
+{
+  "result": "pass",
+  "welcome": true,
+  "source_disk_sha256": "bb16c2a4c7fee2b6ae70ea2be582c176a8954a1b7c5c489882065bf94489bd8f",
+  "module_order": [
+    "ConsoleRuntime",
+    "CompilerRuntime",
+    "CompilerProbe",
+    "FileRuntime",
+    "MemoryRuntime",
+    "BuildRuntime",
+    "EditorRuntime",
+    "DocDiagnosticRuntime",
+    "Startup"
+  ],
+  "modules": {
+    "ConsoleRuntime": {
+      "bytes": 2771555,
+      "records": 14250,
+      "exports": 1435,
+      "sha256": "496f4b4e1d2d2cd6981f7673b2aabfe9bfc935d29f45a3dfdecc3f376b7437e5",
+      "reference_sha256": "496f4b4e1d2d2cd6981f7673b2aabfe9bfc935d29f45a3dfdecc3f376b7437e5"
+    },
+    "CompilerRuntime": {
+      "bytes": 1343145,
+      "records": 4622,
+      "exports": 531,
+      "sha256": "4f16034d8357ca2876e7597ef39f893de2bd56e1aeaad432a94bd30241088ce6",
+      "reference_sha256": "4f16034d8357ca2876e7597ef39f893de2bd56e1aeaad432a94bd30241088ce6"
+    },
+    "CompilerProbe": {
+      "bytes": 588353,
+      "records": 2349,
+      "exports": 139,
+      "sha256": "77f2c716ef4c2f98271a2bcd3075d9599a391e7b8ea5c0fc905b55e576df42f9",
+      "reference_sha256": "77f2c716ef4c2f98271a2bcd3075d9599a391e7b8ea5c0fc905b55e576df42f9"
+    },
+    "FileRuntime": {
+      "bytes": 295839,
+      "records": 998,
+      "exports": 148,
+      "sha256": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38",
+      "reference_sha256": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38"
+    },
+    "MemoryRuntime": {
+      "bytes": 249568,
+      "records": 1175,
+      "exports": 175,
+      "sha256": "5bd13eab9cbaaa943ba07a2d21c2307bba8da3098f44139879c0a925d6f9bac7",
+      "reference_sha256": "5bd13eab9cbaaa943ba07a2d21c2307bba8da3098f44139879c0a925d6f9bac7"
+    },
+    "BuildRuntime": {
+      "bytes": 97307,
+      "records": 300,
+      "exports": 45,
+      "sha256": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d",
+      "reference_sha256": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d"
+    },
+    "EditorRuntime": {
+      "bytes": 53736,
+      "records": 259,
+      "exports": 49,
+      "sha256": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e",
+      "reference_sha256": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e"
+    },
+    "DocDiagnosticRuntime": {
+      "bytes": 49623,
+      "records": 274,
+      "exports": 29,
+      "sha256": "10ae3b166ccca52dcdfa1ea271c2e7b7973ec2e4a9e91087d96cef6e9544d9e6",
+      "reference_sha256": "10ae3b166ccca52dcdfa1ea271c2e7b7973ec2e4a9e91087d96cef6e9544d9e6"
+    },
+    "Startup": {
+      "bytes": 391,
+      "records": 6,
+      "exports": 1,
+      "sha256": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7",
+      "reference_sha256": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7"
+    }
+  },
+  "cpu": "486,-fpu",
+  "ram_mib": 128,
+  "keyboard_harness": false,
+  "managed_pointer": true,
+  "build_provider_loads": 1,
+  "byte_identical_to_installed": "/home/ddanila/fun/TempleOS/build/sound-delay-production-v1/generations128/gen1-selfhost/target.img",
+  "installed_disk_sha256": "6a22a7b642ab9c57f1223e3f93fed50d3b20a07a43f9ae33196b53d2e59c1da4"
+}
