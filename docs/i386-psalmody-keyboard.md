@@ -128,3 +128,12 @@ zero-duration first note and spends 1,050 ms in record redraw, within the range
 of the previous baseline measurements. The fill is outside the dominant
 redraw cost. See `build/psalmody-redraw-profile-v2` and
 `build/psalmody-native-memset-v1`.
+
+A ConsoleRuntime experiment suppresses the nested `DocPutKey` yield when its
+caller already owns the document lock. The overlay cross-build and instruction
+audit pass. With the original application bytes and original physical input
+sequence, native durations are 0, 8, 8. A separate profiled run measures the
+record redraw at 1,020 ms, including 720 ms before the final refresh. The
+experiment leaves the first-note failure in place. The disposable patch and
+receipts are in `build/psalmody-doc-stream-batch-v1` and
+`build/psalmody-redraw-profile-v2/batch64`.

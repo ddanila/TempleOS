@@ -1,0 +1,12 @@
+--- a/Kernel/I386/DocumentRuntime.HC
++++ b/Kernel/I386/DocumentRuntime.HC
+@@ -323,7 +323,8 @@
+     else DocBasicEditCore(doc,ch,sc);
+   } catch { Free(picker_path);if(unlock) DocUnlock(doc); }
+   if(unlock) DocUnlock(doc);
+-  if(!(doc->flags&DOCF_DONT_SWAP_OUT)) Yield;
++  //The caller holding a stream document lock yields after publishing the batch.
++  if(unlock && !(doc->flags&DOCF_DONT_SWAP_OUT)) Yield;
+ }
+ #include "/Adam/DolDoc/DocScanLineCore.HC"
+ #include "/Adam/DolDoc/DocBasicSaveCore.HC"
