@@ -1402,3 +1402,12 @@ themselves. The isolated GrLine3 call fails, including when the switch
 labels are numeric. The next probe varies argument types and the call
 target. See `build/span-draw-spring-default-v1/native64/result.json`
 and `build/span-draw-spring-minimal-v1/native64/result.json`.
+
+The Span raster-call probe compiles when the two coordinates first
+go through typed I64 locals, or when integer literals replace the
+floating-point members. Replacing the already-integer endpoint
+arguments does not help. An otherwise equivalent local call target
+also fails with the floating-point members passed directly, so the
+failure does not depend on GrLine3's binding. The full Span loader is
+under test with the typed locals, and a compiler trace is building.
+See `build/span-line-call-v1/native64/result.json`.

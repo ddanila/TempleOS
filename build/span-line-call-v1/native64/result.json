@@ -1,0 +1,68 @@
+{
+  "result": "pass",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "ae186e78e8abea04e6b202502cf209be37ce25f3f4dc9f7f339b4ca3fc7016c2",
+    "image_sha256": "fb4fc39b5e0f81547e98a15db243c99d3890b1d613d8d738441e5afa09da6e1c",
+    "boot_area_sha256": "d12c7ff2f2171df75d993a8f52bac1c98dee95395f9b28ab9dc2c49e780ab910",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1908,
+      "owned_sectors": 96331,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1914,
+      "owned_sectors": 96338,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Implicit.HC": "cb987a84144dfda442c9e76ab8e3a9ed59b3db7523992396f4b9300828651a2b",
+      "/IntegerEnds.HC": "99696bd2ad1d23d7bd710533e37fe3b1b1f13f84f2d4326f7177ce9fad80f91e",
+      "/IntegerMembers.HC": "765a86f82ef61af88fd7e57d232ded972b77697ed3286b190f6bbe5a1fb7c655",
+      "/LocalCall.HC": "07b1c3f7a633eee3e7c7574479b3ae563cb8cebf0b16c833e0164ef1c9d4cfa2",
+      "/SpringProbeTypes.HH": "ae9ba3fd9108e10ac22ce5c9dac760ab80db2cdb1799601cea13e14a8e8e54ad",
+      "/TypedLocals.HC": "a03f99d37f8b724c568c20bdff352f699416a82a3a941abad6777a0c7f3547aa"
+    },
+    "added_attributes": {
+      "/Implicit.HC": 2048,
+      "/IntegerEnds.HC": 2048,
+      "/IntegerMembers.HC": 2048,
+      "/LocalCall.HC": 2048,
+      "/SpringProbeTypes.HH": 2048,
+      "/TypedLocals.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "cases": {
+    "Implicit": {
+      "result": "fail",
+      "error": "INPUT LINE #include \"C:/Implicit.HC\"\nCOMPILER BREAK ready\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    },
+    "TypedLocals": {
+      "result": "pass"
+    },
+    "IntegerMembers": {
+      "result": "pass"
+    },
+    "IntegerEnds": {
+      "result": "fail",
+      "error": "INPUT LINE #include \"C:/IntegerEnds.HC\"\nCOMPILER BREAK ready\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    },
+    "LocalCall": {
+      "result": "fail",
+      "error": "INPUT LINE #include \"C:/LocalCall.HC\"\nCOMPILER BREAK ready\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 27,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
