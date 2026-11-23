@@ -1722,3 +1722,17 @@ sprite. The compiler still needs to select this behavior for
 unchanged source, and the original public entry point still needs
 qualification. See `build/grmodels-ball-reference-v1/WideProduct.HC`
 and `build/native-geometry-source-v1/GrModels-ball-wide-product/result.json`.
+
+A compiler candidate recognizes a floating multiply whose parser
+result already carries the integer conversion flag. It emits the
+wide multiply helper directly and skips the later binary64-to-I64
+conversion for that instruction. The original bootstrap compiler and
+instruction audit pass. At 64 MiB the unchanged product fixture
+matches the original byte for byte, including the distinct results
+for direct and stored products. The candidate exhausts the fallback
+heap during the original 8 MiB User fixture, so it remains an
+overlay. See `build/i386-wide-product-lowering-v1`.
+
+Span generation one passed retained installation, self-hosting,
+the image audit and the delivered-source audit. Generation two has
+started its retained rebuild.
