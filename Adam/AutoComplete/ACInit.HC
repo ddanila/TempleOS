@@ -4,9 +4,9 @@ acd.has_defs =FileFind(ACD_DEF_FILENAME)||FileFind(ACD_DEF_FILENAME_Z);
 
 public U0 ACDWordsLoad()
 {//Put words from word list into hash table.
-  I64 size;
+  I64 size,length,i,ch;
   CHashGeneric *tmph;
-  U8 *in_ptr,*in_start,*st2;
+  U8 *in_ptr,*in_start,*word;
   U16 *d;
   acd.num_words=0;
   if (in_ptr=FileRead(ACD_WORD_FILENAME,&size)) {
@@ -20,11 +20,17 @@ public U0 ACDWordsLoad()
       if (*in_ptr==ACD_WORD_CHAR)
 	in_ptr++;
       if (*in_ptr) {
-	st2=MStrUtil(in_ptr,SUF_TO_UPPER);
-	tmph=ACAlloc(sizeof(CHashGeneric)+StrLen(st2)+1);
-	StrCpy(tmph+1,st2);
-	Free(st2);
-	in_ptr+=StrLen(in_ptr)+1;
+	length=StrLen(in_ptr);
+	tmph=ACAlloc(sizeof(CHashGeneric)+length+1);
+	word=tmph+1;
+	for (i=0;i<length;i++) {
+	  ch=in_ptr[i];
+	  if ('a'<=ch<='z')
+	    ch-=0x20;
+	  word[i]=ch;
+	}
+	word[length]=0;
+	in_ptr+=length+1;
 	tmph->str=tmph+1;
 	tmph->use_cnt=1;
 	tmph->type=HTT_DICT_WORD;

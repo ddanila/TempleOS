@@ -1,0 +1,108 @@
+{
+  "result": "pass",
+  "mode": "native",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-dictionary.py": "4b1881b763e8d451bd3cbc1cbd6404dbfab5ec7f7a34e5905189a41cce6dc056",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-autocomplete-dictionary/Contract.HC": "2c098195f89aa8cde544fe4992976b4ab098014385606cb16b5952473077bc12",
+    "/home/ddanila/fun/TempleOS/build/i386-autocomplete-archive-original/guest/ACWords.DATA.Z": "649c61e15c401948ac72433cd81114f288222c36eb23c5ddced5a3f89eb4f10d",
+    "/home/ddanila/fun/TempleOS/build/i386-autocomplete-archive-original/result.json": "80b65578ba761e206459ddd740e1439ebddf095fd086612a707cf5bf19ec2b4b",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "47808d67cb623079d8ef164b29b70e9942646717da21f00f09406e4cc3c25cb2",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/guest-run.py": "58e0b848613303f2680594edb6eec7c43823bc2554983d2af4451f11d7d24cd3",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "99b84a62ec9753818b129f12d14d3cb6489654c30e48eb9b68c939b52d68399f",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/Adam/AutoComplete/ACWords.DATA": "11b9b9e48333ba16db4af61126d218ae8db4f5373a445e29442c0808f575c7de",
+    "/home/ddanila/fun/TempleOS/Adam/AutoComplete/ACDefs.DATA": "9a3640279135d84068fe1b851073010ac082178b45d08e64f21f4b854346b702",
+    "/home/ddanila/fun/TempleOS/Adam/AutoComplete/MakeAC.HC": "e70be77672162cc6762d1bb458fc0848312e71d682ca52401728ffe0341fbaea",
+    "/home/ddanila/fun/TempleOS/Adam/AutoComplete/ACFill.HC": "eee70592aa054cb126e29d204280f560e879309298fa30ab4401a7ea104314c3",
+    "/home/ddanila/fun/TempleOS/Adam/AutoComplete/ACTask.HC": "531790c0e5d20cf3d17310835675a35d1879abb0b5d16edaffe6e3d29a644422",
+    "/home/ddanila/fun/TempleOS/Adam/AutoComplete/ACInit.HC": "77daaea6d160a93075ec3b09e690e5a2a0822535507efe1f8c4fa6ad4e739708",
+    "/home/ddanila/fun/TempleOS/build/ac-dictionary-direct-copy/candidate.img": "7aed6eb22071330f104c0d563af7567008162c76711f4dd65c5077f04e5e29b7",
+    "/home/ddanila/fun/TempleOS/build/i386-autocomplete-dictionary-reference-v8/result.json": "0270a63dba041af654bd3c751f35856c70a17cc6fabf0a34852174c67c9b1b65",
+    "/home/ddanila/fun/TempleOS/build/i386-autocomplete-dictionary-reference-v8/ACDictionary.DATA": "b8aa0b9b6175c16652c705c2fe3c2ce5b778c4e10d9b5bcc5b2cb8b278279fdd"
+  },
+  "scope": "Actual unchanged ACInit with pinned dictionaries, live autocomplete task, full word loading and accounting, three exact first/second/all-definition lookups and word pointers, missing lookup, stop/reinitialize/stop lifecycle. Not source-statistics traversal, visible suggestions/selection, exact app heap recovery or full desktop qualification.",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "7aed6eb22071330f104c0d563af7567008162c76711f4dd65c5077f04e5e29b7",
+    "image_sha256": "7683830470010cccb69c3a40b0e0de239155a9df18b53dbd359c18f9a0a7fb1d",
+    "boot_area_sha256": "a366537fa37d14d0b5763aaeb583d8bc7c10806b063f322c1d985ef6a3bb7edb",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1902,
+      "owned_sectors": 96116,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 97057,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/ACDictionaryContract.HC": "2c098195f89aa8cde544fe4992976b4ab098014385606cb16b5952473077bc12",
+      "/Adam/AutoComplete/ACWords.DATA.Z": "649c61e15c401948ac72433cd81114f288222c36eb23c5ddced5a3f89eb4f10d"
+    },
+    "added_attributes": {
+      "/ACDictionaryContract.HC": 2048,
+      "/Adam/AutoComplete/ACWords.DATA.Z": 3072
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "filesystem_integrity": {
+    "directories": 63,
+    "files": 1905,
+    "owned_sectors": 97068,
+    "bitmap": "matches reachable extents"
+  },
+  "independent_dictionary": {
+    "words": 95293,
+    "word_bytes": 1253930,
+    "report_bytes": 5270,
+    "records": {
+      "apple": {
+        "definitions": 5,
+        "record_bytes": 2891
+      },
+      "temple": {
+        "definitions": 8,
+        "record_bytes": 1758
+      },
+      "computer": {
+        "definitions": 1,
+        "record_bytes": 51
+      }
+    }
+  },
+  "dictionary_sha256": "b8aa0b9b6175c16652c705c2fe3c2ce5b778c4e10d9b5bcc5b2cb8b278279fdd",
+  "dictionary_bytes": 5270,
+  "observations": [
+    "AC DICTIONARY fixture loaded",
+    "AC DICTIONARY init begin",
+    "AC DICTIONARY ready 95293 1253930 8355320",
+    "AC DICTIONARY index apple 3F727F8",
+    "AC DICTIONARY block apple 66 26381073 1 16047 2328040022726165",
+    "AC DICTIONARY pointers apple 3957BA8 3957890 3FCC220 19BF835",
+    "AC DICTIONARY word Apple 0",
+    "AC DICTIONARY lookup apple 117 90 2891",
+    "AC DICTIONARY index temple 3A13700",
+    "AC DICTIONARY block temple 1429 26381073 1 12553 202E3205002E72",
+    "AC DICTIONARY pointers temple 3957BD8 39578A0 3FCC620 1AC00E6",
+    "AC DICTIONARY word Temple 0",
+    "AC DICTIONARY lookup temple 72 118 1758",
+    "AC DICTIONARY index computer 3EA4190",
+    "AC DICTIONARY block computer 264 26381073 1 13262 6269736E65686572",
+    "AC DICTIONARY pointers computer 91828 0 922B8 19E595F",
+    "AC DICTIONARY word Computer 0",
+    "AC DICTIONARY lookup computer 17 -1 51",
+    "AC DICTIONARY report ready",
+    "AC DICTIONARY stopped",
+    "AC DICTIONARY init begin",
+    "AC DICTIONARY ready 95293 1253930 8355320",
+    "AC DICTIONARY stopped"
+  ],
+  "inputs_unchanged": true
+}

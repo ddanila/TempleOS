@@ -424,3 +424,15 @@ cleanup, dictionary loading and desktop handoff. The original geometry,
 Home Once selection, fresh input and physical bootstrap retirement pass
 with unchanged pinned inputs. The terminal receipt is in
 `build/resident-opt-desktop64-ac-files/run/result.json`.
+
+ACDWordsLoad now uppercases dictionary names directly in their final hash
+entries. This removes the two temporary allocations inside MStrUtil for
+each word and preserves ASCII case conversion, entry order and block IDs.
+The patched image passed the original dictionary oracle at 64 MiB. It
+loaded 95,293 words, produced the same 5,270-byte lookup report as the
+original guest, and passed the stop and reinitialize cycle. The packager
+checks exact image file equality apart from ACInit.HC. The dictionary
+receipt's source pin refers to the pre-integration worktree, while the
+candidate image contains the same ACInit.HC now committed. The separate
+desktop timing run is in progress. See
+`build/ac-dictionary-direct-copy/native64/result.json`.
