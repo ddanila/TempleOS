@@ -2954,3 +2954,11 @@ block from 251,736 to 132,632 bytes. The [profile](../build/i386-prompt-placemen
 reproduced the 267,527-byte allocation failure. Startup still reaches
 `USCheck` in this experiment. The production startup order remains as
 it was.
+
+The installed 64-slot guest-built ConsoleRuntime passed the fresh 8 MiB
+boot smoke and then the separate User startup workload with
+`USER START MASK 255` and successful follow-up arithmetic. The other
+eight providers in this image are cross-built from the same source.
+See the [install receipt](../build/i386-native-cache-footprint-v2/retained-console128-install/result.json)
+and [User receipt](../build/i386-native-cache-footprint-v2/retained-console128-user8/result.json).
+The matching heap capture and all-native nine-module run are pending.

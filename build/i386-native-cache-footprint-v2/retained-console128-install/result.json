@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "installed": [
+    "ConsoleRuntime"
+  ],
+  "source_disk_sha256": "92507b2747f71d1e2cb9a63bfb93214ed8e510fdfcc8494d413ad857e95e82db",
+  "disk_sha256": "9bd2b9a3749b2779e030fe03f8c6f34e077a96c1e18d06f9343566c51a6453bb",
+  "module_source_paths": {
+    "ConsoleRuntime": "/Probe/RetainedConsoleRuntime.t32m"
+  },
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "welcome": true,
+  "managed_pointer": true,
+  "keyboard_harness": false,
+  "diagnostic_growth_recovery": null,
+  "module_sha256": {
+    "ConsoleRuntime": "a84a8d36544a82302db65b5789edf7d6dff592fd9c7b13c9f2eb6a629c2dd8b8"
+  },
+  "module_bytes": {
+    "ConsoleRuntime": 2707455
+  }
+}
