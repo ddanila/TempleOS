@@ -1,0 +1,22 @@
+{
+  "image_sha256": "ff0b755555bb691d3d67754ffa60ff8c6f6e01f1cf3bf57565c601fcba9aa076",
+  "receipt_sha256": "0dbdef655a23b82b8bdf4961164d12c9a5c81080d9682c3ed03c9840223945c7",
+  "heaps": {
+    "kernel": {
+      "base": 1508864,
+      "size": 6748672,
+      "used": 6356920,
+      "allocations": 20085,
+      "free_payload": 386680,
+      "largest_free": 202512
+    },
+    "fallback": {
+      "base": 69632,
+      "size": 551936,
+      "used": 547760,
+      "allocations": 8,
+      "free_payload": 4112,
+      "largest_free": 2840
+    }
+  }
+}

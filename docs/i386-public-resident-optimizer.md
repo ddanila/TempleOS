@@ -281,3 +281,12 @@ startup test completes CompilerA preload and reaches USCheck, then fails the
 `build/compiler-high-headers-v2/user8-audit.json` pins the runtime and packaging
 receipts. The physical startup heap snapshot under
 `build/preload-heap-comparison/high_v2` measures the effect on the main arena.
+
+The high-placement v2 physical snapshot confirms that the main arena already
+lacks a contiguous task-sized block immediately after startup. Its largest free
+payload is 202,512 bytes, 65,015 bytes below the 267,527-byte request, despite
+386,680 bytes of total free payload. The fallback maximum is still 2,840 bytes.
+The earlier ordinary preload snapshot measured 149,648 bytes for the largest
+main-arena block on a production User base. A separate snapshot of the ordinary
+preload on the original-User base is needed to isolate the placement effect.
+`build/preload-heap-comparison/high_v2/summary.json` pins the full census.
