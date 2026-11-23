@@ -450,3 +450,11 @@ startup was 201.92 seconds, compared with 287.13 seconds on the prior resident
 optimizer image. The observed difference of 85.20 seconds comes from one
 wall-clock run per image and does not establish a repeatable speedup.
 The full receipt is in `build/ac-dictionary-direct-copy/desktop64/result.json`.
+
+The direct-copy image is ready as an input for the retained-module build.
+The C5 host preflight checks that all nine installed providers match their
+cross-built reference modules byte for byte and that their top-level guest
+sources match the repository. It also checks the installed ACInit.HC against
+the committed version. The image hash and per-module evidence are in
+`build/resident-opt-c5-preflight/input.json`. The two current native
+generations still require guest builds, installation, and boot verification.

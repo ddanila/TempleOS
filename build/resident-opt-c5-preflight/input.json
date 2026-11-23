@@ -1,0 +1,62 @@
+{
+  "scope": "Host preflight of nine retained module inputs",
+  "image": "build/ac-dictionary-direct-copy/candidate.img",
+  "image_sha256": "7aed6eb22071330f104c0d563af7567008162c76711f4dd65c5077f04e5e29b7",
+  "reference_exports": "build/resident-opt-public-v5/audit/exports",
+  "modules": {
+    "Startup": {
+      "sha256": "5d523c257fcfa26ed6882a4bcae163946426ece652daf72664de20291409423b",
+      "source_sha256": "387c15104a2938256ada67ad2257586a0d0302c49b091cac3642a3d9d8c2d277",
+      "records": 6,
+      "exports": 1
+    },
+    "MemoryRuntime": {
+      "sha256": "34aa07c7ab16a922df6b81f0080ae1c15617572e9d2fe010d14703d2e40a0072",
+      "source_sha256": "7b5c9845272d6fed4c1c4123f46eb1fdf34e208eb55aeae73ae0c316287d7e92",
+      "records": 578,
+      "exports": 175
+    },
+    "FileRuntime": {
+      "sha256": "23ed2c0014082ae65eb39aa583539db9650f8f4ccd84e0e4ef017ffa780fa4ac",
+      "source_sha256": "5a87fb634dbbddc4d1ad61ad738f2e0461ec9eab96e0c5e1415c80670678bd95",
+      "records": 595,
+      "exports": 148
+    },
+    "ConsoleRuntime": {
+      "sha256": "59e9249ae76e4ec12e1d645ccd47dbaacb316a952a3ece1f9ead16eac0cc1882",
+      "source_sha256": "4954b096486807d3ae8f691bcd396ff3431a26188edafd391748644221bc67b5",
+      "records": 5482,
+      "exports": 1421
+    },
+    "CompilerProbe": {
+      "sha256": "c99513871bca5ebed9b5f5b528def46f814687b588673a567e45a02053527c12",
+      "source_sha256": "03a01f8441d2ae9180346d97173c516c298be0bc12ce09c7887e814c1f0fb39d",
+      "records": 1914,
+      "exports": 139
+    },
+    "CompilerRuntime": {
+      "sha256": "1a80b7e2eebaf3cc2604ebb34eeaa5ad1618f1cf92128d65147119ee2d7c63c5",
+      "source_sha256": "de664a96060268b0de16b4cce6940dad8dfac78b65ebc1c31cff405612cc220b",
+      "records": 1551,
+      "exports": 533
+    },
+    "BuildRuntime": {
+      "sha256": "3134f883c0c637fea96a49bf7270dc660dbfc239457a10564a4bc64acf9977a0",
+      "source_sha256": "fff9e058b572eb392a7770f135e69281812a992c97647edb8fec3c1c479451d8",
+      "records": 230,
+      "exports": 45
+    },
+    "DocDiagnosticRuntime": {
+      "sha256": "f96db8db10285df64ded906e23dae14d430cc75dd4d7fd4546cce789f984bf3d",
+      "source_sha256": "cfa85288b87d6fb9310ec2b81743dafa792dcb0f79e8954c0bdb624d95056952",
+      "records": 45,
+      "exports": 29
+    },
+    "EditorRuntime": {
+      "sha256": "9c82338f318a3d0290e79bcb8bcc807c15826c980b3d78cd06d687cf13d26230",
+      "source_sha256": "3943fe9ed4d8acb70d14239474232dae2b29d4ed22fca5b59b7a54f3b92aa1c6",
+      "records": 61,
+      "exports": 49
+    }
+  }
+}
