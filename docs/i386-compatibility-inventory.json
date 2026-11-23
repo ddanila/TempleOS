@@ -1095,6 +1095,18 @@
       },
       "tests": [
         {
+          "target": "native-dictionary-direct-entry-copy",
+          "result": "pass",
+          "evidence": "build/ac-dictionary-direct-copy/native64/result.json",
+          "scope": "Direct uppercase copy into final entries. Both 95,293-word initializations pass. The 5,270-byte lookup report exactly matches the original guest and independent asset decoder. Stop and restart, fresh console input and filesystem integrity pass."
+        },
+        {
+          "target": "native-desktop-autocomplete-full-traversal",
+          "result": "pass",
+          "evidence": "build/resident-opt-desktop64-ac-files/run/result.json",
+          "scope": "Configured 64 MiB desktop profile completes 1,862 file read and indexing calls, dictionary load and handoff on the pre-copy image. Home Once, original layout, fresh input and physical bootstrap retirement pass. Word-by-word source statistics and default Once remain open."
+        },
+        {
           "target": "native-real-service-source-load-after-run-level",
           "result": "fail",
           "evidence": "build/i386-run-level-autocomplete-v2/result.json",
