@@ -2767,3 +2767,24 @@ in 207.57 seconds. Home Once runs during boot, the 83 original geometry values
 also match generation one, and the bootstrap's physical task record is gone.
 Fresh arithmetic renders. See
 `build/i386-graphics-registry-integration/generations128/gen2-desktop64/result.json`.
+
+### Compact console pointer table and native packaging
+
+The earlier all-module run stopped after writing ConsoleRuntime. An audit
+of the saved disk recovered a passing 1,435-export ConsoleRuntime from that
+pre-compaction source. The
+[recovery receipt](../build/xcaliber-native-loader-v1/retained128-console-recovery/result.json)
+records the module and reference hashes.
+
+The native compact-console run reached the module packer and rejected
+`console_doc_addresses`. The 58 dynamic entries contained
+`0xFFFFFFFF`, which the native packer tried to resolve as a stored pointer.
+The table now uses null for dynamic entries. The cross-built
+[slot audit](../build/i386-console-null-slots-v1/table-audit.json) verifies all
+705 slots against the original initialization order, including 58 null
+entries and 647 nonzero local offsets. The new payload is 24,136 bytes
+smaller than the pre-compaction baseline. The all-nine native rebuild now
+uses the null-slot image. Native packaging, installed 8 MiB startup and the
+two native generations still need terminal results.
+The null-slot cross-built image also passes the unchanged
+[8 MiB User startup check](../build/i386-console-null-slots-v1/user8/result.json).

@@ -1,0 +1,11 @@
+{
+  "disk_sha256": "187d036e45ec8e76ac8323f6107bdcd88116c6f02b95dc2273c07bf7d33a3778",
+  "base_revision": "1da2ec739cfd55ce383fe9e3cd17b52dad8a26b0",
+  "source_sha256": {
+    "Kernel/I386/ConsoleRuntime.HC": "3538f36f499ffa82352e5841546f8761ba3f685203cf04b7455180f92e4db374"
+  },
+  "passed_receipts": {
+    "table-audit.json": "9bdbb0d3d613528e0075a6773566cd015fa9a38b5967a4f4fd615b72c22b6bef",
+    "user8/result.json": "c03a7a756ef7da45959e8227621e77c7a9d78eca4dcfb6244d369884e7a87314"
+  }
+}

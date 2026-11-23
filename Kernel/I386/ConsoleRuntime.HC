@@ -920,7 +920,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   //Cross-built slots contain local offsets. Native relocation already rebases them.
   export_bias=(&I386DocLock-addresses[0])(U64);
   for(i=0;i<sizeof(console_doc_exports)/sizeof(CI386KernelSymbol);i++) {
-    if(addresses[i]!=0xFFFFFFFF(U8 *))
+    if(addresses[i])
       console_doc_exports[i].val=(addresses[i]+0)(U64)+export_bias;
     else
       console_doc_exports[i].val=(ConsoleDocDynamicAddress(config,i)+0)(U64);
@@ -1711,34 +1711,35 @@ CAOT *CmpBuf(U8 *buf,U8 *map_name=0,I64 *errors=0,I64 *warnings=0,U8 map_drive=0
   return (*invoke)(buf,map_name,errors,warnings,map_drive);
 }
 
+//Null slots are filled from the live console configuration.
 U8 *console_doc_addresses[705]={
   &I386DocLock,&I386DocUnlock,&DocPut,&DocDisplay,
   &DocBorder,&IsEditableText,&DocEntryNewBase,&DocEntryNewTag,
   &DocEntrySize,&DocEntryCopy,&DocFormFwd,&DocFormBwd,
   &DocDefaultsInit,&DocInit,&DocDictionaryNew,&DocDictionaryDel,
   &DocGlobalsInit,&ConsoleDocumentStart,
-  0xFFFFFFFF, //doldoc
+  NULL, //doldoc
   &DocReportLiteral,&DocBinFindNum,&DocBinFindTag,&DocBinsValidate,
   &DocBinDel,&DocEntryDel,&DocUndoDel,&DocUndoCntSet,
   &DocRemSoftNewLines,&DocInsEntry,&TextChar,&TextLenStr,
   &TextLenAttrStr,&TextLenAttr,
-  0xFFFFFFFF, //i386_text_base
+  NULL, //i386_text_base
   &NativeTextBasePresent,&NativeTextBaseRestore,&LstSub,&LstMatch,
   &Define,&DefineSub,&DefineCnt,&DefineMatch,
   &YearStartDate,&Struct2Date,&DayOfWeek,&Date2Struct,
   &FirstDayOfMon,&LastDayOfMon,&FirstDayOfYear,&LastDayOfYear,
   &Bcd2Bin,
-  0xFFFFFFFF, //local_time_offset
+  NULL, //local_time_offset
   &Mat4x4MulXYZ,&DCTransform,&Mat4x4IdentEqu,&Mat4x4IdentNew,
   &Mat4x4NormSqr65536,&DCMat4x4Set,&DCLighting,&DCFill,
   &DCClear,&DCRst,&DCExtentsInit,&DCAlias,
   &DCNew,&DCDel,&DCSize,&DCDepthBufRst,
   &DCDepthBufAlloc,
-  0xFFFFFFFF, //gr
-  0xFFFFFFFF, //gr_palette_std
+  NULL, //gr
+  NULL, //gr_palette_std
   &NativeGraphicsStart,&NativeGraphicsPresent,&TextBorder,&TextRect,
   &WinScrollNull,&WinScrollRestore,&WinDerivedValsUpdate,
-  0xFFFFFFFF, //text
+  NULL, //text
   &TaskValidate,&TaskDerivedValsUpdate,&WinHorz,&WinVert,
   &CtrlFindUnique,&CtrlsUpdate,&CtrlInside,&WinZBufUpdate,
   &WinInside,&DocNew,&DocRst,&DocDel,
@@ -1749,7 +1750,7 @@ U8 *console_doc_addresses[705]={
   &Help,&Snd,&SndRst,&MouseGet,
   &I386InstallTree,&I386InstallBoot,&I386BuildModule,&I386BuildBootImage,
   &I386InstallBootImage,&ExeDoc,&NativeJobSource,
-  0xFFFFFFFF, //_SYS_FOCUS_TASK
+  NULL, //_SYS_FOCUS_TASK
   &NativeDebug,&NativeDebugGo,&NativeDebugMode,&NativeIsDebugMode,
   &NativeUserCmdLine,&NativeUserTaskCont,&NativeWinFocus,&IsRaw,
   &StrPrintJoin,&StrPrint,&CatPrint,&MStrPrint,
@@ -1764,7 +1765,7 @@ U8 *console_doc_addresses[705]={
   &DocPutS,&DocPrint,&In,&JobResScan,
   &JobDel,&NativeTaskExe,&NativeSrvTaskCont,&NativeSrvCmdLine,
   &NativeWinToTop,
-  0xFFFFFFFF, //_SYS_WINMGR_TASK
+  NULL, //_SYS_WINMGR_TASK
   &DocBorderNew,&EdOverStrikeCB,&EdAutoSaveCB,&EdFilterCB,
   &EdDollarCB,&EdMoreCB,&EdDollarTypeCB,&NativeMenuNew,
   &MenuFile,&MenuEntryFind,&MenuSubEntryFind,&MenuDel,
@@ -1778,9 +1779,9 @@ U8 *console_doc_addresses[705]={
   &KeyDevAdd,&KeyDevRem,&ScanKey,&GetKey,
   &DocPrintPartial,&DocGetKey,&DocRecalc,&DocUpdateTaskDocs,
   &DrawCtrls,&GrUpdateTaskWin,
-  0xFFFFFFFF, //_SYS_TASK_BEING_SCRN_UPDATED
+  NULL, //_SYS_TASK_BEING_SCRN_UPDATED
   &NativeWindowPresent,&NativeWinMgrStart,&Refresh,
-  0xFFFFFFFF, //_WINMGR_STATE
+  NULL, //_WINMGR_STATE
   &NativePopUp,&NativePopUpPrint,&WinMax,&DocEntryRun,
   &DocMenu,&PopUpMenu,&PopUpPickLst,&EdCurU8,
   &EdCursorLeft,&EdCursorRight,&EdLineUp,&EdLineDown,
@@ -1788,10 +1789,10 @@ U8 *console_doc_addresses[705]={
   &DocCenter,&DocBottom,&DocInsDoc,&ClipDel,
   &ClipCopy,&ClipCut,&ClipPaste,&DocCut,
   &DocCopy,
-  0xFFFFFFFF, //_SYS_CLIP_DOC
+  NULL, //_SYS_CLIP_DOC
   &DocLoad,&Doc2PlainText,&NativeTimeStamp,&DocCaptureUndo,
   &DocUndoRestore,&Char2KeyName,&KeyDescSet,
-  0xFFFFFFFF, //_KEYDEV
+  NULL, //_KEYDEV
   &DocCollapse,&DocEntryToggle,&DocFlagsToggle,&StrFind,
   &EdFindNext,&EdSelAll,&EdFindPaired,&EdGoToFun,
   &EdSelFun,&DocForm,&PopUpForm,&DocSplitTag,
@@ -1803,12 +1804,12 @@ U8 *console_doc_addresses[705]={
   &DrvsRelease,&BlkDevsRelease,&GetOutOfDollar,&PrintErr,
   &PrintWarn,&RawPutChar,&RedSeaFreeFreeLst,&DrvDel,
   &DrvBlkDevDel,
-  0xFFFFFFFF, //NativeDriveRecords
-  0xFFFFFFFF, //NativeBlockRecords
+  NULL, //NativeDriveRecords
+  NULL, //NativeBlockRecords
   &BlkDevNextFreeSlot,&DrvMakeFreeSlot,&DrvNextFreeLet,
-  0xFFFFFFFF, //NativeDriveMap
+  NULL, //NativeDriveMap
   &DrvMap,&GetStr,&DocGetStr2,
-  0xFFFFFFFF, //_FP_GETSTR2
+  NULL, //_FP_GETSTR2
   &DocClear,&DC2Sprite,&DocSprite,&DCLoad,
   &ExpandBuf,&ExtDft,&GRRead,&DocGR,
   &PortNop,&HPET,&Busy,&DocDump,
@@ -1819,38 +1820,38 @@ U8 *console_doc_addresses[705]={
   &ArcCompressBuf,&ArcCtrlDel,&ArcCtrlNew,&ArcExpandBuf,
   &ArcFinishCompression,&CompressBuf,&MemSetU16,&MemSetU32,
   &MemSetI64,
-  0xFFFFFFFF, //sys_os_version
+  NULL, //sys_os_version
   &PopUp1,&PopUp2,&PopUpOk,&PopUpNoYes,
   &PopUpCancelOk,&PopUpEd,&DirCur,&GrPaletteColorSet,
   &GrPaletteColorGet,&GrPaletteGet,&GrPaletteSet,&BirthWait,
   &DeathWait,
-  0xFFFFFFFF, //ac
-  0xFFFFFFFF, //acd
+  NULL, //ac
+  NULL, //acd
   &I386RawBlocks,&GetI64,&GetF64,&GetDate,
   &GrPutChar,&GrPutS,&GrVPutS,&GrPrint,
   &GrVPrint,&GrPutChar3,&GrPrint3,&GrVPrint3,
   &GrTextBox3,&GrTextDiamond3,&Sprite3,&GrLine,
-  0xFFFFFFFF, //SYS_PROGRESS1
-  0xFFFFFFFF, //SYS_PROGRESS1_MAX
-  0xFFFFFFFF, //SYS_PROGRESS1_T0
-  0xFFFFFFFF, //SYS_PROGRESS1_TF
-  0xFFFFFFFF, //SYS_PROGRESS1_DESC
-  0xFFFFFFFF, //SYS_PROGRESS2
-  0xFFFFFFFF, //SYS_PROGRESS2_MAX
-  0xFFFFFFFF, //SYS_PROGRESS2_T0
-  0xFFFFFFFF, //SYS_PROGRESS2_TF
-  0xFFFFFFFF, //SYS_PROGRESS2_DESC
-  0xFFFFFFFF, //SYS_PROGRESS3
-  0xFFFFFFFF, //SYS_PROGRESS3_MAX
-  0xFFFFFFFF, //SYS_PROGRESS3_T0
-  0xFFFFFFFF, //SYS_PROGRESS3_TF
-  0xFFFFFFFF, //SYS_PROGRESS3_DESC
-  0xFFFFFFFF, //SYS_PROGRESS4
-  0xFFFFFFFF, //SYS_PROGRESS4_MAX
-  0xFFFFFFFF, //SYS_PROGRESS4_T0
-  0xFFFFFFFF, //SYS_PROGRESS4_TF
-  0xFFFFFFFF, //SYS_PROGRESS4_DESC
-  0xFFFFFFFF, //SYS_PROGRESSES
+  NULL, //SYS_PROGRESS1
+  NULL, //SYS_PROGRESS1_MAX
+  NULL, //SYS_PROGRESS1_T0
+  NULL, //SYS_PROGRESS1_TF
+  NULL, //SYS_PROGRESS1_DESC
+  NULL, //SYS_PROGRESS2
+  NULL, //SYS_PROGRESS2_MAX
+  NULL, //SYS_PROGRESS2_T0
+  NULL, //SYS_PROGRESS2_TF
+  NULL, //SYS_PROGRESS2_DESC
+  NULL, //SYS_PROGRESS3
+  NULL, //SYS_PROGRESS3_MAX
+  NULL, //SYS_PROGRESS3_T0
+  NULL, //SYS_PROGRESS3_TF
+  NULL, //SYS_PROGRESS3_DESC
+  NULL, //SYS_PROGRESS4
+  NULL, //SYS_PROGRESS4_MAX
+  NULL, //SYS_PROGRESS4_T0
+  NULL, //SYS_PROGRESS4_TF
+  NULL, //SYS_PROGRESS4_DESC
+  NULL, //SYS_PROGRESSES
   &ProgressBarsRst,&DrawProgressBars,&StrICmp,&StrNICmp,
   &DocCursor,&DocHighlightCursor,&DocScroll,&tS,
   &Char2ScanCode,&ScanCode2Char,&ScanCode2KeyName,&NativeDocStrMatch,
@@ -1867,9 +1868,9 @@ U8 *console_doc_addresses[705]={
   &DocTreeFWrite,&DocTreeFAppend,&DocTreeExe,&DocTreeFExe,
   &RegCache,&RegDft,&RegExe,&RegWrite,
   &RegCnt,&RegAppend,&RegInit,
-  0xFFFFFFFF, //_SYS_REGISTRY_DOC
-  0xFFFFFFFF, //_SYS_MSG_FLAGS
-  0xFFFFFFFF, //_REGISTRY_VERSION
+  NULL, //_SYS_REGISTRY_DOC
+  NULL, //_SYS_MSG_FLAGS
+  NULL, //_REGISTRY_VERSION
   &NativeRegistryInit,&Max,&Min,&Clamp,
   &GrCircle,&GrEllipse,&GrRegPoly,&GrFloodFill,
   &GrPlot0,&GrPeek0,&SpriteInterpolate,&Sprite3B,
@@ -1879,16 +1880,16 @@ U8 *console_doc_addresses[705]={
   &Beep,&HashGenericAdd,&FramePtr,&FramePtrAdd,
   &FramePtrSet,&FramePtrDel,&Ona2Freq,&Noise,
   &Sweep,
-  0xFFFFFFFF, //_MUSIC_GLOBALS
-  0xFFFFFFFF, //_MS_GLOBALS
-  0xFFFFFFFF, //_MS_GRID_GLOBALS
+  NULL, //_MUSIC_GLOBALS
+  NULL, //_MS_GLOBALS
+  NULL, //_MS_GRID_GLOBALS
   &DirEntryDel,&DirEntryDel2,&DirTreeDel,&DirTreeDel2,
   &DirFilesFlatten,&DirFilesSort,&DirNameAbs,&CFileNameTo,
   &FATNameTo,&FATNameXSum,&FATFromName,&DirLongNameFill,
   &FAT32DirFill,&FAT32CDirFill,&RepInU8,&RepInU16,
   &RepInU32,&RepOutU8,&RepOutU16,&RepOutU32,
   &EndianU16,&EndianU32,&EndianI64,
-  0xFFFFFFFF, //_BLKDEV
+  NULL, //_BLKDEV
   &DskCacheInit,&DskCacheAdd,&RCache,&DskCacheInvalidate2,
   &ATAReadBlks,&ATAWriteBlks,&ATAInit,&ATARBlks,
   &ATAWBlks,&DrvTypeSet,&FileAttr,&CallExtStr,
@@ -1901,17 +1902,17 @@ U8 *console_doc_addresses[705]={
   &Copy,&Move,&MountFile,&Unmount,
   &RedSeaFmt,&RedSeaValidate,&FAT32Fmt,&FAT32Init,
   &DocTermNew,&KbdMsEvtTime,
-  0xFFFFFFFF, //_KBD_GLOBALS
-  0xFFFFFFFF, //_SYS_RUN_LEVEL
+  NULL, //_KBD_GLOBALS
+  NULL, //_SYS_RUN_LEVEL
   &Size,&ScanFlags,&HashEntrySize2,&HashTableSize2,
   &LinkedLstSize,&NativeOriginalView,&NativeBreak,&NativeBreakLock,
   &NativeBreakUnlock,&MenuPush,&MenuFilePush,&MenuPop,
   &PutExcept,
-  0xFFFFFFFF, //_REV_BITS_TABLE
-  0xFFFFFFFF, //_SET_BITS_TABLE
+  NULL, //_REV_BITS_TABLE
+  NULL, //_SET_BITS_TABLE
   &NativeSourceClampI64,&PutFileLink,&PopUpPickDir,&CopyTree,
   &MusicSettingsRst,&DelTree,&NativeTaskCaller,
-  0xFFFFFFFF, //_SCRNCAST
+  NULL, //_SCRNCAST
   &ScrnCast,&Mute,&IsMute,&DCCopy,
   &DCSave,&GRWrite,&DCExt,&DCDiff,
   &Note2Ona,&Ona2Note,&Ona2Octave,&Sprite,
@@ -1920,11 +1921,11 @@ U8 *console_doc_addresses[705]={
   &Fmt,&RedSeaISO,&RedSeaISO9660,&DVDImageRead,
   &DVDImageWrite,&Cd2DirEntry,&WinCursorPosSet,&PopUpPickFile,
   &LexGetChar,
-  0xFFFFFFFF, //_CMP_GLOBALS
-  0xFFFFFFFF, //_LEX_ZEROS
-  0xFFFFFFFF, //_CHAR_BMP_PRINTABLE
+  NULL, //_CMP_GLOBALS
+  NULL, //_LEX_ZEROS
+  NULL, //_CHAR_BMP_PRINTABLE
   &HashSrcFileSet,&DocPutLine,&FixSet,
-  0xFFFFFFFF, //_DBG_GLOBALS
+  NULL, //_DBG_GLOBALS
   &AdamErr,&IsSingleUser,&LexPutToken,&LexPutLine,
   &LexPutPos,&LexWarn,&LexExcept,&ICAdd,
   &COCInit,&COCPush,&COCPopNoFree,&COCPop,
@@ -1934,7 +1935,7 @@ U8 *console_doc_addresses[705]={
   &MemberMetaFind,&QueDel,&DirFile,&AOTStoreCodeU8,
   &AOTStoreCodeU32,&AOTStoreCodeU64,&AOTStoreCodeU8At,&PrsI386DataRange,
   &LoadOneImport,&SysSymImportsResolve,&CmpFixUpJITAsm,
-  0xFFFFFFFF, //_NATIVE_JIT_SUPPORT
+  NULL, //_NATIVE_JIT_SUPPORT
   &CmpFixUpAOTAsm,&AsmResolve,&AOTLocalsResolve,&AOTGlblsResolve,
   &AsmUnresolvedAdd,&OptPass012,&COCCompile,&I386DocBreakPoll,
   &Lex,&LexExtStr,&LexExpression,&LexExpressionI64,
@@ -1942,7 +1943,7 @@ U8 *console_doc_addresses[705]={
   &PrsAsmBlk,&CmpJoin,&CmpBuf,&MsSet,
   &GridInit,&DrawMs,&DrawStdMs,&DrawWaitMs,
   &GrFillCircle,
-  0xFFFFFFFF, //sys_compile_time
+  NULL, //sys_compile_time
   &OneTimePopUp,&RegOneTimePopUp,&Mat4x4Scale,&DCSymmetry3Set,
   &GrPlot3,&GrLine3,&NativeODEBind
 };

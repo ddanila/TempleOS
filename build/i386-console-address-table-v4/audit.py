@@ -1,4 +1,5 @@
 """Check the compact console export table against the original binding order."""
+import argparse
 import hashlib
 import json
 from pathlib import Path
@@ -6,7 +7,11 @@ import re
 import struct
 import subprocess
 
-root = Path(__file__).resolve().parent
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--build-dir', type=Path, default=Path(__file__).resolve().parent)
+parser.add_argument('--null-slots', action='store_true')
+args = parser.parse_args()
+root = args.build_dir
 path = 'Kernel/I386/ConsoleRuntime.HC'
 original = subprocess.check_output(['git', 'show', f'cce1d9bb:{path}']).decode()
 bindings = re.findall(r'ConsoleDocExportSet\(([^)]+)\);',
@@ -27,10 +32,12 @@ for file in ('Kernel/I386/MediaPathRuntime.HC', 'Kernel/I386/RawOutputRuntime.HC
     aliases.update(re.findall(r'^#define (\w+) (\w+)$', Path(file).read_text(), re.M))
 for index, (expression, slot) in enumerate(zip(bindings, slots, strict=True)):
     if index in overrides:
-        assert overrides[index] == expression and slot == 0xFFFFFFFF, index
+        assert overrides[index] == expression and slot == (0 if args.null_slots else 0xFFFFFFFF), index
     else:
         name = expression.removeprefix('&')
         assert slot == names[aliases.get(name, name)], (index, expression)
+        if args.null_slots:
+            assert slot != 0, (index, expression)
 
 baseline = Path('build/xcaliber-native-loader-v1/full/exports/ConsoleRuntime.t32m').read_bytes()
 loaded = lambda data: struct.unpack_from('<I', data, 16)[0]+8

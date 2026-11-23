@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "slots": 705,
+  "local_slots": 647,
+  "dynamic_slots": 58,
+  "console_sha256": "76d610920cb42639674b77e958c40abc46948f238ac3b9d59cf3a17092dc9f05",
+  "baseline_loaded_payload_bytes": 2335112,
+  "candidate_loaded_payload_bytes": 2310976
+}
