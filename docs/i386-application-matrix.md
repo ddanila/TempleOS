@@ -1255,3 +1255,10 @@ arithmetic renders. This verifies the queue initialization dependency.
 The normal window worker still needs the update phase. The scheduler
 candidate is building in a compiler overlay while the separate production
 retained rebuild continues. See `build/strut-ode-task-ring-v1/native64/result.json`.
+
+The scheduler overlay cross-build and protected-mode boot audit pass.
+A fresh console and its spawned child both have self-linked ODE queues,
+and fresh arithmetic renders. This candidate changes the scheduler
+binary through the compiler overlay. The runtime test covers task
+initialization. The console's automatic ODE update remains separate
+work. See `build/native-ode-task-birth-v1/candidate64/result.json`.
