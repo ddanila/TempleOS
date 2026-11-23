@@ -854,3 +854,13 @@ same-address operand checks, followed by fresh arithmetic. The original
 Psalmody load advances from line 226 to RegOneTimePopUp at line 584.
 The patch and receipts are in `build/psalmody-public-swap-v2`. This remains
 an overlay while the two-generation harness pins the production sources.
+
+With the early SwapI64 binding and the shared registry popup core, the
+unchanged Psalmody application loads and runs its keyboard workflow. The
+first popup overlay failed boot because its serialized export names contained
+an empty slot. The corrected overlay verifies all 700 names and passes
+native startup. The keyboard test records the expected three pitches,
+deletes the last note and restores caller state (mask 63). It fails
+the original exact duration check, recording 0, 7 and 8 instead of
+three 8s. The timed keyboard regression remains open. The candidate,
+failing receipt and decoded vectors are in `build/psalmody-registry-popup-v2`.
