@@ -412,3 +412,10 @@ also passes the resident optimizer oracle at 16 MiB. The original 48-word
 folding trace matches, heap deltas are zero, fresh arithmetic runs, and
 exactly one resident publication occurs. The result pins unchanged inputs
 in `build/ac-dictionary-direct-copy/resident-opt16/result.json`.
+
+The dictionary-updated production image also passes the 16 MiB native
+compiler and program diagnostic run. Both rounds complete the code header,
+emitter, resident policy and metadata checks. Fresh arithmetic and
+DocAllocationCheck pass, including diagnostic load, recovery and unload.
+The diagnostic image and pinned inputs are unchanged. See
+`build/ac-dictionary-direct-copy/diagnostic16/result.json`.
