@@ -1,0 +1,4 @@
+ODE mass start
+ODE mass initialized
+ODE mass state t=3FB9999999999800 x=3FFFAE5A4B447F3A v=BFD96DFF2465E916 fixed=0
+ODE mass motion

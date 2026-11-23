@@ -1262,3 +1262,12 @@ and fresh arithmetic renders. This candidate changes the scheduler
 binary through the compiler overlay. The runtime test covers task
 initialization. The console's automatic ODE update remains separate
 work. See `build/native-ode-task-birth-v1/candidate64/result.json`.
+
+The scheduler candidate also passes a serial ODE check with a stretched
+spring. A fixed anchor at zero and a unit mass at two start at rest.
+With rest length one and spring constant four, the integrator reaches
+0.1 seconds with position 1.98006658 and velocity -0.39733866. Both
+match the analytic oscillator within the probe tolerance of 0.02,
+and the fixed anchor remains at rest. The test drives the solver
+explicitly through the task's initialized queue. See
+`build/native-stretched-spring-v1/native64`.
