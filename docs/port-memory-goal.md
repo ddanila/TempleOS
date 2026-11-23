@@ -3014,3 +3014,11 @@ The [same-revision 64-slot retained build](../build/i386-native-cache-footprint-
 passed the persisted export audit for all nine modules. Its install
 and 8 MiB User test are running. The frozen `6eefeedd` pipeline has
 also entered the second self-hosted flat build after installation.
+
+The same-revision 64-slot rebuild reproduced all nine diagnostic module
+hashes byte for byte. Its
+[installation](../build/i386-native-cache-footprint-v2/retained-all128-install/result.json)
+passed the fresh 8 MiB arithmetic and document checks, and the separate
+[User workload](../build/i386-native-cache-footprint-v2/retained-all128-user8/result.json)
+again failed at `USCheck` with OutMem. The same-revision pre-User
+heap capture is underway.
