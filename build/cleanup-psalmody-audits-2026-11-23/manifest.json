@@ -1,0 +1,89 @@
+{
+  "files": [
+    {
+      "original": "build/psalmody-public-swap-v1/audit/kernel-assembly.txt",
+      "archive": "build/psalmody-public-swap-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "7c727bac8fa95660f22ec3f54b65e69ebf86e8c2477e32fcd8e7772da1e4378b",
+      "size": 109382862,
+      "reclaimed_bytes": 100720640,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/psalmody-public-swap-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/psalmody-public-swap-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/psalmody-public-swap-v2/audit/kernel-assembly.txt",
+      "archive": "build/psalmody-public-swap-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "22cf4898041be4347ed11ea2d91451d5d552e909fb62706e7ee799970d965938",
+      "size": 109383322,
+      "reclaimed_bytes": 100720640,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/psalmody-public-swap-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/psalmody-public-swap-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/psalmody-registry-popup-v1/audit/kernel-assembly.txt",
+      "archive": "build/psalmody-registry-popup-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "24b3df41be9534941da5939474292c02540d4d15770094d31e8d637a2025b66d",
+      "size": 109402975,
+      "reclaimed_bytes": 100737024,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/psalmody-registry-popup-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/psalmody-registry-popup-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/psalmody-registry-popup-v2/audit/kernel-assembly.txt",
+      "archive": "build/psalmody-registry-popup-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "24b3df41be9534941da5939474292c02540d4d15770094d31e8d637a2025b66d",
+      "size": 109402975,
+      "reclaimed_bytes": 100737024,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/psalmody-registry-popup-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/psalmody-registry-popup-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/psalmody-native-memset-v1/audit/kernel-assembly.txt",
+      "archive": "build/psalmody-native-memset-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "4f7674a1b9d4b362107b64f6e1a6feafd1d494c9c944696d59c80c6849b646ac",
+      "size": 109405758,
+      "reclaimed_bytes": 100741120,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/psalmody-native-memset-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/psalmody-native-memset-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/psalmody-doc-stream-batch-v1/audit/kernel-assembly.txt",
+      "archive": "build/psalmody-doc-stream-batch-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "5d1bc8f3ae11f045a53b872baa0fc64d1aeb1697824c64db5866a2e4450babcb",
+      "size": 109403906,
+      "reclaimed_bytes": 100737024,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/psalmody-doc-stream-batch-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/psalmody-doc-stream-batch-v1/audit/kernel-assembly.txt"
+      ]
+    }
+  ],
+  "reclaimed_bytes": 604393472
+}
