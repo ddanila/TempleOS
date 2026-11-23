@@ -141,7 +141,18 @@ try:
         guest.press('esc')
         time.sleep(2)
         guest.screenshot('ball-form-escape')
+        trace = guest.collect()[start:]
+        if 'COMMAND OK\n' not in trace:
+            try:
+                guest.wait('COMMAND OK\n', timeout=12, start=start)
+            except TimeoutError:
+                guest.screenshot('ball-after-escape')
         report['ball_form_trace'] = guest.collect()[start:]
+        if 'COMMAND OK\n' in report['ball_form_trace']:
+            guest.type('PopUpColorLighting;')
+            guest.press('ret')
+            time.sleep(6)
+            guest.screenshot('lighting-chooser')
 
 except Exception as exc:
     report.update(result='fail',error=str(exc))

@@ -1628,3 +1628,18 @@ app. The class form displayed radius 20.000, 16 longitude faces and
 opening and leaving the form. Choosing a lighting color and comparing
 the generated mesh with the original remain open. See the screenshots
 and receipt in `build/native-geometry-source-v1/GrModels-ball-form`.
+
+The Span production image also completed all nine retained module
+rebuilds at 128 MiB on the pinned 486 CPU. The retained source disk
+SHA-256 matches the receipt. The two-generation runner passed its
+input source audit and began generation-one installation. See
+`build/span-production-v1/retained128/result.json` and
+`build/span-production-v1/generations128`.
+
+The pinned original and the Span production image both show the
+BallGen defaults and open the original lighting chooser after Escape.
+The first native check captured the console before the chooser was
+drawn. The later capture shows the matching chooser rows, columns and
+swatches. Color selection and the generated mesh comparison remain
+open. See `build/grmodels-ball-reference-v1/form-original` and
+`build/native-geometry-source-v1/GrModels-ball-chooser`.

@@ -1,0 +1,47 @@
+{
+  "result": "observed",
+  "package": {
+    "result": "pass",
+    "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "image_sha256": "61dfe38b13dc2ddc67052f7494317b5e0da077c2456cf18986777a0a4019aee7",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1915,
+      "owned_sectors": 96200,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/LightingChooser.HC": "8a20753da001c7e8e21c557162d6ffb601d368442519e66c784ea18f7d53ab75",
+      "/PublicGeometrySource.HC": "158a30b386510728aa55d4c22b061632a55843e5b783c476815a37f7a0e0403c"
+    },
+    "added_attributes": {
+      "/LightingChooser.HC": 2048,
+      "/PublicGeometrySource.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "completed_commands": [
+    "#include \"C:/PublicGeometrySource.HC\"",
+    "#include \"C:/LightingChooser.HC\"",
+    "#include \"C:/Apps/GrModels/Load.HC\""
+  ],
+  "command": "#include \"C:/Apps/GrModels/Load.HC\"",
+  "fresh_result": {
+    "column": 0,
+    "row": 14,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "ball_form_trace": "INPUT LINE BallGen;\nCOMPILER BREAK ready\nEDITOR loaded 000000000000B2F8\nWIN ORDER derive begin000000000162DF8800000000015983E80000000000101F78\nWIN ORDER derive end000000000162DF8800000000015983E80000000000101F78\nWIN ORDER move begin000000000162DF8800000000015983E80000000000101F78\nWIN ORDER move end000000000162DF8800000000015B3BF800000000015983E8\nWIN ORDER scan call000000000162DF8800000000015B3BF800000000015983E8\nWIN ORDER scan begin00000000015B3BF800000000015F0D80000000000162DF88\nWIN ORDER scan node00000000015F0D800000000000101F7800000000015B3BF8\nWIN ORDER scan node0000000000101F7800000000015983E800000000015F0D80\nWIN ORDER scan node00000000015983E8000000000162DF880000000000101F78\nWIN ORDER scan node000000000162DF8800000000015B3BF800000000015983E8\nWIN ORDER top done000000000162DF8800000000015B3BF800000000015983E8\nCOMPILER BREAK ready\n"
+}
