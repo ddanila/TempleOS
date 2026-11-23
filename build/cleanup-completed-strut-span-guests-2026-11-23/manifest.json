@@ -3919,7 +3919,245 @@
         "-o",
         "build/native-geometry-source-v1/X-Caliber-loop-trace/working.img"
       ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-refresh-state/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-refresh-state/working.img.zst",
+      "sha256": "c5a4f2881f161a928ae8aa23247295b9e7986287d5b9af0a8657271a598dcd77",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-refresh-state/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-refresh-state/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-userspace/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-userspace/working.img.zst",
+      "sha256": "faec1e14c7ef249c00507300b6f06a108ad37d5965aed1dd6f52877908d58c56",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-userspace/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-userspace/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-binding-v3/optimizer16/working.img",
+      "archive": "build/resident-opt-binding-v3/optimizer16/working.img.zst",
+      "sha256": "be008aa57691a34b482b698654600f2c6bb3a3e70c1f84b6668e6c9d205758e4",
+      "size": 67108864,
+      "reclaimed_bytes": 53420032,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-binding-v3/optimizer16/working.img.zst",
+        "-o",
+        "build/resident-opt-binding-v3/optimizer16/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-binding-v3/user8/working.img",
+      "archive": "build/resident-opt-binding-v3/user8/working.img.zst",
+      "sha256": "389f5f675366c9bc7e1d2004eafd695115afe1b1105bea874e3806622f35bea3",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-binding-v3/user8/working.img.zst",
+        "-o",
+        "build/resident-opt-binding-v3/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-c5-generations128/gen1-desktop64/working.img",
+      "archive": "build/resident-opt-c5-generations128/gen1-desktop64/working.img.zst",
+      "sha256": "211adcefb461b3cf3fbf369e51957d0c80ded83dc7b102366f5a00466e8e7c7b",
+      "size": 67108864,
+      "reclaimed_bytes": 36802560,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-c5-generations128/gen1-desktop64/working.img.zst",
+        "-o",
+        "build/resident-opt-c5-generations128/gen1-desktop64/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-c5-generations128/gen2-desktop64/working.img",
+      "archive": "build/resident-opt-c5-generations128/gen2-desktop64/working.img.zst",
+      "sha256": "c18b13e0df3093065f943305a5611da00c7f3e971d47008c781a3c52730802a5",
+      "size": 67108864,
+      "reclaimed_bytes": 53284864,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-c5-generations128/gen2-desktop64/working.img.zst",
+        "-o",
+        "build/resident-opt-c5-generations128/gen2-desktop64/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-c5-generations128/gen2-desktop64-rerun/working.img",
+      "archive": "build/resident-opt-c5-generations128/gen2-desktop64-rerun/working.img.zst",
+      "sha256": "c18b13e0df3093065f943305a5611da00c7f3e971d47008c781a3c52730802a5",
+      "size": 67108864,
+      "reclaimed_bytes": 36802560,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-c5-generations128/gen2-desktop64-rerun/working.img.zst",
+        "-o",
+        "build/resident-opt-c5-generations128/gen2-desktop64-rerun/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-desktop64-ac-files/run/working.img",
+      "archive": "build/resident-opt-desktop64-ac-files/run/working.img.zst",
+      "sha256": "5a6ce94d0a1c0d57439767c3923f2ff3de400a479e53181141ad9ccbcbd15709",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-desktop64-ac-files/run/working.img.zst",
+        "-o",
+        "build/resident-opt-desktop64-ac-files/run/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-desktop64-ac-phases/run/working.img",
+      "archive": "build/resident-opt-desktop64-ac-phases/run/working.img.zst",
+      "sha256": "5ecdf7d0b60d9003fe9d237e7d5bedf425378acb37b1eb2eb3f5b6f522fdadad",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-desktop64-ac-phases/run/working.img.zst",
+        "-o",
+        "build/resident-opt-desktop64-ac-phases/run/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-desktop64-current/working.img",
+      "archive": "build/resident-opt-desktop64-current/working.img.zst",
+      "sha256": "9ca6be6b29170b0ab002bda268f07773bda095e1b897532af4c693195ab625b3",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-desktop64-current/working.img.zst",
+        "-o",
+        "build/resident-opt-desktop64-current/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-desktop64-trace/run/working.img",
+      "archive": "build/resident-opt-desktop64-trace/run/working.img.zst",
+      "sha256": "6637b9486662c484baa1192f71001aaef8e11e75e8765c464e313a12c8b10305",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-desktop64-trace/run/working.img.zst",
+        "-o",
+        "build/resident-opt-desktop64-trace/run/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-metadata-v1/user8/working.img",
+      "archive": "build/resident-opt-metadata-v1/user8/working.img.zst",
+      "sha256": "53ad6a810917cfb74db94fd504fcd0d21e171b5713c82e788d30097e20d64b3a",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-metadata-v1/user8/working.img.zst",
+        "-o",
+        "build/resident-opt-metadata-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-metadata-v2/user8/working.img",
+      "archive": "build/resident-opt-metadata-v2/user8/working.img.zst",
+      "sha256": "9b6fa43db19c40bc49bd50fc67efe127872397a842e1ce0da930ed0bcc288a72",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-metadata-v2/user8/working.img.zst",
+        "-o",
+        "build/resident-opt-metadata-v2/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-original-user-final/recovery64/working.img",
+      "archive": "build/resident-opt-original-user-final/recovery64/working.img.zst",
+      "sha256": "9bf1ea0dea3941acd230b818a9b2758c76f70a10fe492b8022ae283ede757b80",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-original-user-final/recovery64/working.img.zst",
+        "-o",
+        "build/resident-opt-original-user-final/recovery64/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-original-user-final/user8/working.img",
+      "archive": "build/resident-opt-original-user-final/user8/working.img.zst",
+      "sha256": "ce0af08c20003af8e05e501b2d2a41dd93ef43fc91eb6029936b340d25e3a0f6",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-original-user-final/user8/working.img.zst",
+        "-o",
+        "build/resident-opt-original-user-final/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-original-user-v2/live-recovery/working.img",
+      "archive": "build/resident-opt-original-user-v2/live-recovery/working.img.zst",
+      "sha256": "467643597fc83a6c51e5408f2ede14dcd3347625f828b4148011feeee14849d4",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-original-user-v2/live-recovery/working.img.zst",
+        "-o",
+        "build/resident-opt-original-user-v2/live-recovery/working.img"
+      ]
+    },
+    {
+      "original": "build/resident-opt-original-user-v2/user8/working.img",
+      "archive": "build/resident-opt-original-user-v2/user8/working.img.zst",
+      "sha256": "dac64add323e0586769088fc6cf1a45c6c14d027f91464a022cb83d55d7d23d4",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-original-user-v2/user8/working.img.zst",
+        "-o",
+        "build/resident-opt-original-user-v2/user8/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 13962072064
+  "reclaimed_bytes": 14836682752
 }

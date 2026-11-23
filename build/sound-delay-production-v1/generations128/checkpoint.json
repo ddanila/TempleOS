@@ -1,0 +1,101 @@
+{
+  "result": "pass",
+  "scope": "Two native generations and artifact identity on the sound-timing image",
+  "identity": {
+    "result": "pass",
+    "module_count": 16,
+    "flat_bytes": 467464,
+    "flat_sha256": "3654fc3fbe3ba91879abcfee1aef4103426d5ad5ebe20ea91c17a4536f91b9d7",
+    "boot_area_sha256": "dce8b18e05c628aea5ac4d85077721b49656ef2b0b9eb58959c82891db6a06c6",
+    "first_volume": {
+      "directories": 63,
+      "files": 1926,
+      "owned_sectors": 98162,
+      "bitmap": "matches reachable extents"
+    },
+    "second_volume": {
+      "directories": 63,
+      "files": 1926,
+      "owned_sectors": 98162,
+      "bitmap": "matches reachable extents"
+    },
+    "first_disk_sha256": "6a22a7b642ab9c57f1223e3f93fed50d3b20a07a43f9ae33196b53d2e59c1da4",
+    "second_disk_sha256": "a36e982022f6aa1ebdb30f11793942858050ba105a486b2fe953e843437eafee",
+    "comparison_scope": "All artifact bytes except exported eight-byte Kernel date; each actual boot payload/checksum/padding verified independently",
+    "kernel_build_dates": [
+      3179597323094856,
+      3179597484354971
+    ],
+    "normalized_flat_sha256": "d1a1124d7095eeeddb3ac7537614fffa1d94c05db6341b29a2f6a8b12d9db90c"
+  },
+  "stages": {
+    "input-source-audit": {
+      "result": "pass",
+      "receipt_sha256": "49aa3e377ec5d122109155639fd173f825736398777f9941ab53abe278566b3c"
+    },
+    "gen1-install": {
+      "result": "pass",
+      "receipt_sha256": "8e0859ef6d9cc8c52e78a632e2fb1cd24205b3b02ef191c61042ac5ef65255f0"
+    },
+    "gen1-selfhost": {
+      "result": "pass",
+      "receipt_sha256": "844f862635f763a378b7800606feda0bc6f1a4c486bff3173f43f82180fc018b"
+    },
+    "gen1-audit": {
+      "result": "pass",
+      "receipt_sha256": "1d0c4fdb97a6969dd64ecfee7be477894874c1ebf9885056234f0ca1b2fdf666"
+    },
+    "gen1-source-audit": {
+      "result": "pass",
+      "receipt_sha256": "d90a1a2fb4bdf035d1bfc0d7332b75e8a20452386e3a33932be95738e42ce015"
+    },
+    "gen2-retained-build": {
+      "result": "pass",
+      "receipt_sha256": "b426a6e7af84db8b00da0f2878a2550820cb89ef3e0f3f3c57df26fac021198a"
+    },
+    "gen2-install": {
+      "result": "pass",
+      "receipt_sha256": "4c344baf4e3a721e0d2d379da6bc8bfcfefa9221e3b4bb85f700a6888c54b1fb"
+    },
+    "gen2-selfhost": {
+      "result": "pass",
+      "receipt_sha256": "935bc4db65204f3b5e1c70180d708dbb7ce7e421ed6fcd25b03893618cc9987e"
+    },
+    "gen2-audit": {
+      "result": "pass",
+      "receipt_sha256": "e927e0c9087a7e61197352388fa037449e51415af8273126ced5f3b861c94b4d"
+    },
+    "gen2-source-audit": {
+      "result": "pass",
+      "receipt_sha256": "72b930c3d2605cc455f5572822d9627806a7c4774f1f12b676974f6ae29ead82"
+    },
+    "generation-identity": {
+      "result": "pass",
+      "receipt_sha256": "d424438d277ff597da6cf2018a91e10caa8e9bdfbbef023fa31d9ee543eb8afb"
+    }
+  },
+  "generation_workloads": {
+    "gen1": {
+      "span64": {
+        "result": "pass",
+        "receipt": "build/sound-delay-production-v1/gen1-span64/result.json"
+      },
+      "user8": {
+        "result": "fail",
+        "receipt": "build/sound-delay-production-v1/gen1-user8/result.json"
+      },
+      "bundled_audit": "build/i386-bundled-source-audit-v1/gen1-selfhost.json"
+    },
+    "gen2": {
+      "span64": {
+        "result": "pass",
+        "receipt": "build/sound-delay-production-v1/gen2-span64/result.json"
+      },
+      "user8": {
+        "result": "fail",
+        "receipt": "build/sound-delay-production-v1/gen2-user8/result.json"
+      },
+      "bundled_audit": "build/i386-bundled-source-audit-v1/gen2-selfhost.json"
+    }
+  }
+}

@@ -19,7 +19,7 @@ def collect(guest):
             path = guest.out / f'refresh-{index}-{name}.bin'
             guest.call('pmemsave', val=address, size=8, filename=str(path))
             sample[name] = int.from_bytes(path.read_bytes(), 'little')
-        registers = guest.call('human-monitor-command', command_line='info registers')
+        registers = guest.call('human-monitor-command', **{'command-line': 'info registers'})
         sample['registers'] = registers
         samples.append(sample)
         if index < 2:

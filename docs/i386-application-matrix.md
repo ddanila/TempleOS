@@ -2229,3 +2229,21 @@ retained rebuilds and installs them. Both stage images preserve all
 flat-kernel self-build is running. See
 `build/i386-bundled-source-audit-v1/gen2-retained.json`
 and `build/i386-bundled-source-audit-v1/gen2-install.json`.
+
+The sound-timing image completes the two-generation native artifact
+check. Both generations rebuild, install and boot all sixteen modules.
+The artifacts match under the declared eight-byte Kernel date exception,
+and each real boot image passes its payload and checksum audit. Both
+preserve all 686 bundled files and pass the 64 MiB physical Span check.
+Both still fail the unchanged 8 MiB User task allocation. The current
+ToTheFront production image's retained rebuild is running separately.
+See `build/sound-delay-production-v1/generations128/checkpoint.json`.
+
+X-Caliber reproduces the post-shot Refresh stall with both QEMU IRQ-chip
+configurations. The corrected default-KVM sampler observes the timer
+advancing across all three samples while the window-manager update
+count stays fixed and its refresh semaphore remains set. The first
+draw callback that sees a shot returns normally. Another frame or
+later work within the refresh remains open. See
+`build/native-geometry-source-v1/X-Caliber-refresh-retry/result.json`
+and `build/native-geometry-source-v1/X-Caliber-draw-trace/result.json`.
