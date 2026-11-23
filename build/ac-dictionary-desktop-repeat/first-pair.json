@@ -1,0 +1,7 @@
+{
+  "baseline_receipt_sha256": "07a197ace7defced9da4012f913a175d1d6e9a882c73f56e2512fb0adea2a711",
+  "direct_copy_receipt_sha256": "4376f11bb20e4548124f32cebe21016121035ff05416caa10a731b5693e8f569",
+  "baseline_seconds": 287.125541692003,
+  "direct_copy_seconds": 201.92198834600276,
+  "observed_difference_seconds": 85.20355334600026
+}

@@ -1,0 +1,8 @@
+{
+  "baseline_sha256": "047eeae06731ba6b462472d0637519a92acd47875166ad237e5633370d22de4b",
+  "direct_copy_sha256": "7aed6eb22071330f104c0d563af7567008162c76711f4dd65c5077f04e5e29b7",
+  "boot_unchanged": true,
+  "changed_installed_file": "/Adam/AutoComplete/ACInit.HC",
+  "baseline_file_sha256": "77daaea6d160a93075ec3b09e690e5a2a0822535507efe1f8c4fa6ad4e739708",
+  "direct_copy_file_sha256": "d499ca13b154efc545b9a73b795387004ed62a77b56d95f340c10c31fb207bba"
+}
