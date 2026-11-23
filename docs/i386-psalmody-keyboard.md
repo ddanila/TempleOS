@@ -162,3 +162,18 @@ all 1,903 pre-existing filesystem entries are preserved. The original fixture
 still sends the same 400 ms holds. The immediate-input test still fails, so
 the passing case covers typing after the recording UI is ready. See
 `build/native-graphics-dirty-rows-v1/psalmody-ready64/result.json`.
+
+Changed-row and full VGA uploads match all pixels in four native persistent
+graphics frames. A direct red bitmap pixel appears, a green final hook
+covers it, removing that hook reveals a blue pixel, and clearing the bitmap
+restores the white document. Both sessions execute fresh arithmetic.
+The raster harness and receipt are in
+`build/native-graphics-dirty-rows-v1/raster-compare-v2`. Raw VGA writes and
+forced display flushes are separate transitions under test in the next overlay.
+
+The nested-yield experiment passes the five explicit document-stream checks
+when packaged as a guest fixture. These cover partial markup, escaped dollar
+signs, plain-text output and middle insertion. The older terminal harness
+timed out at its startup raster before it reached the checks. The packaged
+runner verifies the five conditions directly and renders fresh arithmetic.
+The receipt is in `build/psalmody-doc-stream-batch-v1/stream64-packaged`.

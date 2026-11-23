@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/psalmody-doc-stream-batch-v1/candidate.img": "638a9cda19dfe6223f6e5f74c02a0b889e620cae2bc7cab159b24c963c994b36",
+    "tools/test-i386-doc-stream.py": "9d1f33297d2bbfa0266299450602f23ef5618957f462b3efc5e456cadc2b5e5c",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "/home/ddanila/fun/TempleOS/build/psalmody-doc-stream-batch-v1/stream-package.py": "83264914d0b4dfb78831edcfc4880ff6986ea3226afbc13e5a2413763f66fa93"
+  },
+  "checks": 5,
+  "fresh_result": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "added_fixture_sha256": "cdedc700129e62c38bd1a5253be8062a73aa6d6a63b4c36b27c8b60e171eaa21",
+  "inputs_unchanged": true
+}
