@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "source_sha256": "ff0b755555bb691d3d67754ffa60ff8c6f6e01f1cf3bf57565c601fcba9aa076",
+  "image_sha256": "9bb33c493438811e04ce54c41beebdf8f9d55ff6588ec524dd162efaf1efbad3",
+  "boot_area_sha256": "4ba9f86d14fd02568f80d9277a02b87d698b1f2a60e73e0aa7b72afb01703482",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1906,
+    "owned_sectors": 96299,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1906,
+    "owned_sectors": 96302,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Contiguous original User stack reservation through startup",
+  "candidate_sha256": "9bb33c493438811e04ce54c41beebdf8f9d55ff6588ec524dd162efaf1efbad3",
+  "instruction_audit": "pass",
+  "prototype": true
+}

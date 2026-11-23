@@ -1,0 +1,6 @@
+{
+  "result": "fail",
+  "marker": "CONSOLE REJECT load reclaimed",
+  "debug_sha256": "29801811ebbb8ef8968a1d6e449a8e0f03ae2ed8b449310c9175ccec53377f94",
+  "receipt_sha256": "20f0fe54b1690b644438dd1ab94f516cecf52b0d29d8bbe709a81bf9cc3947a5"
+}

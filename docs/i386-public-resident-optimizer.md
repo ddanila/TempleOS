@@ -434,3 +434,16 @@ load and WinMgr starts. Startup then runs out of segmented emitter space
 while compiling `Compiler/UAsmCore.HC` for the original command prompt.
 This is earlier than the original User task allocation. The audited patch and
 failure receipts are in `build/original-user-stack-reserve-v5`.
+
+Splitting command-prompt startup into four native source transactions advances
+the reserved-stack image from segmented emitter exhaustion to the final code
+storage allocation while loading the unit containing `Ui`. The splitter
+preserves every byte of the original disassembler across its two source units.
+The image still fails before startup completes. See
+`build/original-user-split-prompt-v1`.
+
+The first high-end reservation image adds a direct Console import for the
+kernel's high allocator. It passes the host instruction audit with that
+specific import accounted for, then the native Console loader rejects the
+module before the reservation runs. The failure leaves the high-end placement
+hypothesis untested. See `build/original-user-stack-reserve-v6`.
