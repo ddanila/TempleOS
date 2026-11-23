@@ -1829,3 +1829,16 @@ directory include and returns to a working prompt. See
 
 Span's generation-two retained rebuild and installation passed.
 The generation-two native self-host check is running.
+
+A source-only ToTheFront candidate preserves the original Run.HC
+launcher and the original multicore visibility path. Native selects
+the serial workers and loads its graphics, popup, key polling and
+task settings dependencies when the app starts. The queue sentinel
+uses its address on both paths. At 64 MiB, the normal Run.HC entry
+opens the fixed-seed Human match, draws the map and exits back to
+fresh arithmetic. The same image passes the unchanged 8 MiB User
+check in 50.73 seconds. The image kept the original boot area and all
+unrelated files. The shared-source refactor, full game workflows
+and exact rendering remain open. See
+`build/tothefront-normal-entry-v1/match64/result.json` and
+`build/tothefront-normal-entry-v1/user8/result.json`.

@@ -1539,7 +1539,63 @@
         "-o",
         "build/native-geometry-source-v1/ToTheFront-task-settings/working.img"
       ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-combined/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-combined/working.img.zst",
+      "sha256": "9cefd6821b5623378bc50d0fa0bb39b42cfe7fcb960713606f3e9a939bc300fe",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-combined/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-combined/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-human-match/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-human-match/working.img.zst",
+      "sha256": "b9f2bd729f5b7ed6b4ac75153092e9e77965ab3c765877fd6e1baf7060cba578",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-human-match/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-human-match/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-normal-entry-v1/match64/working.img",
+      "archive": "build/tothefront-normal-entry-v1/match64/working.img.zst",
+      "sha256": "19e22318d77d19c1b6b1f1fe0d640f319a1e04c511c43af8e6f919a357a271d1",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-normal-entry-v1/match64/working.img.zst",
+        "-o",
+        "build/tothefront-normal-entry-v1/match64/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-normal-entry-v1/user8/working.img",
+      "archive": "build/tothefront-normal-entry-v1/user8/working.img.zst",
+      "sha256": "05d66280d3544a8d2e9dc9ce3613afd5c93201ae719478d58ec3832e4fa60c4e",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-normal-entry-v1/user8/working.img.zst",
+        "-o",
+        "build/tothefront-normal-entry-v1/user8/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 5428985856
+  "reclaimed_bytes": 5642592256
 }
