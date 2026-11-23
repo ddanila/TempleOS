@@ -1,0 +1,67 @@
+{
+  "result": "fail",
+  "package": {
+    "result": "pass",
+    "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "image_sha256": "20fd2fd2b100feb4718b9f21e439e7a15c3dd39be5cef74d38e07fbe5c4f2bea",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1924,
+      "owned_sectors": 96227,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/IntegerPrompt.HC": "63a9e2a7fbcfdc7264738d9e5b8f9d643a53e2e0c0fca813c43771ebcffeef61",
+      "/PublicGeometrySource.HC": "158a30b386510728aa55d4c22b061632a55843e5b783c476815a37f7a0e0403c",
+      "/TTFAttackHeader.HC": "44620f4d7773ba490651f1d99971b04928120e7516d89f83370922867112a760",
+      "/TTFBulletPlot.HC": "e8ec9f01f2fe2959b9bbe51f372fa5d351b6e1aaa0bf1c625d171d96f26e002b",
+      "/TTFDamageDo.HC": "97b137ca9bf6a9675ef8e42406dfbe39a1e1cc28eb74b79ba26545048578034a",
+      "/TTFHexOccupy.HC": "ee36fdf6b9f0da0e91195d60974db90c536bcea54874b6929dbb66bddc7fadc2",
+      "/TTFHitDamage.HC": "3e6785d2e16f952cec59ceb609ecf13cc9e742042a9e18fed4301fd64609494b",
+      "/TTFIndirectAdd.HC": "cd24261ff423b2ee88821097a7711afbfef88e47d0aaeb2819c23b5666c348b4",
+      "/TTFIndirectResolveAll.HC": "a38771f1bc221c22afa441babe17c2aac6e395772b2748db5c42f51e2840ffbd",
+      "/TTFSerialVis.HC": "5284d9c99baff19833d30a64ad6680ce3d6a13efda2a1a8df59f6624718260e7",
+      "/TTFUnitDirectFire.HC": "6c31cc223304b0a4bcc37356a71fd2894ce2dd3d4231777b83b4fe251857f8bb"
+    },
+    "added_attributes": {
+      "/IntegerPrompt.HC": 2048,
+      "/PublicGeometrySource.HC": 2048,
+      "/TTFAttackHeader.HC": 2048,
+      "/TTFBulletPlot.HC": 2048,
+      "/TTFDamageDo.HC": 2048,
+      "/TTFHexOccupy.HC": 2048,
+      "/TTFHitDamage.HC": 2048,
+      "/TTFIndirectAdd.HC": 2048,
+      "/TTFIndirectResolveAll.HC": 2048,
+      "/TTFSerialVis.HC": 2048,
+      "/TTFUnitDirectFire.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "completed_commands": [
+    "#include \"C:/PublicGeometrySource.HC\"",
+    "#include \"C:/IntegerPrompt.HC\"",
+    "Cd(\"C:/Apps/ToTheFront\");",
+    "#include \"C:/Apps/ToTheFront/TTFGlbls.HC\"",
+    "#include \"C:/Apps/ToTheFront/TTFLib.HC\"",
+    "#include \"C:/Apps/ToTheFront/TTFInit.HC\"",
+    "#include \"C:/TTFSerialVis.HC\"",
+    "#include \"C:/TTFAttackHeader.HC\"",
+    "#include \"C:/TTFHitDamage.HC\"",
+    "#include \"C:/TTFDamageDo.HC\"",
+    "#include \"C:/TTFIndirectAdd.HC\"",
+    "#include \"C:/TTFBulletPlot.HC\"",
+    "#include \"C:/TTFUnitDirectFire.HC\"",
+    "#include \"C:/TTFHexOccupy.HC\""
+  ],
+  "command": "#include \"C:/TTFIndirectResolveAll.HC\"",
+  "error": "INPUT LINE #include \"C:/TTFIndirectResolveAll.HC\"\nCOMPILER BREAK ready\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000000 warnings 0000000000000000\nCOMMAND ERROR\n"
+}

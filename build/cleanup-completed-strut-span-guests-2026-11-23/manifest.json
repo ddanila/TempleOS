@@ -797,7 +797,133 @@
         "-o",
         "build/xcaliber-vector-load-v1/native64/working.img"
       ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/GrModels/working.img",
+      "archive": "build/native-geometry-source-v1/GrModels/working.img.zst",
+      "sha256": "61dfe38b13dc2ddc67052f7494317b5e0da077c2456cf18986777a0a4019aee7",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/GrModels/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/GrModels/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-serial/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-serial/working.img.zst",
+      "sha256": "5ba16ddd64847784b3e645717bc5d3e9d535f77925173bbac9e6a98c603b724b",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-serial/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-serial/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-serial-absolute/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-serial-absolute/working.img.zst",
+      "sha256": "3e5631ebe7cbe1bfe8cd2992aca18925c3fd144457c03d3bcb1278ba63553fae",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-serial-absolute/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-serial-absolute/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-serial-sibling/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-serial-sibling/working.img.zst",
+      "sha256": "9d8231401531a821120c6bc73a45f097e55bea47a4dace5fe4e6b37fb082d7b4",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-serial-sibling/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-serial-sibling/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-serial-explicit/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-serial-explicit/working.img.zst",
+      "sha256": "ebe4af1366676edf5866f647e3d7fe8c2bf2c15c9527b71a9aa67a116a8ef28f",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-serial-explicit/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-serial-explicit/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-serial-inline/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-serial-inline/working.img.zst",
+      "sha256": "d68cc78fe2e1e103f8e1c28c416e0b5f81cb08813d6d4da0525de21f39a27b73",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-serial-inline/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-serial-inline/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-serial-units/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-serial-units/working.img.zst",
+      "sha256": "cf924dce3b6e5062202792696c8721bea0ff7b1555237b6560d3383cedc4af99",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-serial-units/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-serial-units/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-serial-exact/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-serial-exact/working.img.zst",
+      "sha256": "cf924dce3b6e5062202792696c8721bea0ff7b1555237b6560d3383cedc4af99",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-serial-exact/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-serial-exact/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-split-fire/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-split-fire/working.img.zst",
+      "sha256": "20fd2fd2b100feb4718b9f21e439e7a15c3dd39be5cef74d38e07fbe5c4f2bea",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-split-fire/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-split-fire/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 2821652480
+  "reclaimed_bytes": 3302309888
 }

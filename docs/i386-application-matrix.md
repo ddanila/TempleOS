@@ -1594,3 +1594,20 @@ loader complete on the production Span image, and the console
 displayed the result of fresh arithmetic. Full model generation
 remains open. See `build/native-geometry-source-v1/ToTheFront-serial-exact`
 and `build/native-geometry-source-v1/GrModels/result.json`.
+
+The ODE production image completed the retained rebuild for all nine
+modules at 128 MiB on the pinned 486 CPU. The retained source disk
+SHA-256 matches the receipt. This is the retained-provider rebuild
+gate. Two-generation installation and qualification remain open on
+the newer Span image. See
+`build/native-ode-production-v1/retained128/result.json`.
+
+Splitting the original ToTheFront fire unit by function isolates the
+compiler exception to `IndirectResolveAll`. Comparing the pending
+order with `&indirect_head`, as the draw routine does, lets that
+function compile. The next missing symbol is `Wrap` at
+`TTFMove.HC:71`. The probe retains the original application files in
+the disk image. The original `Wrap` has been added as an optional
+probe input for the next run. See
+`build/native-geometry-source-v1/ToTheFront-split-fire/result.json`
+and `build/native-geometry-source-v1/ToTheFront-indirect-head/result.json`.
