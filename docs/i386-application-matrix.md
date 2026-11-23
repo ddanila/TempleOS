@@ -965,3 +965,10 @@ ships the repaired KeepAway source. All 686 inventory files match the current
 tree. The full image passes the 64 MiB launch, jump, restart, exit, caller
 restoration and arena raster checks. See `build/keepaway-sort-production-v1`
 for the image identity and runtime receipts.
+
+KeepAway's bundled loader now resolves autocomplete and TaskSettings on demand
+when their public functions are absent. Autocomplete loads first so task
+settings can bind it. The patched loader passes on the original system and
+on a cold 64 MiB native boot with no preparatory library commands. The native
+run passes arena rendering, jump, restart, exit and caller restoration.
+See `build/keepaway-libraries-lazy-v1` for the original and native receipts.

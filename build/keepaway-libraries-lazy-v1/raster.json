@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "scope": "KeepAway arena appearance and Window Manager exception check",
+  "frames": {
+    "original": {
+      "sha256": "cc94b23dcfe1d2c8962e85b92cee5a458f10cc060999fdba418f2a4b0b2f3506",
+      "arena_yellow_pixels": 291658,
+      "border_red_pixels": 4409
+    },
+    "native64": {
+      "sha256": "241654d3d536ec1206b472232682347042f02b241a1514c7ce9ad21796bb4373",
+      "arena_yellow_pixels": 295071,
+      "border_red_pixels": 4280
+    }
+  },
+  "native_allocation_request_bytes": null,
+  "native_window_exception": null
+}

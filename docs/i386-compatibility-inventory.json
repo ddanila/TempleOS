@@ -10420,10 +10420,22 @@
         "KeepAway"
       ],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
+      "source_at_discovery": "modified",
       "compatibility": "unqualified",
-      "reference_workflow": "Load the unchanged KeepAway application sources using its original Load.HC entry point; full interactive application workflow remains to be captured.",
-      "oracle": "docs/i386-application-matrix.md: on the current full-content image the unchanged native loader rejects unbound SettingsPush at KeepAway.HC.Z line 645; this is not a reference launch or gameplay oracle.",
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Load KeepAway from its bundled path and resolve the autocomplete and task-settings dependencies before starting gameplay."
+      },
+      "oracle": {
+        "tool": "build/keepaway-libraries-lazy-v1/run.py",
+        "checks": [
+          "No manual library loads",
+          "instructions dialog",
+          "animation and arena",
+          "keyboard jump and restart",
+          "exit and caller recovery"
+        ]
+      },
       "tests": [
         {
           "target": "native-keepaway-load",
@@ -10438,6 +10450,13 @@
           "result": "fail",
           "evidence": "build/i386-native-indexed-cross64-full-keepaway-load/result.json",
           "scope": "Current full-content image verifies all three pinned application files; undefined SettingsPush rejects before gameplay"
+        },
+        {
+          "target": "native-keepaway-lazy-library-loading",
+          "command": "python3 build/keepaway-libraries-lazy-v1/run.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/keepaway-libraries-lazy-v1/native64/result.json",
+          "scope": "First launch from a cold 64 MiB boot resolves libraries within Load.HC. Arena, jump, restart, exit and fresh arithmetic pass."
         }
       ]
     },

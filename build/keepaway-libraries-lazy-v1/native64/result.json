@@ -1,0 +1,49 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/keepaway-libraries-lazy-v1/run.py": "6cf75e8a7ec0dd61464cf991cb92697dca61bdf156da69820f02b0dff2ab843b",
+    "/home/ddanila/fun/TempleOS/build/keepaway-libraries-lazy-v1/Probe.HC": "ecfeea9eaff6ebd813170275149cbedc09c708e8bf9befe0c50206e107c49f6a",
+    "/home/ddanila/fun/TempleOS/build/keepaway-libraries-lazy-v1/Load.HC": "dc3e7ad2c816e1303e9860ac3f3ef790250c21837199bca6052566660a20477b",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/keepaway-sort-production-v1/full/kernel.img": "8e602a69a536b0bd0ad76bb04ad52a726a96f33acd11e4958acaa75b6d9f839e"
+  },
+  "scope": "KeepAway launch with on-demand libraries, jump, restart, exit and caller restoration",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "8e602a69a536b0bd0ad76bb04ad52a726a96f33acd11e4958acaa75b6d9f839e",
+    "image_sha256": "c3f06492407e33764f10a39af5ae077cba56c1d76a09c9d76b9ca4296d78da29",
+    "boot_area_sha256": "1ec642e4b21c0e1b5e49df55bf1fad2ebcf01ab157cf923c8223271f145ca8fd",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96134,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/KeepAwayProbe.HC": "ecfeea9eaff6ebd813170275149cbedc09c708e8bf9befe0c50206e107c49f6a"
+    },
+    "added_attributes": {
+      "/KeepAwayProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}
