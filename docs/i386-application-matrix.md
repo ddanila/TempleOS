@@ -1411,3 +1411,18 @@ also fails with the floating-point members passed directly, so the
 failure does not depend on GrLine3's binding. The full Span loader is
 under test with the typed locals, and a compiler trace is building.
 See `build/span-line-call-v1/native64/result.json`.
+
+The Span call failure comes from floating-point helper discovery. The
+frontend checks whether values have an F64 class, but the implicit
+F64-to-I64 flag makes the classifier return I64. The helper scan already
+checks the reverse conversion flag. Adding the I64-result flag makes
+all five reduced call forms compile on a native CompilerRuntime
+overlay, including the unmodified member arguments. The runtime-value
+and 8 MiB checks are running. See
+`build/native-implicit-f64-helper-v1/native64/result.json`.
+
+With explicit I64 locals, the full Span loader passes DrawSpring and
+reaches the missing SndTaskEndCB binding in SongTask. An original music
+player source slice with a native clock adapter is under test together
+with the compiler candidate and the unchanged Span source. See
+`build/span-native-coordinate-locals-v1/native64-typed/result.json`.
