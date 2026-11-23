@@ -1055,3 +1055,20 @@ The bundled Vocabulary sources load on the current native image after
 explicitly loading autocomplete. All three files match the original, and
 fresh arithmetic executes. Dictionary initialization and the interactive quiz
 remain open. See `build/vocabulary-libraries-v1/native64/result.json`.
+
+The longer muted KVM control and the unmuted TCG run both finish the Space-key
+shot, clear the active flag, and update the flight deadline. The unmuted
+KVM stall remains open. A smaller test with two overlapping Noise tasks
+keeps the clock advancing under both KVM interrupt-controller configurations.
+These results narrow the failure to a condition in the full KeepAway
+scenario. See `build/keepaway-shot-timer-controls-v1` and
+`build/native-speaker-clock-v1`.
+
+The controlled unmuted KVM comparison uses the same image, fixture and
+physical Space-key sequence for both runs. With the in-kernel interrupt
+controller enabled, the flight deadline remains unchanged. With
+`-machine pc,kernel_irqchip=off`, the guest clock advances and the shot
+updates the flight deadline. Both runs return to the prompt. The result
+establishes an alternate verified KVM profile for this workflow. The default
+KVM stall still needs a root-cause fix. See
+`build/keepaway-shot-irq-controls-v2`.

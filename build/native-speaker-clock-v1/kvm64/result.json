@@ -1,0 +1,62 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "build/logic-lazy-load-v1/full/kernel.img": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c",
+    "/home/ddanila/fun/TempleOS/build/native-speaker-clock-v1/Probe.HC": "55f382edad2947bf54c57eb04fe88c2b41e58ec50c0af6643cb3971e63b58952",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/native-speaker-clock-v1/run.py": "b05a527b24463a603d25317bb7fe62cc3b8f42cb8a3ed23cec8411ec08247af5"
+  },
+  "kernel_irqchip": "on",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c",
+    "image_sha256": "cab9b7ad08bb4a053c4334382ce61c8b153e57edaec9dc519982795c12c8c9e1",
+    "boot_area_sha256": "c63f8ad7779888b6e1647e1528b9279094034fe17746409473e25a5bfa68b11e",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96133,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/SpeakerClockProbe.HC": "55f382edad2947bf54c57eb04fe88c2b41e58ec50c0af6643cb3971e63b58952"
+    },
+    "added_attributes": {
+      "/SpeakerClockProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "jiffies": [
+    22970,
+    23070,
+    23180,
+    23280,
+    23390,
+    23490,
+    23590,
+    23700,
+    23800,
+    23910,
+    24010,
+    24120
+  ],
+  "finished": true,
+  "fresh_result": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}
