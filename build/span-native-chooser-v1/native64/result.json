@@ -1,0 +1,40 @@
+{
+  "result": "fail",
+  "expected_sha256": "64cfdeb5fe80f3bdad5995fa934a929eb315eef46b3fe8c049f3a0e15611ebf0",
+  "package": {
+    "result": "pass",
+    "source_sha256": "ae186e78e8abea04e6b202502cf209be37ce25f3f4dc9f7f339b4ca3fc7016c2",
+    "image_sha256": "329bf55fa44ecdefb732d36765bbf07398a743dea88764e7ad26baaf7aa6f2a8",
+    "boot_area_sha256": "d12c7ff2f2171df75d993a8f52bac1c98dee95395f9b28ab9dc2c49e780ab910",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1908,
+      "owned_sectors": 96331,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96377,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/SpanFileChooser.HC": "53d9575cd4d5e87f850e4de212002245cebcbd92f46cec5bb6eadae36220d9b9",
+      "/SpanODEScalar.HC": "5a92e2107e61cb05b835600d8d8f2ca423bbc53fa6af1799cfffc764b48673d6",
+      "/SpanODESerial.HC": "d626c788f99b385953a8d35d1823419b3113fef4ec228fd82b8d8a0ada679f21",
+      "/SpanODETypes.HH": "2181b682f44dec99aed91e92022e30cb07efe28d7cd9554bf12f3e380f50b543",
+      "/SpanProbe.HC": "060de1415fd5523651040c6b00012f3497f569378c464ed5d2fc23598624a66e"
+    },
+    "added_attributes": {
+      "/SpanFileChooser.HC": 2048,
+      "/SpanODEScalar.HC": 2048,
+      "/SpanODESerial.HC": 2048,
+      "/SpanODETypes.HH": 2048,
+      "/SpanProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "command": "#include \"C:/Apps/Span/Load.HC\"",
+  "error": "INPUT LINE #include \"C:/Apps/Span/Load.HC\"\nCOMPILER BREAK ready\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+}

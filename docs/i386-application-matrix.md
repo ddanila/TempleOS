@@ -1315,3 +1315,10 @@ stops at the missing `PopUpFileName` service in SpanNew.HC. The trial
 compiles the serial ODE variant and the original button library before encountering
 this gap. The file comparison remains open. See
 `build/span-reference-persistence-v1/native64/result.json`.
+
+The original filename-form and popup functions compile as a scratch
+dependency on native i386. Adding them moves Span beyond the previous
+`PopUpFileName` diagnostic, but the bundled loader still reports a
+compiler exception without a source line. The next probe loads its
+five includes separately to identify the failing source unit. See
+`build/span-native-chooser-v1/native64/result.json`.

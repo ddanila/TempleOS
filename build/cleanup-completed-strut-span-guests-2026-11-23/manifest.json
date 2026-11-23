@@ -1,0 +1,299 @@
+{
+  "files": [
+    {
+      "original": "build/native-strut-entry-v1/strut64/working.img",
+      "archive": "build/native-strut-entry-v1/strut64/working.img.zst",
+      "sha256": "48e4eafbd81e58634538e38ed5628a3a67b3c0b1c82df3e1cd547d62f38245bc",
+      "size": 67108864,
+      "reclaimed_bytes": 53395456,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-strut-entry-v1/strut64/working.img.zst",
+        "-o",
+        "build/native-strut-entry-v1/strut64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-reference-persistence-v1/native64/working.img",
+      "archive": "build/span-reference-persistence-v1/native64/working.img.zst",
+      "sha256": "3c6627f1444a2017f19ea07d44974c2e94e47477d1ad09e2e055aea59ab2af5c",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-reference-persistence-v1/native64/working.img.zst",
+        "-o",
+        "build/span-reference-persistence-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-window-ode-v1/strut64/working.img",
+      "archive": "build/native-window-ode-v1/strut64/working.img.zst",
+      "sha256": "dbb282872075381bc7d38ad217fc12072ef0469128bb2bfbc60673c67fd84915",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-window-ode-v1/strut64/working.img.zst",
+        "-o",
+        "build/native-window-ode-v1/strut64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-stretched-spring-v1/native64/working.img",
+      "archive": "build/native-stretched-spring-v1/native64/working.img.zst",
+      "sha256": "918fa547da8390a0625fef80a4ed9b706233c37e3f13ca1a3c0a0b94ef043088",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-stretched-spring-v1/native64/working.img.zst",
+        "-o",
+        "build/native-stretched-spring-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-ode-task-birth-v1/candidate64/probe.img",
+      "archive": "build/native-ode-task-birth-v1/candidate64/probe.img.zst",
+      "sha256": "8484754348c0f2665e0cbae6965b3433cbbd4e52fed719dea71bd2c9a475850e",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-ode-task-birth-v1/candidate64/probe.img.zst",
+        "-o",
+        "build/native-ode-task-birth-v1/candidate64/probe.img"
+      ]
+    },
+    {
+      "original": "build/native-ode-task-birth-v1/base64/probe.img",
+      "archive": "build/native-ode-task-birth-v1/base64/probe.img.zst",
+      "sha256": "0c51ebb7ebc7d36f1c4adbb7c47b76fe3e29e133278056d0cbb090a55117f51f",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-ode-task-birth-v1/base64/probe.img.zst",
+        "-o",
+        "build/native-ode-task-birth-v1/base64/probe.img"
+      ]
+    },
+    {
+      "original": "build/strut-ode-task-ring-v1/native64/working.img",
+      "archive": "build/strut-ode-task-ring-v1/native64/working.img.zst",
+      "sha256": "e3bbb0f9d3e8a3ddb57af44caa3cc5e660a7ad4337c99ebc1bf930d9b0809e5b",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-ode-task-ring-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-ode-task-ring-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-ode-mass-core-v1/native64/working.img",
+      "archive": "build/strut-ode-mass-core-v1/native64/working.img.zst",
+      "sha256": "310f0a5437483c4dbd77c3228f8bc802a7ea1b339c21551b2fb2d7d65265284c",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-ode-mass-core-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-ode-mass-core-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-simulation-update-trace-v1/native64/working.img",
+      "archive": "build/strut-simulation-update-trace-v1/native64/working.img.zst",
+      "sha256": "22d223067eec205be3c07d9d9b82afd339ce5fd0285e5101a39d7fe90761a484",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-simulation-update-trace-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-simulation-update-trace-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-simulation-tick-v1/native64/working.img",
+      "archive": "build/strut-simulation-tick-v1/native64/working.img.zst",
+      "sha256": "90127057e2f082743f2f49788f7df6867d2ebfbd57059ee7fa542db3617a79b9",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-simulation-tick-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-simulation-tick-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-projected-drag-v1/native64/working.img",
+      "archive": "build/strut-projected-drag-v1/native64/working.img.zst",
+      "sha256": "f9146460bbab82a5b307a7d0779eada475dd7499f887a8618de43763f9127e54",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-projected-drag-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-projected-drag-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-drag-diagnostic-v1/native64/working.img",
+      "archive": "build/strut-drag-diagnostic-v1/native64/working.img.zst",
+      "sha256": "ba849685899843fa6f0d1de1369fd6379286a25c0dd8b0e34122ac8005b625f0",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-drag-diagnostic-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-drag-diagnostic-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-rk4-derivative-v1/native64/working.img",
+      "archive": "build/strut-rk4-derivative-v1/native64/working.img.zst",
+      "sha256": "986b58f9f68048c19b27b1baef211b273e6f421c1f97a5be49d2d69ef4c6f6b0",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-rk4-derivative-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-rk4-derivative-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-edit-play-v1/native64/working.img",
+      "archive": "build/strut-edit-play-v1/native64/working.img.zst",
+      "sha256": "5ba91a289a7664f4cf80fb950199936743d5c6ae5ef5592c2904b3d3cd6ed9aa",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-edit-play-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-edit-play-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-edit-play-v1/original/original.iso",
+      "archive": "build/strut-edit-play-v1/original/original.iso.zst",
+      "sha256": "3ed1fae527d9a6ee4d3b3b411c21b7bf2e681e0278edef099b9646b56c37cff2",
+      "size": 46112768,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-edit-play-v1/original/original.iso.zst",
+        "-o",
+        "build/strut-edit-play-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/strut-drag-diagnostic-v1/original/original.iso",
+      "archive": "build/strut-drag-diagnostic-v1/original/original.iso.zst",
+      "sha256": "c172bfed37b328a169c6a5a320210215868270d4012e9d906f5674e9cdac5cdd",
+      "size": 46112768,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-drag-diagnostic-v1/original/original.iso.zst",
+        "-o",
+        "build/strut-drag-diagnostic-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/strut-drag-hold-v1/original/original.iso",
+      "archive": "build/strut-drag-hold-v1/original/original.iso.zst",
+      "sha256": "c172bfed37b328a169c6a5a320210215868270d4012e9d906f5674e9cdac5cdd",
+      "size": 46112768,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-drag-hold-v1/original/original.iso.zst",
+        "-o",
+        "build/strut-drag-hold-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/strut-mass-selection-v1/original/original.iso",
+      "archive": "build/strut-mass-selection-v1/original/original.iso.zst",
+      "sha256": "b916171fcf47542f97b69f8bbc31060053819d73139c8fe6f202ec7b6ec27510",
+      "size": 46112768,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-mass-selection-v1/original/original.iso.zst",
+        "-o",
+        "build/strut-mass-selection-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/strut-projected-drag-v1/original/original.iso",
+      "archive": "build/strut-projected-drag-v1/original/original.iso.zst",
+      "sha256": "2fee5a748b7768d43f1549b2338e3cb1a1ccea87935edbacbab4bfb6ee703e2b",
+      "size": 46112768,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-projected-drag-v1/original/original.iso.zst",
+        "-o",
+        "build/strut-projected-drag-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/span-reference-persistence-v1/ram-reference/original.iso",
+      "archive": "build/span-reference-persistence-v1/ram-reference/original.iso.zst",
+      "sha256": "d448fc4cfd6b0fc6ed3f644d041fc5b34a1a1039aca53788e2793f441aebc6df",
+      "size": 46112768,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-reference-persistence-v1/ram-reference/original.iso.zst",
+        "-o",
+        "build/span-reference-persistence-v1/ram-reference/original.iso"
+      ]
+    },
+    {
+      "original": "build/span-reference-interactive-v1/original/original.iso",
+      "archive": "build/span-reference-interactive-v1/original/original.iso.zst",
+      "sha256": "f786a507aa64295b1bfda080e5a7c58f50d83455fefb4de3808cd54df05bfbbe",
+      "size": 46112768,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-reference-interactive-v1/original/original.iso.zst",
+        "-o",
+        "build/span-reference-interactive-v1/original/original.iso"
+      ]
+    }
+  ],
+  "reclaimed_bytes": 979984384
+}
