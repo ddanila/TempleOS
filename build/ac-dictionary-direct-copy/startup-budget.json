@@ -1,0 +1,19 @@
+{
+  "scope": "Production User test interactive startup, 8 MiB 486,-fpu",
+  "reports": {
+    "build/resident-opt-public-v5/user8/result.json": {
+      "receipt_sha256": "43830a38692d41bf393313f379b23f838c08f18029bf89564de9e1c0a8745323",
+      "result": "pass",
+      "startup_seconds": 52.456526190042496,
+      "budget_seconds": 60,
+      "over_budget_seconds": 0
+    },
+    "build/ac-dictionary-direct-copy/production-user8/result.json": {
+      "receipt_sha256": "aaeee86e5721748a681f939923385902f17078122ca220f983bb05e04a0b71c8",
+      "result": "pass",
+      "startup_seconds": 50.191857224999694,
+      "budget_seconds": 60,
+      "over_budget_seconds": 0
+    }
+  }
+}

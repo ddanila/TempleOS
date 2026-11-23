@@ -482,3 +482,11 @@ optimized runs passed original geometry, fresh input, and physical
 bootstrap retirement. These timings cover the configured 64 MiB desktop.
 The repeated receipt and comparison are under
 `build/ac-dictionary-desktop-repeat`.
+
+The normal production User startup receipts contain independent 8 MiB
+interactive boot timings. The existing 60-second checker passes both
+the resident optimizer image at 52.46 seconds and the direct-copy image
+at 50.19 seconds. Both runs use 486,-fpu and the managed pointer oracle.
+These timings are from the production terminal path. Original User at
+8 MiB and the configured desktop profile have separate checks. The budget
+verdicts are pinned in `build/ac-dictionary-direct-copy/startup-budget.json`.
