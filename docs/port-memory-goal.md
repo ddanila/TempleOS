@@ -2976,3 +2976,13 @@ passed all nine persisted module audits on `486,-fpu` at 128 MiB.
 This is the production image before the 64-slot cache change. The
 installer is running on the audited source disk, followed by the
 separate 8 MiB User workload and heap capture.
+
+The Titanium native installation passed its 8 MiB boot smoke but
+failed the separate User test on the 267,527-byte task request.
+A diagnostic image then paired the 64-slot native console with the
+other eight audited Titanium modules. Each of those eight had a
+byte-identical cross reference in the cache image. The [provenance](../build/i386-native-cache-footprint-v2/compatible-native-diagnostic/provenance.json)
+pins each installed module to its audit. The assembled image also
+passed the 8 MiB boot smoke and failed the User task allocation.
+Both pre-User heap captures are running. The same-revision nine-module
+cache rebuild remains a separate run.
