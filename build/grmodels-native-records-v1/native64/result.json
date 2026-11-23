@@ -1,0 +1,31 @@
+{
+  "result": "fail",
+  "package": {
+    "result": "pass",
+    "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "image_sha256": "559245e9876900efb78ccd809ade2ec7f89bdc6fca90e2c6720b9c623bff8160",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1914,
+      "owned_sectors": 96190,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/ModelRecords.HC": "82fa66df43b9a9091314809a488e2cbdd410b25e20de83b03a92b3e831068f1c"
+    },
+    "added_attributes": {
+      "/ModelRecords.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "command": "#include \"C:/Apps/GrModels/Load.HC\"",
+  "error": "INPUT LINE #include \"C:/Apps/GrModels/Load.HC\"\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Apps/GrModels/ManGen.HC.Z line 173\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+}

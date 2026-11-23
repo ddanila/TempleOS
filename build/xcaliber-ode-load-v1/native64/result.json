@@ -1,0 +1,27 @@
+{
+  "result": "fail",
+  "package": {
+    "result": "pass",
+    "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "image_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {},
+    "added_attributes": {},
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "command": "#include \"C:/Apps/X-Caliber/Load.HC\"",
+  "error": "INPUT LINE #include \"C:/Apps/X-Caliber/Load.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND SYMBOL WARNING unused extern Ship\nFRONTEND ERROR Undefined identifier at  file C:/Apps/X-Caliber/X-Caliber.HC.Z line 145\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000001\nCOMMAND ERROR\n"
+}

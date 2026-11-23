@@ -1528,3 +1528,19 @@ declarations, and size table. It matches the pinned original's
 interactive model generation remains open. See
 `build/production-span-followup-load-v1` and
 `build/grmodels-ball-reference-v1`.
+
+Original sprite declarations, matrix rotations, and the original
+lighting chooser let GrModels complete its native Load.HC and return
+to fresh arithmetic. Supplying only the sprite records stops at
+Mat4x4RotZ, which isolates the earlier types gap. ToTheFront with
+the original Line helper reaches the missing GrPlot binding.
+X-Caliber with native ODE initialized reaches D3Equ after resolving
+CMass. See `build/grmodels-native-matrix-v1/native64/result.json`,
+`build/tothefront-line-load-v1/native64/result.json`, and
+`build/xcaliber-ode-load-v1/native64/result.json`.
+
+A Console overlay publishes the resident Line, GrPlot, GrRect3, and
+matrix rotations and the original sprite record size table. The
+combined image passes the instruction audit. Its application-load
+and 8 MiB regression checks are running. See
+`build/native-geometry-bindings-v1/combined/result.json`.

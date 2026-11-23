@@ -35,6 +35,15 @@ runs = [
     'span-draw-spring-minimal-v1/native64',
     'span-line-call-v1/native64',
     'span-line-backend-trace-v1/native64',
+    'production-span-followup-load-v1/GrModels',
+    'production-span-followup-load-v1/Titanium',
+    'production-span-followup-load-v1/ToTheFront',
+    'production-span-followup-load-v1/X-Caliber',
+    'grmodels-ball-reference-v1/native64',
+    'grmodels-native-records-v1/native64',
+    'grmodels-native-matrix-v1/native64',
+    'xcaliber-ode-load-v1/native64',
+    'tothefront-line-load-v1/native64',
 ]
 
 

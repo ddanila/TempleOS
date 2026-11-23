@@ -545,7 +545,133 @@
         "-o",
         "build/span-line-backend-trace-v1/native64/working.img"
       ]
+    },
+    {
+      "original": "build/production-span-followup-load-v1/GrModels/working.img",
+      "archive": "build/production-span-followup-load-v1/GrModels/working.img.zst",
+      "sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/production-span-followup-load-v1/GrModels/working.img.zst",
+        "-o",
+        "build/production-span-followup-load-v1/GrModels/working.img"
+      ]
+    },
+    {
+      "original": "build/production-span-followup-load-v1/Titanium/working.img",
+      "archive": "build/production-span-followup-load-v1/Titanium/working.img.zst",
+      "sha256": "50d0562fbad4500bddd0d694425773a2eb3881efa762ef371ef6ca77429e8ce1",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/production-span-followup-load-v1/Titanium/working.img.zst",
+        "-o",
+        "build/production-span-followup-load-v1/Titanium/working.img"
+      ]
+    },
+    {
+      "original": "build/production-span-followup-load-v1/ToTheFront/working.img",
+      "archive": "build/production-span-followup-load-v1/ToTheFront/working.img.zst",
+      "sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/production-span-followup-load-v1/ToTheFront/working.img.zst",
+        "-o",
+        "build/production-span-followup-load-v1/ToTheFront/working.img"
+      ]
+    },
+    {
+      "original": "build/production-span-followup-load-v1/X-Caliber/working.img",
+      "archive": "build/production-span-followup-load-v1/X-Caliber/working.img.zst",
+      "sha256": "a62247d46a34d187506567851a92622ec50a3a8ad8001fe8b8462bb95efabba8",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/production-span-followup-load-v1/X-Caliber/working.img.zst",
+        "-o",
+        "build/production-span-followup-load-v1/X-Caliber/working.img"
+      ]
+    },
+    {
+      "original": "build/grmodels-ball-reference-v1/native64/working.img",
+      "archive": "build/grmodels-ball-reference-v1/native64/working.img.zst",
+      "sha256": "057ede1fbb434f149eaac0d9c4b741d4c5e1911ce75b2e04b1c1a39c78b19e01",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/grmodels-ball-reference-v1/native64/working.img.zst",
+        "-o",
+        "build/grmodels-ball-reference-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/grmodels-native-records-v1/native64/working.img",
+      "archive": "build/grmodels-native-records-v1/native64/working.img.zst",
+      "sha256": "559245e9876900efb78ccd809ade2ec7f89bdc6fca90e2c6720b9c623bff8160",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/grmodels-native-records-v1/native64/working.img.zst",
+        "-o",
+        "build/grmodels-native-records-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/grmodels-native-matrix-v1/native64/working.img",
+      "archive": "build/grmodels-native-matrix-v1/native64/working.img.zst",
+      "sha256": "8dfdc335413869578822ad1af5471bcc38efaf77120a9dc7a708073b7a0674f2",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/grmodels-native-matrix-v1/native64/working.img.zst",
+        "-o",
+        "build/grmodels-native-matrix-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/xcaliber-ode-load-v1/native64/working.img",
+      "archive": "build/xcaliber-ode-load-v1/native64/working.img.zst",
+      "sha256": "ae1e189b6f97dbcb66e42441f717874fa515cfa30f4ba59f79c76f4a8d7f8fa5",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-ode-load-v1/native64/working.img.zst",
+        "-o",
+        "build/xcaliber-ode-load-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-line-load-v1/native64/working.img",
+      "archive": "build/tothefront-line-load-v1/native64/working.img.zst",
+      "sha256": "926bff1d27f0c10cec66fb9ec7789f9783f3b738d7a9b2d65840c46eff244b75",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-line-load-v1/native64/working.img.zst",
+        "-o",
+        "build/tothefront-line-load-v1/native64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 1860292608
+  "reclaimed_bytes": 2340982784
 }
