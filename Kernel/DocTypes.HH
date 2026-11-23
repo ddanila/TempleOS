@@ -373,11 +373,7 @@ class CEdFindText
   I64	filter_lines		format "$$DA,A=\"Filter Lines:%d\"$$\n";
 };
 
-class CEdFileName
-{
-  CDirContext *dirc;
-  U8	name[256] format "$$DA-P,LEN=255,A=\"FileName:%s\"$$";
-};
+#include "/Kernel/FileNameFormTypes.HH"
 
 //$LK,"Ed",A="MN:Ed"$()
 #define EDF_BAIL		0x100

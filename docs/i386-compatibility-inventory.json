@@ -11090,7 +11090,7 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Load the original app, construct a two-mass steel bridge, save it, reopen it into a fresh ODE, and check the endpoint links and fixed mass.",
       "oracle": {
         "tool": "build/span-reference-persistence-v1/run.py",
@@ -11132,6 +11132,12 @@
           "result": "pass",
           "evidence": "build/span-native-cold-v1/native64/result.json",
           "scope": "Cold patched Load.HC, physical popup dismissal and mass placement in the 15-mass bridge, automatic simulation, pause, Shift+Escape cleanup, and fresh arithmetic. The chooser, music and loader changes are in an overlay."
+        },
+        {
+          "target": "native-span-production",
+          "result": "pass",
+          "evidence": "build/span-production-v1/span64/result.json",
+          "scope": "Cold production loader, mass placement, automatic simulation and pause, original six-note soundtrack prefix, speaker off on exit and fresh arithmetic. The production file interchange check separately preserves the original bridge bytes."
         }
       ]
     },

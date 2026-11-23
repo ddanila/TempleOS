@@ -1,0 +1,73 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/native-strut-entry-v1/run.py": "aff5dec3d1d66b3a4d60eae9523d981986e951c433cd6dfcef176f356cffc7e9",
+    "/home/ddanila/fun/TempleOS/build/native-strut-entry-v1/Probe.HC": "ea144cfed09167d92a1ad13da1e1ffe4869c169412a68e882156e4b49d058412",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/span-production-v1/full/kernel.img": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce"
+  },
+  "scope": "Cold Strut loader, physical mass and spring creation, automatic simulation and exit",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "image_sha256": "5717c44423d1032b7a5d1bf4d8b397c26d25f02dcd766db1cc718e562beddadf",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1914,
+      "owned_sectors": 96191,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/StrutProbe.HC": "ea144cfed09167d92a1ad13da1e1ffe4869c169412a68e882156e4b49d058412"
+    },
+    "added_attributes": {
+      "/StrutProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "projected_endpoints": [
+    [
+      320,
+      244
+    ],
+    [
+      245,
+      180
+    ]
+  ],
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "observations": [
+    "STRUT instructions",
+    "STRUT editor 15B2C58",
+    "STRUT first mass",
+    "STRUT second mass",
+    "STRUT input mode=0 button=1 at 245,180",
+    "STRUT input mode=0 button=0 at 245,180",
+    "STRUT input mode=1 button=0 at 245,180",
+    "STRUT input mode=1 button=1 at 320,244",
+    "STRUT input mode=1 button=0 at 245,180",
+    "STRUT spring",
+    "STRUT play",
+    "STRUT simulation advanced",
+    "STRUT returned"
+  ],
+  "inputs_unchanged": true
+}

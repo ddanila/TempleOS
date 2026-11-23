@@ -1,0 +1,71 @@
+{
+  "result": "pass",
+  "expected_sha256": "64cfdeb5fe80f3bdad5995fa934a929eb315eef46b3fe8c049f3a0e15611ebf0",
+  "package": {
+    "result": "pass",
+    "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "image_sha256": "e5abc5cc29472310da2e5e83a43aafe8d051d8fff6e5c6f1965135ad2a459e34",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1915,
+      "owned_sectors": 96194,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/IncomingBridge.DATA": "64cfdeb5fe80f3bdad5995fa934a929eb315eef46b3fe8c049f3a0e15611ebf0",
+      "/SpanProbe.HC": "dd02df6471ced65e78945e234e7812a5cde77db6e9a5a0e972d5499701a17ee7"
+    },
+    "added_attributes": {
+      "/IncomingBridge.DATA": 2048,
+      "/SpanProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "command": "#include \"C:/SpanProbe.HC\"",
+  "capture_size": 312,
+  "capture_sha256": "d8b23d2c6b3a0676882a7b642e4083839e9c3c5e40c922e4dcb8844336c6e8e3",
+  "computed_fields": {
+    "232": [
+      74074.07407407393,
+      74074.07407407407
+    ],
+    "264": [
+      30000.000000000004,
+      30000.0
+    ],
+    "272": [
+      15000000.000000002,
+      15000000.0
+    ],
+    "280": [
+      15000000.000000002,
+      15000000.0
+    ],
+    "288": [
+      5999999.999999988,
+      6000000.0
+    ],
+    "296": [
+      375.00000000000006,
+      375.0
+    ]
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 15,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "returned_sha256": "64cfdeb5fe80f3bdad5995fa934a929eb315eef46b3fe8c049f3a0e15611ebf0"
+}

@@ -1505,3 +1505,15 @@ These checks cover pitch order and exit cleanup. A follow-up build
 selects the chooser and player from files shared with original Adam.
 See `build/span-soundtrack-asnd-v1/original/result.json` and
 `build/span-soundtrack-asnd-v1/native64/result.json`.
+
+Span's filename chooser and music player are now shared with original
+Adam and load independently on demand on native i386. The full
+production image passes both original bootstrap rebuilds, the native
+cross-build and instruction audit, and the source audit for 1,542
+delivered files and all 686 inventory files. At 64 MiB, cold Span
+passes mass placement, simulation and pause, the original six-note
+soundtrack prefix, speaker shutdown on exit, and the original bridge
+file round trip. Strut passes its physical workflow on the same
+image. The 8 MiB User fixture passes in 51.57 seconds. The retained
+rebuild is running on the new image. See
+`build/span-production-v1/qualification.json`.

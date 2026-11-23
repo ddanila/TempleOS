@@ -8,8 +8,8 @@ if(!HashFind("ACInit",adam_task->hash_table,HTT_FUN))
   AdamFile("/Adam/AutoComplete/MakeAC.HC",FALSE);;
 if(!HashFind("SettingsPush",adam_task->hash_table,HTT_FUN))
   AdamFile("/Adam/TaskSettings.HC",FALSE);;
-#ifndef I386_STRUT_BUTTONS_INCLUDED
-#define I386_STRUT_BUTTONS_INCLUDED
+#ifndef I386_BUTTON_CONTROLS_INCLUDED
+#define I386_BUTTON_CONTROLS_INCLUDED
 #include "/Adam/Ctrls/CtrlsBttn.HC"
 #endif
 #endif

@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "disk_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+  "source_files": 1542,
+  "inventory_files": 686,
+  "startup_seconds": 51.571496674994705,
+  "evidence_sha256": {
+    "bootstrap/result.json": "02914f393f15cf0fcde3f2ee1d257de711d90fe8a5bcc5b44bb047e73753a83f",
+    "full/result.json": "dce81830e5e83b9760390c21fcc9e68da32fb5515054988b272ac7bacbc23676",
+    "source-audit/result.json": "60e0e7807030c5b0a3d16858d0549bfaea3d49c7ce8541dea157170794803bc7",
+    "user8/result.json": "377686bfb02cdf6e76e1f4ee4501ff3057afeca92a72e10a3438ef0cdbb9d745",
+    "span64/result.json": "8889ff902dd3ac80d091199bd52511007b172f3383e2f18b2faa233b73146fb7",
+    "strut64/result.json": "a713db0ae95ba2e73f963a36c16d779d245a2c6eb54050a118fd1b7dfded38cf",
+    "interchange64/result.json": "fb84004b16ffeb16256cd6c98672a8e627afdcffedc9a0363e7036e2e4c8b970"
+  }
+}

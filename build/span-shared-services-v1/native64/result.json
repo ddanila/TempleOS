@@ -1,0 +1,62 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "607c4381ba559907374f1fb309e90808f65845023f93124b32a038cf69e0bf9f",
+    "image_sha256": "058870e2eba9610c45b430da09398d8542d587e7975f381ce1ce57a90834c12f",
+    "boot_area_sha256": "55f682a4cfeef1507074120ad9d51dd7df5787f062288c5d23a9e800600d5d53",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1908,
+      "owned_sectors": 96182,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96191,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Adam/DolDoc/FileNameFormCore.HC": "b8956616b526f55f5b128cdb4f7dd4e4e42861b94d08046eb28ed465eba95db9",
+      "/Adam/Snd/MusicPlayCore.HC": "0681071bcad5df110bc34165734ab5a0083538b00df8b79e0fd5a280178689f6",
+      "/Kernel/FileNameFormTypes.HH": "b1575608840187eec219e0751ee52bdde489ef6fcdb90678bb3ca6ea542c9eca",
+      "/Kernel/I386/NativeSpanServices.HC": "015e1b49032031b46f1f9af8f74fe66f04b495194602b3db5e05d0870edb59c8",
+      "/SpanProbe.HC": "e32d589a025018c4cec6db9623937c7beca5435a24bb0722d7e831302971ced8"
+    },
+    "added_attributes": {
+      "/Adam/DolDoc/FileNameFormCore.HC": 2048,
+      "/Adam/Snd/MusicPlayCore.HC": 2048,
+      "/Kernel/FileNameFormTypes.HH": 2048,
+      "/Kernel/I386/NativeSpanServices.HC": 2048,
+      "/SpanProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "command": "#include \"C:/SpanProbe.HC\"",
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "observations": [
+    "SPAN instructions 14B04F0",
+    "SPAN editor 14B04F0 initial masses 15",
+    "SPAN placed mass",
+    "SPAN simulation advanced",
+    "SPAN stopped",
+    "SPAN note 0 = 67",
+    "SPAN note 1 = 65",
+    "SPAN note 2 = 67",
+    "SPAN note 3 = 65",
+    "SPAN note 4 = 58",
+    "SPAN note 5 = 65",
+    "SPAN speaker off",
+    "SPAN returned"
+  ]
+}
