@@ -1271,3 +1271,18 @@ match the analytic oscillator within the probe tolerance of 0.02,
 and the fixed anchor remains at rest. The test drives the solver
 explicitly through the task's initialized queue. See
 `build/native-stretched-spring-v1/native64`.
+
+The 128 MiB retained rebuild of the production focus, menu, and Psalmody
+image completed all nine module builds. A two-generation qualification run
+has started from that passing retained image. See
+`build/native-focus-menu-psalmody-production-v1/retained128/result.json`.
+
+The combined scheduler and Console candidate passes the 386 instruction
+audit and the paired Strut physical-input workflow. The native window
+worker calls the serial updater without a diagnostic tick. Two masses and
+a spring are placed, play advances beyond 0.01 seconds, and Escape returns
+to the console, where fresh arithmetic renders. These runs still load
+Strut's dependencies explicitly. The candidate's vector export bitmap
+also needs expansion before those exports are exercised by a cold loader.
+See `build/native-window-ode-v1/combined/result.json` and
+`build/native-window-ode-v1/strut64/result.json`.

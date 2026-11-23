@@ -11250,6 +11250,13 @@
           "result": "fail",
           "evidence": "build/strut-projected-drag-v1/native64/result.json",
           "scope": "The raster overlay creates a spring through physical input and enters play. The simulation clock fails to advance past 0.01 seconds."
+        },
+        {
+          "target": "native-strut-automatic-ode-candidate",
+          "command": "python3 build/strut-projected-drag-v1/run.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/native-window-ode-v1/strut64/result.json",
+          "scope": "Combined scheduler and window-worker overlay. The unchanged app advances simulation automatically after explicit dependency loads, and Escape returns to fresh console arithmetic."
         }
       ]
     },
