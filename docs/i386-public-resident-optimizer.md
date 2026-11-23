@@ -356,3 +356,14 @@ does not prove which instance survived to startup completion. A packing
 policy cannot redirect the single-fit allocations without changing the
 earlier layout or the batch size. The trace patch, build drivers, and parsed
 records are under `build/compiler-backing-trace-v1`.
+
+The allocation and release replay resolves the address reuse. All 22 live
+addresses at the startup marker match the backing ownership chain in a
+separate physical snapshot of the same instrumented image. The two batches
+between the largest free spans survived from allocations at trace lines
+938 and 375. They had five and three fitting blocks respectively, including
+alternatives outside their selected blocks. The single-fit instances seen
+earlier were temporary. This narrows the placement problem to the choices
+made for the surviving batches and the effects of earlier placement on
+those choices. The instrumented run still fails USCheck at 8 MiB.
+Replay inputs and results are under `build/compiler-backing-trace-v2`.
