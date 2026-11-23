@@ -1,0 +1,48 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/span-production-v1/full/kernel.img": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-application-native-load.py": "ec7e023aa340ac883176d8b7d570ef05e918b0d2b3f8b394d4a771bfb26b1e20",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "78c2d7137622b295031a43ec8a482e318f8ef50781d174c4bfa55392e9cdc9bc",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "98d09168433c80d44eec0aa5ef44d0e0c87dafae79a22464ad997ce9edf49e3a"
+  },
+  "scope": "Original application Load on native 64 MiB; not startup or application workflow qualification",
+  "app": "Titanium",
+  "verified_existing": {
+    "/Apps/Titanium/Load.HC": "edc60f864c9c1eb77cd46b3dac5830a5d82f8412ab70f178cd06a102f72d7fa4",
+    "/Apps/Titanium/Run.HC": "cf0f24a8ad110a81a48ff34a148146fd5557f27a18595673d103e5a982f4c91b",
+    "/Apps/Titanium/Titanium.HC": "d1832e5a5f984528d9f87ec19aee4af8927ea23bf2f063e86f67b7fa0a426231"
+  },
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "image_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {},
+    "added_attributes": {},
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "delivered_sha256": {
+    "/Apps/Titanium/Load.HC": "edc60f864c9c1eb77cd46b3dac5830a5d82f8412ab70f178cd06a102f72d7fa4",
+    "/Apps/Titanium/Run.HC": "cf0f24a8ad110a81a48ff34a148146fd5557f27a18595673d103e5a982f4c91b",
+    "/Apps/Titanium/Titanium.HC": "d1832e5a5f984528d9f87ec19aee4af8927ea23bf2f063e86f67b7fa0a426231"
+  },
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 00000000015983E8 00000000536B7354\nINPUT LINE #include \"C:/Apps/Titanium/Load.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token mp_cnt file C:/Apps/Titanium/Titanium.HC.Z line 277\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\n",
+  "inputs_unchanged": true
+}

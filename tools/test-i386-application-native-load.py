@@ -11,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[1]
 REPAIRS='ce055f205fc38536443289fb1cfc73632f6624f4'
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--app',required=True,choices=('Logic','KeepAway','Strut','Vocabulary'));ap.add_argument('--out',type=Path,required=True);args=ap.parse_args()
+    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--app',required=True,choices=('Logic','KeepAway','Strut','Vocabulary','GrModels','Titanium','ToTheFront','X-Caliber'));ap.add_argument('--out',type=Path,required=True);args=ap.parse_args()
     out=args.out.resolve();source=args.disk.resolve()
     if out.exists():ap.error('Use a fresh output directory')
     out.mkdir(parents=True);image=out/'working.img'

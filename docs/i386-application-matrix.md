@@ -1517,3 +1517,14 @@ file round trip. Strut passes its physical workflow on the same
 image. The 8 MiB User fixture passes in 51.57 seconds. The retained
 rebuild is running on the new image. See
 `build/span-production-v1/qualification.json`.
+
+Cold loader checks on the production Span image locate the next
+application dependencies. GrModels first needs CMeshTri, Titanium
+needs mp_cnt, ToTheFront needs Line, and X-Caliber needs CMass. All
+four receipts verify the original application files in the image.
+The GrModels record-only probe uses the original serializer, record
+declarations, and size table. It matches the pinned original's
+62-byte sprite exactly and returns to fresh arithmetic. Full
+interactive model generation remains open. See
+`build/production-span-followup-load-v1` and
+`build/grmodels-ball-reference-v1`.

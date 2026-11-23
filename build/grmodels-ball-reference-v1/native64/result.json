@@ -1,0 +1,42 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "image_sha256": "057ede1fbb434f149eaac0d9c4b741d4c5e1911ce75b2e04b1c1a39c78b19e01",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1915,
+      "owned_sectors": 96195,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/BallMeshProbe.HC": "118e8189daae9f297dd85a33b785729e8be78e6b2d565063661711646fca14f3",
+      "/BallSerializer.HC": "0485af5870fcd88565d14c00511dae3a054c741bb8676e25a52260537e6c556b"
+    },
+    "added_attributes": {
+      "/BallMeshProbe.HC": 2048,
+      "/BallSerializer.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "command": "#include \"C:/BallMeshProbe.HC\"",
+  "mesh_sha256": "87f675f8ef17c0ba5787ae16bdada3f50d975ef5e479f3160cdcbd3d6a4c8b30",
+  "fresh_result": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/span-production-v1/full/kernel.img": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-application-native-load.py": "ec7e023aa340ac883176d8b7d570ef05e918b0d2b3f8b394d4a771bfb26b1e20",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "78c2d7137622b295031a43ec8a482e318f8ef50781d174c4bfa55392e9cdc9bc",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "98d09168433c80d44eec0aa5ef44d0e0c87dafae79a22464ad997ce9edf49e3a"
+  },
+  "scope": "Original application Load on native 64 MiB; not startup or application workflow qualification",
+  "app": "ToTheFront",
+  "verified_existing": {
+    "/Apps/ToTheFront/AIs/Human.HC": "594fd30fbb47a923ce5b695c5c8846c1821c73dcd04aa2964e0846e6cfdf3fe2",
+    "/Apps/ToTheFront/AIs/SimpleAI.HC": "77706b69d78f32f1480ea32bc60528285b981b9f1880cf19cd0cbb01051e1377",
+    "/Apps/ToTheFront/Install.HC": "d2fcbd18e5c9b8df95c639096d192e70f2e03ba1d325b66309ff5196d2e2f3a2",
+    "/Apps/ToTheFront/Load.HC": "9929d772f13ebbce1e8a0a0ffd551ec00c23d6395131f187966d911c51212b0d",
+    "/Apps/ToTheFront/Run.HC": "e4d1492f241effc0dd7d2e15b57bf9196df78a422e4183c07f9aba03483850ae",
+    "/Apps/ToTheFront/TTFDraw.HC": "55ba6665984c8f9faf0371588c812bdb1dc3602ac3d875593fc146831e576447",
+    "/Apps/ToTheFront/TTFFire.HC": "454026b5983a704b5d03b2d3cfd62564c9279c261d522ed9800792d7f06d98fa",
+    "/Apps/ToTheFront/TTFGlbls.HC": "bed701eb97876a38bbee468d341e733eb4fcc109f43a70ddbedca82739da027c",
+    "/Apps/ToTheFront/TTFInit.HC": "e240a77d12e561dcfdc5ed831ba247ea5a05e3b70fac74bb8fdfe5087a314cd1",
+    "/Apps/ToTheFront/TTFLib.HC": "2b11da999d127996e190f7a52763e21507b91a22366194d6ee032565f11c4363",
+    "/Apps/ToTheFront/TTFMove.HC": "ca18f9ef02787ca8cc3c1758b4a8936c3fadcb59ea6944e1e8fc566a7eb22094",
+    "/Apps/ToTheFront/TTFVis.HC": "aa8b1d5a82b4a4c1e45caca22d78ea794fa99fb2cd82b5fd2d77e4742062f10a",
+    "/Apps/ToTheFront/ToTheFront.HC": "853e02dd9da241f479a80872ba74e67658572fb576a1311a926e7d2da763ba10"
+  },
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "image_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {},
+    "added_attributes": {},
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "delivered_sha256": {
+    "/Apps/ToTheFront/AIs/Human.HC": "594fd30fbb47a923ce5b695c5c8846c1821c73dcd04aa2964e0846e6cfdf3fe2",
+    "/Apps/ToTheFront/AIs/SimpleAI.HC": "77706b69d78f32f1480ea32bc60528285b981b9f1880cf19cd0cbb01051e1377",
+    "/Apps/ToTheFront/Install.HC": "d2fcbd18e5c9b8df95c639096d192e70f2e03ba1d325b66309ff5196d2e2f3a2",
+    "/Apps/ToTheFront/Load.HC": "9929d772f13ebbce1e8a0a0ffd551ec00c23d6395131f187966d911c51212b0d",
+    "/Apps/ToTheFront/Run.HC": "e4d1492f241effc0dd7d2e15b57bf9196df78a422e4183c07f9aba03483850ae",
+    "/Apps/ToTheFront/TTFDraw.HC": "55ba6665984c8f9faf0371588c812bdb1dc3602ac3d875593fc146831e576447",
+    "/Apps/ToTheFront/TTFFire.HC": "454026b5983a704b5d03b2d3cfd62564c9279c261d522ed9800792d7f06d98fa",
+    "/Apps/ToTheFront/TTFGlbls.HC": "bed701eb97876a38bbee468d341e733eb4fcc109f43a70ddbedca82739da027c",
+    "/Apps/ToTheFront/TTFInit.HC": "e240a77d12e561dcfdc5ed831ba247ea5a05e3b70fac74bb8fdfe5087a314cd1",
+    "/Apps/ToTheFront/TTFLib.HC": "2b11da999d127996e190f7a52763e21507b91a22366194d6ee032565f11c4363",
+    "/Apps/ToTheFront/TTFMove.HC": "ca18f9ef02787ca8cc3c1758b4a8936c3fadcb59ea6944e1e8fc566a7eb22094",
+    "/Apps/ToTheFront/TTFVis.HC": "aa8b1d5a82b4a4c1e45caca22d78ea794fa99fb2cd82b5fd2d77e4742062f10a",
+    "/Apps/ToTheFront/ToTheFront.HC": "853e02dd9da241f479a80872ba74e67658572fb576a1311a926e7d2da763ba10"
+  },
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 00000000015983E8 00000000536B7354\nINPUT LINE #include \"C:/Apps/ToTheFront/Load.HC\"\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token Line file C:/Apps/ToTheFront/TTFLib.HC.Z line 120\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n",
+  "inputs_unchanged": true
+}

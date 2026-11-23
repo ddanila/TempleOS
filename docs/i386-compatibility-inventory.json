@@ -10298,9 +10298,27 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Deduplicate a repeated vertex and serialize a colored triangle into a CSprite mesh.",
+      "oracle": "62-byte exact mesh record with three signed vertices and one indexed triangle.",
+      "tests": [
+        {
+          "target": "native-grmodels-load",
+          "result": "fail",
+          "evidence": "build/production-span-followup-load-v1/GrModels/result.json",
+          "scope": "ManGen.HC line 11 rejects CMeshTri. The original loader has yet to complete."
+        },
+        {
+          "target": "original-grmodels-ball-mesh",
+          "result": "pass",
+          "evidence": "build/grmodels-ball-reference-v1/original/result.json"
+        },
+        {
+          "target": "native-grmodels-ball-mesh",
+          "result": "pass",
+          "evidence": "build/grmodels-ball-reference-v1/native64/result.json",
+          "scope": "Exact serializer bytes with explicit original record declarations. Interactive model generation remains open."
+        }
+      ]
     },
     {
       "path": "Apps/GrModels/ManGen.HC",
@@ -11862,7 +11880,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-titanium-load",
+          "result": "fail",
+          "evidence": "build/production-span-followup-load-v1/Titanium/result.json",
+          "scope": "Titanium.HC line 277 requires mp_cnt. The original loader has yet to complete."
+        }
+      ]
     },
     {
       "path": "Apps/Titanium/Run.HC",
@@ -11975,7 +12000,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-tothefront-load",
+          "result": "fail",
+          "evidence": "build/production-span-followup-load-v1/ToTheFront/result.json",
+          "scope": "TTFLib.HC line 120 requires the Line callback iterator. The original loader has yet to complete."
+        }
+      ]
     },
     {
       "path": "Apps/ToTheFront/Run.HC",
@@ -12267,7 +12299,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-x-caliber-load",
+          "result": "fail",
+          "evidence": "build/production-span-followup-load-v1/X-Caliber/result.json",
+          "scope": "X-Caliber.HC line 18 requires the CMass class. The original loader has yet to complete."
+        }
+      ]
     },
     {
       "path": "Apps/X-Caliber/Run.HC",
