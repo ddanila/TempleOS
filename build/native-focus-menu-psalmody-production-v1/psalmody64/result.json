@@ -1,0 +1,83 @@
+{
+  "result": "pass",
+  "fixture_sha256": "08e1c5fb52e2a58b7143aca25720e86b2765f9bf10c2ac949b7eea60d3b7a737",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-psalmody-keyboard.py": "15b188025841954e6bedc879e86b9486d27fbb7b7be781fb57d37d5c5ca48baa",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-psalmody-keyboard/Contract.HC": "08e1c5fb52e2a58b7143aca25720e86b2765f9bf10c2ac949b7eea60d3b7a737",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "ff780cc63fa806ead40ccda9190c2b84af88e0e588e6cba888fbb4deb3ec9e93",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "98d09168433c80d44eec0aa5ef44d0e0c87dafae79a22464ad997ce9edf49e3a",
+    "/home/ddanila/fun/TempleOS/build/native-focus-menu-psalmody-production-v1/full/kernel.img": "1fd1c1b93a04069a4300aa18caf2637aa23c2f804ac5c897fc849618735dfa9b",
+    "/home/ddanila/fun/TempleOS/build/psalmody-timing-trace-v1/original/result.json": "942fe5334bc25d9beb2f67c2b53435ea953979d1ab197da78f6a75824c548466",
+    "/home/ddanila/fun/TempleOS/build/psalmody-timing-trace-v1/original/notes.bin": "07beef2364b543c1466bb44577a4ef488fccf1926a75b426339aeede7244451f",
+    "/home/ddanila/fun/TempleOS/build/psalmody-timing-trace-v1/original/deleted.bin": "4de301e23f8c4017400ed8b44d6623d68754d8f7d72dcfc3ce9fda8749953d0e",
+    "/home/ddanila/fun/TempleOS/build/psalmody-timing-trace-v1/original/mask.bin": "8250ab532e40d24a67c08f58e0cd1d76cef63a045599ae5dc9279472cada42dd"
+  },
+  "scope": "Full Psalmody keyboard record C5/D5/E5 with 0.4-second holds, exact note vectors, backspace deletion and Shift-Escape caller restoration. Not audio, playback, persistence or whole application qualification.",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "1fd1c1b93a04069a4300aa18caf2637aa23c2f804ac5c897fc849618735dfa9b",
+    "image_sha256": "cc76df882a338cc96620418b313d84e5e16555a29ed10f2dd12fe694e9908a2b",
+    "boot_area_sha256": "750bddaf6f6c18c23866a7bccf217fa8ddb7f82ff37778ff16ec940b8a83163f",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96163,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1905,
+      "owned_sectors": 96168,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/PsalmodyKeyboard.HC": "08e1c5fb52e2a58b7143aca25720e86b2765f9bf10c2ac949b7eea60d3b7a737"
+    },
+    "added_attributes": {
+      "/Probe/PsalmodyKeyboard.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "native_provider_commands": [
+    "AdamFile(\"C:/Adam/AutoComplete/MakeAC.HC\",FALSE);",
+    "AdamFile(\"C:/Adam/TaskSettings.HC\",FALSE);",
+    "#include \"C:/Adam/Opt/Utils/Find.HC\"",
+    "#include \"C:/Adam/God/GodExt.HC\"",
+    "#include \"C:/Adam/God/GodBible.HC\"",
+    "#include \"C:/Adam/God/HolySpirit.HC\"",
+    "#include \"C:/Adam/God/GodSong.HC\"",
+    "#include \"C:/Apps/Psalmody/Load.HC\"",
+    "#include \"C:/Probe/PsalmodyKeyboard.HC\""
+  ],
+  "preserved_files": 1904,
+  "filesystem": {
+    "directories": 63,
+    "files": 1905,
+    "owned_sectors": 96168,
+    "bitmap": "matches reachable extents"
+  },
+  "mask": 63,
+  "notes": [
+    3,
+    1,
+    63,
+    8,
+    0,
+    1,
+    65,
+    8,
+    0,
+    1,
+    67,
+    8,
+    0
+  ],
+  "inputs_unchanged": true
+}

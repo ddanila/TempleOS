@@ -12,7 +12,7 @@ Bool NativeWindowNeeded(Bool coverage=FALSE)
   if(NativeLegacyViewActive(sys_focus_task))return FALSE;
   if(TaskValidate(sys_focus_task) &&
       !Bt(&sys_focus_task->display_flags,DISPLAYf_NOT_RAW))return FALSE;
-  if(NativeProgressVisible || gr.fp_final_scrn_update || gr.fp_wall_paper ||
+  if(NativeAppMenuVisible || NativeProgressVisible || gr.fp_final_scrn_update || gr.fp_wall_paper ||
       NativeGraphicsPersistentVisible)return TRUE;
   //A plain focused terminal owns the whole text screen. Windows behind it,
   //including the root welcome document, must not replace its retained surface.

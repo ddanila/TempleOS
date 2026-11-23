@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "disk_sha256": "1fd1c1b93a04069a4300aa18caf2637aa23c2f804ac5c897fc849618735dfa9b",
+  "boot_instruction_audit": "pass",
+  "bootstrap_result": "pass",
+  "source_files": 1533,
+  "source_identity_sha256": "a71e2255543adead3c5efe700bef98d21bb357b62d28013fa69b81d996e69c63",
+  "inventory_files_matched": 686,
+  "build_receipt_sha256": "535805c143b890ed1c5b93d9fee77886a527b9655b715c366f58ee4d4f9b8ef5",
+  "source_audit_sha256": "2120ae4a98a35960656140d93d4db219ef6354df2c6669d6074c9d6487e8ca52"
+}

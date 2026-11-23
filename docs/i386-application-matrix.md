@@ -1149,3 +1149,12 @@ dependency. Adding the needed scalar F64 vector operations advances beyond
 their definitions, but compiling the serial ODE source still throws a
 Compiler exception without a diagnostic location. Strut has yet to load in
 this sequence. See `build/strut-ode-types-v1` and `build/strut-ode-d3-v1`.
+
+Popup focus recovery, the application menu, and timestamped Psalmody note
+durations are integrated in the production sources. Both original bootstrap
+rebuilds and the native full cross-build pass. The full image matches all
+1,533 delivered source and documentation files and all 686 inventory files.
+The production image passes repeated menu selection and cancellation,
+Vocabulary definition dismissal and keyboard-only exit, and the immediate
+Psalmody note-vector comparison. The 8 MiB User smoke test passes in
+50.72 seconds. See `build/native-focus-menu-psalmody-production-v1`.

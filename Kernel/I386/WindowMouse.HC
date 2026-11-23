@@ -130,7 +130,7 @@ U0 NativeWindowMouseReset()
   MemSet(&native_window_mouse,0,sizeof(CMsStateGlbls));
   MemSet(&native_window_mouse_old,0,sizeof(CMsStateGlbls));
   MemSet(&native_window_mouse_last,0,sizeof(CMsStateGlbls));
-  native_window_mouse_buttons=0;NativeWindowControlReset;NativeWindowMousePublish;
+  native_window_mouse_buttons=0;NativeAppMenuReset;NativeWindowControlReset;NativeWindowMousePublish;
 }
 U0 NativeWindowMouseCancel()
 {NativeWindowMouseReset;native_window_mouse_resync=TRUE;}
@@ -155,7 +155,7 @@ U0 NativeWindowMousePump()
   U32 previous;
   I64 code;
   Bool managed=NativeWindowNeeded(),client=NativeWindowMouseClientNeeded();
-  Bool admitted=managed || client || NativeWindowControlNeeded();
+  Bool menu_event,admitted=managed || client || NativeWindowControlNeeded();
   if(native_window_mouse_losses!=native_mouse_events.losses) {
     native_window_mouse_losses=native_mouse_events.losses;NativeWindowMouseCancel;
     KernelLog("MOUSE input reset\n");
@@ -170,9 +170,15 @@ U0 NativeWindowMousePump()
     NativeWindowMousePosition(&position);
     native_window_mouse.lb=(event.buttons&1)!=0;native_window_mouse.rb=(event.buttons&2)!=0;
     native_window_mouse_time=event.stamp/1193182.0;
-    code=NativeWindowMouseMessages((managed || client) && NativeWindowMouseQueueMessages);
+    menu_event=NativeAppMenuMouse(position.pos.x,position.pos.y,event.buttons,previous);
+    code=NativeWindowMouseMessages(!menu_event && (managed || client) && NativeWindowMouseQueueMessages);
     native_window_mouse_buttons=event.buttons;
-    NativeWindowMouseDispatch(code,previous,managed);
+    if(menu_event) {
+      native_window_mouse.left_dbl_time=0;
+      native_window_mouse.left_dbl=FALSE;
+      native_window_mouse.left_down_sent=FALSE;
+      NativeWindowMousePublish;
+    } else NativeWindowMouseDispatch(code,previous,managed);
 mouse_next_event:;
   }
   if(admitted && native_window_control)

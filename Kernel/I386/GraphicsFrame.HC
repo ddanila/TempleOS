@@ -130,6 +130,7 @@ Bool NativeProgressVisible()
 U0 NativeGraphicsFinal(CDC *dc)
 {
   DrawProgressBars(dc);
+  if(I386TaskSelf==native_window_worker && NativeAppMenuVisible)NativeAppMenuDraw(dc);
   if(gr.fp_final_scrn_update)(*gr.fp_final_scrn_update)(dc);
   else if(I386TaskSelf==native_window_worker)DrawMs(dc);
 }

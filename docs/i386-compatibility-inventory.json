@@ -10999,7 +10999,7 @@
       "launch_candidate": false,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
+      "source_at_discovery": "modified",
       "compatibility": "unqualified",
       "reference_workflow": "tools/test-i386-psalmody-keyboard.py",
       "oracle": "Exact typed note vectors and caller restoration from original Psalmody; see docs/i386-psalmody-keyboard.md. Audio and persistence remain open.",
@@ -11027,6 +11027,12 @@
           "result": "pass",
           "evidence": "build/native-graphics-dirty-rows-v2/psalmody-ready64/result.json",
           "scope": "Unchanged original sources on disposable changed-row VGA overlay. Wait for the record menu to finish its redraw before the same 400 ms key holds. Exact original note, surviving note, and caller restoration records match. Immediate-input timing, audio, persistence and full application qualification remain open."
+        },
+        {
+          "target": "native-production-psalmody-immediate-input",
+          "result": "pass",
+          "evidence": "build/native-focus-menu-psalmody-production-v1/psalmody64/result.json",
+          "scope": "Physical 400 ms note holds immediately after record activation. Note durations and post-deletion file match original bytes, caller restoration passes."
         }
       ]
     },
@@ -12129,6 +12135,12 @@
           "result": "pass",
           "evidence": "build/vocabulary-lazy-init-v1/native64/result.json",
           "scope": "Cold native quiz initializes the bundled dictionary on demand. Physical answer and definition open pass. A click restores focus before exit."
+        },
+        {
+          "target": "native-production-vocabulary-popup-focus",
+          "result": "pass",
+          "evidence": "build/native-focus-menu-psalmody-production-v1/vocabulary64/result.json",
+          "scope": "Cold launch initializes the bundled dictionary. The definition popup retires and restores quiz focus. Escape returns without a mouse click."
         }
       ]
     },

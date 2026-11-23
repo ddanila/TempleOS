@@ -36,8 +36,15 @@ def main():
         if args.disk:
             pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'));before=pack['snapshot'](args.disk.read_bytes())[1]
             for entry in json.loads((ROOT/'docs/i386-compatibility-inventory.json').read_text())['entries']:
-                if entry['path'].startswith('Apps/Psalmody/') and hashlib.sha256(before['/'+entry['path']][2]).hexdigest()!=entry['reference_sha256']:
-                    raise ValueError('Psalmody source differs: '+entry['path'])
+                name=entry['path']
+                if not name.startswith('Apps/Psalmody/'):
+                    continue
+                allowed={entry['reference_sha256']}
+                if name=='Apps/Psalmody/PsalmodyMain.HC':
+                    # Also accept the reviewed keyboard-arrival timing port.
+                    allowed.add('c0d0d1367005783450788fe39b29e8e9f0becec872341bad61948ea1b098c13e')
+                if hashlib.sha256(before['/'+name][2]).hexdigest() not in allowed:
+                    raise ValueError('Psalmody source differs: '+name)
             image=out/'working.img';report['packaging']=pack['package'](args.disk.resolve(),image,additions={'/Probe/PsalmodyKeyboard.HC':fixture.read_bytes()})
         else:
             overlay=out/'overlay';overlay.mkdir();report['reference_sha256']=runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))['restore_reference'](overlay)

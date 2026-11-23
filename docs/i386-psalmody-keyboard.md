@@ -229,3 +229,11 @@ filesystem preserves all 1,904 existing entries and fresh arithmetic
 renders. See `build/psalmody-arrival-duration-v1`. The unchanged-source
 control on the same image is running. Production integration and the
 default runner's source verification still need updating.
+
+The unchanged-source control on the same menu/focus image reproduced
+durations 0, 8 and 8. The timestamp change is now integrated, and the
+standard source-checked runner accepts its reviewed file digest alongside
+the archived original. The full production image passes the immediate
+400 ms input sequence with exact original note, deletion and caller-state
+records. See
+`build/native-focus-menu-psalmody-production-v1/psalmody64/result.json`.

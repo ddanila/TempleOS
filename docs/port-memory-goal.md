@@ -2761,3 +2761,9 @@ above the 60-second budget. The complete stage hashes are in
 `build/i386-graphics-registry-integration/generations128/two-generation-receipt.json`.
 This pipeline used the earlier pinned image. The latest menu, popup and
 application changes require separate current-image qualification.
+
+The second self-hosted image passes the configured 64 MiB desktop session
+in 207.57 seconds. Home Once runs during boot, the 83 original geometry values
+also match generation one, and the bootstrap's physical task record is gone.
+Fresh arithmetic renders. See
+`build/i386-graphics-registry-integration/generations128/gen2-desktop64/result.json`.

@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "startup_seconds": 50.720360664010514,
+  "budget_seconds": 60,
+  "over_budget_seconds": 0,
+  "evidence": "/home/ddanila/fun/TempleOS/build/native-focus-menu-psalmody-production-v1/user8/qemu/result.json",
+  "evidence_sha256": "77ebbd754b177c832ff24406482c97efb01d4df327f2a230a5580b9732ba300c",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}

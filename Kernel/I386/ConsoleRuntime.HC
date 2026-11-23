@@ -429,6 +429,23 @@ U0 NativeStorageOwnerRetire(CI386Task *task)
   if(task!=I386TaskSelf)throw('Task',TRUE);
   DrvsRelease;BlkDevsRelease;
   NativeRenderOwnerRetire(task);
+  U32 irq=I386IrqSave;
+  CTask *candidate;
+  if(sys_focus_task==task) {
+    sys_focus_task=NULL;
+    if(TaskValidate(sys_winmgr_task)) {
+      candidate=sys_winmgr_task->last_task;
+      while(TaskValidate(candidate) && candidate!=sys_winmgr_task) {
+        if(candidate!=task && !Bt(&candidate->task_flags,TASKf_KILL_TASK) &&
+            !Bt(&candidate->win_inhibit,WIf_SELF_FOCUS)) {
+          sys_focus_task=candidate;
+          break;
+        }
+        candidate=candidate->last_task;
+      }
+    }
+  }
+  I386IrqRestore(irq);
 }
 import U32 char_bmp_filename[16];
 #include "/Kernel/BlkDev/FileNameCheckCore.HC"
@@ -1647,6 +1664,7 @@ U0 I386DocBreakPoll()
 
 #include "/Kernel/I386/TextRender.HC"
 #include "/Kernel/I386/RebootRuntime.HC"
+#include "/Kernel/I386/NativeAppMenu.HC"
 #include "/Kernel/I386/GraphicsFrame.HC"
 #include "/Kernel/I386/WindowUpdateScope.HC"
 #include "/Kernel/I386/WindowList.HC"

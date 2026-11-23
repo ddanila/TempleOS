@@ -347,11 +347,30 @@ U0 PsmPopMode()
 #define PSMF_CD		1
 #define PSMF_INCOMPLETE	2
 
+I64 PsmGetTimed(I64 *arg1,I64 *arg2,I64 mask,I64 *arrival,CHashExport *symbol)
+{
+  I64 code;
+  I64 (*scan)(I64 *,I64 *,I64,CTask *,I64 *);
+  *arrival=-1;
+  if(!symbol)
+    return GetMsg(arg1,arg2,mask);
+  scan=symbol->val;
+  LBtr(&Fs->task_flags,TASKf_IDLE);
+  while(!(code=(*scan)(arg1,arg2,mask,Fs,arrival))) {
+    LBts(&Fs->task_flags,TASKf_IDLE);
+    Yield;
+  }
+  LBtr(&Fs->task_flags,TASKf_IDLE);
+  return code;
+}
+
 U0 Psalmody(U8 *dirname="~/Psalmody")
 {
   Bool was_playing,is_null=TRUE,was_null=TRUE;
   I64 arg1,arg2,msg_code=0,col,ona=0,last_ona=0,
 	psm_octave=4,timeout_val,timeout_val2,old_doc_flags;
+  I64 arrival=-1,note_down_jiffy=-1;
+  CHashExport *timed_scan=HashFind("I386ScanKeyTimed",Fs->hash_table,HTT_EXPORT_SYS_SYM);
   U8 *filename=NULL,*st,*st2;
   PsmNote *tmpn;
   F64 psm_duration=1.0,d,evt_time=tS,note_down_time=tS;
@@ -431,12 +450,12 @@ U0 Psalmody(U8 *dirname="~/Psalmody")
       was_playing=FALSE;
 mo_start:
       if (ms.pos_text.y-Fs->win_top<18)
-	msg_code=GetMsg(&arg1,&arg2,1<<MSG_KEY_DOWN|1<<MSG_KEY_UP|
+	msg_code=PsmGetTimed(&arg1,&arg2,1<<MSG_KEY_DOWN|1<<MSG_KEY_UP|
 	      1<<MSG_MS_L_DOWN|1<<MSG_MS_L_UP|1<<MSG_MS_R_UP|
-	      1<<MSG_MS_MOVE|1<<MSG_CMD);
+	      1<<MSG_MS_MOVE|1<<MSG_CMD,&arrival,timed_scan);
       else
-	msg_code=GetMsg(&arg1,&arg2,1<<MSG_KEY_DOWN|1<<MSG_KEY_UP|
-	      1<<MSG_MS_MOVE|1<<MSG_CMD);
+	msg_code=PsmGetTimed(&arg1,&arg2,1<<MSG_KEY_DOWN|1<<MSG_KEY_UP|
+	      1<<MSG_MS_MOVE|1<<MSG_CMD,&arrival,timed_scan);
 mo_got_msg:
       if (msg_code==MSG_KEY_DOWN && arg1==CH_SPACE && !arg2) {
 //The Window Mgr sets the Doc cur_entry to a bttn
@@ -649,6 +668,7 @@ mo_got_msg:
 		      msg_code=ScanMsg(&arg1,&arg2,1<<MSG_KEY_DOWN|
 			    1<<MSG_MS_L_DOWN|1<<MSG_CMD);
 		    if (msg_code) {
+		      arrival=-1;
 		      Snd;
 		      psm.playing=FALSE;
 		      was_playing=TRUE;
@@ -756,13 +776,16 @@ mo_got_msg:
 	  if (!was_null) {
 	    music.tempo=4.4*tempo_state.tempo/TEMPO_RANGE+0.5;
 	    music.stacatto_factor=0.88*tempo_state.stacatto/TEMPO_RANGE+0.12;
-	    tmpn->duration=PsmCvtDuration(
-		  music.tempo*(evt_time-note_down_time));
+	    d=evt_time-note_down_time;
+	    if(arrival>=note_down_jiffy && note_down_jiffy>=0)
+	      d=(arrival-note_down_jiffy)/ToF64(JIFFY_FREQ);
+	    tmpn->duration=PsmCvtDuration(music.tempo*d);
 	    PsmSetWidth(tmpn);
 	    QueIns(tmpn,psm.cur_note->last);
 	  }
 	  if (!is_null) {
 	    note_down_time=tS;
+	    note_down_jiffy=arrival;
 	    tmpn=CAlloc(sizeof(PsmNote));
 	    tmpn->type=PSMT_NOTE;
 	    tmpn->ona=ona;
