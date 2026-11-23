@@ -7,11 +7,15 @@ import subprocess
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--disk', type=Path)
+parser.add_argument('--cosine-steps', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
+if args.cosine_steps and not args.disk:
+    parser.error('--cosine-steps requires a native --disk')
 out = args.out.resolve()
 out.mkdir()
-fixture = Path(__file__).with_name('VertexMath.HC').read_bytes()
+fixture_name = 'CosineSteps.HC' if args.cosine_steps else 'VertexMath.HC'
+fixture = Path(__file__).with_name(fixture_name).read_bytes()
 report = {'fixture_sha256': hashlib.sha256(fixture).hexdigest()}
 if args.disk:
     image = out / 'working.img'
@@ -33,7 +37,7 @@ try:
         guest.command('#include "C:/VertexMath.HC"')
     guest.wait('BALL math ready\n', 90)
     data = (out / 'guest/BallVertexMath.bin').read_bytes()
-    if len(data) != 128 * 72:
+    if len(data) != (12 * 8 if args.cosine_steps else 128 * 72):
         raise ValueError('Unexpected sample record size')
     report.update(result='pass', sample_sha256=hashlib.sha256(data).hexdigest())
 except Exception as error:

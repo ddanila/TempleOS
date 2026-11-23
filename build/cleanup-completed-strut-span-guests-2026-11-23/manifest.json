@@ -923,7 +923,133 @@
         "-o",
         "build/native-geometry-source-v1/ToTheFront-split-fire/working.img"
       ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-indirect-head/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-indirect-head/working.img.zst",
+      "sha256": "74d2a575d82b09b9e4663edb3a395464e39dec399e8a2f8fdc19edf5c6765dcd",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-indirect-head/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-indirect-head/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-wrap/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-wrap/working.img.zst",
+      "sha256": "e961992606f9e5cbef146b09bc0e9ca15ab8cf26247c8411bf6036cadcf4f781",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-wrap/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-wrap/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber/working.img.zst",
+      "sha256": "89d0d26535a09c7886c8d1373cbae5b44bf80af0dca5e9afaf3123b6dc9408b4",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/GrModels-ball-mesh/working.img",
+      "archive": "build/native-geometry-source-v1/GrModels-ball-mesh/working.img.zst",
+      "sha256": "913164537e16326a757a69b3523e9ba847c0c92829be45ba7379d6e5477dcf70",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/GrModels-ball-mesh/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/GrModels-ball-mesh/working.img"
+      ]
+    },
+    {
+      "original": "build/grmodels-ball-reference-v1/interactive-original/original.iso",
+      "archive": "build/grmodels-ball-reference-v1/interactive-original/original.iso.zst",
+      "sha256": "5b8b6267759e397c9a7836e14d03be3ce2ee23fcf99cbcfbf09cabd5f8a17d9f",
+      "size": 46133248,
+      "reclaimed_bytes": 33214464,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/grmodels-ball-reference-v1/interactive-original/original.iso.zst",
+        "-o",
+        "build/grmodels-ball-reference-v1/interactive-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/grmodels-ball-reference-v1/math-original/original.iso",
+      "archive": "build/grmodels-ball-reference-v1/math-original/original.iso.zst",
+      "sha256": "c136476da9c5f183587cf1c4cc0dd1afff7506596b3f37c56aaf7b636ec79fb3",
+      "size": 46133248,
+      "reclaimed_bytes": 33214464,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/grmodels-ball-reference-v1/math-original/original.iso.zst",
+        "-o",
+        "build/grmodels-ball-reference-v1/math-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/grmodels-ball-reference-v1/math-native/working.img",
+      "archive": "build/grmodels-ball-reference-v1/math-native/working.img.zst",
+      "sha256": "2aeafaf98207f8ea4880f71ee5bb39fd74045dd655998f1fda559baa5e7a8604",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/grmodels-ball-reference-v1/math-native/working.img.zst",
+        "-o",
+        "build/grmodels-ball-reference-v1/math-native/working.img"
+      ]
+    },
+    {
+      "original": "build/grmodels-ball-reference-v1/cosine-native/working.img",
+      "archive": "build/grmodels-ball-reference-v1/cosine-native/working.img.zst",
+      "sha256": "95dfb0bfdc8cdd40c91211bcd9db28fd90f555c50c1dc148a9eba5872561fea0",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/grmodels-ball-reference-v1/cosine-native/working.img.zst",
+        "-o",
+        "build/grmodels-ball-reference-v1/cosine-native/working.img"
+      ]
+    },
+    {
+      "original": "build/grmodels-ball-reference-v1/cosine-retained/working.img",
+      "archive": "build/grmodels-ball-reference-v1/cosine-retained/working.img.zst",
+      "sha256": "81f204d82d969312e2ebc571ac36f9310a3f693d020a748ec85a7c82578d856d",
+      "size": 67108864,
+      "reclaimed_bytes": 53321728,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/grmodels-ball-reference-v1/cosine-retained/working.img.zst",
+        "-o",
+        "build/grmodels-ball-reference-v1/cosine-retained/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 3302309888
+  "reclaimed_bytes": 3742494720
 }

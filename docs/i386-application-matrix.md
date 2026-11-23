@@ -1671,3 +1671,17 @@ sampled coordinate triples differ. See
 
 The restarted Span generation run passed generation-one retained
 installation and advanced to its native self-host build.
+
+At pi/4, the public cosine in the cross-built bootstrap image is one
+bit below the oracle. JIT compilation of the same source in that
+guest matches the oracle. Installing the guest-rebuilt CompilerRuntime
+also gives the expected public cosine and reproduces every byte of
+the 128-sample vertex-math probe. The complete BallGen workflow still
+returns 60 vertices against the original's 59. On the retained
+installation, 36 of the 128 triangles differ by resolved vertex
+coordinates. The standalone probe stores floating-point intermediates
+before integer conversion. The full app passes its coordinate
+expressions directly to AddVertex, so the next comparison needs to
+observe that call path. See the cosine receipts under
+`build/grmodels-ball-reference-v1` and
+`build/native-geometry-source-v1/GrModels-ball-mesh-retained/comparison.json`.
