@@ -345,3 +345,14 @@ can hold both batches with worst-case padding in this snapshot. Its
 availability when the batches were originally allocated remains unverified.
 The existing backing pages remain live at fixed addresses. The calculation
 is pinned in `build/preload-heap-comparison/high_v2/task-placement-feasibility.json`.
+
+An instrumented MemoryRuntime reproduces the 8 MiB USCheck task allocation
+failure while recording every fitting block before each backing allocation.
+The payload address 0x793730 matches one of the two split-span backing blocks
+in the prior snapshot. Several allocations at that address have exactly one
+fitting block in the selected main arena. Other allocations at the same
+address have alternatives. Address reuse means that a matching pick alone
+does not prove which instance survived to startup completion. A packing
+policy cannot redirect the single-fit allocations without changing the
+earlier layout or the batch size. The trace patch, build drivers, and parsed
+records are under `build/compiler-backing-trace-v1`.

@@ -1,0 +1,34 @@
+--- a/Kernel/I386/MemoryBacking.HC
++++ b/Kernel/I386/MemoryBacking.HC
+@@ -225,11 +225,31 @@
+   }
+   if(!I386MemBackingFits(source,request))return FALSE;
+   before=source->used;
++  CI386HeapBlock *trace_block;
++  U32 trace_offset=0,trace_largest=0,trace_fits=0;
++  KernelLog("BACKING CHOICE "); KernelHex(source==pool->heap);KernelLog(" ");
++  KernelHex(size);KernelLog(" ");KernelHex(request);KernelLog(" ");
++  KernelHex(pool->retained);KernelLog("\n");
++  while(trace_offset<source->size) {
++    trace_block=source->base+trace_offset;
++    if(trace_block->tag==I386_HEAP_FREE) {
++      if(trace_block->span>trace_largest)trace_largest=trace_block->span;
++      if(trace_block->span>=((request+7)&~7)+16) {
++        trace_fits++;
++        KernelLog("BACKING FIT ");KernelHex((trace_block+0)(U64));KernelLog(" ");
++        KernelHex(trace_block->span);KernelLog("\n");
++      }
++    }
++    trace_offset+=trace_block->span;
++  }
++  KernelLog("BACKING LIMIT ");KernelHex(trace_largest);KernelLog(" ");
++  KernelHex(trace_fits);KernelLog("\n");
+   //Keep the initial reserve and large regions first-fit. Later native-sized
+   //batches use the high end, leaving room for large contiguous consumers.
+   if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)region=I386HeapAllocHigh(source,request);
+   else region=I386HeapAlloc(source,request);
+   if(!region) return FALSE;
++  KernelLog("BACKING PICK ");KernelHex((region+0)(U64));KernelLog("\n");
+   for(i=0;i<sizeof(CI386BackingRegion);i++) region(U8 *)[i]=0;
+   arena=((region+0)(U64)+sizeof(CI386BackingRegion)+511)&~511;
+   //The page extent is aligned now; return unused worst-case tail padding.
