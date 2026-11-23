@@ -153,3 +153,12 @@ duration zero with the strict original input sequence. The overlay, pending
 separate raster verification, remains a disposable candidate. See
 `build/native-graphics-dirty-rows-v1` and
 `build/psalmody-redraw-profile-v2/dirty64`.
+
+After the record redraw has settled, the changed-row overlay passes the exact
+keyboard comparison with the unchanged Psalmody application. It records
+durations 8, 8, 8, deletes the last note, restores the caller state, and matches
+all three original binary records. Fresh arithmetic renders correctly and
+all 1,903 pre-existing filesystem entries are preserved. The original fixture
+still sends the same 400 ms holds. The immediate-input test still fails, so
+the passing case covers typing after the recording UI is ready. See
+`build/native-graphics-dirty-rows-v1/psalmody-ready64/result.json`.
