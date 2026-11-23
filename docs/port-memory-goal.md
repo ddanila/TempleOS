@@ -2940,3 +2940,10 @@ identifies the upper boundary in the installed WidePi and cross-built
 register-name and address-format literals from `Compiler/UAsmCore.HC`,
 which the system loads through `MakeCommandPrompt.HC` during startup.
 The occupied pages cannot be released by trimming cached empty regions.
+
+The [64-slot guest-built console audit](../build/i386-native-cache-footprint-v2/retained-console128/result.json)
+passed at 128 MiB on `486,-fpu`, with 1,436 exports and the required
+document allocation wrapper calls. The audited T32M's loaded payload is
+2,322,888 bytes, 12,232 below the earlier WidePi native console. The
+console-only installation has started. The nine-module test uses a copy
+of this audited disk as its input for the remaining eight guest builds.
