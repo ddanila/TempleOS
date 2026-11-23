@@ -1,0 +1,120 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/ac-dictionary-direct-copy/candidate.img": "7aed6eb22071330f104c0d563af7567008162c76711f4dd65c5077f04e5e29b7",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-timeclock-report-native/Contract.HC": "0f49c4d920168c60fca4eb7e39de78e64d6df15428f820e3b0b4239352b625b6",
+    "/home/ddanila/fun/TempleOS/tests/i386/timeclock-reference.json": "f3a0b8f01062d0e7035c796bf02158f66a75904d54f5a158d11eb137b7c1610d",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "99b84a62ec9753818b129f12d14d3cb6489654c30e48eb9b68c939b52d68399f",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-report-native.py": "9a9c7987b3419232ca0f205625cb48f92e1f23078648982e870314b12cd5014b"
+  },
+  "application_sha256": {
+    "/Apps/TimeClock/Install.HC": "93a6eaa93c12c52ce8bb378725092355c36c77770029acedfb6f1d05570ea5ec",
+    "/Apps/TimeClock/Load.HC": "c075ba921d2fa92f2ebfe4171362d32e3629d73480140af5236d00b020510606",
+    "/Apps/TimeClock/TimeClk.HC": "ea0574db2d51cc57b3b5197cb0d3fdf3c4179a65bd142838b2381c5e6764e599"
+  },
+  "commands": [
+    [
+      "!FileFind(\"~/TimeClock\",,FUF_JUST_DIRS);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "#include \"C:/ReportNative.HC\"",
+      [
+        "1"
+      ]
+    ],
+    [
+      "TimeReportSeed;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "reopen_commands": [
+    [
+      "#include \"C:/ReportNative.HC\"",
+      []
+    ],
+    [
+      "TimeReportCapture(\"C:/report-reopened.DD\");",
+      [
+        "1"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "ram_mib": 64,
+  "cpu": "486,-fpu",
+  "scope": "Unchanged native TimeClock deterministic typed records, exact original DolDoc report, 5400-second duration and cold reboot rereport; not physical input or whole application qualification",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "7aed6eb22071330f104c0d563af7567008162c76711f4dd65c5077f04e5e29b7",
+    "image_sha256": "d4ff87524466939c3af2314a398739fd1ccb4709dc950ddcc394067f866d98d1",
+    "boot_area_sha256": "a366537fa37d14d0b5763aaeb583d8bc7c10806b063f322c1d985ef6a3bb7edb",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1902,
+      "owned_sectors": 96116,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96119,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/ReportNative.HC": "0f49c4d920168c60fca4eb7e39de78e64d6df15428f820e3b0b4239352b625b6"
+    },
+    "added_attributes": {
+      "/ReportNative.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 64,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 50.475206909002736,
+    "commands": 4,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "logical_file_sha256": "f5ecc13cd3d99a3efe3fc9208e158d5fa0b94a6ec47884de48d176e23ca4e04b",
+  "report_sha256": "faa5155d46e6a394493031341f60052c38e7cabab285b0ce2f73e84d4bf731c9",
+  "reopen": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 64,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 50.525123728002654,
+    "commands": 3,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "expected_total_seconds": 5400,
+  "inputs_unchanged": true
+}

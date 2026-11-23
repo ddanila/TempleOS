@@ -11427,6 +11427,12 @@
       },
       "tests": [
         {
+          "target": "native-managed-report-and-cold-reboot-current",
+          "result": "pass",
+          "evidence": "build/ac-dictionary-direct-copy/timeclock-report-reopen64/result.json",
+          "scope": "Unchanged TimeClock at 64 MiB on the dictionary-updated image. Typed records and exact original DolDoc report match, including the 5400-second total. Cold reboot reproduces the report. Exact managed-pointer VGA and fresh arithmetic pass on both boots."
+        },
+        {
           "target": "native-keyboard-punch-cold-reboot-current",
           "result": "pass",
           "evidence": "build/ac-dictionary-direct-copy/timeclock-keyboard64/result.json",
