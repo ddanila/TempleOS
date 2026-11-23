@@ -151,6 +151,21 @@ U0 I386Compare(CI386Out *out,I64 op,Bool is_unsigned)
 #include "/Compiler/I386/ValueClassCore.HC"
 
 #define I386_WIDE_PRODUCT -1
+#define I386_WIDE_PI_DIVIDE -2
+#define I386_ICF_WIDE_PI_PRODUCT 0x200000000
+#define I386_ICF_WIDE_PI_DIVIDE  0x400000000
+
+Bool I386PiConstant(CIntermediateCode *ic)
+{
+  if (!ic || !I386IsF64(ic->ic_class) ||
+      ic->ic_flags&(ICF_RES_TO_F64|ICF_RES_TO_INT)) return FALSE;
+  //The i386 optimizer retains the full-width bitcast in the pi definition.
+  if (ic->ic_code==IC_HOLYC_TYPECAST) ic=ic->t.arg1_tree;
+  return ic && (ic->ic_code==IC_IMM_F64 || ic->ic_code==IC_IMM_I64) &&
+    ic->ic_data==0x400921FB54442D18 &&
+    !(ic->ic_flags&(ICF_RES_TO_F64|ICF_RES_TO_INT));
+}
+
 U0 I386F64Runtime(CI386Backend *backend,CI386Out *out,I64 op,I64 pass)
 {//First operand EDX:EAX, optional second EBX:ECX; integer runtime ABI.
   CCmpCtrl *cc=backend->cc;
@@ -169,6 +184,7 @@ U0 I386F64Runtime(CI386Backend *backend,CI386Out *out,I64 op,I64 pass)
     case IC_SUB: name="I386F64Sub"; break;
     case IC_MUL: name="I386F64Mul"; break;
     case I386_WIDE_PRODUCT: name="I386F64MulToI64"; return_type=RT_I64; break;
+    case I386_WIDE_PI_DIVIDE: name="I386F64PiMulDiv"; break;
     case IC_DIV: name="I386F64Div"; break;
     case IC_MOD: name="I386F64Mod"; break;
     case IC_POWER: name="I386F64Power"; break;
@@ -411,7 +427,21 @@ U0 I386BackendCore(CI386Backend *backend)
   I386RestorePointerAdds(backend);
   {
     for (ic=cc->coc.coc_head.next;ic!=&cc->coc.coc_head;ic=ic->next)
-      if (ic->ic_code==IC_RETURN_VAL && !I386IsF64(ic->ic_class) &&
+      if (ic->ic_code==IC_DIV && I386IsF64(ic->ic_class) &&
+          !Bt(&cc->opts,OPTf_NO_BUILTIN_CONST) &&
+          !(ic->ic_flags&(ICF_RES_TO_F64|ICF_RES_TO_INT))) {
+        CIntermediateCode *product=ic->t.arg1_tree;
+        if (product && product->ic_code==IC_MUL &&
+            I386IsF64(product->ic_class) &&
+            !(product->ic_flags&(ICF_RES_TO_F64|ICF_RES_TO_INT)) &&
+            I386IsF64(I386ValueClass(backend,ic->t.arg2_tree)) &&
+            (I386PiConstant(product->t.arg1_tree) ||
+             I386PiConstant(product->t.arg2_tree))) {
+          //Retain the other factor until division models the unspilled FLDPI.
+          product->ic_flags|=I386_ICF_WIDE_PI_PRODUCT;
+          ic->ic_flags|=I386_ICF_WIDE_PI_DIVIDE;
+        }
+      } else if (ic->ic_code==IC_RETURN_VAL && !I386IsF64(ic->ic_class) &&
           ic->t.arg1_tree->ic_code==IC_MUL &&
           I386IsF64(ic->t.arg1_tree->ic_class) &&
           I386IsF64(I386ValueClass(backend,ic->t.arg1_tree))) {
@@ -1198,6 +1228,8 @@ U0 I386BackendCore(CI386Backend *backend)
                 I386IsF64(I386ValueClass(backend,ic->t.arg2_tree)))) {
               if (ic->ic_code==IC_MOD || ic->ic_code==IC_MOD_EQU)
                 I386F64Update(backend,out,IC_MOD,pass,!I386IsF64(c));
+              else if (ic->ic_flags&I386_ICF_WIDE_PI_DIVIDE)
+                I386F64Runtime(backend,out,I386_WIDE_PI_DIVIDE,pass);
               else I386F64Update(backend,out,IC_DIV,pass,!I386IsF64(c));
               if (ic->ic_code==IC_DIV_EQU || ic->ic_code==IC_MOD_EQU) {
                 I386Byte(out,0x59);
@@ -1250,7 +1282,10 @@ U0 I386BackendCore(CI386Backend *backend)
           case IC_XOR:
             if (depth<2) throw('Compiler');
             I386Bytes(out,"\x59\x5B\x58\x5A",4);
-            if (I386IsF64(c) && (ic->ic_code==IC_ADD || ic->ic_code==IC_SUB ||
+            if (ic->ic_flags&I386_ICF_WIDE_PI_PRODUCT) {
+              if (I386PiConstant(ic->t.arg1_tree))
+                I386Bytes(out,"\x89\xC8\x89\xDA",4);
+            } else if (I386IsF64(c) && (ic->ic_code==IC_ADD || ic->ic_code==IC_SUB ||
                 ic->ic_code==IC_MUL || ic->ic_code==IC_POWER))
               if (ic->ic_code==IC_MUL && (ic->ic_flags&ICF_RES_TO_INT))
                 I386F64Runtime(backend,out,I386_WIDE_PRODUCT,pass);

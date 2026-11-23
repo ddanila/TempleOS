@@ -162,6 +162,8 @@ int main(int argc, char **argv)
         UINT64_C(0xfff0000000000000)
     };
     int vectors = argc == 2 && strcmp(argv[1], "--vectors") == 0;
+    int production = argc == 2 && strcmp(argv[1], "--production-vectors") == 0;
+    vectors |= production;
     for (unsigned i = 0; i < sizeof(edge) / sizeof(edge[0]); ++i) {
         for (unsigned j = 0; j < sizeof(edge) / sizeof(edge[0]); ++j) {
             if (vectors) vector(edge[i], edge[j]);
@@ -177,6 +179,19 @@ int main(int argc, char **argv)
                  ((b >> 52) & 2047) == 2047);
         if (vectors) vector(a, b);
         else compare(a, b);
+    }
+    if (production) {
+        const uint64_t nan[] = {
+            UINT64_C(0x7ff8000000000001), UINT64_C(0xfff8000000000001),
+            UINT64_C(0x7ff0000000000002), UINT64_C(0xfff8000000000010)
+        };
+        for (unsigned i = 0; i < sizeof(nan) / sizeof(nan[0]); ++i) {
+            for (unsigned j = 0; j < sizeof(nan) / sizeof(nan[0]); ++j) {
+                vector(nan[i], nan[j]);
+            }
+            vector(nan[i], edge[4]);
+            vector(edge[4], nan[i]);
+        }
     }
     if (vectors) return 0;
     assert(wide_pi_ratio(edge[5], edge[7]) == UINT64_C(0x3fe0c152382d7366));

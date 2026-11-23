@@ -10372,6 +10372,12 @@
           "result": "fail",
           "evidence": "build/grmodels-menu-workflows-v1/comparison.json",
           "scope": "Physical menu selection and four lighting choosers work. Sixteen vertex coordinates differ by one unit from the original."
+        },
+        {
+          "target": "native-grmodels-wide-pi-man",
+          "result": "pass",
+          "evidence": "build/i386-wide-pi-production-v3/qualification.json",
+          "scope": "Bundled Run.HC physical menu, default Man form, four lighting choices and byte-exact original document mesh."
         }
       ]
     },
@@ -10408,6 +10414,12 @@
           "result": "fail",
           "evidence": "build/grmodels-menu-workflows-v1/comparison.json",
           "scope": "Physical menu selection and four lighting choosers work. Sixteen vertex coordinates differ by one unit from the original."
+        },
+        {
+          "target": "native-grmodels-wide-pi-man",
+          "result": "pass",
+          "evidence": "build/i386-wide-pi-production-v3/qualification.json",
+          "scope": "Bundled Run.HC physical menu, default Man form, four lighting choices and byte-exact original document mesh."
         }
       ]
     },
@@ -10446,6 +10458,12 @@
           "result": "fail",
           "evidence": "build/grmodels-menu-workflows-v1/comparison.json",
           "scope": "Physical menu selection and four lighting choosers work. Sixteen vertex coordinates differ by one unit from the original."
+        },
+        {
+          "target": "native-grmodels-wide-pi-man",
+          "result": "pass",
+          "evidence": "build/i386-wide-pi-production-v3/qualification.json",
+          "scope": "Bundled Run.HC physical menu, default Man form, four lighting choices and byte-exact original document mesh."
         }
       ]
     },

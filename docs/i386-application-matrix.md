@@ -2558,3 +2558,10 @@ the original document mesh byte-for-byte through the same physical menu
 workflow. The [mesh receipt](../build/i386-wide-pi-ratio-v1/man/result.json)
 records the result. The bundled source and production compiler still use
 the current lowering.
+
+The production i386 backend now preserves the wider precision for the
+direct π multiply-and-divide expressions used by ManGen. On the rebuilt
+image, both physical menu selections produce exact original DolDoc
+mesh bytes with the packaged ManGen, BallGen and Models sources. The
+[production comparison](../build/i386-wide-pi-production-v3/qualification.json)
+records the default-form workloads and the target image.

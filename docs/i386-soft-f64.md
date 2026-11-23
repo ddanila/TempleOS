@@ -212,3 +212,22 @@ public COCCompile and unchanged 8 MiB User startup. The GrModels harness
 again produced the original mesh bytes. The
 [qualification receipt](../build/i386-wide-product-production-v5/qualification.json)
 records the source, image and output hashes.
+
+## Direct π products followed by division
+
+The native backend recognizes a binary64 π literal, including the
+full-width HolyC bit cast used by the public constant. In a direct
+multiply feeding a floating-point division, it defers the product to
+the integer-only runtime. The runtime rounds both stages to a 64-bit
+significand and then packs the binary64 result. The matcher respects
+the compiler control's builtin-constant option. A stored product and a
+runtime scale retain binary64 arithmetic.
+
+The rebuilt image matched 645 results, including both operand orders,
+NaNs, signed zeros, subnormals, a function-call divisor and the binary64
+boundaries above. The public compiler and unchanged 8 MiB User startup
+checks passed. Both original meshes matched through the unmodified
+GrModels menu workflow. The
+[qualification receipt](../build/i386-wide-pi-production-v3/qualification.json)
+records the tested source and image hashes. Native installed
+generations remain under test.

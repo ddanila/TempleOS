@@ -1,0 +1,35 @@
+{
+  "disk_sha256": "f5e5eb480bbdf8e9267bb27b801f499c541dd4ef8e6dbcaed0d367a9c2942e05",
+  "base_revision": "558b1abbfeafc41fca4b748365441b99c2584375",
+  "source_sha256": {
+    "Compiler/I386/BackendCore.HC": "c53788b15330de2e0c069029da550b96f0cdd280d54e00c4a2823e53405180cb",
+    "Compiler/I386/Frontend.HC": "e2c373f77d58a04a7bfe22ab4878d59941f63368ff3dd10dd9f2525f657e93e6",
+    "Compiler/I386/PublicBackendCore.HC": "4f67de3f0c6f7cc5a59465ddeb2457b9108374c34dd3beccf88164da638dcdaa",
+    "Compiler/I386/PublicBackendSupport.HC": "37c0f22312cbaa46d8c0555b2883f4eec3ed98ed2a1bd3160637415d27939d45",
+    "Kernel/I386/GraphicsContext.HC": "b7cd4917f0fdb17de46d893b844c98137f8a94c1ecc611bf16df1082a5e409b0",
+    "Kernel/I386/Kernel.HC": "5532dd3657088f40be843e5aac98679b43e3323907ffc8cb5bd57e89568c966c",
+    "Kernel/I386/MathPublic.HC": "a5bcff35e35a5c6732a326ab5943a266be2b317ee6a5feadde8c0d5c92ef6682",
+    "Kernel/I386/SoftF64.HC": "dd9fd7e4ab9574eff6633b63e8d410797f57fdb9609efda09493e7ee4d71d24f",
+    "Kernel/I386/SoftF64.HH": "5a4eeb9736861a3046725154d0d7a8e8d8dea643e6dbc479c9710c838a4301e1",
+    "tools/build-i386-kernel.py": "257efed10039c11c90a017266b03a9009ae88592d76763759f8e2823fefc9f77"
+  },
+  "passed_receipts": {
+    "vectors/result.json": "221883b5acac4d771adcf54f55078fcff6ceefd3d66dcd33a484977f16e68b09",
+    "man/result.json": "c015bb054b0e7111ad3d5f54859ece83702112e6cee6dfd98ac60537abbf06f3",
+    "ball/result.json": "dc4686b3b7147caf248f20e983044a3768e0583a002515d840e015c58593f342",
+    "user8/result.json": "42a7261ca2b5445c92c9cacfb9e198cd4688a525963088bd2f78d0d393948a10",
+    "public-backend/result.json": "da21175572207080e2c0b1fb673f4ea66374d4a7724789948869f3f636e6a2d8"
+  },
+  "exact_meshes": {
+    "man": {
+      "native": "build/i386-wide-pi-production-v3/man/guest/MenuMesh.bin",
+      "original": "build/grmodels-menu-workflows-v1/man-original-tab/guest/MenuMesh.bin",
+      "sha256": "4f87974453492199cc40f1d50fad9c18f45ebb0acece354f9d39dfef5381e8a0"
+    },
+    "ball": {
+      "native": "build/i386-wide-pi-production-v3/ball/guest/MenuMesh.bin",
+      "original": "build/grmodels-menu-workflows-v1/ball-original-final/guest/MenuMesh.bin",
+      "sha256": "967ad44894167ae85c198f0a3929c01391a217494638a4bd2c95d63db1a6967b"
+    }
+  }
+}

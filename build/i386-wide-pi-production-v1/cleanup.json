@@ -1,0 +1,35 @@
+{
+  "restoration": "zstd -d <archive> -o <original>",
+  "images": [
+    {
+      "original": "build/i386-wide-pi-production-v1/ball/working.img",
+      "archive": "build/i386-wide-pi-production-v1/ball/working.img.zst",
+      "sha256": "3c9c29061056d087e930d06fe8f8c2d1f2f954f38d442068592f4965eb4c25f4",
+      "recovered_allocated_bytes": 53395456
+    },
+    {
+      "original": "build/i386-wide-pi-production-v1/man/working.img",
+      "archive": "build/i386-wide-pi-production-v1/man/working.img.zst",
+      "sha256": "3c9c29061056d087e930d06fe8f8c2d1f2f954f38d442068592f4965eb4c25f4",
+      "recovered_allocated_bytes": 53395456
+    },
+    {
+      "original": "build/i386-wide-pi-production-v1/public-backend/working.img",
+      "archive": "build/i386-wide-pi-production-v1/public-backend/working.img.zst",
+      "sha256": "0c125b53ba58fabbead7c072baa88162908a66f4228573372b6815dc96f9c65a",
+      "recovered_allocated_bytes": 53399552
+    },
+    {
+      "original": "build/i386-wide-pi-production-v1/user8/working.img",
+      "archive": "build/i386-wide-pi-production-v1/user8/working.img.zst",
+      "sha256": "25ee037640ac8b113400133f73afba89e6faf0836b5269909a9a197e7df46882",
+      "recovered_allocated_bytes": 53395456
+    },
+    {
+      "original": "build/i386-wide-pi-production-v1/vectors/working.img",
+      "archive": "build/i386-wide-pi-production-v1/vectors/working.img.zst",
+      "sha256": "d8610c8fd47bcdaf0c0a3281816532647ab0034228f9d4bb7922033483943742",
+      "recovered_allocated_bytes": 53395456
+    }
+  ]
+}
