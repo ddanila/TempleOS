@@ -476,3 +476,12 @@ retained task code also fails the same parser allocation with the same
 largest free block. The image audits pass in both cases. The comparison and
 receipts are in `build/original-user-split-prompt-v3` and
 `build/original-user-exact-code-v1`.
+
+High-placement flags on the split prompt improve the largest free parser
+block at one rejection from 272 to 488 bytes, but startup still fails.
+Reducing the held reservation to 234,759 bytes advances compilation to
+the final code allocation for the `Ui` unit. An allocation-free census
+at that failure records a 2,056-byte code request, 9,864 free bytes in
+the main arena, and a largest contiguous payload of 408 bytes. The guest
+fails before releasing its reservation and before the original User task
+runs. The diagnostic and receipts are in `build/original-user-code-census-v1`.

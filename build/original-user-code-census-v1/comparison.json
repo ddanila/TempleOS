@@ -1,0 +1,8 @@
+{
+  "result": "fail",
+  "code_bytes": 2056,
+  "main_free_bytes": 9864,
+  "largest_free_bytes": 408,
+  "debug_sha256": "aaff7327377290669eef76c87538528ba8e95b74cad5e3ba8d805cd3787f9dc5",
+  "receipt_sha256": "04ac9750fa69e1eebcdf8503c7239dd71cf9079ca787933f9a8ad404ef584952"
+}

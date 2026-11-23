@@ -1,0 +1,47 @@
+--- a/Compiler/I386/ParserMemory.HC
++++ b/Compiler/I386/ParserMemory.HC
+@@ -80,6 +80,32 @@
+   I386IrqRestore(irq); return release.ok;
+ }
+ 
++U0 I386ParserCodeCensusHex(U32 value)
++{
++  U8 line[10],*digits="0123456789ABCDEF";
++  I64 i;
++  for(i=0;i<8;i++)line[7-i]=digits[(value>>(i*4))&15];
++  line[8]=' ';line[9]=0;
++  KernelLog(line);
++}
++U0 I386ParserCodeCensus(CI386Heap *heap,I64 bytes)
++{
++  CI386HeapBlock *block;
++  U32 position=0,largest=0,free=0;
++  while(position<heap->size) {
++    block=heap->base+position;
++    if(block->tag==I386_HEAP_FREE) {
++      free+=block->span-16;
++      if(largest<block->span-16)largest=block->span-16;
++    }
++    position+=block->span;
++  }
++  KernelLog("PARSER CODE CENSUS ");
++  I386ParserCodeCensusHex(bytes);
++  I386ParserCodeCensusHex(free);
++  I386ParserCodeCensusHex(largest);
++  KernelLog("\n");
++}
+ U8 *I386ParserCodeAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes)
+ {
+   CI386CmpCtrl *owned=cc;
+@@ -99,7 +125,10 @@
+   record=I386ParserHeapAllocKnown(heap,sizeof(CI386ParserAllocation),TRUE,TRUE);
+   if(!record) goto exhausted;
+   allocation=(*owner->code_allocate)(owner,bytes);
+-  if(!allocation) { I386HeapFree(heap,record); goto exhausted; }
++  if(!allocation) {
++    I386ParserCodeCensus(heap,bytes);
++    I386HeapFree(heap,record);goto exhausted;
++  }
+   record->owner=owner; record->requested=bytes; record->allocation=allocation;
+   record->next=&owned->parser_next; record->last=owned->parser_last;
+   record->last->next=record; owned->parser_last=record;

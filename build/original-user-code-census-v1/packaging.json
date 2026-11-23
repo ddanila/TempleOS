@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "source_sha256": "ce7d921e30bdfeec852fd175f569cbf50a6b39619b69390a319cfc2a59fd0baa",
+  "image_sha256": "cd61b4a9c7f5b7f399143c913f3adfb8dc80cc88b669d8acea2c772de9fcef39",
+  "boot_area_sha256": "4ba9f86d14fd02568f80d9277a02b87d698b1f2a60e73e0aa7b72afb01703482",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1910,
+    "owned_sectors": 96338,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1910,
+    "owned_sectors": 96344,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Allocation census when a task code publication fails",
+  "candidate_sha256": "cd61b4a9c7f5b7f399143c913f3adfb8dc80cc88b669d8acea2c772de9fcef39",
+  "instruction_audit": "pass",
+  "prototype": true
+}

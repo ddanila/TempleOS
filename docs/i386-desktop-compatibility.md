@@ -564,3 +564,9 @@ message. It uses QEMU PS/2 events for the gesture. See
 `build/application-menu-mouse-v1/original/result.json`. This is a menu
 dispatch control. The current native comparison and mouse-driven Budget
 entry creation remain open.
+
+On the current production image, the same focus-task menu gesture reaches
+both observed pointer positions, but the focused task receives no menu
+command before the deadline. The native fixture reaches its message wait.
+The missing dispatch remains a C2 gap. See
+`build/application-menu-mouse-v1/native64/result.json`.

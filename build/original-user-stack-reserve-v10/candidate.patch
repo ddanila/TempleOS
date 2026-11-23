@@ -1,0 +1,47 @@
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -266,7 +266,7 @@
+   if(packets) *packets=mouse->packets;
+   I386IrqRestore(flags); return TRUE;
+ }
+-I64 console_diagnostic_line;
++I64 console_diagnostic_line,original_user_stack_reservation;
+ U8 console_diagnostic_filename[256];
+ F64 sys_os_version=5.030;
+ extern U0 DefinePrint(U8 *name,U8 *fmt,...);
+@@ -1401,6 +1401,8 @@
+ }
+ Bool ConsoleRootHeaders()
+ {
++  CI386KernelSymbol *symbol;
++  U8 *(*reserve)(CI386Heap *heap,I64 size,Bool zero);
+   //Publish the resident reader with root declarations, after early diagnostics.
+   console_config->files->public_reader(&NativeResidentReadBridge);
+   //Publish the core first so its temporary parser arena is gone before the
+@@ -1417,6 +1419,14 @@
+   KernelLog("ROOT USER HEADERS ok\n");
+   //Publish complete compiler declarations before rich include documents exist.
+   KernelLog("ROOT COMPILER HEADERS begin\n");
++  symbol=HashFind("I386HeapAllocHigh",Fs->hash_table,HTT_EXPORT_SYS_SYM);
++  if(!symbol || symbol->kind!=1 || !symbol->val) {
++    KernelLog("ORIGINAL USER RESERVE allocator unavailable\n");
++    return FALSE;
++  }
++  reserve=symbol->val;
++  original_user_stack_reservation=(*reserve)(console_config->heap,234759,FALSE);
++  KernelLog("ORIGINAL USER RESERVE ");KernelHex(original_user_stack_reservation);KernelLog("\n");
+   if(!ConsoleSource("#include \"/Compiler/I386/SystemCompilerA.HH\"\n",
+       "RootCompilerHeaders.HC",0x200000000000|I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
+   KernelLog("ROOT COMPILER HEADERS ok\n");
+@@ -1510,6 +1520,11 @@
+       KernelStop;
+     }
+     KernelLog("DESKTOP source error\n");
++  }
++  if(original_user_stack_reservation) {
++    if(!I386HeapFree(console_config->heap,original_user_stack_reservation(U8 *)))KernelStop;
++    original_user_stack_reservation=0;
++    KernelLog("ORIGINAL USER RESERVE released\n");
+   }
+   KernelLog("DONE native kernel startup\n");
+   NativeUserTaskCont;
