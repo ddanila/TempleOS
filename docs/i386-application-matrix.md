@@ -1611,3 +1611,20 @@ the disk image. The original `Wrap` has been added as an optional
 probe input for the next run. See
 `build/native-geometry-source-v1/ToTheFront-split-fire/result.json`
 and `build/native-geometry-source-v1/ToTheFront-indirect-head/result.json`.
+
+The original `Wrap` lets the ToTheFront probe compile `TTFMove.HC`.
+The probe now stops at `TTFDraw.HC:18`, the first call site that
+combines `GrCircle3` and `Saw`. The compiler reported an undefined
+identifier without identifying the symbol. X-Caliber with on-demand
+graphics, ODE and the scalar vector helpers advances past its previous
+`GrPeek` failure and throws a compiler exception after an unused
+`Ship` declaration warning. See
+`build/native-geometry-source-v1/ToTheFront-wrap/result.json` and
+`build/native-geometry-source-v1/X-Caliber/result.json`.
+
+The GrModels probe invokes the original `BallGen` after loading the
+app. The class form displayed radius 20.000, 16 longitude faces and
+8 latitude rings. Escape returned to the console. This check covers
+opening and leaving the form. Choosing a lighting color and comparing
+the generated mesh with the original remain open. See the screenshots
+and receipt in `build/native-geometry-source-v1/GrModels-ball-form`.

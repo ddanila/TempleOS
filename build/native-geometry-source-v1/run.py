@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument('disk',type=Path)
@@ -11,6 +12,7 @@ parser.add_argument('--serial-visibility', action='store_true')
 parser.add_argument('--split-fire', action='store_true')
 parser.add_argument('--fix-indirect-head', action='store_true')
 parser.add_argument('--original-wrap', action='store_true')
+parser.add_argument('--ball-form', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
 if args.serial_visibility and args.app != 'ToTheFront':
@@ -21,6 +23,8 @@ if args.fix_indirect_head and not args.split_fire:
     parser.error('--fix-indirect-head requires --split-fire')
 if args.original_wrap and not args.serial_visibility:
     parser.error('--original-wrap requires --serial-visibility')
+if args.ball_form and args.app != 'GrModels':
+    parser.error('--ball-form requires --app GrModels')
 out = args.out.resolve()
 out.mkdir()
 extras={}
@@ -126,6 +130,19 @@ try:
     guest.command('6*7;')
     report['fresh_result']=guest.result_pixels()
     report['result']='pass'
+    if args.ball_form:
+        report['result'] = 'observed'
+        start = len(guest.collect())
+        guest.type('BallGen;')
+        guest.press('ret')
+        guest.wait('COMPILER BREAK ready', start=start)
+        time.sleep(2)
+        guest.screenshot('ball-form')
+        guest.press('esc')
+        time.sleep(2)
+        guest.screenshot('ball-form-escape')
+        report['ball_form_trace'] = guest.collect()[start:]
+
 except Exception as exc:
     report.update(result='fail',error=str(exc))
     raise
