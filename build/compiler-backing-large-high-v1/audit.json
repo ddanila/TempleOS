@@ -1,0 +1,11 @@
+{
+  "user8": "fail",
+  "request": 267527,
+  "fallback_largest_free": 2840,
+  "sha256": {
+    "result.json": "57e26a862ccf440e7494bc610145071f1b591ac742cf156d3f8a02c35149fc5e",
+    "packaging.json": "43aae7a2fa858d0022055009ac84c669e1eacfd40c58d57a649153da0ced50df",
+    "user8/result.json": "3ad08285d93395df5ced9f434323974540543db7b013b758ed2127ff49ed528c",
+    "user8/qemu/debug.log": "b7ea4ee74dc0c1c392683f10127d361104b618b31fc011ecff0e2386f51841d7"
+  }
+}

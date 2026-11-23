@@ -1,0 +1,16 @@
+--- a/Kernel/I386/MemoryBacking.HC
++++ b/Kernel/I386/MemoryBacking.HC
+@@ -225,9 +225,10 @@
+   }
+   if(!I386MemBackingFits(source,request))return FALSE;
+   before=source->used;
+-  //Keep the initial reserve and large regions first-fit. Later native-sized
+-  //batches use the high end, leaving room for large contiguous consumers.
+-  if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)region=I386HeapAllocHigh(source,request);
++  //Experiment: place large main-arena regions high as well as native batches.
++  if(pool->owned_count && (size==I386_NATIVE_BACKING_QUANTUM ||
++      source==pool->heap && size>I386_NATIVE_BACKING_QUANTUM))
++    region=I386HeapAllocHigh(source,request);
+   else region=I386HeapAlloc(source,request);
+   if(!region) return FALSE;
+   for(i=0;i<sizeof(CI386BackingRegion);i++) region(U8 *)[i]=0;

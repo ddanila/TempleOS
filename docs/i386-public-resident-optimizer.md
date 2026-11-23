@@ -391,3 +391,12 @@ and its largest free payload is 496 bytes, versus eight allocations and
 2,840 bytes at 128 KiB. Varying the reserve alone has failed over both
 tested directions. The unapplied experiment and pinned receipts are under
 `build/compiler-backing-reserve-v2`.
+
+Placing large main-arena backing regions at the high end also passes the
+cross-build and image audit. The 8 MiB image completes native startup but
+USCheck fails the same 267,527-byte task request. The fallback still has
+eight allocations and a largest free payload of 2,840 bytes.
+A physical snapshot of this candidate is running under
+`build/preload-heap-comparison/large_high_v1` to measure the changed main
+arena layout. The patch and pinned receipts are under
+`build/compiler-backing-large-high-v1`.
