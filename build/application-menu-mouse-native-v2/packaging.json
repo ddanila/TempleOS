@@ -1,0 +1,29 @@
+{
+  "result": "pass",
+  "source_sha256": "7aed6eb22071330f104c0d563af7567008162c76711f4dd65c5077f04e5e29b7",
+  "image_sha256": "672b975c7e5f3f168f7ff2f14e26dc2d8c38f2c667d82eec73d754ba7d4c2a79",
+  "boot_area_sha256": "a366537fa37d14d0b5763aaeb583d8bc7c10806b063f322c1d985ef6a3bb7edb",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1902,
+    "owned_sectors": 96116,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1903,
+    "owned_sectors": 96143,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {
+    "/Kernel/I386/NativeAppMenu.HC": "220fb8e01477d24d7ed407289025bcf16fd1a2dc2944fa2184cb87021b8e53f1"
+  },
+  "added_attributes": {
+    "/Kernel/I386/NativeAppMenu.HC": 2048
+  },
+  "scope": "Native application menu mouse dispatch and drawing overlay",
+  "candidate_sha256": "672b975c7e5f3f168f7ff2f14e26dc2d8c38f2c667d82eec73d754ba7d4c2a79",
+  "instruction_audit": "pass",
+  "prototype": false
+}

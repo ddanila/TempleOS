@@ -879,3 +879,18 @@ The combined SwapI64 and registry-popup overlay also passes the standalone
 8 MiB production User check at 50.95 seconds with the managed pointer
 and five command/raster checkpoints. The existing 60-second budget checker
 passes on that receipt. See `build/psalmody-registry-popup-v2/user8`.
+
+The integrated native image passes the unchanged TimeClock report workflow at
+64 MiB on a 486 with the FPU disabled. The report matches the original bytes,
+totals 5,400 seconds, and reproduces after a cold reboot. All raster checkpoints
+pass in both sessions. This workflow uses typed fixture records. The receipt is
+in `build/i386-graphics-registry-integration/timeclock-report64/result.json`.
+
+An experimental ConsoleRuntime overlay passes the physical PS/2 application
+menu gesture from the original oracle. After the observer publishes its first
+sample, the pointer reaches (20, 4), drags with the left button held to (20, 12),
+and releases. The focused task receives the exact command tuple (1, 2676, 83).
+The earlier candidate attempt timed out waiting for the initial pointer target.
+The observer receipt records both logical and raw device coordinates and is
+saved with its fixture in `build/application-menu-mouse-observer-v1`. Production
+integration and broader menu behavior remain open.

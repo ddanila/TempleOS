@@ -2698,3 +2698,17 @@ The second configured desktop run completed Home Once, layout checks and
 physical retirement, but its receipt was rejected after the build helper's
 pinned hash changed during the integration work. A fresh rerun uses the
 same installed generation-two image and stable helper inputs.
+
+The integrated changed-row VGA, SwapI64, and registry-popup image passes the
+64 MiB TimeClock exact report and cold reopen workflow. The new retained-module
+rebuild at 128 MiB has started on that image. The eleven-stage two-generation
+receipt above applies to the earlier pinned sources. The original 8 MiB User
+startup, complete desktop and application coverage, and current-image native
+rebuild verification remain open. Individual qualification remains 2 of 686.
+
+The generation-two configured desktop rerun passed in 214.28 seconds at
+64 MiB. Home Once ran through normal startup, all 83 geometry values
+matched the original and generation one, and the bootstrap retired with
+the expected physical state. Fresh arithmetic rendered and all pinned
+inputs kept their hashes. See
+`build/resident-opt-c5-generations128/gen2-desktop64-rerun/result.json`.
