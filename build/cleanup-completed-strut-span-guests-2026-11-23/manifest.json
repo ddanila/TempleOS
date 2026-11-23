@@ -2869,7 +2869,63 @@
         "-o",
         "build/sound-delay-production-v1/game-over64/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-original-v1/simple-ai-original/original.iso",
+      "archive": "build/tothefront-original-v1/simple-ai-original/original.iso.zst",
+      "sha256": "1c69f6824554e808121088319a82fcb8a51a1cf157e4bbc33823603e9fa1f3ea",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/simple-ai-original/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/simple-ai-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/simple-ai64/working.img",
+      "archive": "build/sound-delay-production-v1/simple-ai64/working.img.zst",
+      "sha256": "66d2eda6faab94f95a104788fa5761691500af9afd310f9537c1b6241d3de8bb",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/simple-ai64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/simple-ai64/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/simple-ai-trace-original/original.iso",
+      "archive": "build/tothefront-original-v1/simple-ai-trace-original/original.iso.zst",
+      "sha256": "908ef66faaa6ff1eb8a39344747afbc70c40fcb7979c471b6465a5efe4f4c0f3",
+      "size": 46157824,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/simple-ai-trace-original/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/simple-ai-trace-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/simple-ai-trace64/working.img",
+      "archive": "build/sound-delay-production-v1/simple-ai-trace64/working.img.zst",
+      "sha256": "025f2756fb9424f36c82368ef65da2c207406f019c1e90b546b4b4d1fc3b4d87",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/simple-ai-trace64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/simple-ai-trace64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 10181767168
+  "reclaimed_bytes": 10355060736
 }

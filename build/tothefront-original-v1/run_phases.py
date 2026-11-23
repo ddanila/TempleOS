@@ -10,6 +10,7 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument('--disk', type=Path)
 parser.add_argument('--simple-ai', action='store_true')
+parser.add_argument('--trace-ai', action='store_true')
 parser.add_argument('--map-raster', action='store_true')
 parser.add_argument('--move', action='store_true')
 occupation = parser.add_mutually_exclusive_group()
@@ -28,6 +29,8 @@ parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 if (args.overrun or args.close_assault) and (args.move or args.fire or args.indirect or args.indirect_damage):
     parser.error('--overrun and --close-assault each require a separate run')
+if args.trace_ai and not args.simple_ai:
+    parser.error('--trace-ai requires --simple-ai')
 if args.simple_ai and (args.move or args.fire or args.overrun or args.close_assault
                        or args.indirect or args.indirect_damage or args.game_over or args.map_raster):
     parser.error('--simple-ai requires a separate run')
@@ -85,18 +88,30 @@ if args.indirect or args.indirect_damage:
     probe += (root/'IndirectFire.HC').read_bytes()
     fixture = fixture.replace(declaration, probe + b'\n' + declaration)
     fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackIndirect(owner);\n    Sleep(1);')
+if args.trace_ai:
+    ai_trace = runpy.run_path(str(root/'ai_trace.py'))
+    ai_path = ai_trace['AI_PATH']
+    instrument_ai = ai_trace['instrument']
 if args.disk:
     image = out/'working.img'
     packer = runpy.run_path('tools/package-i386-native-image.py')
     if args.trace_fire:
         trace = runpy.run_path(str(root/'fire_trace.py'))
         trace['package'](args.disk, image, fixture, packer['snapshot'], packer['package'], args.trace_shot)
+    elif args.trace_ai:
+        pack = runpy.run_path(str(root/'fire_trace.py'))['package_replacements']
+        files = packer['snapshot'](args.disk.read_bytes())[1]
+        pack(args.disk, image, fixture, packer['snapshot'], packer['package'],
+             {ai_path: instrument_ai(files[ai_path][2])})
     else:
         packer['package'](args.disk, image, additions={'/TTFPhases.HC': fixture})
 else:
     overlay = out/'overlay'
     reference = runpy.run_path('tools/test-i386-timeclock-reference.py')
     reference['restore_reference'](overlay)
+    if args.trace_ai:
+        ai_source = overlay / ai_path.lstrip('/')
+        ai_source.write_bytes(instrument_ai(ai_source.read_bytes()))
     (overlay/'Once.HC').write_bytes(
         b'while(!Bt(&sys_run_level,RLf_ADAM_SERVER))Yield;\n'
         b'#include "T:/Apps/ToTheFront/Load.HC"\n'
@@ -154,6 +169,11 @@ except Exception as error:
     report.update(result='fail', error=str(error)[:3000])
     raise
 finally:
+    if args.trace_ai:
+        log = guest.collect().splitlines()
+        for event in ('target', 'random'):
+            prefix = f'TTF AI {event} '
+            report[f'{event}_trace'] = [line.removeprefix(prefix) for line in log if line.startswith(prefix)]
     if args.trace_fire:
         report['fire_trace'] = [line for line in guest.collect().splitlines()
                                 if line.startswith('TTF ')]

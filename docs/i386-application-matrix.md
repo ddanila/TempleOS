@@ -2054,3 +2054,14 @@ match for every unit. After movement, units 0 and 9 differ in position
 and remaining movement. The other 30 unit states match. The native
 guest exits and executes fresh arithmetic. See
 `build/sound-delay-production-v1/simple-ai64/comparison.json`.
+
+The SimpleAI trace reproduces the first-movement discrepancy and
+localizes it to nearest-target selection. Both guests make the same
+two signed random draws in the same order, both for unit 3. Units
+0 and 9 start on row 28 and choose between defenders in column 12,
+six rows above and below. The pinned original chooses defender 10
+on row 22. Native chooses defender 11 on row 34. The other 30 target
+choices match. The two candidate positions are symmetric in the hex
+grid. The exact floating-point step that changes the comparison
+remains open. See
+`build/sound-delay-production-v1/simple-ai-target64/target-comparison.json`.

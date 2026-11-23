@@ -62,6 +62,13 @@ def package(disk, working, fixture, snapshot, packer, trace_shot=False):
         shot = '/Apps/ToTheFront/TTFFire.HC'
         replacements[shot] = instrument_shot(original_files[shot][2])
 
+    return package_replacements(disk, working, fixture, snapshot, packer, replacements)
+
+
+def package_replacements(disk, working, fixture, snapshot, packer, replacements):
+    original_image = disk.read_bytes()
+    original_files = snapshot(original_image)[1]
+
     def transformed(raw):
         tree, files, directories = snapshot(raw)
         for name, data in replacements.items():

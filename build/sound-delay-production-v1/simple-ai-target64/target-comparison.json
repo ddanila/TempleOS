@@ -1,0 +1,42 @@
+{
+  "result": "fail",
+  "original": "build/tothefront-original-v1/simple-ai-target-original/result.json",
+  "native": "build/sound-delay-production-v1/simple-ai-target64/result.json",
+  "matching_random_draws": 2,
+  "target_differences": [
+    {
+      "unit": 0,
+      "position": [
+        28,
+        1
+      ],
+      "original": [
+        10,
+        22,
+        12
+      ],
+      "native": [
+        11,
+        34,
+        12
+      ]
+    },
+    {
+      "unit": 9,
+      "position": [
+        28,
+        5
+      ],
+      "original": [
+        10,
+        22,
+        12
+      ],
+      "native": [
+        11,
+        34,
+        12
+      ]
+    }
+  ]
+}
