@@ -349,7 +349,49 @@
         "-o",
         "build/native-geometry-table-v1/combined-named/kernel-assembly.txt"
       ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/candidate/kernel-assembly.txt",
+      "archive": "build/i386-wide-product-lowering-v1/candidate/kernel-assembly.txt.zst",
+      "sha256": "7c157b68f5f10526d962bc1b255ed194d8ec758c70e0b9df4b3067203005eaf1",
+      "size": 109811807,
+      "reclaimed_bytes": 101113856,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/candidate/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/candidate/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/generations128-resume-install/gen1-audit/kernel-assembly.txt",
+      "archive": "build/span-production-v1/generations128-resume-install/gen1-audit/kernel-assembly.txt.zst",
+      "sha256": "cf8870a38ebcf1c8bc4e04c40441c1c4a25fb6c0d5654aa60891f0d86c2c139a",
+      "size": 110586709,
+      "reclaimed_bytes": 101867520,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/generations128-resume-install/gen1-audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/span-production-v1/generations128-resume-install/gen1-audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/shared-candidate/kernel-assembly.txt",
+      "archive": "build/i386-wide-product-lowering-v1/shared-candidate/kernel-assembly.txt.zst",
+      "sha256": "eed0951d9055ab4b000945423bc7389e4622b41ff2cdb9173cfa2fae7c337f8b",
+      "size": 109779429,
+      "reclaimed_bytes": 101085184,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/shared-candidate/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/shared-candidate/kernel-assembly.txt"
+      ]
     }
   ],
-  "reclaimed_bytes": 2537205760
+  "reclaimed_bytes": 2841272320
 }

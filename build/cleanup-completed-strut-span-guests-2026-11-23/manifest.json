@@ -1189,7 +1189,63 @@
         "-o",
         "build/native-geometry-source-v1/GrModels-ball-wide-product/working.img"
       ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/conversion64/working.img",
+      "archive": "build/i386-wide-product-lowering-v1/conversion64/working.img.zst",
+      "sha256": "9792d0210fcabb6481b80e533c0a374383796d1dab1a41ff1f90798b3adb720f",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/conversion64/working.img.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/conversion64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/user8/working.img",
+      "archive": "build/i386-wide-product-lowering-v1/user8/working.img.zst",
+      "sha256": "f6b289dbc2857ac735b96d56b131e16e8150f4b8dfcf17c4287cc909123f7bfd",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/user8/working.img.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/shared-conversion64/working.img",
+      "archive": "build/i386-wide-product-lowering-v1/shared-conversion64/working.img.zst",
+      "sha256": "36ba0148cbd94589db9453f223d8a00b1b6732ba807f06b34a0ce92377612b56",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/shared-conversion64/working.img.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/shared-conversion64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-wide-product-lowering-v1/shared-user8/working.img",
+      "archive": "build/i386-wide-product-lowering-v1/shared-user8/working.img.zst",
+      "sha256": "325c5237dab4ffb41ff7cb879204d1c5b5b64b636f7abc1e293367198b1c0aee",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-wide-product-lowering-v1/shared-user8/working.img.zst",
+        "-o",
+        "build/i386-wide-product-lowering-v1/shared-user8/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 4195270656
+  "reclaimed_bytes": 4408901632
 }

@@ -1,0 +1,31 @@
+{
+  "result": "pass",
+  "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+  "image_sha256": "a92f99b44ed2512977f2155019ae4d58b7b21f652760b940637cbba9dc2f39ce",
+  "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1913,
+    "owned_sectors": 96187,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1913,
+    "owned_sectors": 96195,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification",
+  "instruction_audit": "pass",
+  "changed_files": {
+    "/Compiler/I386/Frontend.HC": "80017af11bf02ee1730599acf7121960fc87e5f87f0c66beac8b55481738aa77",
+    "/Compiler/I386/BackendCore.HC": "aee671504ad1bb28d06101b010ef54e982fc20002c7abd2599be3006e2fa1df9",
+    "/Kernel/I386/SoftF64.HC": "50d8ead747d21afc16814f8590eb9c4b4898227e064d28bdac68faee7adf4b64",
+    "/Kernel/I386/SoftF64.HH": "10632067faec0cc2c79d0b2eaf8abfd5e42c0ba005f39d4a99c96b417dc50de1",
+    "/Kernel/I386/MathPublic.HC": "a97c2987e0a511e1c8a3d2ad09dede96f132108cee9ca8c3222865b08e7741d9",
+    "/Modules/I386/CompilerRuntime.t32m": "a78f1a44a9298e859ce5a887d048b19134e1cced34120a559c39276ac2685b16"
+  }
+}

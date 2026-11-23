@@ -1,10 +1,18 @@
+import argparse
 from pathlib import Path
 import subprocess
 
 root = Path(__file__).resolve().parent
-attempt = root / 'cross-explicit-branch'
+parser = argparse.ArgumentParser()
+parser.add_argument('--shared-multiply', action='store_true')
+args = parser.parse_args()
+if args.shared_multiply:
+    attempt = root / 'cross-shared-multiply'
+    overlay = attempt / 'overlay'
+else:
+    attempt = root / 'cross-explicit-branch'
+    overlay = root / 'overlay'
 attempt.mkdir(exist_ok=True)
-overlay = root / 'overlay'
 sources = {}
 
 def edit(name, old, new):
@@ -19,7 +27,38 @@ helper = Path('build/grmodels-ball-reference-v1/WideProduct.HC').read_bytes()
 helper = helper.replace(
     b'I64 BallWideMultiplyToI64(F64 left,F64 right)\n{\n  U64 a=left(U64),b=right(U64),negative=(a^b)>>63;',
     b'public I64 I386F64MulToI64(U64 a,U64 b)\n{\n  U64 negative=(a^b)>>63;')
-sources[soft] = Path(soft).read_bytes() + b'\n' + helper
+source = Path(soft).read_bytes()
+if args.shared_multiply:
+    declaration = source.index(b'public U64 I386F64Mul(')
+    start = source.index(b'  exp=a>>52; other=b>>52;', declaration)
+    end = source.index(b'  x=(high<<15)', start)
+    product = source[start:end]
+    shared = b'''I64 I386F64Product(U64 a,U64 b,U64 *lower,U64 *upper)
+{
+  U64 frac=0x000FFFFFFFFFFFFF,x,y,low,middle,high;
+  I64 exp,other;
+''' + product + b'''  *lower=low;
+  *upper=high;
+  return exp;
+}
+
+'''
+    mul = source[declaration:start].replace(
+        b'quiet=0x0008000000000000,frac=0x000FFFFFFFFFFFFF;',
+        b'quiet=0x0008000000000000;')
+    mul = mul.replace(b'x,y,low,middle,high;', b'x,low,high;').replace(
+        b'I64 exp,other;', b'I64 exp;')
+    source = source[:declaration] + shared + mul + b'  exp=I386F64Product(a,b,&low,&high);\n' + source[end:]
+    start = helper.index(b'  exp_a=a>>52;')
+    end = helper.index(b'  significand=', start)
+    helper = helper[:start] + b'''  exponent=I386F64Product(a,b,&low,&high)-1023;
+  shift=41+(high>>41);
+  exponent+=shift-41;
+''' + helper[end:]
+    helper = helper.replace(b'  U64 fraction=0x000FFFFFFFFFFFFF,implicit=0x0010000000000000;\n', b'')
+    helper = helper.replace(b'x,y,low,middle,high,', b'low,high,').replace(
+        b'I64 exp_a,exp_b,exponent,shift;', b'I64 exponent,shift;')
+sources[soft] = source + b'\n' + helper
 
 header = 'Kernel/I386/SoftF64.HH'
 edit(header, 'public extern I64 I386F64ToI64(U64 value);',

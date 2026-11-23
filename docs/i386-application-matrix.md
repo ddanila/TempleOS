@@ -1736,3 +1736,15 @@ overlay. See `build/i386-wide-product-lowering-v1`.
 Span generation one passed retained installation, self-hosting,
 the image audit and the delivered-source audit. Generation two has
 started its retained rebuild.
+
+The wide-product candidate now shares operand normalization and the
+53-by-53-bit product with ordinary software multiplication. This
+saves 1,649 bytes in CompilerRuntime and preserves the byte-exact
+64 MiB conversion result. At 8 MiB, the unchanged User workload still
+fails. A read-only heap census immediately before USCheck measures a
+268,120-byte largest primary payload on the baseline and 264,024 on
+the candidate, exactly one page smaller. User needs 267,528 bytes
+after alignment. Both fallback heaps have a 2,840-byte largest
+payload. The candidate remains an overlay. See the `heap-base`,
+`heap-shared`, `shared-conversion64` and `shared-user8` receipts
+under `build/i386-wide-product-lowering-v1`.
