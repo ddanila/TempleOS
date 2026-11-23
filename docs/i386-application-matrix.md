@@ -1658,3 +1658,16 @@ generation-one installation. Its input source audit passed and its
 files remain available. A fresh runner using the same retained input
 and configuration is active in
 `build/span-production-v1/generations128-retry`.
+
+A 128-sample BallGen math probe records the binary64 ring and longitude
+angles, the cosine results, and the coordinates before and after
+integer conversion. Both guests use identical angle bits. Eighteen
+cosine samples differ. The existing high-precision oracle agrees
+with the original on all 128 and with native on 110. At the sampled
+longitude of pi/4 the one-bit cosine difference moves a product from
+above 10 to below it, so truncation produces 9 instead of 10. Seven
+sampled coordinate triples differ. See
+`build/grmodels-ball-reference-v1/vertex-math-comparison.json`.
+
+The restarted Span generation run passed generation-one retained
+installation and advanced to its native self-host build.

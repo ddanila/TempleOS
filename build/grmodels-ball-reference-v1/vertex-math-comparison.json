@@ -1,0 +1,154 @@
+{
+  "result": "fail",
+  "samples": 128,
+  "differing_values": {
+    "ring": 0,
+    "angle": 0,
+    "cosine": 18,
+    "x": 43,
+    "y": 33,
+    "z": 0,
+    "xi": 5,
+    "yi": 5,
+    "zi": 0
+  },
+  "oracle_exact_cosine_counts": {
+    "original": 128,
+    "native": 110
+  },
+  "coordinate_mismatches": [
+    {
+      "sample": 32,
+      "ring": -2,
+      "step": 0,
+      "angle_hex": "-0x1.921fb54442d18p-1",
+      "original_cos_hex": "0x1.6a09e667f3bcdp-1",
+      "native_cos_hex": "0x1.6a09e667f3bccp-1",
+      "rounded_cos_hex": "0x1.6a09e667f3bcdp-1",
+      "original_coordinates": [
+        10,
+        -10,
+        -14
+      ],
+      "native_coordinates": [
+        9,
+        -9,
+        -14
+      ]
+    },
+    {
+      "sample": 36,
+      "ring": -2,
+      "step": 4,
+      "angle_hex": "0x1.921fb54442d18p-1",
+      "original_cos_hex": "0x1.6a09e667f3bcdp-1",
+      "native_cos_hex": "0x1.6a09e667f3bccp-1",
+      "rounded_cos_hex": "0x1.6a09e667f3bcdp-1",
+      "original_coordinates": [
+        10,
+        10,
+        -14
+      ],
+      "native_coordinates": [
+        9,
+        9,
+        -14
+      ]
+    },
+    {
+      "sample": 40,
+      "ring": -2,
+      "step": 8,
+      "angle_hex": "0x1.2d97c7f3321d2p+1",
+      "original_cos_hex": "-0x1.6a09e667f3bccp-1",
+      "native_cos_hex": "-0x1.6a09e667f3bccp-1",
+      "rounded_cos_hex": "-0x1.6a09e667f3bccp-1",
+      "original_coordinates": [
+        -10,
+        10,
+        -14
+      ],
+      "native_coordinates": [
+        -9,
+        10,
+        -14
+      ]
+    },
+    {
+      "sample": 44,
+      "ring": -2,
+      "step": 12,
+      "angle_hex": "0x1.f6a7a2955385ep+1",
+      "original_cos_hex": "-0x1.6a09e667f3bcep-1",
+      "native_cos_hex": "-0x1.6a09e667f3bcdp-1",
+      "rounded_cos_hex": "-0x1.6a09e667f3bcep-1",
+      "original_coordinates": [
+        -10,
+        -10,
+        -14
+      ],
+      "native_coordinates": [
+        -10,
+        -9,
+        -14
+      ]
+    },
+    {
+      "sample": 96,
+      "ring": 2,
+      "step": 0,
+      "angle_hex": "0x1.921fb54442d18p-1",
+      "original_cos_hex": "0x1.6a09e667f3bcdp-1",
+      "native_cos_hex": "0x1.6a09e667f3bccp-1",
+      "rounded_cos_hex": "0x1.6a09e667f3bcdp-1",
+      "original_coordinates": [
+        10,
+        10,
+        14
+      ],
+      "native_coordinates": [
+        9,
+        9,
+        14
+      ]
+    },
+    {
+      "sample": 100,
+      "ring": 2,
+      "step": 4,
+      "angle_hex": "0x1.2d97c7f3321d2p+1",
+      "original_cos_hex": "-0x1.6a09e667f3bccp-1",
+      "native_cos_hex": "-0x1.6a09e667f3bccp-1",
+      "rounded_cos_hex": "-0x1.6a09e667f3bccp-1",
+      "original_coordinates": [
+        -10,
+        10,
+        14
+      ],
+      "native_coordinates": [
+        -9,
+        10,
+        14
+      ]
+    },
+    {
+      "sample": 104,
+      "ring": 2,
+      "step": 8,
+      "angle_hex": "0x1.f6a7a2955385ep+1",
+      "original_cos_hex": "-0x1.6a09e667f3bcep-1",
+      "native_cos_hex": "-0x1.6a09e667f3bcdp-1",
+      "rounded_cos_hex": "-0x1.6a09e667f3bcep-1",
+      "original_coordinates": [
+        -10,
+        -10,
+        14
+      ],
+      "native_coordinates": [
+        -10,
+        -9,
+        14
+      ]
+    }
+  ]
+}
