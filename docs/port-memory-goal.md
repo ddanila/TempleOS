@@ -3065,3 +3065,15 @@ and spurious-wake checks. The
 [full native task corpus](../build/i386-scheduler-ode-reap-v1/tasks-root-wait/result.json)
 passed with the ODE reaper repair, as did the
 [8 MiB User startup workflow](../build/i386-scheduler-ode-reap-v1/user8/result.json).
+
+The [high-heap retained build](../build/i386-keyboard-high-v2/retained-placement128/result.json)
+passed its ConsoleRuntime and MemoryRuntime audits. The assembled image
+used those two guest-built modules and seven audited guest-built modules
+whose cross references were byte-identical in both builds.
+The [provenance receipt](../build/i386-keyboard-high-v2/assembled-native/provenance.json)
+pins all nine hashes. The installation passed the fresh 8 MiB boot
+smoke, and the
+[User workload](../build/i386-keyboard-high-v2/assembled-native/user8/result.json)
+reached mask 255 and passed follow-up arithmetic with all nine native
+modules installed. The heap capture and the fresh single-revision native
+generation pipeline are still running.

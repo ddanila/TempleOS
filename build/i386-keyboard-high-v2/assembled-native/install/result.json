@@ -1,0 +1,55 @@
+{
+  "result": "pass",
+  "installed": [
+    "Startup",
+    "MemoryRuntime",
+    "FileRuntime",
+    "ConsoleRuntime",
+    "CompilerProbe",
+    "CompilerRuntime",
+    "BuildRuntime",
+    "DocDiagnosticRuntime",
+    "EditorRuntime"
+  ],
+  "source_disk_sha256": "34c0f208258c236bdc02187429cf68eb37eb90207998edb7947d31b9deb84849",
+  "disk_sha256": "df71f7a29af11688fee5d95760757cdf23204f09c3e85089ca275d6681a4ec37",
+  "module_source_paths": {
+    "Startup": "/Probe/RetainedStartup.t32m",
+    "MemoryRuntime": "/Probe/RetainedMemoryRuntime.t32m",
+    "FileRuntime": "/Probe/RetainedFileRuntime.t32m",
+    "ConsoleRuntime": "/Probe/RetainedConsoleRuntime.t32m",
+    "CompilerProbe": "/Probe/RetainedCompilerProbe.t32m",
+    "CompilerRuntime": "/Probe/RetainedCompilerRuntime.t32m",
+    "BuildRuntime": "/Probe/RetainedBuildRuntime.t32m",
+    "DocDiagnosticRuntime": "/Probe/RetainedDocDiagnosticRuntime.t32m",
+    "EditorRuntime": "/Probe/RetainedEditorRuntime.t32m"
+  },
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "welcome": true,
+  "managed_pointer": true,
+  "keyboard_harness": false,
+  "diagnostic_growth_recovery": true,
+  "module_sha256": {
+    "Startup": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7",
+    "MemoryRuntime": "ff80ee4508ab7d2321d64d977a47291c919c1752e7d8306c3fe20ea14213f65f",
+    "FileRuntime": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38",
+    "ConsoleRuntime": "3e85aebf04b49b2950d920ae64158e90e11df3cb906fcf62f43aa58d5dc2aa6c",
+    "CompilerProbe": "77f2c716ef4c2f98271a2bcd3075d9599a391e7b8ea5c0fc905b55e576df42f9",
+    "CompilerRuntime": "2e85efb4db9e430ffc99acd0e83b93cb0c89ed8cb6b36682d2273a29e464e8f8",
+    "BuildRuntime": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d",
+    "DocDiagnosticRuntime": "10ae3b166ccca52dcdfa1ea271c2e7b7973ec2e4a9e91087d96cef6e9544d9e6",
+    "EditorRuntime": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e"
+  },
+  "module_bytes": {
+    "Startup": 391,
+    "MemoryRuntime": 250213,
+    "FileRuntime": 295839,
+    "ConsoleRuntime": 2707463,
+    "CompilerProbe": 588353,
+    "CompilerRuntime": 1356452,
+    "BuildRuntime": 97307,
+    "DocDiagnosticRuntime": 49623,
+    "EditorRuntime": 53736
+  }
+}
