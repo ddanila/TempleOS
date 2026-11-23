@@ -1,0 +1,20 @@
+--- a/Kernel/I386/MemoryBacking.HC
++++ b/Kernel/I386/MemoryBacking.HC
+@@ -207,7 +207,7 @@
+       pages<1 || pages>(0xFFFFFFFF-sizeof(CI386BackingRegion)-511)/512 ||
+       pool->owned_count==0xFFFFFFFF) return FALSE;
+   minimum=pages*512; size=minimum;
+-  if(size<pool->quantum) size=pool->quantum;
++  if(size<pool->quantum && pool->retained<0x100000) size=pool->quantum;
+   request=size+sizeof(CI386BackingRegion)+511;
+   //Use validated low memory first, preserving the main arena for the
+   //bootstrap compiler and other consumers that cannot use the fallback.
+@@ -227,7 +227,7 @@
+   before=source->used;
+   //Keep the initial reserve and large regions first-fit. Later native-sized
+   //batches use the high end, leaving room for large contiguous consumers.
+-  if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)region=I386HeapAllocHigh(source,request);
++  if(pool->owned_count && size<=I386_NATIVE_BACKING_QUANTUM)region=I386HeapAllocHigh(source,request);
+   else region=I386HeapAlloc(source,request);
+   if(!region) return FALSE;
+   for(i=0;i<sizeof(CI386BackingRegion);i++) region(U8 *)[i]=0;

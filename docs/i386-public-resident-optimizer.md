@@ -367,3 +367,11 @@ earlier were temporary. This narrows the placement problem to the choices
 made for the surviving batches and the effects of earlier placement on
 those choices. The instrumented run still fails USCheck at 8 MiB.
 Replay inputs and results are under `build/compiler-backing-trace-v2`.
+
+The exact-size late growth experiment switches to requested pages once the
+pool retains 1 MiB and uses high placement for requests through one 8 KiB
+batch. The threshold is experimental and follows the earlier growth trace.
+The audited image completes native startup at 8 MiB, then USCheck fails
+the same 267,527-byte task request. The fallback largest free payload is
+2,768 bytes. The experiment and pinned receipts are under
+`build/compiler-backing-exact-v1`. All five inventory guard tests also pass.
