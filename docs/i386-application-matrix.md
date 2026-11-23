@@ -2316,3 +2316,11 @@ and compiler lowering for the power operator remain open. See
 `build/i386-power-wide-reference-v1/original-wide/result.json`,
 `build/i386-power-wide-reference-v1/original-wide/wide-model.json`,
 and `build/i386-power-wide-reference-v1/native-wide-widened/result.json`.
+
+A second reconstruction candidate evaluates the fractional power in
+126-bit fixed point and packs the scaled result toward zero. It
+matches all 56 original final results and intermediate exponents on
+the same no-FPU i386 guest. This probe covers positive finite bases.
+Signed and exceptional operands, compiler lowering, and the normal
+X-Caliber load path still need integration and verification. See
+`build/i386-power-wide-reference-v1/native-wide-reconstruction-array/result.json`.

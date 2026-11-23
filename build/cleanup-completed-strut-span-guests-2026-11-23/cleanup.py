@@ -6,6 +6,15 @@ import subprocess
 manifest = Path(__file__).with_name('manifest.json')
 rows = json.loads(manifest.read_text())['files'] if manifest.exists() else []
 runs = [
+    'i386-power-wide-reference-v1/native',
+    'i386-power-wide-reference-v1/native-wide',
+    'i386-power-wide-reference-v1/native-wide-fixed',
+    'i386-power-wide-reference-v1/native-wide-widened',
+    'i386-power-wide-reference-v1/original',
+    'i386-power-wide-reference-v1/original-wide',
+    'i386-power-wide-reference-v1/native-wide-reconstruction',
+    'i386-power-wide-reference-v1/native-wide-reconstruction-final',
+    'i386-power-wide-reference-v1/native-wide-reconstruction-array',
     'wordsearch-dictionary-exact-v1/native64',
     'wordsearch-dictionary-v1/native64',
     'wordsearch-sort-v1/native64',

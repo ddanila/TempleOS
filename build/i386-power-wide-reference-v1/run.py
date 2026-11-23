@@ -128,6 +128,7 @@ def compare(pairs, original):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--disk', type=Path)
+    parser.add_argument('--wide-reconstruction', action='store_true')
     parser.add_argument('--reference', type=Path)
     parser.add_argument('--out', required=True, type=Path)
     args = parser.parse_args()
@@ -149,6 +150,9 @@ def main():
         cases = source[source.index(b'U0 PowerCase('):]
         cases = cases.replace(b'PowerReduced(base,exponent),result=base`exponent;',
                               b'PowerWideReduced(base,exponent),result=PowerReconstruct(reduced);')
+        if args.wide_reconstruction:
+            reconstruct = Path(__file__).with_name('Reconstruct.HC').read_bytes()
+            cases = cases.replace(b'PowerReconstruct(reduced)', b'PowerWideReconstruct(reduced)')
         source = b'\n'.join((reduced, fixed, reconstruct, cases))
         packer = runpy.run_path('tools/package-i386-native-image.py')
         image = out / 'working.img'

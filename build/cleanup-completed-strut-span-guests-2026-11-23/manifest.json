@@ -4647,7 +4647,133 @@
         "-o",
         "build/native-implicit-f64-helper-v1/native64/working.img"
       ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/native/working.img",
+      "archive": "build/i386-power-wide-reference-v1/native/working.img.zst",
+      "sha256": "fb3ba4356030e8a1af7850357f35edbbaabcf1ff830e4d27738e75434bdbfdf3",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/native/working.img.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/native/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/native-wide/working.img",
+      "archive": "build/i386-power-wide-reference-v1/native-wide/working.img.zst",
+      "sha256": "997729bb764162402a8e6e1a3fdea28823bb988ebc320f18485ca8879f8ce8a9",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/native-wide/working.img.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/native-wide/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/native-wide-fixed/working.img",
+      "archive": "build/i386-power-wide-reference-v1/native-wide-fixed/working.img.zst",
+      "sha256": "dd30a9d6be7b6765ebbcf23a6f6964ba89485b87c38d765cc9f9f23ed1674d95",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/native-wide-fixed/working.img.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/native-wide-fixed/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/native-wide-widened/working.img",
+      "archive": "build/i386-power-wide-reference-v1/native-wide-widened/working.img.zst",
+      "sha256": "8127aaec7c7ed9ba5c5ba5880e08c5c3506bc8dc5f629485220340783bab43ae",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/native-wide-widened/working.img.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/native-wide-widened/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/original/original.iso",
+      "archive": "build/i386-power-wide-reference-v1/original/original.iso.zst",
+      "sha256": "85d264903d9641f579e289499145cc9b21ab30017841add8ff0c505e59a858b3",
+      "size": 46159872,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/original/original.iso.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/original-wide/original.iso",
+      "archive": "build/i386-power-wide-reference-v1/original-wide/original.iso.zst",
+      "sha256": "85d264903d9641f579e289499145cc9b21ab30017841add8ff0c505e59a858b3",
+      "size": 46159872,
+      "reclaimed_bytes": 33243136,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/original-wide/original.iso.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/original-wide/original.iso"
+      ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/native-wide-reconstruction/working.img",
+      "archive": "build/i386-power-wide-reference-v1/native-wide-reconstruction/working.img.zst",
+      "sha256": "9904464ba028b35de671382561aa0b0985c96b7d9111279f0dc3e269bb18f139",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/native-wide-reconstruction/working.img.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/native-wide-reconstruction/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/native-wide-reconstruction-final/working.img",
+      "archive": "build/i386-power-wide-reference-v1/native-wide-reconstruction-final/working.img.zst",
+      "sha256": "9209067891f4526d1cd60791fae457f699a6e41b5a37f2e1d249d36eb9db9e58",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/native-wide-reconstruction-final/working.img.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/native-wide-reconstruction-final/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/native-wide-reconstruction-array/working.img",
+      "archive": "build/i386-power-wide-reference-v1/native-wide-reconstruction-array/working.img.zst",
+      "sha256": "d865edd3f0f291c2ec086ff99a386a4ae717efca534b9cf6c6623c169e677979",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/native-wide-reconstruction-array/working.img.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/native-wide-reconstruction-array/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 16564445184
+  "reclaimed_bytes": 17004752896
 }
