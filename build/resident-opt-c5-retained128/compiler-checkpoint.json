@@ -1,0 +1,8 @@
+{
+  "scope": "Persisted CompilerRuntime during current retained build",
+  "bytes": 1343145,
+  "exports": 531,
+  "records": 4622,
+  "module_sha256": "3b6c200b1837258e111163af754fbac70fe0947c73ebd7a3e03ae02068dfd964",
+  "reference_sha256": "1a80b7e2eebaf3cc2604ebb34eeaa5ad1618f1cf92128d65147119ee2d7c63c5"
+}

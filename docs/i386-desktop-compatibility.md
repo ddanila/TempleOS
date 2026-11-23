@@ -516,3 +516,15 @@ matches the captured frame pixel for pixel when the oracle expects black
 ordinary text and prompt, green command names, and the managed pointer.
 The revised harness encodes those expectations. The report creation and
 cold reboot stages still need the terminal result of the fresh run.
+
+The TimeClock report fixture now reaches TimeReportSeed with the managed
+welcome oracle. Its saved typed records and first DolDoc report match the
+original golden bytes. Offline full-frame checks confirm black prompt
+glyphs while typing after DocClear and black return value and prompt on the
+report screen. The revised oracle retains exact raster comparison and
+requires a fresh run through the cold-reboot report check.
+
+The 128 MiB retained build also persisted CompilerRuntime and advanced to
+CompilerProbe. The saved module passes the reference export comparison
+with the harness's existing flat division-symbol exceptions. See
+`build/resident-opt-c5-retained128/compiler-checkpoint.json`.

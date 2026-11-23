@@ -51,18 +51,25 @@ def main():
     plugin_line='You might want to make PLUGINS for hot keys.'
     row_styles={load_line:[(0,len(load_line),0),(20,28,2),(30,39,2),(43,51,2)],
                 plugin_line:[(0,len(plugin_line),0)],
+                'start':[(0,5,0)],'finish':[(0,6,0)],
                 report_lines[0]:[(0,len(report_lines[0]),4)],
                 report_lines[3]:[(0,len(report_lines[3]),4)],
                 report_lines[6]:[(0,len(report_lines[6]),4)]}
+    report_cleared_colors={(7,0):0,(8,0):0}
     def execute(commands,destination,reopening=False):
         styles={}
         if args.welcome:
             if not reopening:
                 styles[1]={'return_rows':[load_line,plugin_line,'','','> '],
                            'return_colors':{(4,0):0}}
-                styles[2]={'return_rows':report_lines}
+                styles[2]={'typing_colors':{(4,0):0},'return_rows':report_lines,
+                           'return_colors':report_cleared_colors}
+                styles[3]={'typing_colors':report_cleared_colors,
+                           'return_colors':report_cleared_colors}
             else:
-                styles[1]={'return_rows':report_lines}
+                styles[1]={'return_rows':report_lines,'return_colors':report_cleared_colors}
+                styles[2]={'typing_colors':report_cleared_colors,
+                           'return_colors':report_cleared_colors}
         return run_input(working,destination,snapshot=False,ram_mib=64,cpu='486,-fpu',accel=args.accel,qmp_stdio=True,welcome=args.welcome,
                          managed_pointer=args.managed_pointer,keep_window_manager=args.managed_pointer,
                          startup_check={'status':'ok','answers':[],'commands':commands,
