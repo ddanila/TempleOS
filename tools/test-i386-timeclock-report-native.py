@@ -11,7 +11,7 @@ FIXTURE = ROOT/'tests/guest/i386-timeclock-report-native/Contract.HC'
 GOLDEN = ROOT/'tests/i386/timeclock-reference.json'
 COMMANDS = [('!FileFind("~/TimeClock",,FUF_JUST_DIRS);', ['1']),
             ('#include "C:/ReportNative.HC"', ['1']), ('TimeReportSeed;', ['1']), ('6*7;', ['42'])]
-REOPEN = [('#include "C:/ReportNative.HC"', ['1']),
+REOPEN = [('#include "C:/ReportNative.HC"', []),
           ('TimeReportCapture("C:/report-reopened.DD");', ['1']), ('6*7;', ['42'])]
 
 

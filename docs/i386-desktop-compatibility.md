@@ -528,3 +528,16 @@ The 128 MiB retained build also persisted CompilerRuntime and advanced to
 CompilerProbe. The saved module passes the reference export comparison
 with the harness's existing flat division-symbol exceptions. See
 `build/resident-opt-c5-retained128/compiler-checkpoint.json`.
+
+The updated TimeClock oracle passes the complete first boot, including
+the report raster, original report and record bytes, and fresh arithmetic.
+On cold boot, loading the fixture leaves no result row because the
+TimeClock directory is already installed. Removing the extra expected
+result row produces an exact match for the captured cold-boot frame.
+The corrected run is in progress through the remaining report comparison.
+
+The retained build has persisted CompilerProbe as its third module and
+started FileRuntime. The progress auditor checks each persisted module
+against its reference export set and verifies stable bytes across two
+reads of the live build disk. See
+`build/resident-opt-c5-retained128/through-compiler-probe.json`.

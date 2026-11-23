@@ -1,0 +1,27 @@
+{
+  "scope": "Check persisted retained modules whose successor command has started.",
+  "modules": {
+    "ConsoleRuntime": {
+      "bytes": 2748962,
+      "records": 14081,
+      "exports": 1421,
+      "module_sha256": "4d0d756845c4f85b355c0b2d5477cd709d8901e2dd0e697e6748cd0944f035d3",
+      "reference_sha256": "59e9249ae76e4ec12e1d645ccd47dbaacb316a952a3ece1f9ead16eac0cc1882"
+    },
+    "CompilerRuntime": {
+      "bytes": 1343145,
+      "records": 4622,
+      "exports": 531,
+      "module_sha256": "3b6c200b1837258e111163af754fbac70fe0947c73ebd7a3e03ae02068dfd964",
+      "reference_sha256": "1a80b7e2eebaf3cc2604ebb34eeaa5ad1618f1cf92128d65147119ee2d7c63c5"
+    },
+    "CompilerProbe": {
+      "bytes": 588089,
+      "records": 2349,
+      "exports": 139,
+      "module_sha256": "08a8045d6edd53bbac6844158f1f0a0588fb26077d2723d3ad1a7a26636c2380",
+      "reference_sha256": "c99513871bca5ebed9b5f5b528def46f814687b588673a567e45a02053527c12"
+    }
+  },
+  "latest_command": "FileRuntime"
+}
