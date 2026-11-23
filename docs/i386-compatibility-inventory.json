@@ -11120,6 +11120,12 @@
           "result": "fail",
           "evidence": "build/span-reference-persistence-v1/native64/result.json",
           "scope": "Compilation stops at the missing PopUpFileName service in SpanNew.HC before the comparison can run."
+        },
+        {
+          "target": "native-span-bridge-file-interchange",
+          "result": "pass",
+          "evidence": "build/span-file-interchange-v1/native64-roundtrip/result.json",
+          "scope": "The native overlay opens and rewrites the original 312-byte file exactly. The pinned original preserves a native-generated file in the reverse direction. Interactive native play remains open."
         }
       ]
     },

@@ -1451,3 +1451,20 @@ The pinned original opens the native-generated bridge and reproduces
 all 312 input bytes after a RAM-disk save and readback, restoring the
 anchor and both endpoint links. See
 `build/span-file-interchange-v1/original/result.json`.
+
+Native Span also opens the original bridge, restores its endpoints,
+and saves the same 312 bytes. The host reads the returned file from
+the native disk and verifies the original SHA-256. Both directions of
+file interchange pass. A new native bridge has the same layout and
+matches every other byte, with rounding differences bounded in six
+newly computed spring fields. An earlier fixture incorrectly compared
+FileWrite's return value with the byte count. The final fixture checks
+its success and verifies the actual disk bytes. See
+`build/span-file-interchange-v1/native64-roundtrip/result.json`.
+
+The production focus, menu, and Psalmody two-generation run passed
+generation one's install, self-host build, instruction audit, and
+delivered-source audit. The orchestrator and generation-two guest
+stopped during the retained rebuild without a terminal report. The
+interruption receipt preserves the completed stage hashes. See
+`build/native-focus-menu-psalmody-production-v1/generations128/terminal-observation.json`.

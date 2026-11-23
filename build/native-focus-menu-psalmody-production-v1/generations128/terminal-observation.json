@@ -1,0 +1,14 @@
+{
+  "result": "interrupted",
+  "orchestrator_report_sha256": "3b90b4625fa7e815845f4c2b408e60f3ccc964a1143fde910e41013563c2121d",
+  "observed_pid": 236567,
+  "observation": "Orchestrator and generation-two rebuild guest absent. The original running report has no terminal result.",
+  "completed_stages": {
+    "input-source-audit": "f12a3ea04b98a43f9ff2678c64a6ac2ef39ee5532f0f0a94eaa3147626a8a1f5",
+    "gen1-install": "c00c9b4dddc9e8fcda9fec67d83a62d874307de52ffaf2fe689962eb7a3db9ba",
+    "gen1-selfhost": "c48002a501b53c183f007b3c716544fbceba62c797039c30544cf40cdd04d317",
+    "gen1-audit": "9849651387de68549ca0995450356568f08bb71911ae37758b2b75360f7a0e71",
+    "gen1-source-audit": "6fc2052c348ea0f15b511e4630a77b338c03b899963364e5ab2b894dc9176862"
+  },
+  "last_generation_two_function": "FBlkWrite"
+}
