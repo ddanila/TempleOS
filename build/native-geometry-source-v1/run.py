@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import struct
 import time
 
 parser = argparse.ArgumentParser()
@@ -18,6 +19,8 @@ parser.add_argument('--vertex-trace', action='store_true')
 parser.add_argument('--wide-product', action='store_true')
 parser.add_argument('--original-curves', action='store_true')
 parser.add_argument('--original-range', action='store_true')
+parser.add_argument('--visibility-fixture', action='store_true')
+parser.add_argument('--original-key-poll', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
 if args.serial_visibility and args.app != 'ToTheFront':
@@ -38,6 +41,10 @@ if args.original_curves and not args.serial_visibility:
     parser.error('--original-curves requires --serial-visibility')
 if args.original_range and not args.serial_visibility:
     parser.error('--original-range requires --serial-visibility')
+if args.visibility_fixture and not args.serial_visibility:
+    parser.error('--visibility-fixture requires --serial-visibility')
+if args.original_key_poll and not args.serial_visibility:
+    parser.error('--original-key-poll requires --serial-visibility')
 out = args.out.resolve()
 out.mkdir()
 extras={}
@@ -64,6 +71,10 @@ if args.app=='ToTheFront':
     if args.original_range:
         extras['/TTFRange.HC'] = source[
             source.index(b'public F64 PopUpRangeF64('):source.index(b'public F64 PopUpRangeF64Exp(')]
+    if args.original_key_poll:
+        message_source = Path('Kernel/SerialDev/Message.HC').read_bytes()
+        extras['/TTFKeyPoll.HC'] = message_source[
+            message_source.index(b'I64 ScanChar()'):message_source.index(b'#include "/Kernel/KeyScanCore.HC"')]
     if args.serial_visibility:
         app = Path('Apps/ToTheFront')
         visibility = (app/'TTFVis.HC').read_bytes()
@@ -88,6 +99,8 @@ if args.app=='ToTheFront':
   job.hi=map_rows;
   MPVisRecalcMap(&job);""" + visibility[end:]
         extras['/TTFSerialVis.HC'] = visibility
+        if args.visibility_fixture:
+            extras['/TTFVisibility.HC'] = Path('build/tothefront-original-v1/Visibility.HC').read_bytes()
         if args.original_wrap:
             math_source = Path('Adam/AMath.HC').read_bytes()
             extras['/TTFWrap.HC'] = math_source[
@@ -157,8 +170,13 @@ try:
                 commands.append('#include "C:/TTFCurves.HC"')
             if unit == 'ToTheFront' and args.original_range:
                 commands.append('#include "C:/TTFRange.HC"')
+            if unit == 'ToTheFront' and args.original_key_poll:
+                commands.append('#include "C:/TTFKeyPoll.HC"')
             paths = fire_units if unit == 'TTFFire' and fire_units else [path]
             commands.extend(f'#include "C:{name}"' for name in paths)
+            if unit == 'TTFVis' and args.visibility_fixture:
+                commands.append('#include "C:/TTFVisibility.HC"')
+                break
     elif args.vertex_trace:
         commands.append('#include "C:/BallGenTrace.HC"')
     else:
@@ -168,6 +186,9 @@ try:
         report['command']=command
         guest.command(command)
         report['completed_commands'].append(command)
+    if args.visibility_fixture:
+        guest.wait('TTF visibility captured\n')
+        report['visibility'] = struct.unpack('<12q', (guest.out/'TTFVisibility.bin').read_bytes())
     guest.command('6*7;')
     report['fresh_result']=guest.result_pixels()
     report['result']='pass'

@@ -1,0 +1,79 @@
+{
+  "result": "fail",
+  "package": {
+    "result": "pass",
+    "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "image_sha256": "b02d47952eb7e589a2f7e3d7b454e97efd5aef0ce33b311c4e5b019f316a1993",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1927,
+      "owned_sectors": 96239,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/IntegerPrompt.HC": "63a9e2a7fbcfdc7264738d9e5b8f9d643a53e2e0c0fca813c43771ebcffeef61",
+      "/PublicGeometrySource.HC": "158a30b386510728aa55d4c22b061632a55843e5b783c476815a37f7a0e0403c",
+      "/TTFAttackHeader.HC": "44620f4d7773ba490651f1d99971b04928120e7516d89f83370922867112a760",
+      "/TTFBulletPlot.HC": "e8ec9f01f2fe2959b9bbe51f372fa5d351b6e1aaa0bf1c625d171d96f26e002b",
+      "/TTFCurves.HC": "2c62692b468aa327f136dbb138f599cee3abef32b0f5bdf9b3bca0d80ba532a0",
+      "/TTFDamageDo.HC": "97b137ca9bf6a9675ef8e42406dfbe39a1e1cc28eb74b79ba26545048578034a",
+      "/TTFHexOccupy.HC": "ee36fdf6b9f0da0e91195d60974db90c536bcea54874b6929dbb66bddc7fadc2",
+      "/TTFHitDamage.HC": "3e6785d2e16f952cec59ceb609ecf13cc9e742042a9e18fed4301fd64609494b",
+      "/TTFIndirectAdd.HC": "cd24261ff423b2ee88821097a7711afbfef88e47d0aaeb2819c23b5666c348b4",
+      "/TTFIndirectResolveAll.HC": "894ebe09fd91d674b5fc1d5ff41894797ae5ffb1c23a8b6930e2c1c4c2845fdc",
+      "/TTFRange.HC": "a157d58bcaaa1d47c1393e01ce76888ff0e732583bbf23f1453084e1d15cdfb0",
+      "/TTFSerialVis.HC": "5284d9c99baff19833d30a64ad6680ce3d6a13efda2a1a8df59f6624718260e7",
+      "/TTFUnitDirectFire.HC": "6c31cc223304b0a4bcc37356a71fd2894ce2dd3d4231777b83b4fe251857f8bb",
+      "/TTFWrap.HC": "0194fe4fa149d0533d111d71daa513aeb2b0e01552ddf312d56ea7027bc6021b"
+    },
+    "added_attributes": {
+      "/IntegerPrompt.HC": 2048,
+      "/PublicGeometrySource.HC": 2048,
+      "/TTFAttackHeader.HC": 2048,
+      "/TTFBulletPlot.HC": 2048,
+      "/TTFCurves.HC": 2048,
+      "/TTFDamageDo.HC": 2048,
+      "/TTFHexOccupy.HC": 2048,
+      "/TTFHitDamage.HC": 2048,
+      "/TTFIndirectAdd.HC": 2048,
+      "/TTFIndirectResolveAll.HC": 2048,
+      "/TTFRange.HC": 2048,
+      "/TTFSerialVis.HC": 2048,
+      "/TTFUnitDirectFire.HC": 2048,
+      "/TTFWrap.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "completed_commands": [
+    "#include \"C:/PublicGeometrySource.HC\"",
+    "#include \"C:/IntegerPrompt.HC\"",
+    "#include \"C:/TTFWrap.HC\"",
+    "Cd(\"C:/Apps/ToTheFront\");",
+    "#include \"C:/Apps/ToTheFront/TTFGlbls.HC\"",
+    "#include \"C:/Apps/ToTheFront/TTFLib.HC\"",
+    "#include \"C:/Apps/ToTheFront/TTFInit.HC\"",
+    "#include \"C:/TTFSerialVis.HC\"",
+    "#include \"C:/TTFAttackHeader.HC\"",
+    "#include \"C:/TTFHitDamage.HC\"",
+    "#include \"C:/TTFDamageDo.HC\"",
+    "#include \"C:/TTFIndirectAdd.HC\"",
+    "#include \"C:/TTFBulletPlot.HC\"",
+    "#include \"C:/TTFUnitDirectFire.HC\"",
+    "#include \"C:/TTFHexOccupy.HC\"",
+    "#include \"C:/TTFIndirectResolveAll.HC\"",
+    "#include \"C:/Apps/ToTheFront/TTFMove.HC\"",
+    "#include \"C:/TTFCurves.HC\"",
+    "#include \"C:/Apps/ToTheFront/TTFDraw.HC\"",
+    "#include \"C:/TTFRange.HC\""
+  ],
+  "command": "#include \"C:/Apps/ToTheFront/ToTheFront.HC\"",
+  "error": "INPUT LINE #include \"C:/Apps/ToTheFront/ToTheFront.HC\"\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token ScanChar file C:/Apps/ToTheFront/ToTheFront.HC line 99\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+}

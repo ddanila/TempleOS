@@ -1,0 +1,69 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "8e8405ee3ca94279301ca2396bca50ca9ed2b482f9bd36c2f2fe9276c87ba8ce",
+    "image_sha256": "cff91710e58a55cc1d6b8c7dffc681e2b679a5d5a4925c3052bcf17d3a25dc1a",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1917,
+      "owned_sectors": 96211,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/IntegerPrompt.HC": "63a9e2a7fbcfdc7264738d9e5b8f9d643a53e2e0c0fca813c43771ebcffeef61",
+      "/PublicGeometrySource.HC": "158a30b386510728aa55d4c22b061632a55843e5b783c476815a37f7a0e0403c",
+      "/TTFSerialVis.HC": "5284d9c99baff19833d30a64ad6680ce3d6a13efda2a1a8df59f6624718260e7",
+      "/TTFVisibility.HC": "00f3d2e65d49352e80c1f06077623ebece068fa4c2a7e1773c9725fb56028e47"
+    },
+    "added_attributes": {
+      "/IntegerPrompt.HC": 2048,
+      "/PublicGeometrySource.HC": 2048,
+      "/TTFSerialVis.HC": 2048,
+      "/TTFVisibility.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "completed_commands": [
+    "#include \"C:/PublicGeometrySource.HC\"",
+    "#include \"C:/IntegerPrompt.HC\"",
+    "Cd(\"C:/Apps/ToTheFront\");",
+    "#include \"C:/Apps/ToTheFront/TTFGlbls.HC\"",
+    "#include \"C:/Apps/ToTheFront/TTFLib.HC\"",
+    "#include \"C:/Apps/ToTheFront/TTFInit.HC\"",
+    "#include \"C:/TTFSerialVis.HC\"",
+    "#include \"C:/TTFVisibility.HC\""
+  ],
+  "command": "#include \"C:/TTFVisibility.HC\"",
+  "visibility": [
+    1,
+    0,
+    763,
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    46,
+    19,
+    1
+  ],
+  "fresh_result": {
+    "column": 0,
+    "row": 19,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

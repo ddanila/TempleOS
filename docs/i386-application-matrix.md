@@ -1789,3 +1789,15 @@ unchanged TTFDraw unit then compiles. The final application unit
 stops at the missing PopUpRangeF64 at line 3. A follow-up probe
 with the original range chooser is running. See
 `build/native-geometry-source-v1/ToTheFront-curves/result.json`.
+
+The original range chooser moves the final ToTheFront compile to
+`ScanChar` at line 99. A follow-up uses the original key poll over
+the published message APIs. The pinned original launcher reaches the
+GameSeed prompt. In a separate deterministic workload, the original
+multicore and native serial visibility workers return twelve identical
+values. They agree on the visible neighbor, the unit behind a mountain,
+763 visible cells, visibility after clearing the obstruction, and the
+death update. Native still executes arithmetic after the probe.
+The complete interactive match remains open. See
+`build/tothefront-original-v1/visibility-zeroed/result.json` and
+`build/native-geometry-source-v1/ToTheFront-visibility-zeroed/result.json`.
