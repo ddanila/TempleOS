@@ -88,6 +88,7 @@ runs = [
     'tothefront-production-v1/fire64-trace',
     'tothefront-production-v1/fire64-shot-trace',
     'tothefront-production-v1/noise-sleep64',
+    'tothefront-production-v1/noise-stall-samples',
     'tothefront-production-v1/match64',
     'tothefront-production-v1/user8',
     'native-geometry-source-v1/ToTheFront-indirect-head',

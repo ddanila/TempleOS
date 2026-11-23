@@ -17,6 +17,8 @@ U0 NoiseSleepProbe()
     return;
   }
   start=cnts.jiffies;
+  StrPrint(report,"TTF timer address %X sleeper %X noise %X\n",&cnts.jiffies,Fs,sound);
+  NoiseSleepLog(report);
   NoiseSleepLog("TTF timer before active noise\n");
   Sleep(250);
   StrPrint(report,"TTF timer after active noise %d\n",cnts.jiffies-start);

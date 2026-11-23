@@ -1913,3 +1913,14 @@ Noise(250,34,41). This shows the same failure without app input,
 rendering or shot calculations. The noise-task interaction remains
 open. See `build/tothefront-production-v1/fire64-shot-trace/result.json`
 and `build/tothefront-production-v1/noise-sleep64/result.json`.
+
+The native noise-stall capture samples the timer at 17,130 jiffies
+three times over one second. The running FS base identifies the
+spawned noise task. The sampled instruction addresses map to Snd's
+speaker-port I/O, and the timer does not advance. In a separate
+run of the same disk and fixture with KVM and QEMU's userspace IRQ
+chip, Sleep returns after exactly 250 jiffies while Noise is active.
+The complete ToTheFront direct-fire comparison is now running in
+that configuration. The default in-kernel IRQ-chip case remains
+open. See `build/tothefront-production-v1/noise-stall-samples/result.json`
+and `build/tothefront-production-v1/noise-userspace-irqchip/result.json`.

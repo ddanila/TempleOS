@@ -1917,7 +1917,21 @@
         "-o",
         "build/tothefront-production-v1/noise-sleep64/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-production-v1/noise-stall-samples/working.img",
+      "archive": "build/tothefront-production-v1/noise-stall-samples/working.img.zst",
+      "sha256": "54693fa5da35c40d1eda12a4dd6c45b7b3e6965e8d0fa27d325f9a667a6aec06",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/noise-stall-samples/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/noise-stall-samples/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 6709329920
+  "reclaimed_bytes": 6762737664
 }

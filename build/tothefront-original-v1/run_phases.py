@@ -12,12 +12,15 @@ parser.add_argument('--move', action='store_true')
 parser.add_argument('--fire', action='store_true')
 parser.add_argument('--trace-fire', action='store_true')
 parser.add_argument('--trace-shot', action='store_true')
+parser.add_argument('--userspace-irqchip', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 if args.trace_fire and (not args.fire or not args.disk):
     parser.error('--trace-fire needs --fire and a native --disk')
 if args.trace_shot and not args.trace_fire:
     parser.error('--trace-shot requires --trace-fire')
+if args.userspace_irqchip and not args.disk:
+    parser.error('--userspace-irqchip requires --disk')
 out = args.out.resolve()
 out.mkdir()
 root = Path(__file__).resolve().parent
@@ -54,7 +57,9 @@ Guest = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Guest']
 exercise = runpy.run_path(str(root/'phase_workflow.py'))['exercise']
 report = {'fixture_sha256': hashlib.sha256(fixture).hexdigest(),
           'input_sha256': hashlib.sha256((args.disk or image).read_bytes()).hexdigest()}
-guest = Guest(image, out/'guest', bool(args.disk))
+machine = 'pc,kernel-irqchip=off' if args.userspace_irqchip else 'pc'
+report['machine'] = machine
+guest = Guest(image, out/'guest', bool(args.disk), native_machine=machine)
 try:
     if args.disk:
         guest.wait('DONE native kernel startup\n')
