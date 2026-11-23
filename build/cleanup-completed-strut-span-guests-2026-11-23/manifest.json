@@ -1987,7 +1987,189 @@
         "-o",
         "build/tothefront-production-v1/fire64-userspace-irqchip/working.img"
       ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/user8/working.img",
+      "archive": "build/i386-graphics-registry-integration/user8/working.img.zst",
+      "sha256": "02e06477113f885eb91d4c3bffad77fdef6607e013cf56db59be17b7861b344a",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/user8/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/timeclock-report64/working.img",
+      "archive": "build/i386-graphics-registry-integration/timeclock-report64/working.img.zst",
+      "sha256": "752f5960dbd79d6721d77aaed66359b4e9e06c1f304051c59b463a4bef9d540f",
+      "size": 67108864,
+      "reclaimed_bytes": 35930112,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/timeclock-report64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/timeclock-report64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/timeclock-punch64/working.img",
+      "archive": "build/i386-graphics-registry-integration/timeclock-punch64/working.img.zst",
+      "sha256": "d24c659d184efc59527ad750f231257eac8f5cf98139db0a6967509701be9dc6",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/timeclock-punch64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/timeclock-punch64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/timeclock-keyboard64/working.img",
+      "archive": "build/i386-graphics-registry-integration/timeclock-keyboard64/working.img.zst",
+      "sha256": "6823457116ddb01d8e8a383ed8e9741cf813534396df79e3f104ff703de83b4c",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/timeclock-keyboard64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/timeclock-keyboard64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/sound-effects64/working.img",
+      "archive": "build/i386-graphics-registry-integration/sound-effects64/working.img.zst",
+      "sha256": "b61f08ad7f4d22e534dc721c6a710330db3d8cbcfd2402fc90eaa517d7597534",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/sound-effects64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/sound-effects64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/sound-effects-managed64/working.img",
+      "archive": "build/i386-graphics-registry-integration/sound-effects-managed64/working.img.zst",
+      "sha256": "b61f08ad7f4d22e534dc721c6a710330db3d8cbcfd2402fc90eaa517d7597534",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/sound-effects-managed64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/sound-effects-managed64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/registry64/working.img",
+      "archive": "build/i386-graphics-registry-integration/registry64/working.img.zst",
+      "sha256": "f491fc228abf2ea5d679ae8f5d07cb12e87677f309ca7eb81e32886477c8f924",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/registry64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/registry64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/psalmody64/working.img",
+      "archive": "build/i386-graphics-registry-integration/psalmody64/working.img.zst",
+      "sha256": "57fb0ab49ec5601e9153e29090c2b3523440168301c00de17a6ac5f1ee70bf06",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/psalmody64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/psalmody64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/keepaway-settings64/working.img",
+      "archive": "build/i386-graphics-registry-integration/keepaway-settings64/working.img.zst",
+      "sha256": "905744d6cfcfae6dac2cd81dfc08009bdd1352ff02c62c558ff0cb47af165bfc",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/keepaway-settings64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/keepaway-settings64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/keepaway-load64/working.img",
+      "archive": "build/i386-graphics-registry-integration/keepaway-load64/working.img.zst",
+      "sha256": "1cff3e7d3cf326465f26c1196b6dfccc4a6ba1fec4c99d991ade9e822f47bb39",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/keepaway-load64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/keepaway-load64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/keepaway-libraries64/working.img",
+      "archive": "build/i386-graphics-registry-integration/keepaway-libraries64/working.img.zst",
+      "sha256": "c3818d2bb84bba5fe6e8d4e4c13fe5f9b60a4138a504598e8c9d1f3ca45d7b54",
+      "size": 67108864,
+      "reclaimed_bytes": 53415936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/keepaway-libraries64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/keepaway-libraries64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/generations128/gen1-desktop64/working.img",
+      "archive": "build/i386-graphics-registry-integration/generations128/gen1-desktop64/working.img.zst",
+      "sha256": "d2ad09e362dee1d00cb02029dd31b7171d69ba5a274a30195fc4cebf02066d71",
+      "size": 67108864,
+      "reclaimed_bytes": 53284864,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/generations128/gen1-desktop64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/generations128/gen1-desktop64/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/generations128/gen2-desktop64/working.img",
+      "archive": "build/i386-graphics-registry-integration/generations128/gen2-desktop64/working.img.zst",
+      "sha256": "0c076b3729917214c3047898772a067b1d095b2038e549e1dd6c6864d3ccbd42",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/generations128/gen2-desktop64/working.img.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/generations128/gen2-desktop64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 6976368640
+  "reclaimed_bytes": 7653023744
 }

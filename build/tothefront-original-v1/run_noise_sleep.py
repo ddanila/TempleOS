@@ -12,21 +12,45 @@ parser.add_argument('--sample-stall', action='store_true')
 irq = parser.add_mutually_exclusive_group()
 irq.add_argument('--userspace-irqchip', action='store_true')
 irq.add_argument('--split-irqchip', action='store_true')
-parser.add_argument('--single-note', action='store_true')
+stimulus = parser.add_mutually_exclusive_group()
+stimulus.add_argument('--single-note', action='store_true')
+stimulus.add_argument('--note-burst', action='store_true')
+stimulus.add_argument('--fixed-noise', action='store_true')
+parser.add_argument('--poll-parent', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 out = args.out.resolve()
 out.mkdir()
 fixture = Path(__file__).with_name('NoiseSleep.HC').read_bytes()
-if args.single_note:
+if args.single_note or args.note_burst:
     start = fixture.index(b'  sound=Noise(')
     end = fixture.index(b'  start=cnts.jiffies;', start)
-    fixture = fixture[:start] + b'  sound=0;\n  Snd(34);\n' + fixture[end:]
+    notes = b'  sound=0;\n  Snd(34);\n'
+    if args.note_burst:
+        fixture = fixture.replace(b'  I64 start;', b'  I64 start,i;')
+        start = fixture.index(b'  sound=Noise(')
+        end = fixture.index(b'  start=cnts.jiffies;', start)
+        notes = b'''  sound=0;
+  NoiseSleepLog("TTF timer before note burst\\n");
+  for (i=0;i<16;i++) {
+    Snd(34+i%2*7);
+    Sleep(15);
+  }
+  NoiseSleepLog("TTF timer after note burst\\n");
+'''
+    fixture = fixture[:start] + notes + fixture[end:]
     fixture = fixture.replace(b'  NoiseSleepLog(report);\n}', b'  NoiseSleepLog(report);\n  Snd;\n}')
+if args.fixed_noise:
+    fixture = fixture.replace(b'Noise(250,34,41)', b'Noise(250,34,34)')
+if args.poll_parent:
+    fixture = fixture.replace(
+        b'  Sleep(250);\n  StrPrint(report,"TTF timer after active noise',
+        b'  while(cnts.jiffies-start<250) Sleep(5);\n  StrPrint(report,"TTF timer after active noise')
 working = out/'working.img'
 package = runpy.run_path('tools/package-i386-native-image.py')['package']
 report = {'package': package(args.disk, working, additions={'/NoiseSleep.HC': fixture}),
-          'fixture_sha256': hashlib.sha256(fixture).hexdigest(), 'single_note': args.single_note}
+          'fixture_sha256': hashlib.sha256(fixture).hexdigest(), 'single_note': args.single_note, 'note_burst': args.note_burst, 'fixed_noise': args.fixed_noise,
+          'poll_parent': args.poll_parent}
 Guest = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Guest']
 machine = 'pc,kernel-irqchip=off' if args.userspace_irqchip else 'pc'
 if args.split_irqchip:

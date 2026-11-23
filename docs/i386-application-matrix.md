@@ -1935,3 +1935,14 @@ workload also passes with the split IRQ-chip configuration.
 See `build/tothefront-production-v1/fire64-userspace-irqchip/result.json`,
 `build/tothefront-production-v1/noise-single-note/result.json` and
 `build/tothefront-production-v1/noise-split-irqchip/result.json`.
+
+The current production image passes the established Noise/Sweep
+lifecycle and cleanup contract under default KVM. It also passes
+sixteen alternating speaker writes from the caller and fixed-note
+Noise at note 34. The varying-note Noise worker at notes 34 through
+40 still freezes the timer when the caller polls in 5 ms sleeps.
+In three frozen samples, the primary PIC had IRQ0 unmasked with no
+pending or in-service request. This confines the reproduction to
+the varying-note worker in the default IRQ configuration. See the
+`sound-effects-managed64`, `noise-note-burst`, `noise-fixed-low`
+and `noise-poll-parent` receipts under `build/tothefront-production-v1`.
