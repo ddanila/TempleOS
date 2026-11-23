@@ -94,3 +94,18 @@ supports a dispatch delay for the zero-duration note, with a separate
 40–90 ms delivery lag on later notes in this run. The trace keeps the original
 400 ms injections and the exact duration check. The timed scan fixture,
 receipt and decoded records are in `build/psalmody-timing-trace-v4`.
+
+A second run waits for two window updates, completion of the full document
+refresh, and the application's idle message wait before starting the same
+physical 400 ms key holds. This run uses unchanged Psalmody sources on both
+guests. The original still passes with durations 8, 8, 8. The native guest
+records 7, 7, 8. Waiting for the record-menu redraw removes the zero in this
+run but does not restore the exact keyboard contract.
+
+A separate native profiling overlay measured the record-menu redraw at
+1,050 guest ms. Clearing took 10 ms, drawing and inserting the first sprite
+took 290 ms, and the remaining menu work took 450 ms. The final two-frame
+refresh wait took another 300 ms. This identifies two costs to investigate
+in the drawing and document paths and leaves the measured dispatch lag after
+redraw open. The strict fixtures and receipts are in
+`build/psalmody-redraw-gate-v1` and `build/psalmody-redraw-profile-v1`.

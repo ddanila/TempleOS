@@ -1,0 +1,36 @@
+{
+  "menu_ms": {
+    "initial_menu": {
+      "clear": 20,
+      "drawing_and_first_sprite": 410,
+      "remaining_menu": 560,
+      "refresh_two_frames": 270,
+      "total": 1260
+    },
+    "record_menu": {
+      "clear": 10,
+      "drawing_and_first_sprite": 290,
+      "remaining_menu": 450,
+      "refresh_two_frames": 300,
+      "total": 1050
+    }
+  },
+  "recording_ready_gate": {
+    "original": {
+      "result": "pass",
+      "durations": [
+        8,
+        8,
+        8
+      ]
+    },
+    "native64": {
+      "result": "fail",
+      "durations": [
+        7,
+        7,
+        8
+      ]
+    }
+  }
+}
