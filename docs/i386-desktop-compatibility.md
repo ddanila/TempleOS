@@ -373,3 +373,9 @@ desktop oracle exactly, and the log shows one Home selection. Desktop startup
 completion, bootstrap retirement and fresh execution still await the terminal
 result from the running harness. The partial receipt is in
 `build/resident-opt-desktop64-current/layout-checkpoint.json`.
+
+A second run brackets the existing HomeSys ACInit call with debug markers.
+The entry marker appears, Home Once exports its layout, and ACInit has yet
+to return at the observation checkpoint. Both guests are still running.
+The trace driver and observation are in `build/resident-opt-desktop64-trace`.
+The desktop oracle still requires completion and physical retirement.
