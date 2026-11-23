@@ -301,3 +301,13 @@ and additional smaller allocations. The census records size and location.
 Ownership must be traced before changing placement of those allocations.
 The matched receipts and neighboring blocks are pinned in
 `build/preload-heap-comparison/original-preload-placement-comparison.json`.
+
+The physical backing ownership audit identifies exactly two live blocks between
+the largest free spans. Both belong to the public backing pool and each holds
+8,192 bytes of assigned pages. Neither carries the reserve hold. The audit
+walks all 22 owned regions, reconciles their request and span fields against
+the physical heap, and matches the pool's retained-byte counter. These regions
+cannot be trimmed as empty. The allocator already places these batches high in
+the last fitting block, so changing header allocation placement alone leaves
+public backing placement as a separate constraint. The decoder and its result
+are under `build/preload-heap-comparison`.

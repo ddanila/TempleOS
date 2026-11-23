@@ -1,0 +1,49 @@
+{
+  "snapshot_sha256": "0dbdef655a23b82b8bdf4961164d12c9a5c81080d9682c3ed03c9840223945c7",
+  "memory_sha256": "6a34e324e2b418d171ed0a8f1feb5317793f769d887705ccd766de27ae46a543",
+  "owned_regions": 22,
+  "quantum": 8192,
+  "retained": 1101584,
+  "free_spans": [
+    {
+      "address": 7741440,
+      "span": 202528,
+      "requested": 0,
+      "free": true
+    },
+    {
+      "address": 7961088,
+      "span": 105480,
+      "requested": 0,
+      "free": true
+    }
+  ],
+  "intervening_blocks": [
+    {
+      "address": 7943968,
+      "span": 8416,
+      "requested": 8400,
+      "free": false,
+      "backing": {
+        "pool": 2729304,
+        "size": 8192,
+        "used": 8192,
+        "span": 8416,
+        "reserve_hold": 0
+      }
+    },
+    {
+      "address": 7952744,
+      "span": 8344,
+      "requested": 8328,
+      "free": false,
+      "backing": {
+        "pool": 2729304,
+        "size": 8192,
+        "used": 8192,
+        "span": 8344,
+        "reserve_hold": 0
+      }
+    }
+  ]
+}
