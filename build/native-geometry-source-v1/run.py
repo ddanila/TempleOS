@@ -13,6 +13,7 @@ parser.add_argument('--split-fire', action='store_true')
 parser.add_argument('--fix-indirect-head', action='store_true')
 parser.add_argument('--original-wrap', action='store_true')
 parser.add_argument('--ball-form', action='store_true')
+parser.add_argument('--ball-mesh', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
 if args.serial_visibility and args.app != 'ToTheFront':
@@ -23,13 +24,16 @@ if args.fix_indirect_head and not args.split_fire:
     parser.error('--fix-indirect-head requires --split-fire')
 if args.original_wrap and not args.serial_visibility:
     parser.error('--original-wrap requires --serial-visibility')
-if args.ball_form and args.app != 'GrModels':
-    parser.error('--ball-form requires --app GrModels')
+if (args.ball_form or args.ball_mesh) and args.app != 'GrModels':
+    parser.error('--ball-form and --ball-mesh require --app GrModels')
 out = args.out.resolve()
 out.mkdir()
 extras={}
 fire_units=[]
+ball_ui = Path('build/grmodels-ball-reference-v1')
 if args.app=='GrModels':
+    if args.ball_mesh:
+        extras['/BallUI.HC'] = (ball_ui/'Interactive.HC').read_bytes()
     source=Path('Adam/DolDoc/DocGr.HC').read_bytes()
     extras['/LightingChooser.HC']=source[
         source.index(b'public I64 PopUpColorLighting'):source.index(b'class CTransformForm')]
@@ -130,6 +134,13 @@ try:
     guest.command('6*7;')
     report['fresh_result']=guest.result_pixels()
     report['result']='pass'
+    if args.ball_mesh:
+        guest.command('#include "C:/BallUI.HC"')
+        guest.type('BallUIProbe;')
+        guest.press('ret')
+        report['ball_mesh'] = runpy.run_path(str(ball_ui/'interactive.py'))['exercise'](guest)
+        guest.command('6*7;')
+        report['after_ball'] = guest.result_pixels()
     if args.ball_form:
         report['result'] = 'observed'
         start = len(guest.collect())

@@ -1,0 +1,53 @@
+{
+  "result": "fail",
+  "scope": "Exact sprite bytes from matching default BallGen forms and red full-range selection",
+  "reference": "build/grmodels-ball-reference-v1/interactive-original",
+  "reference_sha256": "967ad44894167ae85c198f0a3929c01391a217494638a4bd2c95d63db1a6967b",
+  "native_sha256": "c566fe02d102d73d7cd79e53f0ab690806707e91980b3148d92af194f769f203",
+  "reference_vertices": 59,
+  "native_vertices": 60,
+  "triangles": 128,
+  "changed_triangle_coordinate_indices": [
+    16,
+    17,
+    19,
+    20,
+    21,
+    32,
+    34,
+    35,
+    36,
+    80,
+    81,
+    96
+  ],
+  "reference_only_vertices": [
+    [
+      10,
+      -9,
+      -14
+    ],
+    [
+      10,
+      9,
+      -14
+    ]
+  ],
+  "native_only_vertices": [
+    [
+      9,
+      -9,
+      -14
+    ],
+    [
+      9,
+      9,
+      -14
+    ],
+    [
+      9,
+      9,
+      14
+    ]
+  ]
+}

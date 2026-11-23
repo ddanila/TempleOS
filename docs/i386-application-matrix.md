@@ -1643,3 +1643,18 @@ drawn. The later capture shows the matching chooser rows, columns and
 swatches. Color selection and the generated mesh comparison remain
 open. See `build/grmodels-ball-reference-v1/form-original` and
 `build/native-geometry-source-v1/GrModels-ball-chooser`.
+
+The BallGen workflow now exercises Escape on the default form, a
+physical click on the red full-range swatch and No at the repeat
+prompt. Both guests returned a red sprite with 128 triangles. The
+pinned original returned 59 vertices and native returned 60. Twelve
+triangles differ when compared by their vertex coordinates. The
+native console still executes arithmetic after the workflow. Exact
+mesh equivalence remains open. See
+`build/native-geometry-source-v1/GrModels-ball-mesh/comparison.json`.
+
+The first Span two-generation runner exited with status 143 during
+generation-one installation. Its input source audit passed and its
+files remain available. A fresh runner using the same retained input
+and configuration is active in
+`build/span-production-v1/generations128-retry`.

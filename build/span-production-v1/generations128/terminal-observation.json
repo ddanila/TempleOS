@@ -1,0 +1,6 @@
+{
+  "result": "interrupted",
+  "runner_exit_code": 143,
+  "last_recorded_stage": "gen1-install",
+  "input_source_audit": "pass"
+}
