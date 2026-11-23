@@ -2996,3 +2996,9 @@ boundary. The measured [aligned placement](../build/i386-native-cache-footprint-
 still ends 2,168 bytes beyond the available block. One additional
 4 KiB page at the lower boundary would cover both the current
 267,527-byte request and the full aligned stack at this checkpoint.
+
+The frozen `6eefeedd` pipeline completed its
+[generation-two native module rebuild](../build/i386-console-null-slots-v1/generations128-v4/gen2-retained-build/result.json).
+All nine persisted module audits passed. The generation runner has
+moved on to installation; its second self-hosted flat image,
+reproducibility audit and final boot are still pending.
