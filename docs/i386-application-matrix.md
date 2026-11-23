@@ -845,3 +845,12 @@ before the keyboard workflow runs. The retained failure is in
 A candidate publishes the existing native Console swap routine through
 PublicMemory and preserves the source of the application. It cross-builds.
 The native loading and keyboard checks are pending.
+
+The Console-only SwapI64 candidate fails during early PublicMemory loading
+because Console has not yet registered its symbols. The second candidate
+registers the existing MemoryRuntime swap routine alongside the other
+early memory bindings. It passes the native 8 MiB signed 64-bit swap and
+same-address operand checks, followed by fresh arithmetic. The original
+Psalmody load advances from line 226 to RegOneTimePopUp at line 584.
+The patch and receipts are in `build/psalmody-public-swap-v2`. This remains
+an overlay while the two-generation harness pins the production sources.

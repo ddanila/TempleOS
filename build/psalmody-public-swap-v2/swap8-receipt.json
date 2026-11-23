@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "image_sha256": "8038a0e761d8a42243b0de3ceb62c0216f8f057839fb1ba226e6ad68d328c2a1",
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 8,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 50.54655008701957,
+    "commands": 4,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  }
+}

@@ -549,3 +549,9 @@ matches the receipt. The queued generation watcher stopped before it saw
 the passing receipt. After verifying the terminal result, the same
 two-generation harness was started directly with the audited stage listing
 and 128 MiB build profiles. See `build/resident-opt-c5-retained128/result.json`.
+
+Generation one passed retained-module installation and boot verification.
+The installed module hashes match all nine outputs of the retained build,
+and the installed image hash matches its receipt. The guest has started
+self-hosting the flat kernel modules. See
+`build/resident-opt-c5-generations128/gen1-install/result.json`.
