@@ -1809,8 +1809,23 @@ arithmetic succeeds. This loader still uses the serial visibility
 and queue-head probe changes.
 
 The pinned original starts a fixed-seed match with two Human players,
-draws the map, advances from artillery to movement on Space and
+draws the map, advances to the other artillery phase on Space and
 returns on Escape. The same physical keyboard workflow is running
 against the native loader. See
 `build/tothefront-original-v1/human-match` and
 `build/native-geometry-source-v1/ToTheFront-task-settings/result.json`.
+
+The native Human match probe accepts the fixed seed, selects both
+Human players, draws the start map, advances on Space and returns
+on Escape. The console then executes fresh arithmetic. Both captured
+phase headers read Artillery because the first advance changes
+players within the artillery phase. Framebuffer captures differ
+in unit and overlay pixels. The workflow remains a probe of the
+patched loader, with full gameplay and exact rendering still open.
+A second probe compiles the same dependencies through a single app
+directory include and returns to a working prompt. See
+`build/native-geometry-source-v1/ToTheFront-human-match` and
+`build/native-geometry-source-v1/ToTheFront-combined/result.json`.
+
+Span's generation-two retained rebuild and installation passed.
+The generation-two native self-host check is running.

@@ -1525,7 +1525,21 @@
         "-o",
         "build/native-geometry-source-v1/ToTheFront-key-poll/working.img"
       ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-task-settings/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-task-settings/working.img.zst",
+      "sha256": "b9f2bd729f5b7ed6b4ac75153092e9e77965ab3c765877fd6e1baf7060cba578",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-task-settings/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-task-settings/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 5375586304
+  "reclaimed_bytes": 5428985856
 }

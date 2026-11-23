@@ -64,6 +64,7 @@ runs = [
     'tothefront-original-v1/player-choice',
     'tothefront-original-v1/human-match',
     'native-geometry-source-v1/ToTheFront-key-poll',
+    'native-geometry-source-v1/ToTheFront-task-settings',
     'native-geometry-source-v1/ToTheFront-indirect-head',
     'native-geometry-source-v1/ToTheFront-wrap',
     'native-geometry-source-v1/X-Caliber',

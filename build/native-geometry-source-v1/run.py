@@ -23,6 +23,7 @@ parser.add_argument('--visibility-fixture', action='store_true')
 parser.add_argument('--original-key-poll', action='store_true')
 parser.add_argument('--original-task-settings', action='store_true')
 parser.add_argument('--human-match', action='store_true')
+parser.add_argument('--combined-loader', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
 if args.serial_visibility and args.app != 'ToTheFront':
@@ -51,6 +52,11 @@ if args.original_task_settings and not args.serial_visibility:
     parser.error('--original-task-settings requires --serial-visibility')
 if args.human_match and (not args.original_task_settings or args.visibility_fixture):
     parser.error('--human-match needs the full ToTheFront loader with task settings')
+if args.combined_loader and (args.app != 'ToTheFront' or args.visibility_fixture or
+        not all((args.serial_visibility, args.split_fire, args.fix_indirect_head,
+                 args.original_wrap, args.original_curves, args.original_range,
+                 args.original_key_poll, args.original_task_settings))):
+    parser.error('--combined-loader requires all ToTheFront loader dependencies')
 out = args.out.resolve()
 out.mkdir()
 extras={}
@@ -152,6 +158,30 @@ geometry=b"""#include "/Adam/Gr/Gr.HH"
 geometry+=coverage+b"\nBool IsPixCovered0(CTask *task,I64 x,I64 y) {return GrPixelCoveredCore(task,x,y);}\n"
 geometry+=b"\n".join((line,sizes,plot,peek))
 extras['/PublicGeometrySource.HC']=geometry
+if args.combined_loader:
+    app = '/Apps/ToTheFront'
+    load = [
+        '#help_index "Games"',
+        'Cd(__DIR__);;',
+        '#include "/PublicGeometrySource.HC"',
+        '#include "/IntegerPrompt.HC"',
+        '#include "/TTFWrap.HC"',
+        '#include "TTFGlbls"',
+        '#include "TTFLib"',
+        '#include "TTFInit"',
+        '#include "/TTFSerialVis.HC"',
+        *(f'#include "{path}"' for path in fire_units),
+        '#include "TTFMove"',
+        '#include "/TTFCurves.HC"',
+        '#include "TTFDraw"',
+        '#include "/TTFRange.HC"',
+        '#include "/TTFKeyPoll.HC"',
+        'AdamFile("/Adam/AutoComplete/MakeAC.HC",FALSE);;',
+        'AdamFile("/Adam/TaskSettings.HC",FALSE);;',
+        '#include "ToTheFront"',
+        '#help_index ""',
+    ]
+    extras[f'{app}/NativeLoadProbe.HC'] = ('\n'.join(load) + '\n').encode('ascii')
 packer = runpy.run_path('tools/package-i386-native-image.py')
 image = out/'working.img'
 report = {'result':'running','package':packer['package'](args.disk,image,additions=extras)}
@@ -192,6 +222,8 @@ try:
         commands.append('#include "C:/BallGenTrace.HC"')
     else:
         commands.append(f'#include "C:/Apps/{args.app}/Load.HC"')
+    if args.combined_loader:
+        commands = ['#include "C:/Apps/ToTheFront/NativeLoadProbe.HC"']
     report['completed_commands'] = []
     for command in commands:
         report['command']=command
