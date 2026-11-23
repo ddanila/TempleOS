@@ -1,0 +1,171 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "db0c8b0e905a80ba9b456c75d9171c80708d41cbaf9d4671a90cdb1f14141d0b",
+    "image_sha256": "476fddc573ee00dc0dce9f4cbd11671dda3ade772f103815957efc035aa99632",
+    "boot_area_sha256": "b9e518feb87f61183043b754cb08d77aad5c3508f4ea1946fc06cd02a33b4511",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 97001,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 97003,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/UserStartup.HC": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2"
+    },
+    "added_attributes": {
+      "/UserStartup.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "snapshots": {
+    "before-user": {
+      "capacity": 6748672,
+      "used": 6292976,
+      "largest_free": 264056,
+      "allocations": 18487,
+      "failure_callers": [],
+      "stopped_callers": [
+        {
+          "frame": 7753504,
+          "return_address": 1198869,
+          "symbols": [
+            {
+              "name": "Kernel:I386SchedYield",
+              "offset": 516
+            }
+          ]
+        },
+        {
+          "frame": 7753556,
+          "return_address": 2860390,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryCoreYield",
+              "offset": 37
+            }
+          ]
+        },
+        {
+          "frame": 7753584,
+          "return_address": 2883152,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryManagedYield",
+              "offset": 463
+            }
+          ]
+        },
+        {
+          "frame": 7753628,
+          "return_address": 4938791,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeKeyboardWorker",
+              "offset": 318
+            }
+          ]
+        },
+        {
+          "frame": 7753664,
+          "return_address": 2915040,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryTaskEntry",
+              "offset": 343
+            }
+          ]
+        },
+        {
+          "frame": 7753708,
+          "return_address": 2746456,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:DefineLstLoadCore",
+              "offset": 1967
+            }
+          ]
+        }
+      ],
+      "memory_sha256": "bec798639afb5b7f9d3cba72ff177ebcc8975994dad12068daaa0ae7395df30e"
+    },
+    "after-failure": {
+      "capacity": 6748672,
+      "used": 6293040,
+      "largest_free": 264056,
+      "allocations": 18488,
+      "failure_callers": [
+        [
+          {
+            "return_address": 1215719,
+            "symbols": [
+              "Kernel:I386TaskCreateWithFilesFallback"
+            ]
+          },
+          {
+            "return_address": 2930075,
+            "symbols": [
+              "MemoryRuntime:Spawn"
+            ]
+          }
+        ]
+      ],
+      "stopped_callers": [
+        {
+          "frame": 7511912,
+          "return_address": 5120030,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeWindowNeeded",
+              "offset": 773
+            }
+          ]
+        },
+        {
+          "frame": 7511948,
+          "return_address": 5128484,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeWindowWorker",
+              "offset": 715
+            }
+          ]
+        },
+        {
+          "frame": 7512000,
+          "return_address": 2915040,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryTaskEntry",
+              "offset": 343
+            }
+          ]
+        },
+        {
+          "frame": 7512044,
+          "return_address": 2746456,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:DefineLstLoadCore",
+              "offset": 1967
+            }
+          ]
+        }
+      ],
+      "memory_sha256": "8d80f69005fa6349b29c6811abd4e371d7848181705e8858e8bb901c8fe3ce98"
+    }
+  },
+  "fixture_sha256": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2",
+  "failure_log": [
+    "HEAP EXHAUSTED 0000000000041507 0000000000085BB0 0000000000086C00 0000000000000B18 0000000000000008",
+    "HEAP FAILURE CALLERS 0000000000128CE7 00000000002CB59B"
+  ]
+}

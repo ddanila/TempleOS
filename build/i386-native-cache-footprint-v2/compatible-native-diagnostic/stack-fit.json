@@ -1,0 +1,11 @@
+{
+  "snapshot": "build/i386-native-cache-footprint-v2/compatible-native-diagnostic/profile/before-user.json",
+  "task_request": 267527,
+  "stack_bytes": 262144,
+  "projected_reclaim_bytes": 0,
+  "block_start": 7753728,
+  "block_end": 8017800,
+  "stack_start": 7757824,
+  "stack_end": 8019968,
+  "headroom_bytes": -2168
+}

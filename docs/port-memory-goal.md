@@ -2986,3 +2986,13 @@ pins each installed module to its audit. The assembled image also
 passed the 8 MiB boot smoke and failed the User task allocation.
 Both pre-User heap captures are running. The same-revision nine-module
 cache rebuild remains a separate run.
+
+The completed [Titanium profile](../build/titanium-bundled-loader-v1/retained128-user8-profile/result.json)
+and [64-slot all-native diagnostic profile](../build/i386-native-cache-footprint-v2/compatible-native-diagnostic/profile/result.json)
+measured 251,768 and 264,056 contiguous bytes before User startup,
+respectively. The cache image recovered 12,288 contiguous bytes,
+matching the cross-built gain. The two captures share the same upper
+boundary. The measured [aligned placement](../build/i386-native-cache-footprint-v2/compatible-native-diagnostic/stack-fit.json)
+still ends 2,168 bytes beyond the available block. One additional
+4 KiB page at the lower boundary would cover both the current
+267,527-byte request and the full aligned stack at this checkpoint.
