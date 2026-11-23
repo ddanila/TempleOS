@@ -3077,3 +3077,12 @@ smoke, and the
 reached mask 255 and passed follow-up arithmetic with all nine native
 modules installed. The heap capture and the fresh single-revision native
 generation pipeline are still running.
+
+The [all-native high-placement heap capture](../build/i386-keyboard-high-v2/assembled-native/profile/result.json)
+measured 277,000 contiguous bytes before `USCheck`, up 12,944 bytes
+from the same-module-family baseline. The free block now begins at
+the old keyboard allocation's address and has the same upper bound.
+There are 9,473 bytes above the current task request and
+[10,120 bytes beyond the aligned stack](../build/i386-keyboard-high-v2/assembled-native/stack-fit.json).
+The keyboard worker record sits at `0x7CADD8`. The capture run
+again reached User startup mask 255.

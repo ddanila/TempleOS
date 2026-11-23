@@ -1,0 +1,11 @@
+{
+  "snapshot": "build/i386-keyboard-high-v2/assembled-native/profile/before-user.json",
+  "task_request": 267527,
+  "stack_bytes": 262144,
+  "projected_reclaim_bytes": 0,
+  "block_start": 7740784,
+  "block_end": 8017800,
+  "stack_start": 7745536,
+  "stack_end": 8007680,
+  "headroom_bytes": 10120
+}

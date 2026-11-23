@@ -1,0 +1,92 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "df71f7a29af11688fee5d95760757cdf23204f09c3e85089ca275d6681a4ec37",
+    "image_sha256": "c70ce11935790afc907a3b3f5c208d49ae0e2f9f5f3120db431a8a0345320390",
+    "boot_area_sha256": "5f4fdfaacc62c2797b3f2c1f82dc8015bd61c2c2fbf6e18213bcb76cc5421461",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 97008,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 97010,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/UserStartup.HC": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2"
+    },
+    "added_attributes": {
+      "/UserStartup.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "snapshots": {
+    "before-user": {
+      "capacity": 6747648,
+      "used": 6292056,
+      "largest_free": 277000,
+      "allocations": 18490,
+      "failure_callers": [],
+      "stopped_callers": [
+        {
+          "frame": 7511668,
+          "return_address": 4405732,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:GraphicsFrameCore",
+              "offset": 691
+            }
+          ]
+        },
+        {
+          "frame": 7511760,
+          "return_address": 4841431,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeGraphicsPresentChecked",
+              "offset": 2862
+            }
+          ]
+        },
+        {
+          "frame": 7511924,
+          "return_address": 5130125,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeWindowWorker",
+              "offset": 828
+            }
+          ]
+        },
+        {
+          "frame": 7512000,
+          "return_address": 2921216,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryTaskEntry",
+              "offset": 343
+            }
+          ]
+        },
+        {
+          "frame": 7512044,
+          "return_address": 2747480,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:DefineLstLoadCore",
+              "offset": 1967
+            }
+          ]
+        }
+      ],
+      "memory_sha256": "b1d0211b73dad95e09e49e7f4f70522c1667da3f90ecae871f1f13844c23a2bf"
+    }
+  },
+  "fixture_sha256": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2"
+}
