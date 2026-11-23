@@ -65,7 +65,9 @@ def package(disk, working, fixture, snapshot, packer, trace_shot=False):
     return package_replacements(disk, working, fixture, snapshot, packer, replacements)
 
 
-def package_replacements(disk, working, fixture, snapshot, packer, replacements):
+def package_replacements(disk, working, fixture, snapshot, packer, replacements, additions=None):
+    if additions is None:
+        additions = {'/TTFPhases.HC': fixture}
     original_image = disk.read_bytes()
     original_files = snapshot(original_image)[1]
 
@@ -81,13 +83,13 @@ def package_replacements(disk, working, fixture, snapshot, packer, replacements)
 
     packer.__globals__['snapshot'] = transformed
     try:
-        receipt = packer(disk, working, additions={'/TTFPhases.HC': fixture})
+        receipt = packer(disk, working, additions=additions)
     finally:
         packer.__globals__['snapshot'] = snapshot
     final = working.read_bytes()
     delivered = snapshot(final)[1]
     assert final[:2048 * 512] == original_image[:2048 * 512]
-    assert delivered.keys() == original_files.keys() | {'/TTFPhases.HC'}
+    assert delivered.keys() == original_files.keys() | additions.keys()
     assert all(delivered[path] == (attr, date, replacements.get(path, data))
                for path, (attr, date, data) in original_files.items())
     return receipt

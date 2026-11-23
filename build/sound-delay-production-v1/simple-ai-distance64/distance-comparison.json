@@ -1,0 +1,104 @@
+{
+  "original": "build/tothefront-original-v1/simple-ai-distance-original/result.json",
+  "native": "build/sound-delay-production-v1/simple-ai-distance64/result.json",
+  "original_distances": [
+    {
+      "row": "28",
+      "column": "1",
+      "defender": "10",
+      "x": "4045C00000000003",
+      "y": "4071443193C5E77E",
+      "defender_x": "4079680000000003",
+      "defender_y": "406B635777A3D920",
+      "dx": "4076B00000000003",
+      "dy": "C04C942EBF9FD770",
+      "distance_squared": "41007BE000002230"
+    },
+    {
+      "row": "28",
+      "column": "1",
+      "defender": "11",
+      "x": "4045C00000000003",
+      "y": "4071443193C5E77E",
+      "defender_x": "4079680000000003",
+      "defender_y": "4074D6B76BB9E26C",
+      "dx": "4076B00000000003",
+      "dy": "404C942EBF9FD770",
+      "distance_squared": "41007BE000002230"
+    },
+    {
+      "row": "28",
+      "column": "5",
+      "defender": "10",
+      "x": "4065F00000000003",
+      "y": "4071443193C5E77E",
+      "defender_x": "4079680000000003",
+      "defender_y": "406B635777A3D920",
+      "dx": "406CE00000000003",
+      "dy": "C04C942EBF9FD770",
+      "distance_squared": "40EBA680000088B4"
+    },
+    {
+      "row": "28",
+      "column": "5",
+      "defender": "11",
+      "x": "4065F00000000003",
+      "y": "4071443193C5E77E",
+      "defender_x": "4079680000000003",
+      "defender_y": "4074D6B76BB9E26C",
+      "dx": "406CE00000000003",
+      "dy": "404C942EBF9FD770",
+      "distance_squared": "40EBA680000088B4"
+    }
+  ],
+  "native_distances": [
+    {
+      "row": "28",
+      "column": "1",
+      "defender": "10",
+      "x": "4045C00000000000",
+      "y": "4071443193C5E778",
+      "defender_x": "4079680000000000",
+      "defender_y": "406B635777A3D916",
+      "dx": "4076B00000000000",
+      "dy": "C04C942EBF9FD768",
+      "distance_squared": "41007BE00000222C"
+    },
+    {
+      "row": "28",
+      "column": "1",
+      "defender": "11",
+      "x": "4045C00000000000",
+      "y": "4071443193C5E778",
+      "defender_x": "4079680000000000",
+      "defender_y": "4074D6B76BB9E264",
+      "dx": "4076B00000000000",
+      "dy": "404C942EBF9FD760",
+      "distance_squared": "41007BE00000222B"
+    },
+    {
+      "row": "28",
+      "column": "5",
+      "defender": "10",
+      "x": "4065F00000000000",
+      "y": "4071443193C5E778",
+      "defender_x": "4079680000000000",
+      "defender_y": "406B635777A3D916",
+      "dx": "406CE00000000000",
+      "dy": "C04C942EBF9FD768",
+      "distance_squared": "40EBA680000088AE"
+    },
+    {
+      "row": "28",
+      "column": "5",
+      "defender": "11",
+      "x": "4065F00000000000",
+      "y": "4071443193C5E778",
+      "defender_x": "4079680000000000",
+      "defender_y": "4074D6B76BB9E264",
+      "dx": "406CE00000000000",
+      "dy": "404C942EBF9FD760",
+      "distance_squared": "40EBA680000088AD"
+    }
+  ]
+}

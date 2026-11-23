@@ -171,7 +171,7 @@ except Exception as error:
 finally:
     if args.trace_ai:
         log = guest.collect().splitlines()
-        for event in ('target', 'random'):
+        for event in ('target', 'random', 'distance'):
             prefix = f'TTF AI {event} '
             report[f'{event}_trace'] = [line.removeprefix(prefix) for line in log if line.startswith(prefix)]
     if args.trace_fire:

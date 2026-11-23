@@ -2065,3 +2065,15 @@ choices match. The two candidate positions are symmetric in the hex
 grid. The exact floating-point step that changes the comparison
 remains open. See
 `build/sound-delay-production-v1/simple-ai-target64/target-comparison.json`.
+
+The distance trace measures the stored coordinates and squared
+distances for both symmetric target pairs. The original rounds the
+two squared distances to identical binary64 values. Native rounds
+the lower target one binary64 step closer in both cases. The original
+vertical coordinate spacing reproduces all three captured original row
+centers in a host calculation. Using that spacing in the native center
+initializer on an experimental disk makes all 32 first-movement states
+match the original. The map raster regression is running against the
+experimental disk. Broader seed coverage remains open. See
+`build/sound-delay-production-v1/simple-ai-distance64/distance-comparison.json`
+and `build/sound-delay-production-v1/simple-ai-center-candidate64/comparison.json`.

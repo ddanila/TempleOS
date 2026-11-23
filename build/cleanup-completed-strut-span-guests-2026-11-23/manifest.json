@@ -2925,7 +2925,63 @@
         "-o",
         "build/sound-delay-production-v1/simple-ai-trace64/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-original-v1/simple-ai-target-original/original.iso",
+      "archive": "build/tothefront-original-v1/simple-ai-target-original/original.iso.zst",
+      "sha256": "e8433d3e0f0f2cc5f65e4d853a7be149a44146ca3ade330450cf0e2df94646fe",
+      "size": 46157824,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/simple-ai-target-original/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/simple-ai-target-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/simple-ai-target64/working.img",
+      "archive": "build/sound-delay-production-v1/simple-ai-target64/working.img.zst",
+      "sha256": "95733af37e677c5234d926c192fb0eda748bfea065d13a34c1f9f0ab631823ce",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/simple-ai-target64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/simple-ai-target64/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/simple-ai-distance-original/original.iso",
+      "archive": "build/tothefront-original-v1/simple-ai-distance-original/original.iso.zst",
+      "sha256": "0e10e0d2ff77e8c48e31fe8381e038dbe94d6a60764538ea5ef3b41badfa1f22",
+      "size": 46157824,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/simple-ai-distance-original/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/simple-ai-distance-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/simple-ai-distance64/working.img",
+      "archive": "build/sound-delay-production-v1/simple-ai-distance64/working.img.zst",
+      "sha256": "a0c7e5a70d07615774390c48d02b057a26c5e605d45e0ad62d386685870bd4fd",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/simple-ai-distance64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/simple-ai-distance64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 10355060736
+  "reclaimed_bytes": 10528350208
 }
