@@ -417,3 +417,10 @@ dictionary word loading and the initialization flag release. Home Once,
 original geometry, fresh input and physical bootstrap retirement passed
 with pinned inputs preserved. The terminal receipt is in
 `build/resident-opt-desktop64-ac-phases/run/result.json`.
+
+The per-file trace is terminal PASS at 64 MiB after 291.28 seconds. It
+records 1,862 completed file reads and indexing calls followed by traversal
+cleanup, dictionary loading and desktop handoff. The original geometry,
+Home Once selection, fresh input and physical bootstrap retirement pass
+with unchanged pinned inputs. The terminal receipt is in
+`build/resident-opt-desktop64-ac-files/run/result.json`.
