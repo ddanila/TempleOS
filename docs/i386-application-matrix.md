@@ -2634,3 +2634,12 @@ shows both pointers begin with a mesh record containing 112 vertices
 and 168 triangles. Seeds 2 and 3 finished with 1,915. The seed-1
 replay is collecting the full sprite records to check where the size
 walker leaves the expected mesh boundary.
+
+The failing seed-1 operand matched all 4,042 source bytes of mesh 9.
+Its final triangle index and end marker were corrupt in the pinned
+original as well. Restoring the two bytes from the matching animation
+frames fixed the [seed-1 finish](../build/titanium-finish-v1/mesh-repair/seed-1/result.json)
+on the patched image. It scored and saved 1,915. The unchanged
+[physical play test](../build/titanium-finish-v1/mesh-repair/play/result.json)
+also passed with firing, exit and a fresh command. The
+[binary repair record](binary-repairs.md) identifies the bytes.

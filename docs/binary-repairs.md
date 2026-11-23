@@ -66,3 +66,15 @@ Repaired files:
 - `Doc/HelpIndex.DD`
 - `Kernel/Kernel.MAP`
 - `PersonalMenu.DD`
+
+## Titanium mesh 9
+
+The pinned original and the restored source both end mesh 9 with
+`28 38` at record offsets 4040 and 4041. A failing native draw
+captured the same 4,042 bytes in memory. The first corrupt byte
+changes the final triangle's vertex index from 107 to 671,088,747,
+and the second replaces the zero end marker with an unsupported
+element type. The matching triangle tail in the other animation
+frames establishes both missing zero bytes. Only those two bytes
+were changed. The packed record length and all triangle coordinates
+remain the same.
