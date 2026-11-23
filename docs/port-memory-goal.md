@@ -3009,3 +3009,8 @@ startup source ran passed the 8 MiB cross-built User workflow. Its
 measured 280,784 contiguous bytes, 11,944 fewer than the existing
 64-slot cross-built capture. The experiment preserved the worker
 stack size. Production retains the later keyboard start.
+
+The [same-revision 64-slot retained build](../build/i386-native-cache-footprint-v2/retained-all128/result.json)
+passed the persisted export audit for all nine modules. Its install
+and 8 MiB User test are running. The frozen `6eefeedd` pipeline has
+also entered the second self-hosted flat build after installation.
