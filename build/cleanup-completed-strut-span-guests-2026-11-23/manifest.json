@@ -3639,7 +3639,119 @@
         "-o",
         "build/sound-delay-production-v1/gen1-span64/working.img"
       ]
+    },
+    {
+      "original": "build/xcaliber-reference-v1/original/original.iso",
+      "archive": "build/xcaliber-reference-v1/original/original.iso.zst",
+      "sha256": "188b60fd96bc5f471d8d0732cdf80e0617328900e7631b3d5574e7ed3f522af2",
+      "size": 46155776,
+      "reclaimed_bytes": 33234944,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-reference-v1/original/original.iso.zst",
+        "-o",
+        "build/xcaliber-reference-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/xcaliber-reference-v1/original-click/original.iso",
+      "archive": "build/xcaliber-reference-v1/original-click/original.iso.zst",
+      "sha256": "22efbfc53c23414f3b36dbfb2652b93b7b55928fa96fec386fca0061373b9b19",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-reference-v1/original-click/original.iso.zst",
+        "-o",
+        "build/xcaliber-reference-v1/original-click/original.iso"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-production/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-production/working.img.zst",
+      "sha256": "06a5b7eefbaa540646952d638971c10472c9077b7faef232232229fb0d3c5bf2",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-production/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-production/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-split-production/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-split-production/working.img.zst",
+      "sha256": "d6c9c1531015417228757e8eed8fef9c000b29f1c31d03778751b8d25ac1bb3c",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-split-production/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-split-production/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-split-assets/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-split-assets/working.img.zst",
+      "sha256": "36bea73e4a8263608c95f5fde57f63337399522ee681fd0ece313eb10dc75273",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-split-assets/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-split-assets/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-split-draw/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-split-draw/working.img.zst",
+      "sha256": "741590122a8158ed71aba919c30427449289840060f18615c6b2e90fb96e7e72",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-split-draw/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-split-draw/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-primary-backing-batch-v1/small-public-user8/working.img",
+      "archive": "build/i386-primary-backing-batch-v1/small-public-user8/working.img.zst",
+      "sha256": "542b976e51922bb30d21213b514ddca98d0b228224864481b6b6975f79754e1b",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-primary-backing-batch-v1/small-public-user8/working.img.zst",
+        "-o",
+        "build/i386-primary-backing-batch-v1/small-public-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-primary-backing-batch-v1/small-public-stock-user8/working.img",
+      "archive": "build/i386-primary-backing-batch-v1/small-public-stock-user8/working.img.zst",
+      "sha256": "542b976e51922bb30d21213b514ddca98d0b228224864481b6b6975f79754e1b",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-primary-backing-batch-v1/small-public-stock-user8/working.img.zst",
+        "-o",
+        "build/i386-primary-backing-batch-v1/small-public-stock-user8/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 13015224320
+  "reclaimed_bytes": 13401878528
 }

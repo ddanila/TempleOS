@@ -10,6 +10,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('disk',type=Path)
 parser.add_argument('--app', choices=('GrModels','ToTheFront','X-Caliber'), required=True)
 parser.add_argument('--serial-visibility', action='store_true')
+parser.add_argument('--xcaliber-desktop', action='store_true')
+parser.add_argument('--xcaliber-frequency', action='store_true')
 parser.add_argument('--xcaliber-square', action='store_true')
 parser.add_argument('--split-xcaliber', action='store_true')
 parser.add_argument('--split-fire', action='store_true')
@@ -28,6 +30,10 @@ parser.add_argument('--human-match', action='store_true')
 parser.add_argument('--combined-loader', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
+if args.xcaliber_desktop and not args.split_xcaliber:
+    parser.error('--xcaliber-desktop requires --split-xcaliber')
+if args.xcaliber_frequency and not args.split_xcaliber:
+    parser.error('--xcaliber-frequency requires --split-xcaliber')
 if args.xcaliber_square and not args.split_xcaliber:
     parser.error('--xcaliber-square requires --split-xcaliber')
 if args.split_xcaliber and args.app != 'X-Caliber':
@@ -140,6 +146,10 @@ if args.app=='ToTheFront':
                 extras[path] = source
 if args.app=='X-Caliber':
     extras['/ExtraVectors.HC']=Path('build/xcaliber-vector-load-v1/Vector.HC').read_bytes()
+    if args.xcaliber_frequency:
+        misc = Path('Kernel/KMisc.HC').read_bytes()
+        extras['/XCFrequency.HC'] = misc[misc.index(b'I8 Freq2Ona('):
+                                          misc.index(b'#include "/Kernel/SoundCaptureCore.HC"')]
     if args.split_xcaliber:
         source = Path('Apps/X-Caliber/X-Caliber.HC').read_bytes()
         text, separator, assets = source.partition(b'\0')
@@ -210,7 +220,7 @@ try:
     commands=['#include "C:/PublicGeometrySource.HC"']
     if args.app=='X-Caliber':
         commands.append('AdamFile("/Kernel/I386/NativeODE.HC",FALSE);')
-    for path in ('/LightingChooser.HC', '/IntegerPrompt.HC', '/ExtraVectors.HC'):
+    for path in ('/LightingChooser.HC', '/IntegerPrompt.HC', '/ExtraVectors.HC', '/XCFrequency.HC'):
         if path in extras:
             commands.append(f'#include "C:{path}"')
     if args.serial_visibility:
@@ -237,10 +247,17 @@ try:
                 commands.append('#include "C:/TTFVisibility.HC"')
                 break
     elif args.split_xcaliber:
+        units = [f'#include "C:{path}"' for path in xcaliber_units]
+        if args.xcaliber_desktop:
+            units[-1:-1] = [
+                'AdamFile("/Adam/AutoComplete/MakeAC.HC",FALSE);',
+                'AdamFile("/Adam/TaskSettings.HC",FALSE);',
+                '#include "/Kernel/SerialDev/KeyCharPollCore.HC"',
+            ]
         commands.extend((
             'Cd("C:/Apps/X-Caliber");',
             '#include "C:/Apps/X-Caliber/XCCtrls.HC"',
-            *(f'#include "C:{path}"' for path in xcaliber_units),
+            *units,
         ))
     elif args.vertex_trace:
         commands.append('#include "C:/BallGenTrace.HC"')

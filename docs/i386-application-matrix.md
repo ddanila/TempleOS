@@ -2174,3 +2174,22 @@ the next exception to the standalone Explosion routine. A diagnostic
 using Sqr in its denominator is running. See
 `build/xcaliber-reference-v1/original-click/result.json` and
 `build/native-geometry-source-v1/X-Caliber-split-draw/result.json`.
+
+The isolated HolyC power test executes a square, cube, fractional
+exponent and negative exponent on the pinned original. The native
+compiler rejects the fixture before execution. In particular, a
+dynamic base of 3 with literal exponent 2 returns one binary64 step
+below 9 on the original. The Sqr substitution bypasses the compiler
+exception in X-Caliber's Explosion routine and exposes a later
+diagnostic at Freq2Ona. The substitution is a compile diagnostic.
+Exact power behavior remains open. See
+`build/i386-power-operator-v1/original/result.json`,
+`build/i386-power-operator-v1/native64/result.json` and
+`build/native-geometry-source-v1/X-Caliber-explosion-square/result.json`.
+
+With the original Freq2Ona body loaded on demand, the diagnostic
+X-Caliber build compiles its firing and initialization section. It
+then reaches the main routine and rejects the SettingsPush call.
+A probe that loads the original desktop helpers before that routine
+is running. See
+`build/native-geometry-source-v1/X-Caliber-frequency/result.json`.
