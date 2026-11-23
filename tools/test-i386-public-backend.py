@@ -39,7 +39,7 @@ def main():
     pins = {str(p): sha(p) for p in paths}
     out.mkdir()
     report = dict(result='running', input_sha256=pins, reference_revision=REFERENCE,
-                  scope='Original COCCompile binary versus normal target backend: sixteen integer/F64 IR graphs, executed retained code after control deletion, returned raw type, debug map range/start/end, consumed graph, restored context and exact caller data/code heaps. Two executable AOT constant graphs also check segment-relative debug maps, output types and borrowed context/metadata. Direct and late-slot JIT calls, AOT import/extern relocation ownership and execution after control deletion are also checked. Failure recovery, assembly, tracing and complete compiler workflows remain open.')
+                  scope='Original COCCompile binary versus normal target backend: seventeen integer/F64 IR graphs including power, executed retained code after control deletion, returned raw type, debug map range/start/end, consumed graph, restored context and exact caller data/code heaps. Two executable AOT constant graphs also check segment-relative debug maps, output types and borrowed context/metadata. Direct and late-slot JIT calls, AOT import/extern relocation ownership and execution after control deletion are also checked. Failure recovery, assembly, tracing and complete compiler workflows remain open.')
     guest = None
     try:
         (out/'fixture.HC').write_bytes(fixture.read_bytes())
@@ -71,9 +71,9 @@ def main():
         guest.wait('PUBLIC BACKEND DONE\n', timeout=900)
         for name in ('backend-state.bin', 'backend-trace.bin', 'backend-heap.bin'):
             (out/name).write_bytes((guest.out/name).read_bytes())
-        report['state'] = list(struct.unpack('<48Q', (out/'backend-state.bin').read_bytes()))
-        report['values'] = list(struct.unpack('<44Q', (out/'backend-trace.bin').read_bytes()))
-        if report['state'] != [1]*48:
+        report['state'] = list(struct.unpack('<49Q', (out/'backend-state.bin').read_bytes()))
+        report['values'] = list(struct.unpack('<46Q', (out/'backend-trace.bin').read_bytes()))
+        if report['state'] != [1]*49:
             raise ValueError('Public backend contract failed; see state')
         report['heap_metrics'] = list(struct.unpack('<2q', (out/'backend-heap.bin').read_bytes()))
         if report['heap_metrics'] != [0]*2:

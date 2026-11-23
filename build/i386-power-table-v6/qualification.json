@@ -1,0 +1,23 @@
+{
+  "disk_sha256": "5906cfca97ec183ffc6aff695492b45b0d53742973f71a569a47135370be7cba",
+  "source_sha256": {
+    "Compiler/I386/BackendCore.HC": "3fd9496624193dd41e6f688cdaa525ef7582b1f9750072cfc709696a2d1ee599",
+    "Compiler/I386/Frontend.HC": "2a2a787cd0d8c59fca0f0286d2426da1b420d391e540a588469a0c466837f018",
+    "Compiler/I386/PublicBackendCore.HC": "0f4b002967d5202740fa4de21a9a1601a0850fae2c28712117b6cbd586f7303d",
+    "Compiler/I386/PublicBackendSupport.HC": "d0e546ed7c79d4c589a96c00bc4fe7ebb4483340ce8fbd51a0db1e86944c1d0a",
+    "Kernel/I386/FloatPower.HC": "073c997c37a3abbe2158dab96edee260bc864d6c0e500f811c1d8d944c7fb072",
+    "Kernel/I386/MathPublic.HC": "1a2d2c336b01a0c8676f2466cf632512c0cc594963d5d57e4c08ae0f2c703a1e"
+  },
+  "verified_disk_files": 1926,
+  "boot_instruction_audit": "pass",
+  "passing_receipt_sha256": {
+    "user8": "4fb79c2348fcdf32e559e6c7100bd4bb8922e9985d63e8a4468efdaa02fa6d95",
+    "concurrent": "792e00ff932e62bb2b2ed5d690ddca048e07ab922cd0ecabc37a1bdb8542cde1",
+    "native-wide": "6b85a19755115e722392ff31e8633f755cd8449df125271a70c9061960ebb991",
+    "native-syntax": "454c9918a3dd799cfa01d73ecae6717b881ed6038ea2e3d51139f79a312a6fca",
+    "native-specials": "12f435a4267962ac1b2ff4f0f61f021ed6b1d78c6fe705da7f4dea1949c3357d",
+    "public-backend": "19495e5d6ae98bd5023befd402a4c5b4fdaa3024dccbb54656b2415fcf0e94da"
+  },
+  "compiler_module_sha256": "3b31ea14b48b5a2ab22d6211e6afd6d93619f844bc74bb963eb2c8620b795f2f",
+  "compiler_loaded_payload_bytes": 1201712
+}

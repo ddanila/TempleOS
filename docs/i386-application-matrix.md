@@ -2434,6 +2434,18 @@ first-use calls. Both produce the expected bits with zero rejected
 publications. The 98 command-compiler cases and the public COCCompile
 differential pass. This candidate adds 448 loaded compiler bytes
 over the passing baseline and the unchanged 8 MiB User check fails
-during child creation. See the `concurrent`, `user8` and compiler
-receipts under `build/i386-power-table-v5`, with source in
+during child creation with a 264,024-byte largest free block. See
+the `concurrent`, `user8`, `heap-user8` and compiler receipts under
+`build/i386-power-table-v5`, with source in
 `serialized-power.patch`.
+
+The current on-demand implementation checks for a loaded provider
+in Adam and caches the implementation from the published symbol
+after the load. This keeps the resident compiler payload at
+1,201,712 bytes, 168 bytes below the passing baseline. The unchanged
+8 MiB User workflow passes with a 55.08-second startup. Two
+background tasks return the expected bits on first use with zero
+rejected publications. The command compiler matches 98 original
+results and public COCCompile matches all 46 trace values with zero
+net caller heap allocation. See
+`build/i386-power-table-v6/qualification.json` and its receipts.

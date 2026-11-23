@@ -6,6 +6,15 @@ import subprocess
 manifest = Path(__file__).with_name('manifest.json')
 rows = json.loads(manifest.read_text())['files'] if manifest.exists() else []
 runs = [
+    'i386-power-table-v5/heap-user8',
+    'i386-power-table-v6/user8',
+    'i386-power-table-v6/concurrent',
+    'i386-power-table-v6/native-wide',
+    'i386-power-table-v6/native-syntax',
+    'i386-power-table-v6/native-specials',
+    'i386-power-table-v6/public-backend',
+    'i386-power-table-v6/recovery',
+    'i386-power-table-v6/recovery-include',
     'i386-power-table-v2/retained-power',
     'i386-power-table-v5/user8',
     'i386-power-table-v5/concurrent',

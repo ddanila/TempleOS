@@ -1,11 +1,11 @@
 #ifndef BC_ORIGINAL
 #define BC_ORIGINAL 0
 #endif
-I64 bc_state[48],bc_trace[44],bc_heap[2];
-I64 bc_codes[16]={IC_ADD,IC_SUB,IC_MUL,IC_DIV,IC_MOD,IC_AND,IC_OR,IC_XOR,IC_SHL,IC_SHR,IC_LESS,IC_GREATER_EQU,IC_EQU_EQU,IC_ADD,IC_MUL,IC_DIV};
-I64 bc_left[16]={6,6,6,-29,-29,0xAA,0xA0,0xAA,3,-32,2,2,7,0x3FF4000000000000,0x3FF4000000000000,0x4014000000000000};
-I64 bc_right[16]={7,7,7,6,6,15,15,15,5,2,3,3,7,0x4004000000000000,0x4010000000000000,0x4000000000000000};
-I64 bc_expected[16]={13,-1,42,-4,-5,10,175,165,96,-8,1,0,1,0x400E000000000000,0x4014000000000000,0x4004000000000000};
+I64 bc_state[49],bc_trace[46],bc_heap[2];
+I64 bc_codes[17]={IC_ADD,IC_SUB,IC_MUL,IC_DIV,IC_MOD,IC_AND,IC_OR,IC_XOR,IC_SHL,IC_SHR,IC_LESS,IC_GREATER_EQU,IC_EQU_EQU,IC_ADD,IC_MUL,IC_DIV,IC_POWER};
+I64 bc_left[17]={6,6,6,-29,-29,0xAA,0xA0,0xAA,3,-32,2,2,7,0x3FF4000000000000,0x3FF4000000000000,0x4014000000000000,0x4008000000000000};
+I64 bc_right[17]={7,7,7,6,6,15,15,15,5,2,3,3,7,0x4004000000000000,0x4010000000000000,0x4000000000000000,0x4000000000000000};
+I64 bc_expected[17]={13,-1,42,-4,-5,10,175,165,96,-8,1,0,1,0x400E000000000000,0x4014000000000000,0x4004000000000000,0x4021FFFFFFFFFFFF};
 U0 BCLog(U8 *s){while(*s)OutU8(0xE9,*s++);}
 U0 BCExport(U8 *name,U8 *data,I64 size)
 {U8 *s=MStrPrint("EXPORT %s %X %X\n",name,data,size);BCLog(s);Free(s);}
@@ -14,12 +14,12 @@ I64 BCLateTarget(I64 value){return value+42;}
 U0 BCCheck()
 {
  CDoc *display=Fs->display_doc,*put=Fs->put_doc;Bool ud=FALSE,up=FALSE,debug_ok=TRUE,consumed=TRUE,context_ok=TRUE;
- I64 data,code,i,j,type,opcode,size,actual,base;CCmpCtrl *cc;U8 *bytes;CDbgInfo *dbg;
+ I64 data,code,i,j,type,opcode,size,actual,base,state_index,trace_index;CCmpCtrl *cc;U8 *bytes;CDbgInfo *dbg;
  CHashClass *cls;CAOT packet;CAOTCtrl ctrl;CHashFun function,*target;
  CAOTImportExport *relocation;CExternUsage *usage;I64 offset,patch,site;Bool metadata_ok;
  if(display)ud=DocLock(display);if(put && put!=display)up=DocLock(put);
  data=Fs->data_heap->used_u8s;code=Fs->code_heap->used_u8s;
- for(i=0;i<16;i++){
+ for(i=0;i<17;i++){
   cc=CmpCtrlNew();COCInit(cc);type=RT_I64;opcode=IC_IMM_I64;
   if(i>=13){type=RT_F64;opcode=IC_IMM_F64;}
   cls=cmp.internal_types[type];cc->min_line=10;cc->max_line=12;cc->last_line_num=10;
@@ -39,8 +39,10 @@ U0 BCCheck()
 #endif
   if(cc->aot || cc->aotc || cc->htc.fun)context_ok=FALSE;
   CmpCtrlDel(cc);actual=Call(bytes);
-  bc_state[i]=actual==bc_expected[i];bc_trace[i*2]=actual;bc_trace[i*2+1]=type;
-  if(i<13){if(type!=RT_I64)bc_state[i]=FALSE;}else if(type!=RT_F64)bc_state[i]=FALSE;
+  state_index=i;trace_index=i*2;
+  if(i==16){state_index=48;trace_index=44;}
+  bc_state[state_index]=actual==bc_expected[i] && type==cls->raw_type;
+  bc_trace[trace_index]=actual;bc_trace[trace_index+1]=type;
   Free(bytes);Free(dbg);
  }
  for(i=0;i<2;i++){

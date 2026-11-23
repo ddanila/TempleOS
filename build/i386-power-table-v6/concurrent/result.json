@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "fixture_sha256": "b79ffbc1c101ffaba7db3d7ef2bff3e9f9a59be3e2287c6c6700fd6c174ca346",
+  "input_sha256": "5906cfca97ec183ffc6aff695492b45b0d53742973f71a569a47135370be7cba",
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "rejected_publications": 0
+}

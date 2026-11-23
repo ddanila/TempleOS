@@ -81,10 +81,10 @@ U0 PCBPrepare(CPCBState *state,CCmpCtrl *cc)
 }
 U0 PCBHelpers(CPCBState *state,CCmpCtrl *cc)
 {
-  U8 *name="I386F64Abs\0I386F64Sqrt\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0";
+  U8 *name="I386F64Abs\0I386F64Sqrt\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0I386F64Power\0";
   I64 i;CHashFun *fun;CPCBReference *reference;
   state->helpers.mask=15;state->helpers.body=state->helper_body;state->helpers.next=cc->htc.hash_table_lst;
-  for(i=0;i<10;i++){
+  for(i=0;i<11;i++){
     fun=HashFind(name,cc->htc.hash_table_lst,HTT_FUN);reference=PCBReference(state,fun,TRUE);
     if(!reference->target)throw('Compiler');HashAdd(&reference->function,&state->helpers);while(*name++);
   }

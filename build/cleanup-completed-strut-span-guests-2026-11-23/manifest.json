@@ -6341,7 +6341,119 @@
         "-o",
         "build/i386-power-table-v2/retained-power/working.img"
       ]
+    },
+    {
+      "original": "build/i386-power-table-v5/heap-user8/working.img",
+      "archive": "build/i386-power-table-v5/heap-user8/working.img.zst",
+      "sha256": "98c33363bd8855ec9641f9ea55447263f42e012adb42742b9d7582c3154a3d0d",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v5/heap-user8/working.img.zst",
+        "-o",
+        "build/i386-power-table-v5/heap-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v6/user8/working.img",
+      "archive": "build/i386-power-table-v6/user8/working.img.zst",
+      "sha256": "103d9a5f32fcc8ecd42cec610c3fee672d0ab7248aaef74753ef3ab76da43ca5",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v6/user8/working.img.zst",
+        "-o",
+        "build/i386-power-table-v6/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v6/concurrent/working.img",
+      "archive": "build/i386-power-table-v6/concurrent/working.img.zst",
+      "sha256": "8a4fb256fbf08ec6b98a3df336d6c76130b74d8de1d1fd08910db188ec2b97db",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v6/concurrent/working.img.zst",
+        "-o",
+        "build/i386-power-table-v6/concurrent/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v6/native-wide/working.img",
+      "archive": "build/i386-power-table-v6/native-wide/working.img.zst",
+      "sha256": "8b5b51ffd4820eeff2147ee4d108833e48e6e102abcd60f99b0299943fae564e",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v6/native-wide/working.img.zst",
+        "-o",
+        "build/i386-power-table-v6/native-wide/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v6/native-syntax/working.img",
+      "archive": "build/i386-power-table-v6/native-syntax/working.img.zst",
+      "sha256": "2c60a72b9338473bed7752e19cbaedeb1d44f8154e45008bd3391d6a7b23333a",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v6/native-syntax/working.img.zst",
+        "-o",
+        "build/i386-power-table-v6/native-syntax/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v6/native-specials/working.img",
+      "archive": "build/i386-power-table-v6/native-specials/working.img.zst",
+      "sha256": "2378ba056b25cd706a879e3627498518301b1598e5d1cb32b6ec89348c203ee4",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v6/native-specials/working.img.zst",
+        "-o",
+        "build/i386-power-table-v6/native-specials/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v6/public-backend/working.img",
+      "archive": "build/i386-power-table-v6/public-backend/working.img.zst",
+      "sha256": "bed15144056faf6c26916ec938b1468d0d2b622d4eb8b4d86cac1a642cca15e6",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v6/public-backend/working.img.zst",
+        "-o",
+        "build/i386-power-table-v6/public-backend/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v6/recovery/working.img",
+      "archive": "build/i386-power-table-v6/recovery/working.img.zst",
+      "sha256": "5906cfca97ec183ffc6aff695492b45b0d53742973f71a569a47135370be7cba",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v6/recovery/working.img.zst",
+        "-o",
+        "build/i386-power-table-v6/recovery/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 22058381312
+  "reclaimed_bytes": 22485610496
 }

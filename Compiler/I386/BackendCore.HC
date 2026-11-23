@@ -169,6 +169,7 @@ U0 I386F64Runtime(CI386Backend *backend,CI386Out *out,I64 op,I64 pass)
     case IC_MUL: name="I386F64Mul"; break;
     case IC_DIV: name="I386F64Div"; break;
     case IC_MOD: name="I386F64Mod"; break;
+    case IC_POWER: name="I386F64Power"; break;
     case IC_TO_F64:
       name="I386F64FromI64"; arg_type=RT_I64; arg_count=1; break;
     case IC_TO_I64:
@@ -504,7 +505,7 @@ U0 I386BackendCore(CI386Backend *backend)
               if (!I386IsF64(c)) throw('Compiler');
               break;
             case IC_AND: case IC_OR: case IC_XOR: case IC_SHL: case IC_SHR:
-            case IC_ADD: case IC_SUB: case IC_MUL: case IC_DIV: case IC_MOD:
+            case IC_ADD: case IC_SUB: case IC_MUL: case IC_DIV: case IC_MOD: case IC_POWER:
               if (!I386IsF64(c) || !I386IsF64(I386ValueClass(backend,ic->t.arg1_tree)) ||
                   !I386IsF64(I386ValueClass(backend,ic->t.arg2_tree))) {
                 (*backend->report)(backend->context,4,ic,0);
@@ -1235,12 +1236,14 @@ U0 I386BackendCore(CI386Backend *backend)
           case IC_ADD:
           case IC_SUB:
           case IC_MUL:
+          case IC_POWER:
           case IC_AND:
           case IC_OR:
           case IC_XOR:
             if (depth<2) throw('Compiler');
             I386Bytes(out,"\x59\x5B\x58\x5A",4);
-            if (I386IsF64(c) && (ic->ic_code==IC_ADD || ic->ic_code==IC_SUB || ic->ic_code==IC_MUL))
+            if (I386IsF64(c) && (ic->ic_code==IC_ADD || ic->ic_code==IC_SUB ||
+                ic->ic_code==IC_MUL || ic->ic_code==IC_POWER))
               I386F64Runtime(backend,out,ic->ic_code,pass);
             else if(c && c->ptr_stars_cnt && ic->ic_code==IC_ADD)
               I386Bytes(out,"\x8D\x04\x08",3);

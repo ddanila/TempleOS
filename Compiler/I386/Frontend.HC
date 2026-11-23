@@ -111,9 +111,8 @@ class CI386FrontendBound {
   Bool has_helpers;
   CHashTable helpers;
   CHash *buckets[16];
-  CHashFun functions[10];
-  CMemberLst arguments[20];
-  U8 *addresses[10];
+  CHashFun functions[11];
+  CMemberLst arguments[22];
 };
 extern CHashFun *I386CompletionFunction(CI386Frontend *state,CHashFun *function);
 extern Bool I386FrontendPublishedExtern(CI386Frontend *state,CHashFun *function);
@@ -506,23 +505,23 @@ Bool I386FrontendNeedsHelpers(CCmpCtrl *cc,CHashClass *type,CHashClass **types)
   }
   return FALSE;
 }
+U8 *i386_frontend_helper_addresses[11]={
+  &I386F64Sqrt,&I386F64Abs,&I386F64Add,&I386F64Sub,
+  &I386F64Mul,&I386F64Div,&I386F64Mod,&I386F64FromI64,
+  &I386F64ToI64,&I386F64Compare,&I386F64Power
+};
 U0 I386FrontendHelpers(CI386FrontendBound *bound,CHashClass **types)
 {
-  U8 *name="I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare";
+  U8 *name="I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0I386F64Power";
   CHashFun *fun;
   CMemberLst *arg;
   I64 i,j,count,argument_type,result_type;
   bound->helpers.mask=15; bound->helpers.body=bound->buckets;
-  bound->addresses[0]=&I386F64Sqrt; bound->addresses[1]=&I386F64Abs;
-  bound->addresses[2]=&I386F64Add; bound->addresses[3]=&I386F64Sub;
-  bound->addresses[4]=&I386F64Mul; bound->addresses[5]=&I386F64Div;
-  bound->addresses[6]=&I386F64Mod; bound->addresses[7]=&I386F64FromI64;
-  bound->addresses[8]=&I386F64ToI64; bound->addresses[9]=&I386F64Compare;
-  for(i=0;i<10;i++,name+=StrLen(name)+1) {
+  for(i=0;i<11;i++,name+=StrLen(name)+1) {
     fun=&bound->functions[i]; count=2; argument_type=result_type=RT_U64;
     if(i<2 || i==7 || i==8) count=1;
     if(i==7) argument_type=RT_I64;
-    if(i>=8) result_type=RT_I64;
+    if(i==8 || i==9) result_type=RT_I64;
     fun->str=name; fun->type=HTT_FUN|HTF_IMPORT;
     fun->arg_cnt=count; fun->return_class=types[result_type];
     fun->member_lst_and_root=&bound->arguments[i*2];
@@ -740,9 +739,10 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
   CHashFun *canonical;
   U8 *target;
   I64 i,j,offset,bytes=output->bytes;
+  U64 helper_bias=(&I386F64Sqrt-i386_frontend_helper_addresses[0])(U64);
   U8 *code=output->code;
   bound->release_owner.heap=state->heap; bound->release_owner.backend.cc=state->cc;
-  for(i=0;bound->has_helpers && i<10;i++) {
+  for(i=0;bound->has_helpers && i<11;i++) {
     record=bound->functions[i].ie_lst; bound->functions[i].ie_lst=0;
     while(record) {
       next=record->next; offset=record->rip;
@@ -750,7 +750,7 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
         I386FrontendUnavailable(state);
       }
       I386FrontendRelocAdd(state,output,offset,I386_MODULE_REL32,bound->functions[i].str);
-      (code+offset)(U32 *)[0]=(bound->addresses[i]+0)(U64)-(code+offset+4)(U64);
+      (code+offset)(U32 *)[0]=(i386_frontend_helper_addresses[i]+0)(U64)+helper_bias-(code+offset+4)(U64);
       I386NativeBackendFree(&bound->release_owner,record);
       record=next;
     }
