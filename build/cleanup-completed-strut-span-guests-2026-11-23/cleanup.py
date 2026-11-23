@@ -54,6 +54,16 @@ runs = [
     'native-geometry-source-v1/ToTheFront-serial-units',
     'native-geometry-source-v1/ToTheFront-serial-exact',
     'native-geometry-source-v1/ToTheFront-split-fire',
+    'native-geometry-source-v1/ToTheFront-curves',
+    'native-geometry-source-v1/ToTheFront-range',
+    'native-geometry-source-v1/ToTheFront-visibility',
+    'native-geometry-source-v1/ToTheFront-visibility-zeroed',
+    'tothefront-original-v1/visibility',
+    'tothefront-original-v1/visibility-zeroed',
+    'tothefront-original-v1/seed',
+    'tothefront-original-v1/player-choice',
+    'tothefront-original-v1/human-match',
+    'native-geometry-source-v1/ToTheFront-key-poll',
     'native-geometry-source-v1/ToTheFront-indirect-head',
     'native-geometry-source-v1/ToTheFront-wrap',
     'native-geometry-source-v1/X-Caliber',
@@ -109,7 +119,7 @@ def open_in_guest(path):
 for run in runs:
     directory = Path('build') / run
     receipt = directory / 'result.json'
-    if not receipt.is_file() or json.loads(receipt.read_text())['result'] not in ('pass', 'fail'):
+    if not receipt.is_file() or json.loads(receipt.read_text())['result'] not in ('pass', 'fail', 'observed'):
         continue
     for name in ('working.img', 'probe.img', 'original.iso'):
         original = directory / name

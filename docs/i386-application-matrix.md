@@ -1801,3 +1801,16 @@ death update. Native still executes arithmetic after the probe.
 The complete interactive match remains open. See
 `build/tothefront-original-v1/visibility-zeroed/result.json` and
 `build/native-geometry-source-v1/ToTheFront-visibility-zeroed/result.json`.
+
+The original key poll advances ToTheFront to its task settings
+dependency. Loading the shared settings and autocomplete services
+used by Span lets the final game unit compile, and fresh console
+arithmetic succeeds. This loader still uses the serial visibility
+and queue-head probe changes.
+
+The pinned original starts a fixed-seed match with two Human players,
+draws the map, advances from artillery to movement on Space and
+returns on Escape. The same physical keyboard workflow is running
+against the native loader. See
+`build/tothefront-original-v1/human-match` and
+`build/native-geometry-source-v1/ToTheFront-task-settings/result.json`.

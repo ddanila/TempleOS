@@ -21,6 +21,8 @@ parser.add_argument('--original-curves', action='store_true')
 parser.add_argument('--original-range', action='store_true')
 parser.add_argument('--visibility-fixture', action='store_true')
 parser.add_argument('--original-key-poll', action='store_true')
+parser.add_argument('--original-task-settings', action='store_true')
+parser.add_argument('--human-match', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
 if args.serial_visibility and args.app != 'ToTheFront':
@@ -45,6 +47,10 @@ if args.visibility_fixture and not args.serial_visibility:
     parser.error('--visibility-fixture requires --serial-visibility')
 if args.original_key_poll and not args.serial_visibility:
     parser.error('--original-key-poll requires --serial-visibility')
+if args.original_task_settings and not args.serial_visibility:
+    parser.error('--original-task-settings requires --serial-visibility')
+if args.human_match and (not args.original_task_settings or args.visibility_fixture):
+    parser.error('--human-match needs the full ToTheFront loader with task settings')
 out = args.out.resolve()
 out.mkdir()
 extras={}
@@ -172,6 +178,11 @@ try:
                 commands.append('#include "C:/TTFRange.HC"')
             if unit == 'ToTheFront' and args.original_key_poll:
                 commands.append('#include "C:/TTFKeyPoll.HC"')
+            if unit == 'ToTheFront' and args.original_task_settings:
+                commands.extend((
+                    'AdamFile("/Adam/AutoComplete/MakeAC.HC",FALSE);',
+                    'AdamFile("/Adam/TaskSettings.HC",FALSE);',
+                ))
             paths = fire_units if unit == 'TTFFire' and fire_units else [path]
             commands.extend(f'#include "C:{name}"' for name in paths)
             if unit == 'TTFVis' and args.visibility_fixture:
@@ -192,6 +203,18 @@ try:
     guest.command('6*7;')
     report['fresh_result']=guest.result_pixels()
     report['result']='pass'
+    if args.human_match:
+        start = len(guest.collect())
+        guest.type('ToTheFront;')
+        guest.press('ret')
+        guest.wait('COMPILER BREAK ready', start=start)
+        time.sleep(12)
+        workflow = runpy.run_path('build/tothefront-original-v1/startup.py')
+        workflow['play'](guest)
+        guest.wait('COMMAND OK\n', timeout=45, start=start)
+        report['returned_after_phase'] = True
+        guest.command('6*7;')
+        report['after_match'] = guest.result_pixels()
     if args.ball_mesh:
         guest.command('#include "C:/BallUI.HC"')
         guest.type('BallUIProbe;')

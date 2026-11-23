@@ -1385,7 +1385,147 @@
         "-o",
         "build/span-production-v1/gen1-cross-console-heap/working.img"
       ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-curves/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-curves/working.img.zst",
+      "sha256": "afb956cc127ed5ed1b8ea6dee6afa997d400188a075583b75c6cda728878af4a",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-curves/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-curves/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-range/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-range/working.img.zst",
+      "sha256": "b02d47952eb7e589a2f7e3d7b454e97efd5aef0ce33b311c4e5b019f316a1993",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-range/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-range/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-visibility/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-visibility/working.img.zst",
+      "sha256": "6d98a0aedbf3006bb0fd69be3ada9c589d6268c293f231a10dd2b086a3ba3b2b",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-visibility/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-visibility/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-visibility-zeroed/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-visibility-zeroed/working.img.zst",
+      "sha256": "cff91710e58a55cc1d6b8c7dffc681e2b679a5d5a4925c3052bcf17d3a25dc1a",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-visibility-zeroed/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-visibility-zeroed/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/visibility/original.iso",
+      "archive": "build/tothefront-original-v1/visibility/original.iso.zst",
+      "sha256": "08aad97e16ece3622233c608850c0fca80e9a9e019e9450322165cc11216e40c",
+      "size": 46133248,
+      "reclaimed_bytes": 33214464,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/visibility/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/visibility/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/visibility-zeroed/original.iso",
+      "archive": "build/tothefront-original-v1/visibility-zeroed/original.iso.zst",
+      "sha256": "6c252e4c6ec5fa4c65d32fe3d965786cec3a1224e43e6a4765cc270f39d56e40",
+      "size": 46133248,
+      "reclaimed_bytes": 33214464,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/visibility-zeroed/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/visibility-zeroed/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/seed/original.iso",
+      "archive": "build/tothefront-original-v1/seed/original.iso.zst",
+      "sha256": "c4e7a9fa7fe250ceb5f8d50ad816b261a54a6c2d808e5ba23749e923e67a9042",
+      "size": 46133248,
+      "reclaimed_bytes": 33214464,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/seed/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/seed/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/player-choice/original.iso",
+      "archive": "build/tothefront-original-v1/player-choice/original.iso.zst",
+      "sha256": "c4e7a9fa7fe250ceb5f8d50ad816b261a54a6c2d808e5ba23749e923e67a9042",
+      "size": 46133248,
+      "reclaimed_bytes": 33214464,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/player-choice/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/player-choice/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-original-v1/human-match/original.iso",
+      "archive": "build/tothefront-original-v1/human-match/original.iso.zst",
+      "sha256": "c4e7a9fa7fe250ceb5f8d50ad816b261a54a6c2d808e5ba23749e923e67a9042",
+      "size": 46133248,
+      "reclaimed_bytes": 33214464,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/human-match/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/human-match/original.iso"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront-key-poll/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront-key-poll/working.img.zst",
+      "sha256": "b9f2bd729f5b7ed6b4ac75153092e9e77965ab3c765877fd6e1baf7060cba578",
+      "size": 67108864,
+      "reclaimed_bytes": 53399552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront-key-poll/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront-key-poll/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 4942495744
+  "reclaimed_bytes": 5375586304
 }

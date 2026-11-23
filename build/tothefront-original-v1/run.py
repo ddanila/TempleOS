@@ -9,6 +9,8 @@ import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--visibility-fixture', action='store_true')
+parser.add_argument('--startup-dialogs', action='store_true')
+parser.add_argument('--human-match', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 out = args.out.resolve()
@@ -43,7 +45,18 @@ try:
         report['result'] = 'pass'
     else:
         time.sleep(6)
-        guest.screenshot('entry')
+        if args.human_match:
+            workflow = runpy.run_path(str(Path(__file__).with_name('startup.py')))
+            workflow['play'](guest)
+            guest.wait('TTF original returned\n', 30)
+            report['returned_after_phase'] = True
+        else:
+            guest.screenshot('entry')
+            if args.startup_dialogs:
+                guest.type('12345678')
+                guest.press('ret')
+                time.sleep(8)
+                guest.screenshot('player-one')
         report['result'] = 'observed'
 except Exception as error:
     report.update(result='fail', error=str(error))
