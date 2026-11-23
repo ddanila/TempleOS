@@ -3002,3 +3002,10 @@ The frozen `6eefeedd` pipeline completed its
 All nine persisted module audits passed. The generation runner has
 moved on to installation; its second self-hosted flat image,
 reproducibility audit and final boot are still pending.
+
+Starting the keyboard worker after public header loading but before
+startup source ran passed the 8 MiB cross-built User workflow. Its
+[heap capture](../build/i386-keyboard-placement-v1/user8-profile/result.json)
+measured 280,784 contiguous bytes, 11,944 fewer than the existing
+64-slot cross-built capture. The experiment preserved the worker
+stack size. Production retains the later keyboard start.
