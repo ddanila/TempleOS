@@ -3092,3 +3092,10 @@ The assembled all-native high-placement image passed the
 at 64 MiB. Ctrl-S persisted the exact edited text and cursor state,
 both autosave toggles passed, and the reboot recovered the same
 document. Fresh arithmetic worked before and after reboot.
+
+The assembled all-native high-placement image also passed the
+[configured 64 MiB Home desktop workflow](../build/i386-keyboard-high-v2/assembled-native/desktop64/result.json).
+Home Once ran during boot, all 83 geometry values matched the original,
+and fresh arithmetic rendered after the handoff. The physical heap
+capture found no bootstrap task record and showed its former address
+inside a free block. The measured startup was 211.03 seconds.
