@@ -2604,7 +2604,7 @@ A controlled Titanium finish fixture leaves the scoring and bonus
 calculation in the game. The native two-survivor run saved 415 and
 reopened that exact value on a cold boot. The original eight-survivor
 run finished and wrote 1,915. The matching native eight-survivor run
-halted with a 1,347,610,075-byte allocation request during rendering,
+halted with a 1,347,611,099-byte allocation request during rendering,
 also seen in one unmodified play run. A repeat of unmodified play on
 the same image passed. See the
 [cold reopen](../build/titanium-finish-v1/native-reopen/result.json)
