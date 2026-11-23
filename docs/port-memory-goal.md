@@ -2664,3 +2664,10 @@ and verifies a single build-provider load. All nine comparisons pass. The
 second installation, flat-kernel rebuild, boot and final reproducibility
 checks are still underway. See
 `build/resident-opt-c5-generations128/gen2-retained-build/result.json`.
+
+The second retained-module installation now passes. The installer verifies all
+nine rebuilt file hashes and the installed image boots at 8 MiB. Its two
+interactive raster checkpoints pass. Startup measured 60.61 seconds, above the
+separate 60-second budget. The receipts are in
+`build/resident-opt-c5-generations128/gen2-install`. The second self-hosted
+flat-kernel build is running.
