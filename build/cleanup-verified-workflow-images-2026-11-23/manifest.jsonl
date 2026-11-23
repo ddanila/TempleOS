@@ -1,0 +1,6 @@
+{"path": "build/resident-opt-c5-generations128/gen1-desktop64/after-physical.bin", "sha256": "1967ff49bae39fb7274d2687d18c4dccb4e845a9b8aa7e5e3183dc7456422ba4", "size": 67108864, "reclaimed_bytes": 44982272}
+{"path": "build/resident-opt-c5-generations128/gen1-desktop64/working.img", "sha256": "211adcefb461b3cf3fbf369e51957d0c80ded83dc7b102366f5a00466e8e7c7b", "size": 67108864, "reclaimed_bytes": 16486400}
+{"path": "build/resident-opt-c5-generations128/gen2-desktop64-rerun/after-physical.bin", "sha256": "8af2f84732e4ea76a1a7c65340bcf1db8abb2eeacca27b103641203f1ebe1e4f", "size": 67108864, "reclaimed_bytes": 44982272}
+{"path": "build/resident-opt-c5-generations128/gen2-desktop64-rerun/working.img", "sha256": "c18b13e0df3093065f943305a5611da00c7f3e971d47008c781a3c52730802a5", "size": 67108864, "reclaimed_bytes": 16486400}
+{"path": "build/application-menu-mouse-observer-v1/candidate64/working.img", "sha256": "8a36e3c8a27b428e5a1afe26ffe2025a89b7f864181fe4ec719a5a51df2d8e24", "size": 67108864, "reclaimed_bytes": 17494016}
+{"path": "build/i386-graphics-registry-integration/timeclock-report64/working.img", "sha256": "752f5960dbd79d6721d77aaed66359b4e9e06c1f304051c59b463a4bef9d540f", "size": 67108864, "reclaimed_bytes": 17489920}
