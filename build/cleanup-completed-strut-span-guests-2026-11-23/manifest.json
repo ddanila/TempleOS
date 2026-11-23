@@ -5193,7 +5193,273 @@
         "-o",
         "build/i386-power-production-v1/xcaliber-operator-play/working.img"
       ]
+    },
+    {
+      "original": "build/user-hook-native-v3/working.img",
+      "archive": "build/user-hook-native-v3/working.img.zst",
+      "sha256": "ec569fb1d97d19c696586aa2cdbdc4b78e748e23d17a96b58a36f129abfa2a8c",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-hook-native-v3/working.img.zst",
+        "-o",
+        "build/user-hook-native-v3/working.img"
+      ]
+    },
+    {
+      "original": "build/user-hook-native-v2/working.img",
+      "archive": "build/user-hook-native-v2/working.img.zst",
+      "sha256": "b68e876989337ff70ef782014235d62a58da81db07b8498a1e33702563f8536c",
+      "size": 67108864,
+      "reclaimed_bytes": 35835904,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-hook-native-v2/working.img.zst",
+        "-o",
+        "build/user-hook-native-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/user-hook-native-v1/working.img",
+      "archive": "build/user-hook-native-v1/working.img.zst",
+      "sha256": "702448ce63788637937cc734e565e44c86f60064f0b843df2c79f22683bdf574",
+      "size": 67108864,
+      "reclaimed_bytes": 35835904,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-hook-native-v1/working.img.zst",
+        "-o",
+        "build/user-hook-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/user-constructor-native-v4/working.img",
+      "archive": "build/user-constructor-native-v4/working.img.zst",
+      "sha256": "c927b6b2b3e91db497f15a9a695c005eda190e3f7b373a2cb0d9d413d6ac6dd4",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-constructor-native-v4/working.img.zst",
+        "-o",
+        "build/user-constructor-native-v4/working.img"
+      ]
+    },
+    {
+      "original": "build/user-constructor-native-v3/working.img",
+      "archive": "build/user-constructor-native-v3/working.img.zst",
+      "sha256": "3d9fd3c650820f27aa5a2aa47e3de17422b5c8d82c475c216bd250e603ba28f8",
+      "size": 67108864,
+      "reclaimed_bytes": 35835904,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-constructor-native-v3/working.img.zst",
+        "-o",
+        "build/user-constructor-native-v3/working.img"
+      ]
+    },
+    {
+      "original": "build/user-constructor-native-v2/working.img",
+      "archive": "build/user-constructor-native-v2/working.img.zst",
+      "sha256": "89d578f9ed9d0b31f5c467f0c703eda6a0976e8e361004160df55ce41317062a",
+      "size": 67108864,
+      "reclaimed_bytes": 35835904,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-constructor-native-v2/working.img.zst",
+        "-o",
+        "build/user-constructor-native-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/user-constructor-native-v1/working.img",
+      "archive": "build/user-constructor-native-v1/working.img.zst",
+      "sha256": "1078f95d444e9632781c9cb8e3f90d2cb8b77f21077e5f59dbaed75e71eaf548",
+      "size": 67108864,
+      "reclaimed_bytes": 35835904,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-constructor-native-v1/working.img.zst",
+        "-o",
+        "build/user-constructor-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/user-constructor-native-before-v1/working.img",
+      "archive": "build/user-constructor-native-before-v1/working.img.zst",
+      "sha256": "9432bc49824babab5b89ee99b719256ff16956959f72a89ba217109ec52e64e5",
+      "size": 67108864,
+      "reclaimed_bytes": 35827712,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-constructor-native-before-v1/working.img.zst",
+        "-o",
+        "build/user-constructor-native-before-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/user-constructor-native-8m-v2/working.img",
+      "archive": "build/user-constructor-native-8m-v2/working.img.zst",
+      "sha256": "c927b6b2b3e91db497f15a9a695c005eda190e3f7b373a2cb0d9d413d6ac6dd4",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-constructor-native-8m-v2/working.img.zst",
+        "-o",
+        "build/user-constructor-native-8m-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/user-constructor-native-8m-v1/working.img",
+      "archive": "build/user-constructor-native-8m-v1/working.img.zst",
+      "sha256": "3d9fd3c650820f27aa5a2aa47e3de17422b5c8d82c475c216bd250e603ba28f8",
+      "size": 67108864,
+      "reclaimed_bytes": 35835904,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-constructor-native-8m-v1/working.img.zst",
+        "-o",
+        "build/user-constructor-native-8m-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/user-startup-scroll-native-v3/working.img",
+      "archive": "build/user-startup-scroll-native-v3/working.img.zst",
+      "sha256": "5416f94a41105d811e4a69d79253748ea9479506f66e07bf7af584772f7643fb",
+      "size": 67108864,
+      "reclaimed_bytes": 35852288,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-startup-scroll-native-v3/working.img.zst",
+        "-o",
+        "build/user-startup-scroll-native-v3/working.img"
+      ]
+    },
+    {
+      "original": "build/user-startup-scroll-native-v2/working.img",
+      "archive": "build/user-startup-scroll-native-v2/working.img.zst",
+      "sha256": "11f1f1b7083927d5026e5c691897cce0cd41cfb512d035a07df01981fc1f6adb",
+      "size": 67108864,
+      "reclaimed_bytes": 35835904,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-startup-scroll-native-v2/working.img.zst",
+        "-o",
+        "build/user-startup-scroll-native-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/user-startup-scroll-native-v1/working.img",
+      "archive": "build/user-startup-scroll-native-v1/working.img.zst",
+      "sha256": "316abeeb4f11a930f7d7682335cbb01b8789010a1316fdf172d7f21b0d71cf92",
+      "size": 67108864,
+      "reclaimed_bytes": 35835904,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/user-startup-scroll-native-v1/working.img.zst",
+        "-o",
+        "build/user-startup-scroll-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-on-demand-v1/native-wide/working.img",
+      "archive": "build/i386-power-on-demand-v1/native-wide/working.img.zst",
+      "sha256": "ff15aaa9422f1288b5f945f4f4ed25cd3ed5390b96561034df91f1dbcb6addc4",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-on-demand-v1/native-wide/working.img.zst",
+        "-o",
+        "build/i386-power-on-demand-v1/native-wide/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-on-demand-v1/native-syntax/working.img",
+      "archive": "build/i386-power-on-demand-v1/native-syntax/working.img.zst",
+      "sha256": "29c7b2a50dfd885b250c98240c747f456c61589e5d20bf88efdf73e503d54b2f",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-on-demand-v1/native-syntax/working.img.zst",
+        "-o",
+        "build/i386-power-on-demand-v1/native-syntax/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-on-demand-v1/user8/working.img",
+      "archive": "build/i386-power-on-demand-v1/user8/working.img.zst",
+      "sha256": "16b5b540abbdb05b32b961598e057d6bd91e51f2d8b28e683df48c60595e5edb",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-on-demand-v1/user8/working.img.zst",
+        "-o",
+        "build/i386-power-on-demand-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-on-demand-v1/public-backend/working.img",
+      "archive": "build/i386-power-on-demand-v1/public-backend/working.img.zst",
+      "sha256": "8bdec3e6308d489f4e82a940aa1ecca392113f4a9a01a993c2896aa79f085443",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-on-demand-v1/public-backend/working.img.zst",
+        "-o",
+        "build/i386-power-on-demand-v1/public-backend/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-on-demand-v1/native-specials/working.img",
+      "archive": "build/i386-power-on-demand-v1/native-specials/working.img.zst",
+      "sha256": "8a7085b6db76627f812361b5dac422cbb229710a435d69d515f9bac498d1121a",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-on-demand-v1/native-specials/working.img.zst",
+        "-o",
+        "build/i386-power-on-demand-v1/native-specials/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-on-demand-v1/heap-user8/working.img",
+      "archive": "build/i386-power-on-demand-v1/heap-user8/working.img.zst",
+      "sha256": "16b5b540abbdb05b32b961598e057d6bd91e51f2d8b28e683df48c60595e5edb",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-on-demand-v1/heap-user8/working.img.zst",
+        "-o",
+        "build/i386-power-on-demand-v1/heap-user8/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 18423590912
+  "reclaimed_bytes": 19209924608
 }

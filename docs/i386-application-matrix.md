@@ -2376,3 +2376,20 @@ bytes on the resident power candidate. The fallback largest payload
 stays at 2,840 bytes. The child needs 267,528 bytes after alignment.
 See `build/i386-power-production-v1/heap-baseline-user8/result.json`
 and `build/i386-power-production-v1/heap-user8/result.json`.
+
+The on-demand power candidate loads the implementation through
+Adam on the first operation. Its cross-built CompilerRuntime is
+15,977 bytes smaller than the resident candidate. The native command
+compiler matches all 56 finite cases, ten syntax cases and 32 special
+cases, and public COCCompile reproduces all 46 original trace values.
+See the `native-wide`, `native-syntax`, `native-specials` and
+`public-backend` receipts under `build/i386-power-on-demand-v1`.
+
+The unchanged 8 MiB User workload still fails during child creation.
+The largest block is 264,024 bytes, one page smaller than the passing
+baseline. At its measured address, the page-aligned task and stack
+need 266,224 bytes. The census finds zero fitting blocks even with
+exact padding. The on-demand source remains a diagnostic patch.
+See `build/i386-power-on-demand-v1/user8/result.json`,
+`build/i386-power-on-demand-v1/stack-fit.json` and
+`build/i386-power-on-demand-v1/on-demand-power.patch`.

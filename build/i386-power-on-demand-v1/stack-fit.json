@@ -1,0 +1,23 @@
+{
+  "worst_case_request": 267527,
+  "stack_bytes": 262144,
+  "header_bytes": 1288,
+  "snapshots": {
+    "baseline": {
+      "snapshot_sha256": "4c9f5d333bb42bb828f75e76262c22cfc59a03f2284988ce0706ab02c969c7e0",
+      "largest_payload": 268120,
+      "largest_payload_address": "0x764010",
+      "alignment_adjusted_request": 266224,
+      "slack": 1896,
+      "fitting_free_blocks": 1
+    },
+    "on_demand": {
+      "snapshot_sha256": "b30cdac13932f334d4b5971bb84194f9ac90a63f8d38ca8258b01b3784276ae9",
+      "largest_payload": 264024,
+      "largest_payload_address": "0x765010",
+      "alignment_adjusted_request": 266224,
+      "slack": -2200,
+      "fitting_free_blocks": 0
+    }
+  }
+}

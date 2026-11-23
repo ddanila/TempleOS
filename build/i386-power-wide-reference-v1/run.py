@@ -128,12 +128,16 @@ def compare(pairs, original):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--disk', type=Path)
-    parser.add_argument('--wide-reconstruction', action='store_true')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--wide-reconstruction', action='store_true')
+    mode.add_argument('--native-operator', action='store_true')
     parser.add_argument('--reference', type=Path)
     parser.add_argument('--out', required=True, type=Path)
     args = parser.parse_args()
     if bool(args.disk) != bool(args.reference):
         parser.error('--disk and --reference must be supplied together')
+    if (args.wide_reconstruction or args.native_operator) and not args.disk:
+        parser.error('Selected mode requires --disk')
     out = args.out.resolve()
     out.mkdir()
     pairs = corpus()
@@ -143,17 +147,20 @@ def main():
         original = json.loads(args.reference.read_text())
         if original['result'] != 'pass' or original['fixture_sha256'] != original_source_hash:
             raise ValueError('Reference receipt does not match the corpus')
-        reduced = Path('Kernel/I386/FloatExp.HC').read_bytes().split(b'\nF64 Exp(', 1)[0]
-        fixed = Path(__file__).with_name('Fixed.HC').read_bytes()
-        power = Path('build/i386-power-reduction-v1/Candidate.HC').read_bytes()
-        reconstruct = power.split(b'\nF64 PowerSoftware(', 1)[0]
         cases = source[source.index(b'U0 PowerCase('):]
-        cases = cases.replace(b'PowerReduced(base,exponent),result=base`exponent;',
-                              b'PowerWideReduced(base,exponent),result=PowerReconstruct(reduced);')
-        if args.wide_reconstruction:
-            reconstruct = Path(__file__).with_name('Reconstruct.HC').read_bytes()
-            cases = cases.replace(b'PowerReconstruct(reduced)', b'PowerWideReconstruct(reduced)')
-        source = b'\n'.join((reduced, fixed, reconstruct, cases))
+        if args.native_operator:
+            source = cases.replace(b'PowerReduced(base,exponent)', b'0.0')
+        else:
+            reduced = Path('Kernel/I386/FloatExp.HC').read_bytes().split(b'\nF64 Exp(', 1)[0]
+            fixed = Path(__file__).with_name('Fixed.HC').read_bytes()
+            power = Path('build/i386-power-reduction-v1/Candidate.HC').read_bytes()
+            reconstruct = power.split(b'\nF64 PowerSoftware(', 1)[0]
+            cases = cases.replace(b'PowerReduced(base,exponent),result=base`exponent;',
+                                  b'PowerWideReduced(base,exponent),result=PowerReconstruct(reduced);')
+            if args.wide_reconstruction:
+                reconstruct = Path(__file__).with_name('Reconstruct.HC').read_bytes()
+                cases = cases.replace(b'PowerReconstruct(reduced)', b'PowerWideReconstruct(reduced)')
+            source = b'\n'.join((reduced, fixed, reconstruct, cases))
         packer = runpy.run_path('tools/package-i386-native-image.py')
         image = out / 'working.img'
         packer['package'](args.disk, image, additions={'/PowerWideProbe.HC': source})
@@ -181,15 +188,16 @@ def main():
         if args.disk:
             reference_cases = original['cases']
             report['reference_sha256'] = hashlib.sha256(args.reference.read_bytes()).hexdigest()
-            report['reduction_mismatches'] = [
-                int(index) for (index, reduced, _), reference in zip(rows, reference_cases, strict=True)
-                if reduced != reference['original_reduced']]
+            if not args.native_operator:
+                report['reduction_mismatches'] = [
+                    int(index) for (index, reduced, _), reference in zip(rows, reference_cases, strict=True)
+                    if reduced != reference['original_reduced']]
             report['result_mismatches'] = [
                 {'index': int(index), 'native': actual, 'original': reference['original_result']}
                 for (index, _, actual), reference in zip(rows, reference_cases, strict=True)
                 if actual != reference['original_result']]
             report['cases'] = len(rows)
-            if report['reduction_mismatches'] or report['result_mismatches']:
+            if report.get('reduction_mismatches') or report['result_mismatches']:
                 raise ValueError('Native power corpus differs from original')
             report['result'] = 'pass'
         else:
