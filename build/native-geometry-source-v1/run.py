@@ -10,6 +10,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('disk',type=Path)
 parser.add_argument('--app', choices=('GrModels','ToTheFront','X-Caliber'), required=True)
 parser.add_argument('--serial-visibility', action='store_true')
+parser.add_argument('--xcaliber-shot-trace', action='store_true')
+parser.add_argument('--xcaliber-recoil-reference', action='store_true')
+parser.add_argument('--xcaliber-shot-return', action='store_true')
 parser.add_argument('--xcaliber-coordinate-trace', action='store_true')
 parser.add_argument('--xcaliber-draw-trace', action='store_true')
 parser.add_argument('--xcaliber-refresh-state', action='store_true')
@@ -38,6 +41,12 @@ parser.add_argument('--human-match', action='store_true')
 parser.add_argument('--combined-loader', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
+if args.xcaliber_shot_trace and not args.xcaliber_input_trace:
+    parser.error('--xcaliber-shot-trace requires --xcaliber-input-trace')
+if args.xcaliber_recoil_reference and not args.xcaliber_shot_return:
+    parser.error('--xcaliber-recoil-reference requires --xcaliber-shot-return')
+if args.xcaliber_shot_return and not args.split_xcaliber:
+    parser.error('--xcaliber-shot-return requires --split-xcaliber')
 if args.xcaliber_coordinate_trace and not args.xcaliber_input_trace:
     parser.error('--xcaliber-coordinate-trace requires --xcaliber-input-trace')
 if args.xcaliber_draw_trace and not args.xcaliber_input_trace:
@@ -184,6 +193,19 @@ if args.app=='X-Caliber':
             if text.count(square) != 1:
                 raise ValueError('Expected one X-Caliber explosion square')
             text = text.replace(square, b'd=250000*tons/Sqr(d);')
+        if args.xcaliber_shot_return:
+            anchor = b'  QueIns(tmps,shot_head.last);\n}'
+            if text.count(anchor) != 1:
+                raise ValueError('Expected a single ShotNew fall-through')
+            text = text.replace(anchor, b'  QueIns(tmps,shot_head.last);\n  return tmps;\n}')
+        if args.xcaliber_recoil_reference:
+            anchor = b'D3MulEqu(&p,tmps->p.mass/tmpsp->p[n].mass/100.0);'
+            if text.count(anchor) != 1:
+                raise ValueError('Expected one gun recoil calculation')
+            text = text.replace(anchor, b'D3MulEqu(&p,tmps->p.DxDt/tmpsp->p[n].mass/100.0);')
+        if args.xcaliber_shot_trace:
+            trace = runpy.run_path('build/xcaliber-reference-v1/shot_trace.py')
+            text = trace['instrument'](text)
         declarations = (b'U0 MissileNew(', b'Ship *ShipNew(', b'U0 MissileDel(',
                         b'U0 DrawIt(', b'U0 Explosion(', b'Ship TargetGet(', b'U0 MyDerivative(',
                         b'U0 CheckDamage(', b'U0 SolarFlares(', b'U0 XCaliber(')

@@ -10,6 +10,7 @@ import sys
 
 
 parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--shot-trace', action='store_true')
 parser.add_argument('--loop-trace', action='store_true')
 parser.add_argument('--input-trace', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
@@ -28,6 +29,10 @@ if args.input_trace:
     offset = source.index(b'U0 XCaliber(')
     instrument = runpy.run_path(str(Path(__file__).with_name('input_trace.py')))['instrument']
     app.write_bytes(source[:offset] + instrument(source[offset:], loop=args.loop_trace))
+if args.shot_trace:
+    app = overlay / 'Apps/X-Caliber/X-Caliber.HC'
+    instrument = runpy.run_path(str(Path(__file__).with_name('shot_trace.py')))['instrument']
+    app.write_bytes(instrument(app.read_bytes()))
 (overlay / 'Once.HC').write_bytes(
     b'while(!Bt(&sys_run_level,RLf_ADAM_SERVER))Yield;\n'
     b'#include "T:/Apps/X-Caliber/Load.HC"\n' + fixture)
@@ -38,7 +43,7 @@ guest_type = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Gues
 guest = guest_type(iso, out / 'guest', False)
 report = dict(result='fail', fixture_sha256=hashlib.sha256(fixture).hexdigest(),
               app_source_sha256=sources['Apps/X-Caliber/X-Caliber.HC'])
-if args.input_trace:
+if args.input_trace or args.shot_trace:
     report['instrumented_app_sha256'] = hashlib.sha256(app.read_bytes()).hexdigest()
 try:
     exercise = runpy.run_path(str(Path(__file__).with_name('workflow.py')))['exercise']
@@ -47,7 +52,7 @@ except Exception as error:
     report['error'] = str(error)
     raise
 finally:
-    if args.input_trace:
+    if args.input_trace or args.shot_trace:
         report['input_trace'] = [line for line in guest.collect().splitlines()
                                  if line.startswith('XC ')]
     guest.close()

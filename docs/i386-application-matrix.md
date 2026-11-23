@@ -2261,3 +2261,20 @@ The fresh ToTheFront spacing image also passes the physical direct-fire
 differential under default KVM. The hit, remaining life, turn trace and
 console return match the pinned original.
 See `build/tothefront-center-production-v1/fire64/result.json`.
+
+The native sprite-input trace records quiet NaNs for x, y and angle
+at the first two human thruster draw sites and the level-one human
+gun sprite. X-Caliber's ShotNew has a pointer return type and falls
+through after queue insertion. Adding an explicit return of the
+allocated shot on the diagnostic image lets the native guest fire,
+return on Escape, and execute fresh arithmetic. The image still
+uses the Sqr substitution.
+
+The pinned original's implicit return is 40 bytes into the queued
+shot. At the tested heading its recoil calculation reads zero while
+the queued mass is nonzero. The explicit return therefore changes
+the recoil operand. A diagnostic that spells out the corresponding
+original field access is running. See
+`build/native-geometry-source-v1/X-Caliber-sprite-coordinate/result.json`,
+`build/native-geometry-source-v1/X-Caliber-shot-return/result.json`
+and `build/xcaliber-reference-v1/original-shot-mass/result.json`.
