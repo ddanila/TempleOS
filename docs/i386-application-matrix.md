@@ -1583,3 +1583,14 @@ alternate application loader is rejected before any visibility
 workflow can be verified. The probe leaves the production app
 sources intact. See
 `build/native-geometry-source-v1/ToTheFront-serial-inline/result.json`.
+
+Loading ToTheFront units individually advances the single-CPU probe
+past the visibility unit. The original `TTFFire.HC` is the next
+rejection, with a compiler exception and zero frontend errors. This
+run verifies compilation of the serial unit, with no runtime
+visibility comparison yet. In a separate guest, the on-demand
+geometry and original lighting chooser let the unmodified GrModels
+loader complete on the production Span image, and the console
+displayed the result of fresh arithmetic. Full model generation
+remains open. See `build/native-geometry-source-v1/ToTheFront-serial-exact`
+and `build/native-geometry-source-v1/GrModels/result.json`.

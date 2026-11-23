@@ -46,10 +46,7 @@ if args.app=='ToTheFront':
   job.lo=0;
   job.hi=map_rows;
   MPVisRecalcMap(&job);""" + visibility[end:]
-        # Keep the loader in the application directory so __DIR__ retains its value.
-        loader = (app/'Load.HC').read_bytes()
-        extras['/Apps/ToTheFront/TTFLoaderProbe.HC'] = loader.replace(
-            b'#include "TTFVis"', visibility)
+        extras['/TTFSerialVis.HC'] = visibility
 if args.app=='X-Caliber':
     extras['/ExtraVectors.HC']=Path('build/xcaliber-vector-load-v1/Vector.HC').read_bytes()
 math=Path('Adam/Gr/GrMath.HC').read_bytes()
@@ -81,8 +78,14 @@ try:
     for path in ('/LightingChooser.HC', '/IntegerPrompt.HC', '/ExtraVectors.HC'):
         if path in extras:
             commands.append(f'#include "C:{path}"')
-    loader = '/Apps/ToTheFront/TTFLoaderProbe.HC' if args.serial_visibility else f'/Apps/{args.app}/Load.HC'
-    commands.append(f'#include "C:{loader}"')
+    if args.serial_visibility:
+        commands.append('Cd("C:/Apps/ToTheFront");')
+        for unit in ('TTFGlbls', 'TTFLib', 'TTFInit', 'TTFVis', 'TTFFire',
+                     'TTFMove', 'TTFDraw', 'ToTheFront'):
+            path = '/TTFSerialVis.HC' if unit == 'TTFVis' else f'/Apps/ToTheFront/{unit}.HC'
+            commands.append(f'#include "C:{path}"')
+    else:
+        commands.append(f'#include "C:/Apps/{args.app}/Load.HC"')
     for command in commands:
         report['command']=command
         guest.command(command)
