@@ -1,0 +1,16 @@
+{
+  "result": "captured",
+  "allocation_request": 1347611099,
+  "breakpoint": "0x01149bb8",
+  "caller_chain": [
+    ["0x01149e5c", "MemoryAlloc"],
+    ["0x011a6fcc", "NativeDocMAlloc"],
+    ["0x012da0ba", "SpriteInterpolate"],
+    ["0x03f2cb2a", "JIT draw callback"],
+    ["0x0162cb5c", "JIT draw callback"],
+    ["0x013434f3", "GrUpdateTaskWinCore"],
+    ["0x013438e0", "GrUpdateTaskWin"],
+    ["0x01345144", "NativeWindowListDraw"]
+  ],
+  "sprite_size_call_argument": "elems0"
+}

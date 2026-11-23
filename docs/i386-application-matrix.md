@@ -2620,3 +2620,10 @@ also scored 1,915, and a
 [cold reboot](../build/titanium-finish-v1/native-eight-reopen/result.json)
 read it back from the registry. Neither run reproduced the oversized
 allocation, so the intermittent render failure remains unresolved.
+
+A [breakpoint capture](../build/titanium-finish-v1/native-heap-trace-2/caller-receipt.json)
+reproduced the oversized allocation and mapped its call stack.
+`SpriteInterpolate` called `NativeDocMAlloc` with the size returned
+by `SpriteSize(elems0)` during a window redraw. The capture localizes
+the bad size to the first interpolation operand. A follow-up run
+will capture both operand addresses and their leading bytes.
