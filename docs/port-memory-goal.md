@@ -2932,3 +2932,11 @@ free block, the full stack would end 2,200 bytes beyond the block.
 Dropping the worst-case alignment allowance alone would therefore
 still leave the projected installed image short. The same calculation
 finds a fitting placement in the measured 64-slot cross image.
+
+The [stack-gap page audit](../build/i386-native-cache-footprint-v2/stack-gap-live-pages.json)
+identifies the upper boundary in the installed WidePi and cross-built
+64-slot captures. The adjoining backing region holds a single live
+16-page public allocation at `0x7A5800` in both images. It contains
+register-name and address-format literals from `Compiler/UAsmCore.HC`,
+which the system loads through `MakeCommandPrompt.HC` during startup.
+The occupied pages cannot be released by trimming cached empty regions.

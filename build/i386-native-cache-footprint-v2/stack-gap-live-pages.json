@@ -1,0 +1,26 @@
+{
+  "build/i386-native-cache-footprint-v2/user8-profile": {
+    "snapshot_sha256": "a507e844b3a35b55281ec4f1f9ef25db5f6839f8d9c93f9394e0cdad95033be9",
+    "gap_end": 8017800,
+    "backing_base": 8017920,
+    "backing_bytes": 8192,
+    "used_pages": 16,
+    "disassembler_literals": [
+      "ST_U8_REX_REGS",
+      "ST_U32_REGS",
+      "%08X[%Z*%d]"
+    ]
+  },
+  "build/i386-wide-pi-production-v3/retained128-user8-profile": {
+    "snapshot_sha256": "aaea904d596ea154d557d50510d60aeb39a5a424d4de29881e1f3bb942ac5ccf",
+    "gap_end": 8017768,
+    "backing_base": 8017920,
+    "backing_bytes": 8192,
+    "used_pages": 16,
+    "disassembler_literals": [
+      "ST_U8_REX_REGS",
+      "ST_U32_REGS",
+      "%08X[%Z*%d]"
+    ]
+  }
+}
