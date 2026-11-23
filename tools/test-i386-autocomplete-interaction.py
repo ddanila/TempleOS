@@ -66,11 +66,11 @@ def has_result_pixels(path):
     return False
 
 class Guest:
-    def __init__(self,image,out,native,ram_mib=64,reference_cpus=2,native_machine='pc',native_options=()):
+    def __init__(self,image,out,native,ram_mib=64,reference_cpus=2,native_machine='pc',native_options=(),native_accel='kvm'):
         if reference_cpus not in (1,2):raise ValueError('Unsupported reference CPU count')
         self.out=out;out.mkdir();self.log=out/'debug.log';self.log.write_text('');self.seen=set()
         common=['-nic','none','-display','none','-no-reboot','-debugcon',f'file:{self.log}','-qmp','stdio']
-        if native:cmd=['qemu-system-i386','-machine',native_machine,'-accel','kvm','-cpu','486,-fpu','-m',str(ram_mib),'-drive',f'file={image},format=raw,if=ide',*native_options]+common
+        if native:cmd=['qemu-system-i386','-machine',native_machine,'-accel',native_accel,'-cpu','486,-fpu','-m',str(ram_mib),'-drive',f'file={image},format=raw,if=ide',*native_options]+common
         else:cmd=['qemu-system-x86_64','-machine','pc','-accel','tcg','-cpu','max','-m','2048','-smp',str(reference_cpus),'-drive',f'file={image},format=raw,media=cdrom,if=ide,index=2','-boot','d']+common
         (out/'command.json').write_text(json.dumps(cmd,indent=2)+'\n')
         self.stderr=(out/'qemu.log').open('w');self.p=subprocess.Popen(cmd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.stderr,text=True,bufsize=1)

@@ -1,0 +1,9 @@
+{
+  "disk_sha256": "39fe58e011e6b9ce78552eaba431159e095c3be8da55dc4c693706c6e7a0db0f",
+  "image_receipt": "build/titanium-bundled-loader-v1/qualification.json",
+  "passed_receipts": {
+    "build/keepaway-titanium-image-v1/shot-space/result.json": "35f223d4c3073d8fa725305d8f4d34e650f414e8192f57a12bc9fd5d8133e5fd",
+    "build/keepaway-titanium-image-v1/shot-mouse/result.json": "49def366434fd49dd073661f15688618361f86c8045b020bf6611d5751bf8613",
+    "build/vocabulary-titanium-image-v1/native-recheck/result.json": "4cc4fc8b2bfbe1e133452b11844abcf9543140c0ed63ccaba00d55da4f7ca3a6"
+  }
+}

@@ -10521,6 +10521,12 @@
           "result": "pass",
           "evidence": "build/keepaway-score-v1/scoring-receipt.json",
           "scope": "Both systems award 2 points for a handoff and 6 for a recent pass under controlled ball placement. The following native Space-key shot does not complete."
+        },
+        {
+          "target": "native-keepaway-real-shot-default-kvm",
+          "result": "pass",
+          "evidence": "build/keepaway-titanium-image-v1/qualification.json",
+          "scope": "Cold loader, controlled scoring, Space and mouse shot animation, flight and caller return with sound enabled."
         }
       ]
     },
@@ -10574,6 +10580,12 @@
           "result": "pass",
           "evidence": "build/keepaway-libraries-lazy-v1/native64/result.json",
           "scope": "First launch from a cold 64 MiB boot resolves libraries within Load.HC. Arena, jump, restart, exit and fresh arithmetic pass."
+        },
+        {
+          "target": "native-keepaway-real-shot-default-kvm",
+          "result": "pass",
+          "evidence": "build/keepaway-titanium-image-v1/qualification.json",
+          "scope": "Cold loader, controlled scoring, Space and mouse shot animation, flight and caller return with sound enabled."
         }
       ]
     },
@@ -12481,6 +12493,12 @@
           "result": "pass",
           "evidence": "build/vocabulary-lazy-init-v1/native64/result.json",
           "scope": "Cold native quiz initializes the bundled dictionary on demand. Physical answer and definition open pass. A click restores focus before exit."
+        },
+        {
+          "target": "native-vocabulary-popup-focus-recheck",
+          "result": "pass",
+          "evidence": "build/vocabulary-titanium-image-v1/native-recheck/result.json",
+          "scope": "Definition opens, quiz focus returns after Escape, and keyboard-only exit reaches fresh arithmetic."
         }
       ]
     },
@@ -12558,6 +12576,12 @@
           "result": "pass",
           "evidence": "build/native-focus-menu-psalmody-production-v1/vocabulary64/result.json",
           "scope": "Cold launch initializes the bundled dictionary. The definition popup retires and restores quiz focus. Escape returns without a mouse click."
+        },
+        {
+          "target": "native-vocabulary-popup-focus-recheck",
+          "result": "pass",
+          "evidence": "build/vocabulary-titanium-image-v1/native-recheck/result.json",
+          "scope": "Definition opens, quiz focus returns after Escape, and keyboard-only exit reaches fresh arithmetic."
         }
       ]
     },

@@ -2583,3 +2583,19 @@ also passed. The
 [qualification receipt](../build/titanium-bundled-loader-v1/qualification.json)
 records the image, packaged source hashes and render checks. Scoring,
 finish and high-score persistence remain open.
+
+### KeepAway and Vocabulary on the Titanium image
+
+KeepAway loads its prerequisites from the packaged loader. The unchanged
+scoring fixture staged the ball and observed the original handoff and pass
+scores of 2 and 8. Space and left-button input each advanced the shot
+animation, cleared the active flag and changed the flight deadline. Both
+runs used default KVM with sound enabled and returned to fresh arithmetic.
+The controlled scoring setup leaves random match progression and
+high-score persistence open.
+
+The same image passed the Vocabulary answer and definition workflow.
+Focus moved to the definition popup and returned to the quiz owner after
+dismissal. Escape exited the second question and fresh arithmetic rendered.
+The [regression receipt](../build/keepaway-titanium-image-v1/qualification.json)
+pins the input image and the three guest results.

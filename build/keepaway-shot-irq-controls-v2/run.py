@@ -49,19 +49,12 @@ try:
         image = out/'original.iso'
         subprocess.run(['python3', 'tools/build-iso.py', '--overlay', str(overlay),
                         '--output', str(image)], check=True)
-    guest_source = guest_runner.read_text()
-    needle = "'-accel','kvm','-cpu','486,-fpu'"
-    assert guest_source.count(needle) == 1
-    guest_source = guest_source.replace(needle, f"'-accel','{args.accel}','-cpu','486,-fpu'")
+    Guest = runpy.run_path(str(guest_runner))['Guest']
+    machine = 'pc'
     if args.accel == 'kvm':
-        machine = "'-machine','pc','-accel','kvm'"
-        assert guest_source.count(machine)==1
-        guest_source = guest_source.replace(machine,
-            f"'-machine','pc,kernel_irqchip={args.irqchip}','-accel','kvm'")
-    namespace = {'__file__': str(guest_runner.resolve()), '__name__':'keepaway_guest'}
-    exec(compile(guest_source, str(guest_runner), 'exec'), namespace)
-    Guest = namespace['Guest']
-    guest = Guest(image, out/'guest', bool(args.disk))
+        machine += f',kernel_irqchip={args.irqchip}'
+    guest = Guest(image, out/'guest', bool(args.disk),
+                  native_machine=machine, native_accel=args.accel)
     if args.disk:
         guest.wait('DONE native kernel startup\n', 420)
         for command in (
