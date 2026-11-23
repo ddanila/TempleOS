@@ -1,0 +1,38 @@
+{
+  "cross": {
+    "snapshot_sha256": "942f399aab3cf1477d9681648ba2b0b188bf458ef3b5db154973bf9fa50e0577",
+    "largest_free": 288600,
+    "first_address": 7729152,
+    "upper_backing_regions": [
+      {
+        "address": 8017768,
+        "base": 8017920,
+        "capacity": 8192,
+        "used": 8192,
+        "request": 8328,
+        "span": 8344,
+        "held": false
+      }
+    ],
+    "pool_quantum": 8192,
+    "empty_unheld_regions": 0
+  },
+  "installed": {
+    "snapshot_sha256": "7c2227895450a0ea2826595acd9f51619b813f1c88619b327c4786e9ca87260a",
+    "largest_free": 259928,
+    "first_address": 7757824,
+    "upper_backing_regions": [
+      {
+        "address": 8017768,
+        "base": 8017920,
+        "capacity": 8192,
+        "used": 8192,
+        "request": 8328,
+        "span": 8344,
+        "held": false
+      }
+    ],
+    "pool_quantum": 8192,
+    "empty_unheld_regions": 0
+  }
+}

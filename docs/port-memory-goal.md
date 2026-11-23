@@ -2816,3 +2816,10 @@ checkout. An audit against the preceding commit rejected the changed
 console bytes. The two-generation runner is using the audited archive
 and the verified installation for its first generation. Its terminal
 result and the installed User child startup gate remain open.
+
+The [free-block boundary audit](../build/i386-console-null-slots-v1/spawn-gap-neighbors.json)
+follows the captured allocator's owned-region links. The largest gap ends
+at the same fully occupied 8 KiB public backing region in both images,
+while its lower boundary moves 28,672 bytes upward with the installed
+modules. Neither capture has an empty unheld backing region. Normal
+backing trim therefore has no empty region to release at this point.
