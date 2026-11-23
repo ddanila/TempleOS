@@ -336,3 +336,12 @@ The module cross-build and image audit pass, and native startup completes at
 8 MiB. USCheck still fails the 267,527-byte task request. The fallback's
 largest free payload increases from 2,840 to 3,496 bytes. The unapplied
 experiment and pinned receipts are under `build/compiler-backing-aligned-v1`.
+
+Separating the task record from its stack would still leave the 262,144-byte
+stack larger than any free block in the captured high-placement arenas. If
+the two live backing batches had been placed outside the gap, the joined
+span would offer 325,112 bytes of payload. A separate 36,248-byte free span
+can hold both batches with worst-case padding in this snapshot. Its
+availability when the batches were originally allocated remains unverified.
+The existing backing pages remain live at fixed addresses. The calculation
+is pinned in `build/preload-heap-comparison/high_v2/task-placement-feasibility.json`.

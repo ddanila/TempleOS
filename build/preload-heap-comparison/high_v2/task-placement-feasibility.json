@@ -1,0 +1,13 @@
+{
+  "backing_audit_sha256": "04c70b5f91ef3fad6dd6aa09124e8a291fb7c88a476ac3b78835d48c3cd3d72d",
+  "stack_bytes": 262144,
+  "task_request": 267527,
+  "merged_payload": 325112,
+  "alternative_free_block": {
+    "address": 8092672,
+    "span": 36248,
+    "requested": 0,
+    "free": true
+  },
+  "two_worst_case_backing_spans": 17552
+}
