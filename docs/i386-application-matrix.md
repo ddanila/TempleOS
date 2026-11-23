@@ -1018,3 +1018,21 @@ the original across 3,795 pixels. Both sessions return to their caller, and
 the native session renders fresh arithmetic. The native test explicitly
 loads autocomplete and TaskSettings before launching Logic. See
 `build/logic-interaction-return-v1` for the input and raster receipts.
+
+Logic's bundled loader now uses the same guarded autocomplete and task-settings
+order as KeepAway. The original and cold native runs pass the physical AND
+workflow through Load.HC without preparatory library commands. All 3,795
+circuit pixels match the original region, and fresh arithmetic renders.
+See `build/logic-lazy-load-v1` for the receipts.
+
+Host-side memory sampling confirms that the native shot flags remain set
+while the frame deadline stays fixed across 16 samples. The original advances
+its frame deadline and completes the flight update. The native game still
+accepts Escape and returns to the prompt. This localizes the remaining gap to
+post-input animation for the tested state. See
+`build/keepaway-shot-host-observer-v1`.
+
+The host sample repeats the native frame stall with both test-side animation
+task suspension calls removed. The native shot flags stay set, and all 16
+samples report the same frame deadline and original flight deadline. See
+`build/keepaway-shot-no-suspend-v1/native64/result.json`.

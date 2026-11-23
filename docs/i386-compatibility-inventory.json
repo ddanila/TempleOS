@@ -10499,7 +10499,7 @@
         "Logic"
       ],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
+      "source_at_discovery": "modified",
       "compatibility": "unqualified",
       "reference_workflow": "Load the unchanged Logic application sources using its original Load.HC entry point; full interactive application workflow remains to be captured.",
       "oracle": "docs/i386-application-matrix.md: native loader currently rejects SettingsPush at Logic.HC line 569; this is not a reference launch or gameplay oracle.",
@@ -10510,6 +10510,12 @@
           "result": "fail",
           "evidence": "build/i386-app-logic-current-v1/result.json",
           "scope": "Verified original source bytes and unchanged input; compile rejection precedes application execution"
+        },
+        {
+          "target": "native-logic-on-demand-library-loading",
+          "result": "pass",
+          "evidence": "build/logic-lazy-load-v1/native64/result.json",
+          "scope": "Cold 64 MiB native launch from bundled Load.HC, no setup library commands. Physical AND synthesis and caller recovery pass."
         }
       ]
     },

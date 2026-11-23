@@ -1,0 +1,257 @@
+{
+  "files": [
+    {
+      "original": "build/default-home-production-build-v1/kernel-assembly.txt",
+      "archive": "build/default-home-production-build-v1/kernel-assembly.txt.zst",
+      "sha256": "8404ebedc88e92fbcdb03abd193914697345104bf0b35803cc4f1c3e8aa85b62",
+      "size": 108720841,
+      "reclaimed_bytes": 100114432,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/default-home-production-build-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/default-home-production-build-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-default-home-cross-v1/kernel-assembly.txt",
+      "archive": "build/i386-default-home-cross-v1/kernel-assembly.txt.zst",
+      "sha256": "8404ebedc88e92fbcdb03abd193914697345104bf0b35803cc4f1c3e8aa85b62",
+      "size": 108720841,
+      "reclaimed_bytes": 100114432,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-default-home-cross-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-default-home-cross-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/desktop-normal-boot-instruction-v1/kernel-assembly.txt",
+      "archive": "build/desktop-normal-boot-instruction-v1/kernel-assembly.txt.zst",
+      "sha256": "b5c871103f48f503863afb55d26c874592de02325d05bbcbda3172f0a5d4c16a",
+      "size": 108902943,
+      "reclaimed_bytes": 100274176,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/desktop-normal-boot-instruction-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/desktop-normal-boot-instruction-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-desktop-handoff-cross-v2/kernel-assembly.txt",
+      "archive": "build/i386-desktop-handoff-cross-v2/kernel-assembly.txt.zst",
+      "sha256": "dc6fb1b9143f9d1a22d26fd2eba9643d7977703aabb12f7e766e828b62d17f2f",
+      "size": 108720841,
+      "reclaimed_bytes": 100110336,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-desktop-handoff-cross-v2/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-desktop-handoff-cross-v2/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/default-home-parser-budget-instruction-v1/kernel-assembly.txt",
+      "archive": "build/default-home-parser-budget-instruction-v1/kernel-assembly.txt.zst",
+      "sha256": "c6918537f4538fc226a9fac597163d54ea048f52845798fec9db186006cad8a1",
+      "size": 108871793,
+      "reclaimed_bytes": 100249600,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/default-home-parser-budget-instruction-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/default-home-parser-budget-instruction-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/default-home-production-build-v2/kernel-assembly.txt",
+      "archive": "build/default-home-production-build-v2/kernel-assembly.txt.zst",
+      "sha256": "c6918537f4538fc226a9fac597163d54ea048f52845798fec9db186006cad8a1",
+      "size": 108871793,
+      "reclaimed_bytes": 100249600,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/default-home-production-build-v2/kernel-assembly.txt.zst",
+        "-o",
+        "build/default-home-production-build-v2/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-default-home-cross-v2/kernel-assembly.txt",
+      "archive": "build/i386-default-home-cross-v2/kernel-assembly.txt.zst",
+      "sha256": "c6918537f4538fc226a9fac597163d54ea048f52845798fec9db186006cad8a1",
+      "size": 108871793,
+      "reclaimed_bytes": 100245504,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-default-home-cross-v2/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-default-home-cross-v2/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/parser-selector-production-build-v1/kernel-assembly.txt",
+      "archive": "build/parser-selector-production-build-v1/kernel-assembly.txt.zst",
+      "sha256": "ac5e67a9878d36bf451eabd31e0a6f1794ed0fe6da959fc30ecd5815bcc3a505",
+      "size": 108864132,
+      "reclaimed_bytes": 100241408,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/parser-selector-production-build-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/parser-selector-production-build-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/desktop-handoff-production-build-audit-v1/kernel-assembly.txt",
+      "archive": "build/desktop-handoff-production-build-audit-v1/kernel-assembly.txt.zst",
+      "sha256": "dc6fb1b9143f9d1a22d26fd2eba9643d7977703aabb12f7e766e828b62d17f2f",
+      "size": 108720841,
+      "reclaimed_bytes": 100114432,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/desktop-handoff-production-build-audit-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/desktop-handoff-production-build-audit-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-parser-selector-cross-v1/kernel-assembly.txt",
+      "archive": "build/i386-parser-selector-cross-v1/kernel-assembly.txt.zst",
+      "sha256": "ac5e67a9878d36bf451eabd31e0a6f1794ed0fe6da959fc30ecd5815bcc3a505",
+      "size": 108864132,
+      "reclaimed_bytes": 100241408,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-parser-selector-cross-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-parser-selector-cross-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/parser-record-select-build-v1/kernel-assembly.txt",
+      "archive": "build/parser-record-select-build-v1/kernel-assembly.txt.zst",
+      "sha256": "36d823d5ee5d8af5eca0e3a29ec111e70e0ff56159653db278ae86fcd26065fd",
+      "size": 108864742,
+      "reclaimed_bytes": 100237312,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/parser-record-select-build-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/parser-record-select-build-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-parser-record-select-cross-v1/kernel-assembly.txt",
+      "archive": "build/i386-parser-record-select-cross-v1/kernel-assembly.txt.zst",
+      "sha256": "36d823d5ee5d8af5eca0e3a29ec111e70e0ff56159653db278ae86fcd26065fd",
+      "size": 108864742,
+      "reclaimed_bytes": 100241408,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-parser-record-select-cross-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-parser-record-select-cross-v1/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/code-header-known-build-v2/kernel-assembly.txt",
+      "archive": "build/code-header-known-build-v2/kernel-assembly.txt.zst",
+      "sha256": "2783d7a80a92d37b3cb5cf1b0b58099b3251759d1b4f50e29ee73347b449be37",
+      "size": 108979894,
+      "reclaimed_bytes": 100339712,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/code-header-known-build-v2/kernel-assembly.txt.zst",
+        "-o",
+        "build/code-header-known-build-v2/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-code-header-known-cross-v2/kernel-assembly.txt",
+      "archive": "build/i386-code-header-known-cross-v2/kernel-assembly.txt.zst",
+      "sha256": "2783d7a80a92d37b3cb5cf1b0b58099b3251759d1b4f50e29ee73347b449be37",
+      "size": 108979894,
+      "reclaimed_bytes": 100339712,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-code-header-known-cross-v2/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-code-header-known-cross-v2/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/code-header-known-build-v4/kernel-assembly.txt",
+      "archive": "build/code-header-known-build-v4/kernel-assembly.txt.zst",
+      "sha256": "1a6a3dcb63eb2658daa81e1c45e7886e12cc789f78de80586d69a1d7a09be89d",
+      "size": 108984653,
+      "reclaimed_bytes": 100352000,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/code-header-known-build-v4/kernel-assembly.txt.zst",
+        "-o",
+        "build/code-header-known-build-v4/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-code-header-known-cross-v4/kernel-assembly.txt",
+      "archive": "build/i386-code-header-known-cross-v4/kernel-assembly.txt.zst",
+      "sha256": "1a6a3dcb63eb2658daa81e1c45e7886e12cc789f78de80586d69a1d7a09be89d",
+      "size": 108984653,
+      "reclaimed_bytes": 100347904,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-code-header-known-cross-v4/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-code-header-known-cross-v4/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-system-build-date-cross-v3/kernel-assembly.txt",
+      "archive": "build/i386-system-build-date-cross-v3/kernel-assembly.txt.zst",
+      "sha256": "e474e98d084487040e3d681474643dfbb98fa8a8c818d1dfb0053018a6851353",
+      "size": 108674351,
+      "reclaimed_bytes": 100069376,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-system-build-date-cross-v3/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-system-build-date-cross-v3/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-module-zero-cross-v1/kernel-assembly.txt",
+      "archive": "build/i386-module-zero-cross-v1/kernel-assembly.txt.zst",
+      "sha256": "a5cc80423e698b2a640b49ffe82250cdc85011e9943254964f3f861fbea6a4d3",
+      "size": 108685804,
+      "reclaimed_bytes": 100077568,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-module-zero-cross-v1/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-module-zero-cross-v1/kernel-assembly.txt"
+      ]
+    }
+  ],
+  "reclaimed_bytes": 1803960320
+}

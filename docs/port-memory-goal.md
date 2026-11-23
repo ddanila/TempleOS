@@ -2733,3 +2733,9 @@ audit. The 466,936-byte kernel passes both exact interactive raster checks.
 The boot took 60.55 seconds, above the 60-second budget for this image.
 Generation two has started rebuilding its retained modules. Stage hashes
 are in `build/i386-graphics-registry-integration/generations128/gen1-receipt.json`.
+
+The installed generation-one image also passes the configured 64 MiB desktop
+session in 207.22 seconds. Home Once runs through normal boot, all 83 geometry
+values match the original, and the bootstrap task retires with its containing
+heap block free. Fresh arithmetic renders. See
+`build/i386-graphics-registry-integration/generations128/gen1-desktop64/result.json`.

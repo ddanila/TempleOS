@@ -1,0 +1,7 @@
+{
+  "result": "pass",
+  "image_sha256": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c",
+  "inventory_files_matched": 686,
+  "logic_loader_sha256": "4e1490e31158ef807bdee6837edb7edf93a0e3c277077bc7156e9e3cb6f63964",
+  "boot_instruction_audit": "pass"
+}

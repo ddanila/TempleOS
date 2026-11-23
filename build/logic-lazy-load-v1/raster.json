@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "box": [
+    40,
+    32,
+    155,
+    65
+  ],
+  "pixels": 3795,
+  "rgb_sha256": "ab642e51ed457fbd6fba3b40f5184c185802fda889ea0d81624ce1b5303e7800",
+  "screenshots": {
+    "build/logic-lazy-load-v1/original/guest/and-design.png": "8b2373e87dfba5255b36c3023ee09811db2be47670ee7bd5023e61a0d6fa77fa",
+    "build/logic-lazy-load-v1/native64/guest/and-design.png": "77897de762f5197090f68706e78c8e631275147cd2bcf1497363127876f94dcd"
+  }
+}
