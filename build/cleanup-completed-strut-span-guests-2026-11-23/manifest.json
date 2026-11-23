@@ -4773,7 +4773,63 @@
         "-o",
         "build/i386-power-wide-reference-v1/native-wide-reconstruction-array/working.img"
       ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/native-wide-edges/working.img",
+      "archive": "build/i386-power-wide-reference-v1/native-wide-edges/working.img.zst",
+      "sha256": "827efeb7a57b422395b070eb19ff464501c2f4369488b3fb3609313edd11622d",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/native-wide-edges/working.img.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/native-wide-edges/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/original-specials/original.iso",
+      "archive": "build/i386-power-wide-reference-v1/original-specials/original.iso.zst",
+      "sha256": "d58ef462c2b708e7f41e1b62ac341732f6625e67c43e205ed2b1eca5d63d30fb",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/original-specials/original.iso.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/original-specials/original.iso"
+      ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/native-specials/working.img",
+      "archive": "build/i386-power-wide-reference-v1/native-specials/working.img.zst",
+      "sha256": "05b5b400d635427b2bbf9eba0828159827af8fbd943edcb6eb53850d7330672a",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/native-specials/working.img.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/native-specials/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-wide-reference-v1/native-specials-explicit/working.img",
+      "archive": "build/i386-power-wide-reference-v1/native-specials-explicit/working.img.zst",
+      "sha256": "4b887b7cd4ad0728af47143c9cb79bc514dce896ea5f27fc68294a3a44055fd9",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-wide-reference-v1/native-specials-explicit/working.img.zst",
+        "-o",
+        "build/i386-power-wide-reference-v1/native-specials-explicit/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 17004752896
+  "reclaimed_bytes": 17198202880
 }

@@ -2236,7 +2236,11 @@ The artifacts match under the declared eight-byte Kernel date exception,
 and each real boot image passes its payload and checksum audit. Both
 preserve all 686 bundled files and pass the 64 MiB physical Span check.
 Both still fail the unchanged 8 MiB User task allocation. The current
-ToTheFront production image's retained rebuild is running separately.
+The ToTheFront production image rebuilt nine retained modules in the
+128 MiB no-FPU guest. The persisted export audit passed, and the guest
+returned to the desktop command prompt with one build-provider load.
+See `build/tothefront-center-production-v1/retained128/result.json`.
+The subsequent install and 8 MiB boot check are tracked separately.
 See `build/sound-delay-production-v1/generations128/checkpoint.json`.
 
 X-Caliber reproduces the post-shot Refresh stall with both QEMU IRQ-chip
@@ -2324,3 +2328,15 @@ the same no-FPU i386 guest. This probe covers positive finite bases.
 Signed and exceptional operands, compiler lowering, and the normal
 X-Caliber load path still need integration and verification. See
 `build/i386-power-wide-reference-v1/native-wide-reconstruction-array/result.json`.
+
+
+The end-to-end wide power helper matches 32 additional original
+signed and exceptional results on the no-FPU i386 guest. The fixture
+covers signed zeros, infinities, quiet and signaling NaNs, signed
+overflow and underflow, binary64 extremes, and exponents just outside
+the signed integer conversion range. The probe compares the exact
+returned bits, including the sign of zero and NaN payloads. See
+`build/i386-power-wide-reference-v1/original-specials/result.json`
+and `build/i386-power-wide-reference-v1/native-specials-explicit/result.json`.
+The diagnostic calls the helper directly. Compiler lowering and normal
+application loading remain open.

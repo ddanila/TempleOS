@@ -24,25 +24,63 @@ EXPECTED_EDGES = [
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--wide-reduction', action='store_true')
+parser.add_argument('--wide-power', action='store_true')
 parser.add_argument('--replay-reduction', type=Path)
 parser.add_argument('--trace-reduction', action='store_true')
-parser.add_argument('--edges', action='store_true')
+corpus = parser.add_mutually_exclusive_group()
+corpus.add_argument('--edges', action='store_true')
+corpus.add_argument('--specials', action='store_true')
+parser.add_argument('--reference', type=Path)
 parser.add_argument('--reduction-candidate', action='store_true')
 parser.add_argument('--disk', type=Path)
 parser.add_argument('--out', required=True, type=Path)
 args = parser.parse_args()
+if args.wide_power and (not args.disk or args.reduction_candidate or args.replay_reduction):
+    parser.error('--wide-power requires --disk and runs its own candidate')
 if args.wide_reduction and not args.reduction_candidate:
     parser.error('--wide-reduction requires --reduction-candidate')
-if args.replay_reduction and (not args.reduction_candidate or args.edges):
+if args.reference and (not args.disk or not args.specials):
+    parser.error('--reference requires --disk and --specials')
+if args.specials and args.disk and not args.reference:
+    parser.error('Native --specials requires the original --reference receipt')
+if args.replay_reduction and (not args.reduction_candidate or args.edges or args.specials):
     parser.error('--replay-reduction requires the four-case native candidate')
-if args.trace_reduction and (args.disk or args.edges):
+if args.trace_reduction and (args.disk or args.edges or args.specials):
     parser.error('--trace-reduction requires the four-case original workflow')
 if args.reduction_candidate and not args.disk:
     parser.error('--reduction-candidate requires --disk')
+name = 'Probe.HC'
+if args.edges:
+    name = 'Edges.HC'
+if args.specials:
+    name = 'Specials.HC'
+probe = Path(__file__).with_name(name).read_bytes()
+reference_probe = probe
+reference_fixture_sha256 = hashlib.sha256(reference_probe).hexdigest()
+expected = EXPECTED_EDGES if args.edges else EXPECTED
+count = len(expected)
+if args.specials:
+    expected = None
+    count = reference_probe.count(b'=PowerDynamic(')
+reference_sha256 = None
+if args.reference:
+    reference_bytes = args.reference.read_bytes()
+    reference = json.loads(reference_bytes)
+    if (reference['result'] != 'pass' or
+            reference['reference_fixture_sha256'] != reference_fixture_sha256 or
+            len(reference['values']) != count or
+            any(not re.fullmatch(r'[0-9A-F]{16}', value) for value in reference['values'])):
+        raise ValueError('Wrong original specials source')
+    expected = reference['values']
+    reference_sha256 = hashlib.sha256(reference_bytes).hexdigest()
 out = args.out.resolve()
 out.mkdir()
-probe = Path(__file__).with_name('Edges.HC' if args.edges else 'Probe.HC').read_bytes()
-reference_probe = probe
+if args.wide_power:
+    candidate = Path('build/i386-power-wide-reference-v1')
+    parts = [(candidate / name).read_bytes() for name in ('Fixed.HC', 'Reconstruct.HC', 'Power.HC')]
+    parts.append(probe.replace(b'base`2;', b'PowerWide(base,2);').replace(
+        b'base`exponent;', b'PowerWide(base,exponent);'))
+    probe = b'\n'.join(parts)
 if args.reduction_candidate:
     core = Path('Kernel/I386/FloatExp.HC').read_bytes()
     reduced = core[:core.index(b'\nF64 Exp(')]
@@ -85,9 +123,11 @@ else:
 guest_type = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Guest']
 guest = guest_type(image, out / 'guest', bool(args.disk))
 report = {'result': 'fail',
-          'reference_fixture_sha256': hashlib.sha256(reference_probe).hexdigest(),
+          'reference_fixture_sha256': reference_fixture_sha256,
           'fixture_sha256': hashlib.sha256(probe).hexdigest(),
           'input_sha256': hashlib.sha256((args.disk or image).read_bytes()).hexdigest()}
+if reference_sha256:
+    report['reference_sha256'] = reference_sha256
 try:
     if args.disk:
         guest.wait('DONE native kernel startup\n')
@@ -99,11 +139,9 @@ try:
     report['values'] = values[1].split()
     if args.reduction_candidate and not args.replay_reduction:
         report['native_reduced'] = re.findall(r'^POWER native-reduced ([0-9A-F]{16})$', log, re.M)
-    expected = EXPECTED_EDGES if args.edges else EXPECTED
-    count = len(expected)
     if len(report['values']) != count or any(len(value) != 16 for value in report['values']):
         raise ValueError('Incomplete power results')
-    if report['values'] != expected:
+    if expected is not None and report['values'] != expected:
         raise ValueError('Power values differ from the pinned original')
     if args.trace_reduction:
         reduced = re.search(r'^POWER reduced ([0-9A-F ]+)$', log, re.M)
