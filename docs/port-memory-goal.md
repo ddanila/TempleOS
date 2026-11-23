@@ -2630,3 +2630,20 @@ with a regression first. Preserve page/batch rounding, alignment, ownership,
 reserve retention and safe trim order. Evidence: the two
 `build/i386-string-padding-*-compiler*-probe/result.json` files and
 `build/i386-string-padding-selfhost-memory-comparison.json`.
+
+### C1–C5 progress checkpoint (2026-11-23)
+
+- The production resident-optimizer image passed the 8 MiB User smoke test
+  in 50.19 seconds. The original User loop still exceeds the 8 MiB budget.
+- The unchanged Budget template and TimeClock report workflows have focused
+  native receipts, including cold reopen. Psalmody runs on the SwapI64 and
+  registry popup overlays. Its keyboard oracle still fails exact note duration.
+  See the [application matrix](i386-application-matrix.md) for receipts and gaps.
+- C5 verified all nine retained native modules and their first native
+  installation, including an 8 MiB boot of the installed image. At this
+  checkpoint the rebuild was in `gen1-selfhost`. The run status is recorded in
+  `build/resident-opt-c5-generations128/result.json`.
+
+Individual qualification remains at 2 of 686. The full desktop and application
+suite, original 8 MiB User startup, and two native rebuild generations remain
+open.
