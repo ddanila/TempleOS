@@ -1,0 +1,36 @@
+{
+  "result": "pass",
+  "source_sha256": "1fd1c1b93a04069a4300aa18caf2637aa23c2f804ac5c897fc849618735dfa9b",
+  "image_sha256": "b394dd155571d646ea8516c249b924560624126fd5d030e7022676c3d6d2f4dc",
+  "boot_area_sha256": "750bddaf6f6c18c23866a7bccf217fa8ddb7f82ff37778ff16ec940b8a83163f",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1904,
+    "owned_sectors": 96163,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1909,
+    "owned_sectors": 96223,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {
+    "/Kernel/I386/NativeODE.HC": "465515e32d759e2f3f02257530c573dc9d7f76f7dc6be0b06d3d391ecd0ec894",
+    "/Kernel/I386/ODEScalar.HC": "5a92e2107e61cb05b835600d8d8f2ca423bbc53fa6af1799cfffc764b48673d6",
+    "/Kernel/I386/ODESerial.HC": "d626c788f99b385953a8d35d1823419b3113fef4ec228fd82b8d8a0ada679f21",
+    "/Kernel/I386/ODETypes.HH": "2181b682f44dec99aed91e92022e30cb07efe28d7cd9554bf12f3e380f50b543",
+    "/Kernel/I386/WindowODE.HC": "ce6bb0c437e3c1b7adca84c7edb89af7b94171b61d9ebf4a3c8f4c819c056196"
+  },
+  "added_attributes": {
+    "/Kernel/I386/NativeODE.HC": 2048,
+    "/Kernel/I386/ODEScalar.HC": 2048,
+    "/Kernel/I386/ODESerial.HC": 2048,
+    "/Kernel/I386/ODETypes.HH": 2048,
+    "/Kernel/I386/WindowODE.HC": 2048
+  },
+  "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification",
+  "candidate_sha256": "b394dd155571d646ea8516c249b924560624126fd5d030e7022676c3d6d2f4dc",
+  "instruction_audit": "pass"
+}

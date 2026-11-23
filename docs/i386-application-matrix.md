@@ -1369,3 +1369,19 @@ focus of the startup investigation. A smaller candidate reuses the
 window manager's existing guarded task traversal for the update pass.
 See `build/native-focus-menu-psalmody-production-v1/user8-recheck/result.json`
 and `build/native-ode-task-birth-v1/user8-kvm/result.json`.
+
+A Console-only swap on the previous production kernel reproduces the
+8 MiB failure. The next candidate shares the existing guarded task
+traversal between geometry and ODE updates. Its Console module occupies
+2,472 bytes more resident memory than production, down from 4,360 bytes
+for the separate traversal. The 8 MiB KVM User fixture passes, including
+the full startup mask and fresh arithmetic. The matching cold Strut
+test is running. See
+`build/native-ode-on-demand-v1/console-only-user8/result.json` and
+`build/native-ode-shared-traversal-v1/user8-kvm/result.json`.
+
+Eight functions from the original SpanMain.HC compile in source order.
+The ninth, DrawSpring, throws the compiler exception. It switches
+between the three spring materials before rendering a line. A follow-up
+probe checks whether a default branch changes the diagnostic. See
+`build/span-main-units-v1/native64/result.json`.

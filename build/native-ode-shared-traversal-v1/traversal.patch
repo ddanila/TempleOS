@@ -1,0 +1,83 @@
+--- a/Kernel/I386/WindowList.HC
++++ b/Kernel/I386/WindowList.HC
+@@ -18,7 +18,7 @@
+   } while(task!=anchor);
+   return NULL;
+ }
+-U0 NativeWindowDerived()
++U0 NativeWindowDerived(Bool update_ode=FALSE)
+ {//Original predecessor order, including hidden/covered tasks and manager last.
+   CNativeWindowListScope scope;
+   CTask *task,*anchor=sys_winmgr_task;
+@@ -36,14 +36,17 @@
+     for(i=0;i<count;i++) {
+       numbers[i]=task->task_num;task=task->last_task;
+     }
++    if(update_ode)winmgr.ode_time=0;
+     for(i=0;i<count;i++) {
+       task=NativeWindowFind(numbers[i]);
+       if(task && !NativeRenderOwnerClosing(task)) {
+         native_window_fault_task=task->task_num;
+-        TaskDerivedValsUpdate(task,FALSE);
++        if(!update_ode)TaskDerivedValsUpdate(task,FALSE);
++        else if(task->next_ode!=&task->next_ode)NativeWindowUpdateOneODE(task);
+         native_window_fault_task=0;
+       }
+     }
++    if(update_ode)winmgr.last_ode_time=winmgr.ode_time;
+     NativeWindowListRelease(&scope);
+   } catch {
+     NativeWindowListRelease(&scope);
+@@ -94,41 +97,3 @@
+ {//Explicit full-ring component; normal-boot scheduling is integrated separately.
+   return NativeGraphicsPresent(&NativeWindowListDraw,blink);
+ }
+-
+-U0 NativeWindowUpdateODEs();
+-U0 NativeWindowUpdateODEs()
+-{//Snapshot eligible task identities before calling any derivative.
+-  CNativeWindowListScope scope;
+-  CTask *task,*anchor=sys_winmgr_task;
+-  I64 *numbers=NULL,count=0,i=0;
+-  scope.numbers=&numbers;
+-  try {
+-    NativeRenderScopeOpen(&scope,&NativeWindowListRelease);
+-    task=anchor;
+-    do {
+-      if(!TaskValidate(task))throw('WinList',TRUE);
+-      if(task->next_ode && task->next_ode!=&task->next_ode)count++;
+-      task=task->next_task;
+-    } while(task!=anchor);
+-    winmgr.ode_time=0;
+-    if(count) {
+-      numbers=MAlloc(count*sizeof(I64));
+-      task=anchor;
+-      do {
+-        if(task->next_ode && task->next_ode!=&task->next_ode)
+-          numbers[i++]=task->task_num;
+-        task=task->next_task;
+-      } while(task!=anchor);
+-      for(i=0;i<count;i++) {
+-        task=NativeWindowFind(numbers[i]);
+-        if(task && !NativeRenderOwnerClosing(task))NativeWindowUpdateOneODE(task);
+-      }
+-    }
+-    winmgr.last_ode_time=winmgr.ode_time;
+-    NativeWindowListRelease(&scope);
+-  } catch {
+-    NativeWindowListRelease(&scope);
+-    NativeRenderScopeClose(&scope);
+-  }
+-  NativeRenderScopeClose(&scope);
+-}
+--- a/Kernel/I386/WindowManager.HC
++++ b/Kernel/I386/WindowManager.HC
+@@ -137,7 +137,7 @@
+         if(completed) {
+           WinMgrRefreshTime(&winmgr,tS);winmgr.updates++;
+         }
+-        if(native_ode_update)NativeWindowUpdateODEs;
++        if(native_ode_update)NativeWindowDerived(TRUE);
+       }
+     } catch {
+       ch=Fs->except_ch;number=native_window_fault_task;

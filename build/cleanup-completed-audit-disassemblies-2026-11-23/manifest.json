@@ -1,0 +1,313 @@
+{
+  "files": [
+    {
+      "original": "build/native-strut-entry-v1/combined/kernel-assembly.txt",
+      "archive": "build/native-strut-entry-v1/combined/kernel-assembly.txt.zst",
+      "sha256": "a4f7b7b9cfb41f1a8ca24a3cdedac5dd7c6638fd4c60e4b09d74aae56820e32b",
+      "size": 110758380,
+      "reclaimed_bytes": 101994496,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-strut-entry-v1/combined/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-strut-entry-v1/combined/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/native-window-ode-v1/combined/kernel-assembly.txt",
+      "archive": "build/native-window-ode-v1/combined/kernel-assembly.txt.zst",
+      "sha256": "4f234282832ae6463fd885086b1bda068224dc39e4ea5a90d6e864caa0a732d5",
+      "size": 110750470,
+      "reclaimed_bytes": 101986304,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-window-ode-v1/combined/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-window-ode-v1/combined/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/native-ode-on-demand-v1/combined/kernel-assembly.txt",
+      "archive": "build/native-ode-on-demand-v1/combined/kernel-assembly.txt.zst",
+      "sha256": "dec75d282ed0381ff0a2fec1d9391b67251e151dc64565531f8fd972e8f5c960",
+      "size": 109760959,
+      "reclaimed_bytes": 101068800,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-ode-on-demand-v1/combined/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-ode-on-demand-v1/combined/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/native-ode-on-demand-v1/console-only/kernel-assembly.txt",
+      "archive": "build/native-ode-on-demand-v1/console-only/kernel-assembly.txt.zst",
+      "sha256": "90e0c91618857b1f9a6d721896446e6ce603a973b618d358f2294b3a491d960c",
+      "size": 109742740,
+      "reclaimed_bytes": 101052416,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-ode-on-demand-v1/console-only/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-ode-on-demand-v1/console-only/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/native-ode-task-birth-v1/cross/kernel-assembly.txt",
+      "archive": "build/native-ode-task-birth-v1/cross/kernel-assembly.txt.zst",
+      "sha256": "89b2fcc97613268f3285993d7131b794c7ed21f60e1c2ca55997880944b143f7",
+      "size": 109681086,
+      "reclaimed_bytes": 100995072,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-ode-task-birth-v1/cross/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-ode-task-birth-v1/cross/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/strut-native-raster-bindings-v1/audit/kernel-assembly.txt",
+      "archive": "build/strut-native-raster-bindings-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "17d7d983b2f81738e944ec8bc8006711010f52ca5c7bd0338b81ffb1e7ac6df3",
+      "size": 109665627,
+      "reclaimed_bytes": 100978688,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-native-raster-bindings-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/strut-native-raster-bindings-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/generations128/gen1-audit/kernel-assembly.txt",
+      "archive": "build/i386-graphics-registry-integration/generations128/gen1-audit/kernel-assembly.txt.zst",
+      "sha256": "d639a527c91326c748fab76dd1043905653b62fdf7a20aa59cf893512c5c7149",
+      "size": 110310772,
+      "reclaimed_bytes": 101617664,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/generations128/gen1-audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/generations128/gen1-audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/generations128/gen2-audit/kernel-assembly.txt",
+      "archive": "build/i386-graphics-registry-integration/generations128/gen2-audit/kernel-assembly.txt.zst",
+      "sha256": "d639a527c91326c748fab76dd1043905653b62fdf7a20aa59cf893512c5c7149",
+      "size": 110310772,
+      "reclaimed_bytes": 101613568,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/generations128/gen2-audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/generations128/gen2-audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/native/kernel-assembly.txt",
+      "archive": "build/i386-graphics-registry-integration/native/kernel-assembly.txt.zst",
+      "sha256": "6ddf1c7285009373a69822f1aba24b31655f9877ace226525a48cbb56716cad4",
+      "size": 109455992,
+      "reclaimed_bytes": 100786176,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/native/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/native/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-graphics-registry-integration/native-v2/kernel-assembly.txt",
+      "archive": "build/i386-graphics-registry-integration/native-v2/kernel-assembly.txt.zst",
+      "sha256": "6ddf1c7285009373a69822f1aba24b31655f9877ace226525a48cbb56716cad4",
+      "size": 109455992,
+      "reclaimed_bytes": 100786176,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-graphics-registry-integration/native-v2/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-graphics-registry-integration/native-v2/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/on-demand-optimizer-v5/audit/kernel-assembly.txt",
+      "archive": "build/on-demand-optimizer-v5/audit/kernel-assembly.txt.zst",
+      "sha256": "df3f23acf0c8781bbaa734ce06a03db9c70783b2435d2fee059cdd728907a8d9",
+      "size": 113301385,
+      "reclaimed_bytes": 104308736,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/on-demand-optimizer-v5/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/on-demand-optimizer-v5/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/on-demand-optimizer-v4/audit/kernel-assembly.txt",
+      "archive": "build/on-demand-optimizer-v4/audit/kernel-assembly.txt.zst",
+      "sha256": "df3f23acf0c8781bbaa734ce06a03db9c70783b2435d2fee059cdd728907a8d9",
+      "size": 113301385,
+      "reclaimed_bytes": 104308736,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/on-demand-optimizer-v4/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/on-demand-optimizer-v4/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/on-demand-lexer-v9/audit/kernel-assembly.txt",
+      "archive": "build/on-demand-lexer-v9/audit/kernel-assembly.txt.zst",
+      "sha256": "d34e448ac0c84af11efe09e475bbcfa3d23646ab067c2f7aae8ae3f6a132c3f4",
+      "size": 110557665,
+      "reclaimed_bytes": 101785600,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/on-demand-lexer-v9/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/on-demand-lexer-v9/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/on-demand-lexer-v8/audit/kernel-assembly.txt",
+      "archive": "build/on-demand-lexer-v8/audit/kernel-assembly.txt.zst",
+      "sha256": "ec1cdca78283c586e2bee47982be168f8656db8bac5089f4c623a6a9bc770b32",
+      "size": 110548577,
+      "reclaimed_bytes": 101773312,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/on-demand-lexer-v8/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/on-demand-lexer-v8/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/on-demand-lexer-v6/audit/kernel-assembly.txt",
+      "archive": "build/on-demand-lexer-v6/audit/kernel-assembly.txt.zst",
+      "sha256": "409c0eb2e30b998006538cca05117c83a71be1239c06e54d49cecdfa3d812b9d",
+      "size": 110538326,
+      "reclaimed_bytes": 101765120,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/on-demand-lexer-v6/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/on-demand-lexer-v6/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/resident-opt-original-user-v2/audit/kernel-assembly.txt",
+      "archive": "build/resident-opt-original-user-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "a1347b5765fe75b469b2e8f11c643db51e0e611f27ef76b3e4abc244258aa79b",
+      "size": 110827841,
+      "reclaimed_bytes": 102039552,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-original-user-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/resident-opt-original-user-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-loop-prototype-v7/audit/kernel-assembly.txt",
+      "archive": "build/original-user-loop-prototype-v7/audit/kernel-assembly.txt.zst",
+      "sha256": "0206113943dcec1f502d2c3235f26d3f6a555cfcb0867e5d5b7b327184c332cd",
+      "size": 110178790,
+      "reclaimed_bytes": 101437440,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-loop-prototype-v7/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-loop-prototype-v7/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-loop-prototype-v5/audit/kernel-assembly.txt",
+      "archive": "build/original-user-loop-prototype-v5/audit/kernel-assembly.txt.zst",
+      "sha256": "c46aff4fd91ad0043eadc282e995c56987d2de62929c1c652d4ce06d472092c8",
+      "size": 110161793,
+      "reclaimed_bytes": 101416960,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-loop-prototype-v5/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-loop-prototype-v5/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-loop-input-batch-v1/audit/kernel-assembly.txt",
+      "archive": "build/original-user-loop-input-batch-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "8ab01dcfdce79fdc8298429dc7efa4710f18e89b7e439e4a3923397725fa4396",
+      "size": 109288104,
+      "reclaimed_bytes": 100630528,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-loop-input-batch-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-loop-input-batch-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-loop-ownership-v3/audit/kernel-assembly.txt",
+      "archive": "build/original-user-loop-ownership-v3/audit/kernel-assembly.txt.zst",
+      "sha256": "7b691565b247746150113226dfa930310744e8ae9b518ed28bf1e2910c7d35a7",
+      "size": 109285336,
+      "reclaimed_bytes": 100626432,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-loop-ownership-v3/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-loop-ownership-v3/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-loop-ownership-v1/audit/kernel-assembly.txt",
+      "archive": "build/original-user-loop-ownership-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "8073607eb513a50192621f470d0fa8d11bde65fdd8a7746f05d54b1b6164be0c",
+      "size": 109268371,
+      "reclaimed_bytes": 100610048,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-loop-ownership-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-loop-ownership-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/original-user-loop-prototype-v1/audit/kernel-assembly.txt",
+      "archive": "build/original-user-loop-prototype-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "c86caee4baf37bf587ebf1966dbdaeb20c450e8d0c725423da85df5bc3e6463b",
+      "size": 109151087,
+      "reclaimed_bytes": 100507648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/original-user-loop-prototype-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/original-user-loop-prototype-v1/audit/kernel-assembly.txt"
+      ]
+    }
+  ],
+  "reclaimed_bytes": 2234089472
+}
