@@ -38,6 +38,8 @@ runs = [
     'native-ode-production-v1/full',
     'span-production-v1/full',
     'span-production-v1/generations128-resume-install/gen1-audit',
+    'span-production-v1/generations128-resume-install/gen2-audit',
+    'tothefront-production-v1/full',
 ]
 
 

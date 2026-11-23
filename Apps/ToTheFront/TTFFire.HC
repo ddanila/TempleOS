@@ -215,7 +215,7 @@ U0 IndirectResolveAll()
   F64 x1,y1,x2,y2,d,range_factor;
   Unit *tmpu,*target;
   IndirectOrders *tmpi=indirect_head.next,*tmpi1;
-  while (tmpi!=*indirect_head) {
+  while (tmpi!=&indirect_head) {
     tmpi1=tmpi->next;
     tmpu=tmpi->attacker;
     AttackHeader(tmpu,"IndirectFire",NULL);

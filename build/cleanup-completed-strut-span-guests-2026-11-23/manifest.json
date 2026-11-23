@@ -1595,7 +1595,77 @@
         "-o",
         "build/tothefront-normal-entry-v1/user8/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-shared-entry-v1/native64/working.img",
+      "archive": "build/tothefront-shared-entry-v1/native64/working.img.zst",
+      "sha256": "28d9b5475ebfb64465947c3425c39b0c08e53dc8667b5b6ac5aa5d466ea65319",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-shared-entry-v1/native64/working.img.zst",
+        "-o",
+        "build/tothefront-shared-entry-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-shared-entry-v1/user8/working.img",
+      "archive": "build/tothefront-shared-entry-v1/user8/working.img.zst",
+      "sha256": "2b50717493ecd686042dc391e25d6e3e11a9974579131852d4d5edb24d75609c",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-shared-entry-v1/user8/working.img.zst",
+        "-o",
+        "build/tothefront-shared-entry-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-shared-entry-v1/original/original.iso",
+      "archive": "build/tothefront-shared-entry-v1/original/original.iso.zst",
+      "sha256": "a3f0840fc30f14ac3d4c1b80ddd791d81784d55b6d6a1bdee68a9205691a7457",
+      "size": 46139392,
+      "reclaimed_bytes": 33222656,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-shared-entry-v1/original/original.iso.zst",
+        "-o",
+        "build/tothefront-shared-entry-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/gen2-user8/working.img",
+      "archive": "build/span-production-v1/gen2-user8/working.img.zst",
+      "sha256": "0e1706b6c6449c33f7c1b66462adc716535dc44cc96104049b29637f449c67f8",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/gen2-user8/working.img.zst",
+        "-o",
+        "build/span-production-v1/gen2-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/gen2-span64/working.img",
+      "archive": "build/span-production-v1/gen2-span64/working.img.zst",
+      "sha256": "5e39e082f6ab7d0b571d112291904e74901ba040f6302b5756448833d29eed67",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/gen2-span64/working.img.zst",
+        "-o",
+        "build/span-production-v1/gen2-span64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 5642592256
+  "reclaimed_bytes": 5889191936
 }

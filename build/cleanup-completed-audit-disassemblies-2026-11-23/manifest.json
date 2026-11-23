@@ -447,7 +447,35 @@
         "-o",
         "build/span-production-v1/full/kernel-assembly.txt"
       ]
+    },
+    {
+      "original": "build/span-production-v1/generations128-resume-install/gen2-audit/kernel-assembly.txt",
+      "archive": "build/span-production-v1/generations128-resume-install/gen2-audit/kernel-assembly.txt.zst",
+      "sha256": "cf8870a38ebcf1c8bc4e04c40441c1c4a25fb6c0d5654aa60891f0d86c2c139a",
+      "size": 110586709,
+      "reclaimed_bytes": 101867520,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/generations128-resume-install/gen2-audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/span-production-v1/generations128-resume-install/gen2-audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/full/kernel-assembly.txt",
+      "archive": "build/tothefront-production-v1/full/kernel-assembly.txt.zst",
+      "sha256": "f7dd4411653dbf4b8b1129e5a67cd07c012822257f6022eb6ec89e09fad3bd51",
+      "size": 109721881,
+      "reclaimed_bytes": 101027840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/tothefront-production-v1/full/kernel-assembly.txt"
+      ]
     }
   ],
-  "reclaimed_bytes": 3245613056
+  "reclaimed_bytes": 3448508416
 }

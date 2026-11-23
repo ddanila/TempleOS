@@ -133,6 +133,34 @@ Bool MPVisRecalc(MPCtrl1 *job)
 
 Bool VisRecalc(I64 mode,Unit *tmpu=NULL)
 {
+#ifdef I386_PUBLIC_USER_INCLUDED
+  I64 hi;
+  Bool res;
+  MPCtrl1 job;
+
+  if (mode==VR_FRIENDLY_UNIT_DIED) {
+    MemSet((&vis_unit_bitmap[enemy_player])(U8 *)+
+	  (tmpu->num*((UNITS_NUM+7)&~7))>>3,0,(UNITS_NUM+7)>>3);
+    VRMerge(enemy_player);
+    return 0; //Return any value--don't care
+  }
+
+  hi=UNITS_NUM;
+  if (mode==VR_ONE_ENEMY_UNIT) {
+    for (hi--;hi>=0;hi--)
+      if (units[enemy_player][hi].life>0)
+	break;
+    hi++;
+  }
+  job.mode=mode;
+  job.tmpu=tmpu;
+  job.lo=0;
+  job.hi=hi;
+  res=MPVisRecalc(&job);
+  if (mode==VR_UPDATE_FRIENDLY_UNIT)
+    VRMerge(cur_player);
+  return res;
+#else
   I64 i,hi,k,cnt;
   Bool res;
 /*The compiler doesn't go out of it's way
@@ -183,6 +211,7 @@ $LK,"MAlloc",A="MN:MAlloc"$() would probably be the better choice.
   if (mode==VR_UPDATE_FRIENDLY_UNIT)
     VRMerge(cur_player);
   return res;
+#endif
 }
 
 U0 MPVisRecalcMap(MPCtrl2 *job)
@@ -198,6 +227,14 @@ U0 MPVisRecalcMap(MPCtrl2 *job)
 
 U0 VisRecalcMap(I64 row,I64 col)
 {
+#ifdef I386_PUBLIC_USER_INCLUDED
+  MPCtrl2 job;
+  job.row=row;
+  job.col=col;
+  job.lo=0;
+  job.hi=map_rows;
+  MPVisRecalcMap(&job);
+#else
   I64 i,hi,k,cnt;
   MPCtrl2 job[mp_cnt];
   CJob *cmd[mp_cnt];
@@ -220,4 +257,5 @@ U0 VisRecalcMap(I64 row,I64 col)
     cmd[i]=JobQue(&MPVisRecalcMap,&job[i],i,0);
   for (i=0;i<cnt;i++)
     JobResGet(cmd[i]);
+#endif
 }

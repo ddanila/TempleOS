@@ -1,0 +1,10 @@
+{
+  "result": "pass",
+  "scope": "Original bootstrap, full native cross-build, source identity, normal ToTheFront launch and unchanged User8. Full gameplay and C1-C5 remain open.",
+  "disk_sha256": "b9efca2880b1a47157f7ddd6d7a3c8857c63caf589ec7cd6d4efe0fbf162c0d5",
+  "delivered_source_files": 1554,
+  "inventory_files": 686,
+  "source_identity_sha256": "43d414541cba6bbabd4787b8056e6227cd366919ab43e436ef7b8d06cc2f84b7",
+  "original_rebuilds": 2,
+  "user8_seconds": 50.690298480010824
+}

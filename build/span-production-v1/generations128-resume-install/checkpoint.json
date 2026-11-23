@@ -1,0 +1,66 @@
+{
+  "result": "pass",
+  "scope": "Two native rebuild/install/boot generations and artifact audits only; full desktop/application compatibility suite and C1-C5 qualification are separate gates.",
+  "stages": {
+    "input-source-audit": "9dd251f37dfacfbfbfb32fd318e71d3ac1a8d19efc9ee8405c1d0c02a591e232",
+    "gen1-install": "590fb14f08d5e217eafebd2d9a150272e01648871ccf1f3a58b3dae2feb86b9c",
+    "gen1-selfhost": "a10d3e6e5adcdda7b1f9e071cccc89196bf60bb9059e5e8f616a54f196ffcbb8",
+    "gen1-audit": "239df6ff8b8d7ae8f096bb332be36946842537eea9b150d614b2ee32679ef27a",
+    "gen1-source-audit": "5218abf5f409e5a003d57e8c8b2906564b0cac77b785d70924e161fee5652b40",
+    "gen2-retained-build": "4b0eaf46e1502850e86de37f14802bb2af90768ec05720536d6dbcda8b256d5e",
+    "gen2-install": "1746b4af1bb7d25c9c121c56fe8fd12985eac63f083515895a98573c52e5bf0e",
+    "gen2-selfhost": "0e992247ced95afe834749b99dae61b96fcbf57331a059f0e31924cb64dc9ab0",
+    "gen2-audit": "fd9312ec813a838ea3795b83fe1af468b7191f3f9e75c4757cc55ab1bc8fe32c",
+    "gen2-source-audit": "a3418f5e7ea1f3115d026369b3bb42417bd2375a7b079dee9efd3c24a85d7b0f",
+    "generation-identity": "f3f5d989b3cffe6f17834ad0130f6091546edd3c0fdfa993d0b73048bde74fba"
+  },
+  "identity": {
+    "result": "pass",
+    "module_count": 16,
+    "flat_bytes": 467464,
+    "flat_sha256": "2482a2f936701aa145f7ce5fd03563e9eb5a1e7fb87fca18ead104830a0b7655",
+    "boot_area_sha256": "39ce8cdcbe2100f57a5bc5f13cffcb3634c18800e34606531be007f6c72d3196",
+    "first_volume": {
+      "directories": 63,
+      "files": 1914,
+      "owned_sectors": 98149,
+      "bitmap": "matches reachable extents"
+    },
+    "second_volume": {
+      "directories": 63,
+      "files": 1914,
+      "owned_sectors": 98149,
+      "bitmap": "matches reachable extents"
+    },
+    "first_disk_sha256": "74ae57626064f4c6ee1dc85f70d5206a3397970399385c5de97234fc49fb9691",
+    "second_disk_sha256": "9fbba02c36bb75d712d11d86ed7c7918aeddd97ee21510d177dda5dd32725ba8",
+    "comparison_scope": "All artifact bytes except exported eight-byte Kernel date; each actual boot payload/checksum/padding verified independently",
+    "kernel_build_dates": [
+      3179596812321835,
+      3179596973333399
+    ],
+    "normalized_flat_sha256": "d1a1124d7095eeeddb3ac7537614fffa1d94c05db6341b29a2f6a8b12d9db90c"
+  },
+  "generation_workloads": {
+    "gen1-span64": {
+      "result": "pass",
+      "receipt": "build/span-production-v1/gen1-span64/result.json",
+      "sha256": "7225f9827e284b47876515993a7fc853cc4f2bf657a5b1de1f46bc3fc0279d43"
+    },
+    "gen1-user8": {
+      "result": "fail",
+      "receipt": "build/span-production-v1/gen1-user8/result.json",
+      "sha256": "45ee575588ba2d882762398c3f0b83a1ea0f0021bf45e6fc7e195ce4d0a9a209"
+    },
+    "gen2-span64": {
+      "result": "pass",
+      "receipt": "build/span-production-v1/gen2-span64/result.json",
+      "sha256": "f76817bf9098d8406a2d809f46debc0ef468c4717e195f8bfdc7562206cb5c23"
+    },
+    "gen2-user8": {
+      "result": "fail",
+      "receipt": "build/span-production-v1/gen2-user8/result.json",
+      "sha256": "9aac9886d490ccd0f4dda8492b439808a9b5120ccd26960e7e8144197008fb4c"
+    }
+  }
+}

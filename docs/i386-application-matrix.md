@@ -1854,3 +1854,21 @@ in-flight Span generation check verifies its pinned sources. See
 `build/tothefront-shared-entry-v1/original/result.json`,
 `build/tothefront-shared-entry-v1/native64/result.json` and
 `build/tothefront-shared-entry-v1/user8/result.json`.
+
+The shared ToTheFront loader and helpers are integrated in the
+production source tree. Both original bootstrap rebuilds and the
+native cross-build and instruction audit pass. The delivered source
+audit covers 1,554 files and the build checks all 686 pinned
+inventory entries. The new production image passes the normal
+64 MiB fixed-seed Human launcher and the unchanged 8 MiB User
+fixture in 50.69 seconds. Full game workflows and exact rendering
+remain open. See `build/tothefront-production-v1/qualification.json`.
+
+On the preceding Span production image, both native generations
+rebuilt, installed and booted. Sixteen modules and their artifacts
+match within the declared eight-byte Kernel date exception. Both
+generations pass the physical Span workflow and fail User8 at the
+contiguous task allocation. This closes the two-generation
+artifact check for that image. The resource gate and full
+compatibility suite remain open. See
+`build/span-production-v1/generations128-resume-install/checkpoint.json`.

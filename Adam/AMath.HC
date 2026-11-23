@@ -9,16 +9,7 @@ public U0 P2R(F64 *_x=NULL,F64 *_y=NULL,F64 mag,F64 arg)
     *_y=mag*Sin(arg);
 }
 
-public F64 Wrap(F64 é,F64 base=-ã)
-{//Returns angle in range [base,base+2*ã)
-  F64 res=é%(2*ã);
-  if (res>=base+2*ã)
-    res-=2*ã;
-  else if (res<base)
-    res+=2*ã;
-  return res;
-}
-
+#include "/Adam/AngleWrapCore.HC"
 #include "/Adam/DistSqrCore.HC"
 
 public F64 ASin(F64 s)

@@ -72,14 +72,7 @@ public U8 *PopUpGetStr(U8 *header=NULL)
   return res;
 }
 
-public I64 PopUpGetI64(U8 *msg,I64 dft,I64 lo=I64_MIN,I64 hi=I64_MAX)
-{//Prompt for I64 text expression in PopUp win task.
-  U8 *st=MStrPrint("GetI64(0x%X,0x%X,0x%X,0x%X);",msg,dft,lo,hi);
-  I64 res=PopUp(st,Fs);
-  Free(st);
-  return res;
-}
-
+#include "/Adam/DolDoc/DocIntegerPromptCore.HC"
 public F64 PopUpGetF64(U8 *msg,F64 dft,F64 lo=F64_MIN,F64 hi=F64_MAX)
 {//Prompt for F64 text expression in PopUp win task.
   U8 *st=MStrPrint("GetF64(0x%X,0x%X(F64),0x%X(F64),0x%X(F64));",msg,dft,lo,hi);
@@ -105,27 +98,7 @@ public I64 PopUpRangeI64(I64 lo,I64 hi,I64 step=1,
   return i;
 }
 
-public F64 PopUpRangeF64(F64 lo,F64 hi,F64 step,
-    U8 *fmt="%9.4f",U8 *header=NULL,U8 *footer=NULL)
-{//Evenly-spaced F64 range chooser in PopUp win task.
-  F64 d;
-  I64 i;
-  U8 buf[STR_LEN];
-  CDoc *doc=DocNew;
-  if (header)
-    DocPrint(doc,"%s",header);
-  DocPrint(doc,"$$LTBLUE$$");
-  for (d=lo;d<=hi;d+=step) {
-    StrPrint(buf,fmt,d);
-    DocPrint(doc,"$$MU,\"%s\",LE=0x%X$$\n",buf,d);
-  }
-  if (footer)
-    DocPrint(doc,"%s",footer);
-  i=PopUpMenu(doc);
-  DocDel(doc);
-  return i(F64);
-}
-
+#include "/Adam/DolDoc/DocFloatRangeCore.HC"
 public F64 PopUpRangeF64Exp(F64 lo,F64 hi,F64 factor,
     U8 *fmt="%9.4f",U8 *header=NULL,U8 *footer=NULL)
 {//Exp-spaced F64 range chooser in PopUp win task.

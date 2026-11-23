@@ -1,0 +1,54 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "9fbba02c36bb75d712d11d86ed7c7918aeddd97ee21510d177dda5dd32725ba8",
+    "image_sha256": "5e39e082f6ab7d0b571d112291904e74901ba040f6302b5756448833d29eed67",
+    "boot_area_sha256": "414288b27ee91894b65cd8c816457c98043ef7d45c9abafbbe9fad00b1d163a2",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1914,
+      "owned_sectors": 98149,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1915,
+      "owned_sectors": 98153,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/SpanProbe.HC": "e32d589a025018c4cec6db9623937c7beca5435a24bb0722d7e831302971ced8"
+    },
+    "added_attributes": {
+      "/SpanProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "command": "#include \"C:/SpanProbe.HC\"",
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "observations": [
+    "SPAN instructions 14B70F0",
+    "SPAN editor 14B70F0 initial masses 15",
+    "SPAN placed mass",
+    "SPAN simulation advanced",
+    "SPAN stopped",
+    "SPAN note 0 = 67",
+    "SPAN note 1 = 65",
+    "SPAN note 2 = 67",
+    "SPAN note 3 = 65",
+    "SPAN note 4 = 58",
+    "SPAN note 5 = 65",
+    "SPAN speaker off",
+    "SPAN returned"
+  ]
+}

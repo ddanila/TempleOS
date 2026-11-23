@@ -12024,9 +12024,30 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Start a match with seed 12345678 and two Human players. Dismiss instructions, advance to the other artillery phase with Space, and exit with Escape.",
+      "oracle": {
+        "tool": "build/tothefront-original-v1/run.py",
+        "checks": [
+          "Pinned original records the fixed-seed map and the first phase advance.",
+          "Native reports successful exit and executes fresh arithmetic after using the normal Run.HC entry."
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-tothefront-human-match",
+          "command": "python3 build/tothefront-original-v1/run.py --human-match --out OUT",
+          "result": "pass",
+          "evidence": "build/tothefront-original-v1/human-match/result.json",
+          "scope": "Fixed-seed startup, both Human players, map display, Space phase advance and Escape."
+        },
+        {
+          "target": "native-tothefront-shared-entry",
+          "command": "python3 build/tothefront-normal-entry-v1/run.py DISK --out OUT",
+          "result": "pass",
+          "evidence": "build/tothefront-shared-entry-v1/native64/result.json",
+          "scope": "Normal Run.HC on the shared-source overlay at 64 MiB. Exact rendering and full gameplay remain open."
+        }
+      ]
     },
     {
       "path": "Apps/ToTheFront/TTFDraw.HC",
