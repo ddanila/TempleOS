@@ -1,0 +1,57 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "build/psalmody-registry-popup-v2/candidate.img": "63ff6673074edad8d5b90ca401f71c0b0b9572b137acc184b31f4da3b22ae9bb",
+    "/home/ddanila/fun/TempleOS/build/psalmody-registry-modal-v4/Modal.HC": "ffe360fc339ee6220937a702deab442923a54f849b0401833fef878fee31689d",
+    "/home/ddanila/fun/TempleOS/build/psalmody-registry-modal-v4/run.py": "b7534b231f27243f3e7db71d4c802c9c989b4d6e28f1377a2bb994804219aadf",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6"
+  },
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "63ff6673074edad8d5b90ca401f71c0b0b9572b137acc184b31f4da3b22ae9bb",
+    "image_sha256": "2cdfae37a400f7e2c7c7e596656b15c7717d1b36a3ced2ec86b42e527cc5962c",
+    "boot_area_sha256": "a366537fa37d14d0b5763aaeb583d8bc7c10806b063f322c1d985ef6a3bb7edb",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96122,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96127,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/Modal.HC": "ffe360fc339ee6220937a702deab442923a54f849b0401833fef878fee31689d"
+    },
+    "added_attributes": {
+      "/Probe/Modal.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "flags": [
+    0,
+    0,
+    0,
+    8
+  ],
+  "cold_flags": 8,
+  "changed_files": [
+    "/Home/Registry.HC.Z",
+    "/Probe/Modal.HC"
+  ],
+  "inputs_unchanged": true
+}

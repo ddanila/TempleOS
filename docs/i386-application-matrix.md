@@ -864,3 +864,13 @@ deletes the last note and restores caller state (mask 63). It fails
 the original exact duration check, recording 0, 7 and 8 instead of
 three 8s. The timed keyboard regression remains open. The candidate,
 failing receipt and decoded vectors are in `build/psalmody-registry-popup-v2`.
+
+The registry-popup overlay passes a separate native 64 MiB modal check with
+physical mouse and keyboard input. Shift-Escape and unchecked OK preserve
+the flag. Checking the box and clicking OK commits the Psalmody JukeBox
+suppression bit. The next call returns immediately, and a fresh boot reloads
+the bit and suppresses the popup again. Only the test fixture and
+`/Home/Registry.HC.Z` change. The cold session preserves every file and
+renders fresh arithmetic. The fixture and receipt are in
+`build/psalmody-registry-modal-v4`. Psalmody's timed keyboard acceptance and
+production integration remain open.
