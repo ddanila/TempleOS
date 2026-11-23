@@ -2874,3 +2874,14 @@ capture. The required child allocation was 267,527 bytes on the frozen
 null-slot installation. The cache change has passed the cross-built
 startup check. Installed startup, current-image two-generation
 reproduction and C1–C5 remain open.
+
+A mixed-revision diagnostic installed the eight native providers from
+`6eefeedd` into the 64-slot cache image while retaining its cross-built
+console. The replacement guest completed the commands. At 8 MiB the
+resulting disk halted immediately after `RUN LEVEL files 0000000000001407`
+with `FAIL native kernel`. It never reached the User workload or the
+pre-User heap capture. The disk SHA-256 is
+`8e8913cff8e40c01d6db1a2e90a806cff9d1b8995b21490c1df4ed8b4f162f9e`.
+This failure applies to the mixed-revision image. The same-revision
+nine-module install and separate console-only install are queued behind
+the active native console build.
