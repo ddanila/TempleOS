@@ -2004,3 +2004,14 @@ match, and the native guest exits to fresh arithmetic. The fixture
 covers one direct artillery impact against an unarmored unit.
 See `build/tothefront-original-v1/indirect-damage-original/result.json`
 and `build/sound-delay-production-v1/indirect-damage64/result.json`.
+
+The overrun comparison stages enemy infantry on an adjacent plains hex
+and physically drags an armored unit onto it during the first movement
+phase. The pinned original and native production image under default KVM
+both kill defender 16, leave attacker 0 at 100 life, and place it at
+row 26, column 1 with zero movement remaining. The phase traces match
+through the start of turn two and native exits to fresh arithmetic.
+This fixture covers a successful overrun on plains. Failed overruns,
+close assault, exact rendering and a complete match remain open.
+See `build/tothefront-original-v1/overrun-original/result.json`
+and `build/sound-delay-production-v1/overrun64/result.json`.

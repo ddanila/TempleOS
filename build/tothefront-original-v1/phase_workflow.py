@@ -75,7 +75,29 @@ def queue_indirect(guest):
     return unit, row, col
 
 
-def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=False):
+def overrun_unit(guest):
+    log = guest.wait('TTF aim overrun ', 20)
+    aim = re.search(r'^TTF aim overrun ([0-9A-F]+)((?: -?\d+){10})$', log, re.M)
+    if aim is None:
+        raise ValueError('Missing overrun selection')
+    attacker, defender, sx, sy, dx, dy, row, col, attacker_life, defender_life = map(
+        int, aim[2].split())
+    drag(guest, int(aim[1], 16), (sx, sy), (dx, dy))
+    log = guest.wait('TTF overrun resolved ', 55)
+    outcome = re.search(r'^TTF overrun resolved((?: -?\d+){7})$', log, re.M)
+    if outcome is None:
+        raise ValueError('Missing overrun outcome')
+    a, d, a_life, d_life, a_row, a_col, movement = map(int, outcome[1].split())
+    if (a, d) != (attacker, defender) or bool(a_life) == bool(d_life):
+        raise ValueError('Invalid overrun life state')
+    if a_life and ((a_row, a_col) != (row, col) or movement != 0):
+        raise ValueError('Successful overrun must occupy the hex and consume movement')
+    return dict(attacker=a, defender=d, target=[row, col], position=[a_row, a_col],
+                before=[attacker_life, defender_life], after=[a_life, d_life],
+                remaining_movement=movement)
+
+
+def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=False, overrun=False):
     guest.screenshot('entry')
     guest.type('12345678')
     guest.press('ret')
@@ -114,6 +136,13 @@ def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=Fals
         if move and index == 2:
             movement = move_unit(guest)
             guest.screenshot('moved')
+        if overrun and index == 2:
+            occupation = overrun_unit(guest)
+            guest.screenshot('overrun')
+            lost_player = occupation['after'].index(0)
+            expected_states[index + 1:] = [
+                state[:3] + (state[3] - (lost_player == 0), state[4] - (lost_player == 1))
+                for state in expected_states[index + 1:]]
         if fire and index == 4:
             attack = fire_unit(guest)
             guest.screenshot('fired')
@@ -131,6 +160,8 @@ def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=Fals
     result = {'phases': actual}
     if move:
         result['movement'] = movement
+    if overrun:
+        result['overrun'] = occupation
     if fire:
         result['direct_fire'] = attack
     if indirect:

@@ -9,6 +9,7 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument('--disk', type=Path)
 parser.add_argument('--move', action='store_true')
+parser.add_argument('--overrun', action='store_true')
 parser.add_argument('--fire', action='store_true')
 parser.add_argument('--trace-fire', action='store_true')
 parser.add_argument('--trace-shot', action='store_true')
@@ -18,6 +19,8 @@ indirect.add_argument('--indirect', action='store_true')
 indirect.add_argument('--indirect-damage', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
+if args.overrun and (args.move or args.fire or args.indirect or args.indirect_damage):
+    parser.error('--overrun requires a separate run')
 if args.indirect_damage and args.fire:
     parser.error('--indirect-damage and --fire require separate runs')
 if args.trace_fire and (not args.fire or not args.disk):
@@ -34,6 +37,10 @@ if args.move:
     declaration = b'U0 TTFPhaseWatch('
     fixture = fixture.replace(declaration, (root/'Movement.HC').read_bytes() + b'\n' + declaration)
     fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackMove(owner);\n    Sleep(1);')
+if args.overrun:
+    declaration = b'U0 TTFPhaseWatch('
+    fixture = fixture.replace(declaration, (root/'Overrun.HC').read_bytes() + b'\n' + declaration)
+    fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackOverrun(owner);\n    Sleep(1);')
 if args.fire:
     declaration = b'U0 TTFPhaseWatch('
     fixture = fixture.replace(declaration, (root/'DirectFire.HC').read_bytes() + b'\n' + declaration)
@@ -85,7 +92,8 @@ try:
         guest.wait('TTF original loaded\n', 90)
         time.sleep(6)
     report.update(exercise(guest, args.move, args.fire,
-                           args.indirect or args.indirect_damage, args.indirect_damage))
+                           args.indirect or args.indirect_damage, args.indirect_damage,
+                           args.overrun))
     if args.disk:
         guest.command('6*7;')
         report['after_match'] = guest.result_pixels()

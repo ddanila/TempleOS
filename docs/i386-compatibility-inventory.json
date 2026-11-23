@@ -12109,6 +12109,20 @@
           "result": "pass",
           "evidence": "build/sound-delay-production-v1/indirect-damage64/result.json",
           "scope": "Physical artillery drag resolves at the shared impact hex. Staged defender 16 falls from 100 life to zero and the opposing live count drops to 31 at the start of turn two."
+        },
+        {
+          "target": "original-tothefront-overrun",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --overrun --out OUT",
+          "result": "pass",
+          "evidence": "build/tothefront-original-v1/overrun-original/result.json",
+          "scope": "Physical drag of an armored unit onto a staged infantry defender on plains. The attacker occupies row 26, column 1 at full life and zero movement. The defender dies."
+        },
+        {
+          "target": "native-tothefront-overrun",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --overrun --disk DISK --out OUT",
+          "result": "pass",
+          "evidence": "build/sound-delay-production-v1/overrun64/result.json",
+          "scope": "Physical drag of an armored unit onto a staged infantry defender on plains. The attacker occupies row 26, column 1 at full life and zero movement. The defender dies."
         }
       ]
     },
