@@ -1931,7 +1931,63 @@
         "-o",
         "build/tothefront-production-v1/noise-stall-samples/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-production-v1/noise-userspace-irqchip/working.img",
+      "archive": "build/tothefront-production-v1/noise-userspace-irqchip/working.img.zst",
+      "sha256": "54693fa5da35c40d1eda12a4dd6c45b7b3e6965e8d0fa27d325f9a667a6aec06",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/noise-userspace-irqchip/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/noise-userspace-irqchip/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/noise-single-note/working.img",
+      "archive": "build/tothefront-production-v1/noise-single-note/working.img.zst",
+      "sha256": "cfc1852eb9bbe44c7c07a6af5b565ffd564863504ff821a5187b95e45e206fd3",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/noise-single-note/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/noise-single-note/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/noise-split-irqchip/working.img",
+      "archive": "build/tothefront-production-v1/noise-split-irqchip/working.img.zst",
+      "sha256": "54693fa5da35c40d1eda12a4dd6c45b7b3e6965e8d0fa27d325f9a667a6aec06",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/noise-split-irqchip/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/noise-split-irqchip/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/fire64-userspace-irqchip/working.img",
+      "archive": "build/tothefront-production-v1/fire64-userspace-irqchip/working.img.zst",
+      "sha256": "5545633dc831be1a8ac1efbd027fccbd389a1356bd130ff46659d8951a9e76a5",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/fire64-userspace-irqchip/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/fire64-userspace-irqchip/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 6762737664
+  "reclaimed_bytes": 6976368640
 }

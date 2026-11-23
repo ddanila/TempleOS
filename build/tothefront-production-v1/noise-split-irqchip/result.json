@@ -1,0 +1,48 @@
+{
+  "package": {
+    "result": "pass",
+    "source_sha256": "b9efca2880b1a47157f7ddd6d7a3c8857c63caf589ec7cd6d4efe0fbf162c0d5",
+    "image_sha256": "54693fa5da35c40d1eda12a4dd6c45b7b3e6965e8d0fa27d325f9a667a6aec06",
+    "boot_area_sha256": "738b309bb0a62c02826af55a8a428e3e3e9f3be384cda94b24bd9ab34b94881f",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1925,
+      "owned_sectors": 96199,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1926,
+      "owned_sectors": 96201,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/NoiseSleep.HC": "68c108194cbcac919bc4d97463d14f767afbfeb1dc2f5534464b8d4fd87ff855"
+    },
+    "added_attributes": {
+      "/NoiseSleep.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "fixture_sha256": "68c108194cbcac919bc4d97463d14f767afbfeb1dc2f5534464b8d4fd87ff855",
+  "single_note": false,
+  "machine": "pc,kernel-irqchip=split",
+  "result": "pass",
+  "after_sleep": {
+    "column": 0,
+    "row": 11,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "timer_trace": [
+    "TTF timer before control",
+    "TTF timer after control",
+    "TTF timer address 103EA0 sleeper 15983E8 noise 15F4010",
+    "TTF timer before active noise",
+    "TTF timer after active noise 250"
+  ]
+}

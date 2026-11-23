@@ -1924,3 +1924,14 @@ The complete ToTheFront direct-fire comparison is now running in
 that configuration. The default in-kernel IRQ-chip case remains
 open. See `build/tothefront-production-v1/noise-stall-samples/result.json`
 and `build/tothefront-production-v1/noise-userspace-irqchip/result.json`.
+
+The native ToTheFront shot completes with QEMU's userspace IRQ chip.
+The staged adjacent shot matches the pinned original on the hit,
+defender life falling from 100 to zero, opposing live count falling
+to 31, and the phase trace through turn two. The default IRQ-chip
+failure remains open. A single speaker note and a 250-jiffy sleep
+pass under the default KVM configuration. The repeated Noise
+workload also passes with the split IRQ-chip configuration.
+See `build/tothefront-production-v1/fire64-userspace-irqchip/result.json`,
+`build/tothefront-production-v1/noise-single-note/result.json` and
+`build/tothefront-production-v1/noise-split-irqchip/result.json`.

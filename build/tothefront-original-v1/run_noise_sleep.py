@@ -9,18 +9,28 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument('disk', type=Path)
 parser.add_argument('--sample-stall', action='store_true')
-parser.add_argument('--userspace-irqchip', action='store_true')
+irq = parser.add_mutually_exclusive_group()
+irq.add_argument('--userspace-irqchip', action='store_true')
+irq.add_argument('--split-irqchip', action='store_true')
+parser.add_argument('--single-note', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 out = args.out.resolve()
 out.mkdir()
 fixture = Path(__file__).with_name('NoiseSleep.HC').read_bytes()
+if args.single_note:
+    start = fixture.index(b'  sound=Noise(')
+    end = fixture.index(b'  start=cnts.jiffies;', start)
+    fixture = fixture[:start] + b'  sound=0;\n  Snd(34);\n' + fixture[end:]
+    fixture = fixture.replace(b'  NoiseSleepLog(report);\n}', b'  NoiseSleepLog(report);\n  Snd;\n}')
 working = out/'working.img'
 package = runpy.run_path('tools/package-i386-native-image.py')['package']
 report = {'package': package(args.disk, working, additions={'/NoiseSleep.HC': fixture}),
-          'fixture_sha256': hashlib.sha256(fixture).hexdigest()}
+          'fixture_sha256': hashlib.sha256(fixture).hexdigest(), 'single_note': args.single_note}
 Guest = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Guest']
 machine = 'pc,kernel-irqchip=off' if args.userspace_irqchip else 'pc'
+if args.split_irqchip:
+    machine = 'pc,kernel-irqchip=split'
 report['machine'] = machine
 guest = Guest(working, out/'guest', True, native_machine=machine)
 try:
@@ -37,6 +47,8 @@ except Exception as error:
         for _ in range(3):
             sample = {'registers': guest.call('human-monitor-command',
                                                **{'command-line': 'info registers'})}
+            sample['pic'] = guest.call('human-monitor-command',
+                                       **{'command-line': 'info pic'})
             if match:
                 sample['jiffies'] = guest.call('human-monitor-command',
                                                **{'command-line': f'xp /1gx 0x{match[1]}'})

@@ -12067,6 +12067,13 @@
           "result": "pass",
           "evidence": "build/tothefront-production-v1/move64-positive/result.json",
           "scope": "Physical infantry drag places unit 16 at row 30, column 1 with two movement points on both guests."
+        },
+        {
+          "target": "tothefront-differential-direct-fire-userspace-irqchip",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --fire --disk DISK --userspace-irqchip --out OUT",
+          "result": "pass",
+          "evidence": "build/tothefront-production-v1/fire64-userspace-irqchip/result.json",
+          "scope": "Staged adjacent defender. Physical drag, hit state, defender life, opposing live count and turn progression match with QEMU userspace IRQ chip."
         }
       ]
     },
