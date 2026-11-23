@@ -468,3 +468,11 @@ again exhausts emitter chunks. The eventual User task still requests its
 original allocation size. The verified failure is in
 `build/original-user-stack-reserve-v9/user8/result.json`. The same reduced
 reservation and split prompt are being tested together.
+
+Combining the smaller high-end reservation with the split command prompt
+fails on a 547-byte parser allocation while loading the `Ui` unit. Its
+largest free block is 272 bytes. Requesting exact public backing pages for
+retained task code also fails the same parser allocation with the same
+largest free block. The image audits pass in both cases. The comparison and
+receipts are in `build/original-user-split-prompt-v3` and
+`build/original-user-exact-code-v1`.

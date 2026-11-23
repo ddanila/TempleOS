@@ -1,0 +1,18 @@
+{
+  "original-user-split-prompt-v3": {
+    "requested_bytes": 547,
+    "largest_free_bytes": 272,
+    "used_bytes": 6740264,
+    "capacity_bytes": 6748672,
+    "allocations": 20472,
+    "receipt_sha256": "701708d07717e132c0eecc65bb316336ae32d8010eb59f578bc50954c3b34fe4"
+  },
+  "original-user-exact-code-v1": {
+    "requested_bytes": 547,
+    "largest_free_bytes": 272,
+    "used_bytes": 6740208,
+    "capacity_bytes": 6748672,
+    "allocations": 20473,
+    "receipt_sha256": "11b198ce227d3b849e0e9949135053ef4d4d845b486d715d912981e0befcda43"
+  }
+}

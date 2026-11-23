@@ -1,0 +1,11 @@
+--- a/Kernel/I386/TaskHeaps.HC
++++ b/Kernel/I386/TaskHeaps.HC
+@@ -15,7 +15,7 @@
+   U32 flags=I386IrqSave;
+   U8 *result=0;
+   if(owner && I386TaskHeapsValid(owner->task)==owner && !owner->control.bp->locked_flags)
+-    result=I386MemAlloc(&owner->control,bytes);
++    result=I386MemAlloc(&owner->control,bytes,TRUE);
+   I386IrqRestore(flags); return result;
+ }
+ I64 I386TaskCodeCapacity(CI386TaskHeaps *owner,U8 *allocation)

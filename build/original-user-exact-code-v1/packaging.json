@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "source_sha256": "e2b7c014ee94601c8aca35a52d477f34909a208d66f60a3931b50c422821c8e1",
+  "image_sha256": "fa4fe80795895313dd1d06f60e0af58dfd5c56f9a8597ad4fc7556498277bda2",
+  "boot_area_sha256": "4ba9f86d14fd02568f80d9277a02b87d698b1f2a60e73e0aa7b72afb01703482",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1910,
+    "owned_sectors": 96338,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1910,
+    "owned_sectors": 96338,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Exact-page allocation for retained task code in the reserved-stack split-prompt experiment",
+  "candidate_sha256": "fa4fe80795895313dd1d06f60e0af58dfd5c56f9a8597ad4fc7556498277bda2",
+  "instruction_audit": "pass",
+  "prototype": true
+}
