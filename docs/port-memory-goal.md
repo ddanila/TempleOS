@@ -2647,3 +2647,13 @@ reserve retention and safe trim order. Evidence: the two
 Individual qualification remains at 2 of 686. The full desktop and application
 suite, original 8 MiB User startup, and two native rebuild generations remain
 open.
+
+The first native generation has since passed its flat-kernel build, installation,
+8 MiB boot and artifact audits. The build produced a 466,936-byte flat kernel
+from six native objects alongside the nine retained modules and the auxiliary
+compiler probe. The installed image matches the audited flat payload and all
+1,531 delivered source files. The boot checks passed at 60.17 seconds. That
+measurement exceeds the separate 60-second startup target. The verified stage
+hashes and boot receipt are in
+`build/resident-opt-c5-generations128/gen1-receipt.json`. The second generation
+has entered its retained-module build.

@@ -1,0 +1,60 @@
+{
+  "result": "pass",
+  "boot": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 8,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 60.17059911301476,
+    "commands": 2,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "gen1-selfhost": {
+    "result_sha256": "a81b0c52fd2c6d5c3d49057209ff01553fe30f0c57b98510c43a8666285b1716",
+    "result": "pass",
+    "flat_sha256": "8a72236c970cda9fbf997e44a42181843051b1d4e67f10abf5ce3204461b6a43",
+    "flat_bytes": 466936,
+    "guest_built_flat_modules": [
+      "Kernel",
+      "SysTry",
+      "TaskContext",
+      "ExceptContext",
+      "IrqEntry",
+      "ExceptionEntry"
+    ],
+    "guest_built_retained_modules": [
+      "Startup",
+      "MemoryRuntime",
+      "FileRuntime",
+      "ConsoleRuntime",
+      "CompilerProbe",
+      "CompilerRuntime",
+      "BuildRuntime",
+      "DocDiagnosticRuntime",
+      "EditorRuntime"
+    ],
+    "guest_built_auxiliary_modules": [
+      "CompilerProgramRuntimeProbe"
+    ],
+    "target_disk_sha256": "d794b7b0c39498cdb2d4f00c428587c94fa2179bc489400939b52ac1e36ebe3e"
+  },
+  "gen1-audit": {
+    "result_sha256": "608b0f28d11019187bbc65faaf09d45a870067c098d0026db60244a58c3b4767",
+    "result": "pass",
+    "flat_sha256": "8a72236c970cda9fbf997e44a42181843051b1d4e67f10abf5ce3204461b6a43",
+    "flat_bytes": 466936,
+    "installed_disk_sha256": "d794b7b0c39498cdb2d4f00c428587c94fa2179bc489400939b52ac1e36ebe3e"
+  },
+  "gen1-source-audit": {
+    "result_sha256": "b5160bfa36f0587efa994c3b2e7ea933bd3bd07b089d7f84fd316ae93262962b",
+    "result": "pass",
+    "disk_sha256": "d794b7b0c39498cdb2d4f00c428587c94fa2179bc489400939b52ac1e36ebe3e",
+    "source_files": 1531,
+    "source_identity_sha256": "9b33d55ea947e257911b075b48ae610fd1d2193ae4e69eca21bca1e8cc3f8e0a",
+    "candidate_has_source_changes": false
+  }
+}
