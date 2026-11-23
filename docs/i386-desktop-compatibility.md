@@ -397,3 +397,10 @@ match. The configured desktop startup took 287.13 seconds in this run.
 This is evidence for the configured desktop profile and its retirement
 contract. Full desktop parity and the separate minimal startup timing
 gate remain open. See `build/resident-opt-desktop64-current/result.json`.
+
+The per-file autocomplete trace confirms that recursive FilesFind returns
+and the initialization indexes individual files. At the checkpoint the
+first two FileRead and ACSingleFileAdd pairs have returned. This establishes
+forward progress inside traversal rather than a wait for the directory
+listing to return. The markers do not measure time per call. The trace and
+checkpoint are under `build/resident-opt-desktop64-ac-files`.
