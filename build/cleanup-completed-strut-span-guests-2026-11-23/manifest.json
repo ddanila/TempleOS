@@ -3569,7 +3569,77 @@
         "-o",
         "build/span-soundtrack-asnd-v1/native64/working.img"
       ]
+    },
+    {
+      "original": "build/i386-resident-growth-v1/gen1-user-trace/working.img",
+      "archive": "build/i386-resident-growth-v1/gen1-user-trace/working.img.zst",
+      "sha256": "db373c9b79c4014f9119739f8ec8e9f60dd56285a1cf70f75dbb1cd3a819254f",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-resident-growth-v1/gen1-user-trace/working.img.zst",
+        "-o",
+        "build/i386-resident-growth-v1/gen1-user-trace/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-primary-backing-batch-v1/double-user8/working.img",
+      "archive": "build/i386-primary-backing-batch-v1/double-user8/working.img.zst",
+      "sha256": "a889919d7fa406ae69f84bee71539e7c56ba523caaed4e9054b59284fe10957d",
+      "size": 67108864,
+      "reclaimed_bytes": 53284864,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-primary-backing-batch-v1/double-user8/working.img.zst",
+        "-o",
+        "build/i386-primary-backing-batch-v1/double-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-primary-backing-batch-v1/gen1-control/working.img",
+      "archive": "build/i386-primary-backing-batch-v1/gen1-control/working.img.zst",
+      "sha256": "db373c9b79c4014f9119739f8ec8e9f60dd56285a1cf70f75dbb1cd3a819254f",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-primary-backing-batch-v1/gen1-control/working.img.zst",
+        "-o",
+        "build/i386-primary-backing-batch-v1/gen1-control/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/gen1-user8/working.img",
+      "archive": "build/sound-delay-production-v1/gen1-user8/working.img.zst",
+      "sha256": "db373c9b79c4014f9119739f8ec8e9f60dd56285a1cf70f75dbb1cd3a819254f",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/gen1-user8/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/gen1-user8/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/gen1-span64/working.img",
+      "archive": "build/sound-delay-production-v1/gen1-span64/working.img.zst",
+      "sha256": "6cba6268de1d652026ecbebb91035f1fe4128267880b9cb9d18827a1c475d335",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/gen1-span64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/gen1-span64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 12748816384
+  "reclaimed_bytes": 13015224320
 }

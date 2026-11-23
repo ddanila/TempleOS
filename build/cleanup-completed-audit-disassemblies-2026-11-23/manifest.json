@@ -769,7 +769,63 @@
         "-o",
         "build/tothefront-center-production-v1/full/compiler.iso"
       ]
+    },
+    {
+      "original": "build/i386-primary-backing-batch-v1/double/compiler.iso",
+      "archive": "build/i386-primary-backing-batch-v1/double/compiler.iso.zst",
+      "sha256": "11206277dd1fc07afee40744c29d77b7f7e2b8a4259a494b2e4e0dd42c919230",
+      "size": 45469696,
+      "reclaimed_bytes": 32563200,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-primary-backing-batch-v1/double/compiler.iso.zst",
+        "-o",
+        "build/i386-primary-backing-batch-v1/double/compiler.iso"
+      ]
+    },
+    {
+      "original": "build/i386-primary-backing-batch-v1/double/kernel-assembly.txt",
+      "archive": "build/i386-primary-backing-batch-v1/double/kernel-assembly.txt.zst",
+      "sha256": "1aa3c54af540940c5d2504a61a4d2a6d07ab88809e5714900c25e27451896467",
+      "size": 109741151,
+      "reclaimed_bytes": 101052416,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-primary-backing-batch-v1/double/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-primary-backing-batch-v1/double/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-primary-backing-batch-v1/small-public/compiler.iso",
+      "archive": "build/i386-primary-backing-batch-v1/small-public/compiler.iso.zst",
+      "sha256": "86b4848491c943ed9eff75ab6112789c1af953de8580af1edc7619145a551011",
+      "size": 45467648,
+      "reclaimed_bytes": 32563200,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-primary-backing-batch-v1/small-public/compiler.iso.zst",
+        "-o",
+        "build/i386-primary-backing-batch-v1/small-public/compiler.iso"
+      ]
+    },
+    {
+      "original": "build/i386-primary-backing-batch-v1/small-public/kernel-assembly.txt",
+      "archive": "build/i386-primary-backing-batch-v1/small-public/kernel-assembly.txt.zst",
+      "sha256": "e9c363bf50499c7d371171f018686ed0d2ddaa11a4dad9cdbd5eb29bdc1fe8d5",
+      "size": 109725641,
+      "reclaimed_bytes": 101031936,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-primary-backing-batch-v1/small-public/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-primary-backing-batch-v1/small-public/kernel-assembly.txt"
+      ]
     }
   ],
-  "reclaimed_bytes": 4350574592
+  "reclaimed_bytes": 4617785344
 }

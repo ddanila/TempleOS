@@ -77,6 +77,13 @@ for candidate in ('candidate', 'delay-ceil-candidate'):
         files.extend((str(directory.relative_to('build')), name)
                      for name in ('compiler.iso', 'kernel.img'))
 
+for candidate in ('double', 'small-public'):
+    directory = Path('build/i386-primary-backing-batch-v1') / candidate
+    receipt = directory / 'result.json'
+    if receipt.is_file() and json.loads(receipt.read_text())['result'] == 'pass':
+        files.extend((str(directory.relative_to('build')), name)
+                     for name in ('compiler.iso', 'kernel-assembly.txt'))
+
 for run, name in files:
     directory = Path('build') / run
     original = directory / name

@@ -2147,3 +2147,19 @@ Both runs reject the same User task allocation. The batching experiment
 remains outside production. See
 `build/i386-resident-growth-v1/separators.json` and
 `build/i386-primary-backing-batch-v1/double-user8/result.json`.
+
+The generation-one heap trace finds both separating 8 KiB backing
+regions fully occupied in the root task before any User fixture
+command. Their ownership, page counts and the 231,256-byte largest
+free block stay identical through all three setup commands. This
+rules out the test's header and fixture loads as the cause of this
+fragmentation. See
+`build/i386-resident-growth-v1/gen1-user-trace/result.json`.
+
+A separate overlay reduces cached small allocations from sixteen
+pages per public-heap batch to eight, while retaining the existing
+backing policy. It increases total free primary payload by 8,584 bytes
+and the largest block by 248 bytes. The unchanged 8 MiB User test
+still rejects the same allocation. The overlay stays experimental.
+See `build/i386-primary-backing-batch-v1/small-public-user8/result.json`
+and `build/i386-primary-backing-batch-v1/small-public-stock-user8/result.json`.

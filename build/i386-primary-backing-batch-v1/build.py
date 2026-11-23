@@ -1,4 +1,4 @@
-"""Build and install an experimental larger primary backing batch."""
+"""Build and install an experimental memory backing policy."""
 
 import argparse
 import hashlib
@@ -10,16 +10,25 @@ import sys
 
 
 parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--small-public-pages', action='store_true')
 parser.add_argument('disk', type=Path)
 parser.add_argument('--out', required=True, type=Path)
 args = parser.parse_args()
 args.out.mkdir()
-source = Path('Kernel/I386/MemoryBacking.HC')
-text = source.read_bytes()
-anchor = b'  if(!I386MemBackingFits(source,request))return FALSE;\n  before=source->used;'
-if text.count(anchor) != 1:
-    raise ValueError('Unexpected backing selection code')
-text = text.replace(anchor, b'''  if(!I386MemBackingFits(source,request))return FALSE;
+if args.small_public_pages:
+    source = Path('Kernel/I386/Memory.HC')
+    text = source.read_bytes()
+    anchor = b'(span+16*MEM_PAG_SIZE-1)>>MEM_PAG_BITS'
+    if text.count(anchor) != 1:
+        raise ValueError('Unexpected small-allocation page request')
+    text = text.replace(anchor, b'(span+8*MEM_PAG_SIZE-1)>>MEM_PAG_BITS')
+else:
+    source = Path('Kernel/I386/MemoryBacking.HC')
+    text = source.read_bytes()
+    anchor = b'  if(!I386MemBackingFits(source,request))return FALSE;\n  before=source->used;'
+    if text.count(anchor) != 1:
+        raise ValueError('Unexpected backing selection code')
+    text = text.replace(anchor, b'''  if(!I386MemBackingFits(source,request))return FALSE;
   if(pool->fallback && source==pool->heap && pool->owned_count &&
       size==I386_NATIVE_BACKING_QUANTUM &&
       I386MemBackingFits(source,request+I386_NATIVE_BACKING_QUANTUM)) {
@@ -27,10 +36,10 @@ text = text.replace(anchor, b'''  if(!I386MemBackingFits(source,request))return 
     request+=I386_NATIVE_BACKING_QUANTUM;
   }
   before=source->used;''')
-anchor = b'if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)'
-if text.count(anchor) != 1:
-    raise ValueError('Unexpected backing placement code')
-text = text.replace(anchor, b'''if(pool->owned_count && (size==I386_NATIVE_BACKING_QUANTUM ||
+    anchor = b'if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)'
+    if text.count(anchor) != 1:
+        raise ValueError('Unexpected backing placement code')
+    text = text.replace(anchor, b'''if(pool->owned_count && (size==I386_NATIVE_BACKING_QUANTUM ||
       pool->fallback && source==pool->heap && size==2*I386_NATIVE_BACKING_QUANTUM))''')
 overlay = args.out / 'overlay'
 changed = overlay / source

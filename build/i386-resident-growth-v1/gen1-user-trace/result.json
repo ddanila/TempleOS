@@ -1,0 +1,82 @@
+{
+  "result": "pass",
+  "disk_sha256": "6a22a7b642ab9c57f1223e3f93fed50d3b20a07a43f9ae33196b53d2e59c1da4",
+  "stages": {
+    "startup": {
+      "largest_payload": 231256,
+      "regions": {
+        "8017784": {
+          "occupied": true,
+          "used_pages": 16,
+          "pool": 2946192,
+          "heap_control": 2950348,
+          "task": 1509760
+        },
+        "8026560": {
+          "occupied": true,
+          "used_pages": 16,
+          "pool": 2946192,
+          "heap_control": 2950348,
+          "task": 1509760
+        }
+      }
+    },
+    "public_header": {
+      "largest_payload": 231256,
+      "regions": {
+        "8017784": {
+          "occupied": true,
+          "used_pages": 16,
+          "pool": 2946192,
+          "heap_control": 2950348,
+          "task": 1509760
+        },
+        "8026560": {
+          "occupied": true,
+          "used_pages": 16,
+          "pool": 2946192,
+          "heap_control": 2950348,
+          "task": 1509760
+        }
+      }
+    },
+    "report_definition": {
+      "largest_payload": 231256,
+      "regions": {
+        "8017784": {
+          "occupied": true,
+          "used_pages": 16,
+          "pool": 2946192,
+          "heap_control": 2950348,
+          "task": 1509760
+        },
+        "8026560": {
+          "occupied": true,
+          "used_pages": 16,
+          "pool": 2946192,
+          "heap_control": 2950348,
+          "task": 1509760
+        }
+      }
+    },
+    "user_fixture": {
+      "largest_payload": 231256,
+      "regions": {
+        "8017784": {
+          "occupied": true,
+          "used_pages": 16,
+          "pool": 2946192,
+          "heap_control": 2950348,
+          "task": 1509760
+        },
+        "8026560": {
+          "occupied": true,
+          "used_pages": 16,
+          "pool": 2946192,
+          "heap_control": 2950348,
+          "task": 1509760
+        }
+      }
+    }
+  }
+}

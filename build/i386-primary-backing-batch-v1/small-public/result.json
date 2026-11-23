@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "source_sha256": "6a22a7b642ab9c57f1223e3f93fed50d3b20a07a43f9ae33196b53d2e59c1da4",
+  "image_sha256": "104191e1ebbfc2a89954722c0936b15729e274ae172526aad8a3b290a975e503",
+  "boot_area_sha256": "dce8b18e05c628aea5ac4d85077721b49656ef2b0b9eb58959c82891db6a06c6",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1926,
+    "owned_sectors": 98162,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1926,
+    "owned_sectors": 98122,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification",
+  "memory_runtime_sha256": "53ffc3a3a7b91786a2a1577d0f677de5c03ed4be14ac73e8f678d3504f320093",
+  "replaced_sha256": {
+    "/Kernel/I386/Memory.HC": "3faca8db6bcc254bc4a5807dc67addb4190c3c453e61d8f63a5befc42e8fc8fd",
+    "/Modules/I386/MemoryRuntime.t32m": "53ffc3a3a7b91786a2a1577d0f677de5c03ed4be14ac73e8f678d3504f320093"
+  }
+}
