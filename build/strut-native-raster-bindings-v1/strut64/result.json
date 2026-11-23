@@ -1,0 +1,70 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "build/strut-native-raster-bindings-v1/candidate.img": "4775e7f52f10d207bd8df175909edfcef404f0496c5da5738129706da4d8ffd9",
+    "Kernel/KernelA.HH": "d29532576f1ead273cd83ff1aaa1187b45189f193ea122e1607645373a2adb35",
+    "Adam/AMathODE.HC": "702ccf50723c83219c1e1dfd4ec33e486fb3f17884107dd0b7fd879404317e99",
+    "build/strut-ode-power-v1/SerialODE.HC": "656687d45387342967212638a1a4aa3a03855b827a6d398e7477e4257cbb6722",
+    "build/strut-ode-power-v1/D3.HC": "5a92e2107e61cb05b835600d8d8f2ca423bbc53fa6af1799cfffc764b48673d6",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/strut-ode-button-v1/run.py": "aaf9fe499449ef8ea11e8d5ed46b89001bae379933a72bad0b972e9d236b72b5"
+  },
+  "scope": "Original ODE types with single-CPU derivative dispatch on native i386",
+  "type_slice_sha256": "2181b682f44dec99aed91e92022e30cb07efe28d7cd9554bf12f3e380f50b543",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "4775e7f52f10d207bd8df175909edfcef404f0496c5da5738129706da4d8ffd9",
+    "image_sha256": "98b8512f6286d18c5bc3b8b6a31689140fb4ee0325797cfde58a9cdd4b51931b",
+    "boot_area_sha256": "750bddaf6f6c18c23866a7bccf217fa8ddb7f82ff37778ff16ec940b8a83163f",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96165,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1907,
+      "owned_sectors": 96205,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/D3.HC": "5a92e2107e61cb05b835600d8d8f2ca423bbc53fa6af1799cfffc764b48673d6",
+      "/Probe/ODETypes.HH": "2181b682f44dec99aed91e92022e30cb07efe28d7cd9554bf12f3e380f50b543",
+      "/Probe/SerialODE.HC": "656687d45387342967212638a1a4aa3a03855b827a6d398e7477e4257cbb6722"
+    },
+    "added_attributes": {
+      "/Probe/D3.HC": 2048,
+      "/Probe/ODETypes.HH": 2048,
+      "/Probe/SerialODE.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "application_sha256": {
+    "Apps/Strut/Load.HC": "a549f65b246d1b506d257dcfd27a17d2faacce3d915b02b3356b2160d2fd4772",
+    "Apps/Strut/Run.HC": "c6d7643ad2827c09ee79298f3041d666a4b4799bcaa6673ba1500f99da604525",
+    "Apps/Strut/Strut.HC": "6010f698d19731c4a881f1470c7268a4514ef34ec46fcd72d130721c8b4adb72"
+  },
+  "stages": {
+    "types": "pass",
+    "d3": "pass",
+    "ode": "pass",
+    "autocomplete": "pass",
+    "settings": "pass",
+    "buttons": "pass",
+    "strut": "pass"
+  },
+  "stage": "strut",
+  "fresh_result": {
+    "column": 0,
+    "row": 20,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

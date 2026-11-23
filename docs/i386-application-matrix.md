@@ -1182,3 +1182,22 @@ searches match the original's complete 1,944-byte DolDoc output, including
 all 366 displayed matches. The capture removes only the exact native command
 echo after the output. Fresh arithmetic renders. See
 `build/wordsearch-dictionary-exact-v1/native64/result.json`.
+
+The original CtrlsBttn.HC loads on native i386, moving Strut to the
+Mat4x4Scale binding at line 93. A Console overlay publishes the existing
+Mat4x4Scale, DCSymmetry3Set, GrPlot3, and GrLine3 implementations. Its
+instruction audit passes. With the explicit ODE, scalar vector, settings and
+button dependencies, the unchanged Strut Load.HC compiles and fresh
+arithmetic renders. See `build/strut-native-raster-bindings-v1`.
+Physical input places two masses on both the pinned original and the native
+overlay. Neither run observes spring creation after the fixture's drag, so
+the paired check ends before play mode. See `build/strut-edit-play-v1`.
+
+The native single-CPU ODE probe emits mask 5 of the expected 7 for
+`x' = x`. It passes scalar vector checks and the five-step adaptive RK5
+check. The fixed-step RK4 assertion fails and the probe does not isolate
+which part of that assertion failed. See `build/strut-ode-numeric-v1`.
+
+The 128 MiB retained rebuild of the latest production image is still in
+progress at this checkpoint. The completed C5 generation results above
+apply to the earlier graphics and registry image.

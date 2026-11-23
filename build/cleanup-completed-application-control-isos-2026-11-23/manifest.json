@@ -1,0 +1,383 @@
+{
+  "files": [
+    {
+      "original": "build/application-menu-mouse-v1/original/original.iso",
+      "archive": "build/application-menu-mouse-v1/original/original.iso.zst",
+      "sha256": "9055060125b5f597306c27c78c9197709cfb25d4a25b00c5e4edb1ec6e7330b9",
+      "size": 46104576,
+      "reclaimed_bytes": 33189888,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/application-menu-mouse-v1/original/original.iso.zst",
+        "-o",
+        "build/application-menu-mouse-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/application-menu-repeat-v1/original/original.iso",
+      "archive": "build/application-menu-repeat-v1/original/original.iso.zst",
+      "sha256": "9f92a22d1f46cfea8141fcb5a646713d20d75fa24c8ff26833ed55104fe4234b",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/application-menu-repeat-v1/original/original.iso.zst",
+        "-o",
+        "build/application-menu-repeat-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/application-menu-repeat-v1/original-rerun/original.iso",
+      "archive": "build/application-menu-repeat-v1/original-rerun/original.iso.zst",
+      "sha256": "47992d1cc06b3b77e27c96c49cbf55ff7ccdb727c79776aa4344cf2d41cab9cc",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/application-menu-repeat-v1/original-rerun/original.iso.zst",
+        "-o",
+        "build/application-menu-repeat-v1/original-rerun/original.iso"
+      ]
+    },
+    {
+      "original": "build/async-popup-focus-inline-v1/original/original.iso",
+      "archive": "build/async-popup-focus-inline-v1/original/original.iso.zst",
+      "sha256": "6ce647a6100a5198228119040ef732a2903cffd8aafd7ee5854a9258d9be7b09",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/async-popup-focus-inline-v1/original/original.iso.zst",
+        "-o",
+        "build/async-popup-focus-inline-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/async-popup-focus-v1/original/original.iso",
+      "archive": "build/async-popup-focus-v1/original/original.iso.zst",
+      "sha256": "fc05e7aab66f7fe4774414bd9381c6fdc409a0a0e9ad2c7b26ec4821aaa27531",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/async-popup-focus-v1/original/original.iso.zst",
+        "-o",
+        "build/async-popup-focus-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/keepaway-draw-trace-v1/original/original.iso",
+      "archive": "build/keepaway-draw-trace-v1/original/original.iso.zst",
+      "sha256": "bb222ff75bc1bf0a56ab6f7dbc0b60acfd4ae355445df24a3dce6abce8078289",
+      "size": 46215168,
+      "reclaimed_bytes": 33284096,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-draw-trace-v1/original/original.iso.zst",
+        "-o",
+        "build/keepaway-draw-trace-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/keepaway-libraries-lazy-v1/original/original.iso",
+      "archive": "build/keepaway-libraries-lazy-v1/original/original.iso.zst",
+      "sha256": "c5ee50a77cd9c0c73393f56bde24526396d151819e6e7e32a37b377cce918849",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-libraries-lazy-v1/original/original.iso.zst",
+        "-o",
+        "build/keepaway-libraries-lazy-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/keepaway-play-v1/original/original.iso",
+      "archive": "build/keepaway-play-v1/original/original.iso.zst",
+      "sha256": "94d8157f4fbd20d34f17182fd9637cd2f32ed8fa303dae51266c240ad07b34c9",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-play-v1/original/original.iso.zst",
+        "-o",
+        "build/keepaway-play-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/keepaway-score-mouse-v1/original/original.iso",
+      "archive": "build/keepaway-score-mouse-v1/original/original.iso.zst",
+      "sha256": "474686e5382f322e1fa2a884ddcd7dba126b6ea6a4e784d30aed95ad3b633324",
+      "size": 46106624,
+      "reclaimed_bytes": 33189888,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-score-mouse-v1/original/original.iso.zst",
+        "-o",
+        "build/keepaway-score-mouse-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/keepaway-score-v1/original/original.iso",
+      "archive": "build/keepaway-score-v1/original/original.iso.zst",
+      "sha256": "474686e5382f322e1fa2a884ddcd7dba126b6ea6a4e784d30aed95ad3b633324",
+      "size": 46106624,
+      "reclaimed_bytes": 33189888,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-score-v1/original/original.iso.zst",
+        "-o",
+        "build/keepaway-score-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/keepaway-shot-animation-v1/original/original.iso",
+      "archive": "build/keepaway-shot-animation-v1/original/original.iso.zst",
+      "sha256": "6d14539ed2e7bfdf10ff433df79e07b3e42237563520c960a85a171a188f0b66",
+      "size": 46108672,
+      "reclaimed_bytes": 33189888,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-shot-animation-v1/original/original.iso.zst",
+        "-o",
+        "build/keepaway-shot-animation-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/keepaway-shot-host-observer-v1/original/original.iso",
+      "archive": "build/keepaway-shot-host-observer-v1/original/original.iso.zst",
+      "sha256": "945edeab8ab306e03ffca11dbac0d8f69e108edc99741dcbe034ce9d5bb8833e",
+      "size": 46108672,
+      "reclaimed_bytes": 33189888,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-shot-host-observer-v1/original/original.iso.zst",
+        "-o",
+        "build/keepaway-shot-host-observer-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/keepaway-shot-trajectory-v1/original/original.iso",
+      "archive": "build/keepaway-shot-trajectory-v1/original/original.iso.zst",
+      "sha256": "30969c715dcdb0a8a4026e2284fff121432ee861b6d4f008b542bd5b71aa76cd",
+      "size": 46108672,
+      "reclaimed_bytes": 33189888,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-shot-trajectory-v1/original/original.iso.zst",
+        "-o",
+        "build/keepaway-shot-trajectory-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/keepaway-sort-slots-v1/original/original.iso",
+      "archive": "build/keepaway-sort-slots-v1/original/original.iso.zst",
+      "sha256": "15bd4274cbaceceac7b5bad3863eac587e7c668f8cc3281fad7f3a28c04f6bae",
+      "size": 46215168,
+      "reclaimed_bytes": 33288192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-sort-slots-v1/original/original.iso.zst",
+        "-o",
+        "build/keepaway-sort-slots-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/keepaway-sprites-v1/original/original.iso",
+      "archive": "build/keepaway-sprites-v1/original/original.iso.zst",
+      "sha256": "1433f272a213d23752366d557341fa532aec46adb096ba6e2ee7f39ae9206cb1",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/keepaway-sprites-v1/original/original.iso.zst",
+        "-o",
+        "build/keepaway-sprites-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/logic-interaction-return-v1/original/original.iso",
+      "archive": "build/logic-interaction-return-v1/original/original.iso.zst",
+      "sha256": "31056d68ee23b6098043a398aead5b7e170a831d5bc278ac61e08bb591bef8fb",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/logic-interaction-return-v1/original/original.iso.zst",
+        "-o",
+        "build/logic-interaction-return-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/logic-interaction-v1/original/original.iso",
+      "archive": "build/logic-interaction-v1/original/original.iso.zst",
+      "sha256": "31056d68ee23b6098043a398aead5b7e170a831d5bc278ac61e08bb591bef8fb",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/logic-interaction-v1/original/original.iso.zst",
+        "-o",
+        "build/logic-interaction-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/logic-lazy-load-v1/original/original.iso",
+      "archive": "build/logic-lazy-load-v1/original/original.iso.zst",
+      "sha256": "8c0d0f52e91c1b678d6ef545160b4779bd7aa4569126147580cd66b67e570a24",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/logic-lazy-load-v1/original/original.iso.zst",
+        "-o",
+        "build/logic-lazy-load-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/psalmody-arrival-duration-v1/original/original.iso",
+      "archive": "build/psalmody-arrival-duration-v1/original/original.iso.zst",
+      "sha256": "622243c0a24908b8667ef85a94903ae545f445b49dcc8168c7506ccc4b8fa888",
+      "size": 46108672,
+      "reclaimed_bytes": 33185792,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/psalmody-arrival-duration-v1/original/original.iso.zst",
+        "-o",
+        "build/psalmody-arrival-duration-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/psalmody-redraw-gate-v1/original/original.iso",
+      "archive": "build/psalmody-redraw-gate-v1/original/original.iso.zst",
+      "sha256": "e5d813eb512164fda67bea98a235f819b06b881792f90bfa18ee566a655b3be2",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/psalmody-redraw-gate-v1/original/original.iso.zst",
+        "-o",
+        "build/psalmody-redraw-gate-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/psalmody-redraw-profile-v1/original/original.iso",
+      "archive": "build/psalmody-redraw-profile-v1/original/original.iso.zst",
+      "sha256": "3b643046a23ffb4cce74920d3a5c01fff690c5bfef27da2891b154dad023c4c6",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/psalmody-redraw-profile-v1/original/original.iso.zst",
+        "-o",
+        "build/psalmody-redraw-profile-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/psalmody-timing-trace-v1/original/original.iso",
+      "archive": "build/psalmody-timing-trace-v1/original/original.iso.zst",
+      "sha256": "5017c4de2f99b37cee243a831ee2fdad3fa0736cd1df6a573f05008124837d28",
+      "size": 46106624,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/psalmody-timing-trace-v1/original/original.iso.zst",
+        "-o",
+        "build/psalmody-timing-trace-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/vocabulary-quiz-dismiss-v1/original/original.iso",
+      "archive": "build/vocabulary-quiz-dismiss-v1/original/original.iso.zst",
+      "sha256": "b57239277fa987c1738ffde0c2a8f38d82c5c044484dfab70391f0274fca42d4",
+      "size": 46583808,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-quiz-dismiss-v1/original/original.iso.zst",
+        "-o",
+        "build/vocabulary-quiz-dismiss-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/vocabulary-quiz-v1/original/original.iso",
+      "archive": "build/vocabulary-quiz-v1/original/original.iso.zst",
+      "sha256": "b57239277fa987c1738ffde0c2a8f38d82c5c044484dfab70391f0274fca42d4",
+      "size": 46583808,
+      "reclaimed_bytes": 33193984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-quiz-v1/original/original.iso.zst",
+        "-o",
+        "build/vocabulary-quiz-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/vocabulary-quiz-visible-v1/original/original.iso",
+      "archive": "build/vocabulary-quiz-visible-v1/original/original.iso.zst",
+      "sha256": "b57239277fa987c1738ffde0c2a8f38d82c5c044484dfab70391f0274fca42d4",
+      "size": 46583808,
+      "reclaimed_bytes": 33189888,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/vocabulary-quiz-visible-v1/original/original.iso.zst",
+        "-o",
+        "build/vocabulary-quiz-visible-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/wordsearch-dictionary-v1/original/original.iso",
+      "archive": "build/wordsearch-dictionary-v1/original/original.iso.zst",
+      "sha256": "6e0ec53dbcd3a83d1005a64d91011608b411df85e37c21c2553c61e29a9a77d9",
+      "size": 46589952,
+      "reclaimed_bytes": 33202176,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/wordsearch-dictionary-v1/original/original.iso.zst",
+        "-o",
+        "build/wordsearch-dictionary-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/wordsearch-sort-v1/original/original.iso",
+      "archive": "build/wordsearch-sort-v1/original/original.iso.zst",
+      "sha256": "274de66f040e0b0a35ad059b3132d79a4bfbb0c3e6d284be7d7b8ee3afbffa53",
+      "size": 46114816,
+      "reclaimed_bytes": 33198080,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/wordsearch-sort-v1/original/original.iso.zst",
+        "-o",
+        "build/wordsearch-sort-v1/original/original.iso"
+      ]
+    }
+  ],
+  "reclaimed_bytes": 896397312
+}

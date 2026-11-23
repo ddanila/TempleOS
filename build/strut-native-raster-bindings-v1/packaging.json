@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "source_sha256": "1fd1c1b93a04069a4300aa18caf2637aa23c2f804ac5c897fc849618735dfa9b",
+  "image_sha256": "4775e7f52f10d207bd8df175909edfcef404f0496c5da5738129706da4d8ffd9",
+  "boot_area_sha256": "750bddaf6f6c18c23866a7bccf217fa8ddb7f82ff37778ff16ec940b8a83163f",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1904,
+    "owned_sectors": 96163,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1904,
+    "owned_sectors": 96165,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Publish existing native 3D raster, matrix and symmetry operations",
+  "candidate_sha256": "4775e7f52f10d207bd8df175909edfcef404f0496c5da5738129706da4d8ffd9",
+  "instruction_audit": "pass",
+  "prototype": false
+}
