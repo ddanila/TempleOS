@@ -3057,3 +3057,11 @@ corpus advanced past task reuse after the fix and reached its ATA
 handoff check. The independent
 [task heap corpus](../build/i386-scheduler-ode-reap-v1/task-heaps/result.json)
 passed, including cleanup and backing reclamation.
+
+The ATA fixture now checks the root task's FIFO wait through the final
+worker's channel release. It also checks ownership, I/O lock accounting
+and interrupt-state restoration, while retaining the nonowner-release
+and spurious-wake checks. The
+[full native task corpus](../build/i386-scheduler-ode-reap-v1/tasks-root-wait/result.json)
+passed with the ODE reaper repair, as did the
+[8 MiB User startup workflow](../build/i386-scheduler-ode-reap-v1/user8/result.json).

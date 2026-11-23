@@ -44,14 +44,18 @@ I64 AtaChannelTest()
       ata_channel.head->task!=&ata_tasks[0]->task || ata_channel.tail->task!=&ata_tasks[2]->task) return 66;
   if(!I386AtaChannelRelease(&ata_channel) || scheduler.current->io_locks ||
       ata_channel.owner!=&ata_tasks[0]->task || ata_tasks[0]->task.io_locks!=1 ||
-      I386AtaChannelAcquire(&ata_channel) || I386AtaChannelRelease(&ata_channel)) return 67;
+      I386AtaChannelRelease(&ata_channel)) return 67;
   for(i=0;i<3;i++) {
     if(!I386SchedYield(&scheduler) || errors || ata_channel.owner!=&ata_tasks[i]->task ||
         ata_tasks[i]->task.finished || ata_tasks[i]->task.io_locks!=1 ||
-        I386TaskDestroy(ata_tasks[i]) || I386AtaChannelAcquire(&ata_channel)) return 68;
+        I386TaskDestroy(ata_tasks[i]) || I386AtaChannelRelease(&ata_channel)) return 68;
     if((i==0 && ata_order!=1) || (i==1 && ata_order!=12) || (i==2 && ata_order!=123)) return 69;
   }
-  if(!I386SchedYield(&scheduler) || errors || ata_done!=3 || ata_channel.owner ||
+  //Root waits in FIFO order by yielding without leaving the runnable ring.
+  saved=GetRFlags;
+  if(!I386AtaChannelAcquire(&ata_channel) || ata_channel.owner!=scheduler.current ||
+      scheduler.current->io_locks!=1 || (GetRFlags&0x200)!=(saved&0x200) ||
+      !I386AtaChannelRelease(&ata_channel) || errors || ata_done!=3 || ata_channel.owner ||
       ata_channel.head || ata_channel.tail || scheduler.current->io_locks) return 70;
   for(i=0;i<3;i++) {
     if(!ata_tasks[i]->task.finished || ata_tasks[i]->task.io_locks) return 71;
