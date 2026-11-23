@@ -1,0 +1,40 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/keepaway-score-mouse-v1/run.py": "a60eeabee5bfcd20ceb08bc110692d94bb2dd1d83184d55e914ae7260d4ad79e",
+    "/home/ddanila/fun/TempleOS/build/keepaway-score-mouse-v1/Probe.HC": "216168ec12d84bfaa96ed97cdad13cb3d23380c4830f09047d59f8ffbc4ffae6",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/keepaway-libraries-lazy-v1/full/kernel.img": "31b628ce18ccd080c310476bdee2ee596b2b86ca8df4f499dcbb0198ce60dabc"
+  },
+  "scope": "KeepAway scoring with controlled ball placement, physical left-button shot input, and caller recovery",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "31b628ce18ccd080c310476bdee2ee596b2b86ca8df4f499dcbb0198ce60dabc",
+    "image_sha256": "aeef1fd982b3aed3e350345e122cc9e68ac31178187979f4f8226d8b15564d31",
+    "boot_area_sha256": "b37ceed39d292ffb299b739c94431d785d21c9f77cbc467d3d610cedd80403bc",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96136,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/KeepAwayProbe.HC": "216168ec12d84bfaa96ed97cdad13cb3d23380c4830f09047d59f8ffbc4ffae6"
+    },
+    "added_attributes": {
+      "/KeepAwayProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "error": "Missing guest marker: KEEP shot started\n",
+  "inputs_unchanged": true
+}

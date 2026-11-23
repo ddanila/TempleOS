@@ -10404,6 +10404,13 @@
           "result": "pass",
           "evidence": "build/keepaway-sort-production-v1/native64/result.json",
           "scope": "Normal Load.HC path with explicit libraries, arena and border rendering, jump, restart, exit and caller recovery. Complete gameplay and normal startup library integration remain open."
+        },
+        {
+          "target": "original-native-keepaway-controlled-scoring",
+          "command": "python3 build/keepaway-score-v1/run.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/keepaway-score-v1/scoring-receipt.json",
+          "scope": "Both systems award 2 points for a handoff and 6 for a recent pass under controlled ball placement. The following native Space-key shot does not complete."
         }
       ]
     },
@@ -10549,6 +10556,13 @@
           "result": "pass",
           "evidence": "build/i386-logic-document-native/result.json",
           "scope": "Same actual source document at 64 MiB; not compiling it or general document compatibility"
+        },
+        {
+          "target": "native-integrated-logic-synthesis",
+          "command": "python3 build/logic-synthesis-current-v1/run.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/logic-synthesis-current-v1/native64/result.json",
+          "scope": "Ten unchanged original gate-synthesis cases pass on native 64 MiB after explicit library loading. Interactive drawing and application launch remain open."
         }
       ]
     },

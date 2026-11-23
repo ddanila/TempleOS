@@ -1,0 +1,53 @@
+{
+  "result": "pass",
+  "scope": "Original ten-case Logic synthesis oracle on native i386",
+  "input_sha256": {
+    "build/keepaway-libraries-lazy-v1/full/kernel.img": "31b628ce18ccd080c310476bdee2ee596b2b86ca8df4f499dcbb0198ce60dabc",
+    "tests/guest/i386-logic-reference/Once.HC": "e07bbb2c9bb3b81db155488b3c0de56d8df9729a76b113a62efdbbdc2fafcf00",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/logic-synthesis-current-v1/run.py": "219d3e2157fd75b4f29bf1e58132b57f6dcf4f9cb9707146a0c237197779db82"
+  },
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "31b628ce18ccd080c310476bdee2ee596b2b86ca8df4f499dcbb0198ce60dabc",
+    "image_sha256": "ae4c83c5ca61b5cde4c165dc78c408ff054c9d18aea7bb9c8cf60aeb4f908c85",
+    "boot_area_sha256": "b37ceed39d292ffb299b739c94431d785d21c9f77cbc467d3d610cedd80403bc",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96136,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/LogicOracle.HC": "455f50e5ea510afa60bfbc74a7f80c34f66868ff40aeb5b732d294ef18c9a803"
+    },
+    "added_attributes": {
+      "/LogicOracle.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "application_sha256": {
+    "Apps/Logic/Load.HC": "a5e00f6ad4ad8a01df979287a1c39a85b03a12dfd504e241f32ab56740da4ade",
+    "Apps/Logic/Logic.HC": "57006674862cef221ea00c72fdcb7e32d0d57584974132466cd27f1dc98a507a",
+    "Apps/Logic/Run.HC": "16ca744d0e5f5f777ab9e8b29c2c297f3e5be649af7c9cdb8eeb1fa56d11da5e"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 37,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "mask": 1023,
+  "inputs_unchanged": true
+}

@@ -2719,3 +2719,10 @@ load. Its receipt is in
 `build/i386-graphics-registry-integration/retained128/result.json`.
 The current-image two-generation harness is running. This rebuild input
 predates the KeepAway source changes.
+
+Generation one now passes installation of all nine retained modules and
+an 8 MiB boot on the integrated runtime image. The managed-pointer boot
+matches both interactive VGA checkpoints and measures 59.68 seconds,
+within the 60-second budget for this installer run. The flat-kernel
+self-host build is underway. See
+`build/i386-graphics-registry-integration/generations128/gen1-install`.

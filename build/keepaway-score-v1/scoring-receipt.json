@@ -1,0 +1,24 @@
+{
+  "result": "pass",
+  "scope": "Controlled scoring check before the separate shot input phase",
+  "targets": {
+    "original": {
+      "scoring_totals": [
+        2,
+        8
+      ],
+      "shot_marker": true,
+      "debug_sha256": "965acfaf80be5dc963295977388fefb0f6db84500ee16ddd6275f1c27cb89393",
+      "workflow_result": "pass"
+    },
+    "native64": {
+      "scoring_totals": [
+        2,
+        8
+      ],
+      "shot_marker": false,
+      "debug_sha256": "7ead1b255a97d35f95a30902fc339637f59702da204fdee37199a37e4d33089c",
+      "workflow_result": "fail"
+    }
+  }
+}

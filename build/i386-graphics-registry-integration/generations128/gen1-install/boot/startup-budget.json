@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "startup_seconds": 59.67577700299444,
+  "budget_seconds": 60,
+  "over_budget_seconds": 0,
+  "evidence": "/home/ddanila/fun/TempleOS/build/i386-graphics-registry-integration/generations128/gen1-install/boot/result.json",
+  "evidence_sha256": "8447ebd583f7559d9d768279975072857dd468d6d9b3d02d9af224485e59ff64",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}

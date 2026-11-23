@@ -979,3 +979,20 @@ The second launch reuses the exact autocomplete and task-settings symbols from
 the first. No library commands are needed before either launch. The same image
 passes the 8 MiB User smoke test in 50.43 seconds. The full image audit, launch
 and startup receipts are in `build/keepaway-libraries-lazy-v1`.
+
+The original ten-case Logic synthesis oracle now passes on the current native
+64 MiB image. All three application files match the reference. After loading
+autocomplete and TaskSettings, the unchanged Logic code produces mask 1023
+and the prompt accepts fresh arithmetic. The interactive Logic workflow and
+automatic library loading remain open. See
+`build/logic-synthesis-current-v1/native64/result.json`.
+
+With controlled ball placement, original and native KeepAway both award
+2 points for a handoff and 6 for a recent pass, reaching a total of 8.
+The original accepts Space to shoot. The native run times out waiting for
+the same shot transition after Space. These results are in
+`build/keepaway-score-v1`. The scoring check uses controlled game state.
+
+Using a left-button press in place of Space gives the same split. The original
+starts the shot, while the native run records both scores and times out
+waiting for the shot transition. See `build/keepaway-score-mouse-v1`.
