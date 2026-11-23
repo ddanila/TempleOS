@@ -1072,3 +1072,13 @@ updates the flight deadline. Both runs return to the prompt. The result
 establishes an alternate verified KVM profile for this workflow. The default
 KVM stall still needs a root-cause fix. See
 `build/keepaway-shot-irq-controls-v2`.
+
+The Vocabulary quiz reference opens a definition after a numbered answer,
+dismisses the popup, and exits at the next question. Native initialization
+uses the original compressed word archive and the bundled definitions.
+The native run renders a question, accepts a numbered answer, opens the
+definition popup, and renders the next question after dismissal. It times
+out waiting for quiz exit after the next Escape. The native final capture
+shows that fresh question and its unanswered prompt. See
+`build/vocabulary-quiz-dismiss-v1`. The next test waits for the fresh
+unanswered prompt before sending Escape.
