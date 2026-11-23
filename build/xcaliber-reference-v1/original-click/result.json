@@ -1,0 +1,10 @@
+{
+  "result": "pass",
+  "fixture_sha256": "02c9c5d8f6ffaf58e60a6df80ba8346281dab6d76224d64d3a2b5281ba3837ef",
+  "app_source_sha256": "fd7c92aa35481075188a24c9222420739adf491fcfb54823eabfbe4e3410bd32",
+  "level": 1,
+  "enemies": 4,
+  "score": 0,
+  "gun_fired": true,
+  "returned": true
+}

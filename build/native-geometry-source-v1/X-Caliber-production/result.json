@@ -1,0 +1,38 @@
+{
+  "result": "fail",
+  "package": {
+    "result": "pass",
+    "source_sha256": "b89e2239e6b63648be100811597c1209c019f58dd8a9bd864c8b53160361e864",
+    "image_sha256": "90faf5c40e0a131b54b6e6822d4f13d3df2cf53cf510aa6ee0c4480e2c2c00ec",
+    "boot_area_sha256": "dac2696df9219e904db9545b30069852e1e3f3c3880f71ad963e666b258d81a5",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1925,
+      "owned_sectors": 96201,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1927,
+      "owned_sectors": 96206,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/ExtraVectors.HC": "0d4eac4c4156f9daf4e9236950f4fe0b4610aca2548a8335f42c6a4d8c0731d6",
+      "/PublicGeometrySource.HC": "c335b16c5bbcb6c6d122beae9c646d983e29b89240f4429f9856006dc1d5961e"
+    },
+    "added_attributes": {
+      "/ExtraVectors.HC": 2048,
+      "/PublicGeometrySource.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "completed_commands": [
+    "#include \"C:/PublicGeometrySource.HC\"",
+    "AdamFile(\"/Kernel/I386/NativeODE.HC\",FALSE);",
+    "#include \"C:/ExtraVectors.HC\""
+  ],
+  "command": "#include \"C:/Apps/X-Caliber/Load.HC\"",
+  "error": "INPUT LINE #include \"C:/Apps/X-Caliber/Load.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND SYMBOL WARNING unused extern Ship\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000000 warnings 0000000000000001\nCOMMAND ERROR\n"
+}

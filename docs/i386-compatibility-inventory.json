@@ -12476,9 +12476,29 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Start level one, dismiss the solar-storm prompt, launch play, fire with Space and return with Escape.",
+      "oracle": {
+        "tool": "build/xcaliber-reference-v1/run.py",
+        "checks": [
+          "Observe level one with four enemies and zero score, a gun reload transition, and return from the game."
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-xcaliber-launch-and-fire",
+          "command": "python3 build/xcaliber-reference-v1/run.py --out OUT",
+          "result": "pass",
+          "evidence": "build/xcaliber-reference-v1/original-click/result.json",
+          "scope": "Pinned original Load.HC and XCaliber call, popup dismissal, level one gun and Escape."
+        },
+        {
+          "target": "native-xcaliber-compile-frontier",
+          "command": "python3 build/native-geometry-source-v1/run.py DISK --app X-Caliber --split-xcaliber --out OUT",
+          "result": "fail",
+          "evidence": "build/native-geometry-source-v1/X-Caliber-split-draw/result.json",
+          "scope": "The split preserves the DolDoc sprite records. The draw routine compiles and the following Explosion routine throws a compiler exception."
+        }
+      ]
     },
     {
       "path": "Apps/X-Caliber/X-Caliber.HC",

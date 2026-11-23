@@ -10,6 +10,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('disk',type=Path)
 parser.add_argument('--app', choices=('GrModels','ToTheFront','X-Caliber'), required=True)
 parser.add_argument('--serial-visibility', action='store_true')
+parser.add_argument('--xcaliber-square', action='store_true')
+parser.add_argument('--split-xcaliber', action='store_true')
 parser.add_argument('--split-fire', action='store_true')
 parser.add_argument('--fix-indirect-head', action='store_true')
 parser.add_argument('--original-wrap', action='store_true')
@@ -26,6 +28,10 @@ parser.add_argument('--human-match', action='store_true')
 parser.add_argument('--combined-loader', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
+if args.xcaliber_square and not args.split_xcaliber:
+    parser.error('--xcaliber-square requires --split-xcaliber')
+if args.split_xcaliber and args.app != 'X-Caliber':
+    parser.error('--split-xcaliber requires --app X-Caliber')
 if args.serial_visibility and args.app != 'ToTheFront':
     parser.error('--serial-visibility requires --app ToTheFront')
 if args.split_fire and not args.serial_visibility:
@@ -134,6 +140,25 @@ if args.app=='ToTheFront':
                 extras[path] = source
 if args.app=='X-Caliber':
     extras['/ExtraVectors.HC']=Path('build/xcaliber-vector-load-v1/Vector.HC').read_bytes()
+    if args.split_xcaliber:
+        source = Path('Apps/X-Caliber/X-Caliber.HC').read_bytes()
+        text, separator, assets = source.partition(b'\0')
+        if not separator:
+            raise ValueError('X-Caliber is missing its DolDoc binary records')
+        if args.xcaliber_square:
+            square = b'd=250000*tons/d`2;'
+            if text.count(square) != 1:
+                raise ValueError('Expected one X-Caliber explosion square')
+            text = text.replace(square, b'd=250000*tons/Sqr(d);')
+        declarations = (b'U0 MissileNew(', b'Ship *ShipNew(', b'U0 MissileDel(',
+                        b'U0 DrawIt(', b'U0 Explosion(', b'Ship TargetGet(', b'U0 MyDerivative(',
+                        b'U0 CheckDamage(', b'U0 SolarFlares(', b'U0 XCaliber(')
+        boundaries = [0, *(text.index(name) for name in declarations), len(text)]
+        xcaliber_units = []
+        for index, (start, end) in enumerate(zip(boundaries, boundaries[1:])):
+            path = f'/Apps/X-Caliber/Probe{index}.HC'
+            extras[path] = text[start:end] + separator + assets
+            xcaliber_units.append(path)
 math=Path('Adam/Gr/GrMath.HC').read_bytes()
 if args.original_curves:
     sound_source = Path('Adam/Snd/SndMath.HC').read_bytes()
@@ -143,20 +168,13 @@ if args.original_curves:
     extras['/TTFCurves.HC'] = b'\n'.join((
         b'#include "/Adam/PolarCore.HC"', saw, walkers,
         curves[:curves.index(b'public Bool GrRegPoly3(')]))
-line=math[math.index(b'public Bool Line('):math.index(b'#help_index "Graphics/Math/3D Transformation"')]
 sprite=Path('Adam/Gr/SpriteRecordsCore.HC').read_bytes()
 sizes=sprite[:sprite.index(b'\n};')+4]
-point=Path('Adam/Gr/GrPointClipCore.HC').read_bytes()
-plot=point[point.index(b'public Bool GrPlot('):point.index(b'Bool GrPlot1(')]
-peek=point[point.index(b'public I64 GrPeek('):]
-coverage=Path('Adam/Gr/GrPixelCoverageCore.HC').read_bytes()
-geometry=b"""#include "/Adam/Gr/Gr.HH"
-#include "/Adam/Gr/GrBlotCore.HC"
+geometry=b"""#include "/Kernel/I386/NativeTTFGeometry.HC"
 #define GR_SCALE (1<<32)
 #include "/Adam/Gr/MatrixRotationCore.HC"
 """
-geometry+=coverage+b"\nBool IsPixCovered0(CTask *task,I64 x,I64 y) {return GrPixelCoveredCore(task,x,y);}\n"
-geometry+=b"\n".join((line,sizes,plot,peek))
+geometry+=sizes
 extras['/PublicGeometrySource.HC']=geometry
 if args.combined_loader:
     app = '/Apps/ToTheFront'
@@ -218,6 +236,12 @@ try:
             if unit == 'TTFVis' and args.visibility_fixture:
                 commands.append('#include "C:/TTFVisibility.HC"')
                 break
+    elif args.split_xcaliber:
+        commands.extend((
+            'Cd("C:/Apps/X-Caliber");',
+            '#include "C:/Apps/X-Caliber/XCCtrls.HC"',
+            *(f'#include "C:{path}"' for path in xcaliber_units),
+        ))
     elif args.vertex_trace:
         commands.append('#include "C:/BallGenTrace.HC"')
     else:

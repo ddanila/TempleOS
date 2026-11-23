@@ -2163,3 +2163,14 @@ and the largest block by 248 bytes. The unchanged 8 MiB User test
 still rejects the same allocation. The overlay stays experimental.
 See `build/i386-primary-backing-batch-v1/small-public-user8/result.json`
 and `build/i386-primary-backing-batch-v1/small-public-stock-user8/result.json`.
+
+The pinned original X-Caliber reference dismisses the solar-storm
+prompt with the mouse, starts level one with four enemies and zero
+score, fires the gun with Space, and returns on Escape. The ordinary
+native loader on the current full image reproduces the compiler
+exception. Compiling source sections with the original DolDoc binary
+records attached allows the draw routine to compile and isolates
+the next exception to the standalone Explosion routine. A diagnostic
+using Sqr in its denominator is running. See
+`build/xcaliber-reference-v1/original-click/result.json` and
+`build/native-geometry-source-v1/X-Caliber-split-draw/result.json`.
