@@ -6453,7 +6453,21 @@
         "-o",
         "build/i386-power-table-v6/recovery/working.img"
       ]
+    },
+    {
+      "original": "build/i386-power-table-v6/recovery-include/working.img",
+      "archive": "build/i386-power-table-v6/recovery-include/working.img.zst",
+      "sha256": "43527d8d18cf6695cdf7800e0876d8ba6d083fb24b692311120a26c57b9af002",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v6/recovery-include/working.img.zst",
+        "-o",
+        "build/i386-power-table-v6/recovery-include/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 22485610496
+  "reclaimed_bytes": 22539014144
 }

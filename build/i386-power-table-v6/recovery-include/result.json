@@ -1,0 +1,40 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "5906cfca97ec183ffc6aff695492b45b0d53742973f71a569a47135370be7cba",
+    "image_sha256": "43527d8d18cf6695cdf7800e0876d8ba6d083fb24b692311120a26c57b9af002",
+    "boot_area_sha256": "924d6e367866cb4a8cde5a5986f7c881dcbf2dd74c3fba41bb2f71f2000652f3",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1926,
+      "owned_sectors": 96215,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1927,
+      "owned_sectors": 96216,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/RecoverPow.HC": "0ee96f7123a5aebf226f1871cf07786079b67e3181b7adc1d2ab707a4a5c113b"
+    },
+    "added_attributes": {
+      "/RecoverPow.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "input_sha256": "5906cfca97ec183ffc6aff695492b45b0d53742973f71a569a47135370be7cba",
+  "first_rejection": "INPUT LINE RecoverPow(3,2);\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nINPUT REJECT exception 0064616F4C776F50 errors 0000000000000000 warnings 0000000000000000\nCOMMAND ERROR\n",
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 18,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

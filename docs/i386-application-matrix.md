@@ -2449,3 +2449,9 @@ rejected publications. The command compiler matches 98 original
 results and public COCCompile matches all 46 trace values with zero
 net caller heap allocation. See
 `build/i386-power-table-v6/qualification.json` and its receipts.
+
+Removing the on-demand source from a disposable guest disk rejects
+the first power expression with PowLoad. Restoring the same file
+lets the same expression produce the original bits, and fresh
+arithmetic still executes. See
+`build/i386-power-table-v6/recovery-include/result.json`.
