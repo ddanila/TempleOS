@@ -37,4 +37,5 @@ public _extern _DC_SYMMETRY3_SET Bool DCSymmetry3Set(CDC *dc=gr.dc,I64 x1,I64 y1
 public _extern _GR_PLOT3 Bool GrPlot3(CDC *dc=gr.dc,I64 x,I64 y,I64 z);
 public _extern _GR_LINE3 Bool GrLine3(CDC *dc=gr.dc,I64 x1,I64 y1,I64 z1,I64 x2,I64 y2,I64 z2,
     I64 step=1,I64 start=0);
+public _extern _GR_RECT3 I64 GrRect3(CDC *dc=gr.dc,I64 x,I64 y,I64 z,I64 w,I64 h);
 #endif

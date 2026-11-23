@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "native": false,
+  "application_sha256": {
+    "Apps/Titanium/Load.HC": "819915848549655219b606c3665463a232ff2eeb4bd6b1c85ee37e8b821ef254",
+    "Apps/Titanium/Run.HC": "cf0f24a8ad110a81a48ff34a148146fd5557f27a18595673d103e5a982f4c91b",
+    "Apps/Titanium/Titanium.HC": "ef3c58b27ab67196da8c4957f39c81100b9f8663dbaebe1e0d8dfd5accb118d4"
+  },
+  "play_terrain_pixels": 275578,
+  "fire_terrain_pixels": 265590
+}

@@ -2565,3 +2565,21 @@ image, both physical menu selections produce exact original DolDoc
 mesh bytes with the packaged ManGen, BallGen and Models sources. The
 [production comparison](../build/i386-wide-pi-production-v3/qualification.json)
 records the default-form workloads and the target image.
+
+### Titanium packaged launch and play
+
+The bundled native loader supplies task settings, model geometry and angle
+wrapping. The console publishes its existing `GrRect3` implementation.
+The draw callback uses the same unit and explosion loops as the x86-64
+workers. The i386 path runs that work on one core and restores the task's
+random seed after drawing.
+
+The pinned original, the current application on the pinned x86-64 system
+and the bundled i386 image all displayed instructions, entered play,
+rendered changing frames during Right and Space input, and returned on
+Escape. The i386 screen displayed a nonzero bullet count during firing
+and fresh arithmetic after return. The unchanged 8 MiB User startup
+also passed. The
+[qualification receipt](../build/titanium-bundled-loader-v1/qualification.json)
+records the image, packaged source hashes and render checks. Scoring,
+finish and high-score persistence remain open.

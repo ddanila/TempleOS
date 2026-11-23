@@ -11970,14 +11970,25 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": "Launch the bundled Titanium instructions, enter play, hold Right and Space, then exit with Escape.",
+      "oracle": "Instruction title, two rendered play frames with the dithered terrain and return to the caller after Escape.",
       "tests": [
         {
           "target": "native-titanium-load",
           "result": "fail",
           "evidence": "build/production-span-followup-load-v1/Titanium/result.json",
           "scope": "Titanium.HC line 277 requires mp_cnt. The original loader has yet to complete."
+        },
+        {
+          "target": "original-titanium-physical-launch",
+          "result": "pass",
+          "evidence": "build/titanium-bundled-loader-v1/original-physical/result.json"
+        },
+        {
+          "target": "native-titanium-physical-launch",
+          "result": "pass",
+          "evidence": "build/titanium-bundled-loader-v1/qualification.json",
+          "scope": "Packaged Run.HC, physical keyboard input, changing play frames and fresh arithmetic after Escape. Full scoring and persistence remain open."
         }
       ]
     },
@@ -11996,9 +12007,21 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch the bundled Titanium instructions, enter play, hold Right and Space, then exit with Escape.",
+      "oracle": "Instruction title, two rendered play frames with the dithered terrain and return to the caller after Escape.",
+      "tests": [
+        {
+          "target": "original-titanium-physical-launch",
+          "result": "pass",
+          "evidence": "build/titanium-bundled-loader-v1/original-physical/result.json"
+        },
+        {
+          "target": "native-titanium-physical-launch",
+          "result": "pass",
+          "evidence": "build/titanium-bundled-loader-v1/qualification.json",
+          "scope": "Packaged Run.HC, physical keyboard input, changing play frames and fresh arithmetic after Escape. Full scoring and persistence remain open."
+        }
+      ]
     },
     {
       "path": "Apps/Titanium/Titanium.HC",
@@ -12013,9 +12036,21 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch the bundled Titanium instructions, enter play, hold Right and Space, then exit with Escape.",
+      "oracle": "Instruction title, two rendered play frames with the dithered terrain and return to the caller after Escape.",
+      "tests": [
+        {
+          "target": "original-titanium-physical-launch",
+          "result": "pass",
+          "evidence": "build/titanium-bundled-loader-v1/original-physical/result.json"
+        },
+        {
+          "target": "native-titanium-physical-launch",
+          "result": "pass",
+          "evidence": "build/titanium-bundled-loader-v1/qualification.json",
+          "scope": "Packaged Run.HC, physical keyboard input, changing play frames and fresh arithmetic after Escape. Full scoring and persistence remain open."
+        }
+      ]
     },
     {
       "path": "Apps/ToTheFront/AIs/Human.HC",

@@ -1,0 +1,25 @@
+{
+  "disk_sha256": "39fe58e011e6b9ce78552eaba431159e095c3be8da55dc4c693706c6e7a0db0f",
+  "base_revision": "425cfb395384874da51efd1d42a8a76aaf616b59",
+  "source_sha256": {
+    "Apps/Titanium/Load.HC": "819915848549655219b606c3665463a232ff2eeb4bd6b1c85ee37e8b821ef254",
+    "Apps/Titanium/Titanium.HC": "ef3c58b27ab67196da8c4957f39c81100b9f8663dbaebe1e0d8dfd5accb118d4",
+    "Kernel/I386/ConsoleRuntime.HC": "756172d62bd409e8d765cc1907c0429645c0f476ce20b016e9ef896965d1a5bf",
+    "Kernel/I386/PublicRaster.HH": "20975d818f14e6f0e880c10384977f724d28947755f1391656fe3404837a6be6"
+  },
+  "packaged_app_sha256": {
+    "/Apps/Titanium/Load.HC": "819915848549655219b606c3665463a232ff2eeb4bd6b1c85ee37e8b821ef254",
+    "/Apps/Titanium/Run.HC": "cf0f24a8ad110a81a48ff34a148146fd5557f27a18595673d103e5a982f4c91b",
+    "/Apps/Titanium/Titanium.HC": "ef3c58b27ab67196da8c4957f39c81100b9f8663dbaebe1e0d8dfd5accb118d4"
+  },
+  "gr_rect3_slot": {
+    "index": 705,
+    "module_relative_address": 1231696
+  },
+  "passed_receipts": {
+    "native/result.json": "a31a463860a11603586d428ab26514e5bc258927d6b1b32d7c673cb8058e9240",
+    "original-physical/result.json": "63df4dc9d8dbdf12ae2a4ccfc8d48dafe65e90c83327325e391ebdce5a3ca2fd",
+    "x64-current/result.json": "825dd6b0192d28d8d574069795c7924987e48934ec248dab9c13055d76ec0de2",
+    "user8/result.json": "18cb3fc5fc02bcbd6f1c93a9e3c4ccecadbe344c2b9fa996e28477fc2a35fd82"
+  }
+}

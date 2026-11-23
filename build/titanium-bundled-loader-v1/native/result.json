@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "native": true,
+  "source_sha256": "39fe58e011e6b9ce78552eaba431159e095c3be8da55dc4c693706c6e7a0db0f",
+  "play_terrain_pixels": 275559,
+  "fire_terrain_pixels": 268930,
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

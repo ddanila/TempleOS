@@ -269,19 +269,18 @@ U0 ExplosionDraw(CDC *dc,Explosion *tmpe,I64 y)
   }
 }
 
-I64 mp_not_done_flags;
-U0 MPMenDraw(CDC *dc2)
+U0 MenDraw(CDC *dc2,I64 lo,I64 hi,I64 first_explosion,I64 stride)
 {
   CTask *task=dc2->win_task;
   CDC *dc=DCAlias(dc2,task);
-  I64 i,r[16],lo=Gs->num*U_NUM/mp_cnt,hi=(Gs->num+1)*U_NUM/mp_cnt,
+  I64 i,r[16],
 	yy,phase,scroll_y=MAP_HEIGHT-100-100*(tS-t0);
   Unit *tmpu;
   Explosion *tmpe;
   U8 *tmps,**_tmps;
   F64 tt,ts=tS;
 
-  for (i=Gs->num;i<E_NUM;i+=mp_cnt) {
+  for (i=first_explosion;i<E_NUM;i+=stride) {
     tmpe=&e[i];
     yy=(tmpe->y-scroll_y)&(MAP_HEIGHT-1);
     if (-32<=yy<=task->pix_bottom+32 && !tmpe->dead) {
@@ -329,9 +328,16 @@ U0 MPMenDraw(CDC *dc2)
 
   dc->depth_buf=NULL;
   DCDel(dc);
+}
+#ifndef I386_PUBLIC_USER_INCLUDED
+I64 mp_not_done_flags;
+U0 MPMenDraw(CDC *dc)
+{
+  MenDraw(dc,Gs->num*U_NUM/mp_cnt,(Gs->num+1)*U_NUM/mp_cnt,Gs->num,mp_cnt);
   LBtr(&mp_not_done_flags,Gs->num);
   Seed; //Return Seth task to timer-based.
 }
+#endif
 
 U0 MissilePos(I64 m,F64 é,I64 *_x,I64 *_y)
 {
@@ -347,6 +353,9 @@ U0 MissilePos(I64 m,F64 é,I64 *_x,I64 *_y)
 U0 DrawIt(CTask *task,CDC *dc)
 {
   I64 i,m,xx,yy,scroll_y=MAP_HEIGHT-100-100*(tS-t0);
+#ifdef I386_PUBLIC_USER_INCLUDED
+  I64 old_seed;
+#endif
   F64 tt,ts=tS;
   Bullet *tmpb;
 
@@ -376,11 +385,22 @@ U0 DrawIt(CTask *task,CDC *dc)
     }
 
   DCDepthBufAlloc(dc);
+#ifdef I386_PUBLIC_USER_INCLUDED
+  old_seed=Fs->rand_seed;
+  try {
+    MenDraw(dc,0,U_NUM,0,1);
+  } catch {
+    Fs->rand_seed=old_seed;
+    throw;
+  }
+  Fs->rand_seed=old_seed;
+#else
   mp_not_done_flags=1<<mp_cnt-1;
   for (i=0;i<mp_cnt;i++)
     JobQue(&MPMenDraw,dc,i);
   while (mp_not_done_flags)
     Yield;
+#endif
   Free(dc->depth_buf);
   dc->depth_buf=NULL;
 
