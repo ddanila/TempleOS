@@ -400,3 +400,9 @@ A physical snapshot of this candidate is running under
 `build/preload-heap-comparison/large_high_v1` to measure the changed main
 arena layout. The patch and pinned receipts are under
 `build/compiler-backing-large-high-v1`.
+
+The large-region high-placement snapshot is complete. The largest main free
+payload falls from 202,512 to 150,112 bytes while total free payload rises
+from 386,680 to 388,144 bytes. The 267,527-byte task still cannot fit in the
+captured layout. The pinned census is under
+`build/preload-heap-comparison/large_high_v1/summary.json`.
