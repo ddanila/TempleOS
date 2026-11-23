@@ -1,0 +1,47 @@
+{
+  "result": "pass",
+  "fixture_sha256": "c790756289a65f9a3b03fb6beb8311a71abd156c6142d05dd650c486657ac393",
+  "package": {
+    "result": "pass",
+    "source_sha256": "ae186e78e8abea04e6b202502cf209be37ce25f3f4dc9f7f339b4ca3fc7016c2",
+    "image_sha256": "b36780e466e942d8f04986c2324dd5985c5b6e0ada226d5032905e84b72cd66e",
+    "boot_area_sha256": "d12c7ff2f2171df75d993a8f52bac1c98dee95395f9b28ab9dc2c49e780ab910",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1908,
+      "owned_sectors": 96331,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1910,
+      "owned_sectors": 96335,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/FileNameChooser.HC": "53d9575cd4d5e87f850e4de212002245cebcbd92f46cec5bb6eadae36220d9b9",
+      "/FileNameProbe.HC": "c790756289a65f9a3b03fb6beb8311a71abd156c6142d05dd650c486657ac393"
+    },
+    "added_attributes": {
+      "/FileNameChooser.HC": 2048,
+      "/FileNameProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "observations": [
+    "FILENAME accept",
+    "FILENAME returned C:/Default.DATA",
+    "FILENAME cancel",
+    "FILENAME done"
+  ]
+}

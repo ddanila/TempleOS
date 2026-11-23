@@ -1341,3 +1341,31 @@ loads the solver into Adam only when an ODE app opens. It cross-compiles
 and passes the instruction audit. Its 8 MiB and cold Strut tests are
 running. See `build/native-strut-entry-v1/user8-kvm/result.json` and
 `build/native-ode-on-demand-v1/combined/result.json`.
+
+The on-demand ODE candidate passes the cold 64 MiB Strut workflow with
+automatic simulation, Escape cleanup, and fresh console arithmetic.
+At 8 MiB, the same candidate still fails the original User fixture at
+`USCheck`, with the same fallback-heap exhaustion values as the
+resident-solver candidate. This keeps the startup regression open.
+A scheduler-only image and the previous production image are under
+test with the same KVM startup harness. See
+`build/native-ode-on-demand-v1/strut64/result.json` and
+`build/native-ode-on-demand-v1/user8-kvm/result.json`.
+
+The original filename chooser accepts the default path with Escape and
+cancels with Shift+Escape. The paired probe checks the returned string or
+null and restoration of the caller's popup task. The original passes.
+See `build/filename-popup-differential-v1/original-escape/result.json`.
+
+The same filename chooser probe passes on native i386 with the original
+chooser source and the native document and popup services. It returns
+the default path on Escape, returns null on Shift+Escape, restores
+the popup owner state, and renders fresh arithmetic. See
+`build/filename-popup-differential-v1/native64-escape/result.json`.
+
+Both the production image recheck and the scheduler-only candidate
+pass the 8 MiB KVM User fixture. The ODE update phase remains the
+focus of the startup investigation. A smaller candidate reuses the
+window manager's existing guarded task traversal for the update pass.
+See `build/native-focus-menu-psalmody-production-v1/user8-recheck/result.json`
+and `build/native-ode-task-birth-v1/user8-kvm/result.json`.

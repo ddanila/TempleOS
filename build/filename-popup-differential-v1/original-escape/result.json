@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "fixture_sha256": "c790756289a65f9a3b03fb6beb8311a71abd156c6142d05dd650c486657ac393",
+  "chooser_reference_sha256": "9dab62345b49eb96ad07bbd7997ffa6695092aee8946984530b348aa48d2c52b",
+  "observations": [
+    "FILENAME accept",
+    "FILENAME returned C:/Default.DATA",
+    "FILENAME cancel",
+    "FILENAME done"
+  ]
+}
