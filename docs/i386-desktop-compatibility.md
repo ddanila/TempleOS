@@ -500,3 +500,10 @@ only the fixture and three expected Home Budget files changed. The
 filesystem audit passes. The harness now accepts an explicit native Home
 location and requires all three saved files there while retaining its
 strict unrelated-file check. The fresh /Home run is in progress.
+
+The current 128 MiB retained build has persisted ConsoleRuntime and started
+CompilerRuntime. A read-only checkpoint verifies the 2,748,962-byte module,
+its 1,421 exports against the cross-built reference and the allocation
+wrapper checks. The first-module checkpoint is in
+`build/resident-opt-c5-retained128/console-checkpoint.json`. The full
+nine-provider receipt and both native generations are still pending.

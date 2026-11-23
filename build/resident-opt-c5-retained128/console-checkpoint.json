@@ -1,0 +1,10 @@
+{
+  "scope": "Persisted first retained module while nine-provider build remains live",
+  "path": "/Probe/RetainedConsoleRuntime.t32m",
+  "bytes": 2748962,
+  "sha256": "4d0d756845c4f85b355c0b2d5477cd709d8901e2dd0e697e6748cd0944f035d3",
+  "records": 14081,
+  "exports": 1421,
+  "reference_sha256": "59e9249ae76e4ec12e1d645ccd47dbaacb316a952a3ece1f9ead16eac0cc1882",
+  "native_ram_mib": 128
+}
