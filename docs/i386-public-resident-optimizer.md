@@ -311,3 +311,12 @@ cannot be trimmed as empty. The allocator already places these batches high in
 the last fitting block, so changing header allocation placement alone leaves
 public backing placement as a separate constraint. The decoder and its result
 are under `build/preload-heap-comparison`.
+
+The smallest-fit public backing experiment cross-compiles MemoryRuntime and
+passes the image audit on the high-placement original-User base. The 8 MiB
+oracle fails earlier, after the window manager starts and before native
+startup completes, on a 131,976-byte public allocation. The placement
+change therefore fails the startup gate. Choosing a small block for each
+batch in isolation can still leave subsequent large page requests without
+a usable contiguous extent. The unapplied patch and pinned test evidence
+are under `build/compiler-backing-fit-v1`.

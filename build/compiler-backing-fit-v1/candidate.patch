@@ -1,0 +1,32 @@
+--- a/Kernel/I386/MemoryBacking.HC
++++ b/Kernel/I386/MemoryBacking.HC
+@@ -196,6 +196,20 @@
+ done:
+   I386IrqRestore(flags);return result;
+ }
++#include "/Kernel/I386/HeapAllocateBlock.HC"
++U8 *I386MemBackingAllocSmall(CI386Heap *heap,U32 request)
++{//Growth already validated both arenas and excludes competing heap mutations.
++  CI386HeapBlock *block,*best=0;
++  U32 offset=0,need=((request+7)&~7)+16;
++  while(offset<heap->size) {
++    block=heap->base+offset;
++    if(block->tag==I386_HEAP_FREE && block->span>=need &&
++        (!best || block->span<=best->span))best=block;
++    offset+=block->span;
++  }
++  if(!best)return 0;
++  return I386HeapAllocateBlock(heap,best,request,need,FALSE,TRUE);
++}
+ Bool I386MemBackingGrow(CI386PublicPool *base_pool,I64 pages)
+ {//Called once per exhausted page request, IRQs masked, pool unlocked.
+   CI386BackingPool *pool=base_pool;
+@@ -227,7 +241,7 @@
+   before=source->used;
+   //Keep the initial reserve and large regions first-fit. Later native-sized
+   //batches use the high end, leaving room for large contiguous consumers.
+-  if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)region=I386HeapAllocHigh(source,request);
++  if(pool->owned_count && size==I386_NATIVE_BACKING_QUANTUM)region=I386MemBackingAllocSmall(source,request);
+   else region=I386HeapAlloc(source,request);
+   if(!region) return FALSE;
+   for(i=0;i<sizeof(CI386BackingRegion);i++) region(U8 *)[i]=0;

@@ -1,0 +1,10 @@
+{
+  "user8": "fail",
+  "request": 131976,
+  "sha256": {
+    "result.json": "5b83d8a78c5d84b0567dc19eb8e628d0e1be77cca800908b0ab4d179fa0fc447",
+    "packaging.json": "94c3b8950a38773e0028b6db880f89f8a8bf6f5d96e92f8ddfd5da706bf8cce7",
+    "user8/result.json": "b5e7afb0c65ef20faa48d218d70a57dfe2d799cfa1010086cc450a917af9c469",
+    "user8/qemu/debug.log": "73cfb1f07f9fa9ed2e0411c7ce6b6420236adb0d6ba033f5a222f4d20683cdd5"
+  }
+}
