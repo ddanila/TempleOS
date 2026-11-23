@@ -320,3 +320,11 @@ change therefore fails the startup gate. Choosing a small block for each
 batch in isolation can still leave subsequent large page requests without
 a usable contiguous extent. The unapplied patch and pinned test evidence
 are under `build/compiler-backing-fit-v1`.
+
+A second smallest-fit candidate keeps existing placement until the pool retains
+one MiB, an experimental cutoff above the pool usage seen at the previous
+large allocation failure. The cross-build and image audit pass. At 8 MiB the
+window manager and native startup complete, and User startup reaches USCheck.
+It then fails the original 267,527-byte task allocation. The threshold avoids
+the earlier public allocation failure in this run but still leaves User8 open.
+The unapplied policy and pinned evidence are in `build/compiler-backing-fit-v2`.

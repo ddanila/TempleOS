@@ -1,0 +1,11 @@
+{
+  "user8": "fail",
+  "native_startup_completed": true,
+  "request": 267527,
+  "sha256": {
+    "result.json": "f66aa3cbb043065f2250840c3a9d2084499979154f2a0002b302052f70491730",
+    "packaging.json": "e10ebebf97b6d15e7e3be2994432fd0c8259757ccf882ff3ec15484dd87c6a17",
+    "user8/result.json": "15607fd86b75df87a320e1de0de87742d102ea054ae1537ddc06f8384694fcb1",
+    "user8/qemu/debug.log": "8ee1cca7049c422c041d9198ed0ee24d69058a5c8814de6e5fcdd394b41dd234"
+  }
+}
