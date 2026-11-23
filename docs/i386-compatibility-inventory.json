@@ -12087,9 +12087,38 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-components",
+        "description": "Initialize the original dictionary, answer a numbered vocabulary question, view and dismiss its definition, then exit the quiz."
+      },
+      "oracle": {
+        "tool": "build/vocabulary-quiz-dismiss-v1/run.py",
+        "checks": [
+          "Visible four-choice question and prompt",
+          "Definition popup after a physical answer",
+          "Next unanswered prompt",
+          "Escape returns to caller"
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-vocabulary-definition-and-exit",
+          "result": "pass",
+          "evidence": "build/vocabulary-quiz-dismiss-v1/original/result.json"
+        },
+        {
+          "target": "native-vocabulary-quiz-focus",
+          "result": "fail",
+          "evidence": "build/vocabulary-quiz-second-prompt-v1/native64/result.json",
+          "gap": "After popup dismissal, Escape at the new prompt does not return from the quiz."
+        },
+        {
+          "target": "native-vocabulary-quiz-refocus-control",
+          "result": "pass",
+          "evidence": "build/vocabulary-quiz-focus-v1/native64/result.json",
+          "scope": "Physical click restores quiz focus after popup dismissal. Escape then returns, and fresh arithmetic renders."
+        }
+      ]
     },
     {
       "path": "Apps/X-Caliber/Load.HC",

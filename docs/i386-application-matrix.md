@@ -1082,3 +1082,12 @@ out waiting for quiz exit after the next Escape. The native final capture
 shows that fresh question and its unanswered prompt. See
 `build/vocabulary-quiz-dismiss-v1`. The next test waits for the fresh
 unanswered prompt before sending Escape.
+
+Waiting for the second unanswered Vocabulary prompt still leaves Escape unable
+to exit. The native focus sample identifies the quiz task at the first prompt
+and the definition task during the popup and at the next prompt. A physical
+click puts keyboard focus back on the quiz. Escape then exits and fresh
+arithmetic renders. See `build/vocabulary-quiz-focus-v1/native64/result.json`.
+A separate clean boot reaches the same quiz with the bundled dictionary bytes
+alone, after explicit autocomplete load and ACInit. That test adds only the
+probe to the image. See `build/vocabulary-bundled-dictionary-v1`.
