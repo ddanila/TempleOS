@@ -12046,6 +12046,20 @@
           "result": "pass",
           "evidence": "build/tothefront-shared-entry-v1/native64/result.json",
           "scope": "Normal Run.HC on the shared-source overlay at 64 MiB. Exact rendering and full gameplay remain open."
+        },
+        {
+          "target": "original-tothefront-phase-cycle",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --out OUT",
+          "result": "pass",
+          "evidence": "build/tothefront-original-v1/phases-original-labeled/result.json",
+          "scope": "Fixed-seed Human match through all six phases and the start of turn two. No unit orders entered."
+        },
+        {
+          "target": "native-tothefront-phase-cycle",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --disk DISK --out OUT",
+          "result": "pass",
+          "evidence": "build/tothefront-production-v1/phases64-labeled/result.json",
+          "scope": "Fixed-seed Human match through all six phases and the start of turn two. No unit orders entered."
         }
       ]
     },

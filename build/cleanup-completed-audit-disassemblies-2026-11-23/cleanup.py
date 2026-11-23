@@ -51,42 +51,52 @@ def open_in_guest(path):
     return str(path) in subprocess.check_output(['ps', '-eo', 'args'], text=True)
 
 
-for run in runs:
+files = [(run, 'kernel-assembly.txt') for run in runs]
+for project in ('native-ode-production-v1', 'span-production-v1', 'tothefront-production-v1'):
+    for folder, names in (
+        ('bootstrap', ('generation-1.iso', 'generation-2.iso')),
+        ('full', ('compiler.iso',)),
+    ):
+        directory = Path('build') / project / folder
+        if not (directory / 'result.json').is_file():
+            continue
+        files.extend((str(directory.relative_to('build')), name) for name in names)
+
+for run, name in files:
     directory = Path('build') / run
-    for name in ('kernel-assembly.txt',):
-        original = directory / name
-        archive = original.with_suffix(original.suffix + '.zst')
-        if not original.is_file() or original.is_symlink() or archive.exists():
-            continue
-        if open_in_guest(original) or subprocess.check_output(
-                ['git', 'ls-files', '--', str(original)], text=True):
-            continue
-        before = original.stat()
-        with original.open('rb') as stream:
-            sha256 = digest(stream)
-        scratch = archive.with_suffix(archive.suffix + '.tmp')
-        subprocess.run(['zstd', '-q', str(original), '-o', str(scratch)], check=True)
-        with subprocess.Popen(['zstd', '-qdc', str(scratch)], stdout=subprocess.PIPE) as proc:
-            verified = digest(proc.stdout)
-            if proc.wait() != 0 or verified != sha256:
-                raise ValueError(f'Archive verification failed for {original}')
-        after = original.stat()
-        if (before.st_ino, before.st_size, before.st_mtime_ns) != (
-                after.st_ino, after.st_size, after.st_mtime_ns) or open_in_guest(original):
-            raise ValueError(f'Image changed or reopened during archival: {original}')
-        saved = (before.st_blocks - scratch.stat().st_blocks) * 512
-        if saved <= 0:
-            scratch.unlink()
-            continue
-        scratch.rename(archive)
-        rows.append(dict(original=str(original), archive=str(archive), sha256=sha256,
-                         size=before.st_size, reclaimed_bytes=saved,
-                         restore=['zstd', '-d', str(archive), '-o', str(original)]))
-        manifest_tmp = manifest.with_suffix('.tmp')
-        manifest_tmp.write_text(json.dumps(
-            {'files': rows, 'reclaimed_bytes': sum(row['reclaimed_bytes'] for row in rows)},
-            indent=2) + '\n')
-        manifest_tmp.replace(manifest)
-        original.unlink()
+    original = directory / name
+    archive = original.with_suffix(original.suffix + '.zst')
+    if not original.is_file() or original.is_symlink() or archive.exists():
+        continue
+    if open_in_guest(original) or subprocess.check_output(
+            ['git', 'ls-files', '--', str(original)], text=True):
+        continue
+    before = original.stat()
+    with original.open('rb') as stream:
+        sha256 = digest(stream)
+    scratch = archive.with_suffix(archive.suffix + '.tmp')
+    subprocess.run(['zstd', '-q', str(original), '-o', str(scratch)], check=True)
+    with subprocess.Popen(['zstd', '-qdc', str(scratch)], stdout=subprocess.PIPE) as proc:
+        verified = digest(proc.stdout)
+        if proc.wait() != 0 or verified != sha256:
+            raise ValueError(f'Archive verification failed for {original}')
+    after = original.stat()
+    if (before.st_ino, before.st_size, before.st_mtime_ns) != (
+            after.st_ino, after.st_size, after.st_mtime_ns) or open_in_guest(original):
+        raise ValueError(f'Image changed or reopened during archival: {original}')
+    saved = (before.st_blocks - scratch.stat().st_blocks) * 512
+    if saved <= 0:
+        scratch.unlink()
+        continue
+    scratch.rename(archive)
+    rows.append(dict(original=str(original), archive=str(archive), sha256=sha256,
+                     size=before.st_size, reclaimed_bytes=saved,
+                     restore=['zstd', '-d', str(archive), '-o', str(original)]))
+    manifest_tmp = manifest.with_suffix('.tmp')
+    manifest_tmp.write_text(json.dumps(
+        {'files': rows, 'reclaimed_bytes': sum(row['reclaimed_bytes'] for row in rows)},
+        indent=2) + '\n')
+    manifest_tmp.replace(manifest)
+    original.unlink()
 
 print(len(rows), sum(row['reclaimed_bytes'] for row in rows), 'bytes archived')

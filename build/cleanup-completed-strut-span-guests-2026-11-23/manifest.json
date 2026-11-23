@@ -1665,7 +1665,63 @@
         "-o",
         "build/span-production-v1/gen2-span64/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-original-v1/phases-original/original.iso",
+      "archive": "build/tothefront-original-v1/phases-original/original.iso.zst",
+      "sha256": "fa22533e1be52cb3b5d582454c2a04d80e008601c10077bf7624eeffb95e99cb",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/phases-original/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/phases-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/phases64/working.img",
+      "archive": "build/tothefront-production-v1/phases64/working.img.zst",
+      "sha256": "b6daab0f9ff3fddd5baeb7d9fb89bc0750bbd3e6fe37404a0e150eba0bbd9b49",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/phases64/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/phases64/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/match64/working.img",
+      "archive": "build/tothefront-production-v1/match64/working.img.zst",
+      "sha256": "b9efca2880b1a47157f7ddd6d7a3c8857c63caf589ec7cd6d4efe0fbf162c0d5",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/match64/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/match64/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/user8/working.img",
+      "archive": "build/tothefront-production-v1/user8/working.img.zst",
+      "sha256": "7c98af6ec17894530155356766025d65e16c41ca74e72358c704fa31a29c3f8d",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/user8/working.img.zst",
+        "-o",
+        "build/tothefront-production-v1/user8/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 5889191936
+  "reclaimed_bytes": 6082654208
 }

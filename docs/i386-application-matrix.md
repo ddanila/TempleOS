@@ -1872,3 +1872,14 @@ contiguous task allocation. This closes the two-generation
 artifact check for that image. The resource gate and full
 compatibility suite remain open. See
 `build/span-production-v1/generations128-resume-install/checkpoint.json`.
+
+The pinned original and the current ToTheFront production image
+match through all six phases of a fixed-seed Human turn and the
+start of turn two. Physical Space advances each phase. The observer
+records the turn, phase, active player and both live unit counts
+after the corresponding phase label is published. Both preserve
+32 units per side and exit on Escape. Native returns to fresh
+arithmetic. Unit movement, firing orders, and exact framebuffer
+equivalence remain open. See
+`build/tothefront-original-v1/phases-original-labeled/result.json`
+and `build/tothefront-production-v1/phases64-labeled/result.json`.

@@ -475,7 +475,133 @@
         "-o",
         "build/tothefront-production-v1/full/kernel-assembly.txt"
       ]
+    },
+    {
+      "original": "build/native-ode-production-v1/bootstrap/generation-1.iso",
+      "archive": "build/native-ode-production-v1/bootstrap/generation-1.iso.zst",
+      "sha256": "9f47485a7d4d2c4ba0cc225c2bef58b8b9db232c949f685080b5e8273282ca6e",
+      "size": 45320192,
+      "reclaimed_bytes": 32456704,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-ode-production-v1/bootstrap/generation-1.iso.zst",
+        "-o",
+        "build/native-ode-production-v1/bootstrap/generation-1.iso"
+      ]
+    },
+    {
+      "original": "build/native-ode-production-v1/bootstrap/generation-2.iso",
+      "archive": "build/native-ode-production-v1/bootstrap/generation-2.iso.zst",
+      "sha256": "d699749502f058f2e1444fb1c5ee712bff6f421525ed6ae1e15362e7508b5488",
+      "size": 45404160,
+      "reclaimed_bytes": 32505856,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-ode-production-v1/bootstrap/generation-2.iso.zst",
+        "-o",
+        "build/native-ode-production-v1/bootstrap/generation-2.iso"
+      ]
+    },
+    {
+      "original": "build/native-ode-production-v1/full/compiler.iso",
+      "archive": "build/native-ode-production-v1/full/compiler.iso.zst",
+      "sha256": "a4df5a49f079bc3567038ff22d4a96b91a10583dc4dcafc8027ad63054efbd53",
+      "size": 45445120,
+      "reclaimed_bytes": 32538624,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-ode-production-v1/full/compiler.iso.zst",
+        "-o",
+        "build/native-ode-production-v1/full/compiler.iso"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/bootstrap/generation-1.iso",
+      "archive": "build/span-production-v1/bootstrap/generation-1.iso.zst",
+      "sha256": "c3d7764ba859e6a57fedef1eecb97adccf5d00ddbb7f7d8217b132c65e1a4ed1",
+      "size": 45328384,
+      "reclaimed_bytes": 32464896,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/bootstrap/generation-1.iso.zst",
+        "-o",
+        "build/span-production-v1/bootstrap/generation-1.iso"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/bootstrap/generation-2.iso",
+      "archive": "build/span-production-v1/bootstrap/generation-2.iso.zst",
+      "sha256": "e686b7edf1ec24e16e1f98bb0e973157f86699a8c191bc4541d01a74bfce45d4",
+      "size": 45412352,
+      "reclaimed_bytes": 32518144,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/bootstrap/generation-2.iso.zst",
+        "-o",
+        "build/span-production-v1/bootstrap/generation-2.iso"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/full/compiler.iso",
+      "archive": "build/span-production-v1/full/compiler.iso.zst",
+      "sha256": "65c15f8d3ddcc5115f15f355c2d6dc451980ac313993ae7ef41d69a8ecad7148",
+      "size": 45453312,
+      "reclaimed_bytes": 32550912,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/full/compiler.iso.zst",
+        "-o",
+        "build/span-production-v1/full/compiler.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/bootstrap/generation-1.iso",
+      "archive": "build/tothefront-production-v1/bootstrap/generation-1.iso.zst",
+      "sha256": "4ceb457a747b660bf6173d2d9a04df3202b109b6bdbd219d8cbc02ea5b20a26b",
+      "size": 45342720,
+      "reclaimed_bytes": 32481280,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/bootstrap/generation-1.iso.zst",
+        "-o",
+        "build/tothefront-production-v1/bootstrap/generation-1.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/bootstrap/generation-2.iso",
+      "archive": "build/tothefront-production-v1/bootstrap/generation-2.iso.zst",
+      "sha256": "47c3fcb95ce0a0a129e3586b0af402be88602422b1e2d1d167fa0ec8ab8677c5",
+      "size": 45426688,
+      "reclaimed_bytes": 32530432,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/bootstrap/generation-2.iso.zst",
+        "-o",
+        "build/tothefront-production-v1/bootstrap/generation-2.iso"
+      ]
+    },
+    {
+      "original": "build/tothefront-production-v1/full/compiler.iso",
+      "archive": "build/tothefront-production-v1/full/compiler.iso.zst",
+      "sha256": "5fe5a7f5a08d4065d70d27356e310e08bcd33d9185c1623d74058416e65d993d",
+      "size": 45467648,
+      "reclaimed_bytes": 32563200,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-production-v1/full/compiler.iso.zst",
+        "-o",
+        "build/tothefront-production-v1/full/compiler.iso"
+      ]
     }
   ],
-  "reclaimed_bytes": 3448508416
+  "reclaimed_bytes": 3741118464
 }
