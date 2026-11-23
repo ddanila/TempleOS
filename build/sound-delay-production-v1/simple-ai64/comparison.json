@@ -1,0 +1,40 @@
+{
+  "result": "fail",
+  "original": "build/tothefront-original-v1/simple-ai-original/result.json",
+  "native": "build/sound-delay-production-v1/simple-ai64/result.json",
+  "differences": {
+    "before_movement": [],
+    "after_movement": [
+      {
+        "unit": 0,
+        "original": [
+          27,
+          1,
+          100,
+          0
+        ],
+        "native": [
+          34,
+          4,
+          100,
+          2
+        ]
+      },
+      {
+        "unit": 9,
+        "original": [
+          24,
+          7,
+          100,
+          3
+        ],
+        "native": [
+          33,
+          7,
+          100,
+          4
+        ]
+      }
+    ]
+  }
+}

@@ -11955,9 +11955,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Select SimpleAI for player one and Human for player two under seed 12345678. Advance the Human artillery phase with Space and let the computer finish its first movement phase.",
+      "oracle": {
+        "tool": "build/tothefront-original-v1/compare_simple_ai.py",
+        "checks": [
+          "Compare each of the 32 unit positions, life values and remaining movement points before and after the first computer movement phase."
+        ]
+      },
+      "tests": [
+        {
+          "target": "tothefront-differential-simple-ai-movement",
+          "command": "python3 build/tothefront-original-v1/run_phases.py --simple-ai [--disk DISK] --out OUT; python3 build/tothefront-original-v1/compare_simple_ai.py ORIGINAL_RESULT NATIVE_RESULT",
+          "result": "fail",
+          "evidence": "build/sound-delay-production-v1/simple-ai64/comparison.json",
+          "scope": "Both workflows complete and the starting snapshots match. Post-movement positions and remaining movement differ for units 0 and 9."
+        }
+      ]
     },
     {
       "path": "Apps/ToTheFront/Install.HC",

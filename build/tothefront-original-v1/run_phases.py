@@ -9,6 +9,7 @@ import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--disk', type=Path)
+parser.add_argument('--simple-ai', action='store_true')
 parser.add_argument('--map-raster', action='store_true')
 parser.add_argument('--move', action='store_true')
 occupation = parser.add_mutually_exclusive_group()
@@ -27,6 +28,9 @@ parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 if (args.overrun or args.close_assault) and (args.move or args.fire or args.indirect or args.indirect_damage):
     parser.error('--overrun and --close-assault each require a separate run')
+if args.simple_ai and (args.move or args.fire or args.overrun or args.close_assault
+                       or args.indirect or args.indirect_damage or args.game_over or args.map_raster):
+    parser.error('--simple-ai requires a separate run')
 if args.game_over and (args.move or args.overrun or args.close_assault or args.indirect or args.indirect_damage):
     parser.error('--game-over requires a separate run')
 if args.indirect_damage and args.fire:
@@ -41,6 +45,13 @@ out = args.out.resolve()
 out.mkdir()
 root = Path(__file__).resolve().parent
 fixture = (root/'Phases.HC').read_bytes()
+if args.simple_ai:
+    declaration = b'U0 TTFPhaseWatch('
+    fixture = fixture.replace(declaration, (root/'SimpleAIProbe.HC').read_bytes() + b'\n' + declaration)
+    fixture = fixture.replace(
+        b'  while (owner->draw_it!=&DrawIt) Sleep(1);',
+        b'  TTFAIStart;\n  while (owner->draw_it!=&DrawIt) {\n    TTFAIReadPointer;\n    Sleep(1);\n  }')
+    fixture = fixture.replace(b'      old_turn=turn;', b'      TTFAIExport;\n      old_turn=turn;')
 if args.map_raster:
     declaration = b'U0 TTFPhaseWatch('
     fixture = fixture.replace(declaration, (root/'MapRaster.HC').read_bytes() + b'\n' + declaration)
@@ -95,7 +106,7 @@ else:
     subprocess.run(['python3', 'tools/build-iso.py', '--overlay', str(overlay),
                     '--output', str(image)], check=True)
 Guest = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Guest']
-exercise = runpy.run_path(str(root/'phase_workflow.py'))['exercise']
+workflows = runpy.run_path(str(root/'phase_workflow.py'))
 report = {'fixture_sha256': hashlib.sha256(fixture).hexdigest(),
           'input_sha256': hashlib.sha256((args.disk or image).read_bytes()).hexdigest()}
 machine = 'pc,kernel-irqchip=off' if args.userspace_irqchip else 'pc'
@@ -113,10 +124,13 @@ try:
     else:
         guest.wait('TTF original loaded\n', 90)
         time.sleep(6)
-    report.update(exercise(guest, args.move, args.fire,
-                           args.indirect or args.indirect_damage, args.indirect_damage,
-                           'close_assault' if args.close_assault else 'overrun' if args.overrun else None,
-                           args.game_over))
+    if args.simple_ai:
+        report.update(workflows['exercise_simple_ai'](guest))
+    else:
+        occupation = 'close_assault' if args.close_assault else 'overrun' if args.overrun else None
+        report.update(workflows['exercise'](guest, args.move, args.fire,
+                                           args.indirect or args.indirect_damage,
+                                           args.indirect_damage, occupation, args.game_over))
     if args.disk:
         guest.command('6*7;')
         report['after_match'] = guest.result_pixels()

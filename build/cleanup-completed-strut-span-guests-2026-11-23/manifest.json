@@ -2841,7 +2841,35 @@
         "-o",
         "build/sound-delay-production-v1/map64/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-original-v1/game-over-original/original.iso",
+      "archive": "build/tothefront-original-v1/game-over-original/original.iso.zst",
+      "sha256": "e6b09cd5347e4b51c094bf670f26cdfb86a584c64283af9c24e10b070ed4ae87",
+      "size": 46157824,
+      "reclaimed_bytes": 33230848,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-original-v1/game-over-original/original.iso.zst",
+        "-o",
+        "build/tothefront-original-v1/game-over-original/original.iso"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/game-over64/working.img",
+      "archive": "build/sound-delay-production-v1/game-over64/working.img.zst",
+      "sha256": "36431ecb8458a7a546b0a2956c3fe2ec60062016f21b829e7d950305308fd446",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/game-over64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/game-over64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 10095128576
+  "reclaimed_bytes": 10181767168
 }

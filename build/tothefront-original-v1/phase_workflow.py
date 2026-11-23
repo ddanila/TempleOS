@@ -185,3 +185,40 @@ def exercise(guest, move=False, fire=False, indirect=False, indirect_damage=Fals
     if indirect_damage:
         result['indirect_fire']['damage'] = damage_state
     return result
+
+
+
+def exercise_simple_ai(guest):
+    guest.type('12345678')
+    guest.press('ret')
+    time.sleep(8)
+    guest.screenshot('player-one')
+    log = guest.wait('TTF AI pointer ', 10)
+    pointer = re.search(r'^TTF AI pointer ([0-9A-F]+)$', log, re.M)
+    if pointer is None:
+        raise ValueError('Missing player-menu pointer address')
+    simple_ai = (123, 132)
+    drag(guest, int(pointer[1], 16), simple_ai, simple_ai)
+    time.sleep(5)
+    guest.screenshot('player-two')
+    guest.press('esc')
+    time.sleep(5)
+    guest.screenshot('instructions')
+    guest.press('esc')
+    guest.wait('TTF phase 1 1 1 32 32\n', 35)
+    guest.press('spc')
+    log = guest.wait('TTF phase 1 3 1 32 32\n', 240)
+    guest.screenshot('ai-moved')
+    states = {phase: [] for phase in (2, 3)}
+    for row in re.findall(r'^TTF AI unit ((?:\d+ ){5}\d+)$', log, re.M):
+        phase, unit, y, x, life, movement = map(int, row.split())
+        states[phase].append([unit, y, x, life, movement])
+    before, after = states[2], states[3]
+    if any([unit[0] for unit in snapshot] != list(range(32)) for snapshot in (before, after)):
+        raise ValueError('Missing AI movement snapshots')
+    moved = [left[0] for left, right in zip(before, after) if left[1:3] != right[1:3]]
+    if not moved:
+        raise ValueError('The computer player did not move any unit')
+    guest.press('esc')
+    guest.wait('TTF phase workflow returned\n', 25)
+    return {'simple_ai': {'before_movement': before, 'after_movement': after, 'units_moved': moved}}

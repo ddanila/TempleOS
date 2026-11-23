@@ -2045,3 +2045,12 @@ executes fresh arithmetic. The fixture covers the match-ending
 transition and restart from a staged state. See
 `build/tothefront-original-v1/game-over-original/result.json`
 and `build/sound-delay-production-v1/game-over64/result.json`.
+
+The SimpleAI differential selects the bundled computer player through
+the normal player menu. With seed 12345678, both guests move all 32
+units during the first computer movement phase and return control to
+the human player. The initial positions, life and movement points
+match for every unit. After movement, units 0 and 9 differ in position
+and remaining movement. The other 30 unit states match. The native
+guest exits and executes fresh arithmetic. See
+`build/sound-delay-production-v1/simple-ai64/comparison.json`.
