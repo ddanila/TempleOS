@@ -10,8 +10,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--disk', type=Path)
 parser.add_argument('--move', action='store_true')
 parser.add_argument('--fire', action='store_true')
+parser.add_argument('--trace-fire', action='store_true')
+parser.add_argument('--trace-shot', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
+if args.trace_fire and (not args.fire or not args.disk):
+    parser.error('--trace-fire needs --fire and a native --disk')
+if args.trace_shot and not args.trace_fire:
+    parser.error('--trace-shot requires --trace-fire')
 out = args.out.resolve()
 out.mkdir()
 root = Path(__file__).resolve().parent
@@ -26,8 +32,12 @@ if args.fire:
     fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackFire(owner);\n    Sleep(1);')
 if args.disk:
     image = out/'working.img'
-    packer = runpy.run_path('tools/package-i386-native-image.py')['package']
-    packer(args.disk, image, additions={'/TTFPhases.HC': fixture})
+    packer = runpy.run_path('tools/package-i386-native-image.py')
+    if args.trace_fire:
+        trace = runpy.run_path(str(root/'fire_trace.py'))
+        trace['package'](args.disk, image, fixture, packer['snapshot'], packer['package'], args.trace_shot)
+    else:
+        packer['package'](args.disk, image, additions={'/TTFPhases.HC': fixture})
 else:
     overlay = out/'overlay'
     reference = runpy.run_path('tools/test-i386-timeclock-reference.py')
@@ -66,5 +76,8 @@ except Exception as error:
     report.update(result='fail', error=str(error)[:3000])
     raise
 finally:
+    if args.trace_fire:
+        report['fire_trace'] = [line for line in guest.collect().splitlines()
+                                if line.startswith('TTF ')]
     guest.close()
     (out/'result.json').write_text(json.dumps(report, indent=2)+'\n')

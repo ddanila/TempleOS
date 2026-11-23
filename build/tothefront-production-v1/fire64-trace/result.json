@@ -1,0 +1,18 @@
+{
+  "fixture_sha256": "d6f6a8e5ce1ecf5f4fc271e00693bf5b87a528b694a97abd539e5684a22539b6",
+  "input_sha256": "b9efca2880b1a47157f7ddd6d7a3c8857c63caf589ec7cd6d4efe0fbf162c0d5",
+  "result": "fail",
+  "error": "Missing guest marker: TTF fired ",
+  "fire_trace": [
+    "TTF phase 1 0 0 32 32",
+    "TTF phase 1 1 1 32 32",
+    "TTF phase 1 2 0 32 32",
+    "TTF phase 1 3 1 32 32",
+    "TTF fire 14E8E40 0 0 47 300 47 281 100",
+    "TTF phase 1 4 0 32 32",
+    "TTF selected before visibility",
+    "TTF selected after visibility",
+    "TTF release received",
+    "TTF before shot"
+  ]
+}

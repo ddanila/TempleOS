@@ -1,0 +1,36 @@
+{
+  "package": {
+    "result": "pass",
+    "source_sha256": "b9efca2880b1a47157f7ddd6d7a3c8857c63caf589ec7cd6d4efe0fbf162c0d5",
+    "image_sha256": "fb483e0009cc04c85938034aae7cbbf3949a2ccc02ba16bdf8012a9541022d25",
+    "boot_area_sha256": "738b309bb0a62c02826af55a8a428e3e3e9f3be384cda94b24bd9ab34b94881f",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1925,
+      "owned_sectors": 96199,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1926,
+      "owned_sectors": 96201,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/NoiseSleep.HC": "fd7b60a871ed3fc16e10232a7fb5e4797e06d4df3d2f6e27c4377c5d80feaf50"
+    },
+    "added_attributes": {
+      "/NoiseSleep.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "fixture_sha256": "fd7b60a871ed3fc16e10232a7fb5e4797e06d4df3d2f6e27c4377c5d80feaf50",
+  "result": "fail",
+  "error": "Missing guest marker: COMMAND OK\n",
+  "timer_trace": [
+    "TTF timer before control",
+    "TTF timer after control",
+    "TTF timer before active noise"
+  ]
+}

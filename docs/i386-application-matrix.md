@@ -1903,3 +1903,13 @@ range circle but times out waiting for the shot to finish. This
 localizes the remaining gap to native direct-fire interaction.
 See `build/tothefront-original-v1/fire-original-adjacent/result.json`
 and `build/tothefront-production-v1/fire64-adjacent/result.json`.
+
+The native direct-fire trace confirms that selecting the attacker
+completes visibility calculation, delivers the mouse release, and
+enters UnitDirectFire. The hit branch returns from Noise and remains
+inside the following Sleep. A separate native console fixture returns
+from a plain Sleep(250), then stalls in Sleep(250) after starting
+Noise(250,34,41). This shows the same failure without app input,
+rendering or shot calculations. The noise-task interaction remains
+open. See `build/tothefront-production-v1/fire64-shot-trace/result.json`
+and `build/tothefront-production-v1/noise-sleep64/result.json`.
