@@ -1,0 +1,8 @@
+{
+  "image_sha256": "7aed6eb22071330f104c0d563af7567008162c76711f4dd65c5077f04e5e29b7",
+  "delivered_files": 1531,
+  "source_receipt_sha256": "f32b85ce2ef7d2a72a9f5e3964684ddd17c1f2075b0ef0f19fcd45de4bb93502",
+  "boot_receipt_sha256": "3e4ab628657756a49ba9b0ad9b77be0c5df4cd98a0ba8ddf03d569b91679e6a8",
+  "stage_listing": "build/resident-opt-metadata-v2/stage.lst",
+  "stage_listing_sha256": "8a4646b133c9e1dfa8a1d635d985bc0c1a77bc1fe84c999a683bf5634771f9dc"
+}

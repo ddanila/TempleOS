@@ -465,3 +465,11 @@ set matches the checked-out bytes, including the retained providers'
 dependencies. The input receipt records the count and a digest of their
 path and hash map. A 128 MiB retained build is queued behind the serial
 desktop benchmark using the verified image and reference exports.
+
+The C5 delivered-source auditor passes on the direct-copy image with 1,531
+matching source and document files. The retained stage listing passes the
+386 boot audit on the same image with 96 BIOS and 332 protected-mode
+instructions. The receipt digests and listing identity are in
+`build/resident-opt-c5-preflight/generation-input-audit.json`. The generation
+harness is queued behind a passing retained-build receipt, with both build
+stages set to 128 MiB and the existing kernel build-date allowance.
