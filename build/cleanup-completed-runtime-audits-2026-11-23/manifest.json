@@ -1,0 +1,117 @@
+{
+  "files": [
+    {
+      "original": "build/compiler-high-headers-v2/audit/kernel-assembly.txt",
+      "archive": "build/compiler-high-headers-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "29b041a0593a51605e147ab10003d0889bf909af972b6471db4b8bb66e4e69b7",
+      "size": 110860001,
+      "reclaimed_bytes": 102068224,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-high-headers-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-high-headers-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/resident-opt-public-v5/audit/kernel-assembly.txt",
+      "archive": "build/resident-opt-public-v5/audit/kernel-assembly.txt.zst",
+      "sha256": "339ea721646f97c3113789f3f5a14f1106efe6860f32eb60f5c724d7c323c4ae",
+      "size": 109382071,
+      "reclaimed_bytes": 100716544,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-public-v5/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/resident-opt-public-v5/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-backing-reserve-v1/audit/kernel-assembly.txt",
+      "archive": "build/compiler-backing-reserve-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "2885cb0e25ea0b624a005e5b6adbf5e60b95648bae114eeb1500f57b2c85d767",
+      "size": 110860001,
+      "reclaimed_bytes": 102068224,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-backing-reserve-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-backing-reserve-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-backing-reserve-v2/audit/kernel-assembly.txt",
+      "archive": "build/compiler-backing-reserve-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "b6e1094a9943e849996f83da5bffbe78d6464aecb32bba4cb8d47bb141423a1e",
+      "size": 110860000,
+      "reclaimed_bytes": 102068224,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-backing-reserve-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-backing-reserve-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/resident-opt-metadata-v2/audit/kernel-assembly.txt",
+      "archive": "build/resident-opt-metadata-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "339ea721646f97c3113789f3f5a14f1106efe6860f32eb60f5c724d7c323c4ae",
+      "size": 109382071,
+      "reclaimed_bytes": 100720640,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-metadata-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/resident-opt-metadata-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/native-graphics-dirty-rows-v1/audit/kernel-assembly.txt",
+      "archive": "build/native-graphics-dirty-rows-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "90cb3d11e9ffab256b37a23fb2af6f938aadea940a5afa5cc4341a28020a8ed2",
+      "size": 109446789,
+      "reclaimed_bytes": 100777984,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-graphics-dirty-rows-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-graphics-dirty-rows-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/native-graphics-dirty-rows-v2/audit/kernel-assembly.txt",
+      "archive": "build/native-graphics-dirty-rows-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "c62c8e5ec06879ef472b941f74c3db96445e23fd75cfdd451b300a6994477fa6",
+      "size": 109455992,
+      "reclaimed_bytes": 100786176,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-graphics-dirty-rows-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-graphics-dirty-rows-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/native-graphics-pack32-v3/audit/kernel-assembly.txt",
+      "archive": "build/native-graphics-pack32-v3/audit/kernel-assembly.txt.zst",
+      "sha256": "1a7bf75537aa0f36b3f823d1a813b33206f16330fd8110527d89a6f9f681964c",
+      "size": 109459279,
+      "reclaimed_bytes": 100790272,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-graphics-pack32-v3/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-graphics-pack32-v3/audit/kernel-assembly.txt"
+      ]
+    }
+  ],
+  "reclaimed_bytes": 809996288
+}

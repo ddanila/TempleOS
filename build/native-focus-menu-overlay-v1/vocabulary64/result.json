@@ -1,0 +1,69 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/vocabulary-popup-lifetime-v1/run.py": "d9bdf2072975232b4b2c4466a1cded97c40541be3fa3a626f0db47559e90a023",
+    "/home/ddanila/fun/TempleOS/build/vocabulary-popup-lifetime-v1/Probe.HC": "acb121cf0e4a29197517c1f90240e74f744f348416c5000cbbe920dedcba15fd",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/i386-autocomplete-archive-original/guest/ACWords.DATA.Z": "649c61e15c401948ac72433cd81114f288222c36eb23c5ddced5a3f89eb4f10d",
+    "Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "build/native-focus-menu-overlay-v1/candidate.img": "9fcea0ee83b186a175f642f86ab4950f4bd1a6acc2613aee3e37e01d5553e53c"
+  },
+  "scope": "Vocabulary quiz answer and definition popup using the original dictionary",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "9fcea0ee83b186a175f642f86ab4950f4bd1a6acc2613aee3e37e01d5553e53c",
+    "image_sha256": "194371131f1daca9cfc8ee1c1efb670ad57031cb72c88fee0ab76bda4ba4f374",
+    "boot_area_sha256": "5aa85244a30e742429830e2770bcea2fcf34bf207db61cb847921c16e136677e",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96162,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1905,
+      "owned_sectors": 96164,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/VocabularyProbe.HC": "acb121cf0e4a29197517c1f90240e74f744f348416c5000cbbe920dedcba15fd"
+    },
+    "added_attributes": {
+      "/VocabularyProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "focus": {
+    "owner": 22641088,
+    "first_question": 22641088,
+    "definition": 23654416,
+    "second_question": 22641088
+  },
+  "popup_task": 23654416,
+  "popup_state": {
+    "definition": {
+      "signature": 1399550804,
+      "task_flags": 520,
+      "display_flags": 3
+    },
+    "second_question": {
+      "signature": 0,
+      "task_flags": 2,
+      "display_flags": 3
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 58,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

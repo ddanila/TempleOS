@@ -1,0 +1,29 @@
+{
+  "result": "pass",
+  "source_sha256": "1765e7562ebd5d04daeaf06ffbf6c14c38a7e82a412801eb8a2917f44101c7b7",
+  "image_sha256": "9fcea0ee83b186a175f642f86ab4950f4bd1a6acc2613aee3e37e01d5553e53c",
+  "boot_area_sha256": "5aa85244a30e742429830e2770bcea2fcf34bf207db61cb847921c16e136677e",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1903,
+    "owned_sectors": 96132,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1904,
+    "owned_sectors": 96162,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {
+    "/Kernel/I386/NativeAppMenu.HC": "220fb8e01477d24d7ed407289025bcf16fd1a2dc2944fa2184cb87021b8e53f1"
+  },
+  "added_attributes": {
+    "/Kernel/I386/NativeAppMenu.HC": 2048
+  },
+  "scope": "Native retirement focus and application menu overlay",
+  "candidate_sha256": "9fcea0ee83b186a175f642f86ab4950f4bd1a6acc2613aee3e37e01d5553e53c",
+  "instruction_audit": "pass",
+  "prototype": false
+}

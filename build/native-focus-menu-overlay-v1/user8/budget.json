@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "startup_seconds": 50.90307277897955,
+  "budget_seconds": 60,
+  "over_budget_seconds": 0,
+  "evidence": "/home/ddanila/fun/TempleOS/build/native-focus-menu-overlay-v1/user8/qemu/result.json",
+  "evidence_sha256": "3aa11b33274d099d615454531b3ee138d535c6913e1133cb5265bd5a63fbb755",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}

@@ -2739,3 +2739,8 @@ session in 207.22 seconds. Home Once runs through normal boot, all 83 geometry
 values match the original, and the bootstrap task retires with its containing
 heap block free. Fresh arithmetic renders. See
 `build/i386-graphics-registry-integration/generations128/gen1-desktop64/result.json`.
+
+Generation two now passes the retained-module rebuild. All nine exports
+match the first self-hosted generation byte for byte, with one build-provider
+load. The second installation is underway. See
+`build/i386-graphics-registry-integration/generations128/gen2-retained-build/result.json`.

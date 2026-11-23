@@ -1117,3 +1117,13 @@ The overlay passes its instruction audit and the 8 MiB User smoke test in
 50.74 seconds. See `build/async-popup-focus-inline-v1` and
 `build/async-popup-focus-retire-v1`. The production source remains pinned by
 the ongoing native rebuild.
+
+The retirement-focus and application-menu patches also pass together on the
+full Vocabulary image. The overlay passes the instruction audit, the original
+popup focus handoff, and the complete Vocabulary answer and Escape workflow.
+Outside menu release dispatches no command, each of two subsequent selections
+dispatches (1, 2676, 83) once, and all 6,272 checked menu pixels match the
+original. The 8 MiB User smoke test passes in 50.90 seconds. See
+`build/native-focus-menu-overlay-v1`. Broader popup regressions are still
+running under the managed-pointer profile. The two patches remain overlays
+while the two-generation harness uses its pinned production sources.
