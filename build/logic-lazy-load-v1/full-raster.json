@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "pixels": 3795,
+  "box": [
+    40,
+    32,
+    155,
+    65
+  ],
+  "rgb_sha256": "ab642e51ed457fbd6fba3b40f5184c185802fda889ea0d81624ce1b5303e7800",
+  "screenshot_sha256": "77897de762f5197090f68706e78c8e631275147cd2bcf1497363127876f94dcd",
+  "image_sha256": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c"
+}

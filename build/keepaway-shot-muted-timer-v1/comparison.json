@@ -1,0 +1,59 @@
+{
+  "result": "pass",
+  "scope": "Sound mute control for native timer stall",
+  "controls": {
+    "kvm_unmuted": {
+      "receipt": "build/keepaway-shot-timer-sample-v1/native64/result.json",
+      "receipt_sha256": "94153012e57e228b6cc608b56f1ba70e70abe9c1e6d38ee55af6d418e230aa53",
+      "active_samples": 15,
+      "guest_jiffies": [
+        43140
+      ],
+      "window_updates": [
+        390
+      ],
+      "frame_deadlines": [
+        42.995
+      ]
+    },
+    "kvm_muted": {
+      "receipt": "build/keepaway-shot-muted-timer-v1/native64/result.json",
+      "receipt_sha256": "14601316a623cbff3af9f375f042211b8171b5686c043fe7ada48dbc6fbf4de4",
+      "active_samples": 15,
+      "guest_jiffies": [
+        45950,
+        46080,
+        46210,
+        46340,
+        46470,
+        46610,
+        46740,
+        46870,
+        47000,
+        47140,
+        47270,
+        47400,
+        47530,
+        47670,
+        47800
+      ],
+      "window_updates": [
+        444,
+        445,
+        446,
+        447,
+        448,
+        449,
+        450
+      ],
+      "frame_deadlines": [
+        46.005,
+        46.335,
+        46.61,
+        47.040000000000006,
+        47.24000000000001,
+        47.59
+      ]
+    }
+  }
+}

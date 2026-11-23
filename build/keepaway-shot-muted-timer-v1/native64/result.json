@@ -1,0 +1,303 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/keepaway-shot-muted-timer-v1/run.py": "80206544e4fc757980158c99709f70a86f223b711c13a15e651279845fd63929",
+    "/home/ddanila/fun/TempleOS/build/keepaway-shot-muted-timer-v1/Probe.HC": "47160bad12325877727f8f8e04c8f4f4b04144335e3e748e5ccee47a035c96a0",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/logic-lazy-load-v1/full/kernel.img": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c"
+  },
+  "scope": "KeepAway scoring with controlled ball placement, physical shot input, and caller recovery",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c",
+    "image_sha256": "e1c5ac7647ca5dc09ce0a92d0722ade77e2da2832981f4abe5329b0684606cd7",
+    "boot_area_sha256": "c63f8ad7779888b6e1647e1528b9279094034fe17746409473e25a5bfa68b11e",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96136,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/KeepAwayProbe.HC": "47160bad12325877727f8f8e04c8f4f4b04144335e3e748e5ccee47a035c96a0"
+    },
+    "added_attributes": {
+      "/KeepAwayProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "before_shot": {
+    "draw": 23054368,
+    "updates": 443,
+    "jiffies": 45630,
+    "display": 79341738312859659,
+    "active": 0,
+    "shooting": 0,
+    "stopped": 0,
+    "possession": 1,
+    "previous": 2,
+    "next_frame": 12,
+    "next_time": 45.695,
+    "deadline": 46.21
+  },
+  "hardware_before": {
+    "registers": "\r\nCPU#0\r\nEAX=00000000 EBX=00000030 ECX=00000000 EDX=00000043\r\nESI=0000b23e EDI=00000000 EBP=015b3718 ESP=015b36fc\r\nEIP=0121fba1 EFL=00000002 [-------] CPL=0 II=0 A20=1 SMM=0 HLT=0\r\nES =0010 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]\r\nCS =0008 00000000 ffffffff 00c09b00 DPL=0 CS32 [-RA]\r\nSS =0010 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]\r\nDS =0010 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]\r\nFS =0018 015af700 000004cb 00409300 DPL=0 DS   [-WA]\r\nGS =0020 00102448 000000eb 00409300 DPL=0 DS   [-WA]\r\nLDT=0000 00000000 0000ffff 00008200 DPL=0 LDT\r\nTR =0000 00000000 0000ffff 00008b00 DPL=0 TSS32-busy\r\nGDT=     001035f4 00000027\r\nIDT=     0010361c 000007ff\r\nCR0=00000015 CR2=00000000 CR3=00000000 CR4=00000000\r\nDR0=00000000 DR1=00000000 DR2=00000000 DR3=00000000 \r\nDR6=ffff0ff0 DR7=00000400\r\nEFER=0000000000000000\r\nFCW=037f FSW=0000 [ST=0] FTW=00 MXCSR=00001f80\r\nFPR0=0000000000000000 0000 FPR1=0000000000000000 0000\r\nFPR2=0000000000000000 0000 FPR3=0000000000000000 0000\r\nFPR4=0000000000000000 0000 FPR5=0000000000000000 0000\r\nFPR6=0000000000000000 0000 FPR7=0000000000000000 0000\r\nXMM00=0000000000000000 0000000000000000 XMM01=0000000000000000 0000000000000000\r\nXMM02=0000000000000000 0000000000000000 XMM03=0000000000000000 0000000000000000\r\nXMM04=0000000000000000 0000000000000000 XMM05=0000000000000000 0000000000000000\r\nXMM06=0000000000000000 0000000000000000 XMM07=0000000000000000 0000000000000000\r\n",
+    "pic": "ioapic0: ver=0x11 id=0x00 sel=0x00\r\n  pin 0  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 1  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 2  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 3  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 4  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 5  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 6  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 7  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 8  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 9  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 10 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 11 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 12 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 13 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 14 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 15 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 16 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 17 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 18 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 19 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 20 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 21 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 22 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 23 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  IRR      (none)\r\n  Remote IRR (none)\r\npic1: irr=40 imr=ef isr=00 hprio=0 irq_base=28 rr_sel=0 elcr=0c fnm=0\r\npic0: irr=00 imr=f8 isr=00 hprio=0 irq_base=20 rr_sel=0 elcr=00 fnm=0\r\n",
+    "irq": "IRQ statistics for kvm-ioapic:\r\n 1: 237\r\n 4: 1\r\n12: 19\r\n14: 1\r\nIRQ statistics for kvm-i8259:\r\n 1: 237\r\n 4: 1\r\n12: 19\r\n14: 1\r\n"
+  },
+  "samples": [
+    {
+      "draw": 23054368,
+      "updates": 443,
+      "jiffies": 45810,
+      "display": 79341738312859659,
+      "active": 0,
+      "shooting": 0,
+      "stopped": 0,
+      "possession": 1,
+      "previous": 2,
+      "next_frame": 12,
+      "next_time": 45.695,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 444,
+      "jiffies": 45950,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 12,
+      "next_frame": 0,
+      "next_time": 46.005,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 444,
+      "jiffies": 46080,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 12,
+      "next_frame": 0,
+      "next_time": 46.005,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 445,
+      "jiffies": 46210,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 12,
+      "next_frame": 0,
+      "next_time": 46.005,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 445,
+      "jiffies": 46340,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 0,
+      "next_frame": 4,
+      "next_time": 46.335,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 445,
+      "jiffies": 46470,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 0,
+      "next_frame": 4,
+      "next_time": 46.335,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 446,
+      "jiffies": 46610,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 4,
+      "next_frame": 5,
+      "next_time": 46.61,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 446,
+      "jiffies": 46740,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 4,
+      "next_frame": 5,
+      "next_time": 46.61,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 447,
+      "jiffies": 46870,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 4,
+      "next_frame": 5,
+      "next_time": 46.61,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 447,
+      "jiffies": 47000,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 5,
+      "next_frame": 6,
+      "next_time": 47.040000000000006,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 448,
+      "jiffies": 47140,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 5,
+      "next_frame": 6,
+      "next_time": 47.040000000000006,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 448,
+      "jiffies": 47270,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 6,
+      "next_frame": 7,
+      "next_time": 47.24000000000001,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 448,
+      "jiffies": 47400,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 6,
+      "next_frame": 7,
+      "next_time": 47.24000000000001,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 449,
+      "jiffies": 47530,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 7,
+      "next_frame": 8,
+      "next_time": 47.59,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 449,
+      "jiffies": 47670,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 7,
+      "next_frame": 8,
+      "next_time": 47.59,
+      "deadline": 46.21
+    },
+    {
+      "draw": 23054368,
+      "updates": 450,
+      "jiffies": 47800,
+      "display": 79341738312859659,
+      "active": 1,
+      "shooting": 1,
+      "stopped": 0,
+      "possession": 0,
+      "previous": 7,
+      "next_frame": 8,
+      "next_time": 47.59,
+      "deadline": 46.21
+    }
+  ],
+  "hardware_after": {
+    "registers": "\r\nCPU#0\r\nEAX=0004b000 EBX=00000000 ECX=0004b000 EDX=00000000\r\nESI=00023149 EDI=00000000 EBP=015b3c74 ESP=015b3c58\r\nEIP=011fc728 EFL=00000202 [-------] CPL=0 II=0 A20=1 SMM=0 HLT=0\r\nES =0010 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]\r\nCS =0008 00000000 ffffffff 00c09b00 DPL=0 CS32 [-RA]\r\nSS =0010 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]\r\nDS =0010 00000000 ffffffff 00c09300 DPL=0 DS   [-WA]\r\nFS =0018 015af700 000004cb 00409300 DPL=0 DS   [-WA]\r\nGS =0020 00102448 000000eb 00409300 DPL=0 DS   [-WA]\r\nLDT=0000 00000000 0000ffff 00008200 DPL=0 LDT\r\nTR =0000 00000000 0000ffff 00008b00 DPL=0 TSS32-busy\r\nGDT=     001035f4 00000027\r\nIDT=     0010361c 000007ff\r\nCR0=00000015 CR2=00000000 CR3=00000000 CR4=00000000\r\nDR0=00000000 DR1=00000000 DR2=00000000 DR3=00000000 \r\nDR6=ffff0ff0 DR7=00000400\r\nEFER=0000000000000000\r\nFCW=037f FSW=0000 [ST=0] FTW=00 MXCSR=00001f80\r\nFPR0=0000000000000000 0000 FPR1=0000000000000000 0000\r\nFPR2=0000000000000000 0000 FPR3=0000000000000000 0000\r\nFPR4=0000000000000000 0000 FPR5=0000000000000000 0000\r\nFPR6=0000000000000000 0000 FPR7=0000000000000000 0000\r\nXMM00=0000000000000000 0000000000000000 XMM01=0000000000000000 0000000000000000\r\nXMM02=0000000000000000 0000000000000000 XMM03=0000000000000000 0000000000000000\r\nXMM04=0000000000000000 0000000000000000 XMM05=0000000000000000 0000000000000000\r\nXMM06=0000000000000000 0000000000000000 XMM07=0000000000000000 0000000000000000\r\n",
+    "pic": "ioapic0: ver=0x11 id=0x00 sel=0x00\r\n  pin 0  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 1  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 2  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 3  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 4  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 5  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 6  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 7  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 8  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 9  0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 10 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 11 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 12 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 13 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 14 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 15 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 16 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 17 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 18 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 19 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 20 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 21 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 22 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  pin 23 0x0000000000010000 dest=0 vec=0   active-hi edge  masked fixed  physical\r\n  IRR      (none)\r\n  Remote IRR (none)\r\npic1: irr=40 imr=ef isr=00 hprio=0 irq_base=28 rr_sel=0 elcr=0c fnm=0\r\npic0: irr=00 imr=f8 isr=00 hprio=0 irq_base=20 rr_sel=0 elcr=00 fnm=0\r\n",
+    "irq": "IRQ statistics for kvm-ioapic:\r\n 1: 239\r\n 4: 1\r\n12: 19\r\n14: 1\r\nIRQ statistics for kvm-i8259:\r\n 1: 239\r\n 4: 1\r\n12: 19\r\n14: 1\r\n"
+  },
+  "shot_input": "space",
+  "observed_scores": [
+    2,
+    8
+  ],
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

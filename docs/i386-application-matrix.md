@@ -1036,3 +1036,22 @@ The host sample repeats the native frame stall with both test-side animation
 task suspension calls removed. The native shot flags stay set, and all 16
 samples report the same frame deadline and original flight deadline. See
 `build/keepaway-shot-no-suspend-v1/native64/result.json`.
+
+The fresh full image repeats the Logic keyboard-driven AND workflow through
+its bundled loader. The 3,795-pixel circuit region matches the original
+again, and fresh arithmetic renders. See
+`build/logic-lazy-load-v1/full-play64/result.json` and
+`build/logic-lazy-load-v1/full-raster.json`.
+
+The unmuted KVM KeepAway trace holds the guest jiffy counter and Window Manager
+update count fixed after the shot becomes active. At the sampled point, the
+CPU has interrupts enabled and the PIC timer interrupt is unmasked. With
+`Mute(ON)`, both counters advance and the shot animation progresses through
+frames 4 to 8. The shorter sample ends before the flight deadline updates.
+See `build/keepaway-shot-muted-timer-v1/comparison.json`. Longer muted and
+unmuted TCG controls are underway.
+
+The bundled Vocabulary sources load on the current native image after
+explicitly loading autocomplete. All three files match the original, and
+fresh arithmetic executes. Dictionary initialization and the interactive quiz
+remain open. See `build/vocabulary-libraries-v1/native64/result.json`.

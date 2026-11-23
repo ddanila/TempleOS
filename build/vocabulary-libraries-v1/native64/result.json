@@ -1,0 +1,48 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/logic-lazy-load-v1/full/kernel.img": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c",
+    "/home/ddanila/fun/TempleOS/build/vocabulary-libraries-v1/run.py": "f18290da0bd9fbda77aa97b491d9baf4eefa910c727eacd58e2cc45bd62b2d00",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-application-native-load.py": "eea097f5364eb9b8f1dac68f1bf398a139eca126577d165f4c43bb4dff4f4be6",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "a2f75daf989853b7c868818c8ee0aad98d9eb3ea9c1027b0a4a178fc1fd159ef",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "98d09168433c80d44eec0aa5ef44d0e0c87dafae79a22464ad997ce9edf49e3a"
+  },
+  "scope": "Original application Load on native 64 MiB; not startup or application workflow qualification",
+  "app": "Vocabulary",
+  "verified_existing": {
+    "/Apps/Vocabulary/Load.HC": "cf5e6d2096d37fc7f6dfdbcdeb4e6dd9fce81876d1ca1bbc2651fde36ea142fd",
+    "/Apps/Vocabulary/Run.HC": "36c578510595691f35bf2ba7b341a228d7d74c53103e91ebb1188ac52a9f6bed",
+    "/Apps/Vocabulary/VocabQuiz.HC": "7ce89ddfe50d7a3305648d146c4d4733b7a44ae047a17c5a36ed3a3e235792f0"
+  },
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c",
+    "image_sha256": "a7a09b35386c46e36a67b9215d4777b08ac95b7ec10b966c5c1643a2f16c1f7c",
+    "boot_area_sha256": "c63f8ad7779888b6e1647e1528b9279094034fe17746409473e25a5bfa68b11e",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {},
+    "added_attributes": {},
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "delivered_sha256": {
+    "/Apps/Vocabulary/Load.HC": "cf5e6d2096d37fc7f6dfdbcdeb4e6dd9fce81876d1ca1bbc2651fde36ea142fd",
+    "/Apps/Vocabulary/Run.HC": "36c578510595691f35bf2ba7b341a228d7d74c53103e91ebb1188ac52a9f6bed",
+    "/Apps/Vocabulary/VocabQuiz.HC": "7ce89ddfe50d7a3305648d146c4d4733b7a44ae047a17c5a36ed3a3e235792f0"
+  },
+  "inputs_unchanged": true
+}
