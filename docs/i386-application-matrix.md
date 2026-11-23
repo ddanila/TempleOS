@@ -1700,3 +1700,13 @@ The partial export was discarded and the trace now exports exactly
 6 KiB. The new Span runner verified provenance and reused the passed
 retained installation. Generation-one self-hosting is running again
 under `build/span-production-v1/generations128-resume-install`.
+
+A focused call reproduces the BallGen mismatch with the same two
+binary64 operands. The original passes -9 or 9 when the product is
+converted directly to an integer argument and -10 or 10 when it is
+stored as binary64 first. Native passes -10 or 10 in both cases.
+An independent rational model reproduces all 256 original vertex
+calls with a 64-bit product significand and all 256 retained native
+calls with a 53-bit significand. This isolates the remaining mesh
+difference to product precision at the integer conversion boundary.
+See `build/grmodels-ball-reference-v1/product-precision-comparison.json`.

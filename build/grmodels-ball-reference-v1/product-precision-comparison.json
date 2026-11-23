@@ -1,0 +1,13 @@
+{
+  "calls": 256,
+  "product_significand_bits": {
+    "53": {
+      "mismatches_original": 24,
+      "mismatches_native": 0
+    },
+    "64": {
+      "mismatches_original": 0,
+      "mismatches_native": 24
+    }
+  }
+}

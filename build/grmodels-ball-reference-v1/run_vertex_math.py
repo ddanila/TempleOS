@@ -8,13 +8,20 @@ import subprocess
 parser = argparse.ArgumentParser()
 parser.add_argument('--disk', type=Path)
 parser.add_argument('--cosine-steps', action='store_true')
+parser.add_argument('--product-conversion', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 if args.cosine_steps and not args.disk:
     parser.error('--cosine-steps requires a native --disk')
+if args.cosine_steps and args.product_conversion:
+    parser.error('Select one math fixture')
 out = args.out.resolve()
 out.mkdir()
-fixture_name = 'CosineSteps.HC' if args.cosine_steps else 'VertexMath.HC'
+fixture_name, expected_size = 'VertexMath.HC', 128 * 72
+if args.cosine_steps:
+    fixture_name, expected_size = 'CosineSteps.HC', 12 * 8
+if args.product_conversion:
+    fixture_name, expected_size = 'ProductConversion.HC', 6 * 8
 fixture = Path(__file__).with_name(fixture_name).read_bytes()
 report = {'fixture_sha256': hashlib.sha256(fixture).hexdigest()}
 if args.disk:
@@ -37,7 +44,7 @@ try:
         guest.command('#include "C:/VertexMath.HC"')
     guest.wait('BALL math ready\n', 90)
     data = (out / 'guest/BallVertexMath.bin').read_bytes()
-    if len(data) != (12 * 8 if args.cosine_steps else 128 * 72):
+    if len(data) != expected_size:
         raise ValueError('Unexpected sample record size')
     report.update(result='pass', sample_sha256=hashlib.sha256(data).hexdigest())
 except Exception as error:
