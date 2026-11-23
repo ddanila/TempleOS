@@ -14,6 +14,7 @@ public extern U64 I386F64FromI64(I64 value);
 public extern I64 I386F64ToI64(U64 value);
 public extern I64 I386F64Compare(U64 a,U64 b);
 public extern U64 I386F64Power(U64 a,U64 b);
+public extern I64 I386F64MulToI64(U64 a,U64 b);
 public extern I64 Un(U8 *code,I64 bytes,I64 bits);
 #include "/Compiler/I386/Emit.HC"
 #include "/Compiler/CodeLabel.HC"

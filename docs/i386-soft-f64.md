@@ -154,3 +154,34 @@ The truncating-remainder helper now computes exact finite remainders by integer
 significand reduction and preserves the dividend's sign, including zero. Native
 compiler lowering, mixed compound updates and exact/x64 oracles are documented
 in [i386-f64-remainder.md](i386-f64-remainder.md).
+
+## Direct multiplication into an integer
+
+The i386 backend now uses `I386F64MulToI64` when the IR marks an F64
+multiply for immediate integer conversion. The helper shares the exact
+53-by-53-bit product with ordinary F64 multiplication, rounds to a 64-bit
+significand and truncates to I64. An intervening F64 store keeps binary64
+rounding.
+
+The [qualification receipt](../build/i386-wide-product-production-v2/qualification.json)
+identifies the tested image and source hashes. The ordinary software F64
+suite passed 2,048 vectors. The full cross-built image passed the unchanged
+8 MiB User startup and public compiler checks. All six values in the direct
+assignment and stored-product fixture matched the original x86-64 guest.
+The implicit return fixture matched 14 of 16 values. Its two near-integer
+products still round to ±10 on i386 where the original returns ±9.
+
+The GrModels harness ran BallGen with its prerequisite fixtures and recorded
+256 vertex calls. Thirty coordinates still differ by one unit, and the
+serialized mesh differs from the original. The public cosine probe measured
+`Cos(pi/4)` at `0x3FE6A09E667F3BCC` in the cross-built image and
+`0x3FE6A09E667F3BCD` in the retained guest-built runtime. Disassembly traced
+the difference to the low word emitted for the decimal literal `0.28125` in
+the cosine kernel. The exact constant, the return conversion and ordinary
+GrModels loader qualification remain open. Two installed native i386
+generations and the full C5 suite remain pending.
+
+Seven completed probe disk images were compressed in place. Each archive
+was decompressed and checked against the original SHA-256 before the raw
+image was removed. The [cleanup manifest](../build/i386-wide-product-production-v2/cleanup.json)
+records the restoration paths and 373,821,440 allocated bytes recovered.

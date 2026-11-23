@@ -10,8 +10,7 @@ parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
 out = args.out.resolve()
 out.mkdir()
-records = Path('Adam/Gr/SpriteRecordsCore.HC').read_bytes()
-table = records[:records.index(b'\n};')+4]
+table = Path('Adam/Gr/SpriteBaseSizes.HC').read_bytes()
 setup = b'#include "/Adam/Gr/Gr.HH"\n'+table+b'\n'
 matrix = Path('Adam/Gr/MatrixRotationCore.HC').read_bytes()
 source = Path('Adam/DolDoc/DocGr.HC').read_bytes()

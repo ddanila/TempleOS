@@ -111,8 +111,8 @@ class CI386FrontendBound {
   Bool has_helpers;
   CHashTable helpers;
   CHash *buckets[16];
-  CHashFun functions[11];
-  CMemberLst arguments[22];
+  CHashFun functions[12];
+  CMemberLst arguments[24];
 };
 extern CHashFun *I386CompletionFunction(CI386Frontend *state,CHashFun *function);
 extern Bool I386FrontendPublishedExtern(CI386Frontend *state,CHashFun *function);
@@ -505,23 +505,23 @@ Bool I386FrontendNeedsHelpers(CCmpCtrl *cc,CHashClass *type,CHashClass **types)
   }
   return FALSE;
 }
-U8 *i386_frontend_helper_addresses[11]={
+U8 *i386_frontend_helper_addresses[12]={
   &I386F64Sqrt,&I386F64Abs,&I386F64Add,&I386F64Sub,
   &I386F64Mul,&I386F64Div,&I386F64Mod,&I386F64FromI64,
-  &I386F64ToI64,&I386F64Compare,&I386F64Power
+  &I386F64ToI64,&I386F64Compare,&I386F64Power,&I386F64MulToI64
 };
 U0 I386FrontendHelpers(CI386FrontendBound *bound,CHashClass **types)
 {
-  U8 *name="I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0I386F64Power";
+  U8 *name="I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0I386F64Power\0I386F64MulToI64";
   CHashFun *fun;
   CMemberLst *arg;
   I64 i,j,count,argument_type,result_type;
   bound->helpers.mask=15; bound->helpers.body=bound->buckets;
-  for(i=0;i<11;i++,name+=StrLen(name)+1) {
+  for(i=0;i<12;i++,name+=StrLen(name)+1) {
     fun=&bound->functions[i]; count=2; argument_type=result_type=RT_U64;
     if(i<2 || i==7 || i==8) count=1;
     if(i==7) argument_type=RT_I64;
-    if(i==8 || i==9) result_type=RT_I64;
+    if(i==8 || i==9 || i==11) result_type=RT_I64;
     fun->str=name; fun->type=HTT_FUN|HTF_IMPORT;
     fun->arg_cnt=count; fun->return_class=types[result_type];
     fun->member_lst_and_root=&bound->arguments[i*2];
@@ -742,7 +742,7 @@ U0 I386FrontendLink(CI386Frontend *state,CI386FrontendBound *bound,CI386Frontend
   U64 helper_bias=(&I386F64Sqrt-i386_frontend_helper_addresses[0])(U64);
   U8 *code=output->code;
   bound->release_owner.heap=state->heap; bound->release_owner.backend.cc=state->cc;
-  for(i=0;bound->has_helpers && i<11;i++) {
+  for(i=0;bound->has_helpers && i<12;i++) {
     record=bound->functions[i].ie_lst; bound->functions[i].ie_lst=0;
     while(record) {
       next=record->next; offset=record->rip;

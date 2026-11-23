@@ -1,6 +1,6 @@
 #include "/Kernel/I386/KernelSymbols.HH"
 #include "/Kernel/KMathInt.HC"
-CI386KernelSymbol math_exports[28];
+CI386KernelSymbol math_exports[29];
 CHashTable *math_symbols;
 U64 (*i386_power_implementation)(U64 base,U64 exponent);
 
@@ -38,13 +38,13 @@ U64 I386F64Power(U64 base,U64 exponent)
   return (*i386_power_implementation)(base,exponent);
 }
 
-U8 *math_addresses[28]={
+U8 *math_addresses[29]={
   &Round,&Trunc,&Floor,&Ceil,&Pow10I64,
   &Ln,&Log10,&Log2,&FloorU64,&CeilU64,
   &RoundI64,&FloorI64,&CeilI64,&I386F64Sqrt,&I386F64Abs,
   &I386F64Add,&I386F64Sub,&I386F64Mul,&I386F64Div,&I386F64Mod,
   &I386F64FromI64,&I386F64ToI64,&I386F64Compare,&Sin,&Cos,
-  &Arg,&Exp,&I386F64Power
+  &Arg,&Exp,&I386F64Power,&I386F64MulToI64
 };
 
 Bool I386MathBind(CHashTable *symbols)
@@ -53,11 +53,11 @@ Bool I386MathBind(CHashTable *symbols)
   I64 i;
   U64 bias;
   Bool result=FALSE;
-  U8 *names="_ROUND\0_TRUNC\0_FLOOR\0_CEIL\0_POW10_I64\0_LN\0_LOG10\0_LOG2\0_FLOOR_U64\0_CEIL_U64\0_ROUND_I64\0_FLOOR_I64\0_CEIL_I64\0I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0_SIN\0_COS\0_ARG\0_EXP\0I386F64Power\0",*name=names;
+  U8 *names="_ROUND\0_TRUNC\0_FLOOR\0_CEIL\0_POW10_I64\0_LN\0_LOG10\0_LOG2\0_FLOOR_U64\0_CEIL_U64\0_ROUND_I64\0_FLOOR_I64\0_CEIL_I64\0I386F64Sqrt\0I386F64Abs\0I386F64Add\0I386F64Sub\0I386F64Mul\0I386F64Div\0I386F64Mod\0I386F64FromI64\0I386F64ToI64\0I386F64Compare\0_SIN\0_COS\0_ARG\0_EXP\0I386F64Power\0I386F64MulToI64\0",*name=names;
   if(!symbols) goto done;
   if(math_symbols) { result=math_symbols==symbols; goto done; }
   //Check the entire namespace before mutating it.
-  for(i=0;i<28;i++) {
+  for(i=0;i<29;i++) {
     if(HashFind(name,symbols,HTT_EXPORT_SYS_SYM)) goto done;
     while(*name++);
   }
@@ -65,7 +65,7 @@ Bool I386MathBind(CHashTable *symbols)
   //already have placed them at their runtime addresses.
   bias=(&Round-math_addresses[0])(U64);
   name=names;
-  for(i=0;i<28;i++) {
+  for(i=0;i<29;i++) {
     math_exports[i].str=name; math_exports[i].type=HTT_EXPORT_SYS_SYM;
     math_exports[i].kind=1; math_exports[i].val=(math_addresses[i]+0)(U64)+bias;
     HashAdd(&math_exports[i],symbols);

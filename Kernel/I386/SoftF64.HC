@@ -129,20 +129,10 @@ public U64 I386F64Add(U64 a,U64 b) { return I386F64AddSub(a,b,FALSE); }
 public U64 I386F64Sub(U64 a,U64 b) { return I386F64AddSub(a,b,TRUE); }
 
 
-public U64 I386F64Mul(U64 a,U64 b)
+I64 I386F64Product(U64 a,U64 b,U64 *lower,U64 *upper)
 {
-  U64 magnitude=0x7FFFFFFFFFFFFFFF,infinity=0x7FF0000000000000;
-  U64 quiet=0x0008000000000000,frac=0x000FFFFFFFFFFFFF;
-  U64 sign=(a^b)&0x8000000000000000,x,y,low,middle,high;
+  U64 frac=0x000FFFFFFFFFFFFF,x,y,low,middle,high;
   I64 exp,other;
-  if ((a&magnitude)>infinity) return a|quiet;
-  if ((b&magnitude)>infinity) return b|quiet;
-  a&=magnitude; b&=magnitude;
-  if (a==infinity || b==infinity) {
-    if (!a || !b) return infinity|quiet;
-    return sign|infinity;
-  }
-  if (!a || !b) return sign;
   exp=a>>52; other=b>>52;
   x=a&frac; y=b&frac;
   if (exp) x|=0x0010000000000000;
@@ -161,6 +151,26 @@ public U64 I386F64Mul(U64 a,U64 b)
   middle=(x>>32)*(y&0xFFFFFFFF)+(x&0xFFFFFFFF)*(y>>32)+(low>>32);
   high=(x>>32)*(y>>32)+(middle>>32);
   low=(low&0xFFFFFFFF)|(middle<<32);
+  *lower=low;
+  *upper=high;
+  return exp;
+}
+
+public U64 I386F64Mul(U64 a,U64 b)
+{
+  U64 magnitude=0x7FFFFFFFFFFFFFFF,infinity=0x7FF0000000000000;
+  U64 quiet=0x0008000000000000;
+  U64 sign=(a^b)&0x8000000000000000,x,low,high;
+  I64 exp;
+  if ((a&magnitude)>infinity) return a|quiet;
+  if ((b&magnitude)>infinity) return b|quiet;
+  a&=magnitude; b&=magnitude;
+  if (a==infinity || b==infinity) {
+    if (!a || !b) return infinity|quiet;
+    return sign|infinity;
+  }
+  if (!a || !b) return sign;
+  exp=I386F64Product(a,b,&low,&high);
   x=(high<<15)|(low>>49)|((low<<15)!=0);
   if (x&0x0100000000000000) { x=I386F64ShiftJam(x,1); exp++; }
   return I386F64RoundPack(sign,exp,x);
@@ -288,4 +298,43 @@ public I64 I386F64ToI64(U64 value)
   else magnitude<<=exp-52;
   if (value>>63) magnitude=0-magnitude;
   return magnitude;
+}
+
+// Model FMUL with 64 significand bits, followed by masked FISTTP to I64.
+public I64 I386F64MulToI64(U64 a,U64 b)
+{
+  U64 negative=(a^b)>>63;
+  U64 magnitude=0x7FFFFFFFFFFFFFFF,infinity=0x7FF0000000000000;
+  U64 low,high,significand,remainder,half,result;
+  I64 exponent,shift;
+
+  a&=magnitude;
+  b&=magnitude;
+  if (a>=infinity || b>=infinity)
+    return 0x8000000000000000;
+  if (!a || !b)
+    return 0;
+
+  exponent=I386F64Product(a,b,&low,&high)-1023;
+  shift=41+(high>>41);
+  exponent+=shift-41;
+  significand=(high<<(64-shift))|(low>>shift);
+  half=1(U64)<<(shift-1);
+  remainder=low&((half<<1)-1);
+  if (remainder>half || (remainder==half && significand&1)) {
+    significand++;
+    if (!significand) {
+      significand=0x8000000000000000;
+      exponent++;
+    }
+  }
+
+  if (exponent<0)
+    return 0;
+  if (exponent>=63)
+    return 0x8000000000000000;
+  result=significand>>(63-exponent);
+  if (negative)
+    result=0-result;
+  return result;
 }

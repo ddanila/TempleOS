@@ -1,0 +1,61 @@
+{
+  "restoration": "zstd -d <archive> -o <original>",
+  "images": [
+    {
+      "original": "build/i386-wide-product-production-v2/ball-mesh/working.img",
+      "archive": "build/i386-wide-product-production-v2/ball-mesh/working.img.zst",
+      "sha256": "4a4d87b86c31a6068b05980695d5edc9373904e7fe9ac4423da034d4a24f7568",
+      "original_bytes": 67108864,
+      "archive_bytes": 13707301,
+      "recovered_allocated_bytes": 53403648
+    },
+    {
+      "original": "build/i386-wide-product-production-v2/ball-trace/working.img",
+      "archive": "build/i386-wide-product-production-v2/ball-trace/working.img.zst",
+      "sha256": "20b31ce0834dd3559f4c58b3be76a83021330ff58b454685ba20db5a368e9ef5",
+      "original_bytes": 67108864,
+      "archive_bytes": 13708560,
+      "recovered_allocated_bytes": 53403648
+    },
+    {
+      "original": "build/i386-wide-product-production-v2/cosine/working.img",
+      "archive": "build/i386-wide-product-production-v2/cosine/working.img.zst",
+      "sha256": "cfe40add2b06c78e4d908bbc90554baaa9fa01f5d874f68670e518d3e754ffb5",
+      "original_bytes": 67108864,
+      "archive_bytes": 13707738,
+      "recovered_allocated_bytes": 53403648
+    },
+    {
+      "original": "build/i386-wide-product-production-v2/edges/working.img",
+      "archive": "build/i386-wide-product-production-v2/edges/working.img.zst",
+      "sha256": "273f713ade550c097edefc788c1ef71f248b70e5a70f815fee6e783d2f60cadb",
+      "original_bytes": 67108864,
+      "archive_bytes": 13707575,
+      "recovered_allocated_bytes": 53403648
+    },
+    {
+      "original": "build/i386-wide-product-production-v2/product/working.img",
+      "archive": "build/i386-wide-product-production-v2/product/working.img.zst",
+      "sha256": "5a73471bd5fd499a478dd12f466fac0f7332d70b988e795ae50a9b5818363bd0",
+      "original_bytes": 67108864,
+      "archive_bytes": 13707521,
+      "recovered_allocated_bytes": 53403648
+    },
+    {
+      "original": "build/i386-wide-product-production-v2/public-backend/working.img",
+      "archive": "build/i386-wide-product-production-v2/public-backend/working.img.zst",
+      "sha256": "4c0ddf0ab17ef725a2908dc454ab3914e5512874bd74683da7cb403402a77e74",
+      "original_bytes": 67108864,
+      "archive_bytes": 13709984,
+      "recovered_allocated_bytes": 53399552
+    },
+    {
+      "original": "build/i386-wide-product-production-v2/user8/working.img",
+      "archive": "build/i386-wide-product-production-v2/user8/working.img.zst",
+      "sha256": "c762ea6b9df3c5e6af148a42a7f0cad0ff334ca34fd7696db728c9ec7f7d9de7",
+      "original_bytes": 67108864,
+      "archive_bytes": 13707893,
+      "recovered_allocated_bytes": 53403648
+    }
+  ]
+}

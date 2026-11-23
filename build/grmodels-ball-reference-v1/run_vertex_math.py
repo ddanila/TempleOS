@@ -10,8 +10,11 @@ parser.add_argument('--disk', type=Path)
 parser.add_argument('--cosine-steps', action='store_true')
 parser.add_argument('--product-conversion', action='store_true')
 parser.add_argument('--wide-check', action='store_true')
+parser.add_argument('--implicit', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
+if args.implicit and not args.wide_check:
+    parser.error('--implicit requires --wide-check')
 if args.cosine_steps and not args.disk:
     parser.error('--cosine-steps requires a native --disk')
 if sum((args.cosine_steps, args.product_conversion, args.wide_check)) > 1:
@@ -27,7 +30,7 @@ if args.wide_check:
     fixture_name, expected_size = 'WideProductCheck.HC', 16 * 8
 fixture_path = Path(__file__).with_name(fixture_name)
 fixture = fixture_path.read_bytes()
-if args.wide_check and args.disk:
+if args.wide_check and args.disk and not args.implicit:
     helper = fixture_path.with_name('WideProduct.HC').read_bytes()
     fixture = helper + b'\n' + fixture.replace(
         b'return a*b;', b'return BallWideMultiplyToI64(a,b);')

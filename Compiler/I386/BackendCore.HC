@@ -150,6 +150,7 @@ U0 I386Compare(CI386Out *out,I64 op,Bool is_unsigned)
 
 #include "/Compiler/I386/ValueClassCore.HC"
 
+#define I386_WIDE_PRODUCT -1
 U0 I386F64Runtime(CI386Backend *backend,CI386Out *out,I64 op,I64 pass)
 {//First operand EDX:EAX, optional second EBX:ECX; integer runtime ABI.
   CCmpCtrl *cc=backend->cc;
@@ -167,6 +168,7 @@ U0 I386F64Runtime(CI386Backend *backend,CI386Out *out,I64 op,I64 pass)
     case IC_ADD: name="I386F64Add"; break;
     case IC_SUB: name="I386F64Sub"; break;
     case IC_MUL: name="I386F64Mul"; break;
+    case I386_WIDE_PRODUCT: name="I386F64MulToI64"; return_type=RT_I64; break;
     case IC_DIV: name="I386F64Div"; break;
     case IC_MOD: name="I386F64Mod"; break;
     case IC_POWER: name="I386F64Power"; break;
@@ -1244,7 +1246,10 @@ U0 I386BackendCore(CI386Backend *backend)
             I386Bytes(out,"\x59\x5B\x58\x5A",4);
             if (I386IsF64(c) && (ic->ic_code==IC_ADD || ic->ic_code==IC_SUB ||
                 ic->ic_code==IC_MUL || ic->ic_code==IC_POWER))
-              I386F64Runtime(backend,out,ic->ic_code,pass);
+              if (ic->ic_code==IC_MUL && (ic->ic_flags&ICF_RES_TO_INT))
+                I386F64Runtime(backend,out,I386_WIDE_PRODUCT,pass);
+              else
+                I386F64Runtime(backend,out,ic->ic_code,pass);
             else if(c && c->ptr_stars_cnt && ic->ic_code==IC_ADD)
               I386Bytes(out,"\x8D\x04\x08",3);
             else I386Binary(out,ic->ic_code,ToBool(c && c->raw_type&RTF_UNSIGNED));
@@ -1333,7 +1338,8 @@ U0 I386BackendCore(CI386Backend *backend)
             (*backend->report)(backend->context,5,ic,0);
             throw('Compiler');
         }
-        if (ic->ic_flags&(ICF_RES_TO_F64|ICF_RES_TO_INT)) {
+        if ((ic->ic_flags&(ICF_RES_TO_F64|ICF_RES_TO_INT)) &&
+            !(ic->ic_code==IC_MUL && I386IsF64(c) && (ic->ic_flags&ICF_RES_TO_INT))) {
           if (depth<1 || !intermediate_code_table[ic->ic_code].res_cnt) throw('Compiler');
           I386Bytes(out,"\x58\x5A",2);
           if (ic->ic_flags&ICF_RES_TO_F64) I386F64Runtime(backend,out,IC_TO_F64,pass);

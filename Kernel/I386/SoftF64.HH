@@ -19,4 +19,5 @@ public extern U64 I386F64FromI64(I64 value);
 #define I386_F64_UNORDERED 2
 public extern I64 I386F64Compare(U64 a,U64 b);
 public extern I64 I386F64ToI64(U64 value);
+public extern I64 I386F64MulToI64(U64 a,U64 b);
 #endif

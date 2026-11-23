@@ -10,8 +10,7 @@ parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
 out = args.out.resolve()
 out.mkdir()
-records = Path('Adam/Gr/SpriteRecordsCore.HC').read_bytes()
-table = records[:records.index(b'\n};')+4]
+table = Path('Adam/Gr/SpriteBaseSizes.HC').read_bytes()
 setup = b'#include "/Adam/Gr/Gr.HH"\n'+table+b'\n'
 packer = runpy.run_path('tools/package-i386-native-image.py')
 image = out/'working.img'

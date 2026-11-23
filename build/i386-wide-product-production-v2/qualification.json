@@ -1,0 +1,69 @@
+{
+  "base_revision": "b46776651677ceab8c3327279a9fae7af544f7a6",
+  "disk_sha256": "6f9525c09f327f63440f1ef3fdb074402978bc213a63347f7390eede552cd84a",
+  "verified_build_inputs": {
+    "Compiler/I386/BackendCore.HC": "ad32f82bf73fbcda782a5d5162272ba4287dc2291663d03a8266fe04b8a48636",
+    "Compiler/I386/Frontend.HC": "425e9f1296e8bf14e12ae91af50fc41791b9e51cfae02141af86d3be58711888",
+    "Compiler/I386/PublicBackendCore.HC": "9cf57b6b9ff16b10c74fb8e5e4ed58d6697579ba7629b2c8a3e0ac76b439c70a",
+    "Compiler/I386/PublicBackendSupport.HC": "ff42ab2d99337505058bb83364b0ef7b9dbe98fbfc8183efbbd82da80f9c4f8c",
+    "Kernel/I386/GraphicsContext.HC": "5e41916ac9e7f62cbded523651b3c5a7a59c66cf6b4395036726ee9756a05158",
+    "Kernel/I386/Kernel.HC": "8bed9cde355f64f4cd931d141785bf1b3aeac5c7f1a62c1ef65880ea76c077f8",
+    "Kernel/I386/MathPublic.HC": "621195dbcde223ab27e7cb924731b8ff1beb2c22db48f6808981dcedeaba8271",
+    "Kernel/I386/SoftF64.HC": "50d8ead747d21afc16814f8590eb9c4b4898227e064d28bdac68faee7adf4b64",
+    "Kernel/I386/SoftF64.HH": "10632067faec0cc2c79d0b2eaf8abfd5e42c0ba005f39d4a99c96b417dc50de1",
+    "tools/build-i386-kernel.py": "3369d11b186926a0936d93a19c64def95f4e2d04c4b70cbfb870fde919047360"
+  },
+  "direct_assignment": {
+    "records": 6,
+    "different_indices": [],
+    "reference": "build/grmodels-ball-reference-v1/product-original/guest/BallVertexMath.bin",
+    "sha256": "387793ee4328f77e16be1ef5469ffe8dc2f4802521ae60e6d085f1634c3c8e61"
+  },
+  "direct_return": {
+    "records": 16,
+    "different_indices": [
+      0,
+      1
+    ],
+    "reference": "build/grmodels-ball-reference-v1/wide-check-original-implicit/guest/BallVertexMath.bin",
+    "sha256": "731c7a1f48f47a60f65e498bcf0fc582d81b4224767156ea589fc85324094c16"
+  },
+  "grmodels_vertex_calls": {
+    "records": 256,
+    "different_indices": [
+      34,
+      39,
+      42,
+      47,
+      50,
+      55,
+      58,
+      63,
+      64,
+      69,
+      72,
+      77,
+      80,
+      85,
+      88,
+      93,
+      162,
+      167,
+      170,
+      175,
+      178,
+      183,
+      186,
+      192,
+      197,
+      200,
+      205,
+      208,
+      213,
+      216
+    ],
+    "reference": "build/grmodels-ball-reference-v1/trace-original-fixed/guest/BallVertexCalls.bin",
+    "sha256": "5ba9803af0fe262d353c31b7a5eaf00ce93b1aecdf20e86b92e368fc4ab74698"
+  },
+  "interactive_mesh_exact": false
+}
