@@ -40,7 +40,7 @@ CI386Task *memory_root;
 CI386Heap *memory_task_fallback;
 CTask *adam_task;
 U32 memory_runtime_version=I386_MEMORY_SERVICES_VERSION;
-CI386KernelSymbol memory_exports[74];
+CI386KernelSymbol memory_exports[75];
 U0 (*memory_owner_retire)(CI386Task *task);
 U0 (*memory_task_window_init)(CTask *task);
 Bool (*memory_file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap);
@@ -52,6 +52,8 @@ extern Bool MemoryTaskValidate(CTask *task);
 extern CI386Task *MemoryTaskPublicResolve(CTask *task);
 extern Bool MemoryManagedYield(CI386Scheduler *scheduler);
 extern CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,I64 target_cpu=-1,CTask *parent=0,I64 stack_size=0,I64 flags=256);
+extern CTask *MemorySpawnHigh(U0 (*entry)(U8 *data),U8 *data,U8 *name,
+  I64 target_cpu,CTask *parent,I64 stack_size,I64 flags);
 extern U0 Exit();
 extern U0 TaskQueIns(CTask *task,CTask *pred=0);
 extern CJob *MemoryTaskMsg(CTask *task,CTask *master,I64 msg_code,I64 arg1,I64 arg2,I64 flags);
@@ -96,7 +98,7 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols,CI386Heap *t
 {//Reserve startup pages early; subsequent public backing grows on demand.
   U32 flags=I386IrqSave;
   Bool result=FALSE;
-  U8 *addresses[74],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0_SCAN_MSG\0_GET_MSG\0_FLUSH_MSGS\0_SYS_SEMAS\0_SYS_MACRO_HEAD\0_SYS_MACRO_TASK\0_KILL\0_HASH_REM_DEL\0_ADAM_TASK\0I386PostKeyTimed\0I386ScanKeyTimed\0I386CAllocExact\0I386TaskOwnerRetireHook\0I386TaskFileBirthHook\0_FIFO_U8_NEW\0_FIFO_U8_DEL\0_FIFO_U8_INS\0_FIFO_U8_REM\0_FIFO_U8_PEEK\0_FIFO_U8_FLUSH\0_FIFO_U8_CNT\0_FIFO_I64_NEW\0_FIFO_I64_DEL\0_FIFO_I64_INS\0_FIFO_I64_REM\0_FIFO_I64_PEEK\0_FIFO_I64_FLUSH\0_FIFO_I64_CNT\0_AMALLOC\0_ACALLOC\0_AMALLOC_IDENT\0_ASTR_NEW\0_MEMCMP\0_LINKED_LST_CNT\0_QSORT_I64\0I386TaskWindowInitHook\0I386TaskPublicResolve\0_SWAP_I64\0";
+  U8 *addresses[75],*names="_MALLOC\0_FREE\0_MSIZE\0_MSIZE2\0_MHEAP_CTRL\0_CALLOC\0_MALLOC_ALIGNED\0_CALLOC_ALIGNED\0_MEMCPY\0_MEMSET\0_MALLOC_IDENT\0_STR_NEW\0_STRCPY\0_BEQU\0_LBEQU\0_HASH_TABLE_NEW\0_HASH_TABLE_DEL\0_HASH_DEL\0_HASH_LIST_ADD\0_DEFINE_LIST_LOAD\0_HASH_DEFINE_LIST_ADD\0_MEM_MEASURE_START\0_MEM_MEASURE_STOP\0_YIELD\0_SLEEP\0_SLEEP_UNTIL\0_SPAWN\0_EXIT\0_TASK_QUE_INS\0I386SchedYield\0_TASK_MSG\0_POST_MSG\0_MSG\0_SUSPEND\0_IS_SUSPENDED\0_JOBS_HNDLR\0_SCAN_MSG\0_GET_MSG\0_FLUSH_MSGS\0_SYS_SEMAS\0_SYS_MACRO_HEAD\0_SYS_MACRO_TASK\0_KILL\0_HASH_REM_DEL\0_ADAM_TASK\0I386PostKeyTimed\0I386ScanKeyTimed\0I386CAllocExact\0I386TaskOwnerRetireHook\0I386TaskFileBirthHook\0_FIFO_U8_NEW\0_FIFO_U8_DEL\0_FIFO_U8_INS\0_FIFO_U8_REM\0_FIFO_U8_PEEK\0_FIFO_U8_FLUSH\0_FIFO_U8_CNT\0_FIFO_I64_NEW\0_FIFO_I64_DEL\0_FIFO_I64_INS\0_FIFO_I64_REM\0_FIFO_I64_PEEK\0_FIFO_I64_FLUSH\0_FIFO_I64_CNT\0_AMALLOC\0_ACALLOC\0_AMALLOC_IDENT\0_ASTR_NEW\0_MEMCMP\0_LINKED_LST_CNT\0_QSORT_I64\0I386TaskWindowInitHook\0I386TaskPublicResolve\0_SWAP_I64\0I386SpawnHigh\0";
   I64 i;
   if(memory_root || task_fallback && !I386HeapValid(task_fallback) ||
       !symbols || !symbols->body || symbols->locked_flags ||
@@ -162,7 +164,8 @@ Bool MemoryBind(CI386Task *root,CI386Heap *heap,CHashTable *symbols,CI386Heap *t
   addresses[71]=&memory_task_window_init;
   addresses[72]=&MemoryTaskPublicResolve;
   addresses[73]=&MemorySwapI64;
-  for(i=0;i<74;i++) {
+  addresses[74]=&MemorySpawnHigh;
+  for(i=0;i<sizeof(memory_exports)/sizeof(CI386KernelSymbol);i++) {
     memory_exports[i].str=names; memory_exports[i].type=HTT_EXPORT_SYS_SYM;
     memory_exports[i].kind=1;
     if(i>=39 && i<=41 || i==44 || i==48 || i==49 || i==71) memory_exports[i].kind=3;
@@ -345,10 +348,10 @@ Bool MemoryCoreYield(CI386Scheduler *scheduler) { return I386SchedYield(schedule
 //a second copy in this provider. Public task/job ownership remains below.
 import Bool I386SchedActivate(CI386Scheduler *s,CI386Task *task);
 import Bool I386SchedFinish(CI386Scheduler *s);
-import CI386OwnedTask *I386TaskCreateWithFilesFallback(CI386Scheduler *s,
+import CI386OwnedTask *I386TaskCreateWithFilesPlacement(CI386Scheduler *s,
   CI386Heap *heap,CI386Heap *fallback,CI386Task *parent,I64 stack_size,
   U0 (*entry)(I64 arg),I64 arg,U16 fs,U16 gs,I64 private_size,Bool queued,
-  Bool (*file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap));
+  Bool (*file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap),Bool high);
 import Bool I386TaskDestroy(CI386OwnedTask *owned);
 #include "/Kernel/I386/TaskRuntimePublic.HC"
 

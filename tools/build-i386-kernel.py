@@ -266,7 +266,7 @@ def memory_runtime_layout(module):
     #bindings, not additional external kernel services.
     external_imports = set(imports) - set(exports)
     if external_imports != {'I386HeapAlloc', 'I386HeapAllocHigh', 'I386HeapFree', 'I386HeapShrink', 'I386HeapSize', 'I386HeapValid',
-                       'I386IrqSave', 'I386IrqRestore', 'KernelLog', 'KernelHex', 'KernelStop', 'HashAdd', 'throw', 'SysTry', 'SysUntry', 'HashFind', 'I386SchedYield', 'cnts', 'I386TaskCreateWithFilesFallback', 'I386TaskDestroy', 'I386SchedActivate', 'I386SchedFinish'}:
+                       'I386IrqSave', 'I386IrqRestore', 'KernelLog', 'KernelHex', 'KernelStop', 'HashAdd', 'throw', 'SysTry', 'SysUntry', 'HashFind', 'I386SchedYield', 'cnts', 'I386TaskCreateWithFilesPlacement', 'I386TaskDestroy', 'I386SchedActivate', 'I386SchedFinish'}:
         raise ValueError('Unexpected memory-runtime import contract')
     for name in ('Main', 'MemoryBind', 'MemoryProbe', 'MemoryCAllocExact', 'Yield', 'Sleep', 'SleepUntil', 'Spawn', 'Exit', 'TaskQueIns', 'MemoryManagedYield', 'MemoryTaskMsg', 'MemoryPostMsg', 'MemoryMsg', 'MemorySuspend', 'MemoryIsSuspended', 'MemoryJobsHndlr', 'MemoryScanMsg', 'MemoryGetMsg', 'MemoryFlushMsgs', 'MemoryKill', 'FifoU8New', 'FifoU8Del', 'FifoU8Ins', 'FifoU8Rem', 'FifoU8Peek', 'FifoU8Flush', 'FifoU8Cnt', 'FifoI64New', 'FifoI64Del', 'FifoI64Ins', 'FifoI64Rem', 'FifoI64Peek', 'FifoI64Flush', 'FifoI64Cnt', 'AMAlloc', 'ACAlloc', 'AMAllocIdent', 'AStrNew'):
         if exports.get(name, (0, 0))[0] != 1:

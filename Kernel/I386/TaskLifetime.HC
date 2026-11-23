@@ -18,10 +18,11 @@ public U0 I386TaskReturn()
   I386SchedFinish(I386TaskSelf->owner);
   while (1) {}
 }
-public CI386OwnedTask *I386TaskCreateWithFilesFallback(CI386Scheduler *s,
+CI386OwnedTask *I386TaskCreateWithFilesPlacement(CI386Scheduler *s,
   CI386Heap *heap,CI386Heap *fallback,CI386Task *parent,I64 stack_size,
   U0 (*entry)(I64 arg),I64 arg,U16 fs,U16 gs,I64 private_size,Bool queued,
-  Bool (*file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap))
+  Bool (*file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap),
+  Bool high)
 {//NULL-returning bootstrap API, not the full public Spawn/OutMem contract.
   CI386OwnedTask *owned;
   CI386Task *creator[1];
@@ -208,7 +209,8 @@ public CI386OwnedTask *I386TaskCreateWithFilesFallback(CI386Scheduler *s,
     }
     if(scan_offset==heap->size)heap=fallback;
   }
-  owned=I386HeapAlloc(heap,total,TRUE);
+  if(high) owned=I386HeapAllocHigh(heap,total,TRUE);
+  else owned=I386HeapAlloc(heap,total,TRUE);
   if (!owned) { I386IrqRestore(flags); return 0; }
   owned->heap=heap; owned->allocation_size=total; owned->signature=0x54323349;
   //The public descriptor directly precedes the page-aligned usable stack.
@@ -293,6 +295,14 @@ spawn_fail:
   I386HeapFree(heap,owned);
   I386IrqRestore(flags);
   return 0;
+}
+public CI386OwnedTask *I386TaskCreateWithFilesFallback(CI386Scheduler *s,
+  CI386Heap *heap,CI386Heap *fallback,CI386Task *parent,I64 stack_size,
+  U0 (*entry)(I64 arg),I64 arg,U16 fs,U16 gs,I64 private_size,Bool queued,
+  Bool (*file_birth)(CI386Task *source,CI386Task *target,CI386Heap *heap))
+{
+  return I386TaskCreateWithFilesPlacement(s,heap,fallback,parent,stack_size,
+    entry,arg,fs,gs,private_size,queued,file_birth,FALSE);
 }
 public CI386OwnedTask *I386TaskCreateWithFiles(CI386Scheduler *s,CI386Heap *heap,
   CI386Task *parent,I64 stack_size,U0 (*entry)(I64 arg),I64 arg,

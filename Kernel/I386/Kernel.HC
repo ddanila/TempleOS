@@ -973,12 +973,15 @@ U0 KernelFileLoad()
 
 U0 KernelMemoryLoad()
 {
-  CI386ModuleBinding bindings[sizeof(kernel_memory_bindings)];
+  CI386ModuleBinding bindings[sizeof(kernel_memory_bindings)+1];
   CI386Heap *fallback=0;
   if(kernel_memory_image || kernel_memory.version) KernelStop;
-  KernelBindings(bindings,kernel_memory_bindings,sizeof(kernel_memory_bindings),sizeof(bindings)/sizeof(CI386ModuleBinding));
+  KernelBindings(bindings,kernel_memory_bindings,sizeof(kernel_memory_bindings),sizeof(kernel_memory_bindings));
+  bindings[sizeof(kernel_memory_bindings)].name="I386TaskCreateWithFilesPlacement";
+  bindings[sizeof(kernel_memory_bindings)].kind=1;
+  bindings[sizeof(kernel_memory_bindings)].address=&I386TaskCreateWithFilesPlacement;
   kernel_memory_image=KernelServiceLoad("/Modules/I386/MemoryRuntime.t32m","MEMORY ",
-    bindings,sizeof(kernel_memory_bindings),&kernel_memory,sizeof(CI386MemoryServices),I386_MEMORY_SERVICES_VERSION);
+    bindings,sizeof(bindings)/sizeof(CI386ModuleBinding),&kernel_memory,sizeof(CI386MemoryServices),I386_MEMORY_SERVICES_VERSION);
   if(kernel_task_fallback_heap.signature==I386_HEAP_MAGIC)fallback=&kernel_task_fallback_heap;
   if(!kernel_memory.bind(&kernel_root,&kernel_heap,kernel_symbols,fallback)) KernelStop;
   if(kernel_diagnostics) kernel_memory.probe(0);

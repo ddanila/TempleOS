@@ -3027,3 +3027,16 @@ The [same-revision heap capture](../build/i386-native-cache-footprint-v2/retaine
 also measured 264,056 bytes before `USCheck` and reproduced the
 267,527-byte allocation failure. It matches the earlier assembled
 diagnostic's largest free block.
+
+A private high-heap spawn path places the keyboard worker away from
+the lower edge of the User stack gap. The worker keeps its 8 KiB
+stack and starts at the same point in console initialization. Public
+`Spawn` still uses the existing first-fit policy. In the
+[8 MiB cross-built capture](../build/i386-keyboard-high-v2/user8-profile/result.json),
+the worker moved from `0x75AD80` to `0x7CADD8` and the largest
+free block grew from 292,728 to 301,576 bytes. Both the capture and
+the [separate User workflow](../build/i386-keyboard-high-v2/user8/result.json)
+reached mask 255. The standalone task corpus returned 142 during
+scheduler preparation on both the candidate and the committed baseline,
+before exercising task allocation. The changed ConsoleRuntime and
+MemoryRuntime guest builds are underway to test the installed margin.

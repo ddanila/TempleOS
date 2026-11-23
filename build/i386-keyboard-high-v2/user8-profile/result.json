@@ -1,0 +1,142 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "f29e056a4de9db295586a9c1b557d71a8c360a82e215ac33a930baf1b8d1eead",
+    "image_sha256": "675adf0d3fdd3b668ae8b22a3813079e5149f60e64f42707b368ca4afd988703",
+    "boot_area_sha256": "5f4fdfaacc62c2797b3f2c1f82dc8015bd61c2c2fbf6e18213bcb76cc5421461",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 96171,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96174,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/UserStartup.HC": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2"
+    },
+    "added_attributes": {
+      "/UserStartup.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "snapshots": {
+    "before-user": {
+      "capacity": 6747648,
+      "used": 6267736,
+      "largest_free": 301576,
+      "allocations": 18494,
+      "failure_callers": [],
+      "stopped_callers": [
+        {
+          "frame": 7486048,
+          "return_address": 4550355,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:DocRecalc",
+              "offset": 10138
+            }
+          ]
+        },
+        {
+          "frame": 7486732,
+          "return_address": 4080572,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:DocUpdateTaskDocs",
+              "offset": 1211
+            }
+          ]
+        },
+        {
+          "frame": 7486848,
+          "return_address": 4931042,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:GrUpdateTaskWinCore",
+              "offset": 1185
+            }
+          ]
+        },
+        {
+          "frame": 7486964,
+          "return_address": 4932320,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:GrUpdateTaskWin",
+              "offset": 231
+            }
+          ]
+        },
+        {
+          "frame": 7486992,
+          "return_address": 4938564,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeWindowListDraw",
+              "offset": 1867
+            }
+          ]
+        },
+        {
+          "frame": 7487092,
+          "return_address": 4893992,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:GraphicsFrameCore",
+              "offset": 567
+            }
+          ]
+        },
+        {
+          "frame": 7487184,
+          "return_address": 4925029,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeGraphicsPresentChecked",
+              "offset": 2420
+            }
+          ]
+        },
+        {
+          "frame": 7487348,
+          "return_address": 5035877,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeWindowWorker",
+              "offset": 804
+            }
+          ]
+        },
+        {
+          "frame": 7487424,
+          "return_address": 2913816,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryTaskEntry",
+              "offset": 343
+            }
+          ]
+        },
+        {
+          "frame": 7487468,
+          "return_address": 2920624,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemorySpawnHigh",
+              "offset": 175
+            }
+          ]
+        }
+      ],
+      "memory_sha256": "01b7a0fb9ad15d8b854fd0b2ca25bfd72b6464f5c1a6d5f1bca4ef6843838101"
+    }
+  },
+  "fixture_sha256": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2"
+}

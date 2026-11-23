@@ -189,8 +189,8 @@ U0 TaskQueIns(CTask *task,CTask *pred=0)
   I386IrqRestore(irq);
   if(!result) throw('Task',TRUE);
 }
-CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
-  I64 target_cpu=-1,CTask *parent=0,I64 stack_size=0,I64 flags=256)
+CTask *MemorySpawn(U0 (*entry)(U8 *data),U8 *data,U8 *name,
+  I64 target_cpu,CTask *parent,I64 stack_size,I64 flags,Bool high)
 {
   U32 irq=I386IrqSave;
   CMemoryTaskRecord *record;
@@ -210,8 +210,8 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
   if(!stack_size) stack_size=MEM_DFT_STK;
   record=I386HeapAlloc(memory_pool.heap,sizeof(CMemoryTaskRecord),TRUE);
   if(!record) { I386IrqRestore(irq); throw('OutMem',TRUE); return 0; }
-  owned=I386TaskCreateWithFilesFallback(memory_root->owner,memory_pool.heap,memory_task_fallback,parent,
-      stack_size,&MemoryTaskEntry,(data+0)(U64),0x18,0x20,0,FALSE,memory_file_birth);
+  owned=I386TaskCreateWithFilesPlacement(memory_root->owner,memory_pool.heap,memory_task_fallback,parent,
+      stack_size,&MemoryTaskEntry,(data+0)(U64),0x18,0x20,0,FALSE,memory_file_birth,high);
   if(!owned) {
     I386HeapFree(memory_pool.heap,record);
     I386IrqRestore(irq); throw('OutMem',TRUE); return 0;
@@ -244,6 +244,16 @@ CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
     if(!MemoryTaskActivate(task,I386TaskSelf)) KernelStop;
   }
   I386IrqRestore(irq); return task;
+}
+CTask *Spawn(U0 (*entry)(U8 *data),U8 *data=0,U8 *name=0,
+  I64 target_cpu=-1,CTask *parent=0,I64 stack_size=0,I64 flags=256)
+{
+  return MemorySpawn(entry,data,name,target_cpu,parent,stack_size,flags,FALSE);
+}
+CTask *MemorySpawnHigh(U0 (*entry)(U8 *data),U8 *data,U8 *name,
+  I64 target_cpu,CTask *parent,I64 stack_size,I64 flags)
+{
+  return MemorySpawn(entry,data,name,target_cpu,parent,stack_size,flags,TRUE);
 }
 U0 Exit()
 {

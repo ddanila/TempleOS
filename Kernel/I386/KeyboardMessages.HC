@@ -96,7 +96,7 @@ Bool NativeKeyboardStart()
   if(native_keyboard_task) return FALSE;
   //Initialize the immortal actor's public queues before keyboard scanning.
   if(!I386SchedYield(I386TaskSelf->owner)) return FALSE;
-  symbol=HashFind("_SPAWN",task->hash_table,HTT_EXPORT_SYS_SYM);
+  symbol=HashFind("I386SpawnHigh",task->hash_table,HTT_EXPORT_SYS_SYM);
   if(!symbol) return FALSE;
   native_keyboard_hooks.spawn=symbol->val;
   symbol=HashFind("I386PostKeyTimed",task->hash_table,HTT_EXPORT_SYS_SYM);
