@@ -31015,3 +31015,13 @@ docs/i386-public-resident-optimizer.md and
 build/compiler-header-pause-checkpoint/audit.json. No production source change,
 resource gate reduction or milestone completion is claimed. C1–C5 are paused
 at the user's request; continue directly on main when resumed.
+
+### Resumed C2/C4 allocation placement experiment (2026-11-23)
+
+The goal is active again. Corrected the experimental identifier initialization
+from NULL to zero in a fresh frozen overlay. Both complete CompilerRuntime and
+ConsoleRuntime cross-build with unchanged inputs; module hashes are pinned in
+build/compiler-high-headers-v2/cross-audit.json. Audit/packaging and unchanged
+original-User8 qualification follow this build; inspect their terminal receipts
+before drawing conclusions. This remains an unapplied prototype. Full C1–C5,
+inventory, native generations and resource/startup qualification remain open.

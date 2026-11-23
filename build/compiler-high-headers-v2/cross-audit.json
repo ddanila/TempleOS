@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "scope": "Cross compilation only; heap-placement hypothesis awaits runtime qualification",
+  "receipt_sha256": "00593f2fb4d7c6d03114b6163c0bfcffc004e16e87b04a0011a039eed27f993a",
+  "modules": {
+    "CompilerRuntime.t32m": "0b6737eb4bc396aa572fa285b6a884ac9066d856582a058319d7366b4e15e328",
+    "ConsoleRuntime.t32m": "3bcaadb775f39c58101efcbb0b74f0baaf0ce2fe49b11453c9140355c450e993"
+  }
+}

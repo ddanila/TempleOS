@@ -259,3 +259,16 @@ last production optimizer integration remains the resident core implementation;
 original User/provider lexer and raw-header policies remain prototypes. Full
 C1–C5, the 2/686 inventory, original-User8, current native generations and startup
 qualification remain open. Work is paused at the user's request.
+
+## Resumed allocation-placement experiment (2026-11-23)
+
+Work resumed on main from the paused checkpoint. A fresh
+build/compiler-high-headers-v2 overlay replaces the bootstrap-incompatible NULL
+in the experimental identifier path with zero. Both complete CompilerRuntime
+and ConsoleRuntime now cross-compile with unchanged pinned inputs. The
+cross-audit.json records their hashes and the build receipt. This establishes
+compilability only; it does not verify the placement policy's ownership behavior,
+heap fragmentation, startup or broader compatibility. The original-User8 test
+is launched after successful image auditing/packaging and needs its terminal
+receipt before any passing claim. No production source changes are applied.
+The full C1–C5 objective is active again; all prior open gates remain open.
