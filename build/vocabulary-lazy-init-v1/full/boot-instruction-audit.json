@@ -1,0 +1,40 @@
+{
+  "result": "pass",
+  "boot16": {
+    "instructions": 96
+  },
+  "stage32": {
+    "instructions": 332
+  },
+  "ranges": {
+    "entry32": {
+      "offset": 512,
+      "bytes": 5,
+      "bits": 32,
+      "instructions": 1,
+      "sha256": "8123416c083ef1c0cb908278f350eed53af95b468ef4d39318e1ae15988e9687"
+    },
+    "load32": {
+      "offset": 614,
+      "bytes": 278,
+      "bits": 32,
+      "instructions": 63,
+      "sha256": "3b09d9c32bc3d9a34cf00dfd89e11fb3b6932ab5944e6eb6a97cb13284596553"
+    },
+    "bios16": {
+      "offset": 892,
+      "bytes": 317,
+      "bits": 16,
+      "instructions": 101,
+      "sha256": "b7cd3c5266306b658ee4538a4cddadd874758a9fd819498a4a24871f3f5fecdc"
+    },
+    "copy32": {
+      "offset": 1209,
+      "bytes": 603,
+      "bits": 32,
+      "instructions": 167,
+      "sha256": "ef4d47792394284b4efc6f2b1c19acd1cc6b781a75b89a53e14317b7e4e15189"
+    }
+  },
+  "scope": "Extended loader executable ranges; metadata/GDT/padding excluded"
+}

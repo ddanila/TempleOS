@@ -1099,3 +1099,21 @@ accepts a choice, and opens the definition. The run uses a click to restore
 quiz focus before exiting. Fresh arithmetic renders. See
 `build/vocabulary-lazy-init-v1/native64/result.json`. Automatic focus
 restoration after the definition still needs a fix.
+
+The rebuilt full Vocabulary image passes the boot instruction and 686-file
+inventory audits. Its cold quiz starts with the bundled dictionary. After
+Escape dismisses the definition, the popup task signature is cleared while
+keyboard focus still holds its old task address. Clicking the quiz restores
+focus and permits Escape to exit. See `build/vocabulary-lazy-init-v1/full-inventory.json`
+and `build/vocabulary-popup-lifetime-v1/native64/result.json`.
+
+A minimal asynchronous PopUp and View reproduces the same native stale focus.
+The original retires the popup and routes the next key to its caller. The
+native baseline retires the popup and leaves focus at its former address.
+The retirement overlay selects the next eligible task in window order.
+It returns focus to the caller in the minimal test and in the complete
+Vocabulary answer, definition, and Escape workflow without a mouse click.
+The overlay passes its instruction audit and the 8 MiB User smoke test in
+50.74 seconds. See `build/async-popup-focus-inline-v1` and
+`build/async-popup-focus-retire-v1`. The production source remains pinned by
+the ongoing native rebuild.

@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "source_sha256": "1765e7562ebd5d04daeaf06ffbf6c14c38a7e82a412801eb8a2917f44101c7b7",
+  "image_sha256": "2ee37ed0c3295ef8d52f4664a4b29f410b3421264157ce781bc63794edaba311",
+  "boot_area_sha256": "5aa85244a30e742429830e2770bcea2fcf34bf207db61cb847921c16e136677e",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1903,
+    "owned_sectors": 96132,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1903,
+    "owned_sectors": 96134,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Native focus selection when a focused task retires",
+  "candidate_sha256": "2ee37ed0c3295ef8d52f4664a4b29f410b3421264157ce781bc63794edaba311",
+  "instruction_audit": "pass",
+  "prototype": false
+}

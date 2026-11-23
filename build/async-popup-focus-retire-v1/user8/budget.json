@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "startup_seconds": 50.74290143401595,
+  "budget_seconds": 60,
+  "over_budget_seconds": 0,
+  "evidence": "/home/ddanila/fun/TempleOS/build/async-popup-focus-retire-v1/user8/qemu/result.json",
+  "evidence_sha256": "e7f34ff221effae2024211cd6fe587c09e062d880371a7b3e1b59a2c9714665b",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}

@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "image_sha256": "1765e7562ebd5d04daeaf06ffbf6c14c38a7e82a412801eb8a2917f44101c7b7",
+  "inventory_files_matched": 686,
+  "boot_instruction_audit": "pass",
+  "vocabulary_sha256": {
+    "/Apps/Vocabulary/Load.HC": "13a0d4944159f1f271210c9c92606f64a365c6f553c3a78cc4ec502f0a726e87",
+    "/Apps/Vocabulary/Run.HC": "36c578510595691f35bf2ba7b341a228d7d74c53103e91ebb1188ac52a9f6bed",
+    "/Apps/Vocabulary/VocabQuiz.HC": "7b815f210ee546a68e9c73c7e0dde988d17aceefc10fc2be90a3e0a2e65657b1"
+  }
+}
