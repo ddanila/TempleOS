@@ -1574,3 +1574,12 @@ At this checkpoint, the retained 128 MiB native rebuilds for the ODE
 and Span production images were both still running. Their current
 receipts are under `build/native-ode-production-v1/retained128` and
 `build/span-production-v1/retained128`.
+
+A ToTheFront serial visibility probe submits the existing worker
+callbacks directly over the full unit and map ranges. The probe
+keeps the original visibility merge and the single-enemy range
+calculation. The geometry and integer prompt still load, but the
+alternate application loader is rejected before any visibility
+workflow can be verified. The probe leaves the production app
+sources intact. See
+`build/native-geometry-source-v1/ToTheFront-serial-inline/result.json`.

@@ -7,8 +7,11 @@ import runpy
 parser = argparse.ArgumentParser()
 parser.add_argument('disk',type=Path)
 parser.add_argument('--app', choices=('GrModels','ToTheFront','X-Caliber'), required=True)
+parser.add_argument('--serial-visibility', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
+if args.serial_visibility and args.app != 'ToTheFront':
+    parser.error('--serial-visibility requires --app ToTheFront')
 out = args.out.resolve()
 out.mkdir()
 extras={}
@@ -20,6 +23,33 @@ if args.app=='ToTheFront':
     source=Path('Adam/DolDoc/DocPopUp.HC').read_bytes()
     extras['/IntegerPrompt.HC']=source[
         source.index(b'public I64 PopUpGetI64'):source.index(b'public F64 PopUpGetF64')]
+    if args.serial_visibility:
+        app = Path('Apps/ToTheFront')
+        visibility = (app/'TTFVis.HC').read_bytes()
+        start = visibility.index(b'  I64 i,hi,k,cnt;', visibility.index(b'Bool VisRecalc('))
+        end = visibility.index(b'  if (mode==VR_FRIENDLY_UNIT_DIED)', start)
+        visibility = visibility[:start] + b'  I64 hi;\n  Bool res;\n  MPCtrl1 job;\n\n' + visibility[end:]
+        visibility = visibility.replace(b'  cnt=mp_cnt; //Cores\n', b'', 1)
+        start = visibility.index(b'  k=hi;', start)
+        end = visibility.index(b'  if (mode==VR_UPDATE_FRIENDLY_UNIT)', start)
+        visibility = visibility[:start] + b"""  job.mode=mode;
+  job.tmpu=tmpu;
+  job.lo=0;
+  job.hi=hi;
+  res=MPVisRecalc(&job);
+""" + visibility[end:]
+        start = visibility.index(b'  I64 i,hi,k,cnt;', visibility.index(b'U0 VisRecalcMap('))
+        end = visibility.index(b'\n}', start)
+        visibility = visibility[:start] + b"""  MPCtrl2 job;
+  job.row=row;
+  job.col=col;
+  job.lo=0;
+  job.hi=map_rows;
+  MPVisRecalcMap(&job);""" + visibility[end:]
+        # Keep the loader in the application directory so __DIR__ retains its value.
+        loader = (app/'Load.HC').read_bytes()
+        extras['/Apps/ToTheFront/TTFLoaderProbe.HC'] = loader.replace(
+            b'#include "TTFVis"', visibility)
 if args.app=='X-Caliber':
     extras['/ExtraVectors.HC']=Path('build/xcaliber-vector-load-v1/Vector.HC').read_bytes()
 math=Path('Adam/Gr/GrMath.HC').read_bytes()
@@ -48,8 +78,11 @@ try:
     commands=['#include "C:/PublicGeometrySource.HC"']
     if args.app=='X-Caliber':
         commands.append('AdamFile("/Kernel/I386/NativeODE.HC",FALSE);')
-    commands += [f'#include "C:{path}"' for path in extras if path!='/PublicGeometrySource.HC']
-    commands.append(f'#include "C:/Apps/{args.app}/Load.HC"')
+    for path in ('/LightingChooser.HC', '/IntegerPrompt.HC', '/ExtraVectors.HC'):
+        if path in extras:
+            commands.append(f'#include "C:{path}"')
+    loader = '/Apps/ToTheFront/TTFLoaderProbe.HC' if args.serial_visibility else f'/Apps/{args.app}/Load.HC'
+    commands.append(f'#include "C:{loader}"')
     for command in commands:
         report['command']=command
         guest.command(command)
