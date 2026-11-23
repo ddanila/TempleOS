@@ -1541,8 +1541,7 @@ CMass. See `build/grmodels-native-matrix-v1/native64/result.json`,
 
 A Console overlay publishes the resident Line, GrPlot, GrRect3, and
 matrix rotations and the original sprite record size table. The
-combined image passes the instruction audit. Its application-load
-and 8 MiB regression checks are running. See
+combined image passes the instruction audit. See
 `build/native-geometry-bindings-v1/combined/result.json`.
 
 The per-symbol graphics candidate loads GrModels with its original
@@ -1561,3 +1560,17 @@ The next candidate loads the original portable geometry routines on
 demand from the unchanged production Console image. See
 `build/native-geometry-bindings-v1/user8/result.json` and
 `build/native-geometry-table-v1/user8/result.json`.
+
+The on-demand geometry probe compiled the original graphics routines
+and integer prompt at 64 MiB using the production Span image. The
+package audit confirmed that all existing files and the boot area were
+preserved. ToTheFront advanced to `TTFVis.HC:146`, where the compiler
+rejected `mp_cnt` in its multicore visibility code. This confirms the
+loader reached the same dependency without the resident graphics
+exports. The full game workflow still needs verification. See
+`build/native-geometry-source-v1/ToTheFront/result.json`.
+
+At this checkpoint, the retained 128 MiB native rebuilds for the ODE
+and Span production images were both still running. Their current
+receipts are under `build/native-ode-production-v1/retained128` and
+`build/span-production-v1/retained128`.

@@ -671,7 +671,133 @@
         "-o",
         "build/tothefront-line-load-v1/native64/working.img"
       ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/ToTheFront/working.img",
+      "archive": "build/native-geometry-source-v1/ToTheFront/working.img.zst",
+      "sha256": "e9c6bfe726daf5eac88cd5ec6958ac8037ae4423f9cf9947fc02762f82ee88d5",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/ToTheFront/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/ToTheFront/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-bindings-v1/GrModels/working.img",
+      "archive": "build/native-geometry-bindings-v1/GrModels/working.img.zst",
+      "sha256": "558a4027354341fe9a7922459f5a9177460ec7dbb2490189387ea8148608a8c7",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-bindings-v1/GrModels/working.img.zst",
+        "-o",
+        "build/native-geometry-bindings-v1/GrModels/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-bindings-v1/user8/working.img",
+      "archive": "build/native-geometry-bindings-v1/user8/working.img.zst",
+      "sha256": "edfcdbe83c3e3a50fb716a2457508397a8c9bdb2153c9b5bb94980c54336afb5",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-bindings-v1/user8/working.img.zst",
+        "-o",
+        "build/native-geometry-bindings-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-table-v1/GrModels/working.img",
+      "archive": "build/native-geometry-table-v1/GrModels/working.img.zst",
+      "sha256": "9ddc4ed325974ede6f268ecde6d57a7749cc355c984285efc1df6c4ba4a66fe1",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-table-v1/GrModels/working.img.zst",
+        "-o",
+        "build/native-geometry-table-v1/GrModels/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-table-v1/probe64/working.img",
+      "archive": "build/native-geometry-table-v1/probe64/working.img.zst",
+      "sha256": "e705150f88483a45ff5b6338b985ddf7ff2fd510fe835672cbb8a39396ccb60b",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-table-v1/probe64/working.img.zst",
+        "-o",
+        "build/native-geometry-table-v1/probe64/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-table-v1/probe64-named/working.img",
+      "archive": "build/native-geometry-table-v1/probe64-named/working.img.zst",
+      "sha256": "ccde72cc8986648561a6a00237752d23c3787507d5de3645feda6bd664f13f06",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-table-v1/probe64-named/working.img.zst",
+        "-o",
+        "build/native-geometry-table-v1/probe64-named/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-table-v1/user8/working.img",
+      "archive": "build/native-geometry-table-v1/user8/working.img.zst",
+      "sha256": "4737e57a99357dc045c1cbc753eb8a5533c3c09799de1c8d4217b4a2cfbce45a",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-table-v1/user8/working.img.zst",
+        "-o",
+        "build/native-geometry-table-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-integer-prompt-v1/native64/working.img",
+      "archive": "build/tothefront-integer-prompt-v1/native64/working.img.zst",
+      "sha256": "1fbbbb8eae9f794ccc7edb5f50acbf872e773e3f34eeff3e09c5c6450aee8b40",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-integer-prompt-v1/native64/working.img.zst",
+        "-o",
+        "build/tothefront-integer-prompt-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/xcaliber-vector-load-v1/native64/working.img",
+      "archive": "build/xcaliber-vector-load-v1/native64/working.img.zst",
+      "sha256": "08df980e255508064896033def57fde63e2af7c4e9148be88cf8d7ca3a22d1e7",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-vector-load-v1/native64/working.img.zst",
+        "-o",
+        "build/xcaliber-vector-load-v1/native64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 2340982784
+  "reclaimed_bytes": 2821652480
 }

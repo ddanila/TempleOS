@@ -44,6 +44,15 @@ runs = [
     'grmodels-native-matrix-v1/native64',
     'xcaliber-ode-load-v1/native64',
     'tothefront-line-load-v1/native64',
+    'native-geometry-source-v1/ToTheFront',
+    'native-geometry-bindings-v1/GrModels',
+    'native-geometry-bindings-v1/user8',
+    'native-geometry-table-v1/GrModels',
+    'native-geometry-table-v1/probe64',
+    'native-geometry-table-v1/probe64-named',
+    'native-geometry-table-v1/user8',
+    'tothefront-integer-prompt-v1/native64',
+    'xcaliber-vector-load-v1/native64',
 ]
 
 
