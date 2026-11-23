@@ -2795,3 +2795,24 @@ ConsoleRuntime with 1,436 exports, and its persisted export set and document
 allocation wrapper calls passed the audit. The same guest rebuilt and audited
 the other eight retained modules with a single load of the build provider.
 Installation and fresh 8 MiB boot are separate checks.
+
+The frozen null-slot image installed all nine audited guest-built modules
+and passed the installer's fresh 8 MiB boot, arithmetic and document
+allocation checks. The separate User child startup still fails. Before
+`USCheck`, the largest main-heap block is 259,928 bytes with all nine
+guest-built modules installed and 288,600 bytes with the cross-built
+modules. `Spawn` requests 267,527 bytes for the child allocation, and
+the conventional fallback has only 2,840 contiguous bytes. The caller
+addresses resolve to `I386TaskCreateWithFilesFallback` and `Spawn`.
+The installed console's payload is 24,160 bytes larger than the
+cross-built console. The
+[installation and heap receipt](../build/i386-console-null-slots-v1/installation-qualification.json)
+pins the disk, module sizes and both heap captures.
+
+A read-only source archive of `6eefeedd` has the exact 1,558 delivered
+source and documentation files. The source auditor can now verify an
+archive against a named commit while development continues on the
+checkout. An audit against the preceding commit rejected the changed
+console bytes. The two-generation runner is using the audited archive
+and the verified installation for its first generation. Its terminal
+result and the installed User child startup gate remain open.

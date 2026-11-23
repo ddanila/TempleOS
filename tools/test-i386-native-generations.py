@@ -26,6 +26,7 @@ def source_identity(repo):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--repository', type=Path, required=True)
+    parser.add_argument('--source-revision', help='Require packaged source from this exact Git revision')
     parser.add_argument('--retained-build', type=Path, required=True)
     parser.add_argument('--retained-install', type=Path,
                         help='Reuse an already passing all-nine installation directory for generation one, after verifying its provenance')
@@ -50,6 +51,9 @@ def main():
     if args.build_command_timeout <= 0:
         parser.error('Build command timeout must be positive')
     runtime = ['--accel', args.accel, '--cpu', args.cpu]
+    source_options = []
+    if args.source_revision:
+        source_options = ['--source-revision', args.source_revision]
     if args.qmp_stdio:
         runtime.append('--qmp-stdio')
     if args.welcome:
@@ -157,14 +161,14 @@ def main():
             '--stage-listing', listing, '--out', audit)
         source_audit = out / (prefix + '-source-audit')
         run(source_audit.name, 'audit-i386-delivered-source.py',
-            '--disk', native / 'target.img', '--repository', repo,
+            '--disk', native / 'target.img', '--repository', repo, *source_options,
             '--out', source_audit / 'result.json')
         return native, audit
 
     try:
         save()
         run('input-source-audit', 'audit-i386-delivered-source.py',
-            '--disk', retained / 'source.img', '--repository', repo,
+            '--disk', retained / 'source.img', '--repository', repo, *source_options,
             '--out', out / 'input-source-audit' / 'result.json')
         first, audited = generation(1, retained)
         built = out / 'gen2-retained-build'

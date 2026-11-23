@@ -1,0 +1,27 @@
+{
+  "installed_disk_sha256": "16b246d5ff76f33e851be7629d4685f01823929dd9efabab1acad229bba585a0",
+  "source_revision": "6eefeedd31b0a453b2dd9555c7ab61dacc24317b",
+  "receipts": {
+    "retained128-install/result.json": "2d1f9096b12a4458c061e36d5b4a4fe3657a568002680acdd96ad8c59c0ea75a",
+    "retained128-install/source-audit.json": "705a08ce3cb9bd5d24704f78810691bdbac05421b3180c6908f78e15522869ff",
+    "retained128-user8/result.json": "b40282f9a14fea72cd29449d130db4f1196148fc48dab0be1b0c5e3a88157f9b",
+    "user8-profile-cross/result.json": "9abf5c6532c1449cc99d21642941622c280dcc24093b52f139573f672fe3e993",
+    "user8-profile-installed/result.json": "9a8a2e8a3270c518ed02c487d9ee1d4263d7686a507b8ffab02ee8a0f580693e"
+  },
+  "installed_user8": "fail",
+  "task_allocation_request": 267527,
+  "fallback_largest_free": 2840,
+  "cross_main_largest_free": 288600,
+  "installed_main_largest_free": 259928,
+  "installed_payload_growth_bytes": {
+    "Startup": 0,
+    "MemoryRuntime": 1112,
+    "FileRuntime": 344,
+    "ConsoleRuntime": 24160,
+    "CompilerProbe": 424,
+    "CompilerRuntime": 688,
+    "BuildRuntime": 80,
+    "DocDiagnosticRuntime": 160,
+    "EditorRuntime": 696
+  }
+}

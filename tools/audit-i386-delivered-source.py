@@ -23,7 +23,32 @@ def source_paths(repository):
             if path.is_file() and path.suffix.upper() in SUFFIXES}
 
 
-def audit(disk, repository):
+def committed_source_revision(repository, expected, revision):
+    """Verify a source archive without depending on the checkout's HEAD."""
+    def git(*args):
+        return subprocess.check_output(['git', *args], cwd=repository)
+
+    commit = git('rev-parse', '--verify', revision+'^{commit}').decode().strip()
+    format_name = git('rev-parse', '--show-object-format').decode().strip()
+    objects = {}
+    for record in git('ls-tree', '-rz', '--full-tree', commit, '--', *DIRECTORIES).split(b'\0'):
+        if record:
+            header, path = record.split(b'\t', 1)
+            _, kind, object_id = header.decode().split()
+            name = '/' + path.decode()
+            if kind == 'blob' and Path(name).suffix.upper() in SUFFIXES:
+                objects[name] = object_id
+    if objects.keys() != expected.keys():
+        raise ValueError('Source archive paths differ from the stated commit')
+    for name, path in expected.items():
+        data = path.read_bytes()
+        blob = f'blob {len(data)}\0'.encode() + data
+        if hashlib.new(format_name, blob).hexdigest() != objects[name]:
+            raise ValueError('Source archive bytes differ from the stated commit: ' + name)
+    return commit
+
+
+def audit(disk, repository, source_revision=None):
     repository = repository.resolve()
     expected = source_paths(repository)
     required = {'/Kernel/I386/Kernel.HC', '/Compiler/I386/Frontend.HC'}
@@ -56,16 +81,21 @@ def audit(disk, repository):
         raise ValueError('Candidate source changed during audit')
     if any(sha(Path(path)) != digest for path, digest in pins.items()):
         raise ValueError('Disk or source-audit helper changed')
-    revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repository, text=True).strip()
-    changes = subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', *DIRECTORIES],
-                             cwd=repository, check=False).returncode
-    if changes not in (0, 1):
-        raise ValueError('Cannot inspect candidate source revision')
-    untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard',
-                                        '--', *DIRECTORIES], cwd=repository, text=True).splitlines()
+    if source_revision:
+        revision = committed_source_revision(repository, expected, source_revision)
+        has_changes = False
+    else:
+        revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repository, text=True).strip()
+        changes = subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', *DIRECTORIES],
+                                 cwd=repository, check=False).returncode
+        if changes not in (0, 1):
+            raise ValueError('Cannot inspect candidate source revision')
+        untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard',
+                                            '--', *DIRECTORIES], cwd=repository, text=True).splitlines()
+        has_changes = bool(changes or untracked)
     return dict(result='pass', disk_sha256=pins[str(disk.resolve())],
                 repository=str(repository), base_revision=revision,
-                candidate_has_source_changes=bool(changes or untracked),
+                candidate_has_source_changes=has_changes,
                 source_files=len(expected), source_sha256=identities,
                 source_identity_sha256=hashlib.sha256(json.dumps(identities, sort_keys=True).encode()).hexdigest(),
                 input_sha256=pins, filesystem=filesystem,
@@ -76,11 +106,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--disk', type=Path, required=True)
     parser.add_argument('--repository', type=Path, required=True)
+    parser.add_argument('--source-revision',
+                        help='Require exact Git source bytes at this revision')
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
     if args.out.exists():
         parser.error('Use a fresh report')
-    result = audit(args.disk, args.repository)
+    result = audit(args.disk, args.repository, args.source_revision)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(result, indent=2) + '\n')
     print('PASS: ' + str(result['source_files']) + ' delivered source/doc files match candidate')
