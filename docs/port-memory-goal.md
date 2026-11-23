@@ -2914,3 +2914,13 @@ allocation. See the [install receipt](../build/i386-wide-pi-production-v3/retain
 and [User startup receipt](../build/i386-wide-pi-production-v3/retained128-user8/result.json).
 A pre-User heap capture is running to measure this baseline's contiguous
 space before the cache reduction.
+
+The [installed WidePi heap capture](../build/i386-wide-pi-production-v3/retained128-user8-profile/result.json)
+measured 251,736 contiguous bytes before `USCheck`, 8,192 below the
+frozen null-slot installation. Both gaps end at `0x7A5768`. The
+WidePi gap starts 8,192 bytes higher, at `0x768000`, and the second
+largest gap has the same bounds on both images. If the 64-slot cache
+recovers the same 12,288 bytes on the native image as on the cross
+image, the largest block would reach 264,024 bytes, still 3,503 bytes
+short of the current task request. That projection awaits the
+same-revision native installation and heap capture.

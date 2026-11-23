@@ -1,0 +1,291 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "e512995190580ab9ab87f4477a1edcede7ebf50a43ecdf8f3e9e33d9e53492e5",
+    "image_sha256": "28706177ac111ac3bd161a232c66b93056f8d88ce45d6b06bc67f7ef389be395",
+    "boot_area_sha256": "f34b809a1ac08b566ce3550e20c8640b527839c999133cba5fd0cdf3fa2659cd",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 97024,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 97026,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/UserStartup.HC": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2"
+    },
+    "added_attributes": {
+      "/UserStartup.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "snapshots": {
+    "before-user": {
+      "capacity": 6748672,
+      "used": 6305104,
+      "largest_free": 251736,
+      "allocations": 18479,
+      "failure_callers": [],
+      "stopped_callers": [
+        {
+          "frame": 7522536,
+          "return_address": 1115001,
+          "symbols": [
+            {
+              "name": "Kernel:I386HeapValid",
+              "offset": 56
+            }
+          ]
+        },
+        {
+          "frame": 7522572,
+          "return_address": 2779132,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:I386MemBackingValid",
+              "offset": 651
+            }
+          ]
+        },
+        {
+          "frame": 7522696,
+          "return_address": 2777158,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:I386MemBackingTrim",
+              "offset": 93
+            }
+          ]
+        },
+        {
+          "frame": 7522764,
+          "return_address": 2903740,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryReclaim",
+              "offset": 139
+            }
+          ]
+        },
+        {
+          "frame": 7522792,
+          "return_address": 2865217,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryFree",
+              "offset": 752
+            }
+          ]
+        },
+        {
+          "frame": 7522844,
+          "return_address": 4077361,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:FilesFindMatch",
+              "offset": 3040
+            }
+          ]
+        },
+        {
+          "frame": 7522912,
+          "return_address": 3760048,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:DocRecalc",
+              "offset": 3791
+            }
+          ]
+        },
+        {
+          "frame": 7523596,
+          "return_address": 3860708,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:DocUpdateTaskDocs",
+              "offset": 1211
+            }
+          ]
+        },
+        {
+          "frame": 7523712,
+          "return_address": 4390438,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:GrUpdateTaskWinCore",
+              "offset": 1237
+            }
+          ]
+        },
+        {
+          "frame": 7523828,
+          "return_address": 4389168,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:GrUpdateTaskWin",
+              "offset": 239
+            }
+          ]
+        },
+        {
+          "frame": 7523856,
+          "return_address": 5105552,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeWindowListDraw",
+              "offset": 1903
+            }
+          ]
+        },
+        {
+          "frame": 7523956,
+          "return_address": 4404080,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:GraphicsFrameCore",
+              "offset": 567
+            }
+          ]
+        },
+        {
+          "frame": 7524048,
+          "return_address": 4839903,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeGraphicsPresentChecked",
+              "offset": 2862
+            }
+          ]
+        },
+        {
+          "frame": 7524212,
+          "return_address": 5128589,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeWindowWorker",
+              "offset": 828
+            }
+          ]
+        },
+        {
+          "frame": 7524288,
+          "return_address": 2915040,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryTaskEntry",
+              "offset": 343
+            }
+          ]
+        },
+        {
+          "frame": 7524332,
+          "return_address": 2746456,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:DefineLstLoadCore",
+              "offset": 1967
+            }
+          ]
+        }
+      ],
+      "memory_sha256": "aaea904d596ea154d557d50510d60aeb39a5a424d4de29881e1f3bb942ac5ccf"
+    },
+    "after-failure": {
+      "capacity": 6748672,
+      "used": 6304656,
+      "largest_free": 251736,
+      "allocations": 18472,
+      "failure_callers": [
+        [
+          {
+            "return_address": 1215719,
+            "symbols": [
+              "Kernel:I386TaskCreateWithFilesFallback"
+            ]
+          },
+          {
+            "return_address": 2930075,
+            "symbols": [
+              "MemoryRuntime:Spawn"
+            ]
+          }
+        ]
+      ],
+      "stopped_callers": [
+        {
+          "frame": 7458432,
+          "return_address": 5067219,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeTerminalInputKey",
+              "offset": 1394
+            }
+          ]
+        },
+        {
+          "frame": 7458500,
+          "return_address": 5061295,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeTerminalInput",
+              "offset": 566
+            }
+          ]
+        },
+        {
+          "frame": 7458688,
+          "return_address": 5083391,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:NativeUserTaskCont",
+              "offset": 430
+            }
+          ]
+        },
+        {
+          "frame": 7458716,
+          "return_address": 3467536,
+          "symbols": [
+            {
+              "name": "ConsoleRuntime:ConsoleKeys",
+              "offset": 1519
+            }
+          ]
+        },
+        {
+          "frame": 7458752,
+          "return_address": 2915040,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:MemoryTaskEntry",
+              "offset": 343
+            }
+          ]
+        },
+        {
+          "frame": 7458796,
+          "return_address": 2746456,
+          "symbols": [
+            {
+              "name": "MemoryRuntime:DefineLstLoadCore",
+              "offset": 1967
+            }
+          ]
+        }
+      ],
+      "memory_sha256": "2844e8ea6d0d183a6e675d25de459d424fdef57f1480480f4d56331002bb35e7"
+    }
+  },
+  "fixture_sha256": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2",
+  "failure_log": [
+    "HEAP EXHAUSTED 0000000000041507 0000000000085BB0 0000000000086C00 0000000000000B18 0000000000000008",
+    "HEAP FAILURE CALLERS 0000000000128CE7 00000000002CB59B"
+  ]
+}
