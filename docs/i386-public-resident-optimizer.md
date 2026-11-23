@@ -461,3 +461,10 @@ A separate boot of that image measures 390,832 free bytes in the main arena
 with a largest free block of 176,480 bytes. The unsplit high-header baseline
 had a largest free block of 202,512 bytes. The comparison and runtime
 receipt are in `build/original-user-split-prompt-v2`.
+
+Reducing the held high-end reservation by 12 KiB lets the original startup
+advance beyond the parser payload failure, but the unsplit disassembler
+again exhausts emitter chunks. The eventual User task still requests its
+original allocation size. The verified failure is in
+`build/original-user-stack-reserve-v9/user8/result.json`. The same reduced
+reservation and split prompt are being tested together.
