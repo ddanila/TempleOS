@@ -6,6 +6,44 @@ import subprocess
 manifest = Path(__file__).with_name('manifest.json')
 rows = json.loads(manifest.read_text())['files'] if manifest.exists() else []
 runs = [
+    'i386-power-table-v2/user8',
+    'i386-power-table-v2/native-wide',
+    'i386-power-table-v2/public-backend',
+    'i386-power-table-v2/concurrent',
+    'i386-power-table-v2/concurrent-published',
+    'i386-power-table-v2/concurrent-background',
+    'i386-power-table-v2/native-syntax',
+    'i386-power-table-v2/native-specials',
+    'build-date-msg-loop-shift-native-v1',
+    'build-date-msg-loop-native-v1',
+    'graphics-pens-native-v3',
+    'graphics-pens-native-v1',
+    'msg-loop-user-startup-shift-native-v1',
+    'msg-loop-user-startup-native-v1',
+    'msg-loop-pointer-default-shift-native-v1',
+    'msg-loop-pointer-default-native-v1',
+    'msg-loop-default-frames-shift-native-v2',
+    'msg-loop-default-frames-shift-native-v1',
+    'msg-loop-default-frames-native-v2',
+    'msg-loop-default-frames-native-v1',
+    'i386-power-table-v1/user8',
+    'i386-power-table-v1/native-wide',
+    'i386-power-table-v1/public-backend',
+    'i386-power-table-v1/concurrent',
+    'terminal-scroll-lifecycle-native-v1',
+    'terminal-scroll-constructor-native-v1',
+    'msg-loop-frames-shift-native-v7',
+    'msg-loop-frames-shift-native-v5',
+    'msg-loop-frames-shift-native-v4',
+    'msg-loop-frames-shift-native-v3',
+    'msg-loop-frames-shift-native-v2',
+    'msg-loop-frames-shift-native-v1',
+    'msg-loop-frames-native-v7',
+    'msg-loop-frames-native-v5',
+    'msg-loop-frames-native-v4',
+    'msg-loop-frames-native-v3',
+    'msg-loop-frames-native-v2',
+    'msg-loop-frames-native-v1',
     'i386-power-on-demand-v1/native-wide',
     'i386-power-on-demand-v1/native-syntax',
     'i386-power-on-demand-v1/native-specials',
@@ -399,45 +437,56 @@ def open_in_guest(path):
     return str(path) in subprocess.check_output(['ps', '-eo', 'args'], text=True)
 
 
+def archive_file(original):
+    archive = original.with_suffix(original.suffix + '.zst')
+    if not original.is_file() or original.is_symlink() or archive.exists():
+        return
+    if open_in_guest(original) or subprocess.check_output(
+            ['git', 'ls-files', '--', str(original)], text=True):
+        return
+    before = original.stat()
+    with original.open('rb') as stream:
+        sha256 = digest(stream)
+    scratch = archive.with_suffix(archive.suffix + '.tmp')
+    subprocess.run(['zstd', '-q', str(original), '-o', str(scratch)], check=True)
+    with subprocess.Popen(['zstd', '-qdc', str(scratch)], stdout=subprocess.PIPE) as proc:
+        verified = digest(proc.stdout)
+        if proc.wait() != 0 or verified != sha256:
+            raise ValueError(f'Archive verification failed for {original}')
+    after = original.stat()
+    if (before.st_ino, before.st_size, before.st_mtime_ns) != (
+            after.st_ino, after.st_size, after.st_mtime_ns) or open_in_guest(original):
+        raise ValueError(f'Image changed or reopened during archival: {original}')
+    saved = (before.st_blocks - scratch.stat().st_blocks) * 512
+    if saved <= 0:
+        scratch.unlink()
+        return
+    scratch.rename(archive)
+    rows.append(dict(original=str(original), archive=str(archive), sha256=sha256,
+                     size=before.st_size, reclaimed_bytes=saved,
+                     restore=['zstd', '-d', str(archive), '-o', str(original)]))
+    manifest_tmp = manifest.with_suffix('.tmp')
+    manifest_tmp.write_text(json.dumps(
+        {'files': rows, 'reclaimed_bytes': sum(row['reclaimed_bytes'] for row in rows)},
+        indent=2) + '\n')
+    manifest_tmp.replace(manifest)
+    original.unlink()
+
+
 for run in runs:
     directory = Path('build') / run
     receipt = directory / 'result.json'
     if not receipt.is_file() or json.loads(receipt.read_text())['result'] not in ('pass', 'fail', 'observed'):
         continue
     for name in ('working.img', 'probe.img', 'original.iso'):
-        original = directory / name
-        archive = original.with_suffix(original.suffix + '.zst')
-        if not original.is_file() or original.is_symlink() or archive.exists():
-            continue
-        if open_in_guest(original) or subprocess.check_output(
-                ['git', 'ls-files', '--', str(original)], text=True):
-            continue
-        before = original.stat()
-        with original.open('rb') as stream:
-            sha256 = digest(stream)
-        scratch = archive.with_suffix(archive.suffix + '.tmp')
-        subprocess.run(['zstd', '-q', str(original), '-o', str(scratch)], check=True)
-        with subprocess.Popen(['zstd', '-qdc', str(scratch)], stdout=subprocess.PIPE) as proc:
-            verified = digest(proc.stdout)
-            if proc.wait() != 0 or verified != sha256:
-                raise ValueError(f'Archive verification failed for {original}')
-        after = original.stat()
-        if (before.st_ino, before.st_size, before.st_mtime_ns) != (
-                after.st_ino, after.st_size, after.st_mtime_ns) or open_in_guest(original):
-            raise ValueError(f'Image changed or reopened during archival: {original}')
-        saved = (before.st_blocks - scratch.stat().st_blocks) * 512
-        if saved <= 0:
-            scratch.unlink()
-            continue
-        scratch.rename(archive)
-        rows.append(dict(original=str(original), archive=str(archive), sha256=sha256,
-                         size=before.st_size, reclaimed_bytes=saved,
-                         restore=['zstd', '-d', str(archive), '-o', str(original)]))
-        manifest_tmp = manifest.with_suffix('.tmp')
-        manifest_tmp.write_text(json.dumps(
-            {'files': rows, 'reclaimed_bytes': sum(row['reclaimed_bytes'] for row in rows)},
-            indent=2) + '\n')
-        manifest_tmp.replace(manifest)
-        original.unlink()
+        archive_file(directory / name)
+
+
+for run in ('i386-power-production-v1', 'i386-power-on-demand-v1', 'i386-power-table-v1'):
+    directory = Path('build') / run / 'full'
+    receipt = directory / 'result.json'
+    if receipt.is_file() and json.loads(receipt.read_text())['boot_instruction_audit']['result'] == 'pass':
+        archive_file(directory / 'kernel-assembly.txt')
+        archive_file(directory / 'compiler.iso')
 
 print(len(rows), sum(row['reclaimed_bytes'] for row in rows), 'bytes archived')

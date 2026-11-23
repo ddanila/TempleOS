@@ -5459,7 +5459,623 @@
         "-o",
         "build/i386-power-on-demand-v1/heap-user8/working.img"
       ]
+    },
+    {
+      "original": "build/terminal-scroll-lifecycle-native-v1/working.img",
+      "archive": "build/terminal-scroll-lifecycle-native-v1/working.img.zst",
+      "sha256": "0ac3aa2cb835e351c7c5a2f265cdc758c622f117091d49c6d435f35c7ebcb4f4",
+      "size": 67108864,
+      "reclaimed_bytes": 35831808,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/terminal-scroll-lifecycle-native-v1/working.img.zst",
+        "-o",
+        "build/terminal-scroll-lifecycle-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/terminal-scroll-constructor-native-v1/working.img",
+      "archive": "build/terminal-scroll-constructor-native-v1/working.img.zst",
+      "sha256": "d9133adddbdafeb8efa06b2109cbf04b491cf3d45fa92c9d2d6fd5958c53d345",
+      "size": 67108864,
+      "reclaimed_bytes": 35827712,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/terminal-scroll-constructor-native-v1/working.img.zst",
+        "-o",
+        "build/terminal-scroll-constructor-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-shift-native-v7/working.img",
+      "archive": "build/msg-loop-frames-shift-native-v7/working.img.zst",
+      "sha256": "aa9a065c1e0b77b671f98a4f8bbcc0c8b9a028f6c1d72eddab298da6ac998793",
+      "size": 67108864,
+      "reclaimed_bytes": 35860480,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-shift-native-v7/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-shift-native-v7/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-shift-native-v5/working.img",
+      "archive": "build/msg-loop-frames-shift-native-v5/working.img.zst",
+      "sha256": "3d05071b88830d10e8e0d4223dab6343680ffc654a9f30d3c86639c0a4dea646",
+      "size": 67108864,
+      "reclaimed_bytes": 35856384,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-shift-native-v5/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-shift-native-v5/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-shift-native-v4/working.img",
+      "archive": "build/msg-loop-frames-shift-native-v4/working.img.zst",
+      "sha256": "5564e8074932a03294a2c2daafb1de18c74383be5db448b956bf73769db13ccd",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-shift-native-v4/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-shift-native-v4/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-shift-native-v3/working.img",
+      "archive": "build/msg-loop-frames-shift-native-v3/working.img.zst",
+      "sha256": "61b9e615913aceca0ab56e7a531e7369dd66eb5d0f345b0de4ea7983a67cd4ed",
+      "size": 67108864,
+      "reclaimed_bytes": 35860480,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-shift-native-v3/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-shift-native-v3/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-shift-native-v2/working.img",
+      "archive": "build/msg-loop-frames-shift-native-v2/working.img.zst",
+      "sha256": "b0d0e0cab3d5fa71463362f06486ebd724c0599336ef23027f41c98657948691",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-shift-native-v2/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-shift-native-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-shift-native-v1/working.img",
+      "archive": "build/msg-loop-frames-shift-native-v1/working.img.zst",
+      "sha256": "9b141db6232ac2ee0106c9be07bd470023287dea010fb726d43cb852d44cc41a",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-shift-native-v1/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-shift-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-native-v7/working.img",
+      "archive": "build/msg-loop-frames-native-v7/working.img.zst",
+      "sha256": "aa9a065c1e0b77b671f98a4f8bbcc0c8b9a028f6c1d72eddab298da6ac998793",
+      "size": 67108864,
+      "reclaimed_bytes": 35860480,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-native-v7/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-native-v7/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-native-v5/working.img",
+      "archive": "build/msg-loop-frames-native-v5/working.img.zst",
+      "sha256": "3d05071b88830d10e8e0d4223dab6343680ffc654a9f30d3c86639c0a4dea646",
+      "size": 67108864,
+      "reclaimed_bytes": 35856384,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-native-v5/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-native-v5/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-native-v4/working.img",
+      "archive": "build/msg-loop-frames-native-v4/working.img.zst",
+      "sha256": "5564e8074932a03294a2c2daafb1de18c74383be5db448b956bf73769db13ccd",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-native-v4/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-native-v4/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-native-v3/working.img",
+      "archive": "build/msg-loop-frames-native-v3/working.img.zst",
+      "sha256": "61b9e615913aceca0ab56e7a531e7369dd66eb5d0f345b0de4ea7983a67cd4ed",
+      "size": 67108864,
+      "reclaimed_bytes": 35860480,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-native-v3/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-native-v3/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-native-v2/working.img",
+      "archive": "build/msg-loop-frames-native-v2/working.img.zst",
+      "sha256": "b0d0e0cab3d5fa71463362f06486ebd724c0599336ef23027f41c98657948691",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-native-v2/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-native-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-frames-native-v1/working.img",
+      "archive": "build/msg-loop-frames-native-v1/working.img.zst",
+      "sha256": "9b141db6232ac2ee0106c9be07bd470023287dea010fb726d43cb852d44cc41a",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-frames-native-v1/working.img.zst",
+        "-o",
+        "build/msg-loop-frames-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v1/user8/working.img",
+      "archive": "build/i386-power-table-v1/user8/working.img.zst",
+      "sha256": "6d70988b5781d6bf0af14f81a354c02687c70939827a0ea4ccbe57c6ecdf4e4b",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v1/user8/working.img.zst",
+        "-o",
+        "build/i386-power-table-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v1/native-wide/working.img",
+      "archive": "build/i386-power-table-v1/native-wide/working.img.zst",
+      "sha256": "ca01f3dd91c297ed93b76cae16686fe86eff279cab470e1755b54a443577cc55",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v1/native-wide/working.img.zst",
+        "-o",
+        "build/i386-power-table-v1/native-wide/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v1/public-backend/working.img",
+      "archive": "build/i386-power-table-v1/public-backend/working.img.zst",
+      "sha256": "0b31ad9e5ed98cc3cb097fdc6efa127ee75ebcac1c237a2efea814dc0ed1bb87",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v1/public-backend/working.img.zst",
+        "-o",
+        "build/i386-power-table-v1/public-backend/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v1/concurrent/working.img",
+      "archive": "build/i386-power-table-v1/concurrent/working.img.zst",
+      "sha256": "41d04362c50643061781d216a7ec6a9eac4a11ed5ada83fe5fceb432000892e6",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v1/concurrent/working.img.zst",
+        "-o",
+        "build/i386-power-table-v1/concurrent/working.img"
+      ]
+    },
+    {
+      "original": "build/build-date-msg-loop-shift-native-v1/working.img",
+      "archive": "build/build-date-msg-loop-shift-native-v1/working.img.zst",
+      "sha256": "1fa1af6882d31c945b303576a5241b93ee8bb6ef7cbaff9d221aa4876a1bf57f",
+      "size": 67108864,
+      "reclaimed_bytes": 35860480,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/build-date-msg-loop-shift-native-v1/working.img.zst",
+        "-o",
+        "build/build-date-msg-loop-shift-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/build-date-msg-loop-native-v1/working.img",
+      "archive": "build/build-date-msg-loop-native-v1/working.img.zst",
+      "sha256": "1fa1af6882d31c945b303576a5241b93ee8bb6ef7cbaff9d221aa4876a1bf57f",
+      "size": 67108864,
+      "reclaimed_bytes": 35860480,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/build-date-msg-loop-native-v1/working.img.zst",
+        "-o",
+        "build/build-date-msg-loop-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/graphics-pens-native-v3/working.img",
+      "archive": "build/graphics-pens-native-v3/working.img.zst",
+      "sha256": "2aa7ac357b898d4c19dffecaa5ae41f2e2e7e04887ff3ff162275454b7bff59e",
+      "size": 67108864,
+      "reclaimed_bytes": 35856384,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/graphics-pens-native-v3/working.img.zst",
+        "-o",
+        "build/graphics-pens-native-v3/working.img"
+      ]
+    },
+    {
+      "original": "build/graphics-pens-native-v1/working.img",
+      "archive": "build/graphics-pens-native-v1/working.img.zst",
+      "sha256": "409aa214bb0f4793f2c2066b49a76e98a1347f89d7b9b56ddd7cfc560eed532d",
+      "size": 67108864,
+      "reclaimed_bytes": 35856384,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/graphics-pens-native-v1/working.img.zst",
+        "-o",
+        "build/graphics-pens-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-user-startup-shift-native-v1/working.img",
+      "archive": "build/msg-loop-user-startup-shift-native-v1/working.img.zst",
+      "sha256": "59339e542cbd74f5cf640aeb8bd00aa5a81012369a462bc413a16ad993c6c0b5",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-user-startup-shift-native-v1/working.img.zst",
+        "-o",
+        "build/msg-loop-user-startup-shift-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-user-startup-native-v1/working.img",
+      "archive": "build/msg-loop-user-startup-native-v1/working.img.zst",
+      "sha256": "59339e542cbd74f5cf640aeb8bd00aa5a81012369a462bc413a16ad993c6c0b5",
+      "size": 67108864,
+      "reclaimed_bytes": 35848192,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-user-startup-native-v1/working.img.zst",
+        "-o",
+        "build/msg-loop-user-startup-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-pointer-default-shift-native-v1/working.img",
+      "archive": "build/msg-loop-pointer-default-shift-native-v1/working.img.zst",
+      "sha256": "f752177ce80c6eb709ee11714f13e2a52855bbf6bc98ee2751ffd5ca76a13470",
+      "size": 67108864,
+      "reclaimed_bytes": 35856384,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-pointer-default-shift-native-v1/working.img.zst",
+        "-o",
+        "build/msg-loop-pointer-default-shift-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-pointer-default-native-v1/working.img",
+      "archive": "build/msg-loop-pointer-default-native-v1/working.img.zst",
+      "sha256": "f752177ce80c6eb709ee11714f13e2a52855bbf6bc98ee2751ffd5ca76a13470",
+      "size": 67108864,
+      "reclaimed_bytes": 35856384,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-pointer-default-native-v1/working.img.zst",
+        "-o",
+        "build/msg-loop-pointer-default-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-default-frames-shift-native-v2/working.img",
+      "archive": "build/msg-loop-default-frames-shift-native-v2/working.img.zst",
+      "sha256": "fdd96398509d41e6d82129d56ec57a3ea908fa73bf77e8c6e0d4e839ed4fc382",
+      "size": 67108864,
+      "reclaimed_bytes": 35860480,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-default-frames-shift-native-v2/working.img.zst",
+        "-o",
+        "build/msg-loop-default-frames-shift-native-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-default-frames-shift-native-v1/working.img",
+      "archive": "build/msg-loop-default-frames-shift-native-v1/working.img.zst",
+      "sha256": "fdd96398509d41e6d82129d56ec57a3ea908fa73bf77e8c6e0d4e839ed4fc382",
+      "size": 67108864,
+      "reclaimed_bytes": 35860480,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-default-frames-shift-native-v1/working.img.zst",
+        "-o",
+        "build/msg-loop-default-frames-shift-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-default-frames-native-v2/working.img",
+      "archive": "build/msg-loop-default-frames-native-v2/working.img.zst",
+      "sha256": "fdd96398509d41e6d82129d56ec57a3ea908fa73bf77e8c6e0d4e839ed4fc382",
+      "size": 67108864,
+      "reclaimed_bytes": 35860480,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-default-frames-native-v2/working.img.zst",
+        "-o",
+        "build/msg-loop-default-frames-native-v2/working.img"
+      ]
+    },
+    {
+      "original": "build/msg-loop-default-frames-native-v1/working.img",
+      "archive": "build/msg-loop-default-frames-native-v1/working.img.zst",
+      "sha256": "fdd96398509d41e6d82129d56ec57a3ea908fa73bf77e8c6e0d4e839ed4fc382",
+      "size": 67108864,
+      "reclaimed_bytes": 35860480,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/msg-loop-default-frames-native-v1/working.img.zst",
+        "-o",
+        "build/msg-loop-default-frames-native-v1/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v2/user8/working.img",
+      "archive": "build/i386-power-table-v2/user8/working.img.zst",
+      "sha256": "2a6fc64e31c215c3612d38859fc9da8fc05d51927c8fc1975d728f46e40e58d2",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v2/user8/working.img.zst",
+        "-o",
+        "build/i386-power-table-v2/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v2/native-wide/working.img",
+      "archive": "build/i386-power-table-v2/native-wide/working.img.zst",
+      "sha256": "0b54aa2a07ee815ca33229cd3b2c870db58fcc299fa0352caca0d280e6e2403b",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v2/native-wide/working.img.zst",
+        "-o",
+        "build/i386-power-table-v2/native-wide/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v2/public-backend/working.img",
+      "archive": "build/i386-power-table-v2/public-backend/working.img.zst",
+      "sha256": "b0a155e87acd1855adfb1dadc1ba20952af6f434a8ec17bbd85ef9a56c588257",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v2/public-backend/working.img.zst",
+        "-o",
+        "build/i386-power-table-v2/public-backend/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v2/concurrent/working.img",
+      "archive": "build/i386-power-table-v2/concurrent/working.img.zst",
+      "sha256": "03afbe32272925cc756263d543b336935f43a2ddd3c4ad3cc3c1c16634fe0ffe",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v2/concurrent/working.img.zst",
+        "-o",
+        "build/i386-power-table-v2/concurrent/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/full/kernel-assembly.txt",
+      "archive": "build/i386-power-production-v1/full/kernel-assembly.txt.zst",
+      "sha256": "16a466054f1693370bd2cfeb4025f7c5c789bea5004bae5c4ffa78ff86fc4d64",
+      "size": 110074313,
+      "reclaimed_bytes": 101347328,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-power-production-v1/full/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-power-production-v1/full/compiler.iso",
+      "archive": "build/i386-power-production-v1/full/compiler.iso.zst",
+      "sha256": "e24f97db6e88bf62a927fe55c34d79cfac1e00d7b209d96734838808cea13181",
+      "size": 45475840,
+      "reclaimed_bytes": 32571392,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-production-v1/full/compiler.iso.zst",
+        "-o",
+        "build/i386-power-production-v1/full/compiler.iso"
+      ]
+    },
+    {
+      "original": "build/i386-power-on-demand-v1/full/kernel-assembly.txt",
+      "archive": "build/i386-power-on-demand-v1/full/kernel-assembly.txt.zst",
+      "sha256": "e4fdd7ee3a9e40f1aa25a6f0e8b34af03101db8367062e9444d1615a18535b73",
+      "size": 109752167,
+      "reclaimed_bytes": 101060608,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-on-demand-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-power-on-demand-v1/full/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-power-on-demand-v1/full/compiler.iso",
+      "archive": "build/i386-power-on-demand-v1/full/compiler.iso.zst",
+      "sha256": "30aa46d4fe9769409cc391396babe8e4701685a65e0d37111bee70bdaa4a53ac",
+      "size": 45477888,
+      "reclaimed_bytes": 32571392,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-on-demand-v1/full/compiler.iso.zst",
+        "-o",
+        "build/i386-power-on-demand-v1/full/compiler.iso"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v1/full/kernel-assembly.txt",
+      "archive": "build/i386-power-table-v1/full/kernel-assembly.txt.zst",
+      "sha256": "323638712169533b7c498afa13249934439ced83cdff028f25ec0e5098deebf3",
+      "size": 109700435,
+      "reclaimed_bytes": 101011456,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v1/full/kernel-assembly.txt.zst",
+        "-o",
+        "build/i386-power-table-v1/full/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v1/full/compiler.iso",
+      "archive": "build/i386-power-table-v1/full/compiler.iso.zst",
+      "sha256": "dade694c8bf878199ff8b72a288f0aaee10c3fd959f57c25e9071faa9b83f3cc",
+      "size": 45475840,
+      "reclaimed_bytes": 32567296,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v1/full/compiler.iso.zst",
+        "-o",
+        "build/i386-power-table-v1/full/compiler.iso"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v2/concurrent-published/working.img",
+      "archive": "build/i386-power-table-v2/concurrent-published/working.img.zst",
+      "sha256": "b7a853688bd27793ec0a2b166e7cbdd2dd63b2ad084a5ff1a3336a89e347e875",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v2/concurrent-published/working.img.zst",
+        "-o",
+        "build/i386-power-table-v2/concurrent-published/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v2/concurrent-background/working.img",
+      "archive": "build/i386-power-table-v2/concurrent-background/working.img.zst",
+      "sha256": "1fe74353732865df74f52bdede4aae0b184929f1c251679603ebf7d8c6869bed",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v2/concurrent-background/working.img.zst",
+        "-o",
+        "build/i386-power-table-v2/concurrent-background/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v2/native-syntax/working.img",
+      "archive": "build/i386-power-table-v2/native-syntax/working.img.zst",
+      "sha256": "7be71b6dfc4ba25b0e48d2ba7119d3f73187376fd768cd90ef9eec6f8fd3428c",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v2/native-syntax/working.img.zst",
+        "-o",
+        "build/i386-power-table-v2/native-syntax/working.img"
+      ]
+    },
+    {
+      "original": "build/i386-power-table-v2/native-specials/working.img",
+      "archive": "build/i386-power-table-v2/native-specials/working.img.zst",
+      "sha256": "26184819088925f281e73922a8cb11f84b97ed8e891e6807386125e78f3fc668",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-table-v2/native-specials/working.img.zst",
+        "-o",
+        "build/i386-power-table-v2/native-specials/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 19209924608
+  "reclaimed_bytes": 21184086016
 }

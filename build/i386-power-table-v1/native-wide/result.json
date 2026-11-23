@@ -1,0 +1,6 @@
+{
+  "result": "fail",
+  "fixture_sha256": "07c0d560b4e46a675374460162750153b7ebe155f4371483224bc3992cd2a61b",
+  "input_sha256": "7ca54093411143013580a9e86481af38d35636bc4cc08a66a53031c3125c21f0",
+  "error": "Missing guest marker: DONE native kernel startup\n"
+}

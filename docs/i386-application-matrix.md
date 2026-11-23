@@ -2393,3 +2393,20 @@ exact padding. The on-demand source remains a diagnostic patch.
 See `build/i386-power-on-demand-v1/user8/result.json`,
 `build/i386-power-on-demand-v1/stack-fit.json` and
 `build/i386-power-on-demand-v1/on-demand-power.patch`.
+
+Static math and compiler helper tables recover the page lost by the
+on-demand candidate. The first cross-built tables carried 40 local
+offsets without pointer relocations, so that image stalled during boot.
+The corrected build derives the module base from a known entry in each
+table before using the addresses. Its loaded compiler payload is 264
+bytes smaller than the passing baseline. It passes the unchanged 8 MiB
+User check, all 98 command-compiler power cases and the public
+COCCompile differential. See the `table-layout.json` receipt under
+`build/i386-power-table-v1` and the `candidate.json` receipt under
+`build/i386-power-table-v2`.
+
+Two background tasks return exact results on first use, but the log
+shows one rejected duplicate publication. The compact implementation
+remains a diagnostic patch while first-use serialization is open.
+See `build/i386-power-table-v2/concurrent-background/result.json`
+and `build/i386-power-table-v2/compact-power.patch`.

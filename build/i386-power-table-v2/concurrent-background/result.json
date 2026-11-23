@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "fixture_sha256": "b79ffbc1c101ffaba7db3d7ef2bff3e9f9a59be3e2287c6c6700fd6c174ca346",
+  "input_sha256": "7d095fe4b989fef5f5f05989a95e848065009ef81d520bc6ca6681819143332a",
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

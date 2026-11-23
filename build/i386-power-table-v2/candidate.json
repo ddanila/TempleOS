@@ -1,0 +1,41 @@
+{
+  "source_sha256": {
+    "Compiler/I386/BackendCore.HC": "3fd9496624193dd41e6f688cdaa525ef7582b1f9750072cfc709696a2d1ee599",
+    "Compiler/I386/Frontend.HC": "2a2a787cd0d8c59fca0f0286d2426da1b420d391e540a588469a0c466837f018",
+    "Compiler/I386/PublicBackendCore.HC": "0f4b002967d5202740fa4de21a9a1601a0850fae2c28712117b6cbd586f7303d",
+    "Compiler/I386/PublicBackendSupport.HC": "d0e546ed7c79d4c589a96c00bc4fe7ebb4483340ce8fbd51a0db1e86944c1d0a",
+    "Kernel/I386/FloatPower.HC": "ae4b8d550d21689c2f5ed28b1b76e0a2d60d85a532ff8f9a28bf563adf69d8da",
+    "Kernel/I386/MathPublic.HC": "d19817ddc2fae3ccaa126ec097ebd15879254c8893e659a52ff282318a7e73a6"
+  },
+  "disk_sha256": "7d095fe4b989fef5f5f05989a95e848065009ef81d520bc6ca6681819143332a",
+  "verified_disk_files": 1926,
+  "boot_instruction_audit": "pass",
+  "compiler_runtime_baseline": {
+    "file_bytes": 1246230,
+    "loaded_payload_bytes": 1201880,
+    "sha256": "5382aadfbbcba14b1f0cfc1a23204ad54c22705a63237ffc7e4e4809ae7f1f55"
+  },
+  "compiler_runtime_on_demand": {
+    "file_bytes": 1247963,
+    "loaded_payload_bytes": 1203408,
+    "sha256": "bafef2e20a8c584ee11fa1fd831982a373233edf79ad2e85fdb55ce376ade9fc"
+  },
+  "compiler_runtime_compact": {
+    "file_bytes": 1246281,
+    "loaded_payload_bytes": 1201616,
+    "sha256": "17c84027d7b98a4a85da57b370fe1e2c2e4f28d64cfffad006e582ea2ecbeae3"
+  },
+  "passing_receipt_sha256": {
+    "user8": "75cea4dcf96c4bb8ab3e46652a54b1f6708350e9faa33df1e9bfe838720db154",
+    "native-wide": "16e0ce96ffa6340b2d0c7b9c9083d5060e48586289a1fe72626fb27fdab941ca",
+    "native-syntax": "82d95fc046db18bd434e4045869e732cf96335a5044c8d8803c0504dfe7f5376",
+    "native-specials": "00d80ee9d3eaf8f8075ca664d4918d42daf2757cca1fbe1919c7823d9b573813",
+    "public-backend": "07d219fcfda164d814954e0e93b2a62d242e9a024705097b569e5ab403210ec8"
+  },
+  "patch_sha256": "895e620de0594e1f36364193b743040da2336e15b8223a7147303b16321e30f1",
+  "first_use_workers": {
+    "exact_workers": 2,
+    "rejected_publications": 1,
+    "worker_receipt_sha256": "497a91a7e7473d3d85341fc691fa720d8d02f4bab7236c1ee221aa34ec0d18b4"
+  }
+}
