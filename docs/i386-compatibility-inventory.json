@@ -10368,7 +10368,7 @@
       "launch_candidate": false,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
+      "source_at_discovery": "modified",
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "observed-components",
@@ -10397,6 +10397,13 @@
           "result": "fail",
           "evidence": "build/keepaway-play-v1/gameplay-raster.json",
           "gap": "Input and caller-state checks pass after explicit library loading. The Window Manager reports OutMem and the arena is absent."
+        },
+        {
+          "target": "native-keepaway-width-correct-gameplay",
+          "command": "python3 build/keepaway-sort-production-v1/run.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/keepaway-sort-production-v1/native64/result.json",
+          "scope": "Normal Load.HC path with explicit libraries, arena and border rendering, jump, restart, exit and caller recovery. Complete gameplay and normal startup library integration remain open."
         }
       ]
     },

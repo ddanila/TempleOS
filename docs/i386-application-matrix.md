@@ -948,3 +948,14 @@ Each selected sprite reports a length of 4,042 bytes, and every 32-byte
 prefix hash matches. This comparison is in `build/keepaway-sprites-v1`.
 The live draw path still needs diagnosis, including which frame data reaches
 interpolation when the allocation fails.
+
+KeepAway now stores its temporary object pointers in explicit I64 slots for
+QSortI64, following the port's existing fixed-width sort convention. The
+original used a pointer array, whose entries are four bytes on i386.
+The comparator, draw order rules, and embedded sprite bytes are preserved.
+The original-width control and both repaired native checks pass. The native
+check through the bundled Load.HC path captures 295,061 arena-yellow pixels
+and 4,280 red border pixels, with no Window Manager exception. Jump, restart,
+exit, caller restoration and fresh arithmetic also pass. Live-game frames
+are timing dependent. See `build/keepaway-sort-production-v1/native64/result.json`.
+Scoring, additional input, and automatic startup library loading remain open.

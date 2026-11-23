@@ -283,7 +283,8 @@ U0 DrawIt(CTask *task,CDC *dc)
 {
   F64 tt=tS,d,d_down,d_up;
   I64 i;
-  Obj *o_sort[OBJS_NUM],*o;
+  I64 o_sort[OBJS_NUM];
+  Obj *o;
 
   DCDepthBufAlloc(dc);
   dc->ls.x=10000;
@@ -300,7 +301,8 @@ U0 DrawIt(CTask *task,CDC *dc)
 	task->pix_width -1-COURT_BORDER,
 	task->pix_height-1-COURT_BORDER);
   for (i=0;i<OBJS_NUM;i++) {
-    o=o_sort[i]=&objs[i];
+    o=&objs[i];
+    o_sort[i]=o(I64);
     if (o!=ball) {
       if (o->has_ball) {
 	ball->x=o->x+HAND_X_OFFSET*Cos(o->é-ã/2)+HAND_Y_OFFSET*Cos(o->é);
@@ -373,7 +375,7 @@ U0 DrawIt(CTask *task,CDC *dc)
 
   QSortI64(o_sort,OBJS_NUM,&ObjCompare);
   for (i=0;i<OBJS_NUM;i++)
-    DrawObj(dc,o_sort[i],tt);
+    DrawObj(dc,o_sort[i](Obj *),tt);
   tt=(game_t_end-tS)/60;
   if (tt<=0) {
     dc->color=RED;
