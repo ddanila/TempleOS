@@ -473,3 +473,12 @@ instructions. The receipt digests and listing identity are in
 `build/resident-opt-c5-preflight/generation-input-audit.json`. The generation
 harness is queued behind a passing retained-build receipt, with both build
 stages set to 128 MiB and the existing kernel build-date allowance.
+
+The serial desktop comparison repeated the improvement on the same two
+images and oracle inputs. The baseline passed in 288.64 seconds and the
+direct-copy image in 201.90 seconds, a difference of 86.73 seconds.
+The first pair measured 287.13 and 201.92 seconds respectively. Both
+optimized runs passed original geometry, fresh input, and physical
+bootstrap retirement. These timings cover the configured 64 MiB desktop.
+The repeated receipt and comparison are under
+`build/ac-dictionary-desktop-repeat`.
