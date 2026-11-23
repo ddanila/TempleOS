@@ -82,3 +82,15 @@ application dispatch to distinguish input delivery lag from elapsed clock
 drift. The diagnostic scripts, receipts and decoded vectors are preserved
 in `build/psalmody-timing-trace-v1`. The unchanged application's exact
 keyboard acceptance remains open.
+
+The native follow-up used the existing timed message scan in a disposable
+Psalmody overlay to log the raw keyboard arrival and the application dispatch
+clock. The first note's make and break arrived 400 ms apart (123861 and 124261
+guest ms) and both reached Psalmody at 124851 ms. The next two pairs arrived
+400 and 410 ms apart. The recording flag became observable while processing
+`z`, before the application's record-menu redraw returned to its message loop.
+The `z` release itself waited 1090 ms between arrival and dispatch. This
+supports a dispatch delay for the zero-duration note, with a separate
+40–90 ms delivery lag on later notes in this run. The trace keeps the original
+400 ms injections and the exact duration check. The timed scan fixture,
+receipt and decoded records are in `build/psalmody-timing-trace-v4`.
