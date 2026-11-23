@@ -1385,3 +1385,20 @@ The ninth, DrawSpring, throws the compiler exception. It switches
 between the three spring materials before rendering a line. A follow-up
 probe checks whether a default branch changes the diagnostic. See
 `build/span-main-units-v1/native64/result.json`.
+
+The shared-traversal image also passes cold Strut at 64 MiB. The same
+image passed the 8 MiB User fixture and reached its startup screen in
+50.85 seconds. A follow-up image selects the serial solver from the
+original Adam ODE file. Selecting either branch reproduces the
+corresponding original or tested serial source bytes. The shared-file
+candidate also passes cold Strut, automatic play, Escape, and fresh
+arithmetic. See
+`build/native-ode-shared-traversal-v1/strut64/result.json` and
+`build/native-ode-shared-solver-v1/strut64/result.json`.
+
+A default branch does not change Span's DrawSpring failure. A reduced
+probe compiles the original switch and property assignments by
+themselves. The isolated GrLine3 call fails, including when the switch
+labels are numeric. The next probe varies argument types and the call
+target. See `build/span-draw-spring-default-v1/native64/result.json`
+and `build/span-draw-spring-minimal-v1/native64/result.json`.

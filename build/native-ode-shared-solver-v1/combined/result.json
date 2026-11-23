@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "source_sha256": "bdea272ffed980f611cd28f81687b8db73168f4d1a37a660ebc2407d8bd709b4",
+  "image_sha256": "122f126172c46e04c9f7ccad2a2831749d6674924c4de9427faca28d9633ffcf",
+  "boot_area_sha256": "d12c7ff2f2171df75d993a8f52bac1c98dee95395f9b28ab9dc2c49e780ab910",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1909,
+    "owned_sectors": 96218,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1909,
+    "owned_sectors": 96219,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification",
+  "candidate_sha256": "122f126172c46e04c9f7ccad2a2831749d6674924c4de9427faca28d9633ffcf",
+  "replacement_sha256": {
+    "/Adam/AMathODE.HC": "8e2626cf9db917de6bdea148440a333d1560285030472ea842d9c69a4c828f32",
+    "/Kernel/I386/NativeODE.HC": "df185e3799bfa5e89c0cbbadc5e7b86f7ecf5f4c7092bb53bfe8e8876154e56e"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "result": "pass",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "ae186e78e8abea04e6b202502cf209be37ce25f3f4dc9f7f339b4ca3fc7016c2",
+    "image_sha256": "bd8991da21476b3773722ca48ab570ccff4b0b7bae48dcaa9abbbe41b414f0c3",
+    "boot_area_sha256": "d12c7ff2f2171df75d993a8f52bac1c98dee95395f9b28ab9dc2c49e780ab910",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1908,
+      "owned_sectors": 96331,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1913,
+      "owned_sectors": 96336,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Both.HC": "c4e8b580c528320d5e91906cf46cc5219075d5a7974d07755980d526e484aee0",
+      "/LineOnly.HC": "4cda1c4f931a5b249c76be5fb0ac3f740c118b1a2834285b4c2619a5343bfc63",
+      "/LiteralLabels.HC": "06a006e8fd0ee26d8dfaa21ccf45a5d549e72d7f9eb1955f68f496ad354ae199",
+      "/SpringProbeTypes.HH": "c9e16709249d0f4cff4091b5fba8de1f5ac15fbbaa8ab12d0ceb6cfada0e05d3",
+      "/SwitchOnly.HC": "30c28a698ef62e89c77e53dc1bc8992d2705c34daf16d08d4e09a468d545ef3f"
+    },
+    "added_attributes": {
+      "/Both.HC": 2048,
+      "/LineOnly.HC": 2048,
+      "/LiteralLabels.HC": 2048,
+      "/SpringProbeTypes.HH": 2048,
+      "/SwitchOnly.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "cases": {
+    "SwitchOnly": {
+      "result": "pass"
+    },
+    "LineOnly": {
+      "result": "fail",
+      "error": "INPUT LINE #include \"C:/LineOnly.HC\"\nCOMPILER BREAK ready\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    },
+    "LiteralLabels": {
+      "result": "fail",
+      "error": "INPUT LINE #include \"C:/LiteralLabels.HC\"\nCOMPILER BREAK ready\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    },
+    "Both": {
+      "result": "fail",
+      "error": "INPUT LINE #include \"C:/Both.HC\"\nCOMPILER BREAK ready\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 21,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
