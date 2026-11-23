@@ -2924,3 +2924,11 @@ recovers the same 12,288 bytes on the native image as on the cross
 image, the largest block would reach 264,024 bytes, still 3,503 bytes
 short of the current task request. That projection awaits the
 same-revision native installation and heap capture.
+
+The [stack-fit calculation](../build/i386-native-cache-footprint-v2/widepi-stack-fit-projection.json)
+accounts for the heap header, task descriptor and 4 KiB stack alignment.
+With a projected 12,288-byte extension at the lower end of the WidePi
+free block, the full stack would end 2,200 bytes beyond the block.
+Dropping the worst-case alignment allowance alone would therefore
+still leave the projected installed image short. The same calculation
+finds a fitting placement in the measured 64-slot cross image.
