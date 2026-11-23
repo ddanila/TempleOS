@@ -4157,7 +4157,63 @@
         "-o",
         "build/resident-opt-original-user-v2/user8/working.img"
       ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-refresh-retry/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-refresh-retry/working.img.zst",
+      "sha256": "92a0fdac9a4d1e7b88a83ca22bc445a216ff717ec731890505bed4c82ef76cbe",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-refresh-retry/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-refresh-retry/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-draw-trace/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-draw-trace/working.img.zst",
+      "sha256": "77eb46517abdff8c9b9cf46a28c7cf4c35412bc98d97a97a422527e17f1b0d31",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-draw-trace/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-draw-trace/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/gen2-span64/working.img",
+      "archive": "build/sound-delay-production-v1/gen2-span64/working.img.zst",
+      "sha256": "cf431ff2ff56c98ed94209286b17a32385e2ab7b2697a3ebf3d261d478ae4272",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/gen2-span64/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/gen2-span64/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/gen2-user8/working.img",
+      "archive": "build/sound-delay-production-v1/gen2-user8/working.img.zst",
+      "sha256": "dbae663733512e81507158bce7826055a9e3b58a1ac92748cdec47b1e4d30202",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/gen2-user8/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/gen2-user8/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 14836682752
+  "reclaimed_bytes": 15050055680
 }

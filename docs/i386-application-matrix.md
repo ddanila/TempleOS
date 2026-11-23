@@ -2247,3 +2247,17 @@ draw callback that sees a shot returns normally. Another frame or
 later work within the refresh remains open. See
 `build/native-geometry-source-v1/X-Caliber-refresh-retry/result.json`
 and `build/native-geometry-source-v1/X-Caliber-draw-trace/result.json`.
+
+The X-Caliber stack samples locate the stalled window-manager frame
+inside the normal transformed loop of GrBlot3. The 9 by 7 bitmap
+arrives with both coordinates equal to the minimum signed 64-bit
+value. Both derived iteration bounds are 4,294,967,296. The inner
+index advances across samples while the outer index remains zero.
+The next diagnostic records sprite arguments before integer
+conversion. See
+`build/native-geometry-source-v1/X-Caliber-raster-stack/raster.json`.
+
+The fresh ToTheFront spacing image also passes the physical direct-fire
+differential under default KVM. The hit, remaining life, turn trace and
+console return match the pinned original.
+See `build/tothefront-center-production-v1/fire64/result.json`.

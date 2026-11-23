@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('disk',type=Path)
 parser.add_argument('--app', choices=('GrModels','ToTheFront','X-Caliber'), required=True)
 parser.add_argument('--serial-visibility', action='store_true')
+parser.add_argument('--xcaliber-coordinate-trace', action='store_true')
 parser.add_argument('--xcaliber-draw-trace', action='store_true')
 parser.add_argument('--xcaliber-refresh-state', action='store_true')
 parser.add_argument('--userspace-irqchip', action='store_true')
@@ -37,6 +38,8 @@ parser.add_argument('--human-match', action='store_true')
 parser.add_argument('--combined-loader', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
+if args.xcaliber_coordinate_trace and not args.xcaliber_input_trace:
+    parser.error('--xcaliber-coordinate-trace requires --xcaliber-input-trace')
 if args.xcaliber_draw_trace and not args.xcaliber_input_trace:
     parser.error('--xcaliber-draw-trace requires --xcaliber-input-trace')
 if args.xcaliber_refresh_state and not args.xcaliber_loop_trace:
@@ -193,8 +196,12 @@ if args.app=='X-Caliber':
                 trace = runpy.run_path('build/xcaliber-reference-v1/input_trace.py')
                 unit = trace['instrument'](unit, loop=args.xcaliber_loop_trace,
                                            refresh=args.xcaliber_refresh_state)
-            if args.xcaliber_draw_trace and unit.startswith(b'U0 DrawIt('):
+            is_draw = unit.startswith(b'U0 DrawIt(')
+            if args.xcaliber_draw_trace and is_draw:
                 trace = runpy.run_path('build/xcaliber-reference-v1/draw_trace.py')
+                unit = trace['instrument'](unit)
+            if args.xcaliber_coordinate_trace and is_draw:
+                trace = runpy.run_path('build/xcaliber-reference-v1/coordinate_trace.py')
                 unit = trace['instrument'](unit)
             extras[path] = unit + separator + assets
             xcaliber_units.append(path)

@@ -1,0 +1,61 @@
+{
+  "sample_source": "build/native-geometry-source-v1/X-Caliber-raster-stack/result.json",
+  "module": "build/tothefront-center-production-v1/full/exports/ConsoleRuntime.t32m",
+  "module_sha256": "9cd5fc60d4545b82211cfb3596a46d85a4d277398158e5fbf9b6fd1604047e2c",
+  "payload_base": "0x11a0b30",
+  "function": "GrBlot3",
+  "loop_condition_addresses": [
+    "0x1035ca",
+    "0x103691"
+  ],
+  "samples": [
+    {
+      "instruction": "0x12a4975",
+      "module_offset": "0x103e45",
+      "sprite_size": [
+        9,
+        7
+      ],
+      "coordinates": [
+        -9223372036854775808,
+        -9223372036854775808
+      ],
+      "outer_bound": 4294967296,
+      "inner_bound": 4294967296,
+      "outer_index": 0,
+      "inner_index": 522544769
+    },
+    {
+      "instruction": "0x12a4944",
+      "module_offset": "0x103e14",
+      "sprite_size": [
+        9,
+        7
+      ],
+      "coordinates": [
+        -9223372036854775808,
+        -9223372036854775808
+      ],
+      "outer_bound": 4294967296,
+      "inner_bound": 4294967296,
+      "outer_index": 0,
+      "inner_index": 531291013
+    },
+    {
+      "instruction": "0x12a48ab",
+      "module_offset": "0x103d7b",
+      "sprite_size": [
+        9,
+        7
+      ],
+      "coordinates": [
+        -9223372036854775808,
+        -9223372036854775808
+      ],
+      "outer_bound": 4294967296,
+      "inner_bound": 4294967296,
+      "outer_index": 0,
+      "inner_index": 540039915
+    }
+  ]
+}
