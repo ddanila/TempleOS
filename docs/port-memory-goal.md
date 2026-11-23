@@ -3022,3 +3022,8 @@ passed the fresh 8 MiB arithmetic and document checks, and the separate
 [User workload](../build/i386-native-cache-footprint-v2/retained-all128-user8/result.json)
 again failed at `USCheck` with OutMem. The same-revision pre-User
 heap capture is underway.
+
+The [same-revision heap capture](../build/i386-native-cache-footprint-v2/retained-all128-user8-profile/result.json)
+also measured 264,056 bytes before `USCheck` and reproduced the
+267,527-byte allocation failure. It matches the earlier assembled
+diagnostic's largest free block.
