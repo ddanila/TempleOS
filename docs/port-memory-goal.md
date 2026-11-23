@@ -2947,3 +2947,10 @@ document allocation wrapper calls. The audited T32M's loaded payload is
 2,322,888 bytes, 12,232 below the earlier WidePi native console. The
 console-only installation has started. The nine-module test uses a copy
 of this audited disk as its input for the remaining eight guest builds.
+
+Moving the unchanged prompt/disassembler load ahead of graphics startup
+on a copy of the WidePi installation reduced the largest pre-User heap
+block from 251,736 to 132,632 bytes. The [profile](../build/i386-prompt-placement-v1/profile/result.json)
+reproduced the 267,527-byte allocation failure. Startup still reaches
+`USCheck` in this experiment. The production startup order remains as
+it was.
