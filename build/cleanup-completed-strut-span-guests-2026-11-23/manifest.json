@@ -1357,7 +1357,35 @@
         "-o",
         "build/span-production-v1/gen1-span64/working.img"
       ]
+    },
+    {
+      "original": "build/span-production-v1/gen1-user8-heap/working.img",
+      "archive": "build/span-production-v1/gen1-user8-heap/working.img.zst",
+      "sha256": "1332cc9f6f40c6f4383c610c3c8f6b560cd6b49199bf631f4688d9872988ca7a",
+      "size": 67108864,
+      "reclaimed_bytes": 53280768,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/gen1-user8-heap/working.img.zst",
+        "-o",
+        "build/span-production-v1/gen1-user8-heap/working.img"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/gen1-cross-console-heap/working.img",
+      "archive": "build/span-production-v1/gen1-cross-console-heap/working.img.zst",
+      "sha256": "e527b1afcc50bb70d39edd6176fe78d67b02b019a7e24bde04ad7611b8505891",
+      "size": 67108864,
+      "reclaimed_bytes": 53305344,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/gen1-cross-console-heap/working.img.zst",
+        "-o",
+        "build/span-production-v1/gen1-cross-console-heap/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 4835909632
+  "reclaimed_bytes": 4942495744
 }

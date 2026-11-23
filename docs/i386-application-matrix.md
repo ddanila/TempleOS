@@ -1782,3 +1782,10 @@ counterpart on a diagnostic copy recovers 24,576 contiguous bytes.
 The resulting 255,832-byte block still falls short of 267,528.
 The boot area and every other file remain intact in the diagnostic
 copy. See `build/span-production-v1/gen1-user8-growth.json`.
+
+Original circle and ellipse walkers, 3D drawing primitives, polar
+conversion and Saw compile on demand in the ToTheFront probe. The
+unchanged TTFDraw unit then compiles. The final application unit
+stops at the missing PopUpRangeF64 at line 3. A follow-up probe
+with the original range chooser is running. See
+`build/native-geometry-source-v1/ToTheFront-curves/result.json`.

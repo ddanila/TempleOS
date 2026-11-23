@@ -75,6 +75,8 @@ runs = [
     'i386-wide-product-lowering-v1/heap-small-holes',
     'span-production-v1/gen1-user8',
     'span-production-v1/gen1-span64',
+    'span-production-v1/gen1-user8-heap',
+    'span-production-v1/gen1-cross-console-heap',
     'grmodels-ball-reference-v1/math-retained',
     'grmodels-ball-reference-v1/trace-original-fixed',
     'grmodels-ball-reference-v1/product-original',

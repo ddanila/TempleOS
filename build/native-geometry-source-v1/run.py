@@ -16,6 +16,8 @@ parser.add_argument('--ball-form', action='store_true')
 parser.add_argument('--ball-mesh', action='store_true')
 parser.add_argument('--vertex-trace', action='store_true')
 parser.add_argument('--wide-product', action='store_true')
+parser.add_argument('--original-curves', action='store_true')
+parser.add_argument('--original-range', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
 if args.serial_visibility and args.app != 'ToTheFront':
@@ -32,6 +34,10 @@ if args.vertex_trace and not args.ball_mesh:
     parser.error('--vertex-trace requires --ball-mesh')
 if args.wide_product and not args.vertex_trace:
     parser.error('--wide-product requires --vertex-trace')
+if args.original_curves and not args.serial_visibility:
+    parser.error('--original-curves requires --serial-visibility')
+if args.original_range and not args.serial_visibility:
+    parser.error('--original-range requires --serial-visibility')
 out = args.out.resolve()
 out.mkdir()
 extras={}
@@ -55,6 +61,9 @@ if args.app=='ToTheFront':
     source=Path('Adam/DolDoc/DocPopUp.HC').read_bytes()
     extras['/IntegerPrompt.HC']=source[
         source.index(b'public I64 PopUpGetI64'):source.index(b'public F64 PopUpGetF64')]
+    if args.original_range:
+        extras['/TTFRange.HC'] = source[
+            source.index(b'public F64 PopUpRangeF64('):source.index(b'public F64 PopUpRangeF64Exp(')]
     if args.serial_visibility:
         app = Path('Apps/ToTheFront')
         visibility = (app/'TTFVis.HC').read_bytes()
@@ -101,6 +110,14 @@ if args.app=='ToTheFront':
 if args.app=='X-Caliber':
     extras['/ExtraVectors.HC']=Path('build/xcaliber-vector-load-v1/Vector.HC').read_bytes()
 math=Path('Adam/Gr/GrMath.HC').read_bytes()
+if args.original_curves:
+    sound_source = Path('Adam/Snd/SndMath.HC').read_bytes()
+    saw = sound_source[sound_source.index(b'public F64 Saw('):sound_source.index(b'public F64 FullSaw(')]
+    walkers = math[math.index(b'#define GR_SCALE1_BITS'):math.index(b'public Bool RegPoly(')]
+    curves = Path('Adam/Gr/GrCurves3Core.HC').read_bytes()
+    extras['/TTFCurves.HC'] = b'\n'.join((
+        b'#include "/Adam/PolarCore.HC"', saw, walkers,
+        curves[:curves.index(b'public Bool GrRegPoly3(')]))
 line=math[math.index(b'public Bool Line('):math.index(b'#help_index "Graphics/Math/3D Transformation"')]
 sprite=Path('Adam/Gr/SpriteRecordsCore.HC').read_bytes()
 sizes=sprite[:sprite.index(b'\n};')+4]
@@ -136,6 +153,10 @@ try:
         for unit in ('TTFGlbls', 'TTFLib', 'TTFInit', 'TTFVis', 'TTFFire',
                      'TTFMove', 'TTFDraw', 'ToTheFront'):
             path = '/TTFSerialVis.HC' if unit == 'TTFVis' else f'/Apps/ToTheFront/{unit}.HC'
+            if unit == 'TTFDraw' and args.original_curves:
+                commands.append('#include "C:/TTFCurves.HC"')
+            if unit == 'ToTheFront' and args.original_range:
+                commands.append('#include "C:/TTFRange.HC"')
             paths = fire_units if unit == 'TTFFire' and fire_units else [path]
             commands.extend(f'#include "C:{name}"' for name in paths)
     elif args.vertex_trace:
