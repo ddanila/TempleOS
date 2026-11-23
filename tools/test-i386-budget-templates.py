@@ -98,7 +98,14 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--archive',type=Path);ap.add_argument('--reference',type=Path);ap.add_argument('--out',type=Path,required=True);args=ap.parse_args()
+    ap=argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('disk',type=Path,nargs='?')
+    ap.add_argument('--archive',type=Path)
+    ap.add_argument('--reference',type=Path)
+    ap.add_argument('--out',type=Path,required=True)
+    ap.add_argument('--native-home',choices=('/', '/Home'),default='/',
+                    help='Expected native Home location for Budget persistence')
+    args=ap.parse_args()
     out=args.out.resolve();fixture=ROOT/'tests/guest/i386-budget-templates/Contract.HC'
     if out.exists():ap.error('Use a fresh output directory')
     if args.disk and not args.reference:ap.error('Native requires --reference')
@@ -202,7 +209,12 @@ def main():
         report['reopen_mask']=63
         if args.disk:
             files=pack['snapshot'](image.read_bytes())[1]
-            allowed={'/Probe/BudgetEntry.HC','/Budget/Accts.DD.Z','/Budget/Strs.DD.Z','/Budget/Bgt.DATA.Z'}
+            budget_dir=args.native_home.rstrip('/')+'/Budget'
+            budget_files={budget_dir+'/'+name for name in ('Accts.DD.Z','Strs.DD.Z','Bgt.DATA.Z')}
+            if not budget_files <= files.keys():
+                raise ValueError('Missing persisted files at configured native Home: '+budget_dir)
+            allowed={'/Probe/BudgetEntry.HC'} | budget_files
+            report['native_home']=args.native_home
             changed={n for n in set(before)|set(files) if before.get(n)!=files.get(n)}
             if changed-allowed:raise ValueError('Unrelated file changed: '+repr(changed-allowed))
             report['changed_files']=sorted(changed);report['preserved_files']=len(set(before)-allowed)

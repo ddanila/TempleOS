@@ -490,3 +490,13 @@ at 50.19 seconds. Both runs use 486,-fpu and the managed pointer oracle.
 These timings are from the production terminal path. Original User at
 8 MiB and the configured desktop profile have separate checks. The budget
 verdicts are pinned in `build/ac-dictionary-direct-copy/startup-budget.json`.
+
+The Budget templates run on the current image completed the live form
+workflow and read-only cold reopen. The original harness rejected the
+saved paths because this image places Budget under /Home/Budget. The
+offline continuation checked the recorded original form comparisons,
+normalized records and permitted numeric differences, and verified that
+only the fixture and three expected Home Budget files changed. The
+filesystem audit passes. The harness now accepts an explicit native Home
+location and requires all three saved files there while retaining its
+strict unrelated-file check. The fresh /Home run is in progress.
