@@ -9,6 +9,7 @@ import time
 parser = argparse.ArgumentParser()
 parser.add_argument('--disk', type=Path)
 parser.add_argument('--move', action='store_true')
+parser.add_argument('--fire', action='store_true')
 parser.add_argument('--out', type=Path, required=True)
 args = parser.parse_args()
 out = args.out.resolve()
@@ -19,6 +20,10 @@ if args.move:
     declaration = b'U0 TTFPhaseWatch('
     fixture = fixture.replace(declaration, (root/'Movement.HC').read_bytes() + b'\n' + declaration)
     fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackMove(owner);\n    Sleep(1);')
+if args.fire:
+    declaration = b'U0 TTFPhaseWatch('
+    fixture = fixture.replace(declaration, (root/'DirectFire.HC').read_bytes() + b'\n' + declaration)
+    fixture = fixture.replace(b'    Sleep(1);', b'    TTFTrackFire(owner);\n    Sleep(1);')
 if args.disk:
     image = out/'working.img'
     packer = runpy.run_path('tools/package-i386-native-image.py')['package']
@@ -52,7 +57,7 @@ try:
     else:
         guest.wait('TTF original loaded\n', 90)
         time.sleep(6)
-    report.update(exercise(guest, args.move))
+    report.update(exercise(guest, args.move, args.fire))
     if args.disk:
         guest.command('6*7;')
         report['after_match'] = guest.result_pixels()

@@ -1,0 +1,6 @@
+{
+  "fixture_sha256": "d6f6a8e5ce1ecf5f4fc271e00693bf5b87a528b694a97abd539e5684a22539b6",
+  "input_sha256": "b9efca2880b1a47157f7ddd6d7a3c8857c63caf589ec7cd6d4efe0fbf162c0d5",
+  "result": "fail",
+  "error": "Missing guest marker: TTF fired "
+}

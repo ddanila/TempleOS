@@ -1892,3 +1892,14 @@ sequence and exit. Native returns to fresh arithmetic. Firing,
 overrun and exact rendering remain open. See
 `build/tothefront-original-v1/move-original-positive/result.json`
 and `build/tothefront-production-v1/move64-positive/result.json`.
+
+The direct-fire differential stages one defender in an empty,
+visible hex adjacent to attacker 0 during the first firing phase.
+The original seed alone has no legal direct-fire pair. Physical
+dragging on the pinned original marks attacker 0 fired, reduces
+defender 0 from 100 life to zero, and updates the opposing live
+count to 31. Native selects the same coordinates and displays the
+range circle but times out waiting for the shot to finish. This
+localizes the remaining gap to native direct-fire interaction.
+See `build/tothefront-original-v1/fire-original-adjacent/result.json`
+and `build/tothefront-production-v1/fire64-adjacent/result.json`.
