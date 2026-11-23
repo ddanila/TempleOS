@@ -10,6 +10,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('disk',type=Path)
 parser.add_argument('--app', choices=('GrModels','ToTheFront','X-Caliber'), required=True)
 parser.add_argument('--serial-visibility', action='store_true')
+parser.add_argument('--xcaliber-loop-trace', action='store_true')
+parser.add_argument('--xcaliber-no-fire', action='store_true')
 parser.add_argument('--xcaliber-input-trace', action='store_true')
 parser.add_argument('--xcaliber-play', action='store_true')
 parser.add_argument('--xcaliber-desktop', action='store_true')
@@ -32,6 +34,10 @@ parser.add_argument('--human-match', action='store_true')
 parser.add_argument('--combined-loader', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
+if args.xcaliber_loop_trace and not args.xcaliber_input_trace:
+    parser.error('--xcaliber-loop-trace requires --xcaliber-input-trace')
+if args.xcaliber_no_fire and not args.xcaliber_play:
+    parser.error('--xcaliber-no-fire requires --xcaliber-play')
 if args.xcaliber_input_trace and not args.xcaliber_play:
     parser.error('--xcaliber-input-trace requires --xcaliber-play')
 if args.xcaliber_play and not args.xcaliber_desktop:
@@ -178,7 +184,7 @@ if args.app=='X-Caliber':
             unit = text[start:end]
             if args.xcaliber_input_trace and unit.startswith(b'U0 XCaliber('):
                 trace = runpy.run_path('build/xcaliber-reference-v1/input_trace.py')
-                unit = trace['instrument'](unit)
+                unit = trace['instrument'](unit, loop=args.xcaliber_loop_trace)
             extras[path] = unit + separator + assets
             xcaliber_units.append(path)
 math=Path('Adam/Gr/GrMath.HC').read_bytes()
@@ -290,7 +296,7 @@ try:
         report['play'] = {'fixture_sha256': hashlib.sha256(extras['/XCProbe.HC']).hexdigest()}
         guest.type('#include "C:/XCProbe.HC"')
         guest.press('ret')
-        exercise(guest, report['play'])
+        exercise(guest, report['play'], fire=not args.xcaliber_no_fire)
     guest.command('6*7;')
     report['fresh_result']=guest.result_pixels()
     report['result']='pass'

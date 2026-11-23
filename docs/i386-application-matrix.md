@@ -2204,3 +2204,13 @@ uses the Sqr substitution. See
 `build/native-geometry-source-v1/X-Caliber-desktop/result.json`,
 `build/native-geometry-source-v1/X-Caliber-play/result.json` and
 `build/xcaliber-reference-v1/original-shared-workflow/result.json`.
+
+The original input trace receives Escape and completes teardown
+after firing. The two native control runs use identical packaged
+sources. With no shot, native receives both Escape events, completes
+teardown, and executes fresh arithmetic. After firing, native still
+receives both Escape events but never reaches the teardown marker.
+A finer trace of the simulation and refresh calls is running.
+See `build/xcaliber-reference-v1/original-input-trace/result.json`,
+`build/native-geometry-source-v1/X-Caliber-input-trace/result.json`
+and `build/native-geometry-source-v1/X-Caliber-no-fire/result.json`.

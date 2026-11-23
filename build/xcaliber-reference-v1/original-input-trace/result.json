@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "fixture_sha256": "02c9c5d8f6ffaf58e60a6df80ba8346281dab6d76224d64d3a2b5281ba3837ef",
+  "app_source_sha256": "fd7c92aa35481075188a24c9222420739adf491fcfb54823eabfbe4e3410bd32",
+  "level": 1,
+  "enemies": 4,
+  "score": 0,
+  "gun_fired": true,
+  "returned": true,
+  "input_trace": [
+    "XC ready",
+    "XC pointer 6DD83D58",
+    "XC level 1 enemies 4 score 0",
+    "XC running",
+    "XC key 3 10 11C0000011C",
+    "XC key 2 32 3900000039",
+    "XC gun fired",
+    "XC key 3 32 13900000139",
+    "XC key 2 27 100000001",
+    "XC before teardown",
+    "XC after teardown",
+    "XC returned"
+  ],
+  "instrumented_app_sha256": "749d16b7326c1972652b54211b7664cbf30b3924ea049fc170dacf942e86ddb9"
+}

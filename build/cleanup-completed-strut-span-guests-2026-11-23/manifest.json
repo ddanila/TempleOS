@@ -3751,7 +3751,105 @@
         "-o",
         "build/i386-primary-backing-batch-v1/small-public-stock-user8/working.img"
       ]
+    },
+    {
+      "original": "build/i386-power-operator-v1/original/original.iso",
+      "archive": "build/i386-power-operator-v1/original/original.iso.zst",
+      "sha256": "d5b68568cb7999b7afcfdc97283e776f0caadb04213f07d90966c3e08e7bc01d",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-operator-v1/original/original.iso.zst",
+        "-o",
+        "build/i386-power-operator-v1/original/original.iso"
+      ]
+    },
+    {
+      "original": "build/i386-power-operator-v1/native64/working.img",
+      "archive": "build/i386-power-operator-v1/native64/working.img.zst",
+      "sha256": "c40f5f24654420ef587c9e300b69e112f244a75acb29ae6af4592e9541e57671",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/i386-power-operator-v1/native64/working.img.zst",
+        "-o",
+        "build/i386-power-operator-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/xcaliber-reference-v1/original-shared-workflow/original.iso",
+      "archive": "build/xcaliber-reference-v1/original-shared-workflow/original.iso.zst",
+      "sha256": "22efbfc53c23414f3b36dbfb2652b93b7b55928fa96fec386fca0061373b9b19",
+      "size": 46155776,
+      "reclaimed_bytes": 33239040,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/xcaliber-reference-v1/original-shared-workflow/original.iso.zst",
+        "-o",
+        "build/xcaliber-reference-v1/original-shared-workflow/original.iso"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-explosion-square/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-explosion-square/working.img.zst",
+      "sha256": "e3724e02abca0167311f01b3f4df8205964cb55f88502ec3aea021a1f6bc7e7c",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-explosion-square/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-explosion-square/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-frequency/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-frequency/working.img.zst",
+      "sha256": "62d24fdc2fab4490e8a043d894de1ca72a102b4a7a88d64171db0013df4c2b9b",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-frequency/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-frequency/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-desktop/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-desktop/working.img.zst",
+      "sha256": "0e8306d7754e06b7626c43fadb1e382922ccbcc238597032e536e563bbbfd80e",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-desktop/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-desktop/working.img"
+      ]
+    },
+    {
+      "original": "build/native-geometry-source-v1/X-Caliber-play/working.img",
+      "archive": "build/native-geometry-source-v1/X-Caliber-play/working.img.zst",
+      "sha256": "a9c291a2193a72febf03e8c79594a899322be35b644e240818fb7c8b6299ff27",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-source-v1/X-Caliber-play/working.img.zst",
+        "-o",
+        "build/native-geometry-source-v1/X-Caliber-play/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 13401878528
+  "reclaimed_bytes": 13735383040
 }
