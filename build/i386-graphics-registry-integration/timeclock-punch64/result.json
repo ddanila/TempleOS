@@ -1,0 +1,137 @@
+{
+  "result": "fail",
+  "ram_mib": 64,
+  "cpu": "486,-fpu",
+  "scope": "Unchanged TimeClock scripted punch commands, independent typed-file decoding, duplicate/cancel behavior and cold reboot reopen; not physical keyboard or complete application qualification",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-graphics-registry-integration/native-v2/kernel.img": "905744d6cfcfae6dac2cd81dfc08009bdd1352ff02c62c558ff0cb47af165bfc",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-timeclock-punch-native/Contract.HC": "f73971848ca56c3ca7e12d030aff5eb72b75cd201d3145805a70929b5e620342",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "98d09168433c80d44eec0aa5ef44d0e0c87dafae79a22464ad997ce9edf49e3a",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-punch-reference.py": "db8fe4740b5f784b9e93376e0aea39e8e90b728976af9ab9ea942d7c8188d1dd",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "6484f7175207cd690b038fea715576ac4efa8fdb3081e02980d140235d293dcd",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-punch-native.py": "36fff85b4e6a860b9ee92621ae1a4d493b9a4b6c6cee2c9f2109b90dbf29ce0d"
+  },
+  "application_sha256": {
+    "/Apps/TimeClock/Install.HC": "93a6eaa93c12c52ce8bb378725092355c36c77770029acedfb6f1d05570ea5ec",
+    "/Apps/TimeClock/Load.HC": "c075ba921d2fa92f2ebfe4171362d32e3629d73480140af5236d00b020510606",
+    "/Apps/TimeClock/TimeClk.HC": "ea0574db2d51cc57b3b5197cb0d3fdf3c4179a65bd142838b2381c5e6764e599"
+  },
+  "commands": [
+    [
+      "!FileFind(\"~/TimeClock\",,FUF_JUST_DIRS);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "#include \"C:/PunchNative.HC\"",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(0);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(1);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(2);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(3);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(4);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(5);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(6);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "reopen_commands": [
+    [
+      "#include \"C:/PunchNative.HC\"",
+      [
+        "1"
+      ]
+    ],
+    [
+      "!TimeRep;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchSave(\"C:/punch-reopen.DATA\");",
+      [
+        "1"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "905744d6cfcfae6dac2cd81dfc08009bdd1352ff02c62c558ff0cb47af165bfc",
+    "image_sha256": "d24c659d184efc59527ad750f231257eac8f5cf98139db0a6967509701be9dc6",
+    "boot_area_sha256": "bb893582cccb23231d413e6a0fca83bd83379c0d5cdcdbdb733920cf79b949aa",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96135,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/PunchNative.HC": "f73971848ca56c3ca7e12d030aff5eb72b75cd201d3145805a70929b5e620342"
+    },
+    "added_attributes": {
+      "/PunchNative.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "error": "Console check timed out; inspect /home/ddanila/fun/TempleOS/build/i386-graphics-registry-integration/timeclock-punch64/qemu",
+  "inputs_unchanged": true
+}

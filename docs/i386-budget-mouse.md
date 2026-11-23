@@ -107,3 +107,10 @@ Only the fixture and the three expected Budget data files change, with 1,902
 prior files preserved. The cold session preserves all file tuples. The harness
 and receipt are in `build/budget-mouse-production-home-v1`. Mouse-driven
 entry creation and full Budget qualification remain open.
+
+The integrated registry, SwapI64 and changed-row VGA image repeats the physical
+Budget workflow with masks 1023 and 63. Cold reopen preserves the entire image.
+The run preserves 1,903 prior files and changes only the fixture and the three
+expected files under `/Home/Budget`. Fresh arithmetic renders after both
+sessions. The receipt is in
+`build/i386-graphics-registry-integration/budget-mouse64/result.json`.

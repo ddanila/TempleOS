@@ -909,3 +909,23 @@ region match the original across 6,272 pixels. The overlay also passes
 the 8 MiB User smoke test in 50.55 seconds with five raster checkpoints.
 See `build/application-menu-repeat-v1` for the repeat, raster and startup
 receipts. The menu overlay still awaits production integration.
+
+The integrated image passes the unchanged Budget physical mouse workflow and
+read-only cold reopen. It also reproduces the unchanged KeepAway load boundary
+at `SettingsPush` on line 645. Loading TaskSettings directly reaches an undefined
+`AutoComplete` at line 82 of TaskSettingsCore. These receipts are under
+`build/i386-graphics-registry-integration`.
+
+The integrated image passes the Noise and Sweep task, speaker and mute cleanup
+checks with four exact raster checkpoints on the managed-pointer profile.
+The earlier TCG attempt timed out at the initial raster comparison before
+sending any test command. The passing receipt and profile wrapper are in
+`build/i386-graphics-registry-integration/sound-effects-managed64` and
+`build/i386-graphics-registry-integration/sound-with-managed-pointer.py`.
+
+KeepAway's unchanged Load.HC succeeds after explicitly loading the bundled
+autocomplete library and TaskSettings in that order. All three application
+files match the original and fresh arithmetic executes afterward. The
+`keepaway-libraries64` receipt records this 64 MiB KVM session. Normal startup
+still requires library integration for this launch path, and gameplay remains
+open.

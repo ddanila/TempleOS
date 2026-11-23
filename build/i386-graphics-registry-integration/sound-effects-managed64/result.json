@@ -1,0 +1,78 @@
+{
+  "result": "pass",
+  "scope": "Noise and Sweep task lifecycle, speaker and mute cleanup",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "905744d6cfcfae6dac2cd81dfc08009bdd1352ff02c62c558ff0cb47af165bfc",
+    "image_sha256": "b61f08ad7f4d22e534dc721c6a710330db3d8cbcfd2402fc90eaa517d7597534",
+    "boot_area_sha256": "bb893582cccb23231d413e6a0fca83bd83379c0d5cdcdbdb733920cf79b949aa",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1904,
+      "owned_sectors": 96134,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Effects.HC": "cc146a0efd778e3904f9f03df87ac44e16de127287911f510cc3c9900378bfb6"
+    },
+    "added_attributes": {
+      "/Effects.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-graphics-registry-integration/native-v2/kernel.img": "905744d6cfcfae6dac2cd81dfc08009bdd1352ff02c62c558ff0cb47af165bfc",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-sound-effects-reference/Effects.HC": "cc146a0efd778e3904f9f03df87ac44e16de127287911f510cc3c9900378bfb6",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "98d09168433c80d44eec0aa5ef44d0e0c87dafae79a22464ad997ce9edf49e3a",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-sound-effects.py": "33a7e1dd93bcb3a5393b79df6f91cac7c2ce541b5ddc658ce2d4abd2917817dc",
+    "/home/ddanila/fun/TempleOS/build/i386-graphics-registry-integration/sound-with-managed-pointer.py": "8c1c662544804566301efd4e89f1bee5ad4426caaf6eaa185c5bdf3e54362180"
+  },
+  "commands": [
+    [
+      "#include \"/Kernel/I386/PublicUser.HH\"",
+      []
+    ],
+    [
+      "#include \"C:/Effects.HC\"",
+      []
+    ],
+    [
+      "SFCheck;",
+      [
+        "63"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "ram_mib": 64,
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 64,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 50.76274168698001,
+    "commands": 4,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "guest_fixture_sha256": "cc146a0efd778e3904f9f03df87ac44e16de127287911f510cc3c9900378bfb6",
+  "inputs_unchanged": true
+}

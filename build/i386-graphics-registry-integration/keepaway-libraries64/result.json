@@ -1,0 +1,48 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-graphics-registry-integration/native-v2/kernel.img": "905744d6cfcfae6dac2cd81dfc08009bdd1352ff02c62c558ff0cb47af165bfc",
+    "/home/ddanila/fun/TempleOS/build/i386-graphics-registry-integration/keepaway-with-libraries.py": "6786617f3630ed05fa1b8226ae4133dc5c842af3b4afd5042809d426b766231e",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-application-native-load.py": "eea097f5364eb9b8f1dac68f1bf398a139eca126577d165f4c43bb4dff4f4be6",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "6484f7175207cd690b038fea715576ac4efa8fdb3081e02980d140235d293dcd",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "98d09168433c80d44eec0aa5ef44d0e0c87dafae79a22464ad997ce9edf49e3a"
+  },
+  "scope": "Original application Load on native 64 MiB; not startup or application workflow qualification",
+  "app": "KeepAway",
+  "verified_existing": {
+    "/Apps/KeepAway/KeepAway.HC": "2dc29f9ad173bbfe6ab52c9e78c4901e6abe1d81ff6e4214919c974662357f7b",
+    "/Apps/KeepAway/Load.HC": "d481032d5f5543dccbb9ecedd9810c4d9ad4b068867035203e2dfe1ce306daf3",
+    "/Apps/KeepAway/Run.HC": "476c37fbd37b8bd6bc47709bb6a4b2025bbad243b1e7b754ac7e72b031505e65"
+  },
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "905744d6cfcfae6dac2cd81dfc08009bdd1352ff02c62c558ff0cb47af165bfc",
+    "image_sha256": "905744d6cfcfae6dac2cd81dfc08009bdd1352ff02c62c558ff0cb47af165bfc",
+    "boot_area_sha256": "bb893582cccb23231d413e6a0fca83bd83379c0d5cdcdbdb733920cf79b949aa",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1903,
+      "owned_sectors": 96132,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {},
+    "added_attributes": {},
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "delivered_sha256": {
+    "/Apps/KeepAway/KeepAway.HC": "2dc29f9ad173bbfe6ab52c9e78c4901e6abe1d81ff6e4214919c974662357f7b",
+    "/Apps/KeepAway/Load.HC": "d481032d5f5543dccbb9ecedd9810c4d9ad4b068867035203e2dfe1ce306daf3",
+    "/Apps/KeepAway/Run.HC": "476c37fbd37b8bd6bc47709bb6a4b2025bbad243b1e7b754ac7e72b031505e65"
+  },
+  "inputs_unchanged": true
+}
