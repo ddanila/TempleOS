@@ -1,0 +1,33 @@
+{
+  "result": "pass",
+  "checks": {
+    "menu-heading": {
+      "box": [
+        0,
+        0,
+        640,
+        8
+      ],
+      "pixels": 5120,
+      "rgb_sha256": "06a345b4738341a4b85af88689c1823063ef0b581b295751762e2ca9083e1e8b",
+      "inputs": {
+        "build/application-menu-mouse-v1/original/guest/menu-heading.png": "f34eadf5a40a12d3b3c21f43116870280fb87adca8384f2d750ef06b80dcdcc3",
+        "build/application-menu-integrated-v1/native64/guest/menu-heading.png": "3fb1f22a5d560fe3c6e9b513392e2b5676a6be2522a59a41004d37c112d13466"
+      }
+    },
+    "menu-highlight": {
+      "box": [
+        0,
+        0,
+        72,
+        16
+      ],
+      "pixels": 1152,
+      "rgb_sha256": "a6c4d4caa2818d8206ab1be81a9c40f5af3e8a807913ebacdd0536733f146372",
+      "inputs": {
+        "build/application-menu-mouse-v1/original/guest/menu-highlight.png": "070572b3aadac309610061520be18c93d8b3ef90d689699f485d6c86e0425839",
+        "build/application-menu-integrated-v1/native64/guest/menu-highlight.png": "7715df636d6841ed886a7e5c07d3b651d0a47d263809819881e4c47731bd3367"
+      }
+    }
+  }
+}

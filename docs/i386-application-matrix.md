@@ -901,3 +901,11 @@ delivers (1, 2676, 83) at 64 MiB. Build commands, packaging and runtime
 receipts are in `build/application-menu-integrated-v1`.
 The unmodified image reaches both pointer targets but times out waiting for the
 menu command after release. Its receipt is in the same directory.
+
+On the original system and the rebased overlay, releasing outside the menu
+dispatches no command. The two subsequent selections each dispatch
+(1, 2676, 83) exactly once. The full heading row and the selected dropdown
+region match the original across 6,272 pixels. The overlay also passes
+the 8 MiB User smoke test in 50.55 seconds with five raster checkpoints.
+See `build/application-menu-repeat-v1` for the repeat, raster and startup
+receipts. The menu overlay still awaits production integration.

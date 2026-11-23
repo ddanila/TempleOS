@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "startup_seconds": 50.548028651974164,
+  "budget_seconds": 60,
+  "over_budget_seconds": 0,
+  "evidence": "/home/ddanila/fun/TempleOS/build/application-menu-repeat-v1/user8/qemu/result.json",
+  "evidence_sha256": "6b16f5b06903a3fcc5416b84017d17f47652ce96cdc3a4221d745199da8551b8",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}
