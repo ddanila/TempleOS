@@ -357,6 +357,7 @@ public Bool I386SchedReap(CI386Scheduler *s,CI386Task *task)
   for(i=0;i<I386_EXCEPT_CALLERS;i++) task->except_callers[i]=0;
   task->next_cc=task->last_cc=0;
   task->next_ctrl=task->last_ctrl=0;
+  task->next_ode=task->last_ode=0;
   task->addr=0; task->context.esp=0; task->owner=0; task->finished=0; task->blocked=0;
   task->task_signature=0; task->gs=0;
   task->memory=0;

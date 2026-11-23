@@ -3049,3 +3049,11 @@ the declared eight-byte build-date normalization. Each actual boot
 payload, checksum and padding passed separately. This is frozen
 reproduction evidence. The current source and full C1–C5 compatibility
 suite still require qualification.
+
+The scheduler reaper now clears the ODE list links after task-owned
+heap teardown. A reaped task record had retained the empty list
+sentinel, so its next preparation was rejected. The original task
+corpus advanced past task reuse after the fix and reached its ATA
+handoff check. The independent
+[task heap corpus](../build/i386-scheduler-ode-reap-v1/task-heaps/result.json)
+passed, including cleanup and backing reclamation.
