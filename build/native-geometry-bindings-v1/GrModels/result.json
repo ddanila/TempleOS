@@ -1,0 +1,39 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "692a9ae4c9bbc6ad90a463b56b4d77a3dd83aac9c0131a22519d893bd06df677",
+    "image_sha256": "558a4027354341fe9a7922459f5a9177460ec7dbb2490189387ea8148608a8c7",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1914,
+      "owned_sectors": 96191,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1915,
+      "owned_sectors": 96194,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/LightingChooser.HC": "8a20753da001c7e8e21c557162d6ffb601d368442519e66c784ea18f7d53ab75"
+    },
+    "added_attributes": {
+      "/LightingChooser.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "command": "#include \"C:/Apps/GrModels/Load.HC\"",
+  "fresh_result": {
+    "column": 0,
+    "row": 14,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

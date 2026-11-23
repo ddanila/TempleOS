@@ -28,6 +28,9 @@ runs = [
     'original-user-loop-ownership-v3/audit',
     'original-user-loop-ownership-v1/audit',
     'original-user-loop-prototype-v1/audit',
+    'native-geometry-bindings-v1/combined',
+    'native-geometry-table-v1/combined',
+    'native-geometry-table-v1/combined-named',
 ]
 
 

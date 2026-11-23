@@ -307,7 +307,49 @@
         "-o",
         "build/original-user-loop-prototype-v1/audit/kernel-assembly.txt"
       ]
+    },
+    {
+      "original": "build/native-geometry-bindings-v1/combined/kernel-assembly.txt",
+      "archive": "build/native-geometry-bindings-v1/combined/kernel-assembly.txt.zst",
+      "sha256": "80757074cc563254f292553f55e0c450869edb2b9288254a18bb29801ec5e7be",
+      "size": 109726936,
+      "reclaimed_bytes": 101036032,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-bindings-v1/combined/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-geometry-bindings-v1/combined/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/native-geometry-table-v1/combined/kernel-assembly.txt",
+      "archive": "build/native-geometry-table-v1/combined/kernel-assembly.txt.zst",
+      "sha256": "7c25af66b6861d6003f9b3c6db191bc8d6765aacb130bd57d0e7ca9a31c2a7fb",
+      "size": 109729397,
+      "reclaimed_bytes": 101040128,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-table-v1/combined/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-geometry-table-v1/combined/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/native-geometry-table-v1/combined-named/kernel-assembly.txt",
+      "archive": "build/native-geometry-table-v1/combined-named/kernel-assembly.txt.zst",
+      "sha256": "7c25af66b6861d6003f9b3c6db191bc8d6765aacb130bd57d0e7ca9a31c2a7fb",
+      "size": 109729397,
+      "reclaimed_bytes": 101040128,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/native-geometry-table-v1/combined-named/kernel-assembly.txt.zst",
+        "-o",
+        "build/native-geometry-table-v1/combined-named/kernel-assembly.txt"
+      ]
     }
   ],
-  "reclaimed_bytes": 2234089472
+  "reclaimed_bytes": 2537205760
 }

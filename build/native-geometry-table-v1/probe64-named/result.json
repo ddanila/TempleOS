@@ -1,0 +1,31 @@
+{
+  "result": "fail",
+  "package": {
+    "result": "pass",
+    "source_sha256": "5049c5467f17bb7b80f1cca91f02ef9ce62d27baf778a04354ab87e4370441d8",
+    "image_sha256": "ccde72cc8986648561a6a00237752d23c3787507d5de3645feda6bd664f13f06",
+    "boot_area_sha256": "9a596a41a03b137c824d2803cf66f8e425468766f012d8073d2130f751882b85",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1914,
+      "owned_sectors": 96191,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1915,
+      "owned_sectors": 96193,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/GeometryProbe.HC": "65c12597aff34d17313581c1f73d3aa068a65f42181a75b01f1dcb6d26d580db"
+    },
+    "added_attributes": {
+      "/GeometryProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "command": "#include \"C:/Kernel/I386/PublicGeometry.HH\"",
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 00000000015985E8 00000000536B7354\nINPUT LINE #include \"C:/Kernel/I386/PublicGeometry.HH\"\nCOMPILER BREAK ready\nFRONTEND ERROR Missing expression at  token U8 file C:/Kernel/I386/PublicGeometry.HH line 9\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+}

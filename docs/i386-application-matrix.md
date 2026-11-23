@@ -1544,3 +1544,20 @@ matrix rotations and the original sprite record size table. The
 combined image passes the instruction audit. Its application-load
 and 8 MiB regression checks are running. See
 `build/native-geometry-bindings-v1/combined/result.json`.
+
+The per-symbol graphics candidate loads GrModels with its original
+lighting chooser. ToTheFront reaches the missing PopUpGetI64 helper,
+then moves to the multicore visibility code after loading that
+original popup helper. X-Caliber's added scalar vector routines move
+its loader to GrPeek. These are compile probes. See
+`build/native-geometry-bindings-v1/GrModels/result.json`,
+`build/tothefront-integer-prompt-v1/native64/result.json`, and
+`build/xcaliber-vector-load-v1/native64/result.json`.
+
+Both resident graphics export candidates fail the 8 MiB User fixture
+with fallback-heap exhaustion. The table candidate also exposes a
+native parser failure on the local indirect function declarations.
+The next candidate loads the original portable geometry routines on
+demand from the unchanged production Console image. See
+`build/native-geometry-bindings-v1/user8/result.json` and
+`build/native-geometry-table-v1/user8/result.json`.
