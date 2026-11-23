@@ -2900,3 +2900,9 @@ only CompilerRuntime with the older guest build reproduced
 The matching cross-built image passed the 8 MiB User startup workload.
 The [qualification receipt](../build/i386-binding-diagnostic-v1/qualification.json)
 pins both images and the passing startup receipt.
+
+The [WidePi retained build](../build/i386-wide-pi-production-v3/retained128/result.json)
+passed all nine persisted module audits at 128 MiB on `486,-fpu`.
+The guest loaded the build provider once. Installation and the 8 MiB
+User test are underway on that same source disk. This is the WidePi
+baseline before the 64-slot debug cache change.
