@@ -65,3 +65,20 @@ codes without a supplemental ScanCodes include. The full Psalmody loader then
 stops at `FileOcc` in JukeBox line 135. See [signed-clamp evidence](i386-clamp-i64.md).
 The app remains unqualified; the original keyboard control is still the target
 workflow after these dependencies are restored.
+
+## Guest timing comparison
+
+A diagnostic overlay logs note onset and release timestamps inside Psalmody
+on original TempleOS and the native registry-popup candidate. Both runs use
+the same physical key sequence and exact note-vector check. The original
+records guest intervals of 410, 400 and 400 ms and three duration values of 8.
+The native run records intervals of 0, 430 and 310 ms and duration values of
+0, 8 and 7. Host key holds were approximately 400 ms in both runs. Both runs
+record the expected pitches, delete the final note and restore caller state.
+
+The traces place the discrepancy before duration quantization. The next
+comparison needs the queued input timestamps alongside the timestamps at
+application dispatch to distinguish input delivery lag from elapsed clock
+drift. The diagnostic scripts, receipts and decoded vectors are preserved
+in `build/psalmody-timing-trace-v1`. The unchanged application's exact
+keyboard acceptance remains open.

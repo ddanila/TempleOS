@@ -1,0 +1,112 @@
+{
+  "original": {
+    "result": "pass",
+    "timings": [
+      {
+        "pitch": 63,
+        "guest_hold_ms": 410,
+        "host_hold_ms": 403.9,
+        "tempo_milli": 2480
+      },
+      {
+        "pitch": 65,
+        "guest_hold_ms": 400,
+        "host_hold_ms": 403.9,
+        "tempo_milli": 2480
+      },
+      {
+        "pitch": 67,
+        "guest_hold_ms": 400,
+        "host_hold_ms": 403.9,
+        "tempo_milli": 2480
+      }
+    ],
+    "records": {
+      "notes": [
+        3,
+        1,
+        63,
+        8,
+        0,
+        1,
+        65,
+        8,
+        0,
+        1,
+        67,
+        8,
+        0
+      ],
+      "deleted": [
+        2,
+        1,
+        63,
+        8,
+        0,
+        1,
+        65,
+        8,
+        0
+      ],
+      "mask": [
+        63
+      ]
+    },
+    "receipt_sha256": "942fe5334bc25d9beb2f67c2b53435ea953979d1ab197da78f6a75824c548466"
+  },
+  "native64-plain": {
+    "result": "fail",
+    "timings": [
+      {
+        "pitch": 63,
+        "guest_hold_ms": 0,
+        "host_hold_ms": 403.8,
+        "tempo_milli": 2480
+      },
+      {
+        "pitch": 65,
+        "guest_hold_ms": 430,
+        "host_hold_ms": 404.0,
+        "tempo_milli": 2480
+      },
+      {
+        "pitch": 67,
+        "guest_hold_ms": 310,
+        "host_hold_ms": 404.0,
+        "tempo_milli": 2480
+      }
+    ],
+    "records": {
+      "notes": [
+        3,
+        1,
+        63,
+        0,
+        0,
+        1,
+        65,
+        8,
+        0,
+        1,
+        67,
+        7,
+        0
+      ],
+      "deleted": [
+        2,
+        1,
+        63,
+        0,
+        0,
+        1,
+        65,
+        8,
+        0
+      ],
+      "mask": [
+        63
+      ]
+    },
+    "receipt_sha256": "e1276abf06b4b683ac576c4d00e33c470b48d170fd7a4eb18bed7b2f362eaab3"
+  }
+}
