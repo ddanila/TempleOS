@@ -177,3 +177,12 @@ signs, plain-text output and middle insertion. The older terminal harness
 timed out at its startup raster before it reached the checks. The packaged
 runner verifies the five conditions directly and renders fresh arithmetic.
 The receipt is in `build/psalmody-doc-stream-batch-v1/stream64-packaged`.
+
+The second changed-row overlay also invalidates its VGA cache after raw
+character output and honors a requested full VGA flush. It matches the full
+upload in all six native raster comparisons. Both raw-output restoration
+and explicit flush restore the same RGB bytes as the initial frame.
+The unchanged Psalmody keyboard workflow after the redraw independently
+passes a second time with durations 8, 8, 8. These results are mapped to
+the Psalmody loader and application source in the compatibility inventory.
+The candidate and receipts are in `build/native-graphics-dirty-rows-v2`.

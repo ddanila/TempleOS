@@ -10695,6 +10695,18 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-sprite-output-v1/result.json",
           "scope": "Original app bytes verified. Load advances past Sprite and rejects CmpCtrlNew in PsalmodyFile line 203. Inputs unchanged; recording/deletion/abort unexecuted."
+        },
+        {
+          "target": "native-psalmody-immediate-keyboard",
+          "result": "fail",
+          "evidence": "build/psalmody-registry-popup-v2/keyboard64/result.json",
+          "scope": "Unchanged original sources on isolated SwapI64 and registry popup overlay. Recording, note deletion and caller restoration execute. Exact 400 ms keyboard check records durations 0, 7, 8."
+        },
+        {
+          "target": "native-psalmody-settled-keyboard",
+          "result": "pass",
+          "evidence": "build/native-graphics-dirty-rows-v2/psalmody-ready64/result.json",
+          "scope": "Unchanged original sources on disposable changed-row VGA overlay. Wait for the record menu to finish its redraw before the same 400 ms key holds. Exact original note, surviving note, and caller restoration records match. Immediate-input timing, audio, persistence and full application qualification remain open."
         }
       ]
     },
@@ -10869,6 +10881,18 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-keyboard-native-v1/result.json",
           "scope": "Original application bytes verified; Load rejects SC_DELETE in JukeBox.HC line 56 before keyboard workflow. Inputs unchanged; no native workflow pass."
+        },
+        {
+          "target": "native-psalmody-immediate-keyboard",
+          "result": "fail",
+          "evidence": "build/psalmody-registry-popup-v2/keyboard64/result.json",
+          "scope": "Unchanged original sources on isolated SwapI64 and registry popup overlay. Recording, note deletion and caller restoration execute. Exact 400 ms keyboard check records durations 0, 7, 8."
+        },
+        {
+          "target": "native-psalmody-settled-keyboard",
+          "result": "pass",
+          "evidence": "build/native-graphics-dirty-rows-v2/psalmody-ready64/result.json",
+          "scope": "Unchanged original sources on disposable changed-row VGA overlay. Wait for the record menu to finish its redraw before the same 400 ms key holds. Exact original note, surviving note, and caller restoration records match. Immediate-input timing, audio, persistence and full application qualification remain open."
         }
       ]
     },

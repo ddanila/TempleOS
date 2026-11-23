@@ -1,0 +1,63 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "build/psalmody-registry-popup-v2/candidate.img": "63ff6673074edad8d5b90ca401f71c0b0b9572b137acc184b31f4da3b22ae9bb",
+    "build/native-graphics-dirty-rows-v2/candidate.img": "bbcb1ee725ea71ab70c039f837af90af168fe9edee79d0e7c5c916601dab0301",
+    "tools/test-i386-persistent-window.py": "9c0788603676a9aa9fc707b14768e3070d1a08049a8c2afa3c4423bf21b6d958",
+    "tools/test-i386-autocomplete-interaction.py": "129f7fc3908165d89b9c8de1ba3391458333c399b2f2bbde8ce00a372a718bd6",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/native-graphics-dirty-rows-v2/verify.py": "7ff491167aa30033073a46c1577e92590f5fbcd1ab11ccd9922e376e3bb0df12"
+  },
+  "scope": "Native full versus changed-row VGA uploads through direct bitmap changes, final hook layering and return to ordinary output. Exact six rasters including restoration after raw output and an explicit VGA flush, then continued arithmetic.",
+  "frames": {
+    "A": {
+      "raster_sha256": "239b11189eaef60d0002b656e8fc0d6a86791232662ec6eb7cde7f7384f576d3",
+      "test_pixel": [
+        168,
+        0,
+        0
+      ]
+    },
+    "R": {
+      "raster_sha256": "239b11189eaef60d0002b656e8fc0d6a86791232662ec6eb7cde7f7384f576d3",
+      "test_pixel": [
+        168,
+        0,
+        0
+      ]
+    },
+    "F": {
+      "raster_sha256": "239b11189eaef60d0002b656e8fc0d6a86791232662ec6eb7cde7f7384f576d3",
+      "test_pixel": [
+        168,
+        0,
+        0
+      ]
+    },
+    "B": {
+      "raster_sha256": "105dca350ef850673e32b7415b0763c7ed742c993725d07cd99b737b8c9d99a6",
+      "test_pixel": [
+        0,
+        168,
+        0
+      ]
+    },
+    "C": {
+      "raster_sha256": "2ed9cde4a1c189e4e65b717f70b575c7afbe346b5900bd3dd7a628b15023c48d",
+      "test_pixel": [
+        0,
+        0,
+        168
+      ]
+    },
+    "D": {
+      "raster_sha256": "132bec1a84fc58b816ed1db7cc92f8f4859bddd3c7d093fcda34207d02b010b9",
+      "test_pixel": [
+        255,
+        255,
+        255
+      ]
+    }
+  },
+  "inputs_unchanged": true
+}
