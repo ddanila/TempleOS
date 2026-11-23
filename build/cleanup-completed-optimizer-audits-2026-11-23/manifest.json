@@ -1,0 +1,299 @@
+{
+  "files": [
+    {
+      "original": "build/compiler-preload-original-v1/audit/kernel-assembly.txt",
+      "archive": "build/compiler-preload-original-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "6e9bfbce0f889e227c0b657f7b05db8bb535a7554f767725223b646494f0203d",
+      "size": 110831033,
+      "reclaimed_bytes": 102043648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-preload-original-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-preload-original-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-preload-original-v2/audit/kernel-assembly.txt",
+      "archive": "build/compiler-preload-original-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "da2a8dab00e29a40cee71b5d6e3c7594b39ba7415f0d20ce996c90b4fb128418",
+      "size": 110831033,
+      "reclaimed_bytes": 102043648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-preload-original-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-preload-original-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-preload-v1/audit/kernel-assembly.txt",
+      "archive": "build/compiler-preload-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "1a630a7d549499fae036d9ee175b16c523217fc13ec8ca619a9f4e472ce5e7ec",
+      "size": 109385261,
+      "reclaimed_bytes": 100720640,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-preload-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-preload-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-preload-v2/audit/kernel-assembly.txt",
+      "archive": "build/compiler-preload-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "c6a7693b89e4ce539d67265575be1fafa82ee3ce705a0e34a276f4ca354c7550",
+      "size": 109385261,
+      "reclaimed_bytes": 100724736,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-preload-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-preload-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-raw-headers-v2/audit/kernel-assembly.txt",
+      "archive": "build/compiler-raw-headers-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "0f74c72d621d375d389d43c9767a376cf3d837ca54125f9cf9995ec40b01f9ef",
+      "size": 110830833,
+      "reclaimed_bytes": 102043648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-raw-headers-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-raw-headers-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-raw-headers-v3/audit/kernel-assembly.txt",
+      "archive": "build/compiler-raw-headers-v3/audit/kernel-assembly.txt.zst",
+      "sha256": "0f74c72d621d375d389d43c9767a376cf3d837ca54125f9cf9995ec40b01f9ef",
+      "size": 110830833,
+      "reclaimed_bytes": 102043648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-raw-headers-v3/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-raw-headers-v3/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-raw-headers-v4/audit/kernel-assembly.txt",
+      "archive": "build/compiler-raw-headers-v4/audit/kernel-assembly.txt.zst",
+      "sha256": "6f7a528aa6d9aece613c60c734cafd5ee842f3269d6de00ccb768fecd3d4d493",
+      "size": 110830833,
+      "reclaimed_bytes": 102043648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-raw-headers-v4/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-raw-headers-v4/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-raw-headers-v6/audit/kernel-assembly.txt",
+      "archive": "build/compiler-raw-headers-v6/audit/kernel-assembly.txt.zst",
+      "sha256": "e59e91651ac4d51d08ad321f2b9492ec0c51830c73a0d16383af379b453b517c",
+      "size": 110854351,
+      "reclaimed_bytes": 102064128,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-raw-headers-v6/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-raw-headers-v6/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/compiler-raw-headers-v7/audit/kernel-assembly.txt",
+      "archive": "build/compiler-raw-headers-v7/audit/kernel-assembly.txt.zst",
+      "sha256": "2ef142cf0a0beee24079a3d879e2ebd95ed5bef88fe759a1ee6710195daed91a",
+      "size": 110856414,
+      "reclaimed_bytes": 102064128,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/compiler-raw-headers-v7/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/compiler-raw-headers-v7/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/current-opt-include-trace/audit/kernel-assembly.txt",
+      "archive": "build/current-opt-include-trace/audit/kernel-assembly.txt.zst",
+      "sha256": "0ff0cdc36e805f88f91413f366b22c1220e778c5e4463cfa0b2420f94450c8bb",
+      "size": 110829884,
+      "reclaimed_bytes": 102043648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/current-opt-include-trace/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/current-opt-include-trace/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/include-document-trace-v1/audit/kernel-assembly.txt",
+      "archive": "build/include-document-trace-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "714fa3a9b79631a403545a5b0a3e4478f087bad41b3a57c6a9c23287fea28e60",
+      "size": 110587602,
+      "reclaimed_bytes": 101814272,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/include-document-trace-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/include-document-trace-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/optimizer-policy-core-v1/audit/kernel-assembly.txt",
+      "archive": "build/optimizer-policy-core-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "64c773277a276c195eb20ac5d4761d988e9def1aa1ebc0c3dc5d32bfd6b43628",
+      "size": 109115349,
+      "reclaimed_bytes": 100474880,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/optimizer-policy-core-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/optimizer-policy-core-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/optimizer-provider-load-v1/audit/kernel-assembly.txt",
+      "archive": "build/optimizer-provider-load-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "c50572e4ebfbf292613a984d2ac54a79a0c01fccbce5d07981b88db97dd5bbbd",
+      "size": 113432451,
+      "reclaimed_bytes": 104427520,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/optimizer-provider-load-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/optimizer-provider-load-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/optimizer-public-capacity-v1/audit/kernel-assembly.txt",
+      "archive": "build/optimizer-public-capacity-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "c781a9f7d5f83c828ec800d47cf36063799aa08e4e6f661000c3ee37dd65317f",
+      "size": 113446757,
+      "reclaimed_bytes": 104443904,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/optimizer-public-capacity-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/optimizer-public-capacity-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/public-alloc-caller-trace-v1/audit/kernel-assembly.txt",
+      "archive": "build/public-alloc-caller-trace-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "1f4f3563de085264d005d2047879626de3e4f4d2e2210695afbbb70b00135013",
+      "size": 110585559,
+      "reclaimed_bytes": 101810176,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/public-alloc-caller-trace-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/public-alloc-caller-trace-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/resident-opt-binding-v3/audit/kernel-assembly.txt",
+      "archive": "build/resident-opt-binding-v3/audit/kernel-assembly.txt.zst",
+      "sha256": "8fb6ed68d1ef1a67d6d5798a05eb696ea83ba6e654a712fe30cba53050794399",
+      "size": 109230082,
+      "reclaimed_bytes": 100577280,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-binding-v3/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/resident-opt-binding-v3/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/resident-opt-metadata-v1/audit/kernel-assembly.txt",
+      "archive": "build/resident-opt-metadata-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "339ea721646f97c3113789f3f5a14f1106efe6860f32eb60f5c724d7c323c4ae",
+      "size": 109382071,
+      "reclaimed_bytes": 100720640,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-metadata-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/resident-opt-metadata-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/resident-opt-public-v1/audit/kernel-assembly.txt",
+      "archive": "build/resident-opt-public-v1/audit/kernel-assembly.txt.zst",
+      "sha256": "339ea721646f97c3113789f3f5a14f1106efe6860f32eb60f5c724d7c323c4ae",
+      "size": 109382071,
+      "reclaimed_bytes": 100720640,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-public-v1/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/resident-opt-public-v1/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/resident-opt-public-v2/audit/kernel-assembly.txt",
+      "archive": "build/resident-opt-public-v2/audit/kernel-assembly.txt.zst",
+      "sha256": "339ea721646f97c3113789f3f5a14f1106efe6860f32eb60f5c724d7c323c4ae",
+      "size": 109382071,
+      "reclaimed_bytes": 100720640,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-public-v2/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/resident-opt-public-v2/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/resident-opt-public-v3/audit/kernel-assembly.txt",
+      "archive": "build/resident-opt-public-v3/audit/kernel-assembly.txt.zst",
+      "sha256": "339ea721646f97c3113789f3f5a14f1106efe6860f32eb60f5c724d7c323c4ae",
+      "size": 109382071,
+      "reclaimed_bytes": 100720640,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-public-v3/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/resident-opt-public-v3/audit/kernel-assembly.txt"
+      ]
+    },
+    {
+      "original": "build/resident-opt-public-v4/audit/kernel-assembly.txt",
+      "archive": "build/resident-opt-public-v4/audit/kernel-assembly.txt.zst",
+      "sha256": "339ea721646f97c3113789f3f5a14f1106efe6860f32eb60f5c724d7c323c4ae",
+      "size": 109382071,
+      "reclaimed_bytes": 100720640,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/resident-opt-public-v4/audit/kernel-assembly.txt.zst",
+        "-o",
+        "build/resident-opt-public-v4/audit/kernel-assembly.txt"
+      ]
+    }
+  ],
+  "reclaimed_bytes": 2134986752
+}

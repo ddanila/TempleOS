@@ -427,3 +427,10 @@ the remaining startup work. Startup completes, but USCheck still fails the
 same-size allocation. This rules out a reservation limited to the CompilerA
 load as a sufficient fix. The patch, packaging and runtime receipts are in
 `build/original-user-stack-reserve-v4`.
+
+Extending the same reservation through the remainder of startup leaves the
+original task block occupied at `0x708CB8`. The complete compiler headers
+load and WinMgr starts. Startup then runs out of segmented emitter space
+while compiling `Compiler/UAsmCore.HC` for the original command prompt.
+This is earlier than the original User task allocation. The audited patch and
+failure receipts are in `build/original-user-stack-reserve-v5`.
