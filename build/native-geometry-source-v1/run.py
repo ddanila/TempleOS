@@ -10,6 +10,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('disk',type=Path)
 parser.add_argument('--app', choices=('GrModels','ToTheFront','X-Caliber'), required=True)
 parser.add_argument('--serial-visibility', action='store_true')
+parser.add_argument('--xcaliber-input-trace', action='store_true')
+parser.add_argument('--xcaliber-play', action='store_true')
 parser.add_argument('--xcaliber-desktop', action='store_true')
 parser.add_argument('--xcaliber-frequency', action='store_true')
 parser.add_argument('--xcaliber-square', action='store_true')
@@ -30,6 +32,10 @@ parser.add_argument('--human-match', action='store_true')
 parser.add_argument('--combined-loader', action='store_true')
 parser.add_argument('--out',type=Path,required=True)
 args = parser.parse_args()
+if args.xcaliber_input_trace and not args.xcaliber_play:
+    parser.error('--xcaliber-input-trace requires --xcaliber-play')
+if args.xcaliber_play and not args.xcaliber_desktop:
+    parser.error('--xcaliber-play requires --xcaliber-desktop')
 if args.xcaliber_desktop and not args.split_xcaliber:
     parser.error('--xcaliber-desktop requires --split-xcaliber')
 if args.xcaliber_frequency and not args.split_xcaliber:
@@ -146,6 +152,8 @@ if args.app=='ToTheFront':
                 extras[path] = source
 if args.app=='X-Caliber':
     extras['/ExtraVectors.HC']=Path('build/xcaliber-vector-load-v1/Vector.HC').read_bytes()
+    if args.xcaliber_play:
+        extras['/XCProbe.HC'] = Path('build/xcaliber-reference-v1/Probe.HC').read_bytes()
     if args.xcaliber_frequency:
         misc = Path('Kernel/KMisc.HC').read_bytes()
         extras['/XCFrequency.HC'] = misc[misc.index(b'I8 Freq2Ona('):
@@ -167,7 +175,11 @@ if args.app=='X-Caliber':
         xcaliber_units = []
         for index, (start, end) in enumerate(zip(boundaries, boundaries[1:])):
             path = f'/Apps/X-Caliber/Probe{index}.HC'
-            extras[path] = text[start:end] + separator + assets
+            unit = text[start:end]
+            if args.xcaliber_input_trace and unit.startswith(b'U0 XCaliber('):
+                trace = runpy.run_path('build/xcaliber-reference-v1/input_trace.py')
+                unit = trace['instrument'](unit)
+            extras[path] = unit + separator + assets
             xcaliber_units.append(path)
 math=Path('Adam/Gr/GrMath.HC').read_bytes()
 if args.original_curves:
@@ -273,6 +285,12 @@ try:
     if args.visibility_fixture:
         guest.wait('TTF visibility captured\n')
         report['visibility'] = struct.unpack('<12q', (guest.out/'TTFVisibility.bin').read_bytes())
+    if args.xcaliber_play:
+        exercise = runpy.run_path('build/xcaliber-reference-v1/workflow.py')['exercise']
+        report['play'] = {'fixture_sha256': hashlib.sha256(extras['/XCProbe.HC']).hexdigest()}
+        guest.type('#include "C:/XCProbe.HC"')
+        guest.press('ret')
+        exercise(guest, report['play'])
     guest.command('6*7;')
     report['fresh_result']=guest.result_pixels()
     report['result']='pass'
@@ -325,5 +343,8 @@ except Exception as exc:
     report.update(result='fail',error=str(exc))
     raise
 finally:
+    if args.xcaliber_input_trace:
+        report['input_trace'] = [line for line in guest.collect().splitlines()
+                                 if line.startswith('XC ')]
     guest.close()
     (out/'result.json').write_text(json.dumps(report,indent=2)+'\n')

@@ -4,11 +4,9 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-import re
 import runpy
 import subprocess
 import sys
-import time
 
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -31,32 +29,8 @@ guest = guest_type(iso, out / 'guest', False)
 report = dict(result='fail', fixture_sha256=hashlib.sha256(fixture).hexdigest(),
               app_source_sha256=sources['Apps/X-Caliber/X-Caliber.HC'])
 try:
-    guest.wait('XC ready\n', 90)
-    time.sleep(3)
-    guest.screenshot('intro')
-    log = guest.wait('XC pointer ', 10)
-    pointer = re.search(r'^XC pointer ([0-9A-F]+)$', log, re.M)
-    if pointer is None:
-        raise ValueError('Missing popup pointer address')
-    drag = runpy.run_path('build/tothefront-original-v1/phase_workflow.py')['drag']
-    okay = (160, 156)
-    drag(guest, int(pointer[1], 16), okay, okay)
-    log = guest.wait('XC level ', 30)
-    level = re.search(r'^XC level (\d+) enemies (\d+) score (\d+)$', log, re.M)
-    if level is None:
-        raise ValueError('Missing level state')
-    report['level'], report['enemies'], report['score'] = map(int, level.groups())
-    assert report['level'] == 1 and report['enemies'] > 0 and report['score'] == 0
-    guest.screenshot('level')
-    guest.press('ret')
-    guest.wait('XC running\n', 20)
-    guest.press('spc')
-    guest.wait('XC gun fired\n', 20)
-    report['gun_fired'] = True
-    guest.screenshot('play')
-    guest.press('esc')
-    guest.wait('XC returned\n', 30)
-    report.update(result='pass', returned=True)
+    exercise = runpy.run_path(str(Path(__file__).with_name('workflow.py')))['exercise']
+    exercise(guest, report)
 except Exception as error:
     report['error'] = str(error)
     raise

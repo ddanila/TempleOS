@@ -12497,6 +12497,13 @@
           "result": "fail",
           "evidence": "build/native-geometry-source-v1/X-Caliber-split-draw/result.json",
           "scope": "The split preserves the DolDoc sprite records. The draw routine compiles and the following Explosion routine throws a compiler exception."
+        },
+        {
+          "target": "native-xcaliber-diagnostic-launch-and-fire",
+          "command": "python3 build/native-geometry-source-v1/run.py DISK --app X-Caliber --split-xcaliber --xcaliber-square --xcaliber-frequency --xcaliber-desktop --xcaliber-play --out OUT",
+          "result": "fail",
+          "evidence": "build/native-geometry-source-v1/X-Caliber-play/result.json",
+          "scope": "With the squared-distance diagnostic and original helpers, native reaches the original level-one state and fires the gun. The Escape return marker is missing."
         }
       ]
     },

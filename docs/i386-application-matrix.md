@@ -2193,3 +2193,14 @@ then reaches the main routine and rejects the SettingsPush call.
 A probe that loads the original desktop helpers before that routine
 is running. See
 `build/native-geometry-source-v1/X-Caliber-frequency/result.json`.
+
+Loading the original task settings, autocomplete and key-poll helpers
+lets the diagnostic X-Caliber build compile its main routine. The
+shared physical workflow then reaches the same level-one state as
+the pinned original and observes the gun reload transition after Space.
+The native run times out waiting for return after Escape. A trace of
+the real key loop and ODE teardown is running. This diagnostic still
+uses the Sqr substitution. See
+`build/native-geometry-source-v1/X-Caliber-desktop/result.json`,
+`build/native-geometry-source-v1/X-Caliber-play/result.json` and
+`build/xcaliber-reference-v1/original-shared-workflow/result.json`.
