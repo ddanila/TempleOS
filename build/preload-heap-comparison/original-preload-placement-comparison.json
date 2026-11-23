@@ -1,0 +1,82 @@
+{
+  "original_preload_v2": {
+    "receipt_sha256": "e8497f6b05dd65a82a58784c64538dfe7d631c531ab015ca1f525881de5b4f13",
+    "image_sha256": "cc7e86d339e058667072448215dc783b4752beaee83708b5e570783bb1fc1e5d",
+    "kernel_used": 6354024,
+    "kernel_free_payload": 392104,
+    "kernel_largest_free": 149648,
+    "fallback_largest_free": 2840,
+    "largest_free_and_neighbors": [
+      {
+        "address": 8027024,
+        "span": 8304,
+        "requested": 8288,
+        "free": false
+      },
+      {
+        "address": 8035328,
+        "span": 149664,
+        "requested": 0,
+        "free": true
+      },
+      {
+        "address": 8184992,
+        "span": 8544,
+        "requested": 8528,
+        "free": false
+      },
+      {
+        "address": 8193536,
+        "span": 232,
+        "requested": 0,
+        "free": true
+      },
+      {
+        "address": 8193768,
+        "span": 8472,
+        "requested": 8456,
+        "free": false
+      }
+    ]
+  },
+  "high_v2": {
+    "receipt_sha256": "0dbdef655a23b82b8bdf4961164d12c9a5c81080d9682c3ed03c9840223945c7",
+    "image_sha256": "ff0b755555bb691d3d67754ffa60ff8c6f6e01f1cf3bf57565c601fcba9aa076",
+    "kernel_used": 6356920,
+    "kernel_free_payload": 386680,
+    "kernel_largest_free": 202512,
+    "fallback_largest_free": 2840,
+    "largest_free_and_neighbors": [
+      {
+        "address": 7728592,
+        "span": 12848,
+        "requested": 12832,
+        "free": false
+      },
+      {
+        "address": 7741440,
+        "span": 202528,
+        "requested": 0,
+        "free": true
+      },
+      {
+        "address": 7943968,
+        "span": 8416,
+        "requested": 8400,
+        "free": false
+      },
+      {
+        "address": 7952384,
+        "span": 360,
+        "requested": 0,
+        "free": true
+      },
+      {
+        "address": 7952744,
+        "span": 8344,
+        "requested": 8328,
+        "free": false
+      }
+    ]
+  }
+}

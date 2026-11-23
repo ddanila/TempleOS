@@ -290,3 +290,14 @@ The earlier ordinary preload snapshot measured 149,648 bytes for the largest
 main-arena block on a production User base. A separate snapshot of the ordinary
 preload on the original-User base is needed to isolate the placement effect.
 `build/preload-heap-comparison/high_v2/summary.json` pins the full census.
+
+The matched original-User ordinary preload census is complete. The largest
+main-arena free payload rises from 149,648 to 202,512 bytes with high placement,
+a gain of 52,864 bytes. Total free payload falls from 392,104 to 386,680.
+Both experiments still fail the 267,527-byte task allocation. This comparison
+includes the rebuilt module size and layout effects. In high v2 the two
+largest free spans are separated by live requests of 8,400 and 8,328 bytes
+and additional smaller allocations. The census records size and location.
+Ownership must be traced before changing placement of those allocations.
+The matched receipts and neighboring blocks are pinned in
+`build/preload-heap-comparison/original-preload-placement-comparison.json`.
