@@ -1,0 +1,69 @@
+{
+  "result": "fail",
+  "scope": "User child startup document, border/menu, flags, callback, welcome bytes and queued execution",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "6a22a7b642ab9c57f1223e3f93fed50d3b20a07a43f9ae33196b53d2e59c1da4",
+    "image_sha256": "db373c9b79c4014f9119739f8ec8e9f60dd56285a1cf70f75dbb1cd3a819254f",
+    "boot_area_sha256": "dce8b18e05c628aea5ac4d85077721b49656ef2b0b9eb58959c82891db6a06c6",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1926,
+      "owned_sectors": 98162,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1927,
+      "owned_sectors": 98164,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/UserStartup.HC": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2"
+    },
+    "added_attributes": {
+      "/UserStartup.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/sound-delay-production-v1/generations128/gen1-selfhost/target.img": "6a22a7b642ab9c57f1223e3f93fed50d3b20a07a43f9ae33196b53d2e59c1da4",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-user-startup-reference/UserStartup.HC": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "98d09168433c80d44eec0aa5ef44d0e0c87dafae79a22464ad997ce9edf49e3a",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-user-startup.py": "9e4b58f3cc64847a7b65868ed63bfa88e0b408e91b8d01325b7081c591222837"
+  },
+  "commands": [
+    [
+      "#include \"/Kernel/I386/PublicUser.HH\"",
+      []
+    ],
+    [
+      "U0 Report(U8*s){while(*s)OutU8(0xE9,*s++);}",
+      []
+    ],
+    [
+      "#include \"C:/UserStartup.HC\"",
+      []
+    ],
+    [
+      "USCheck;",
+      [
+        "255"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "ram_mib": 8,
+  "managed_pointer": true,
+  "error": "Guest command rejected: INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+  "inputs_unchanged": true
+}

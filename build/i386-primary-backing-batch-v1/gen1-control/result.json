@@ -1,0 +1,14 @@
+{
+  "main": {
+    "largest_payload": 231256,
+    "total_payload": 419528,
+    "free_blocks": 242
+  },
+  "fallback": {
+    "largest_payload": 2840,
+    "total_payload": 4112,
+    "free_blocks": 4
+  },
+  "result": "fail",
+  "rejection": "INPUT LINE USCheck;\nCOMPILER BREAK ready\nHEAP EXHAUSTED 0000000000041507 0000000000085BB0 0000000000086C00 0000000000000B18 0000000000000008\nHEAP FAILURE CALLERS 000000000014DEE4 00000000002CA773\nINPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000\nCOMMAND ERROR\n"
+}

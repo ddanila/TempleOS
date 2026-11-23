@@ -2128,3 +2128,22 @@ disk relocation table. The compiler retains its existing division
 template export difference. See
 `build/i386-resident-growth-v1/modules.json` and
 `build/i386-resident-growth-v1/user8.json`.
+
+Generation one of the sound-timing image rebuilt, installed and
+booted all sixteen modules. The core and bundled audits verify
+1,554 and 686 files respectively. The physical Span workflow
+passes at 64 MiB. The unchanged User check at 8 MiB fails during
+task creation with OutMem. Generation two's retained rebuild is
+running. See `build/sound-delay-production-v1/gen1-span64/result.json`,
+`build/sound-delay-production-v1/gen1-user8/result.json` and
+`build/i386-bundled-source-audit-v1/gen1-selfhost.json`.
+
+Two live 8 KiB backing regions separate the two largest free blocks
+in the paired retained-install heap snapshots. An overlay that doubles
+late primary backing batches to 16 KiB when space permits raises total
+free payload by 1,232 bytes on the fully native generation-one image,
+while reducing the largest block from 231,256 to 229,072 bytes.
+Both runs reject the same User task allocation. The batching experiment
+remains outside production. See
+`build/i386-resident-growth-v1/separators.json` and
+`build/i386-primary-backing-batch-v1/double-user8/result.json`.

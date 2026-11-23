@@ -3303,7 +3303,273 @@
         "-o",
         "build/tothefront-center-production-v1/simple-ai64/working.img"
       ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/user8-resident-growth/cross/working.img",
+      "archive": "build/sound-delay-production-v1/user8-resident-growth/cross/working.img.zst",
+      "sha256": "a05806c6dd75b029d0ab27f0987282db250d08b54e55b92fd4117010abca0ca2",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/user8-resident-growth/cross/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/user8-resident-growth/cross/working.img"
+      ]
+    },
+    {
+      "original": "build/sound-delay-production-v1/user8-resident-growth/native-retained/working.img",
+      "archive": "build/sound-delay-production-v1/user8-resident-growth/native-retained/working.img.zst",
+      "sha256": "dbc7e837a5a68c7c797c2bc3c4ae7d2f7352fb7415953324e01e27f2254e2135",
+      "size": 67108864,
+      "reclaimed_bytes": 53321728,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/sound-delay-production-v1/user8-resident-growth/native-retained/working.img.zst",
+        "-o",
+        "build/sound-delay-production-v1/user8-resident-growth/native-retained/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-graphics-bindings-v1/native64/working.img",
+      "archive": "build/strut-graphics-bindings-v1/native64/working.img.zst",
+      "sha256": "bdf9b7680d32df4571f0bbbf3e17ff1ac62576347004feb3d7b9177465bf581f",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-graphics-bindings-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-graphics-bindings-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-native-raster-bindings-v1/strut64/working.img",
+      "archive": "build/strut-native-raster-bindings-v1/strut64/working.img.zst",
+      "sha256": "98b8512f6286d18c5bc3b8b6a31689140fb4ee0325797cfde58a9cdd4b51931b",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-native-raster-bindings-v1/strut64/working.img.zst",
+        "-o",
+        "build/strut-native-raster-bindings-v1/strut64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-ode-button-v1/native64/working.img",
+      "archive": "build/strut-ode-button-v1/native64/working.img.zst",
+      "sha256": "92785e3444b71cc8274f3897575f1579bc82494883125147ca2a07991a69b982",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-ode-button-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-ode-button-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-ode-compile-units-v1/native64/working.img",
+      "archive": "build/strut-ode-compile-units-v1/native64/working.img.zst",
+      "sha256": "a5ad2ac0651cc9580295aac9d955c5ef3e03b4138fd20ec995f67372172e73db",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-ode-compile-units-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-ode-compile-units-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-ode-d3-v1/native64/working.img",
+      "archive": "build/strut-ode-d3-v1/native64/working.img.zst",
+      "sha256": "20a06a8b23cde05134f43868142ec82f96075fb69d63657f4771ac42c5663bd5",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-ode-d3-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-ode-d3-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-ode-numeric-v1/native64/working.img",
+      "archive": "build/strut-ode-numeric-v1/native64/working.img.zst",
+      "sha256": "21b69a3e7552d8b90af1d4474ec8c629caa1718a92fb7e9ec1b7aa74fa3c1b20",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-ode-numeric-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-ode-numeric-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-ode-power-v1/native64/working.img",
+      "archive": "build/strut-ode-power-v1/native64/working.img.zst",
+      "sha256": "92785e3444b71cc8274f3897575f1579bc82494883125147ca2a07991a69b982",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-ode-power-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-ode-power-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-ode-serial-v1/native64/working.img",
+      "archive": "build/strut-ode-serial-v1/native64/working.img.zst",
+      "sha256": "0f653ab7a2566f059ebf06ea1e2beae74fc0635e57f49dbe692d81cac49fe07a",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-ode-serial-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-ode-serial-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/strut-ode-types-v1/native64/working.img",
+      "archive": "build/strut-ode-types-v1/native64/working.img.zst",
+      "sha256": "27229aaf8598e6edc4fd22f149b1022defdcd203f4602dec9f797e89ff7033a2",
+      "size": 67108864,
+      "reclaimed_bytes": 53411840,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/strut-ode-types-v1/native64/working.img.zst",
+        "-o",
+        "build/strut-ode-types-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-native-chooser-v1/native64/working.img",
+      "archive": "build/span-native-chooser-v1/native64/working.img.zst",
+      "sha256": "329bf55fa44ecdefb732d36765bbf07398a743dea88764e7ad26baaf7aa6f2a8",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-native-chooser-v1/native64/working.img.zst",
+        "-o",
+        "build/span-native-chooser-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-native-compile-stages-v1/native64/working.img",
+      "archive": "build/span-native-compile-stages-v1/native64/working.img.zst",
+      "sha256": "329bf55fa44ecdefb732d36765bbf07398a743dea88764e7ad26baaf7aa6f2a8",
+      "size": 67108864,
+      "reclaimed_bytes": 53387264,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-native-compile-stages-v1/native64/working.img.zst",
+        "-o",
+        "build/span-native-compile-stages-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/interchange64/working.img",
+      "archive": "build/span-production-v1/interchange64/working.img.zst",
+      "sha256": "7944823fe5baad4eb5ab7cc8819f1c957d10f30e956faccc051966255231d72c",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/interchange64/working.img.zst",
+        "-o",
+        "build/span-production-v1/interchange64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/span64/working.img",
+      "archive": "build/span-production-v1/span64/working.img.zst",
+      "sha256": "bf983d4187e37d7cd3991ccc5e977ec88601a04fc29e4eac93e85cfb098d444e",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/span64/working.img.zst",
+        "-o",
+        "build/span-production-v1/span64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/strut64/working.img",
+      "archive": "build/span-production-v1/strut64/working.img.zst",
+      "sha256": "5717c44423d1032b7a5d1bf4d8b397c26d25f02dcd766db1cc718e562beddadf",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/strut64/working.img.zst",
+        "-o",
+        "build/span-production-v1/strut64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-production-v1/user8/working.img",
+      "archive": "build/span-production-v1/user8/working.img.zst",
+      "sha256": "ecd581988907df255eddbe3eb8ff04611f13433136c1abbd976d6aa07f127335",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-production-v1/user8/working.img.zst",
+        "-o",
+        "build/span-production-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/span-shared-services-v1/native64/working.img",
+      "archive": "build/span-shared-services-v1/native64/working.img.zst",
+      "sha256": "058870e2eba9610c45b430da09398d8542d587e7975f381ce1ce57a90834c12f",
+      "size": 67108864,
+      "reclaimed_bytes": 53403648,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-shared-services-v1/native64/working.img.zst",
+        "-o",
+        "build/span-shared-services-v1/native64/working.img"
+      ]
+    },
+    {
+      "original": "build/span-soundtrack-asnd-v1/native64/working.img",
+      "archive": "build/span-soundtrack-asnd-v1/native64/working.img.zst",
+      "sha256": "cef3d8f82c2b70d2a1e471c8e52e8d91bf9a89a7a23a94bf1971f113267c6d75",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/span-soundtrack-asnd-v1/native64/working.img.zst",
+        "-o",
+        "build/span-soundtrack-asnd-v1/native64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 11734224896
+  "reclaimed_bytes": 12748816384
 }

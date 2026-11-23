@@ -1,0 +1,44 @@
+{
+  "cross": {
+    "snapshot_sha256": "d407f7c906fc69db242e8dba8b1027d9966825a21038600042892be9c41bc997",
+    "largest_free_payloads": [
+      268120,
+      149680
+    ],
+    "separators": [
+      {
+        "address": 8017784,
+        "span": 8344,
+        "payload_bytes": 8192,
+        "pages": 16
+      },
+      {
+        "address": 8026560,
+        "span": 8272,
+        "payload_bytes": 8192,
+        "pages": 16
+      }
+    ]
+  },
+  "retained": {
+    "snapshot_sha256": "aa8579701dcc9bebcf3160a1710c0817d67d10b0b4298cb118e228e0644810d9",
+    "largest_free_payloads": [
+      239448,
+      149680
+    ],
+    "separators": [
+      {
+        "address": 8017784,
+        "span": 8344,
+        "payload_bytes": 8192,
+        "pages": 16
+      },
+      {
+        "address": 8026560,
+        "span": 8272,
+        "payload_bytes": 8192,
+        "pages": 16
+      }
+    ]
+  }
+}
