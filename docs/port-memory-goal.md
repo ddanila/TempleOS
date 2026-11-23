@@ -2970,3 +2970,9 @@ The [aligned placement calculation](../build/i386-native-cache-footprint-v2/cons
 has 1,928 bytes beyond the full stack in that block. The workload again
 reached mask 255. The all-native image needs a separate measurement
 because the remaining eight guest-built modules can change the gap.
+
+The [Titanium retained build](../build/titanium-bundled-loader-v1/retained128/result.json)
+passed all nine persisted module audits on `486,-fpu` at 128 MiB.
+This is the production image before the 64-slot cache change. The
+installer is running on the audited source disk, followed by the
+separate 8 MiB User workload and heap capture.
