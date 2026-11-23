@@ -1,0 +1,12 @@
+{
+  "scope": "Live 64 MiB desktop startup observation",
+  "phases_seen": [
+    "entry",
+    "dictionary preparation",
+    "hash reset",
+    "file traversal"
+  ],
+  "next_phase": "dictionary word load",
+  "log_sha256": "253bc5d7d4075145d694f634b94446990959c6f7f3db438eae3ea4bbf8724bd1",
+  "trace_sha256": "117deab3794ca01d4850d053a09fc7e91ae222664c584b9fa4ea1cb5a9db2443"
+}

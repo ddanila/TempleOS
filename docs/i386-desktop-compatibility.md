@@ -379,3 +379,11 @@ The entry marker appears, Home Once exports its layout, and ACInit has yet
 to return at the observation checkpoint. Both guests are still running.
 The trace driver and observation are in `build/resident-opt-desktop64-trace`.
 The desktop oracle still requires completion and physical retirement.
+
+A phase trace inside ACInit reaches its call to ACMainFileLstTraverse after
+dictionary preparation and hash reset. Home Once exports the original layout
+while that traversal is underway. The marker before ACDWordsLoad has yet to
+appear. This observation narrows the remaining wait to directory traversal,
+file reads or word indexing. The driver and live observation are under
+`build/resident-opt-desktop64-ac-phases`. Full desktop startup and physical
+bootstrap retirement still require terminal verification.
