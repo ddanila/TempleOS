@@ -1,0 +1,46 @@
+{
+  "result": "pass",
+  "package": {
+    "result": "pass",
+    "source_sha256": "fd3b0948a0c22b2c092221095b03fb7c9261968d321855cedcb10386757689f5",
+    "image_sha256": "9957c38c4e54fe68ea0738e9aa4a59bbe4e31ba1542b7a3c1139b9ac76e0bd1f",
+    "boot_area_sha256": "d3d4f2e14015ad32afeffc7445594964376f7463044ab1277bed51e1b24d1eb8",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 96163,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96166,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/XCProbe.HC": "02c9c5d8f6ffaf58e60a6df80ba8346281dab6d76224d64d3a2b5281ba3837ef"
+    },
+    "added_attributes": {
+      "/XCProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "play": {
+    "level": 1,
+    "enemies": 4,
+    "score": 0,
+    "gun_fired": true,
+    "result": "pass",
+    "returned": true
+  },
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

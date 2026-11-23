@@ -13,8 +13,7 @@ out.mkdir()
 table = Path('Adam/Gr/SpriteBaseSizes.HC').read_bytes()
 setup = b'#include "/Adam/Gr/Gr.HH"\n'+table+b'\n'
 matrix = Path('Adam/Gr/MatrixRotationCore.HC').read_bytes()
-source = Path('Adam/DolDoc/DocGr.HC').read_bytes()
-chooser = source[source.index(b'public I64 PopUpColorLighting'):source.index(b'class CTransformForm')]
+chooser = Path('Adam/DolDoc/DocColorLightingCore.HC').read_bytes()
 setup += b'#define GR_SCALE (1<<32)\n' + matrix + b'\n' + chooser
 packer = runpy.run_path('tools/package-i386-native-image.py')
 image = out/'working.img'

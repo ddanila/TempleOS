@@ -1,0 +1,26 @@
+{
+  "disk_sha256": "fd3b0948a0c22b2c092221095b03fb7c9261968d321855cedcb10386757689f5",
+  "base_revision": "6eefeedd31b0a453b2dd9555c7ab61dacc24317b",
+  "packaged_source_sha256": {
+    "/Adam/DolDoc/DocColorLightingCore.HC": "c81bf2115c0e3f88fcda3abfe423994c9cbf896f050e731603bfaadf29303095",
+    "/Apps/GrModels/BallGen.HC": "7eacc3f1f70487f8e19223073f99c4976e787e45cffcb385802b9464ae214d74",
+    "/Apps/GrModels/Load.HC": "4801f5bf4382e595a7c61d349d492be72c4cc2f8dccf95fba84e68d48c6935f5",
+    "/Apps/GrModels/ManGen.HC": "47b6f81eb5fe5f72b3fa628ae12f4fbbb40c0be057c43fb658fc71d9e83609e6",
+    "/Apps/GrModels/Models.HC": "d7ed0860c8a1d8908614fded2e2ec67dc7ccfc2aad6d677bc14fd6df9d1b04ab",
+    "/Apps/GrModels/Run.HC": "91ef5355257508c01a78f6bd030c06be138c2a1cb28eb202def2005e600bc70b",
+    "/Kernel/I386/NativeModelGeometry.HC": "c9c1168660752f518b6a15a455706bf7387ca9245fb228f3d0390b3514597e8c",
+    "/Kernel/I386/NativeXCaliber.HC": "af3b3cfc6e095d6b88867dbada727b0ea1af252488cfbe0cb366b4703b1c207a"
+  },
+  "passed_receipts": {
+    "grmodels-final/result.json": "77c95d9b82e212dfeb55f41716f3ef6ace867e9ef923ab7d3ae5d984adfb7f9e",
+    "xcaliber-warm/result.json": "825dff5cf91dcec026fa802c7d2168a78093580d0794a2c8fac327e8eb64b190",
+    "user8/result.json": "b1f2c20770b245300c24fda41890ba96ab7aacdb31bd8b801495b65775205386",
+    "source-audit/result.json": "e21a8929c286c96e2e9d8309b698999e20a92ced2489d9c78f2bf0be83170589"
+  },
+  "models_menu_png_sha256": "97c87c9309ddca84f94f6a216f36cd9ae45747943748bf50b6fa6d72d75cc1aa",
+  "ball_mesh": {
+    "candidate": "build/grmodels-bundled-loader-v1/grmodels-final/guest/BallInteractive.bin",
+    "original": "build/grmodels-ball-reference-v1/interactive-original/guest/BallInteractive.bin",
+    "sha256": "967ad44894167ae85c198f0a3929c01391a217494638a4bd2c95d63db1a6967b"
+  }
+}

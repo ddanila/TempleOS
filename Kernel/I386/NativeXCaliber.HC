@@ -1,7 +1,4 @@
-#include "/Kernel/I386/NativeTTFGeometry.HC"
-#define GR_SCALE (1<<32)
-#include "/Adam/Gr/MatrixRotationCore.HC"
-#include "/Adam/Gr/SpriteBaseSizes.HC"
+#include "/Kernel/I386/NativeModelGeometry.HC"
 #include "/Kernel/Freq2OnaCore.HC"
 #include "/Kernel/SerialDev/KeyCharPollCore.HC"
 

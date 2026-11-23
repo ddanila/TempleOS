@@ -13,9 +13,7 @@ out = args.out.resolve()
 out.mkdir()
 extras={}
 if args.app=='GrModels':
-    source=Path('Adam/DolDoc/DocGr.HC').read_bytes()
-    extras['/LightingChooser.HC']=source[
-        source.index(b'public I64 PopUpColorLighting'):source.index(b'class CTransformForm')]
+    extras['/LightingChooser.HC'] = Path('Adam/DolDoc/DocColorLightingCore.HC').read_bytes()
 if args.app=='ToTheFront':
     source=Path('Adam/DolDoc/DocPopUp.HC').read_bytes()
     extras['/IntegerPrompt.HC']=source[

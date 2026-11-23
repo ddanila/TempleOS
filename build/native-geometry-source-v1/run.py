@@ -6,6 +6,8 @@ import runpy
 import struct
 import time
 
+from PIL import Image
+
 parser = argparse.ArgumentParser()
 parser.add_argument('disk',type=Path)
 parser.add_argument('--app', choices=('GrModels','ToTheFront','X-Caliber'), required=True)
@@ -31,6 +33,7 @@ parser.add_argument('--split-xcaliber', action='store_true')
 parser.add_argument('--split-fire', action='store_true')
 parser.add_argument('--fix-indirect-head', action='store_true')
 parser.add_argument('--original-wrap', action='store_true')
+parser.add_argument('--grmodels-prerequisites', action='store_true')
 parser.add_argument('--ball-form', action='store_true')
 parser.add_argument('--ball-mesh', action='store_true')
 parser.add_argument('--vertex-trace', action='store_true')
@@ -88,6 +91,8 @@ if args.original_wrap and not args.serial_visibility:
     parser.error('--original-wrap requires --serial-visibility')
 if (args.ball_form or args.ball_mesh) and args.app != 'GrModels':
     parser.error('--ball-form and --ball-mesh require --app GrModels')
+if args.grmodels_prerequisites and (args.app != 'GrModels' or args.vertex_trace):
+    parser.error('--grmodels-prerequisites requires the bundled GrModels loader')
 if args.vertex_trace and not args.ball_mesh:
     parser.error('--vertex-trace requires --ball-mesh')
 if args.wide_product and not args.vertex_trace:
@@ -126,9 +131,8 @@ if args.app=='GrModels':
             extras['/BallGenTrace.HC'] = trace['instrument'](source)
             fixture = trace['observe'](fixture)
         extras['/BallUI.HC'] = fixture
-    source=Path('Adam/DolDoc/DocGr.HC').read_bytes()
-    extras['/LightingChooser.HC']=source[
-        source.index(b'public I64 PopUpColorLighting'):source.index(b'class CTransformForm')]
+    if not args.grmodels_prerequisites:
+        extras['/LightingChooser.HC'] = Path('Adam/DolDoc/DocColorLightingCore.HC').read_bytes()
 if args.app=='ToTheFront':
     source=Path('Adam/DolDoc/DocPopUp.HC').read_bytes()
     extras['/IntegerPrompt.HC']=source[
@@ -254,7 +258,8 @@ geometry=b"""#include "/Kernel/I386/NativeTTFGeometry.HC"
 #include "/Adam/Gr/MatrixRotationCore.HC"
 """
 geometry+=sizes
-extras['/PublicGeometrySource.HC']=geometry
+if not args.grmodels_prerequisites:
+    extras['/PublicGeometrySource.HC']=geometry
 if args.combined_loader:
     app = '/Apps/ToTheFront'
     load = [
@@ -287,7 +292,9 @@ report['machine'] = machine
 guest = Guest(image, out/'guest', True, native_machine=machine)
 try:
     guest.wait('DONE native kernel startup\n')
-    commands=['#include "C:/PublicGeometrySource.HC"']
+    commands=[]
+    if '/PublicGeometrySource.HC' in extras:
+        commands.append('#include "C:/PublicGeometrySource.HC"')
     if args.app=='X-Caliber':
         commands.append('AdamFile("/Kernel/I386/NativeODE.HC",FALSE);')
     for path in ('/LightingChooser.HC', '/IntegerPrompt.HC', '/ExtraVectors.HC', '/XCFrequency.HC'):
@@ -342,6 +349,33 @@ try:
     if args.combined_loader:
         commands = ['#include "C:/Apps/ToTheFront/NativeLoadProbe.HC"']
     report['completed_commands'] = []
+    if args.grmodels_prerequisites:
+        command = '#include "C:/Apps/GrModels/Run.HC"'
+        start = len(guest.collect())
+        guest.type(command)
+        guest.press('ret')
+        guest.wait('INPUT LINE ' + command + '\n', start=start)
+        pixels_check = runpy.run_path('tools/check-i386-autocomplete-numeric-pixels.py')
+        font = pixels_check['font_bytes']()
+        title = b'Make a CSprite model.'
+        deadline = time.monotonic() + 90
+        while time.monotonic() < deadline:
+            guest.screenshot('models-menu')
+            with Image.open(guest.out/'models-menu.png') as frame:
+                pixels = frame.convert('RGB').load()
+                found = any(pixels_check['text_at'](pixels,font,title,column,row)
+                            for row in range(60) for column in range(81-len(title)))
+            if found:
+                break
+            time.sleep(.5)
+        else:
+            raise TimeoutError('Models menu title is missing from the screen')
+        guest.key('shift', True)
+        guest.press('esc')
+        guest.key('shift', False)
+        guest.wait('COMMAND OK\n', start=start)
+        report['completed_commands'].append(command)
+        commands = []
     for command in commands:
         report['command']=command
         guest.command(command)

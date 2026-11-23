@@ -13,9 +13,7 @@ out = args.out.resolve()
 out.mkdir()
 extras={}
 if args.app=='GrModels':
-    source=Path('Adam/DolDoc/DocGr.HC').read_bytes()
-    extras['/LightingChooser.HC']=source[
-        source.index(b'public I64 PopUpColorLighting'):source.index(b'class CTransformForm')]
+    extras['/LightingChooser.HC'] = Path('Adam/DolDoc/DocColorLightingCore.HC').read_bytes()
 packer = runpy.run_path('tools/package-i386-native-image.py')
 image = out/'working.img'
 report = {'result':'running','package':packer['package'](args.disk,image,additions=extras)}

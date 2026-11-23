@@ -10277,9 +10277,21 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Invoke BallGen, accept the default form, choose the red full-range swatch and decline another model.",
+      "oracle": "Byte-exact original DolDoc mesh record with 59 vertices and 128 red triangles.",
+      "tests": [
+        {
+          "target": "original-grmodels-interactive-ball",
+          "result": "pass",
+          "evidence": "build/grmodels-ball-reference-v1/interactive-original/result.json"
+        },
+        {
+          "target": "native-grmodels-bundled-interactive-ball",
+          "result": "pass",
+          "evidence": "build/grmodels-bundled-loader-v1/qualification.json",
+          "scope": "Default BallGen model through the bundled prerequisites with physical form and chooser input."
+        }
+      ]
     },
     {
       "path": "Apps/GrModels/Load.HC",
@@ -10317,6 +10329,12 @@
           "result": "pass",
           "evidence": "build/grmodels-ball-reference-v1/native64/result.json",
           "scope": "Exact serializer bytes with explicit original record declarations. Interactive model generation remains open."
+        },
+        {
+          "target": "native-grmodels-cold-run-menu",
+          "result": "pass",
+          "evidence": "build/grmodels-bundled-loader-v1/grmodels-final/result.json",
+          "scope": "Cold packaged Run.HC renders the Models menu, cancels and returns to the prompt. The Man workflow remains open."
         }
       ]
     },
@@ -10354,7 +10372,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-grmodels-cold-run-menu",
+          "result": "pass",
+          "evidence": "build/grmodels-bundled-loader-v1/grmodels-final/result.json",
+          "scope": "Cold packaged Run.HC renders the Models menu, cancels and returns to the prompt. The Man workflow remains open."
+        }
+      ]
     },
     {
       "path": "Apps/GrModels/Run.HC",
@@ -10373,7 +10398,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-grmodels-cold-run-menu",
+          "result": "pass",
+          "evidence": "build/grmodels-bundled-loader-v1/grmodels-final/result.json",
+          "scope": "Cold packaged Run.HC renders the Models menu, cancels and returns to the prompt. The Man workflow remains open."
+        }
+      ]
     },
     {
       "path": "Apps/KeepAway/KeepAway.HC",

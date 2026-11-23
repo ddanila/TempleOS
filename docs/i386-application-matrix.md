@@ -2499,3 +2499,23 @@ ToTheFront direct-fire comparison against the original phase trace,
 and the public COCCompile differential. See the `span64`,
 `fire64` and `public-backend` receipts under
 `build/i386-console-address-table-v4`.
+
+### GrModels bundled launch and default ball
+
+On native i386, the bundled GrModels loader now includes the model
+geometry and the original DolDoc lighting chooser. X-Caliber uses the
+same guarded geometry include.
+
+From normal boot, the unmodified `Apps/GrModels/Run.HC` entered the
+Models menu. The check matched the menu title in VGA pixels, cancelled
+with Shift+Escape and ran fresh arithmetic. In the same guest, the
+BallGen observer accepted default dimensions, selected the red
+full-range swatch with physical mouse input and declined another model.
+Its 59 vertices and 128 red triangles match the original serialized
+mesh byte-for-byte. The disk overlay added only the observer source.
+Man generation and selection of the models from the menu remain open.
+
+X-Caliber passed its preloaded-geometry fire and return workflow. The
+full image passed unchanged 8 MiB User startup. The
+[qualification receipt](../build/grmodels-bundled-loader-v1/qualification.json)
+records the packaged files, output hashes and regression receipts.
