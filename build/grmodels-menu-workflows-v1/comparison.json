@@ -1,0 +1,229 @@
+{
+  "ball": {
+    "original": "build/grmodels-menu-workflows-v1/ball-original-final",
+    "native": "build/grmodels-menu-workflows-v1/ball-native-final",
+    "vertices": 59,
+    "triangles": 128,
+    "triangle_records_exact": true,
+    "mesh_exact": true,
+    "mismatched_vertices": []
+  },
+  "man": {
+    "original": "build/grmodels-menu-workflows-v1/man-original-tab",
+    "native": "build/grmodels-menu-workflows-v1/man-native-final",
+    "vertices": 112,
+    "triangles": 168,
+    "triangle_records_exact": true,
+    "mesh_exact": false,
+    "mismatched_vertices": [
+      {
+        "index": 32,
+        "original": [
+          21,
+          -47,
+          20
+        ],
+        "native": [
+          21,
+          -47,
+          19
+        ]
+      },
+      {
+        "index": 33,
+        "original": [
+          17,
+          -45,
+          22
+        ],
+        "native": [
+          17,
+          -45,
+          21
+        ]
+      },
+      {
+        "index": 34,
+        "original": [
+          23,
+          -43,
+          27
+        ],
+        "native": [
+          23,
+          -43,
+          26
+        ]
+      },
+      {
+        "index": 35,
+        "original": [
+          19,
+          -41,
+          29
+        ],
+        "native": [
+          19,
+          -41,
+          28
+        ]
+      },
+      {
+        "index": 36,
+        "original": [
+          21,
+          -51,
+          20
+        ],
+        "native": [
+          21,
+          -51,
+          21
+        ]
+      },
+      {
+        "index": 37,
+        "original": [
+          17,
+          -49,
+          22
+        ],
+        "native": [
+          17,
+          -49,
+          23
+        ]
+      },
+      {
+        "index": 38,
+        "original": [
+          23,
+          -47,
+          27
+        ],
+        "native": [
+          23,
+          -47,
+          28
+        ]
+      },
+      {
+        "index": 39,
+        "original": [
+          19,
+          -45,
+          29
+        ],
+        "native": [
+          19,
+          -45,
+          30
+        ]
+      },
+      {
+        "index": 56,
+        "original": [
+          -15,
+          -44,
+          -16
+        ],
+        "native": [
+          -15,
+          -43,
+          -16
+        ]
+      },
+      {
+        "index": 57,
+        "original": [
+          -19,
+          -44,
+          -14
+        ],
+        "native": [
+          -19,
+          -43,
+          -14
+        ]
+      },
+      {
+        "index": 58,
+        "original": [
+          -16,
+          -37,
+          -19
+        ],
+        "native": [
+          -16,
+          -36,
+          -19
+        ]
+      },
+      {
+        "index": 59,
+        "original": [
+          -20,
+          -37,
+          -17
+        ],
+        "native": [
+          -20,
+          -36,
+          -17
+        ]
+      },
+      {
+        "index": 60,
+        "original": [
+          -15,
+          -42,
+          -14
+        ],
+        "native": [
+          -15,
+          -43,
+          -14
+        ]
+      },
+      {
+        "index": 61,
+        "original": [
+          -19,
+          -42,
+          -12
+        ],
+        "native": [
+          -19,
+          -43,
+          -12
+        ]
+      },
+      {
+        "index": 62,
+        "original": [
+          -16,
+          -35,
+          -17
+        ],
+        "native": [
+          -16,
+          -36,
+          -17
+        ]
+      },
+      {
+        "index": 63,
+        "original": [
+          -20,
+          -35,
+          -15
+        ],
+        "native": [
+          -20,
+          -36,
+          -15
+        ]
+      }
+    ]
+  }
+}

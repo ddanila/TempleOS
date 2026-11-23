@@ -2519,3 +2519,19 @@ X-Caliber passed its preloaded-geometry fire and return workflow. The
 full image passed unchanged 8 MiB User startup. The
 [qualification receipt](../build/grmodels-bundled-loader-v1/qualification.json)
 records the packaged files, output hashes and regression receipts.
+
+### GrModels physical menu selection
+
+The original and native guests now run the same menu workflow with mouse
+selection, default form values, lighting choices and a keyboard response
+to the repeat prompt. The observer reads the sprite that the application
+inserted into the document. The harness leaves the bundled application
+sources intact.
+
+Ball selection produces the exact original document mesh. Man selection
+produces 112 vertices and 168 triangles with the selected blue, green,
+red and cyan lighting colors. The triangle records match byte-for-byte.
+Sixteen of the Man vertices differ by one unit in one coordinate, split
+between the right hand and the left hand. The
+[comparison](../build/grmodels-menu-workflows-v1/comparison.json) records
+the differing coordinates and both raw captures.

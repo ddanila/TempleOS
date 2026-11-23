@@ -10290,6 +10290,12 @@
           "result": "pass",
           "evidence": "build/grmodels-bundled-loader-v1/qualification.json",
           "scope": "Default BallGen model through the bundled prerequisites with physical form and chooser input."
+        },
+        {
+          "target": "native-grmodels-menu-ball",
+          "result": "pass",
+          "evidence": "build/grmodels-menu-workflows-v1/comparison.json",
+          "scope": "Physical menu selection produces the original document mesh exactly."
         }
       ]
     },
@@ -10353,9 +10359,21 @@
       ],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Select Man in Models, accept the default form, choose blue shirt, green pants, red skin and cyan shoes, then decline another model.",
+      "oracle": "Exact original DolDoc mesh bytes with 112 vertices, 168 triangles and four selected colors.",
+      "tests": [
+        {
+          "target": "original-grmodels-menu-man",
+          "result": "pass",
+          "evidence": "build/grmodels-menu-workflows-v1/man-original-tab/result.json"
+        },
+        {
+          "target": "native-grmodels-menu-man",
+          "result": "fail",
+          "evidence": "build/grmodels-menu-workflows-v1/comparison.json",
+          "scope": "Physical menu selection and four lighting choosers work. Sixteen vertex coordinates differ by one unit from the original."
+        }
+      ]
     },
     {
       "path": "Apps/GrModels/Models.HC",
@@ -10378,6 +10396,18 @@
           "result": "pass",
           "evidence": "build/grmodels-bundled-loader-v1/grmodels-final/result.json",
           "scope": "Cold packaged Run.HC renders the Models menu, cancels and returns to the prompt. The Man workflow remains open."
+        },
+        {
+          "target": "native-grmodels-menu-ball",
+          "result": "pass",
+          "evidence": "build/grmodels-menu-workflows-v1/comparison.json",
+          "scope": "Physical menu selection produces the original document mesh exactly."
+        },
+        {
+          "target": "native-grmodels-menu-man",
+          "result": "fail",
+          "evidence": "build/grmodels-menu-workflows-v1/comparison.json",
+          "scope": "Physical menu selection and four lighting choosers work. Sixteen vertex coordinates differ by one unit from the original."
         }
       ]
     },
@@ -10404,6 +10434,18 @@
           "result": "pass",
           "evidence": "build/grmodels-bundled-loader-v1/grmodels-final/result.json",
           "scope": "Cold packaged Run.HC renders the Models menu, cancels and returns to the prompt. The Man workflow remains open."
+        },
+        {
+          "target": "native-grmodels-menu-ball",
+          "result": "pass",
+          "evidence": "build/grmodels-menu-workflows-v1/comparison.json",
+          "scope": "Physical menu selection produces the original document mesh exactly."
+        },
+        {
+          "target": "native-grmodels-menu-man",
+          "result": "fail",
+          "evidence": "build/grmodels-menu-workflows-v1/comparison.json",
+          "scope": "Physical menu selection and four lighting choosers work. Sixteen vertex coordinates differ by one unit from the original."
         }
       ]
     },
