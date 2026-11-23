@@ -387,3 +387,13 @@ appear. This observation narrows the remaining wait to directory traversal,
 file reads or word indexing. The driver and live observation are under
 `build/resident-opt-desktop64-ac-phases`. Full desktop startup and physical
 bootstrap retirement still require terminal verification.
+
+The unmodified resident optimizer desktop run is terminal PASS at 64 MiB.
+It selects Home Once exactly once, matches all 83 geometry values, accepts
+fresh arithmetic, and confirms bootstrap retirement through TaskValidate
+and a physical heap capture. The capture shows no bootstrap task record
+and a free block containing its former allocation. All pinned inputs
+match. The configured desktop startup took 287.13 seconds in this run.
+This is evidence for the configured desktop profile and its retirement
+contract. Full desktop parity and the separate minimal startup timing
+gate remain open. See `build/resident-opt-desktop64-current/result.json`.
