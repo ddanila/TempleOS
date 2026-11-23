@@ -2962,3 +2962,11 @@ eight providers in this image are cross-built from the same source.
 See the [install receipt](../build/i386-native-cache-footprint-v2/retained-console128-install/result.json)
 and [User receipt](../build/i386-native-cache-footprint-v2/retained-console128-user8/result.json).
 The matching heap capture and all-native nine-module run are pending.
+
+The [console-only heap capture](../build/i386-native-cache-footprint-v2/retained-console128-user8-profile/result.json)
+measured 268,152 contiguous bytes before `USCheck`, down 24,576 from
+the same-revision cross image and 625 above the 267,527-byte request.
+The [aligned placement calculation](../build/i386-native-cache-footprint-v2/console-only-stack-fit.json)
+has 1,928 bytes beyond the full stack in that block. The workload again
+reached mask 255. The all-native image needs a separate measurement
+because the remaining eight guest-built modules can change the gap.
