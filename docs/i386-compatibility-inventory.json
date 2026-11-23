@@ -11214,8 +11214,15 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": "Load the unchanged Strut application sources using its original Load.HC entry point; full interactive application workflow remains to be captured.",
-      "oracle": "docs/i386-application-matrix.md: native loader currently rejects missing CMass at Strut.HC line 16; this is not a reference launch or gameplay oracle.",
+      "reference_workflow": "Load through the original Load.HC entry point, dismiss instructions, place two masses, switch to spring mode and drag between their current screen positions. Start play, observe advancing simulation time, and exit with Escape.",
+      "oracle": {
+        "tool": "build/strut-projected-drag-v1/run.py",
+        "checks": [
+          "Physical mouse input creates two masses and one spring",
+          "Space starts play and simulation time advances beyond 0.01 seconds",
+          "Escape returns to the caller"
+        ]
+      },
       "tests": [
         {
           "target": "native-strut-load",
@@ -11223,6 +11230,19 @@
           "result": "fail",
           "evidence": "build/i386-app-strut-current-v1/result.json",
           "scope": "Verified original source bytes and unchanged input; compile rejection precedes application execution"
+        },
+        {
+          "target": "native-strut-raster-overlay-load",
+          "result": "pass",
+          "evidence": "build/strut-native-raster-bindings-v1/strut64/result.json",
+          "scope": "Unchanged Load.HC compiles with explicit dependencies on a raster export overlay."
+        },
+        {
+          "target": "original-strut-physical-edit-play",
+          "command": "python3 build/strut-projected-drag-v1/run.py --out OUT",
+          "result": "pass",
+          "evidence": "build/strut-projected-drag-v1/original/result.json",
+          "scope": "Pinned original input, spring creation, play, advancing simulation clock and exit."
         }
       ]
     },

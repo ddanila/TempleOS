@@ -1215,3 +1215,11 @@ patch -o build/strut-rk4-derivative-v1/SerialODE.HC \
   build/strut-ode-power-v1/SerialODE.HC \
   < build/strut-rk4-derivative-v1/derivative.patch
 ```
+
+The original Strut draw callback recenters its viewport after the first
+mass. The earlier fixed-screen drag selected the second mass at both
+ends. The projected-endpoint fixture reads the current viewport transform
+and drags from the first mass at (320, 244) to the second at (245, 180).
+The pinned original creates the spring, enters play, advances past
+0.01 seconds of simulation time, and returns on Escape. This workflow
+is recorded in the inventory. See `build/strut-projected-drag-v1`.
