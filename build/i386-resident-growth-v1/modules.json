@@ -1,0 +1,269 @@
+{
+  "cross_sha256": "3f11b6cd1822cff1de3f82181f37f72ab2ddb3f99310902c54a661da9bc88f7c",
+  "retained_sha256": "04ab5a82ca50b58561c52f52c5d027ea7a66df8234fde86b36dc2050e93eaa2c",
+  "changes": {
+    "BuildRuntime": {
+      "cross": {
+        "payload": 86888,
+        "bytes": 94335,
+        "records": {
+          "1": 45,
+          "2": 182,
+          "3": 1,
+          "4": 2
+        },
+        "declared_data_bytes": 319
+      },
+      "retained": {
+        "payload": 86968,
+        "bytes": 97307,
+        "records": {
+          "1": 45,
+          "2": 230,
+          "3": 1,
+          "4": 2,
+          "5": 22
+        },
+        "declared_data_bytes": 319
+      },
+      "payload_growth": 80,
+      "removed_exports": [],
+      "added_exports": []
+    },
+    "CompilerProbe": {
+      "cross": {
+        "payload": 521464,
+        "bytes": 573247,
+        "records": {
+          "1": 139,
+          "2": 1709,
+          "3": 3,
+          "4": 56,
+          "5": 7
+        },
+        "declared_data_bytes": 21092
+      },
+      "retained": {
+        "payload": 521888,
+        "bytes": 588353,
+        "records": {
+          "1": 139,
+          "2": 2051,
+          "3": 3,
+          "4": 56,
+          "5": 100
+        },
+        "declared_data_bytes": 21092
+      },
+      "payload_growth": 424,
+      "removed_exports": [],
+      "added_exports": []
+    },
+    "CompilerRuntime": {
+      "cross": {
+        "payload": 1201872,
+        "bytes": 1246230,
+        "records": {
+          "1": 533,
+          "2": 878,
+          "3": 10,
+          "4": 108,
+          "5": 22
+        },
+        "declared_data_bytes": 31947
+      },
+      "retained": {
+        "payload": 1202624,
+        "bytes": 1343145,
+        "records": {
+          "1": 531,
+          "2": 3682,
+          "3": 11,
+          "4": 109,
+          "5": 289
+        },
+        "declared_data_bytes": 32132
+      },
+      "payload_growth": 752,
+      "removed_exports": [
+        "_I386_DIV_BEGIN",
+        "_I386_DIV_END"
+      ],
+      "added_exports": [
+        "I386DivTemplate"
+      ]
+    },
+    "ConsoleRuntime": {
+      "cross": {
+        "payload": 2335104,
+        "bytes": 2480899,
+        "records": {
+          "1": 1435,
+          "2": 3318,
+          "3": 209,
+          "4": 527,
+          "5": 29,
+          "6": 10
+        },
+        "declared_data_bytes": 140294
+      },
+      "retained": {
+        "payload": 2360792,
+        "bytes": 2771555,
+        "records": {
+          "1": 1435,
+          "2": 9168,
+          "3": 209,
+          "4": 527,
+          "5": 2901,
+          "6": 10
+        },
+        "declared_data_bytes": 140300
+      },
+      "payload_growth": 25688,
+      "removed_exports": [],
+      "added_exports": []
+    },
+    "DocDiagnosticRuntime": {
+      "cross": {
+        "payload": 41592,
+        "bytes": 42899,
+        "records": {
+          "1": 29,
+          "2": 8,
+          "3": 1,
+          "4": 7
+        },
+        "declared_data_bytes": 309
+      },
+      "retained": {
+        "payload": 41752,
+        "bytes": 49623,
+        "records": {
+          "1": 29,
+          "2": 196,
+          "3": 1,
+          "4": 7,
+          "5": 41
+        },
+        "declared_data_bytes": 309
+      },
+      "payload_growth": 160,
+      "removed_exports": [],
+      "added_exports": []
+    },
+    "EditorRuntime": {
+      "cross": {
+        "payload": 45808,
+        "bytes": 47389,
+        "records": {
+          "1": 49,
+          "3": 3,
+          "4": 9
+        },
+        "declared_data_bytes": 598
+      },
+      "retained": {
+        "payload": 46504,
+        "bytes": 53736,
+        "records": {
+          "1": 49,
+          "2": 121,
+          "3": 3,
+          "4": 9,
+          "5": 77
+        },
+        "declared_data_bytes": 598
+      },
+      "payload_growth": 696,
+      "removed_exports": [],
+      "added_exports": []
+    },
+    "FileRuntime": {
+      "cross": {
+        "payload": 262568,
+        "bytes": 281590,
+        "records": {
+          "1": 148,
+          "2": 415,
+          "3": 10,
+          "4": 21,
+          "5": 1
+        },
+        "declared_data_bytes": 1167
+      },
+      "retained": {
+        "payload": 262912,
+        "bytes": 295839,
+        "records": {
+          "1": 148,
+          "2": 717,
+          "3": 10,
+          "4": 21,
+          "5": 102
+        },
+        "declared_data_bytes": 1167
+      },
+      "payload_growth": 344,
+      "removed_exports": [],
+      "added_exports": []
+    },
+    "MemoryRuntime": {
+      "cross": {
+        "payload": 212752,
+        "bytes": 229427,
+        "records": {
+          "1": 175,
+          "2": 333,
+          "3": 23,
+          "4": 40,
+          "5": 7
+        },
+        "declared_data_bytes": 10396
+      },
+      "retained": {
+        "payload": 213864,
+        "bytes": 249568,
+        "records": {
+          "1": 175,
+          "2": 683,
+          "3": 23,
+          "4": 40,
+          "5": 254
+        },
+        "declared_data_bytes": 10396
+      },
+      "payload_growth": 1112,
+      "removed_exports": [],
+      "added_exports": []
+    },
+    "Startup": {
+      "cross": {
+        "payload": 192,
+        "bytes": 391,
+        "records": {
+          "1": 1,
+          "2": 2,
+          "4": 1,
+          "5": 2
+        },
+        "declared_data_bytes": 21
+      },
+      "retained": {
+        "payload": 192,
+        "bytes": 391,
+        "records": {
+          "1": 1,
+          "2": 2,
+          "4": 1,
+          "5": 2
+        },
+        "declared_data_bytes": 21
+      },
+      "payload_growth": 0,
+      "removed_exports": [],
+      "added_exports": []
+    }
+  },
+  "total_payload_growth": 29256
+}

@@ -1,0 +1,9 @@
+{
+  "cross": "build/sound-delay-production-v1/user8-resident-growth/cross/result.json",
+  "native_retained": "build/sound-delay-production-v1/user8-resident-growth/native-retained/result.json",
+  "module_comparison": "build/i386-resident-growth-v1/modules.json",
+  "request_bytes": 267527,
+  "aligned_request_bytes": 267528,
+  "largest_payload_loss": 28672,
+  "native_shortfall": 28080
+}

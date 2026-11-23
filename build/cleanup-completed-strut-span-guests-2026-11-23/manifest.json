@@ -3261,7 +3261,49 @@
         "-o",
         "build/sound-delay-production-v1/simple-ai-center-shared64/working.img"
       ]
+    },
+    {
+      "original": "build/tothefront-center-production-v1/user8/working.img",
+      "archive": "build/tothefront-center-production-v1/user8/working.img.zst",
+      "sha256": "2f95fc3c2418f13e9b9824056c231d365c652f804dfc0fd2184101b380e482ce",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-center-production-v1/user8/working.img.zst",
+        "-o",
+        "build/tothefront-center-production-v1/user8/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-center-production-v1/map64/working.img",
+      "archive": "build/tothefront-center-production-v1/map64/working.img.zst",
+      "sha256": "4bc3fdd280b37191542e59bbc75c046b177e27e949d1073ab3aa7069efab9f34",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-center-production-v1/map64/working.img.zst",
+        "-o",
+        "build/tothefront-center-production-v1/map64/working.img"
+      ]
+    },
+    {
+      "original": "build/tothefront-center-production-v1/simple-ai64/working.img",
+      "archive": "build/tothefront-center-production-v1/simple-ai64/working.img.zst",
+      "sha256": "07596eee4324c77b7c6f173c8a75b103cf87a7488292cbe52897ac63dd0a3f1b",
+      "size": 67108864,
+      "reclaimed_bytes": 53407744,
+      "restore": [
+        "zstd",
+        "-d",
+        "build/tothefront-center-production-v1/simple-ai64/working.img.zst",
+        "-o",
+        "build/tothefront-center-production-v1/simple-ai64/working.img"
+      ]
     }
   ],
-  "reclaimed_bytes": 11574001664
+  "reclaimed_bytes": 11734224896
 }

@@ -1,0 +1,13 @@
+{
+  "main": {
+    "largest_payload": 268120,
+    "total_payload": 456392,
+    "free_blocks": 242
+  },
+  "fallback": {
+    "largest_payload": 2840,
+    "total_payload": 4112,
+    "free_blocks": 4
+  },
+  "result": "pass"
+}

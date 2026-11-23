@@ -2111,3 +2111,20 @@ the new revision detects the single changed ToTheFront initializer.
 Generation one's native self-build is running.
 See `build/i386-bundled-source-audit-v1/gen1-install.json`
 and `build/i386-bundled-source-audit-v1/pre-fix.json`.
+
+The sound-timing generation-one installation reproduces the 8 MiB
+User allocation failure with the cross-built flat kernel and native
+retained providers. The paired heap probe measures a largest primary
+payload of 268,120 bytes on the cross-built image and 239,448 on the
+native-retained image. The same User creation needs 267,528 aligned
+bytes. Both images have 242 free primary blocks and identical
+fallback space. The probe therefore localizes the failure to the
+retained-provider installation before the native flat-kernel rebuild.
+
+The installed retained modules add 29,256 payload bytes in total.
+ConsoleRuntime accounts for 25,688 bytes of that growth. Its declared
+data ranges grow by six bytes, and the module also carries a larger
+disk relocation table. The compiler retains its existing division
+template export difference. See
+`build/i386-resident-growth-v1/modules.json` and
+`build/i386-resident-growth-v1/user8.json`.
