@@ -3086,3 +3086,9 @@ There are 9,473 bytes above the current task request and
 [10,120 bytes beyond the aligned stack](../build/i386-keyboard-high-v2/assembled-native/stack-fit.json).
 The keyboard worker record sits at `0x7CADD8`. The capture run
 again reached User startup mask 255.
+
+The assembled all-native high-placement image passed the
+[physical editor save and reboot test](../build/i386-keyboard-high-v2/assembled-native/editor-save-reboot/result.json)
+at 64 MiB. Ctrl-S persisted the exact edited text and cursor state,
+both autosave toggles passed, and the reboot recovered the same
+document. Fresh arithmetic worked before and after reboot.
