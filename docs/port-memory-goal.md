@@ -3099,3 +3099,14 @@ Home Once ran during boot, all 83 geometry values matched the original,
 and fresh arithmetic rendered after the handoff. The physical heap
 capture found no bootstrap task record and showed its former address
 inside a free block. The measured startup was 211.03 seconds.
+
+The assembled all-native image passed the 64 MiB KVM retained-window
+check. The [receipt](../build/i386-keyboard-high-v2/assembled-native/persistent-window-kvm64/result.json)
+records the red retained pixel, green final-hook overlay, restored blue
+pixel, cleared white pixel and fresh arithmetic. The TCG driver timed
+out during startup before it could exercise the fixture.
+
+The frozen `592a38b7` image's
+[nine-module native rebuild](../build/i386-scheduler-ode-reap-v1/retained128/result.json)
+passed its persisted export audits. The two-generation runner is using
+that audited image as its input.

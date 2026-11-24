@@ -1,0 +1,35 @@
+{
+  "result": "pass",
+  "source_sha256": "df71f7a29af11688fee5d95760757cdf23204f09c3e85089ca275d6681a4ec37",
+  "pixels": {
+    "A": [
+      168,
+      0,
+      0
+    ],
+    "B": [
+      0,
+      168,
+      0
+    ],
+    "C": [
+      0,
+      0,
+      168
+    ],
+    "D": [
+      255,
+      255,
+      255
+    ]
+  },
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 5,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
