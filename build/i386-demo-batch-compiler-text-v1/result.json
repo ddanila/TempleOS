@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "input_sha256": "756bce70fe94e145e4f3aa077e5575087d9d473e6d051721d2f7e420013945d1",
+  "entries": {
+    "Demo/CompileDemo.HC": {
+      "source_sha256": "ac530c10a7654de97d530410dcf8d6a41aa55eb42cf36cad4a36c328da478715",
+      "output_file": "demo-0.DD",
+      "result": "pass",
+      "original_sha256": "4b102c556d01bf31e19d72dd1a3eeb7f60cf8b03b20fa3b034e96be566004ffc",
+      "native_sha256": "4b102c556d01bf31e19d72dd1a3eeb7f60cf8b03b20fa3b034e96be566004ffc",
+      "bytes": 195
+    },
+    "Demo/DolDoc/TextDemo.HC": {
+      "source_sha256": "17b4ff4ccf77fa2dac35b63ba0ca24fde531ec8afd76f3c947ee860a4c06b84a",
+      "output_file": "demo-1.DD",
+      "result": "pass",
+      "original_sha256": "ebc142ad2a65c9f908246d22b2998c067e31301d626c83be39ab18d3e61e1151",
+      "native_sha256": "ebc142ad2a65c9f908246d22b2998c067e31301d626c83be39ab18d3e61e1151",
+      "bytes": 498
+    }
+  },
+  "seed": null,
+  "scope": "Exact DolDoc output, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}

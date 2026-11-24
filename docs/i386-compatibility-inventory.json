@@ -15655,10 +15655,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged demo through expression compilation, execution and ExePrint, then return to the prompt.",
+      "oracle": "The complete 195-byte DolDoc matches the pinned original and fresh native arithmetic succeeds.",
+      "tests": [
+        {
+          "target": "native-original-demo-batch",
+          "result": "pass",
+          "evidence": "build/i386-demo-batch-compiler-text-v1/result.json",
+          "scope": "Complete noninteractive demo."
+        }
+      ]
     },
     {
       "path": "Demo/DateTime.HC",
@@ -15930,9 +15937,16 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Render both markup examples, follow the Genesis link, and activate the OKAY button.",
+      "oracle": "The complete 498-byte captured DolDoc matches the original. Check link navigation and button activation in a separate live window.",
+      "tests": [
+        {
+          "target": "native-original-demo-batch",
+          "result": "pass",
+          "evidence": "build/i386-demo-batch-compiler-text-v1/result.json",
+          "scope": "Exact serialized markup, including control and link records. Interactive activation remains open."
+        }
+      ]
     },
     {
       "path": "Demo/DolDoc/TreeDemo.HC",
