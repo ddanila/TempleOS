@@ -6,10 +6,54 @@
 386+/VGA port, preserving their HolyC and DolDoc behavior, with automated
 compatibility tests and native self-hosting.**
 
-Status: C1 discovery and C2 desktop integration are in progress; normal-boot
-automatic document refresh now has a runnable baseline. Full
-compatibility qualification remains open. The bounded-memory self-hosting goal below is complete and provides
-the foundation, but does not establish desktop or application parity.
+### Current status (2026-11-24)
+
+Measured with `python3 tools/inventory-i386-compatibility.py --check`; update
+this table instead of repeating "C1–C5 remain open" in checkpoint entries.
+
+| Measure | Count |
+| --- | --- |
+| Inventory entries (pinned original tree) | 686 |
+| Qualified | 4 (Span, Strut, Demo/Carry, Demo/ClassMeta) |
+| Linked to tests / with reference workflow and oracle | 164 / 94 |
+| Apps qualified | 2 of 12 (all 12 have partial tests) |
+| Demos qualified | 2 of 224 |
+
+C1 inventory exists but most per-item references are missing. C2 has passing
+editor save/reboot, Home handoff, menus and form input on specific images, not
+end-to-end qualification. C5 has frozen two-generation reproduction, not the
+current source with the full suite. The bounded-memory self-hosting goal below
+is complete and provides the foundation, but not desktop or application parity.
+
+### Plan decisions (2026-11-24)
+
+These resolve recurring problems found in the progress review.
+
+1. **Separate the memory profiles.** The 8 MiB / 16 MiB minimal profile is
+   qualified on a frozen minimal image with its existing workload and
+   regressions (the 2026-10-14 qualification). The original-component desktop
+   image is qualified at 64 MiB (128 MiB for rebuilding), per *Memory profiles*.
+   Fitting newly ported original components into 8 MiB is not a goal
+   requirement; do not spend work on 8 MiB heap/stack placement for that image
+   unless the frozen minimal image regresses. Record the smallest passing
+   profile as a measurement, not a gate.
+2. **Define required items and transitive qualification.** Launchable programs
+   (apps, demos, desktop entry points) are qualified directly by their own
+   workflows and oracles. Shared sources, headers, documents and assets (Kernel,
+   Adam, Compiler, Doc, app support files) are qualified through the qualified
+   workflows that load or display them; the inventory records which workflows
+   cover each one. Items that are not runnable on this architecture or not
+   user-facing (e.g. Linux host tools, Downloads) need an explicit recorded
+   exclusion or substitute decision. Extend `--require-qualified` to apply
+   these rules.
+3. **Qualify demos in batches.** Build one generic runner that launches each
+   demo on the pinned original and on i386 with fixed seeds/clock, captures
+   framebuffer, state and termination/cleanup, and compares them. Classify
+   demos that need interaction or have nondeterministic output and give those
+   a scripted workflow. Prefer this over per-demo investigation.
+
+Prioritise work that increases the qualified count. A checkpoint that only
+records measurements or traces should name the qualification it unblocks.
 
 ### Private backing for diagnostic child tasks (2026-11-07)
 
