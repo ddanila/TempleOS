@@ -11297,7 +11297,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Span/Load.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Span/SpanBridge.HC",
@@ -11314,7 +11320,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Span/Load.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Span/SpanDerive.HC",
@@ -11331,7 +11343,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Span/Load.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Span/SpanMain.HC",
@@ -11348,7 +11366,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Span/Load.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Span/SpanNew.HC",
@@ -11365,7 +11389,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Span/Load.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Strut/Load.HC",
@@ -11487,7 +11517,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Strut/Load.HC"
+        ]
+      }
     },
     {
       "path": "Apps/TimeClock/Install.HC",
