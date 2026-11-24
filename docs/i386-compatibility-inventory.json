@@ -18283,10 +18283,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged demo with task RNG seed 1 and let it return without input.",
+      "oracle": "All 232 DolDoc bytes match the pinned original and fresh native arithmetic succeeds.",
+      "tests": [
+        {
+          "target": "native-original-seeded-demo-batch",
+          "result": "pass",
+          "evidence": "build/i386-demo-batch-seeded-v1/result.json",
+          "scope": "Demo/RadixSort.HC"
+        }
+      ]
     },
     {
       "path": "Demo/RandDemo.HC",
@@ -18604,10 +18611,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged demo with task RNG seed 1 and let it return without input.",
+      "oracle": "All 142 DolDoc bytes match the pinned original and fresh native arithmetic succeeds.",
+      "tests": [
+        {
+          "target": "native-original-seeded-demo-batch",
+          "result": "pass",
+          "evidence": "build/i386-demo-batch-seeded-v1/result.json",
+          "scope": "Demo/SubIntAccess.HC"
+        }
+      ]
     },
     {
       "path": "Demo/SubSwitch.HC",

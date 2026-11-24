@@ -10,14 +10,20 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = r'''
 U0 DemoBatchLog(U8 *s){while(*s)OutU8(0xE9,*s++);}
-U0 DemoBatchRun(U8 *path,U8 *name)
+U0 DemoBatchRun(U8 *path,U8 *name,I64 seed=0)
 {
   CDoc *put=DocPut,*doc=DocNew;
-  I64 size;
+  I64 size,previous_seed=Fs->rand_seed;
   U8 *data,*line;
-  Bool raw=Raw(OFF);
+  Bool raw=Raw(OFF),previous_fixed=Bt(&Fs->task_flags,TASKf_NONTIMER_RAND);
+  if(seed)Seed(seed);
   Fs->put_doc=doc;
   ExeFile(path);
+  if(seed) {
+    Fs->rand_seed=previous_seed;
+    if(previous_fixed)LBts(&Fs->task_flags,TASKf_NONTIMER_RAND);
+    else LBtr(&Fs->task_flags,TASKf_NONTIMER_RAND);
+  }
   if(Fs->put_doc!=doc)throw('Batch',TRUE);
   Fs->put_doc=put;
   data=DocSave(doc,&size);
@@ -64,13 +70,16 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--demo', type=demo_path, action='append', required=True)
+    parser.add_argument('--seed', type=int, help='Reset the task RNG to this seed before each demo')
     args = parser.parse_args()
     if len(set(args.demo)) != len(args.demo):
         parser.error('Each demo may be selected once')
+    if args.seed is not None and not 1 <= args.seed < 1 << 63:
+        parser.error('Use a positive signed 64-bit seed')
     disk, out = args.disk.resolve(), args.out.resolve()
     input_hash = sha(disk.read_bytes())
     out.mkdir()
-    report = dict(result='running', input_sha256=input_hash, entries={},
+    report = dict(result='running', input_sha256=input_hash, entries={}, seed=args.seed,
                   scope='Exact DolDoc output, document cleanup and return to native command input for a batch of noninteractive demos')
     try:
         overlay = out/'original-source'
@@ -86,7 +95,7 @@ def main():
                 raise ValueError(f'Delivered source differs from the reference: {path}')
             name = f'demo-{index}.DD'
             outputs.append(name)
-            calls.append(f'DemoBatchRun("::/{path}","{name}");')
+            calls.append(f'DemoBatchRun("::/{path}","{name}",{args.seed or 0});')
             report['entries'][path] = {'source_sha256': sha(original), 'output_file': name}
         body = (FIXTURE+'\n'.join(calls)+'\nDemoBatchLog("DEMO BATCH DONE\\n");\n').encode()
         (out/'fixture.HC').write_bytes(body)
