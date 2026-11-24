@@ -70,16 +70,46 @@ def discover():
                 counts=dict(Counter(e['category'] for e in entries)), entries=entries)
 
 
+def qualification_gaps(entries):
+    workflows = {
+        entry['path'] for entry in entries
+        if entry.get('qualification', {}).get('mode', 'direct') == 'direct'
+        and entry['compatibility'] == 'qualified'
+        and entry.get('reference_workflow') and entry.get('oracle')
+        and any(test.get('result') == 'pass' and test.get('evidence')
+                for test in entry.get('tests', []))
+    }
+    gaps = []
+    for entry in entries:
+        path = entry['path']
+        decision = entry.get('qualification', {})
+        mode = decision.get('mode', 'direct')
+        if mode == 'direct':
+            covered = path in workflows
+        elif mode in ('covered', 'substitute'):
+            references = decision.get('workflows', [])
+            covered = (isinstance(references, list) and bool(references)
+                       and all(isinstance(ref, str) and ref in workflows for ref in references)
+                       and (mode == 'covered' or bool(decision.get('reason', '').strip())))
+        elif mode == 'excluded':
+            covered = bool(decision.get('reason', '').strip())
+        else:
+            raise ValueError(f'Unknown qualification mode for {path}: {mode}')
+        if not covered:
+            gaps.append(path)
+    return gaps
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, default=ROOT/'docs/i386-compatibility-inventory.json')
     parser.add_argument('--check', action='store_true', help='Verify discovery fields and exhaustive reference coverage, preserving reviewed workflow fields')
-    parser.add_argument('--require-qualified', action='store_true', help='Fail unless every required inventory item has workflow, oracle, tests and qualified status')
+    parser.add_argument('--require-qualified', action='store_true', help='Require direct workflow evidence, coverage by qualified workflows or an explicit exclusion for every entry')
     args = parser.parse_args()
     fresh = discover()
     if args.check:
         existing = json.loads(args.output.read_text())
-        reviewed = {'compatibility', 'reference_workflow', 'oracle', 'tests', 'source_at_discovery'}
+        reviewed = {'compatibility', 'reference_workflow', 'oracle', 'tests', 'source_at_discovery', 'qualification'}
         def discovery(d):
             return [{k:v for k,v in e.items() if k not in reviewed} for e in d['entries']]
         if any(existing.get(k) != fresh[k] for k in ('schema','reference_revision','repair_revision','scope','counts')) or discovery(existing) != discovery(fresh):
@@ -91,8 +121,7 @@ def main():
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(fresh, indent=2)+'\n')
         report = fresh
-    gaps = [e['path'] for e in report['entries'] if e['compatibility'] != 'qualified' or
-            not all(e.get(k) for k in ('reference_workflow', 'oracle', 'tests'))]
+    gaps = qualification_gaps(report['entries'])
     print(json.dumps(dict(reference=REFERENCE, repair_revision=REPAIRS, repaired_blobs=sum(e['archive_blob']!=e['reference_blob'] for e in report['entries']), files=len(report['entries']), counts=report['counts'], unqualified=len(gaps))))
     if args.require_qualified and gaps:
         raise SystemExit('FAIL: compatibility qualification gaps remain; first: '+gaps[0])

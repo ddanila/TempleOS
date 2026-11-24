@@ -15,6 +15,8 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
 | Qualified | 4 (Span, Strut, Demo/Carry, Demo/ClassMeta) |
+| Explicit host-only exclusions | 7 (Linux tools and sources) |
+| Qualification gaps | 675 |
 | Linked to tests / with reference workflow and oracle | 164 / 94 |
 | Apps qualified | 2 of 12 (all 12 have partial tests) |
 | Demos qualified | 2 of 224 |

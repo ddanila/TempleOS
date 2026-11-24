@@ -25016,7 +25016,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Linux host utility, build script or source. It does not run inside the TempleOS guest."
+      }
     },
     {
       "path": "Linux/GodWords",
@@ -25033,7 +25037,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Linux host utility, build script or source. It does not run inside the TempleOS guest."
+      }
     },
     {
       "path": "Linux/GodWords100",
@@ -25050,7 +25058,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Linux host utility, build script or source. It does not run inside the TempleOS guest."
+      }
     },
     {
       "path": "Linux/TOSZ",
@@ -25067,7 +25079,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Linux host utility, build script or source. It does not run inside the TempleOS guest."
+      }
     },
     {
       "path": "Linux/TOSZ.CPP",
@@ -25084,7 +25100,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Linux host utility, build script or source. It does not run inside the TempleOS guest."
+      }
     },
     {
       "path": "Linux/gw",
@@ -25101,7 +25121,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Linux host utility, build script or source. It does not run inside the TempleOS guest."
+      }
     },
     {
       "path": "Linux/make_tosz",
@@ -25118,7 +25142,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Linux host utility, build script or source. It does not run inside the TempleOS guest."
+      }
     },
     {
       "path": "MakeHome.HC",
