@@ -1,0 +1,32 @@
+{
+  "result": "pass",
+  "input_sha256": "756bce70fe94e145e4f3aa077e5575087d9d473e6d051721d2f7e420013945d1",
+  "entries": {
+    "Demo/NullCase.HC": {
+      "source_sha256": "ddd8cc82cf34020e33c9a387b43cf806b125f3341591f7b684d47998c6a43383",
+      "output_file": "demo-0.DD",
+      "result": "pass",
+      "original_sha256": "f49a3dec6ab6090bbfaae20969009341c32d5389f3848299b4501b4474f76133",
+      "native_sha256": "f49a3dec6ab6090bbfaae20969009341c32d5389f3848299b4501b4474f76133",
+      "bytes": 31
+    },
+    "Demo/SubSwitch.HC": {
+      "source_sha256": "8500ac305868454e90bef308031c42c1950ffcc70850d251925be1fc1c1cc1a9",
+      "output_file": "demo-1.DD",
+      "result": "pass",
+      "original_sha256": "f0fd573143e27cfc8f53a3ba6b2bf72b90323c08ac0410d85d47d6667e23ced2",
+      "native_sha256": "f0fd573143e27cfc8f53a3ba6b2bf72b90323c08ac0410d85d47d6667e23ced2",
+      "bytes": 37
+    },
+    "Demo/Print.HC": {
+      "source_sha256": "da2e2d0e51a18f7827a9899c24b5fa5ff5635a209507f23b63c0376cb736c02b",
+      "output_file": "demo-2.DD",
+      "result": "pass",
+      "original_sha256": "5e2d2ce8e1b1124b6bf782f802fc8980a74b6e6141c383b5f9889bb17fa79288",
+      "native_sha256": "5e2d2ce8e1b1124b6bf782f802fc8980a74b6e6141c383b5f9889bb17fa79288",
+      "bytes": 231
+    }
+  },
+  "scope": "Exact DolDoc output, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}

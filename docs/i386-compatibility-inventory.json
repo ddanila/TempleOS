@@ -18133,10 +18133,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged demo from the normal command environment and let it return without input.",
+      "oracle": "The complete 31-byte DolDoc matches the pinned original and a fresh native command succeeds.",
+      "tests": [
+        {
+          "target": "native-original-demo-batch",
+          "result": "pass",
+          "evidence": "build/i386-demo-batch-v1/result.json",
+          "scope": "Demo/NullCase.HC"
+        }
+      ]
     },
     {
       "path": "Demo/OnceDemo.HC",
@@ -18201,10 +18208,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged demo from the normal command environment and let it return without input.",
+      "oracle": "The complete 231-byte DolDoc matches the pinned original and a fresh native command succeeds.",
+      "tests": [
+        {
+          "target": "native-original-demo-batch",
+          "result": "pass",
+          "evidence": "build/i386-demo-batch-v1/result.json",
+          "scope": "Demo/Print.HC"
+        }
+      ]
     },
     {
       "path": "Demo/Progress.HC",
@@ -18607,10 +18621,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged demo from the normal command environment and let it return without input.",
+      "oracle": "The complete 37-byte DolDoc matches the pinned original and a fresh native command succeeds.",
+      "tests": [
+        {
+          "target": "native-original-demo-batch",
+          "result": "pass",
+          "evidence": "build/i386-demo-batch-v1/result.json",
+          "scope": "Demo/SubSwitch.HC"
+        }
+      ]
     },
     {
       "path": "Demo/SuggestSpelling.HC",
