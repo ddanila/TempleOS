@@ -15989,6 +15989,13 @@
       "oracle": "The complete 498-byte captured DolDoc matches the original. Check link navigation and button activation in a separate live window.",
       "tests": [
         {
+          "target": "original-textdemo-physical-verse-link",
+          "command": "python3 build/i386-textdemo-mouse-link-v2/run.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-textdemo-mouse-link-v2/original/result.json",
+          "scope": "Locate the two underlined Genesis labels by their font masks, click the second link in the live menu and verify verse display, menu return and document-role restoration after Shift-Escape."
+        },
+        {
           "target": "original-textdemo-physical-button",
           "result": "pass",
           "evidence": "build/i386-textdemo-mouse-v2/original/result.json",
