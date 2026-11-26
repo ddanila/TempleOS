@@ -16190,7 +16190,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Activate Snd On with Space, open Set Freq using Tab and Space, select 400 Hz, turn sound off, and exit.",
       "oracle": "Observe both sustained PC-speaker tone ranges, verify the frequency popup and sound-off state, and check native prompt recovery.",
       "tests": [
@@ -16205,6 +16205,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-menu-buttons-v1/button-space/result.json",
           "scope": "The Sign image rejects the unresolved Freq2Ona call on line 52."
+        },
+        {
+          "target": "native-original-menu-buttons-and-frequency",
+          "result": "pass",
+          "evidence": "build/i386-demo-menu-buttons-v1/public-tone/qualification.json",
+          "scope": "Both guests render the menu and frequency popup, emit sustained tones near 100 Hz and 390 Hz, and stop emitting audio after Snd Off. The i386 prompt evaluates fresh arithmetic after exit."
         }
       ]
     },

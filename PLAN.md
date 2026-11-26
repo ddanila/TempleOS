@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 66 (six apps and sixty demos) |
+| Qualified | 67 (six apps and sixty-one demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 590 |
+| Qualification gaps | 589 |
 | Linked to tests / with reference workflow and oracle | 226 / 155 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 60 of 224 |
+| Demos qualified | 61 of 224 |
 
-C1 has 590 qualification gaps, including entries that still need a reference
+C1 has 589 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -41,7 +41,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 66 workflows and records eighteen shared files
+- The inventory qualifies 67 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -491,11 +491,16 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   [live-field comparison](build/i386-demo-data-widget-v1/live-fields/result.json)
   and [physical editor comparison](build/i386-demo-data-widget-v1/physical-editor-writeback/result.json).
 
-- MenuBttn selects the frequency popup with physical Tab and Space on
-  the original guest. Its speaker capture contains sustained tones
-  around 100 Hz and 390 Hz. The i386 Sign image rejects the
-  `Freq2Ona` call. See the
-  [button and speaker comparison](build/i386-demo-menu-buttons-v1/button-space/result.json).
+- MenuBttn qualifies on both guests with physical Tab and Space.
+  The original and i386 PC-speaker captures contain sustained tones
+  near 100 Hz initially and 390 Hz after selecting 400 Hz. Both stop
+  emitting audio after Snd Off, and the i386 prompt evaluates fresh
+  arithmetic after Shift-Escape. The rebuilt image publishes the shared
+  `Freq2Ona` routine and passes the 1,574-file delivered source audit.
+  See the [menu and speaker qualification](build/i386-demo-menu-buttons-v1/public-tone/qualification.json)
+  and [source audit](build/i386-demo-menu-buttons-v1/source-audit.json).
+  The [X-Caliber loader regression](build/i386-demo-menu-buttons-v1/xcaliber-loader/result.json)
+  also passes using the public routine.
 
 ### Plan decisions (2026-11-24)
 

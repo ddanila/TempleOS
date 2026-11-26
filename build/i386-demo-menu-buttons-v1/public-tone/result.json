@@ -1,0 +1,60 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-menu-buttons-v1/cross-linked/kernel.img": "3f9a939a757a5653c9b38b46dd801207c3b951daf5c193a3f17af22360ecc9e5",
+    "/home/ddanila/fun/TempleOS/Demo/DolDoc/MenuBttn.HC": "8a2ab9ebe1aad81d23c84ca83c57093768cf5600a4bca1b109de186dcb1670a1"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "silent_bytes": 0,
+      "screenshots_sha256": {
+        "initial-menu": "e75de66a3a2a766c1ddda7fca65147e235de01c7f3df1f7ad0136aa84237846c",
+        "tone-on": "e947798ea6b1bd0e4370644a1147aeb4d48479abe4fbf6e7914d3d670ebf4f39",
+        "frequency": "6c6007b7da1dc08c84599a1b2d527f5573f1c1d0ab4a5abaae984bd9c51be833",
+        "changed-tone": "604b93befebdbda5dae707a05d440e0786c741ab9697ad00041a0faccf612bb3",
+        "tone-off": "0fcfd221515a0c9af15c0a9468e57c1bfc6e051dcccc92af8023974a57156063",
+        "after-exit": "c8202643b30345cfba3d8a7696a8a165bba36e2225422e1de2463221f199e3fa"
+      },
+      "result": "pass",
+      "audio_sha256": "d922b29e22cee6b5226476d6f8be3b4b918e8a8317541a2f2c3bce12426c9ae3",
+      "tone_windows": {
+        "90": 12,
+        "100": 30,
+        "170": 1,
+        "390": 19,
+        "380": 1
+      }
+    },
+    "native": {
+      "silent_bytes": 0,
+      "screenshots_sha256": {
+        "initial-menu": "06a0ceb2cffdbc4b410071caff6a0f63b644bacac80d71240f7b4936143ee195",
+        "tone-on": "ae771d37db56b20b22e3f84dc236ff5a01fc75e308a70e2ac640bb2308ec9528",
+        "frequency": "7e688b64fb4a9af22b27ca84d93a750602f1fd57c2c11aea09b7cd4521b163e4",
+        "changed-tone": "ae771d37db56b20b22e3f84dc236ff5a01fc75e308a70e2ac640bb2308ec9528",
+        "tone-off": "06a0ceb2cffdbc4b410071caff6a0f63b644bacac80d71240f7b4936143ee195",
+        "after-exit": "e6ac248fdfa840e4d8d8008fc2ae5ae821784267f6884be03d88ef6c44c2c30f"
+      },
+      "fresh_result": {
+        "column": 0,
+        "row": 2,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      },
+      "result": "pass",
+      "audio_sha256": "335581687d468fa13e5c2613555417978d32cdd575c34fad0d89b831c6844a3b",
+      "tone_windows": {
+        "90": 12,
+        "100": 30,
+        "120": 1,
+        "390": 17,
+        "380": 3
+      }
+    }
+  }
+}

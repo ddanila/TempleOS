@@ -1917,7 +1917,7 @@ U8 *console_doc_addresses[711]={
   &PutExcept,
   NULL, //_REV_BITS_TABLE
   NULL, //_SET_BITS_TABLE
-  &NativeSourceClampI64,&PutFileLink,&PopUpPickDir,&CopyTree,
+  &I386ClampI64,&PutFileLink,&PopUpPickDir,&CopyTree,
   &MusicSettingsRst,&DelTree,&NativeTaskCaller,
   NULL, //_SCRNCAST
   &ScrnCast,&Mute,&IsMute,&DCCopy,

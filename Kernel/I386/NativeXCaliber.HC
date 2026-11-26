@@ -1,5 +1,4 @@
 #include "/Kernel/I386/NativeModelGeometry.HC"
-#include "/Kernel/Freq2OnaCore.HC"
 #include "/Kernel/SerialDev/KeyCharPollCore.HC"
 
 public CD3 *D3Equ(CD3 *dst,F64 x=0,F64 y=0,F64 z=0)

@@ -1,0 +1,42 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-menu-buttons-v1/cross-linked/kernel.img": "3f9a939a757a5653c9b38b46dd801207c3b951daf5c193a3f17af22360ecc9e5",
+    "/home/ddanila/fun/TempleOS/Demo/DolDoc/MenuBttn.HC": "8a2ab9ebe1aad81d23c84ca83c57093768cf5600a4bca1b109de186dcb1670a1"
+  },
+  "font_sha256": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+  "runs": {
+    "original": {
+      "tone_windows": {
+        "90": 12,
+        "100": 30,
+        "170": 1,
+        "390": 19,
+        "380": 1
+      },
+      "silent_bytes": 0,
+      "audio_sha256": "d922b29e22cee6b5226476d6f8be3b4b918e8a8317541a2f2c3bce12426c9ae3"
+    },
+    "native": {
+      "tone_windows": {
+        "90": 12,
+        "100": 30,
+        "120": 1,
+        "390": 17,
+        "380": 3
+      },
+      "silent_bytes": 0,
+      "audio_sha256": "335581687d468fa13e5c2613555417978d32cdd575c34fad0d89b831c6844a3b"
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 2,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

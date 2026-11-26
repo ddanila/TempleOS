@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "input_sha256": "3f9a939a757a5653c9b38b46dd801207c3b951daf5c193a3f17af22360ecc9e5",
+  "fresh_result": {
+    "column": 0,
+    "row": 14,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
