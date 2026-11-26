@@ -17341,9 +17341,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch the unchanged Blot demo, wait for the finished bitmap and press Space to clear it.",
+      "oracle": "Compare the stamped red ring, blue cross and solid 40-by-40 yellow square in the shared raster region, then verify the bitmap clears and the i386 prompt recovers.",
+      "tests": [
+        {
+          "target": "original-blot-bitmap-and-clear",
+          "result": "pass",
+          "evidence": "build/i386-demo-blot-v1/original-cleared/result.json",
+          "scope": "The original guest renders the three color layers and clears the bitmap after a physical key."
+        },
+        {
+          "target": "native-blot-before-raster-bindings",
+          "result": "fail",
+          "evidence": "build/i386-demo-blot-v1/comparison/result.json",
+          "scope": "The pre-binding i386 image rejects GrFloodFill3 at line 8 of the unchanged demo."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Bounce.HC",

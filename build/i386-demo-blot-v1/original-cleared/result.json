@@ -1,0 +1,14 @@
+{
+  "input_sha256": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+  "result": "pass",
+  "bitmap_colors": {
+    "red": 11244,
+    "blue": 3918,
+    "yellow": 1600
+  },
+  "cleared_colors": {
+    "red": 0,
+    "blue": 2626,
+    "yellow": 64
+  }
+}
