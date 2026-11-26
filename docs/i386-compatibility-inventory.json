@@ -10555,7 +10555,13 @@
           "evidence": "build/keepaway-titanium-image-v1/qualification.json",
           "scope": "Cold loader, controlled scoring, Space and mouse shot animation, flight and caller return with sound enabled."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/KeepAway/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/KeepAway/Load.HC",
@@ -10614,7 +10620,13 @@
           "evidence": "build/keepaway-titanium-image-v1/qualification.json",
           "scope": "Cold loader, controlled scoring, Space and mouse shot animation, flight and caller return with sound enabled."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/KeepAway/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/KeepAway/Run.HC",
@@ -10630,9 +10642,9 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": "Launch cold, jump, restart, shoot with both input methods, verify scoring rules, complete the regulation clock and reopen the saved best score.",
-      "oracle": "Original timing and collision behavior, native rendered arena and finish caption, shot state and registry recovery.",
+      "compatibility": "qualified",
+      "reference_workflow": "Launch cold, jump with the keyboard and right mouse button, restart, shoot with both inputs, exercise handoff, pass and foul scoring, finish regulation, then reopen the saved best score.",
+      "oracle": "The arena and game-over caption render, inputs advance the original game state, regulation finishes at three minutes, finish tones match the original order and play within native scheduling tolerance, and the best score persists across cold boot.",
       "tests": [
         {
           "target": "native-keepaway-cold-launch",
@@ -10675,6 +10687,12 @@
           "result": "fail",
           "evidence": "build/i386-keepaway-sound-v1/comparison.json",
           "scope": "Pitch and tone order match, with longer active tones on native in the controlled finish and restart."
+        },
+        {
+          "target": "native-keepaway-guarded-production",
+          "result": "pass",
+          "evidence": "build/i386-keepaway-render-production-v1/qualification.json",
+          "scope": "Audited full-content image passes cold launches, both jump and shot methods, scoring, foul, regulation, speaker comparison, prompt recovery and cold best-score reopen."
         }
       ]
     },

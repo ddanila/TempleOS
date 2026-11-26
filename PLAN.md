@@ -14,12 +14,12 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 24 (five apps and nineteen demos) |
+| Qualified | 25 (six apps and nineteen demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
-| Shared files covered by qualified workflows | 16 (twelve app support sources and four shared data files) |
-| Qualification gaps | 634 |
+| Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
+| Qualification gaps | 631 |
 | Linked to tests / with reference workflow and oracle | 183 / 112 |
-| Apps qualified | 5 of 12 (all 12 have partial tests) |
+| Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 19 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 24 workflows and records sixteen shared files
+- The inventory qualifies 25 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -63,11 +63,11 @@ is complete and provides the foundation, but not desktop or application parity.
   records repeated backing-region trims during DolDoc loading and a slower
   allocator experiment that was discarded.
 
-- The KeepAway drawing experiment cut the native finish tones from 610,
-  330, and 310 ms to 510, 130, and 130 ms. The game-over frame, 8–0
-  score and cold registry reopen passed. The patch remains experimental
-  pending a repeat and full desktop checks. See the
-  [KeepAway comparison](build/i386-keepaway-render-yield-v1/comparison.json).
+- KeepAway now qualifies on the audited full desktop image. The native
+  finish tones measured 500/100/100 and 520/110/100 ms in two runs.
+  Cold launches, keyboard and mouse controls, arena and game-over
+  rendering, scoring, fouls, full regulation, and cold reopen passed.
+  See the [KeepAway receipt](build/i386-keepaway-render-production-v1/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

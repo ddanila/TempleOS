@@ -1,4 +1,5 @@
 import argparse
+from collections import Counter
 import hashlib
 import json
 from pathlib import Path
@@ -6,9 +7,13 @@ import runpy
 import subprocess
 import time
 
+from PIL import Image
+
 parser = argparse.ArgumentParser()
 parser.add_argument('disk', type=Path, nargs='?')
 parser.add_argument('--out', type=Path, required=True)
+parser.add_argument('--bundled-loader', action='store_true', help='Skip native library preloading')
+parser.add_argument('--mouse', action='store_true', help='Jump with a physical right click')
 args = parser.parse_args()
 out = args.out.resolve()
 out.mkdir()
@@ -47,9 +52,10 @@ try:
     guest = Guest(image, out/'guest', bool(args.disk))
     if args.disk:
         guest.wait('DONE native kernel startup\n')
+        if not args.bundled_loader:
+            guest.command('AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);')
+            guest.command('AdamFile("C:/Adam/TaskSettings.HC",FALSE);')
         for command in (
-            'AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);',
-            'AdamFile("C:/Adam/TaskSettings.HC",FALSE);',
             '#include "C:/Apps/KeepAway/Load.HC"',
             '#include "C:/KeepAwayProbe.HC"',
         ):
@@ -61,9 +67,28 @@ try:
     guest.screenshot('instructions')
     guest.press('esc')
     guest.wait('KEEP playing\n', 30)
-    time.sleep(.5)
-    guest.screenshot('gameplay')
-    guest.press('j')
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        guest.screenshot('gameplay')
+        with Image.open(guest.out / 'gameplay.png') as frame:
+            pixels = Counter(frame.convert('RGB').get_flattened_data())
+        yellow, red = pixels[(255, 255, 87)], pixels[(168, 0, 0)]
+        if yellow >= 200_000 and red >= 1_000:
+            report['arena_pixels'] = {'yellow': yellow, 'red': red}
+            break
+        if 'WINMGR window exception ' in guest.collect():
+            raise ValueError('Window Manager exception during KeepAway')
+        time.sleep(.2)
+    else:
+        raise TimeoutError('Missing KeepAway arena frame')
+    if args.mouse:
+        for down in (True, False):
+            guest.call('input-send-event', events=[
+                {'type': 'btn', 'data': {'down': down, 'button': 'right'}}])
+            time.sleep(.1)
+    else:
+        guest.press('j')
+    report['jump_input'] = 'right button' if args.mouse else 'j'
     guest.wait('KEEP jumped\n', 20)
     guest.press('ret')
     guest.wait('KEEP restarted\n', 20)

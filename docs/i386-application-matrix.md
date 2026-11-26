@@ -2870,3 +2870,12 @@ input. Its warning text still lacks the original token context and
 navigable source links, so the differential remains open. See the
 [active-control probe](../build/i386-demo-parenwarn-v1/shared-probe/result.json)
 and [startup comparison](../build/i386-demo-parenwarn-v1/startup-comparison/result.json).
+
+The KeepAway qualification image repacks the base full desktop with
+only the committed KeepAway source changed. Its audited content
+matches all 686 inventory files. An original and native physical
+right-click session both jumped, restarted, exited, and restored
+the caller. The native session waited for a complete arena frame
+before sending the jump. The inventory qualifies the bundled launcher
+and records coverage for its loader and shared application source.
+See the [KeepAway qualification receipt](../build/i386-keepaway-render-production-v1/qualification.json).

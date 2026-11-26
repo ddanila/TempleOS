@@ -1,0 +1,60 @@
+{
+  "result": "pass",
+  "scope": "Cold bundled launch, control inputs, scoring, foul, regulation, sound and best-score persistence",
+  "source_revision": "08a9f6d9f8b3f6061b0d095cd37b8f6440382ffa",
+  "image_sha256": "cc52b6758e15642e0fe7b57d57446ab8a601112c91b4c78583b2b1c510fa5231",
+  "source_file_audit": {
+    "count": 1561,
+    "sha256": "c6376a1ca844add893c891bb8ebf8a2b92daba303b73cb72dc1c49634925386c"
+  },
+  "inventory_content_audit": {
+    "count": 686,
+    "sha256": "d790529840d45d661a813022ba74ac71972a36b2246f9650a79f187d66b54187"
+  },
+  "guarded_workflow_receipt_sha256": "2c96cc9f0726770b43142ee0859062db47ae71b7489399c1735841fd247b8506",
+  "first_sound_receipt_sha256": "3d64d79b5e9e21a2f2af03d9b1bd5f5ff325e8f349b64bcd84252f8e2b94c3e9",
+  "right_button_jump": {
+    "jump-original": {
+      "receipt_sha256": "8f67890a3c7236c6f8a4059829cbf9d5fe5dbd1ff40223de4f8668f962500ec5",
+      "trace_sha256": "78bcdad8272d3f66028c7d8b8e895310e639b4ce1862a3c8faac23f3fd59f953",
+      "markers": [
+        "KEEP popup",
+        "KEEP playing",
+        "KEEP jumped",
+        "KEEP restarted",
+        "KEEP returned"
+      ],
+      "input": "right button"
+    },
+    "jump-arena-native": {
+      "receipt_sha256": "f9bce46b017bb5313c6ffee899dc0c83fa18fe75b7d36ed550c3120841594caa",
+      "trace_sha256": "f2ebd8730a2c7db177c6cd5916fe9f99403c6dab5561fdd93aeb6c95509f63a1",
+      "markers": [
+        "KEEP popup",
+        "KEEP playing",
+        "KEEP jumped",
+        "KEEP restarted",
+        "KEEP returned"
+      ],
+      "input": "right button"
+    }
+  },
+  "raster": {
+    "result": "pass",
+    "scope": "KeepAway arena appearance and Window Manager exception check",
+    "frames": {
+      "original": {
+        "sha256": "cc94b23dcfe1d2c8962e85b92cee5a458f10cc060999fdba418f2a4b0b2f3506",
+        "arena_yellow_pixels": 291658,
+        "border_red_pixels": 4409
+      },
+      "native64": {
+        "sha256": "dcc60fbfc366c778f2d6dd1672ac72b8a57c344f79126ce6d089d5371f23deaf",
+        "arena_yellow_pixels": 295073,
+        "border_red_pixels": 4280
+      }
+    },
+    "native_allocation_request_bytes": null,
+    "native_window_exception": null
+  }
+}
