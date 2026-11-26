@@ -227,3 +227,12 @@ directory timestamps, and the allocation bitmap audit passes on
 that image. See the
 [first-write results](../build/i386-redsea-named-self-v1/explicit-directory-results.txt)
 and [first report audit](../build/i386-redsea-named-self-v1/first-report-audit.json).
+
+The full 64 MiB KVM report test passed with the managed pointer and
+window manager enabled. The original typed records and 5,400-second
+DolDoc report matched byte for byte, the VGA checkpoints passed, and
+the report reopened identically after cold reboot. All test inputs
+were unchanged. The image also passed the audit of 1,561 delivered
+source and documentation files against `c51ab0fc`. See the
+[report receipt](../build/i386-redsea-named-self-v1/timeclock-report-audited/result.json)
+and [source audit](../build/i386-redsea-named-self-v1/delivered-source.json).

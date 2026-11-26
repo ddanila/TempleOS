@@ -47,9 +47,10 @@ is complete and provides the foundation, but not desktop or application parity.
   settings and autocomplete sources. Both guests return on a keypress and
   native arithmetic still works. A cold direct include still stops at
   `SettingsPush`. See the [VGA comparison](build/i386-demo-scrncodes-v3/comparison.json).
-- TimeClock's newly written archive resolves by name and decodes on the
-  host. Guest `FileRead` fails on that file and succeeds on a prepackaged
-  copy. See the [TimeClock report investigation](docs/i386-timeclock-native.md#fresh-report-failure-on-the-newer-desktop-image).
+- TimeClock reads its first compressed write and reproduces the original
+  5,400-second DolDoc report across cold reboot with the window manager
+  active. The RedSea reader now accepts original directory self records.
+  See the [TimeClock report investigation](docs/i386-timeclock-native.md#fresh-report-failure-on-the-newer-desktop-image).
 - The [Bible lookup profile](docs/i386-bible-load-profile.md#first-full-lookup-with-the-window-manager-active-2026-11-26)
   records repeated backing-region trims during DolDoc loading and a slower
   allocator experiment that was discarded.
