@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 14 (two apps and twelve demos) |
+| Qualified | 16 (two apps and fourteen demos) |
 | Explicit host-only exclusions | 7 (Linux tools and sources) |
 | Shared files covered by qualified workflows | 6 (Span and Strut support sources) |
-| Qualification gaps | 659 |
-| Linked to tests / with reference workflow and oracle | 175 / 104 |
+| Qualification gaps | 657 |
+| Linked to tests / with reference workflow and oracle | 176 / 105 |
 | Apps qualified | 2 of 12 (all 12 have partial tests) |
-| Demos qualified | 12 of 224 |
+| Demos qualified | 14 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not

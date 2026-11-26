@@ -1,0 +1,35 @@
+{
+  "result": "pass",
+  "guests": {
+    "original": {
+      "column": 6,
+      "row": 13,
+      "rows": [
+        60,
+        66,
+        165,
+        129,
+        195,
+        189,
+        66,
+        60
+      ],
+      "frame_sha256": "302c4f23e0fa3edc4364cc243da7df5261dacfa7590e83eb4c2eb926cf0d645c"
+    },
+    "native": {
+      "column": 5,
+      "row": 10,
+      "rows": [
+        60,
+        66,
+        165,
+        129,
+        195,
+        189,
+        66,
+        60
+      ],
+      "frame_sha256": "014b0f54d6b103da229d0f99d6f7cdc1f550fecd6725007ce60bb952c26e1522"
+    }
+  }
+}

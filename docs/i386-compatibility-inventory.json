@@ -16225,10 +16225,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged demo, display the custom character 255 face, and verify the result of the extended-character identifier.",
+      "oracle": "Match complete original DolDoc and all eight glyph rows in both the live font table and VGA frame.",
+      "tests": [
+        {
+          "target": "native-original-extchars-rendered-glyph",
+          "result": "pass",
+          "evidence": "build/i386-demo-extchars-v2/glyph-result.json",
+          "scope": "Byte-identical complete DolDoc from the unchanged demo, exact installed font rows and exact glyph pixels beside Face: on both guests. The fixture restores the prior font glyph, and native arithmetic succeeds."
+        }
+      ]
     },
     {
       "path": "Demo/Games/BattleLines.HC",
@@ -19240,7 +19247,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "modified",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": {
         "status": "observed-components",
         "description": "Collect strings from a 20-by-20 grid in eight directions and sort them before dictionary lookup. Use the original dictionary to print both searches for a deterministic grid."
@@ -19254,6 +19261,12 @@
         ]
       },
       "tests": [
+        {
+          "target": "native-production-wordsearch-bundled-dictionary",
+          "result": "pass",
+          "evidence": "build/i386-wordsearch-bundled-v1/native/result.json",
+          "scope": "Cold desktop runs the actual packaged production source and dictionary with no fixture replacement. The seeded 20-by-20 grid and both lists match the pinned original output exactly, with 366 word tokens and fresh native arithmetic."
+        },
         {
           "target": "original-wordsearch-grid-sort",
           "result": "pass",

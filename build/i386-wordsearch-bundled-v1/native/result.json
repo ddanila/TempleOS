@@ -1,0 +1,55 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-wordsearch-bundled-v1/Probe.HC": "73f0e6aa33724056a4ec6c54cea074650c9cf76e2c2b8a0000b513428036529a",
+    "Demo/WordSearch.HC": "29a5d5f8ee74504ba282e5ea060dadd34c91404de956d33c07c7bba0ae97df1c",
+    "tools/test-i386-autocomplete-interaction.py": "9c96e317209ea0dba1ab36e9168b47cf448794cafe33285ee6dfb0bba233e101",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/i386-autocomplete-archive-original/guest/ACWords.DATA.Z": "649c61e15c401948ac72433cd81114f288222c36eb23c5ddced5a3f89eb4f10d",
+    "/home/ddanila/fun/TempleOS/build/i386-wordsearch-bundled-v1/run.py": "a273f2c2fc2df52320b8bf18d234a6fe4c1b0e267844cd18fffd5d69ff9cf8ba",
+    "build/i386-demo-doc-fileread-cleanup-v1/full/kernel.img": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+    "build/wordsearch-dictionary-v1/original/guest/wordsearch.dd": "1adc8d17ad3b07cd74d49af0fea34407b0b4916ca6760a33f1717d39dd27bba3"
+  },
+  "scope": "Seeded full WordSearch demo with the bundled dictionary, both searches, prompt recovery",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+    "image_sha256": "6be6252bda1bdb81f969002e8aab282fcc3b1a6f5d667556f06338e184110b0c",
+    "boot_area_sha256": "82a2d590f407e247f5b381f2caf9a8a65ab5966c3deaf59d9272dea8206ee1d9",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96178,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 96179,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/WordSearchProbe.HC": "73f0e6aa33724056a4ec6c54cea074650c9cf76e2c2b8a0000b513428036529a"
+    },
+    "added_attributes": {
+      "/WordSearchProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "application_sha256": "29a5d5f8ee74504ba282e5ea060dadd34c91404de956d33c07c7bba0ae97df1c",
+  "fresh_result": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "grid_rows": 20,
+  "output_words": 366,
+  "output_sha256": "1adc8d17ad3b07cd74d49af0fea34407b0b4916ca6760a33f1717d39dd27bba3",
+  "inputs_unchanged": true
+}

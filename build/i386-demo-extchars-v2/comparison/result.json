@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "input_sha256": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+  "entries": {
+    "Demo/ExtChars.HC": {
+      "source_sha256": "25d8a0b382277e73814ed28845631b78b28dc6cdc036e7f5d07d47438b364012",
+      "output_file": "demo-0.DD",
+      "result": "pass",
+      "original_sha256": "c3ae255088281fb994bfa25df99898305ae103cddc6de0fc8a83bc3722819478",
+      "native_sha256": "c3ae255088281fb994bfa25df99898305ae103cddc6de0fc8a83bc3722819478",
+      "bytes": 18
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "glyph_rows": [
+    60,
+    66,
+    165,
+    129,
+    195,
+    189,
+    66,
+    60
+  ],
+  "inputs_unchanged": true
+}
