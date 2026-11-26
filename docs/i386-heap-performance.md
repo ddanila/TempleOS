@@ -991,3 +991,7 @@ KVM with `486,-fpu` and live WinMgr. It reached interactive startup in 63.584
 seconds, above the 60-second gate. Its boot trace has no
 `SpriteToCodeCore.HC` allocation rejection. See
 `build/i386-diagnostic-worker-defer-user640-v1/interactive8-kvm/budget.json`.
+
+The same version-276 image also passed the full 16 MiB TCG diagnostic
+regression on `486,-fpu`, including all nine exact VGA checks. See
+`build/i386-diagnostic-worker-defer-user640-v1/diagnostic16/result.json`.
