@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "image_sha256": "f123f413a00c0b76469801977b40b7f581f819abb544a107a87ad4dc78efd828",
+  "source_revision": "576226073664c52108f221c14726c6f184e7d695",
+  "delivered_source_files": 1561,
+  "boot_instruction_audit": "pass",
+  "bootstrap_generations": 2,
+  "evidence_sha256": {
+    "full/result.json": "1f0e8062604ca3a01ad7513e1b2d65c6691b35134755f71441c974bd62e62a0e",
+    "production-revision-audit.json": "642c489e9e7bfa7e85e038602a16f76dc38b15ee8480e914830b57911484d2b3",
+    "bootstrap/result.json": "e4da3bb75942341fbf7617d02802f0ed4e2583473c52eb9e5d6f988d1d172d9e"
+  },
+  "scope": "Fresh full image cross-build and committed source audit."
+}

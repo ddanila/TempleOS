@@ -92,6 +92,11 @@ is complete and provides the foundation, but not desktop or application parity.
   [warning comparison](build/i386-parenwarn-links-v2/qualification.json)
   and [link activation](build/i386-parenwarn-links-v2/activation64-fixed/result.json).
 
+- A fresh full image containing the ParenWarn changes cross-built from
+  committed source and passed the boot instruction and 1,561-file source
+  audits. An x86-64 bootstrap rebuilt twice before the cross-build.
+  See the [production build receipt](build/i386-parenwarn-links-v2/production-build-checkpoint.json).
+
 ### Plan decisions (2026-11-24)
 
 These resolve recurring problems found in the progress review.
