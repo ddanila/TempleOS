@@ -44,6 +44,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('document', type=Path)
     parser.add_argument('drive', choices=('C', 'T'))
+    parser.add_argument('--original', type=Path,
+                        help='Compare all file targets with the original T: document')
     args = parser.parse_args()
     inventory = ROOT / 'docs/i386-compatibility-inventory.json'
     pinned = {('/' + row['path']).encode('ascii')
@@ -54,10 +56,21 @@ def main():
     actual = {path for path in files if path.startswith(b'/Demo/')}
     if actual != pinned:
         raise ValueError(f'Demo links differ. Missing {sorted(pinned - actual)!r}. Extra {sorted(actual - pinned)!r}.')
-    print(json.dumps(dict(result='pass', drive=args.drive,
-                          document_sha256=hashlib.sha256(data).hexdigest(),
-                          directories=len(directories), file_links=len(files),
-                          pinned_demo_links=len(pinned)), indent=2))
+    report = dict(result='pass', drive=args.drive,
+                  document_sha256=hashlib.sha256(data).hexdigest(),
+                  directories=len(directories), file_links=len(files),
+                  pinned_demo_links=len(pinned))
+    if args.original:
+        original, original_directories = inspect_tree(args.original.read_bytes(), b'T')
+        if missing := original - files:
+            raise ValueError(f'Missing original file targets: {sorted(missing)!r}')
+        report.update(shared_file_links=len(original),
+                      native_only_files=sorted(path.decode('ascii') for path in files - original),
+                      original_only_directories=sorted(
+                          path.decode('ascii') for path in original_directories - directories),
+                      native_only_directories=sorted(
+                          path.decode('ascii') for path in directories - original_directories))
+    print(json.dumps(report, indent=2))
 
 
 if __name__ == '__main__':

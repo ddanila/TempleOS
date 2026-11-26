@@ -16302,15 +16302,21 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": "Launch the unchanged demo from the pinned original command prompt and capture the generated navigable drive tree.",
-      "oracle": "Validate the collapsed root, indentation, directory macros, parent ordering, unique file links and all 224 pinned demo paths.",
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged demo from the pinned original command prompt and capture the generated navigable drive tree. Repeat on the audited i386 guest and verify return to arithmetic.",
+      "oracle": "Validate the collapsed root, indentation, directory macros, parent ordering, unique file links and all 224 pinned demo paths. Compare all shared file targets after normalizing the drive letter and verify native-only links against the input disk.",
       "tests": [
         {
           "target": "original-treedemo-prompt",
           "result": "pass",
           "evidence": "build/i386-demo-treedoc-v2/original-receipt.json",
           "scope": "The original CD presents 62 directories and 1,906 file links, including all 224 pinned Demo paths."
+        },
+        {
+          "target": "native-original-treedemo-prompt",
+          "result": "pass",
+          "evidence": "build/i386-demo-treedoc-v2/qualification.json",
+          "scope": "All 1,906 original file targets and 224 pinned demo links are present on i386. The 27 native-only links match files on the input image."
         }
       ]
     },

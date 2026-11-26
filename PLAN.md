@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 32 (six apps and twenty-six demos) |
+| Qualified | 33 (six apps and twenty-seven demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 624 |
+| Qualification gaps | 623 |
 | Linked to tests / with reference workflow and oracle | 191 / 120 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 26 of 224 |
+| Demos qualified | 27 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 32 workflows and records eighteen shared files
+- The inventory qualifies 33 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -156,9 +156,11 @@ is complete and provides the foundation, but not desktop or application parity.
 - The batch runner can launch from the original prompt through the keyboard.
   NullCase matched all 31 DolDoc bytes through this launch path. TreeDemo
   produced 62 directory macros and 1,906 file links on the pinned original,
-  including all 224 Demo paths. See the
+  including all 224 Demo paths. TreeDemo qualifies on i386 with all 1,906
+  original file targets present after normalizing the drive letter. The 27
+  additional file targets match the native image. See the
   [NullCase control](build/i386-demo-prompt-control-v2/comparison/result.json)
-  and [TreeDemo reference](build/i386-demo-treedoc-v2/original-receipt.json).
+  and [TreeDemo comparison](build/i386-demo-treedoc-v2/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

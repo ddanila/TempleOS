@@ -1,0 +1,48 @@
+{
+  "result": "pass",
+  "image_sha256": "c2f2b2084341a20531c6b889ad415b39b440315e35ce0c89b628c24c7d49d0ac",
+  "source_sha256": "4c8ef820f83a54912830cf93a22b49d178fed84f5e688bbea9263f3a2f16efb2",
+  "batch_receipt_sha256": "8150d36b95c2b929724291f395f46c20e6e68547e7c2bc698e8892b4770f8049",
+  "original_document_sha256": "24b0d120f506c4caa1731606922f8e886375732584036398f557731c47f4417e",
+  "native_document_sha256": "93fd7835080b5e2a47898ddf60eaa2da3fe9d008bb38e02198563044bc7f5697",
+  "shared_file_links": 1906,
+  "pinned_demo_links": 224,
+  "native_only_files": [
+    "/Apps/Budget/Accts.DD.Z",
+    "/Modules/I386/BuildRuntime.t32m",
+    "/Modules/I386/CompilerProbe.t32m",
+    "/Modules/I386/CompilerProgramRuntimeProbe.t32m",
+    "/Modules/I386/CompilerRuntime.t32m",
+    "/Modules/I386/ConsoleRuntime.t32m",
+    "/Modules/I386/DocDiagnosticRuntime.t32m",
+    "/Modules/I386/EditorRuntime.t32m",
+    "/Modules/I386/ExceptContext.t32m",
+    "/Modules/I386/ExceptionEntry.t32m",
+    "/Modules/I386/FileRuntime.t32m",
+    "/Modules/I386/IrqEntry.t32m",
+    "/Modules/I386/Kernel.t32m",
+    "/Modules/I386/MemoryRuntime.t32m",
+    "/Modules/I386/Startup.t32m",
+    "/Modules/I386/SysTry.t32m",
+    "/Modules/I386/TaskContext.t32m",
+    "/Probe/Bad.HC",
+    "/Probe/Bad.HC.Z",
+    "/Probe/HelpAnchor.DD",
+    "/Probe/HelpAnchorTarget.DD",
+    "/Probe/HelpSearch.DD",
+    "/Probe/HelpSearchTarget.DD",
+    "/Probe/Inner.HC.Z",
+    "/Probe/OriginalCompat.DD",
+    "/Probe/Outer.HC",
+    "/Registry.HC.Z"
+  ],
+  "original_only_directories": [
+    "/Tmp",
+    "/Tmp/ScrnShots"
+  ],
+  "native_only_directories": [
+    "/Modules",
+    "/Modules/I386"
+  ],
+  "scope": "Both documents preserve the original file targets after drive-letter normalization. Native-only files were checked against the input disk. Both trees preserve their labels, directory macros, indentation and unique targets."
+}

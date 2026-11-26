@@ -1,0 +1,18 @@
+{
+  "result": "fail",
+  "input_sha256": "c2f2b2084341a20531c6b889ad415b39b440315e35ce0c89b628c24c7d49d0ac",
+  "entries": {
+    "Demo/DolDoc/TreeDemo.HC": {
+      "source_sha256": "4c8ef820f83a54912830cf93a22b49d178fed84f5e688bbea9263f3a2f16efb2",
+      "output_file": "demo-0.DD",
+      "result": "fail",
+      "original_sha256": "24b0d120f506c4caa1731606922f8e886375732584036398f557731c47f4417e",
+      "native_sha256": "93fd7835080b5e2a47898ddf60eaa2da3fe9d008bb38e02198563044bc7f5697",
+      "bytes": 114355
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "inputs_unchanged": true
+}
