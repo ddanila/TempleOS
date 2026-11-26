@@ -1,0 +1,64 @@
+{
+  "result": "fail",
+  "font_sha256": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+  "runs": {
+    "original": {
+      "clock-first": {
+        "console": [
+          "11/26/26 15:02:06"
+        ],
+        "border": [
+          "556054=00:00:11"
+        ]
+      },
+      "clock-second": {
+        "console": [
+          "11/26/26 15:02:08"
+        ],
+        "border": [
+          "657244=00:00:13"
+        ]
+      },
+      "undo": {
+        "console": [
+          "11/26/26 15:02:13"
+        ],
+        "border": []
+      }
+    },
+    "native": {
+      "clock-first": {
+        "console": [
+          "11/26/26 15:03:09"
+        ],
+        "border": [
+          "1659319=00:00:33"
+        ]
+      },
+      "clock-second": {
+        "console": [
+          "11/26/26 15:03:11"
+        ],
+        "border": [
+          "1759236=00:00:35"
+        ]
+      },
+      "undo": {
+        "console": [],
+        "border": []
+      }
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "mismatches": [
+    "native console tag did not survive UndoIt"
+  ]
+}

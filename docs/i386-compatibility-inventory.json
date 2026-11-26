@@ -15992,9 +15992,16 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch unchanged CallBack, observe two samples of both clock callbacks, then execute UndoIt.",
+      "oracle": "Decode the VGA clock glyphs and confirm that the banner and console tags advance independently. UndoIt clears the border tag while the console clock keeps advancing.",
+      "tests": [
+        {
+          "target": "native-original-tag-callback-lifetime",
+          "result": "fail",
+          "evidence": "build/i386-demo-tag-callback-v1/comparison/qualification.json",
+          "scope": "Both guests render advancing border and console clocks. UndoIt clears only the border clock on the original and clears both on the tested i386 image."
+        }
+      ]
     },
     {
       "path": "Demo/DolDoc/ClickCallBack.HC",

@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 588 |
-| Linked to tests / with reference workflow and oracle | 227 / 156 |
+| Linked to tests / with reference workflow and oracle | 228 / 157 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 62 of 224 |
 
@@ -508,6 +508,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   near 50, 100, and 190–200 Hz. Cancel clears the sprite and stops sound.
   The i386 prompt evaluates fresh arithmetic after exit. See the
   [sprite and speaker qualification](build/i386-demo-menu-sprite-v1/comparison/qualification.json).
+
+- CallBack renders two advancing clock tags on both guests. On the
+  original, UndoIt clears the border clock and the console clock keeps
+  advancing. The audited i386 image clears both. The
+  [pixel-decoded tag comparison](build/i386-demo-tag-callback-v1/comparison/qualification.json)
+  captures the open document-lifetime difference.
 
 ### Plan decisions (2026-11-24)
 
