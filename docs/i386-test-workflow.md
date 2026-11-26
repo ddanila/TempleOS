@@ -6359,3 +6359,9 @@ The installed generation-one image matched all 686 inventoried files
 against the frozen source and passed the bounded guest lookup/read
 workflow. The allocation bitmap matched the reachable extents.
 [Generation-one content check](../build/i386-code-alloc-known-v1/native-generations128/gen1-full-content/result.json)
+
+The installed generation-one flat kernel also passed the managed desktop
+baseline at 64 MiB under KVM with the window manager active. All nine
+commands matched the expected VGA pixels, and the build provider stayed
+unloaded throughout the check.
+[Generation-one desktop baseline](../build/i386-code-alloc-known-v1/native-generations128/gen1-desktop64/result.json)
