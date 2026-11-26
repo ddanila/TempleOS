@@ -2788,3 +2788,11 @@ source and launcher hashes and checks the current bundled loader
 separately. Normal desktop startup supplied the dependencies, and
 the guest rendered 42 after the test. See the
 [ten-gate receipt](../build/i386-logic-gates-production-v1/native/result.json).
+
+A guest-side sound trace separated the acquisition effects from
+match expiry. Both guests emitted the same three finish tones.
+The original timed its two record tones at 99.9 ms and 101.5 ms,
+while native timed them at 330 ms and 310 ms. The sound-off calls
+themselves arrive late in native guest time. The audio difference
+therefore persists after allowing earlier scoring sounds to settle.
+See the [guest sound-clock comparison](../build/i386-keepaway-sound-phases-v1/comparison.json).
