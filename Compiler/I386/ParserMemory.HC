@@ -120,7 +120,8 @@ Bool I386ParserTake(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
   CI386ParserAllocation *record;
   U32 irq=I386IrqSave;
   Bool result=FALSE;
-  if(!I386CmpCodeOwner(heap,cc) || !allocation || I386HeapSize(heap,allocation)<1) goto done;
+  //CodeOwner has already validated the arena while IRQs remain excluded.
+  if(!I386CmpCodeOwner(heap,cc) || !allocation || !I386HeapKnownAtLeast(heap,allocation,1)) goto done;
   for(record=owned->parser_next;record!=&owned->parser_next;record=record->next)
     if(record->allocation==allocation) goto done;
   //Both owner and payload checks precede this allocation under IRQ exclusion.

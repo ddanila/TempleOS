@@ -1159,6 +1159,16 @@ remains open.
 [TCG timing](../build/i386-code-alloc-known-v1/interactive8-tcg/result.json) ·
 [KVM diagnostics](../build/i386-code-alloc-known-v1/diagnostic8-kvm/result.json)
 
+Parser adoption also reuses the arena validation done by
+`I386CmpCodeOwner` while IRQs remain excluded. It still checks that
+the supplied pointer starts a live allocation with at least one
+requested byte before attaching its ownership record. Both bootstrap
+generations, the 386 boot audit, the task-symbol ownership corpus,
+and the 8 MiB KVM diagnostics passed. The diagnostics matched all
+nine VGA checkpoints.
+[Task-symbol ownership](../build/i386-parser-take-known-v1/task-symbols/result.json) ·
+[8 MiB diagnostics](../build/i386-parser-take-known-v1/diagnostic8-kvm/result.json)
+
 The full image with the code-allocation change matched all 686 inventory
 files against the working tree and passed the bounded guest content
 workflow under KVM at 64 MiB. The volume audit covered 1,949 files and
