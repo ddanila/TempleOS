@@ -1035,6 +1035,6 @@ a repeatable speedup, and the candidate is retained as a patch while the
 Both frozen self-hosted images passed the nine-command 64 MiB KVM desktop
 baseline with the managed pointer and Window Manager active. Generation one
 also matched all 686 inventoried files and passed the bounded guest read
-fixture. Generation two's full-content run was still in progress. These
-checks leave the complete desktop and application workflow suite open.
+fixture. Generation two passed the same inventory and guest read checks.
+The complete desktop and application workflow suite remains open.
 See `build/i386-demo-insetip-v1/generations128/`.
