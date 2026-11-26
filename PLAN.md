@@ -327,6 +327,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   `GrPlot` routine. Both guests drew changing multicolor trails and cleared
   them on Escape. The i386 guest returned fresh arithmetic. See the
   [seeded Bounce comparison](build/i386-demo-bounce-v1/qualification.json).
+  The cross-built image matches all 1,572 delivered source files at
+  `02a6be0d`. An 8 MiB cold boot verified an in-bounds write and rejection
+  at both horizontal clipping boundaries, then returned fresh arithmetic.
+  See the [plot checkpoint](build/i386-demo-bounce-v1/plot-checkpoint.json).
   The audited `c4064751` i386 image stops at the `GrPlot` call on line 27.
   See the
   [original trail receipt](build/i386-demo-bounce-v1-baseline/original-receipt.json)

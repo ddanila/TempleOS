@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "ram_mib": 8,
+  "image_sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+  "fresh_result": {
+    "column": 0,
+    "row": 17,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

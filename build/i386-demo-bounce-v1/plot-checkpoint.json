@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "disk_sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+  "source_files": 1572,
+  "source_identity_sha256": "e8a55a68401fd86c28b90fe1bd3bc3eb9ffaab6f3a7a8b3db7ca96bc2bdd8019",
+  "source_revision": "02a6be0dcbd2e595fae7038b866476116f19e45d",
+  "plot8_result_sha256": "97b8ec5d5bb1b914a09fe29db5696b9a6978884cb580fb41cd594b46d05fb936",
+  "committed_source_audit_sha256": "8945ad8c8698dad88d9a1a478e063c6581b5c26610b3f53cd4bda701ebea2218"
+}
