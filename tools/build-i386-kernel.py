@@ -1034,22 +1034,22 @@ def verify_mutated_volume(disk):
     def record(offset):
         attr,raw,block,size,date=struct.unpack_from('<H38sqqQ',image,offset)
         return attr,raw.split(b'\0',1)[0].decode('ascii'),block,size,date
-    def directory(block,parent):
+    def directory(block,parent,leaf):
         nonlocal directories,files
         if block in visiting: raise ValueError('Cyclic mutation-probe tree')
         visiting.add(block)
         attr,name,self_block,size,date=record(block*512)
-        if (attr,name,self_block,date)!=(0x810,'.',block,0) or size<512 or size%512:
+        if attr!=0x810 or name not in ('.',leaf) or self_block!=block or size<512 or size%512:
             raise ValueError('Invalid mutation-probe directory')
-        if record(block*512+64)!=(0x810,'..',parent,0,0):
+        if record(block*512+64)[:4]!=(0x810,'..',parent,0):
             raise ValueError('Invalid mutation-probe parent')
         claim(block,size); directories+=1; terminated=False
         for offset in range(128,size,64):
             attr,name,child,length,date=record(block*512+offset)
             if not name: terminated=True; break
             if attr&0x100: continue
-            if (date and attr not in (0x800,0xA00,0xC00,0xE00)) or name in ('.','..') or '/' in name: raise ValueError('Invalid mutation-probe entry')
-            if attr==0x810: directory(child,block)
+            if name in ('.','..') or '/' in name: raise ValueError('Invalid mutation-probe entry')
+            if attr==0x810: directory(child,block,name)
             elif attr in (0x800,0xA00,0xC00,0xE00):
                 if length: claim(child,length)
                 elif child: raise ValueError('Empty mutation-probe file owns blocks')
@@ -1057,7 +1057,7 @@ def verify_mutated_volume(disk):
             else: raise ValueError('Invalid mutation-probe attributes')
         if not terminated: raise ValueError('Missing mutation-probe terminator')
         visiting.remove(block)
-    directory(root,root)
+    directory(root,root,'.')
     bitmap=image[(start+1)*512:first*512]
     for index in range(len(bitmap)*8):
         block=first-1+index; expected=block<first or block>=end or block in owned
@@ -1081,7 +1081,8 @@ def mutated_file_contents(disk, wanted):
     def directory(block,path):
         if block in visiting: raise ValueError('Cyclic raw-failure tree')
         visiting.add(block); attr,name,self_block,size,date=record(block*512)
-        if (attr,name,self_block,date)!=(0x810,'.',block,0) or size<512 or size%512:
+        leaf=path.rsplit('/',1)[-1] or '.'
+        if attr!=0x810 or name not in ('.',leaf) or self_block!=block or size<512 or size%512:
             raise ValueError('Invalid raw-failure directory')
         for offset in range(block*512+128,block*512+size,64):
             attr,name,child,length,date=record(offset)

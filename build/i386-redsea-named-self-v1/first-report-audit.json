@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "disk_sha256": "9225710ad2b2191b9b1e1a55a466ad1bf1e4ab7716e499a02c18a37d5b8b2d25",
+  "files_sha256": {
+    "/report-records.DATA": "f5ecc13cd3d99a3efe3fc9208e158d5fa0b94a6ec47884de48d176e23ca4e04b",
+    "/report-first.DD": "faa5155d46e6a394493031341f60052c38e7cabab285b0ce2f73e84d4bf731c9"
+  },
+  "filesystem": {
+    "directories": 64,
+    "files": 1936,
+    "owned_sectors": 96187,
+    "bitmap": "matches reachable extents"
+  }
+}

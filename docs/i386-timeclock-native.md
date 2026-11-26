@@ -218,3 +218,12 @@ rewriting the sector. The low-level RedSea suite uses an original-style
 named subdirectory and checks both the virtual dot entry and traversal
 through its parent. See the
 [RedSea regression receipt](../build/i386-redsea-named-self-v1/low-level/result.json).
+
+On the rebuilt desktop, both writes in the explicit-directory probe
+read back immediately. The unchanged TimeClock report also produced
+the original typed records and DolDoc on its first boot. The host
+image readers now accept a matching directory name and original
+directory timestamps, and the allocation bitmap audit passes on
+that image. See the
+[first-write results](../build/i386-redsea-named-self-v1/explicit-directory-results.txt)
+and [first report audit](../build/i386-redsea-named-self-v1/first-report-audit.json).
