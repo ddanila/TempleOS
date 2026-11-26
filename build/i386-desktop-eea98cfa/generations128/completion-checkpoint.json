@@ -1,0 +1,50 @@
+{
+  "result": "pass",
+  "source_revision": "eea98cfa6edaea11e11f82462c8dbc65830239c6",
+  "scope": "Two native rebuild/install/boot generations and artifact audits only; full desktop/application compatibility suite and C1-C5 qualification are separate gates.",
+  "build_ram_mib": 128,
+  "boot_ram_mib": 8,
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "identity": {
+    "result": "pass",
+    "module_count": 16,
+    "flat_bytes": 468560,
+    "flat_sha256": "1308aadff84208104b1b81216f9a6327bb770e96f1659ce04a48f7be29d53a29",
+    "boot_area_sha256": "f0aa2b5b312b63bbbbcb64fe160d4a9b4f2367b5e53a168641e58537c1c96280",
+    "first_volume": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 98093,
+      "bitmap": "matches reachable extents"
+    },
+    "second_volume": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 98093,
+      "bitmap": "matches reachable extents"
+    },
+    "first_disk_sha256": "87dfab2082a8193415358de4e20225c9306265834c23497054d1197dc3378659",
+    "second_disk_sha256": "5b2f1f4fd13eb0165cd9eed9f9e5f8bbd69149332be988282de0770f3bf8a52a",
+    "comparison_scope": "All artifact bytes except exported eight-byte Kernel date; each actual boot payload/checksum/padding verified independently",
+    "kernel_build_dates": [
+      3179608923383956,
+      3179609075696222
+    ],
+    "normalized_flat_sha256": "985d88e0cd1e664023287c9c3a7ebbb79223437bd69b36acd1c5eedcd49d38d5"
+  },
+  "generation_report_sha256": "16395606f7bc6860b0c467fc8496f2d7318d20b028a5b7c22724c7db8e57130e",
+  "stage_result_sha256": {
+    "input-source-audit": "1817215c057317ad70dbcb5d58bae4d95f64aad329f6255299f5c812258c51f8",
+    "gen1-install": "e13e9f6b79487ccff8891a77d1e2f12884b0434f2a36d7d5acb51e73d74134ec",
+    "gen1-selfhost": "635b007963013713448c1dc5df15ac729a19e775bf788aea66af72fce9a06166",
+    "gen1-audit": "f1b5162b47ae53cd5bc3adec4efa71042b0a21d536e894d3ef04b315c0e7f551",
+    "gen1-source-audit": "e62c440e6d4d9636f131b6285c863104457c46d8b15f3eb67e8b0eeeedfc1724",
+    "gen2-retained-build": "4062eda4af4e73432895bf2aa8d488c8a61e6aea9830adc86ef4ab43bc7b240f",
+    "gen2-install": "2879e3c09d688e4636c595ce429a6340ff3a6274a8106c4e870600a8f00c30b2",
+    "gen2-selfhost": "286f642098007df75d6ed3b061222eb48a6723a7756cbf502d55883a54fdb2ea",
+    "gen2-audit": "bc9e4c72927d4b5c75a22412a0c2173cad9a13b6b44d238b340e98939be83680",
+    "gen2-source-audit": "4fe79c1bc58cc2a7f3b88001657fc69581394f9be18b5463729acf0acbffb480",
+    "generation-identity": "5c88d88edf4d994decfdf79e4f816e725377e5d177679433305e3bf1e454bbdd"
+  }
+}

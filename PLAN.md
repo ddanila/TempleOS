@@ -45,12 +45,12 @@ is complete and provides the foundation, but not desktop or application parity.
   `eea98cfa` installed generation one's providers and passed the 8 MiB
   reboot and document-allocation checks. Generation one then built its flat
   kernel at 128 MiB, passed an 8 MiB cold boot, and passed the installed
-  image and source audits. Generation two rebuilt all nine retained
-  providers byte for byte. Its provider installation, 8 MiB reboot,
-  and document-allocation checks passed. The flat kernel rebuild is
-  running. See the [generation-one receipt](build/i386-desktop-eea98cfa/generations128/gen1-checkpoint.json),
-  [generation-two provider rebuild](build/i386-desktop-eea98cfa/generations128/gen2-retained-build/result.json)
-  and [generation-two provider install](build/i386-desktop-eea98cfa/generations128/gen2-install/result.json).
+  image and source audits. Generation two completed the same rebuild,
+  installation, 8 MiB cold boot, and audits. Both images reproduced all
+  16 modules and the installed artifacts after normalizing the original
+  eight-byte kernel build date. The full compatibility suite still needs
+  to run on both images. See the
+  [two-generation receipt](build/i386-desktop-eea98cfa/generations128/completion-checkpoint.json).
 - The full desktop publishes the original autocomplete and task settings
   sources at startup. A cold direct include of ScrnCodes matched all
   256 original glyphs, returned on a keypress, and rendered fresh
