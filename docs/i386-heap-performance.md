@@ -860,3 +860,12 @@ The frozen 128 MiB retained native-module run had reached EditorRuntime, the
 seventh of nine modules, at this checkpoint. Its terminal export audit is still
 pending. The run is recorded under `build/i386-demo-insetip-v1/retained128/`.
 C1 through C5 remain open.
+
+The frozen `5303f095` run subsequently built and persisted all nine retained
+modules at 128 MiB under KVM with `486,-fpu`. The audit matched the cross-build
+export sets with the harness's two allowed CompilerRuntime division-boundary
+symbols, checked the ConsoleRuntime allocation wrappers, and verified one
+BuildRuntime provider load. The receipt records the native and cross-build
+module hashes. The generation runner verified the retained image and receipt
+hashes and proceeded to the first native install. Two-generation boot and
+resource qualification remain pending.
