@@ -1,0 +1,33 @@
+diff --git a/Kernel/I386/ConsoleRuntime.HC b/Kernel/I386/ConsoleRuntime.HC
+index 360144d3..a04deb95 100644
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -1152,6 +1152,11 @@ U0 NativeTerminalInput()
+       DocPutKey(doc,event.ch,event.scan);ConsolePresent;
+     } else if(decoded && event.type==2) {
+       ch=event.ch;
++      if(ch==CH_SPACE && doc->cur_entry->type_u8==DOCT_MACRO) {
++        KernelLog("CLICK TRACE input ");
++        KernelHex(doc->cur_entry->de_flags);KernelLog(" ");
++        KernelHex(doc->cur_entry->left_cb);KernelLog("\n");
++      }
+       if(!ch && event.scan.u8[0]==SC_END && !(event.scan&(SCF_CTRL|SCF_ALT))) {
+         DocPutKey(doc,ch,event.scan);
+       } else if(ch==CH_SHIFT_ESC) {
+diff --git a/Kernel/I386/WindowMouse.HC b/Kernel/I386/WindowMouse.HC
+index b05acce7..e7b31d00 100644
+--- a/Kernel/I386/WindowMouse.HC
++++ b/Kernel/I386/WindowMouse.HC
+@@ -84,6 +84,12 @@ U0 NativeWindowMouseDocument(CTask *task,I64 x,I64 y,Bool right,Bool down,Bool d
+     if(doc->doc_signature==DOC_SIGNATURE_VAL) {
+       if(down)DocMousePressCore(doc,right);
+       else action=DocMouseReleaseCore(doc,right,dbl);
++      if(doc->cur_entry->type_u8==DOCT_MACRO) {
++        KernelLog("CLICK TRACE mouse ");
++        KernelHex(down);KernelLog(" ");KernelHex(action);KernelLog(" ");
++        KernelHex(doc->cur_entry->de_flags);KernelLog(" ");
++        KernelHex(doc->cur_entry->left_cb);KernelLog("\n");
++      }
+     }
+     NativeWindowMouseRelease(&scope);
+     if(action)NativePostMsg(task,MSG_KEY_DOWN,action,0,0);

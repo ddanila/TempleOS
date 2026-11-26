@@ -459,7 +459,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   and [generation input audit](build/i386-demo-f64-files-v1/generations128/input-source-audit/result.json).
   The [generation-one install](build/i386-demo-f64-files-v1/generations128/gen1-install/result.json)
   passed for all nine rebuilt providers, including its independent boot
-  and diagnostic growth recovery. The generation-one flat rebuild follows.
+  and diagnostic growth recovery. Generation one then rebuilt and
+  installed the 468,784-byte flat kernel at 128 MiB and cold-booted at
+  8 MiB. Its installed-image and 1,573-file source audits passed. See
+  the [flat rebuild and cold boot](build/i386-demo-f64-files-v1/generations128/gen1-selfhost/result.json),
+  [installed-image audit](build/i386-demo-f64-files-v1/generations128/gen1-audit/result.json),
+  and [source audit](build/i386-demo-f64-files-v1/generations128/gen1-source-audit/result.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the
@@ -552,6 +557,11 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   to the demo's unchanged `MyLeftCB1` produces a 211 ms rising sweep
   and restores the prompt, isolating the remaining gap to activation
   from the console document.
+  The [native click trace](build/i386-demo-click-callback-v1/click-trace.json)
+  shows the release queues Space and the terminal consumes it with the
+  macro selected, its left callback present, and its Escape flag set.
+  The standard document action queues Escape, which the native console
+  loop did not handle.
 
 
 ### Plan decisions (2026-11-24)
