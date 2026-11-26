@@ -1,0 +1,17 @@
+{
+  "result": "fail",
+  "input_sha256": "6e05345edddd4aaec70e4aa9368dc5cd3df571fea790540a924f610f7298e951",
+  "entries": {
+    "Demo/DolDoc/FileRead.HC": {
+      "source_sha256": "99a30083defdfdbb5cc6bc4d91a5a33930039c03760379bde6abf797b4b98962",
+      "output_file": "demo-0.DD",
+      "result": "fail",
+      "original_sha256": "afc12d89279e02dcd2026100c5c5b37dbc7028707b60cf7fb50691abdf7b281e",
+      "native_sha256": "b17525b7f731b7728c703e12f51067db24df9049dc1237ccff56213862784689",
+      "bytes": 1674
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}

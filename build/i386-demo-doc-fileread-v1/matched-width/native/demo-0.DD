@@ -1,0 +1,40 @@
+$FG,5$-------::/Doc/Welcome.DD-------
+$FG,2$The lowest byte of the 32-bit 'doc_e->type', '$FG,5$doc_e->type.u8[0]$FG,2$', is cmd and accessed with the union '$FG,5$doc_e->type_u8$FG,2$'.  See $LK,"CDocEntry",A="MN:CDocEntry"$, $LK,"Doc Type Defines",A="MN:DOCT_TEXT"$ and $LK,"Doc Type Codes",A="FF:::/Adam/DolDoc/DocInit.HC,ST_DOC_CMDS"$.
+$FG$  TX:348
+  CR:135
+  SR:117
+  ID:2
+  FG:153
+  WW:1
+  UL:2
+  LK:77
+  MA:1
+
+$FG,2$'$FG,5$doc_e->type.u8[1]$FG,2$' is the scrn color attr of the entry.  '$FG,5$doc_e->type.u16[1]$FG,2$' is some flags for blinking and stuff.  See $LK,"Doc Type Flag Defines",A="MN:DOCET_BLINK"$.
+$FG$  31:84
+$FG,2$
+'$FG,5$doc_e->de_flags$FG,2$' is 64-bit.  See $LK,"Doc Flag Defines",A="MN:DOCEf_TAG"$ and $LK,"Doc Flag Codes",A="FF:::/Adam/DolDoc/DocInit.HC,ST_DOC_FLAGS"$.
+$FG$   T:426
+   A:74
+   D:1
+HTML:2
+  LM:1
+  CX:1
+  WW:835
+  UL:2
+   L:77
+  PU:1
+$BK,1$PRESS A KEY$BK,0$
+
+$FG,5$-------::/Doc/Welcome.DD-------
+$FG,2$The lowest byte of the 32-bit 'doc_e->type', '$FG,5$doc_e->type.u8[0]$FG,2$', is cmd and accessed with the union '$FG,5$doc_e->type_u8$FG,2$'.  See $LK,"CDocEntry",A="MN:CDocEntry"$, $LK,"Doc Type Defines",A="MN:DOCT_TEXT"$ and $LK,"Doc Type Codes",A="FF:::/Adam/DolDoc/DocInit.HC,ST_DOC_CMDS"$.
+$FG$  TX:96
+  CR:135
+
+$FG,2$'$FG,5$doc_e->type.u8[1]$FG,2$' is the scrn color attr of the entry.  '$FG,5$doc_e->type.u16[1]$FG,2$' is some flags for blinking and stuff.  See $LK,"Doc Type Flag Defines",A="MN:DOCET_BLINK"$.
+$FG$$FG,2$
+'$FG,5$doc_e->de_flags$FG,2$' is 64-bit.  See $LK,"Doc Flag Defines",A="MN:DOCEf_TAG"$ and $LK,"Doc Flag Codes",A="FF:::/Adam/DolDoc/DocInit.HC,ST_DOC_FLAGS"$.
+$FG$   T:96
+$BK,1$PRESS A KEY$BK,0$
+
+

@@ -1,0 +1,32 @@
+{
+  "result": "fail",
+  "fixture_sha256": "ed6eae66c277579182e1ce71c37c2a25913d842ca08e8fdb723f388baddf9c62",
+  "scope": "Actual parsed TextDemo button command and Bible link via DocEntryRun",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "e4a61b3a1343d694a099c5b242300adf94a9c51f34e7200e2a70159feff4baa2",
+    "image_sha256": "19aa9d4965d8a85651b76917e6b4c264cf6798cea8075fac6162814c4e9e1332",
+    "boot_area_sha256": "5684a31f570201ae7bd8c9d2642d86148a0d31e88b7103f1bf32a72597385b59",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96175,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 96178,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/TextDemo.HC": "ed6eae66c277579182e1ce71c37c2a25913d842ca08e8fdb723f388baddf9c62"
+    },
+    "added_attributes": {
+      "/Probe/TextDemo.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "error": "Missing guest marker: COMMAND OK\n"
+}
