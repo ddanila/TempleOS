@@ -1,0 +1,50 @@
+{
+  "result": "pass",
+  "source_sha256": "8f4fb59318ec229c78846aa74641ffc5cb6adb59807e820bf786eb124a8dbcc2",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-extents-v2/candidate.img": "19f1f3e781ef1f2abb3be18480f24c87f96c4d388342c6156c52145c6bc16c32"
+  },
+  "bounds": {
+    "x": [
+      -11,
+      49
+    ],
+    "y": [
+      -12,
+      23
+    ]
+  },
+  "box_size": [
+    62,
+    36
+  ],
+  "raster_sha256": "1683964033a571084bb7f70260ddedad319fc28d975141d17d61bdad2220e674",
+  "screenshots_sha256": {
+    "original": {
+      "before-key.png": "c92855ab2af3f6be181ff7d195f13ff37b88d4f9ecc9fdc1350ed761b42f5162",
+      "after-key.png": "17dbf1bcc0a330f587745e3c5109e360edaac2d6bcb1df2b8012708bde9ddcc0"
+    },
+    "native": {
+      "before-key.png": "8659d61b9b2ca29dbf52310b240b93fac18e2cf548ed23164903532d37bb267a",
+      "after-key.png": "dccadbdb5ca789f386c1764fa2df0ea85503bc5fc367ebb72c819eaa317d16c7"
+    }
+  },
+  "delivered_source_files": 1572,
+  "x86_64_bootstrap_generations": [
+    {
+      "Compiler.BIN": "2aadbdb94c1ef5c1c8013482ae18897096eadbb3aa395e18cc5fee67a3c593d2",
+      "Kernel.BIN": "18092306ce944a20b6e5a0fed0c097e4e9159b3c83f3445604f6b985582f2350"
+    },
+    {
+      "Compiler.BIN": "83fbfc1bff917f50f32bca3ed6a3c1408012f4d94d020378569bf0ad4467dd41",
+      "Kernel.BIN": "d98ecea79b0e25a560abd50651e4cae703652fee7d1388e4515b830ec058f7ce"
+    }
+  ],
+  "evidence_sha256": {
+    "render/result.json": "b4609919da507a161c41e30aa0850a8b20bd7cc775236da68a9abfac7acac0c4",
+    "address8/result.json": "f02fac1f7ae18de2b462bbf99a10c1ececc1cfb4ca904b2d79a274b9477f5cfe",
+    "rebuild/result.json": "fd12d6da27c9fe5c2461e28d0215a46285c7af87ce8e800294da3c12f0987280",
+    "source-audit.json": "5c52c0abf1ae7f70ddb3d55983ab99991b17e3d7d64d46a5a93047f770e1345a"
+  }
+}

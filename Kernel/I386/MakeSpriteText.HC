@@ -2,6 +2,7 @@
 #include "/Kernel/I386/PublicKernel.HH"
 #include "/Kernel/I386/PublicDocument.HH"
 #include "/Kernel/I386/PublicGraphicsContext.HH"
+#include "/Kernel/I386/PublicRaster.HH"
 #include "/Kernel/I386/PublicFormat.HH"
 #include "/Kernel/I386/PublicHash.HH"
 #include "/Kernel/I386/PublicMath.HH"
@@ -11,3 +12,4 @@
 #include "/Adam/Gr/SpriteElementSizeCore.HC"
 #include "/Adam/Gr/SpriteSummaryCore.HC"
 #include "/Adam/Gr/SpriteToCodeCore.HC"
+#include "/Adam/Gr/SpriteExtentsCore.HC"

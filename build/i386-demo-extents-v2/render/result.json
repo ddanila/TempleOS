@@ -1,0 +1,9 @@
+{
+  "result": "captured",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-extents-v2/candidate.img": "19f1f3e781ef1f2abb3be18480f24c87f96c4d388342c6156c52145c6bc16c32"
+  },
+  "source_sha256": "8f4fb59318ec229c78846aa74641ffc5cb6adb59807e820bf786eb124a8dbcc2",
+  "inputs_unchanged": true
+}

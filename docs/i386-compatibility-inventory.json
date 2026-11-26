@@ -17353,10 +17353,23 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged Extents demo on the pinned original and i386. Capture its outline, send a physical key, and verify the reported bounds and native prompt recovery.",
+      "oracle": "Compare all sprite and bounding-box pixels after aligning their positions. Check clearing and the exact X and Y bounds in the post-key text.",
+      "tests": [
+        {
+          "target": "native-extents-before-public-wrapper",
+          "result": "fail",
+          "evidence": "build/i386-demo-extents-v1/baseline-reject.json",
+          "scope": "The previous i386 image rejects the SpriteExtents call."
+        },
+        {
+          "target": "native-original-sprite-extents",
+          "result": "pass",
+          "evidence": "build/i386-demo-extents-v2/qualification.json",
+          "scope": "Both guests match the entire 62 by 36 sprite and outline, clear it on Space and report X -11 to 49 and Y -12 to 23."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/FontEd.HC",
