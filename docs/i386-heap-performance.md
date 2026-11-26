@@ -1106,3 +1106,14 @@ publication checks, and 28 program publication checks. Both memory-probe
 phases and all nine exact VGA checkpoints passed, with zero BuildRuntime
 loads and the source image unchanged.
 [8 MiB diagnostic receipt](../build/i386-ata-string-read-v1/diagnostic8-kvm/result.json)
+
+The paused TCG profile of the ATA candidate completed and collected 2,307
+samples. The three heap walks `I386HeapScan`, `I386HeapScanSelect`, and
+`I386HeapFree` account for 564 of 761 user-header samples and 953 of
+1,300 startup-source samples. The path through `I386CmpControlValid` and
+`I386CmpCodeOwner` accounts for 141 and 291 of the `I386HeapScan` samples
+in those phases. In the foundation phase, symbol lookup and module
+validation account for 109 of 141 samples. These samples identify the
+remaining TCG work after the ATA change. Pausing the guest makes the
+profile unsuitable for judging elapsed startup time.
+[Verified TCG sample summary](../build/i386-ata-string-read-v1/startup-profile8-tcg/summary.json)
