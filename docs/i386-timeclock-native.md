@@ -158,3 +158,16 @@ directly to public `FileWrite`. All five immediate reads returned the exact
 home-relative filename. The probe leaves the application's failing call
 sequence open and gives a controlled passing case on the same base image.
 See the [round-trip results](../build/i386-timeclock-write-read-matrix-v1/guest-results.txt).
+
+The failing application run and passing direct-write run both left the
+same 50-byte archive and RedSea attributes `0xC00` at
+`/Home/TimeClock/TimeFile.DATA.Z`. The on-disk comparison isolates the
+difference to guest state or to the call sequence surrounding the read.
+See the [disk comparison](../build/i386-timeclock-write-sequence-v1/disk-comparison.json).
+
+Within one guest, TimeClock's own write was unreadable before and after
+`TimeEntriesDel`, including through the absolute path. A direct overwrite of
+the same filename with the captured record made the next read return all 34
+bytes. This reproduces the original failure without the report runner and
+rules out record cleanup as the trigger. See the
+[guest trace](../build/i386-timeclock-write-sequence-v1/guest-results.txt).
