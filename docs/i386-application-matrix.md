@@ -2796,3 +2796,9 @@ while native timed them at 330 ms and 310 ms. The sound-off calls
 themselves arrive late in native guest time. The audio difference
 therefore persists after allowing earlier scoring sounds to settle.
 See the [guest sound-clock comparison](../build/i386-keepaway-sound-phases-v1/comparison.json).
+
+An empty-table Logic session now has a paired keyboard check. Both
+guests accepted an empty gate list and table size, printed the
+original abort message, and restored the caller's drawing callback
+and task settings. Native rendered fresh arithmetic afterward.
+See the [cancellation comparison](../build/i386-logic-cancel-v2/comparison.json).
