@@ -16025,10 +16025,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Maximize the terminal, clear it, and launch unchanged CursorMove in each guest.",
+      "oracle": "Read all 100 cells using the pinned font. Check the column-major layout, four-column spacing, and fresh native arithmetic after the final cursor move.",
+      "tests": [
+        {
+          "target": "native-original-doldoc-cursor-grid",
+          "result": "pass",
+          "evidence": "build/i386-demo-cursor-move-v1/table-comparison/result.json",
+          "scope": "Both guests render 000 through 099 in the same ten-row, ten-column layout. The i386 prompt accepts fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/DolDoc/Data.HC",
