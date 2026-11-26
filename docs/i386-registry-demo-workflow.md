@@ -209,3 +209,13 @@ content/access coverage rather than all application behavior. A new full
 nine-module native build is running separately in
 `build/i386-parser-heap-native-nine-v1`; no C5 build or generation pass is
 claimed before its terminal audit.
+
+## Configured Home on the second native generation
+
+The 64 MiB KVM run passed the first launch with the bundled demo and the
+standard mouse pointer visible. The fixture reads the registry filename from
+`sys_registry_doc` and exports the file and execution time bounds. This
+image saves the score and incremented value to `/Home/Registry.HC.Z`.
+The earlier root-path probe read a separate registry containing the default
+Adam entries. See the
+[first-boot result](../build/i386-registry-demo-gen2-reboot-active-v1/first/result.json).

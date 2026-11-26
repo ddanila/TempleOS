@@ -18,6 +18,8 @@ def main():
     parser.add_argument('disk',type=Path)
     parser.add_argument('--reference',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--managed-pointer', action='store_true',
+                        help='Require the original standard pointer in managed console frames')
     parser.add_argument('--require-bundled',action='store_true',help='Exercise the source image bundled demo without adding a fixture')
     args=parser.parse_args();source=args.disk.resolve();ref=args.reference.resolve();out=args.out.resolve()
     if out.exists():parser.error('Use a fresh output directory')
@@ -36,10 +38,12 @@ def main():
         pack=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))
         initial_files=pack['snapshot'](source.read_bytes())[1]
         subprocess.run(['python3',str(first_tool),str(source),'--reference',str(ref),
-            '--out',str(out/'first')]+(['--require-bundled'] if args.require_bundled else []),cwd=ROOT,check=True)
+            '--out',str(out/'first')]+(['--require-bundled'] if args.require_bundled else [])
+            +(['--managed-pointer'] if args.managed_pointer else []),cwd=ROOT,check=True)
         first=json.loads((out/'first/result.json').read_text())
         if first['result']!='pass' or not first['inputs_unchanged']:raise ValueError('First launch failed')
         report['demo_source']=first['demo_source']
+        registry_path=report['registry_path']=first['registry_path']
         if args.require_bundled and report['demo_source']!='bundled':raise ValueError('First launch added a demo fixture')
         build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
         extract=build['mutated_file_contents'];verify=build['verify_mutated_volume']
@@ -58,11 +62,13 @@ def main():
         report['second_commands']=second
         def boot(commands,name):
             return run(working,out/name,snapshot=False,ram_mib=64,cpu='486,-fpu',accel='kvm',
-                qmp_stdio=True,welcome=True,keep_window_manager=True,
+                qmp_stdio=True,welcome=True,keep_window_manager=True,managed_pointer=args.managed_pointer,
                 startup_check={'status':'ok','answers':[],'commands':commands,
                     'pause_window_manager':False,'command_timeout':120})
         report['second']=boot(second,'second')
-        files=extract(working,{'/DemoRegistryState.HC','/DemoTimes.DATA','/Demo/RegistryDemo.HC'})
+        files=extract(working,{'/DemoRegistryState.HC','/DemoTimes.DATA','/DemoRegistryPath.DATA','/Demo/RegistryDemo.HC',registry_path})
+        if files['/DemoRegistryPath.DATA']!=('C:'+registry_path).encode('ascii'):
+            raise ValueError('Active registry path changed across reboot')
         if files['/Demo/RegistryDemo.HC']!=(ROOT/'Demo/RegistryDemo.HC').read_bytes():raise ValueError('Demo changed')
         before,score,after=struct.unpack('<3d',files['/DemoTimes.DATA'])
         state=files['/DemoRegistryState.HC']
@@ -76,10 +82,10 @@ def main():
             ('Abs(best_score-('+match[1].decode()+'))<0.00000001;',['1']),
             ('6*7;',['42'])]
         report['third_commands']=third;report['third']=boot(third,'third')
-        after_files=extract(working,{'/DemoRegistryState.HC','/DemoTimes.DATA','/Demo/RegistryDemo.HC'})
+        after_files=extract(working,{'/DemoRegistryState.HC','/DemoTimes.DATA','/DemoRegistryPath.DATA','/Demo/RegistryDemo.HC',registry_path})
         if after_files!=files:raise ValueError('Third-boot verification changed saved files')
         final_files=pack['snapshot'](working.read_bytes())[1]
-        allowed={'/Registry.HC.Z','/DemoRegistryState.HC','/DemoTimes.DATA'}
+        allowed={registry_path,'/DemoRegistryState.HC','/DemoTimes.DATA','/DemoRegistryPath.DATA'}
         if report['demo_source']=='added-fixture':allowed.add('/Demo/RegistryDemo.HC')
         changed=[name for name in set(initial_files)|set(final_files)
             if initial_files.get(name)!=final_files.get(name)]

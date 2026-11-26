@@ -18432,6 +18432,13 @@
       },
       "tests": [
         {
+          "target": "native-gen2-configured-home-registry",
+          "command": "python3 tools/test-i386-registry-demo.py IMAGE --reference REFERENCE --out OUT --require-bundled --managed-pointer",
+          "result": "pass",
+          "evidence": "build/i386-registry-demo-gen2-reboot-active-v1/first/result.json",
+          "scope": "First launch on the frozen second-generation desktop with configured Home. Exact console frames, bounded score, incremented value and the active Home registry file are checked."
+        },
+        {
           "command": "python3 tools/test-i386-registry-demo-reference.py --out OUT",
           "result": "pass",
           "evidence": "build/i386-registry-demo-reference-v2/result.json",

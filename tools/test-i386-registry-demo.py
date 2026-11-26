@@ -15,7 +15,7 @@ COMMANDS=[
     ('#include "C:/Demo/RegistryDemo.HC"',['High Score:1.23000','Val:1234']),
     ('F64 demo_after=tS;',[]),
     ('RegExe("DemoCompany/Game1/SimpleVal")==1235 && demo_before<=best_score && best_score<=demo_after;',['1']),
-    ('U0 SaveDemoRegistry(){I64 n;U8 *p=FileRead("C:/Registry.HC.Z",&n);FileWrite("C:/DemoRegistryState.HC",p,n);Free(p);}',[]),
+    ('U0 SaveDemoRegistry(){I64 n;U8 *name=sys_registry_doc->filename.name,*p=FileRead(name,&n);FileWrite("C:/DemoRegistryState.HC",p,n);FileWrite("C:/DemoRegistryPath.DATA",name,StrLen(name));Free(p);}',[]),
     ('U0 SaveDemoTimes(){F64 v[3];v[0]=demo_before;v[1]=best_score;v[2]=demo_after;FileWrite("C:/DemoTimes.DATA",v,24);}',[]),
     ('SaveDemoRegistry;SaveDemoTimes;',[]),
     ('6*7;',['42']),
@@ -27,6 +27,8 @@ def main():
     parser.add_argument('disk',type=Path)
     parser.add_argument('--reference',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--managed-pointer', action='store_true',
+                        help='Require the original standard pointer in managed console frames')
     parser.add_argument('--require-bundled',action='store_true',help='Require the unchanged demo in the source image')
     args=parser.parse_args();source=args.disk.resolve();out=args.out.resolve();ref=args.reference.resolve()
     if out.exists():parser.error('Use a fresh output directory')
@@ -52,14 +54,21 @@ def main():
         build=runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
         report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](
             working,out/'qemu',snapshot=False,ram_mib=64,cpu='486,-fpu',accel='kvm',qmp_stdio=True,
-            welcome=True,keep_window_manager=True,startup_check={'status':'ok','answers':[],
+            welcome=True,keep_window_manager=True,managed_pointer=args.managed_pointer,startup_check={'status':'ok','answers':[],
                 'commands':COMMANDS,'pause_window_manager':False,'command_timeout':120})
-        files=build['mutated_file_contents'](working,{'/DemoRegistryState.HC','/DemoTimes.DATA','/Demo/RegistryDemo.HC'})
+        files=build['mutated_file_contents'](working,{'/DemoRegistryState.HC','/DemoTimes.DATA','/DemoRegistryPath.DATA','/Demo/RegistryDemo.HC'})
         if files.get('/Demo/RegistryDemo.HC')!=demo.read_bytes():raise ValueError('Persisted demo fixture changed')
         data=files.get('/DemoTimes.DATA',b'')
         if len(data)!=24:raise ValueError('Missing persisted time samples')
         before,score,after=struct.unpack('<3d',data)
         if not 0<=before<=score<=after:raise ValueError('Demo timestamp outside actual execution')
+        name=files.get('/DemoRegistryPath.DATA',b'').decode('ascii')
+        if not re.fullmatch(r'C:/(?:[^/:]+/)*Registry\.HC\.Z',name):
+            raise ValueError('Active registry is outside the tested volume')
+        registry_path=name[2:]
+        if registry_path not in build['mutated_file_contents'](working,{registry_path}):
+            raise ValueError('Missing active registry on disk')
+        report['registry_path']=registry_path
         state=files.get('/DemoRegistryState.HC',b'')
         match=re.search(rb'F64 best_score= *([0-9]+\.[0-9]{5});\n',state)
         if not match or abs(float(match[1])-score)>0.0000051 or b'1235;\n' not in state:
