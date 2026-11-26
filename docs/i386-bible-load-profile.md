@@ -752,3 +752,11 @@ The previous trim stack through `DocPutS` disappeared and allocation became
 the largest sampled cost. `I386MemFreeSpansMerge` accounted for 177 samples
 and `I386MemPoolValid` for 155. The lookup was still running when sampling
 ended. See the [candidate profile](../build/i386-bible-trim-on-page-return-v1/first-lookup-profile/result.json).
+
+The frozen desktop control passed the same excerpt checks and reported
+the same region counts (67 and 113). Control read-through-free time was
+6.512 seconds for 1,600 lines and 15.832 seconds for 3,200 lines. The
+candidate measured 1.303 and 2.206 seconds. Most of the observed reduction
+was between find completion and cleanup completion. The runs overlapped
+other guests and provide a scoped comparison at 64 MiB TCG.
+See the [control result](../build/i386-bible-trim-on-page-return-v1/scaled-control/result.json).
