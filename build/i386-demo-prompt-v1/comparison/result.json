@@ -1,0 +1,142 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/cross-sign/kernel.img": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "/home/ddanila/fun/TempleOS/Demo/Prompt.HC": "c1fcc2c1e4c534cb8a6469fdd0ce32d91da0a1876f3c51d4237f7a9b815c4f10"
+  },
+  "inputs_unchanged": true,
+  "answers": {
+    "integer": "6*7",
+    "float": "13.0/4",
+    "name": "Ada",
+    "date": "08/15/2024"
+  },
+  "runs": {
+    "original": {
+      "frames": {
+        "integer": {
+          "positions": [
+            [
+              2,
+              21
+            ]
+          ],
+          "sha256": "c13e79eed2f0003d25a1e6d2c287716c87cb8ae0740ea4a3a2220e677b30d60b"
+        },
+        "float": {
+          "positions": [
+            [
+              2,
+              23
+            ]
+          ],
+          "sha256": "41b2d048e9f5e1b54d80c1339900abf9647e61c796dc79bf22504fb0d71ef1ad"
+        },
+        "name": {
+          "positions": [
+            [
+              2,
+              26
+            ]
+          ],
+          "sha256": "ad75d0fad5d65aefddbe3e76c7ff9687400277b3b74402709595a083d9229ec5"
+        },
+        "date": {
+          "positions": [
+            [
+              2,
+              28
+            ]
+          ],
+          "sha256": "4dabfeb7391522088e16f20820283b7eedf47e177f26432639d913c350460e30"
+        }
+      },
+      "values": {
+        "nt=42": [
+          [
+            2,
+            22
+          ]
+        ],
+        "loat=3.250000e+00": [],
+        "ame:Ada": [
+          [
+            2,
+            27
+          ]
+        ],
+        "ate=08/15/2024": []
+      },
+      "completed_sha256": "a2d8ce9748dc8ea25e9ca6ed1756b1fedef7fa83b8445bb9ae210fa2fa6a1fdf",
+      "result": "fail"
+    },
+    "native": {
+      "frames": {
+        "integer": {
+          "positions": [
+            [
+              1,
+              16
+            ]
+          ],
+          "sha256": "b8d86ea37a9fbc088f7d265a7e1084ffa9e1a6f00408250a36b99574ea258986"
+        },
+        "float": {
+          "positions": [
+            [
+              1,
+              18
+            ]
+          ],
+          "sha256": "bea58bdcde82013ebfe73d050d91d86dafe51cae2897fd34f651f323fb3b75e9"
+        },
+        "name": {
+          "positions": [
+            [
+              1,
+              20
+            ]
+          ],
+          "sha256": "f081db812ca290e4b4e3a2fdd123f87edadb2b4cdaa176fdb844658444b3db02"
+        },
+        "date": {
+          "positions": [
+            [
+              1,
+              22
+            ]
+          ],
+          "sha256": "882a7797fdbbc1578f5026fd2416a6a833547b52bf3dc29807605cd06b0d9d2a"
+        }
+      },
+      "values": {
+        "nt=42": [
+          [
+            1,
+            17
+          ]
+        ],
+        "loat=3.250000e+00": [],
+        "ame:Ada": [
+          [
+            1,
+            21
+          ]
+        ],
+        "ate=08/15/2024": []
+      },
+      "completed_sha256": "0b86944cc8e708a369d71d99304f34c86cbe4516d5e9be3cfa96e9e6d5f5bc25",
+      "fresh_result": {
+        "column": 4,
+        "row": 17,
+        "foreground": [
+          0,
+          0,
+          0
+        ]
+      },
+      "result": "fail"
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/cross-sign/kernel.img": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "/home/ddanila/fun/TempleOS/Demo/Prompt.HC": "c1fcc2c1e4c534cb8a6469fdd0ce32d91da0a1876f3c51d4237f7a9b815c4f10"
+  },
+  "font_sha256": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+  "capture_sha256": "9916c255acc561c3167379e300947713977b9e487d0b8259cc6a38532c5cecc4",
+  "answers": {
+    "integer": "6*7",
+    "float": "13.0/4",
+    "name": "Ada",
+    "date": "08/15/2024"
+  },
+  "values": {
+    "original": {
+      "nt=42": [
+        [
+          2,
+          22
+        ]
+      ],
+      "loat=3.25000000e0": [
+        [
+          2,
+          25
+        ]
+      ],
+      "ame:Ada": [
+        [
+          2,
+          27
+        ]
+      ],
+      "ate=08/15/24": [
+        [
+          2,
+          29
+        ]
+      ]
+    },
+    "native": {
+      "nt=42": [
+        [
+          1,
+          17
+        ]
+      ],
+      "loat=3.25000000e0": [
+        [
+          1,
+          19
+        ]
+      ],
+      "ame:Ada": [
+        [
+          1,
+          21
+        ]
+      ],
+      "ate=08/15/24": [
+        [
+          1,
+          23
+        ]
+      ]
+    }
+  },
+  "fresh_result": {
+    "column": 4,
+    "row": 17,
+    "foreground": [
+      0,
+      0,
+      0
+    ]
+  }
+}

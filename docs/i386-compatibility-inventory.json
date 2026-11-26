@@ -19089,10 +19089,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged Prompt, enter an integer expression, a floating-point expression, a name, and a date.",
+      "oracle": "Verify each prompt before typing, compare the four rendered answers using the pinned font, and evaluate fresh native arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-four-typed-prompts",
+          "result": "pass",
+          "evidence": "build/i386-demo-prompt-v1/qualification.json",
+          "scope": "Both guests render 42, 3.25000000e0, Ada and 08/15/24 for the same typed inputs. The i386 prompt evaluates fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/PullDownMenu.HC",
