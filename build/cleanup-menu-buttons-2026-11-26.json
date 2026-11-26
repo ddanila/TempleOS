@@ -1,0 +1,7 @@
+{
+  "removed": "build/i386-demo-menu-buttons-v1/comparison/working.img",
+  "retained": "build/i386-demo-menu-buttons-v1/button-space/working.img",
+  "sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+  "logical_bytes": 67108864,
+  "allocated_bytes": 67112960
+}
