@@ -6421,3 +6421,14 @@ and recovery and matched both VGA smoke checkpoints. The installed
 image then began the 128 MiB guest flat-kernel rebuild.
 [Second-generation installation](../build/i386-code-alloc-known-v1/native-generations128/gen2-install/result.json) ·
 [8 MiB cold boot](../build/i386-code-alloc-known-v1/native-generations128/gen2-install/boot/result.json)
+
+The two-generation rebuild from frozen revision `84d1c25f` passed.
+Generation two produced a 469,000-byte flat kernel and the compiler
+program probe, cold-booted at 8 MiB, and passed the installed artifact
+and delivered-source audits. The reproducibility audit matched all
+16 modules after normalizing the eight-byte kernel build date and
+verified both boot payloads independently.
+[Second-generation self-build](../build/i386-code-alloc-known-v1/native-generations128/gen2-selfhost/result.json) ·
+[Artifact audit](../build/i386-code-alloc-known-v1/native-generations128/gen2-audit/result.json) ·
+[Source audit](../build/i386-code-alloc-known-v1/native-generations128/gen2-source-audit/result.json) ·
+[Generation comparison](../build/i386-code-alloc-known-v1/native-generations128/generation-identity/result.json)
