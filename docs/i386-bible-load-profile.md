@@ -807,3 +807,11 @@ previous post-lookup profile was still inside pool removal when its
 for 369 of 381 samples on the new build.
 See the [public heap result](../build/i386-heap-pool-remove-v1/public-heap/result.json)
 and [post-lookup profile](../build/i386-heap-pool-remove-v1/post-bible-profile/result.json).
+
+The 32-bit address comparison experiment passed both bootstrap builds,
+the 386 cross-build and the public heap tests. Its follow-up command took
+94.6 seconds in the 64 MiB KVM sample. The preceding pool-removal change
+took 83.4 seconds, and ownership lookup remained the largest sampled cost.
+The production lookup keeps the existing comparison. See the
+[experimental patch](../build/i386-heap-region-address-v1/tested.patch) and
+[profile report](../build/i386-heap-region-address-v1/post-bible-profile/result.json).
