@@ -2686,3 +2686,11 @@ to a working prompt. The original foul reference also awarded the
 opposing team exactly one point during a controlled collision.
 See the [cold-launch receipt](../build/i386-keepaway-cold-v1/native/result.json)
 and [original foul receipt](../build/i386-keepaway-foul-v1/original-receipt.json).
+
+The fresh native image matched the original finish and restart checks.
+The Game Over caption was at the same coordinates and matched 171 of
+173 expected red glyph pixels on both guests. The lower match left the
+8–0 best score intact. After a cold boot, the unchanged KeepAway
+loader recovered that score from the registry and the prompt rendered
+fresh arithmetic. See the
+[native finish receipt](../build/i386-keepaway-finish-v3/native/result.json).
