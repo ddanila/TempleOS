@@ -151,6 +151,8 @@ def main():
         original_outputs = run(original_image, out/'original', False, outputs,
                                args.reference_at_prompt)
         original_end = int(time.time())
+        for path, original in zip(args.demo, original_outputs):
+            report['entries'][path].update(original_sha256=sha(original), bytes=len(original))
         native_start = int(time.time())
         native_outputs = run(native_image, out/'native', True, outputs)
         native_end = int(time.time())
@@ -164,8 +166,7 @@ def main():
             else:
                 matches = original == native
             result = 'pass' if matches else 'fail'
-            report['entries'][path].update(result=result, original_sha256=sha(original),
-                                           native_sha256=sha(native), bytes=len(original))
+            entry.update(result=result, native_sha256=sha(native))
         report['result'] = 'pass' if all(e['result'] == 'pass' for e in report['entries'].values()) else 'fail'
     except Exception as error:
         report.update(result='fail', error=str(error))

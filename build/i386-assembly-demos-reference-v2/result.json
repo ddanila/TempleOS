@@ -1,0 +1,41 @@
+{
+  "result": "fail",
+  "input_sha256": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+  "entries": {
+    "Demo/Asm/AsmHelloWorld.HC": {
+      "source_sha256": "69303dd9f6eb12e021d909986fee8546f3aa9f0fcdb5cc0485391f9671e3e963",
+      "output_file": "demo-0.DD",
+      "original_sha256": "33f821a344a050785241010f080ee7d0a1fb55fb88b6c8224f6b14013265676e",
+      "bytes": 151
+    },
+    "Demo/Asm/BuzzFizz.HC": {
+      "source_sha256": "41ec42ff7d81396b7cc54578135bfa30d1d73e30ec4627905b409e4a61683932",
+      "output_file": "demo-1.DD",
+      "original_sha256": "9f9a633edb35ecf530f628d09c0adac0e74c58ddf952a90c6309f521e382d92e",
+      "bytes": 1951
+    },
+    "Demo/Asm/PutDec.HC": {
+      "source_sha256": "8002730a5834122472ee090a95e4b0d1dbfb4030bda1ace3a24bbd646ca120cd",
+      "output_file": "demo-2.DD",
+      "original_sha256": "59502a553d387d8ec664b34963c5a3c766012ad85eeff32c83ad8b1cc0de0b92",
+      "bytes": 11
+    },
+    "Demo/Asm/DivByHand.HC": {
+      "source_sha256": "c1b4c83ac2b33887e8d3c606b480ec237f719f4b25047597fe52fcda22cc9744",
+      "output_file": "demo-3.DD",
+      "original_sha256": "be08209b9932a369055d3bd1d56fb4c0015196b5fd517a86bb7512673dde61a8",
+      "bytes": 17
+    },
+    "Demo/Asm/MulByHand.HC": {
+      "source_sha256": "1c5b975941d49f364accc6fd3f781ab1015673104d3c499e6325cf5b895b99f5",
+      "output_file": "demo-4.DD",
+      "original_sha256": "0cec5bf4e805101a7ae825be8987c8e246f99cb32f9c2682f8a61c780aa03990",
+      "bytes": 89
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 00000000015A9048 00000000536B7354\nINPUT LINE #include \"C:/Probe/DemoBatch.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND UNAVAILABLE source C:/Demo/Asm/AsmHelloWorld.HC token asm\nFRONTEND ERROR Native frontend service unavailable token asm file C:/Demo/Asm/AsmHelloWorld.HC line 22\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nEXPORT demo-0.DD 3FDC040 2C\n",
+  "inputs_unchanged": true
+}

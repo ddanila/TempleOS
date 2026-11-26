@@ -15566,9 +15566,31 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-reference",
+        "description": "Run the standalone assembly demo and compare the ten countdown lines from 0A to 01, each followed by Hello World."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-demo-batch.py",
+        "checks": [
+          "Compare the complete DolDoc output, including spaces, newlines and the end marker.",
+          "Require ordinary native command input after the demo returns."
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-assembly-demo-output",
+          "result": "pass",
+          "evidence": "build/i386-assembly-demos-reference-v2/result.json",
+          "scope": "Complete output captured on the pinned original and checked independently."
+        },
+        {
+          "target": "native-assembly-demo-batch",
+          "result": "fail",
+          "evidence": "build/i386-assembly-demos-reference-v2/result.json",
+          "gap": "Frozen native compiler rejects the top-level asm block at line 22."
+        }
+      ]
     },
     {
       "path": "Demo/Asm/BuzzFizz.HC",
@@ -15583,9 +15605,25 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-reference",
+        "description": "Run the assembly loop for 1 through 100. Compare all hexadecimal labels and FIZZ and BUZZ annotations at multiples of six and seven."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-demo-batch.py",
+        "checks": [
+          "Compare the complete DolDoc output, including spaces, newlines and the end marker.",
+          "Require ordinary native command input after the demo returns."
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-assembly-demo-output",
+          "result": "pass",
+          "evidence": "build/i386-assembly-demos-reference-v2/result.json",
+          "scope": "Complete output captured on the pinned original and checked independently."
+        }
+      ]
     },
     {
       "path": "Demo/Asm/DivByHand.HC",
@@ -15600,9 +15638,25 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-reference",
+        "description": "Run the hand-written unsigned division and compare the printed quotient 12345 for 123456 divided by 10."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-demo-batch.py",
+        "checks": [
+          "Compare the complete DolDoc output, including spaces, newlines and the end marker.",
+          "Require ordinary native command input after the demo returns."
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-assembly-demo-output",
+          "result": "pass",
+          "evidence": "build/i386-assembly-demos-reference-v2/result.json",
+          "scope": "Complete output captured on the pinned original and checked independently."
+        }
+      ]
     },
     {
       "path": "Demo/Asm/MulByHand.HC",
@@ -15617,9 +15671,25 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-reference",
+        "description": "Run both multiplication routines. Compare the two narrow products and the full 128-bit product, including leading zeroes."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-demo-batch.py",
+        "checks": [
+          "Compare the complete DolDoc output, including spaces, newlines and the end marker.",
+          "Require ordinary native command input after the demo returns."
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-assembly-demo-output",
+          "result": "pass",
+          "evidence": "build/i386-assembly-demos-reference-v2/result.json",
+          "scope": "Complete output captured on the pinned original and checked independently."
+        }
+      ]
     },
     {
       "path": "Demo/Asm/PutDec.HC",
@@ -15634,9 +15704,25 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "observed-reference",
+        "description": "Run the assembly decimal conversion and compare the printed value 122333221."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-demo-batch.py",
+        "checks": [
+          "Compare the complete DolDoc output, including spaces, newlines and the end marker.",
+          "Require ordinary native command input after the demo returns."
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-assembly-demo-output",
+          "result": "pass",
+          "evidence": "build/i386-assembly-demos-reference-v2/result.json",
+          "scope": "Complete output captured on the pinned original and checked independently."
+        }
+      ]
     },
     {
       "path": "Demo/Carry.HC",

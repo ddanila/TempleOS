@@ -1,0 +1,31 @@
+{
+  "result": "fail",
+  "input_sha256": "d9652f593e580f188ae71414722bb1fb82d8c3590215ff177b3ef7f544f753a7",
+  "entries": {
+    "Demo/Asm/AsmHelloWorld.HC": {
+      "source_sha256": "69303dd9f6eb12e021d909986fee8546f3aa9f0fcdb5cc0485391f9671e3e963",
+      "output_file": "demo-0.DD"
+    },
+    "Demo/Asm/BuzzFizz.HC": {
+      "source_sha256": "41ec42ff7d81396b7cc54578135bfa30d1d73e30ec4627905b409e4a61683932",
+      "output_file": "demo-1.DD"
+    },
+    "Demo/Asm/PutDec.HC": {
+      "source_sha256": "8002730a5834122472ee090a95e4b0d1dbfb4030bda1ace3a24bbd646ca120cd",
+      "output_file": "demo-2.DD"
+    },
+    "Demo/Asm/DivByHand.HC": {
+      "source_sha256": "c1b4c83ac2b33887e8d3c606b480ec237f719f4b25047597fe52fcda22cc9744",
+      "output_file": "demo-3.DD"
+    },
+    "Demo/Asm/MulByHand.HC": {
+      "source_sha256": "1c5b975941d49f364accc6fd3f781ab1015673104d3c499e6325cf5b895b99f5",
+      "output_file": "demo-4.DD"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 00000000015A9048 00000000536B7354\nINPUT LINE #include \"C:/Probe/DemoBatch.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND UNAVAILABLE source C:/Demo/Asm/AsmHelloWorld.HC token asm\nFRONTEND ERROR Native frontend service unavailable token asm file C:/Demo/Asm/AsmHelloWorld.HC line 22\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nEXPORT demo-0.DD 3FDC040 2C\n",
+  "inputs_unchanged": true
+}

@@ -154,3 +154,19 @@ original preloaded build-helper snapshot and reader AST. The on-disk builder
 hash differs, as recorded throughout the run; the original input manifest is
 preserved. Do not describe all original path hashes as unchanged. No C5
 completion is claimed.
+
+## Bundled assembly demo reference outputs
+
+The pinned original ran AsmHelloWorld, BuzzFizz, PutDec, DivByHand and
+MulByHand from the command prompt. The captured DolDoc streams matched
+independently calculated outputs, including all 100 BuzzFizz lines, the
+unsigned quotient and the full 128-bit product. The runner now records
+the original output hashes before it launches the native guest.
+
+Both installed native generations from `5303f095` delivered the original
+source bytes and stopped at the first demo. The native frontend reported
+its service unavailable at the top-level `asm` token in AsmHelloWorld
+line 22. The later four demos have only original output evidence from
+these runs.
+[First native generation and original output](../build/i386-assembly-demos-reference-v2/result.json) ·
+[Second native generation](../build/i386-assembly-demos-reference-v1/result.json)
