@@ -15982,6 +15982,18 @@
       "oracle": "The complete 498-byte captured DolDoc matches the original. Check link navigation and button activation in a separate live window.",
       "tests": [
         {
+          "target": "original-textdemo-physical-button",
+          "result": "pass",
+          "evidence": "build/i386-textdemo-mouse-v2/original/result.json",
+          "scope": "Physical mouse selection and double-click of the unchanged OKAY entry returns command 1 from the live menu and restores the caller document roles."
+        },
+        {
+          "target": "native-textdemo-physical-button",
+          "result": "pass",
+          "evidence": "build/i386-textdemo-mouse-v2/native/result.json",
+          "scope": "Physical mouse selection and double-click of the unchanged OKAY entry returns command 1 from the live menu and restores the caller document roles. Fresh arithmetic displays 42."
+        },
+        {
           "target": "native-textdemo-post-link-command",
           "result": "fail",
           "evidence": "build/i386-textdemo-verse-v1/native/result.json",

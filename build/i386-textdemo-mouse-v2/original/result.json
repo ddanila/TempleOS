@@ -1,0 +1,6 @@
+{
+  "result": "pass",
+  "fixture_sha256": "5bea8210cf3eab5e74a0eca61d95abda380f2db1309e7a8f019af32d69a038e3",
+  "scope": "Physical click on the unchanged TextDemo button in the live document menu",
+  "button": 1
+}

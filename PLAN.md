@@ -35,8 +35,9 @@ is complete and provides the foundation, but not desktop or application parity.
   files. TextDemo matches 498 bytes of emitted DolDoc and dispatches the
   OKAY button through `DocEntryRun` on both architectures. The native
   Bible editor now preserves the selected verse on entry. Both guests
-  show Genesis and restore document roles on Shift-Escape. Physical
-  click activation remains open.
+  show Genesis and restore document roles on Shift-Escape. Both also
+  accept a physical double-click on OKAY. Physical activation of the
+  Genesis link remains open.
 - RegistryDemo passed three 64 MiB KVM boots on the frozen second
   native generation. The harness verified the exact console frames and
   persisted increments through the configured Home registry.
