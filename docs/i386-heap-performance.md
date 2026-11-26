@@ -1178,3 +1178,12 @@ fixture, and the volume audit verified the reachable extents at each step.
 [Native build](../build/i386-code-alloc-known-v1/native-compiler128/result.json) ·
 [Install and cold boot](../build/i386-code-alloc-known-v1/native-compiler-install/result.json) ·
 [Source and disk audit](../build/i386-code-alloc-known-v1/native-compiler128/provenance.json)
+
+With the guest-built CompilerRuntime installed, the 64 MiB KVM desktop
+baseline passed all nine exact VGA checks with the managed pointer and
+Window Manager active. The 8 MiB document resource profile passed all
+20 cycles and 11 VGA checkpoints. Peak live use was 37,840 bytes,
+7,824 above baseline, and peak reservation was 55,808 bytes. Both
+tests preserved the installed source image.
+[Desktop baseline](../build/i386-code-alloc-known-v1/native-compiler-desktop64/result.json) ·
+[Document resource receipt](../build/i386-code-alloc-known-v1/native-compiler-resource8/resource-result.json)

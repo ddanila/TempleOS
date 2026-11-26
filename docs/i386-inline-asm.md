@@ -248,3 +248,8 @@ rendered arithmetic.
 [Paired demo comparison](../build/i386-mul-by-hand-port-v1/compare/result.json) ·
 [Vector receipt](../build/i386-mul-by-hand-port-v1/vectors/result.json) ·
 [Original byte carry observation](../build/i386-mul-by-hand-port-v1/original-edge/guest/debug.log)
+
+All five assembly ports passed together on the compiler allocation
+image. Each native DolDoc output matched the original byte for byte,
+and the batch returned to fresh arithmetic at the prompt.
+[Combined comparison](../build/i386-code-alloc-known-v1/assembly-demos64/result.json)

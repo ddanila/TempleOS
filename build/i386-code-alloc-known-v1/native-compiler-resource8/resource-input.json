@@ -1,0 +1,11 @@
+{
+  "disk": "/home/ddanila/fun/TempleOS/build/i386-code-alloc-known-v1/native-compiler-install/candidate.img",
+  "disk_sha256": "cc050dff325bcaf349c4dda37b68b40e9b461b8448aaeb01a66e2eef591d9d3e",
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "ram_mib": 8,
+  "working_disk": "/home/ddanila/fun/TempleOS/build/i386-code-alloc-known-v1/native-compiler-resource8/working.img",
+  "storage_policy": "writable copy",
+  "qmp_stdio": true,
+  "managed_welcome": true
+}

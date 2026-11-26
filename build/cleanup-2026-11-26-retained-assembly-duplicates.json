@@ -1,0 +1,14 @@
+[
+  {
+    "removed": "build/i386-code-alloc-known-v1/retained-current/assembly-control/source.img",
+    "retained": "build/i386-code-alloc-known-v1/retained-current/assembly-two-shard-test/source.img",
+    "sha256": "3547456d5b7cfab3dc3b79ef3b05d39073341bb0cba0d98ec22d7299e27eb296",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/retained-current/assembly-control-v2/source.img",
+    "retained": "build/i386-code-alloc-known-v1/retained-current/assembly-two-shard-test/source.img",
+    "sha256": "3547456d5b7cfab3dc3b79ef3b05d39073341bb0cba0d98ec22d7299e27eb296",
+    "allocated_bytes": 67108864
+  }
+]
