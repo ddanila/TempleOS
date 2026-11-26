@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-demo-fprintf-v1/cancel-save/working.img",
+  "retained": "build/i386-demo-fprintf-v1/save-and-export/working.img",
+  "sha256": "aeb61d05ad4b400a2fe9024611861848ba21a1583a6a307d338086a84ad39dd3",
+  "allocated_bytes": 67108864
+}

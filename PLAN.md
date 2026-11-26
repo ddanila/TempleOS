@@ -361,6 +361,9 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   on disk, and the prompt accepts fresh arithmetic. See the
   [tree comparison](build/i386-demo-fprintf-v1/save-and-export/qualification.json)
   and [native disk check](build/i386-demo-fprintf-v1/save-and-export/persisted.json).
+  After changing the fixture tree, Shift-Escape in the filename form
+  preserves the entire saved native disk byte for byte and returns to
+  arithmetic. See the [cancel regression](build/i386-demo-fprintf-v1/cancel-save/result.json).
 
 - Lines qualifies. Both guests accumulated multicolor line drawings from
   seed 1, changed the drawings across three asynchronous samples, and
