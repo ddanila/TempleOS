@@ -1,0 +1,9 @@
+[
+  {
+    "removed": "build/native-strut-run-entry-v1/native64/working.img",
+    "retained": "build/native-implicit-f64-helper-v1/ode-combined/kernel.img",
+    "allocated_bytes": 67108864,
+    "sha256": "692597ef8b6adbf0b61804ae26b9550185c0bf0b8f0f5346f4b342c3d0a6c423",
+    "bytes": 67108864
+  }
+]
