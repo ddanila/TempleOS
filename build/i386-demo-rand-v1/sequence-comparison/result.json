@@ -1,0 +1,118 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/cross-sign/kernel.img": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "/home/ddanila/fun/TempleOS/Demo/RandDemo.HC": "9e33364c9c7dc5f7452c8fda76816739be5b9f19e9e6503c35b1e87fa3f358dd"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "result": "pass",
+      "printed": [
+        [
+          124,
+          23424,
+          -12667,
+          -30952,
+          -30528
+        ],
+        [
+          32681,
+          22646,
+          32508,
+          -16491,
+          -6467
+        ],
+        [
+          124,
+          23424,
+          -12667,
+          -30952,
+          -30528
+        ],
+        [
+          27751,
+          16076,
+          32267,
+          -10685,
+          4352
+        ],
+        [
+          17161,
+          8953,
+          811,
+          -30441,
+          -27806
+        ]
+      ],
+      "cloud_pixels": [
+        18375,
+        19418
+      ],
+      "screenshots_sha256": {
+        "timer-cloud": "5a2d20c18a3b2f06bbc880aeec0ffd0eab2dba4dea763a02e531f49e1402b3bf",
+        "fixed-cloud": "63d1afbfe3db5d2ce09100fbd1995785329882116c26ee86eea526a4105c2ef0",
+        "completed": "b3671695c6fe8291b11c71e768f811e5cf50bc102a3169634a207c8215a2de8c"
+      }
+    },
+    "native": {
+      "result": "pass",
+      "printed": [
+        [
+          124,
+          23424,
+          -12667,
+          -30952,
+          -30528
+        ],
+        [
+          32681,
+          22646,
+          32508,
+          -16491,
+          -6467
+        ],
+        [
+          124,
+          23424,
+          -12667,
+          -30952,
+          -30528
+        ],
+        [
+          26311,
+          -30006,
+          16345,
+          -26934,
+          -9486
+        ],
+        [
+          21041,
+          19021,
+          -8430,
+          6461,
+          22256
+        ]
+      ],
+      "cloud_pixels": [
+        565,
+        8037
+      ],
+      "screenshots_sha256": {
+        "timer-cloud": "0c31607c60fbcc7db34af6d12c6208a38e4928ead07c57e68e365e49cb066e67",
+        "fixed-cloud": "113528ebd36425dc275b75601fc1c5aa9deda90b8ac1849fea8040c07a16bd4a",
+        "completed": "a10a41c8393561f2605b2fe8e374593768fc53c0fe05a00b9576397a25d66a50"
+      },
+      "fresh_result": {
+        "column": 5,
+        "row": 24,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

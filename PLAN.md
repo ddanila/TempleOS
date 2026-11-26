@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 62 (six apps and fifty-six demos) |
+| Qualified | 63 (six apps and fifty-seven demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 594 |
-| Linked to tests / with reference workflow and oracle | 221 / 150 |
+| Qualification gaps | 593 |
+| Linked to tests / with reference workflow and oracle | 222 / 151 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 56 of 224 |
+| Demos qualified | 57 of 224 |
 
-C1 has 594 qualification gaps, including entries that still need a reference
+C1 has 593 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -38,7 +38,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 62 workflows and records eighteen shared files
+- The inventory qualifies 63 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -294,13 +294,15 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   The saved disk passed an all-provider export audit and a 1,572-file
   source audit. Generation one installed all nine providers, built its
   flat kernel at 128 MiB, cold-booted at 8 MiB, and passed the installed
-  module and source audits. Generation two is rebuilding retained providers.
+  module and source audits. Generation two rebuilt all nine retained
+  providers at 128 MiB with byte-identical outputs and started installation.
   See the
   [retained-build checkpoint](build/i386-sprite-plot3d-production-v1/retained128-checkpoint.json),
   [generation-one install](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-install/result.json),
   [generation-one checkpoint](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-checkpoint.json),
   [generation-one desktop and content checks](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-desktop-content-checkpoint.json),
   [generation-one configured handoff](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-configured-desktop-checkpoint.json),
+  [generation-two retained build](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen2-retained-checkpoint.json),
   [recovered ConsoleRuntime receipt](build/i386-sprite-plot3d-production-v1/retained128-console-recovery.json),
   [production cross-build](build/i386-sprite-plot3d-production-v1/cross-checkpoint.json)
   and [full-content checkpoint](build/i386-sprite-plot3d-production-v1/full-content-checkpoint.json).
@@ -451,6 +453,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   with the same ordering and tags in the framebuffer. The i386 prompt
   evaluated fresh arithmetic after each path. See the
   [exception comparison](build/i386-demo-exceptions-v1/qualification.json).
+
+- RandDemo qualifies. Both guests rendered both point clouds, printed
+  identical fixed-seed sequences, and repeated the seed-1 sequence after
+  seed 2. The timer-seeded sequences differed within each guest. The i386
+  prompt evaluated fresh arithmetic. See the
+  [random sequence comparison](build/i386-demo-rand-v1/sequence-comparison/result.json).
 
 ### Plan decisions (2026-11-24)
 

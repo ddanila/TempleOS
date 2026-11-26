@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "source_revision": "c40647513cbe0732de62fbf14733c6c86bdfe4e6",
+  "ram_mib": 128,
+  "gen1_disk_sha256": "650e519a076620077108344bd0bc8738fcec21c04b319c543dac5637083ae6ac",
+  "gen2_retained_disk_sha256": "e4e2d172ae2211985ba79a5efc142a19c82e2ca69b310800ca956891bc81fc59",
+  "byte_identical_providers": [
+    "BuildRuntime",
+    "CompilerProbe",
+    "CompilerRuntime",
+    "ConsoleRuntime",
+    "DocDiagnosticRuntime",
+    "EditorRuntime",
+    "FileRuntime",
+    "MemoryRuntime",
+    "Startup"
+  ],
+  "result_sha256": "63df7a621f5e7f69657d23e10f4af9f42b7583d783a734f863f3e4cbfa7ddd70"
+}

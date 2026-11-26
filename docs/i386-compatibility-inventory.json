@@ -19161,10 +19161,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged RandDemo, press Space for each timed point cloud, and capture the five printed sequences.",
+      "oracle": "Check both clouds, compare the fixed-seed sequences exactly, verify that two timer-seeded runs differ, and evaluate fresh native arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-random-sequences",
+          "result": "pass",
+          "evidence": "build/i386-demo-rand-v1/sequence-comparison/result.json",
+          "scope": "Both guests render both clouds, reproduce the same fixed-seed sequences, and show non-repeating timer-seeded sequences. The i386 prompt evaluates fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/RegistryDemo.HC",
