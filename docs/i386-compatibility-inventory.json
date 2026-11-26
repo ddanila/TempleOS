@@ -18170,7 +18170,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "native-original-demo-batch",
+          "result": "fail",
+          "evidence": "build/i386-demo-mpprint-v1/result.json",
+          "scope": "The native compiler reported an undefined identifier at the JobQue call on line 12. The single-CPU original capture contained no job text, so the generic batch still needs a worker-completion oracle for this demo."
+        }
+      ]
     },
     {
       "path": "Demo/MultiCore/MPRadix.HC",

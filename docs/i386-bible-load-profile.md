@@ -785,3 +785,10 @@ performance gain, so the production allocator keeps the existing sort.
 See the [experimental patch](../build/i386-heap-sorted-spans-v1/candidate.patch),
 [diagnostic result](../build/i386-heap-sorted-spans-v1/diagnostics/result.json)
 and [full lookup profile](../build/i386-heap-sorted-spans-v1/full-link-profile/result.json).
+
+A [separate KVM profile](../build/i386-heap-sorted-spans-v1/post-bible-profile/result.json)
+sampled the arithmetic command after the complete Bible contract. It
+recorded 545 of 548 samples in `I386MemBlockRegion`. Of those, 544
+were in calls from pool removal while the compiler released parser
+storage. The arithmetic command had not returned when sampling ended.
+This identifies the relevant removal path for the post-lookup delay.

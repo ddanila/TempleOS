@@ -1,0 +1,14 @@
+{
+  "result": "fail",
+  "input_sha256": "6e05345edddd4aaec70e4aa9368dc5cd3df571fea790540a924f610f7298e951",
+  "entries": {
+    "Demo/MultiCore/MPPrint.HC": {
+      "source_sha256": "44f716247b78b7d98d3b67f94304098cc14aa6177d9f6463b3c9af9ecef4a30e",
+      "output_file": "demo-0.DD"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 00000000015925E8 00000000536B7354\nINPUT LINE #include \"C:/Probe/DemoBatch.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Demo/MultiCore/MPPrint.HC line 12\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nEXPORT demo-0.DD 11F00 21\n",
+  "inputs_unchanged": true
+}
