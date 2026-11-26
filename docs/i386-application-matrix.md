@@ -2727,3 +2727,12 @@ independent host check showed that prefixing the bundled Bible's
 plain lines reproduces all 4,920,719 original output bytes. This gives
 an exact oracle for a lower-memory implementation.
 See the [native baseline receipt](../build/i386-demo-numbible-v1/native/result.json).
+
+Collision instrumentation found that both games entered the same
+foul predicate with a closing speed of 106.066017 and an opponent on
+team 1. The original trace saw just over two seconds since the
+staged prior hit. Native saw 0.34 seconds, so its one-second foul
+cooldown prevented the penalty. The source of the staged timestamp
+difference is still under investigation.
+See the [original predicate](../build/i386-keepaway-foul-conditions-v1/original-predicate.txt)
+and [native predicate](../build/i386-keepaway-foul-conditions-v1/native-predicate.txt).
