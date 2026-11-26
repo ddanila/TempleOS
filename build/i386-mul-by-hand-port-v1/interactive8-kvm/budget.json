@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-mul-by-hand-port-v1/cross-v2/kernel.img": "d419394439618d4d24a33a4b7a0dc84d872984bbcf6b77e79b5c28dae0172a6e",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "8b97bca4bd59d0ca074338b68c4102504a376f41f972b1e6acb8cd281614290a",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-startup-memory.py": "cc4748a4118d5e498b26d490b719f79c92148a34dcd76d325f30744d859ec0de"
+  },
+  "disk_sha256": "d419394439618d4d24a33a4b7a0dc84d872984bbcf6b77e79b5c28dae0172a6e",
+  "accel": "kvm",
+  "budget_seconds": 60,
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 8,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 63.19809882197296,
+    "commands": 9,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "budget_pass": false,
+  "inputs_unchanged": true
+}

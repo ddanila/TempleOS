@@ -32,6 +32,7 @@ def main():
                         help='Require the original standard pointer in every managed normal frame')
     parser.add_argument('--diagnostics', action='store_true',
                         help='Use the diagnostic image and require all startup diagnostics')
+    parser.add_argument('--accel', choices=('tcg', 'kvm'), default='tcg')
     parser.add_argument('--ram-mib', type=int, choices=(8, 16), default=8,
                         help='16 MiB alone is a resource probe; use --diagnostics for startup diagnostics')
     args = parser.parse_args()
@@ -53,16 +54,18 @@ def main():
     out.mkdir(parents=True)
     working = out/'working.img'
     shutil.copyfile(disk, working)
-    result = dict(status='running', cpu='486,-fpu', ram_mib=args.ram_mib,
+    inputs = (disk, manifest_path, Path(__file__).resolve(), runner, ROOT/'Kernel/FontStd.HC')
+    pins = {str(path): sha(path) for path in inputs}
+    if sha(working) != expected or pins[str(disk)] != expected:
+        raise ValueError('Working disk differs from its cross-build manifest')
+    result = dict(status='running', cpu='486,-fpu', ram_mib=args.ram_mib, accel=args.accel,
                   qualification='diagnostic' if args.diagnostics else 'interactive' if args.ram_mib == 8 else 'resource-probe',
                   diagnostics=args.diagnostics, managed_pointer=args.managed_pointer,
                   scope='Startup diagnostics, retained static/function/literal behavior and exact VGA restoration; not complete OS acceptance' if args.diagnostics else 'Startup, retained static/function/literal behavior and exact VGA restoration; not complete OS acceptance',
-                  input_sha256={str(disk): sha(disk), str(manifest_path): sha(manifest_path),
-                                str(Path(__file__).resolve()): sha(Path(__file__).resolve()),
-                                str(runner): sha(runner)}, commands=COMMANDS)
+                  input_sha256=pins, commands=COMMANDS)
     try:
         result['behavior'] = runpy.run_path(str(runner))['run_input'](
-            working, out, snapshot=False, cpu='486,-fpu', ram_mib=args.ram_mib,
+            working, out, snapshot=False, cpu='486,-fpu', ram_mib=args.ram_mib, accel=args.accel,
             qmp_stdio=True, diagnostics=args.diagnostics, welcome=True, startup_timeout=180,
             managed_pointer=args.managed_pointer,
             startup_check={'status': 'ok', 'answers': [], 'commands': COMMANDS,'pause_window_manager':False,
@@ -114,7 +117,12 @@ def main():
         result['error'] = str(exc)
         raise
     finally:
+        result['inputs_unchanged'] = all(path.is_file() and sha(path) == pins[str(path)] for path in inputs)
+        if not result['inputs_unchanged']:
+            result.update(status='fail', error='Startup inputs changed')
         (out/'result.json').write_text(json.dumps(result, indent=2)+'\n')
+    if not result['inputs_unchanged']:
+        raise ValueError(result['error'])
     print(f'PASS: {args.ram_mib} MiB {result["qualification"]} startup and storage/presentation checks')
 
 

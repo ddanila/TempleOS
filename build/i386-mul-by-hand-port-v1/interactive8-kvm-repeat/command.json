@@ -1,0 +1,22 @@
+[
+  "qemu-system-i386",
+  "-machine",
+  "pc",
+  "-accel",
+  "kvm",
+  "-cpu",
+  "486,-fpu",
+  "-m",
+  "8",
+  "-nic",
+  "none",
+  "-drive",
+  "file=/home/ddanila/fun/TempleOS/build/i386-mul-by-hand-port-v1/interactive8-kvm-repeat/working.img,format=raw,if=ide",
+  "-display",
+  "none",
+  "-no-reboot",
+  "-debugcon",
+  "file:/home/ddanila/fun/TempleOS/build/i386-mul-by-hand-port-v1/interactive8-kvm-repeat/debug.log",
+  "-qmp",
+  "stdio"
+]

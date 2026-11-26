@@ -1055,3 +1055,14 @@ checkpoints matched and the source disk hash was unchanged. The second
 generation passed with identical heap measurements and VGA results. See
 the `gen1-resource8` and `gen2-resource8` receipts in
 `build/i386-demo-insetip-v1/generations128/`.
+
+### Startup after the assembly demo ports
+
+The MulByHand full image reached interactive startup in 63.198 and
+63.403 seconds in two isolated 8 MiB KVM boots with `486,-fpu`, the
+managed pointer and the Window Manager active. Both runs passed all
+nine exact VGA checkpoints and preserved the source image. The second
+run used the startup test's new `--accel kvm` option, with TCG still
+the default. Both timings exceed the 60-second target.
+[First timing receipt](../build/i386-mul-by-hand-port-v1/interactive8-kvm/budget.json) ·
+[Repeat timing receipt](../build/i386-mul-by-hand-port-v1/interactive8-kvm-repeat/result.json)
