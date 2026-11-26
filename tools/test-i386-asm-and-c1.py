@@ -83,15 +83,19 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
-    parser.add_argument('--count', type=int, choices=range(1, 6), default=2)
+    count_input = parser.add_mutually_exclusive_group()
+    count_input.add_argument('--count', type=int, choices=range(1, 6), default=2)
+    count_input.add_argument('--default-count', action='store_true',
+                             help='Press Enter at the prompt to select the default count of three')
     parser.add_argument('--demo', type=int, choices=(1, 2), default=1)
     args = parser.parse_args()
+    count = 3 if args.default_count else args.count
     out = args.out.resolve()
     out.mkdir()
     native = args.disk is not None
     demo = f'Demo/Asm/AsmAndC{args.demo}.HC'
     fixture = f'#include "::/{demo}"\n'.encode() + FIXTURE
-    report = dict(result='running', count=args.count, native=native,
+    report = dict(result='running', count=count, default_count=args.default_count, native=native,
                   fixture_sha256=hashlib.sha256(fixture).hexdigest(), demo=demo)
     try:
         if native:
@@ -126,11 +130,12 @@ def main():
                 guest.type('#include "C:/AsmAndC1Probe.HC"')
                 guest.press('ret')
             report['prompt'] = wait_text(guest, probe, font, b'Num of beeps 1-5 (3):', 'prompt')
-            guest.press(str(args.count))
+            if not args.default_count:
+                guest.press(str(count))
             guest.press('ret')
             guest.wait('ASM AND C1 DONE\n')
             if args.demo == 1:
-                label = f'Beeps:{args.count}'.encode('ascii')
+                label = f'Beeps:{count}'.encode('ascii')
                 report['result_pixels'] = wait_text(guest, probe, font, label, 'beep-count')
             else:
                 report['elapsed_jiffies'] = read_jiffies(guest, probe, font, wait_text)
@@ -141,7 +146,7 @@ def main():
                 report['fresh_arithmetic'] = guest.result_pixels()
         finally:
             guest.close()
-        report['audio'] = speaker_tones(audio, args.count, args.demo)
+        report['audio'] = speaker_tones(audio, count, args.demo)
         if [run['note'] for run in report['audio']['sequence']] != report['audio']['expected']:
             raise ValueError('PC speaker tones differ from the expected note sequence')
         report['result'] = 'pass'

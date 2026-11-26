@@ -348,3 +348,11 @@ and matched all nine VGA checkpoints in the 8 MiB KVM diagnostic boot.
 [Delivered-source audit](../build/i386-asm-and-c2-port-v1/committed-source-audit.json) ·
 [Full content](../build/i386-asm-and-c2-port-v1/full-content64/result.json) ·
 [8 MiB diagnostics](../build/i386-asm-and-c2-port-v1/diagnostic8-kvm/result.json)
+
+Pressing Enter with an empty count selected three in both demos on
+the original and 386 guests. The recordings matched each demo's
+expected note sequence, and all four runs shut off the speaker.
+[AsmAndC1 original](../build/i386-asm-and-c2-port-v1/demo1-reference-default/result.json) ·
+[AsmAndC1 386](../build/i386-asm-and-c2-port-v1/demo1-native-default/result.json) ·
+[AsmAndC2 original](../build/i386-asm-and-c2-port-v1/demo2-reference-default/result.json) ·
+[AsmAndC2 386](../build/i386-asm-and-c2-port-v1/demo2-native-default/result.json)

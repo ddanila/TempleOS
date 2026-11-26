@@ -1,0 +1,80 @@
+{
+  "result": "pass",
+  "count": 3,
+  "default_count": true,
+  "native": true,
+  "fixture_sha256": "01be8e6539b046e4973ad56aaccb50fe6d00f900a033135fd9612c7633ccdc36",
+  "demo": "Demo/Asm/AsmAndC1.HC",
+  "package": {
+    "result": "pass",
+    "source_sha256": "88fc61aebccfab6dbd2a4fb5c791f9753d613843e2f6565f413e1235d11b57ed",
+    "image_sha256": "a01750af5af5f00fc79fa78e8571e222418d940c2baac26b77ba672122f588c2",
+    "boot_area_sha256": "5b237f960313e6c2b7c45906ebdd6ea94f25e40cea9f0430f32cb002f9865c54",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1949,
+      "owned_sectors": 96301,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1950,
+      "owned_sectors": 96302,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/AsmAndC1Probe.HC": "01be8e6539b046e4973ad56aaccb50fe6d00f900a033135fd9612c7633ccdc36"
+    },
+    "added_attributes": {
+      "/AsmAndC1Probe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "demo_sha256": "924ae7e2a0637ae37434d71a595134bdca7bcbf938d95243956812d74be2db71",
+  "prompt": [
+    0,
+    10
+  ],
+  "result_pixels": [
+    0,
+    11
+  ],
+  "speaker_disabled": true,
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "audio": {
+    "frames": 82085,
+    "sequence": [
+      {
+        "note": 62,
+        "classified_ms": 1480
+      },
+      {
+        "note": 70,
+        "classified_ms": 120
+      },
+      {
+        "note": 60,
+        "classified_ms": 120
+      },
+      {
+        "note": 50,
+        "classified_ms": 120
+      }
+    ],
+    "expected": [
+      62,
+      70,
+      60,
+      50
+    ]
+  }
+}
