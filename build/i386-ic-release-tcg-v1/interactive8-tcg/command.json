@@ -1,0 +1,22 @@
+[
+  "qemu-system-i386",
+  "-machine",
+  "pc",
+  "-accel",
+  "tcg",
+  "-cpu",
+  "486,-fpu",
+  "-m",
+  "8",
+  "-nic",
+  "none",
+  "-drive",
+  "file=/home/ddanila/fun/TempleOS/build/i386-ic-release-tcg-v1/interactive8-tcg/working.img,format=raw,if=ide",
+  "-display",
+  "none",
+  "-no-reboot",
+  "-debugcon",
+  "file:/home/ddanila/fun/TempleOS/build/i386-ic-release-tcg-v1/interactive8-tcg/debug.log",
+  "-qmp",
+  "stdio"
+]

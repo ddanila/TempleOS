@@ -1124,3 +1124,18 @@ with the managed pointer and Window Manager active. The observation
 limit allowed a complete measurement. The runner rejected the result
 against the unchanged 60-second target and verified the input hashes.
 [Completed reference timing receipt](../build/i386-ata-string-read-v1/interactive8-tcg-extended/result.json)
+
+### Bounded instruction release under TCG
+
+The earlier 16-slot release batch was rebuilt on the ATA word-input
+candidate. The two images differed in one OS source, `Compiler/I386/Code.HC`.
+Among the modules, CompilerRuntime changed and the Kernel changed only
+within its build date field. Both bootstrap generations, the 386 boot
+audit, and the task-symbol ownership corpus passed.
+
+The trial reached the 8 MiB TCG prompt in 270.106 seconds and passed all
+nine exact VGA checkpoints. The separately measured control took 291.886
+seconds. Both exceed the 60-second gate. The source batch remains an
+experimental patch pending repeat timing on this profile.
+[Timing comparison](../build/i386-ic-release-tcg-v1/comparison.json) ·
+[Task-symbol ownership receipt](../build/i386-ic-release-tcg-v1/task-symbols/result.json)

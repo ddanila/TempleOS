@@ -1,0 +1,28 @@
+{
+  "scope": "One separate isolated 8 MiB TCG boot per full image, 486 without FPU, live Window Manager, nine exact VGA checkpoints per run",
+  "changed_sources": [
+    "Compiler/I386/Code.HC"
+  ],
+  "changed_modules": [
+    "CompilerRuntime",
+    "Kernel"
+  ],
+  "kernel_module_difference": "Only bytes within the eight-byte build date field, offsets 32 through 39",
+  "results": {
+    "control": {
+      "image_sha256": "a0259ebe2b8a3138f26620df29d7fee608e24f5a33c3288064ca30e18a88faf3",
+      "timing_receipt": "build/i386-ata-string-read-v1/interactive8-tcg-extended/result.json",
+      "timing_sha256": "6a28debfaaddbee867d30c313711b0bd3779c4e9127020bf936ac063546ec0b9",
+      "startup_seconds": 291.8858035050216,
+      "build_manifest_sha256": "e3471e70474a34f2dfe43a52316a8fac90fecd9ad24cc49948f96bb58051757b"
+    },
+    "candidate": {
+      "image_sha256": "94f3b7709312573619808df634c6fe7acde8c30d4e8dfa4ba6f1bb612c15984f",
+      "timing_receipt": "build/i386-ic-release-tcg-v1/interactive8-tcg/result.json",
+      "timing_sha256": "e8e40f37f0792ec061a48e64b8635ef99f96d11dad4cda6896f936c32e56bbb6",
+      "startup_seconds": 270.10620496899355,
+      "build_manifest_sha256": "c33b6bbb4a8e7850aafda928cf61979779d8ab2b861482d980b95091c6976267"
+    }
+  },
+  "candidate_retained": false
+}
