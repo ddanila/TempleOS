@@ -100,3 +100,26 @@ Both private-view runs above are now terminal pass: Console 88 (palette fixed)
 and Console 89 each pass all 214 commands with WinMgr enabled and unchanged
 source images. This supersedes their earlier active status; the new Console-90
 popup candidate has separate qualification.
+
+## Frozen native rebuild checkpoint
+
+The installed rebuild disks boot with a welcome document. To exercise the
+plain-document composition path, the test can empty `/Doc/Start.DD` and add
+`/Probe/PersistentWindow.HC` on a disposable disk. The test checks that every
+other file retains its original content, attributes and date, and verifies
+the source disk and host input hashes at the end. Loading the declarations
+from a file also keeps the setup command short at the interactive prompt.
+
+```sh
+base=build/i386-demo-insetip-v1/generations128
+python3 tools/test-i386-persistent-window.py "$base/gen1-selfhost/target.img" \
+  --out "$base/gen1-persistent-window64-repeat" --ram-mib 64 --accel kvm --plain-start
+```
+
+The [first rebuilt disk receipt](../build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain-final/result.json)
+records three commands and exact VGA matches for the red persistent pixel, the
+green final hook, the blue pixel after hook removal, the cleared white
+background, and the restored prompt with `6*7` returning 42. The pointer is
+absent during the custom final hook and returns when the hook is removed.
+This is a 64 MiB focused composition check. The separate 8 MiB interactive
+startup budget and broader C1–C5 qualification remain open.

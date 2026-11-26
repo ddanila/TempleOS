@@ -50,29 +50,68 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--accel', choices=('tcg', 'kvm'), default='tcg')
+    parser.add_argument('--plain-start', action='store_true',
+                        help='Replace the welcome document in the disposable image')
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     commands = list(COMMANDS)
+    if args.plain_start:
+        source_line, answers, interaction = commands[-2]
+        events = [dict(event, pointer=False) if event.get('label')=='final-hook' else event
+                  for event in interaction['events']]
+        commands[-2] = (source_line, answers, dict(interaction, events=events))
     if out.exists():
         parser.error('Use a fresh output directory')
     sha = lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     runner = ROOT/'tools/i386-kernel-input.py'
-    pins = {str(p):sha(p) for p in [source, runner, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]}
+    packer = ROOT/'tools/package-i386-native-image.py'
+    inputs = [source, runner, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]
+    if args.plain_start:
+        inputs.extend((packer, ROOT/'tools/build-i386-kernel.py'))
+    pins = {str(p):sha(p) for p in inputs}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    if args.plain_start:
+        helpers = runpy.run_path(str(packer))
+        package, snapshot = helpers['package'], helpers['snapshot']
+        _, source_files, _ = snapshot(source.read_bytes())
+        path = '/Doc/Start.DD'
+        fixture = '/Probe/PersistentWindow.HC'
+        declarations = ('\n'.join(command[0] for command in commands[:-2])+'\n').encode()
+        commands = [(f'#include "C:{fixture}"', [])] + commands[-2:]
+
+        def plain_snapshot(raw):
+            tree, files, directories = snapshot(raw)
+            attr, date, _ = files[path]
+            replacement = (attr, date, b'')
+            tree['Doc'][2]['Start.DD'] = files[path] = replacement
+            return tree, files, directories
+
+        package.__globals__['snapshot'] = plain_snapshot
+        try:
+            package(source, working, additions={fixture: declarations})
+        finally:
+            package.__globals__['snapshot'] = snapshot
+        _, staged_files, _ = snapshot(working.read_bytes())
+        attr, date, _ = source_files[path]
+        if staged_files.pop(fixture)[2] != declarations or staged_files != {**source_files, path: (attr, date, b'')}:
+            raise ValueError('Plain startup fixture changed unrelated files')
+    else:
+        shutil.copyfile(source, working)
     report = dict(result='running', scope='Persistent direct-body pixel admitted with plain existing put/display document; final hook overlays and removal reveals retained pixel, clearing returns plain document, then continued command input; not all graphics/input roles',
-                  input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
+                  input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib,
+                  accel=args.accel, plain_start=args.plain_start)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
-            cpu='486,-fpu', accel='tcg', qmp_stdio=True,
+            cpu='486,-fpu', accel=args.accel, qmp_stdio=True, managed_pointer=args.plain_start,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
-                           'pause_window_manager':False,
+                           'pause_window_manager':False, 'plain_start':args.plain_start,
                            'rejection_prefixes':('INPUT REJECT ',),
                            # Original DOCT_PMT renders command input green.
-                           'command_styles':{11:{
+                           'command_styles':{len(commands)-1:{
                                'typing_colors':{(4,x):2 for x in range(2,6)},
                                'return_colors':{**{(4,x):2 for x in range(2,6)},
                                                 (5,0):2,(5,1):2,(6,0):2}}},

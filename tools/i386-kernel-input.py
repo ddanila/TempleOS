@@ -375,17 +375,25 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
                                      'after_bytes':audio_wav.stat().st_size,
                                      'observation_seconds':time.monotonic()-started}
 
+            plain_start = startup_check is not None and startup_check.get('plain_start',False)
+
             def screen(rows,name,timeout=30,rejected_rows=None,colors=None,backgrounds=None,underlines=None,pixels=None,pointer=None,rejection_message=None,canvas_color=15,welcome_style=None):
                 if welcome_style is None: welcome_style=welcome
                 if welcome_style:
                     colors,underlines=welcome_styles(rows,colors,underlines,
                         startup_check.get('row_styles',{}) if startup_check is not None else None)
+                if plain_start and rows[:4]==['TempleOS i386','HolyC console','','']:
+                    startup_colors={(row,col):2 for row in range(4,len(rows))
+                                    for col in range(2 if row==4 else 0,len(rows[row]))}
+                    startup_colors.update(colors or {})
+                    colors=startup_colors
                 pointer_style='retained'
-                if welcome_style and managed_pointer and pointer is None:
+                if managed_pointer and pointer is None and (welcome_style or plain_start):
                     pointer=(mouse_host_x,mouse_host_y);pointer_style='standard'
+                if pointer is False: pointer=None
                 expected=console_pixels(rows,colors,backgrounds,underlines,pixels,pointer,canvas_color,pointer_style)
                 expected_cursor=None
-                if welcome_style and rows and len(rows[-1])<80:
+                if rows and len(rows[-1])<80 and (welcome_style or plain_start and rows[-1].startswith('> ')):
                     x=len(rows[-1])*8;y=(len(rows)-1)*8
                     cursor=dict(pixels or {});cursor.update({(x+dx,y+dy):0 for dy in range(8) for dx in range(8)})
                     expected_cursor=console_pixels(rows,colors,backgrounds,underlines,cursor,pointer,canvas_color,pointer_style)
@@ -417,6 +425,7 @@ def run_input(disk,out,startup_check=None,diagnostics=False,groups=None,mutation
             wait_for(lambda:'DONE native kernel startup\n' in log.read_text(), timeout=1200 if diagnostics else startup_timeout)
             startup_seconds=time.monotonic()-startup_started
             heading=startup_console_rows(welcome)[:-1]
+            if plain_start: heading.append('')
             status='ok' if startup_check is None else startup_check['status']
             evidence=log.read_text()
             if evidence.count('PUBLIC HEADERS ok\n')!=1:

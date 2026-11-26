@@ -1,0 +1,44 @@
+[
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain-colors/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain/working.img",
+    "sha256": "82400c4b2c984be9e5245a9e8f0e3200781da031301123af0cc0237fc1da2921",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain-oracle/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain/working.img",
+    "sha256": "82400c4b2c984be9e5245a9e8f0e3200781da031301123af0cc0237fc1da2921",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain-pointer/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain/working.img",
+    "sha256": "82400c4b2c984be9e5245a9e8f0e3200781da031301123af0cc0237fc1da2921",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain-wrap/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain/working.img",
+    "sha256": "82400c4b2c984be9e5245a9e8f0e3200781da031301123af0cc0237fc1da2921",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain-layering/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain-fixture/working.img",
+    "sha256": "d86d95424e7a9a55a8ccfd107e4d13c1441e5e74ea4906d2547d07bfa6eb1375",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-kvm/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64/working.img",
+    "sha256": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen2-persistent-window64-kvm/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen2-persistent-window64/working.img",
+    "sha256": "d9652f593e580f188ae71414722bb1fb82d8c3590215ff177b3ef7f544f753a7",
+    "allocated_bytes": 67108864
+  }
+]
