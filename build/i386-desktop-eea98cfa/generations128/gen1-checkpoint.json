@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "source_revision": "eea98cfa6edaea11e11f82462c8dbc65830239c6",
+  "source_files": 1561,
+  "build_ram_mib": 128,
+  "boot_ram_mib": 8,
+  "installed_disk_sha256": "87dfab2082a8193415358de4e20225c9306265834c23497054d1197dc3378659",
+  "flat_kernel_bytes": 468560,
+  "flat_kernel_sha256": "1308aadff84208104b1b81216f9a6327bb770e96f1659ce04a48f7be29d53a29",
+  "filesystem": {
+    "directories": 63,
+    "files": 1933,
+    "owned_sectors": 98093,
+    "bitmap": "matches reachable extents"
+  },
+  "result_sha256": {
+    "gen1-selfhost": "635b007963013713448c1dc5df15ac729a19e775bf788aea66af72fce9a06166",
+    "gen1-audit": "f1b5162b47ae53cd5bc3adec4efa71042b0a21d536e894d3ef04b315c0e7f551",
+    "gen1-source-audit": "e62c440e6d4d9636f131b6285c863104457c46d8b15f3eb67e8b0eeeedfc1724"
+  }
+}

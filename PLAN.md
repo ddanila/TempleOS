@@ -43,8 +43,10 @@ is complete and provides the foundation, but not desktop or application parity.
   Bible and returned to arithmetic. At 128 MiB, the guest rebuilt and
   audited all nine retained providers. The two-generation pipeline for
   `eea98cfa` installed generation one's providers and passed the 8 MiB
-  reboot and document-allocation checks. The first self-hosted kernel build
-  is underway. See the [installation receipt](build/i386-desktop-eea98cfa/generations128/gen1-install/result.json).
+  reboot and document-allocation checks. Generation one then built its flat
+  kernel at 128 MiB, passed an 8 MiB cold boot, and passed the installed
+  image and source audits. Generation two's retained provider build has
+  started. See the [generation-one receipt](build/i386-desktop-eea98cfa/generations128/gen1-checkpoint.json).
 - The full desktop publishes the original autocomplete and task settings
   sources at startup. A cold direct include of ScrnCodes matched all
   256 original glyphs, returned on a keypress, and rendered fresh
