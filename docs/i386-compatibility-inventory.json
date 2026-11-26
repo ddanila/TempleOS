@@ -18440,10 +18440,10 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": {
         "status": "observed-reference",
-        "description": "Launch unchanged Demo/RegistryDemo.HC against fresh defaults, then launch again after actual saved-document reload. Require exact displayed score/value, increments 1235/1236 and persisted five-decimal scores within sampled tS bounds. Original first/repeated launch and experimental native first/reboot/same-boot workflows pass at their recorded scopes; active-primary legacy display failure remains recorded. Customized state, cleanup and complete qualification remain open."
+        "description": "Launch unchanged Demo/RegistryDemo.HC against fresh defaults, then launch again after actual saved-document reload. Require exact displayed score/value, increments 1235/1236 and persisted five-decimal scores within sampled tS bounds. Exercise fresh defaults, an existing custom score and value, repeat launch after saved-document reload, and the configured native Home path across cold boots. Verify the registry and test file changes and normal prompt recovery."
       },
       "oracle": {
         "tool": "tools/test-i386-registry-demo-reference.py",
@@ -18453,12 +18453,24 @@
           "Exact initial high-score/value text in captured original document and native full-frame expectation",
           "Increment to 1235 and five-decimal persisted score bounded by actual execution time",
           "Native persisted source identity, time samples, filesystem integrity and unrelated-file preservation; older active-runtime display failure remains separate from experimental passes",
-          "Original machine reboot, customized registry, error cleanup and full qualification remain open; native repeated launch/reboot is separately scoped",
+          "Original comparisons use saved-document reload. The second native generation also reloads and verifies the actual registry across three boots.",
           "Original second launch after saved document reload: exact persisted score/Val:1235 output, increment 1236, new sampled score and trailing DocSave marker",
           "Native second launch in the same boot after actual registry document reload, preserving old namespace: exact persisted first score/Val:1235 display, increment 1236 and newly sampled/persisted score; no reboot substitution"
         ]
       },
       "tests": [
+        {
+          "target": "original-registry-demo-custom-state",
+          "result": "pass",
+          "evidence": "build/i386-registry-demo-custom-v2/original/result.json",
+          "scope": "Pre-existing score 78.12500 and value 31415 are displayed by the unchanged demo. The original saves 31416 and a score within the measured time bounds."
+        },
+        {
+          "target": "native-registry-demo-custom-state",
+          "result": "pass",
+          "evidence": "build/i386-registry-demo-custom-v2/native-seed-answer/result.json",
+          "scope": "Bundled demo on the frozen second native generation. Exact console frames, customized initial state, persisted value 31416, bounded score, valid filesystem and return to the prompt."
+        },
         {
           "target": "native-gen2-configured-home-registry-reboot",
           "command": "python3 tools/test-i386-registry-demo-reboot.py IMAGE --reference REFERENCE --out OUT --require-bundled --managed-pointer",

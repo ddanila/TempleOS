@@ -227,3 +227,13 @@ records. The registry and three test files accounted for all changes.
 The filesystem audit passed and preserved 1,932 pre-existing source-image
 files. The original reference exercised a saved-document reload.
 See the [native three-boot result](../build/i386-registry-demo-gen2-reboot-active-v1/result.json).
+
+With an existing score of 78.12500 and value 31415, both architectures
+displayed the seeded state, saved 31416 and wrote a score within the
+sampled time bounds. The native filesystem audit passed, the prompt
+accepted fresh arithmetic, and the same registry and three test files
+accounted for all changes. This qualifies the unchanged bundled demo
+for the default, customized and reload workflows above. Broader
+registry API failure handling is tracked separately.
+See the [original customized run](../build/i386-registry-demo-custom-v2/original/result.json)
+and [native customized run](../build/i386-registry-demo-custom-v2/native-seed-answer/result.json).

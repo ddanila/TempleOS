@@ -1,0 +1,15 @@
+$WW+H,1$$FG,5$$TX+CX,"TempleOS V5.03",D="DD_OS_NAME_VERSION"$$FG$
+
+$TX+CX,"Public Domain Operating System"$
+
+$LK,"Help & Index",A="FI:::/Doc/HelpIndex.DD"$, $LK,"Quick Start: Cmd line",A="FI:::/Doc/CmdLineOverview.DD"$
+
+$MA,"Directory",LM="PopUpCd;Dir;\n"$ of T:/Home
+DATE_ TIME_ SIZE
+01/02 00:00 0800 $MA,".",LM="Cd(\"T:/Home/.\");Dir;\n"$
+01/02 00:00 0000 $MA,"..",LM="Cd(\"T:/Home/..\");Dir;\n"$
+T:/Home>$PT$Cd;#include "Once";
+$PT$$FG$$BG$&FileRead &DocRead &OriginalStartupRegistry &Report $FG,12$$BK,1$ERROR:$FG$$BK,0$ File not found: "B:/BootRegistry.HC.Z".
+High Score:78.12500
+Val:31415
+
