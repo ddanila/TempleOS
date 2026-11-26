@@ -295,7 +295,8 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   source audit. Generation one installed all nine providers, built its
   flat kernel at 128 MiB, cold-booted at 8 MiB, and passed the installed
   module and source audits. Generation two rebuilt all nine retained
-  providers at 128 MiB with byte-identical outputs and started installation.
+  providers at 128 MiB with byte-identical outputs, installed them, and
+  started the flat-kernel self-host build.
   See the
   [retained-build checkpoint](build/i386-sprite-plot3d-production-v1/retained128-checkpoint.json),
   [generation-one install](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-install/result.json),
@@ -303,6 +304,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   [generation-one desktop and content checks](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-desktop-content-checkpoint.json),
   [generation-one configured handoff](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-configured-desktop-checkpoint.json),
   [generation-two retained build](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen2-retained-checkpoint.json),
+  [generation-two install](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen2-install/result.json),
   [recovered ConsoleRuntime receipt](build/i386-sprite-plot3d-production-v1/retained128-console-recovery.json),
   [production cross-build](build/i386-sprite-plot3d-production-v1/cross-checkpoint.json)
   and [full-content checkpoint](build/i386-sprite-plot3d-production-v1/full-content-checkpoint.json).
