@@ -16503,10 +16503,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged Exceptions three times. Catch Point1 locally and raise Point3, then use separate runs to raise Point2 and Point4 through both handlers.",
+      "oracle": "Verify handler and exception-tag order in the framebuffer and evaluate fresh native arithmetic after each path.",
+      "tests": [
+        {
+          "target": "native-original-nested-exception-handlers",
+          "result": "pass",
+          "evidence": "build/i386-demo-exceptions-v1/qualification.json",
+          "scope": "Both guests catch Point1 locally, handle Point3 in the outer frame, and propagate Point2 and Point4 through inner and outer frames in order. The i386 prompt recovers in each case."
+        }
+      ]
     },
     {
       "path": "Demo/ExtChars.HC",

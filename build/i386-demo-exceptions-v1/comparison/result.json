@@ -1,0 +1,160 @@
+{
+  "result": "fail",
+  "inputs_unchanged": true,
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/cross-sign/kernel.img": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "/home/ddanila/fun/TempleOS/Demo/Exceptions.HC": "f7c89a3834e2a7a9daaf44da6f318e98a2abaee7626666caee3032bd60373146"
+  },
+  "cases": {
+    "catch": [
+      [
+        "1",
+        "y"
+      ],
+      [
+        "3",
+        "y"
+      ]
+    ],
+    "rethrow": [
+      [
+        "1",
+        "n"
+      ],
+      [
+        "2",
+        "y"
+      ]
+    ]
+  },
+  "runs": {
+    "original-catch": {
+      "markers": {
+        "D2 hndlr": [
+          [
+            1,
+            19
+          ]
+        ],
+        "Demo hndlr": [
+          [
+            1,
+            23
+          ]
+        ],
+        "Caught in D2": [
+          [
+            1,
+            21
+          ]
+        ],
+        "Ch:Point1:": [
+          [
+            1,
+            20
+          ]
+        ],
+        "Ch:Point3:": [
+          [
+            1,
+            24
+          ]
+        ]
+      },
+      "completed_sha256": "7c299807b1c403bc7f1f3118aa92dca57b3c712e66b50dd2705ca924d8ed35be",
+      "result": "pass"
+    },
+    "original-rethrow": {
+      "markers": {
+        "D2 hndlr": [],
+        "Demo hndlr": [],
+        "Ch:Point2:": []
+      },
+      "completed_sha256": "d33484c46fe98cf8289ff23255c8bbb4652e6a482c940c723595fcdf59582356",
+      "result": "fail"
+    },
+    "native-catch": {
+      "markers": {
+        "D2 hndlr": [
+          [
+            0,
+            13
+          ]
+        ],
+        "Demo hndlr": [
+          [
+            0,
+            17
+          ]
+        ],
+        "Caught in D2": [
+          [
+            0,
+            15
+          ]
+        ],
+        "Ch:Point1:": [
+          [
+            0,
+            14
+          ]
+        ],
+        "Ch:Point3:": [
+          [
+            0,
+            18
+          ]
+        ]
+      },
+      "completed_sha256": "c246e5f112645bb6ce899e9be246dcba9c3d36d2968143435dda8f81c161185c",
+      "fresh_result": {
+        "column": 0,
+        "row": 21,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      },
+      "result": "pass"
+    },
+    "native-rethrow": {
+      "markers": {
+        "D2 hndlr": [
+          [
+            0,
+            14
+          ]
+        ],
+        "Demo hndlr": [
+          [
+            0,
+            16
+          ]
+        ],
+        "Ch:Point2:": [
+          [
+            0,
+            15
+          ],
+          [
+            0,
+            17
+          ]
+        ]
+      },
+      "completed_sha256": "96ab1c07e30d789743e9155f2ebb38a6170d69e26d3a0e22e7ae97f73283fdd6",
+      "fresh_result": {
+        "column": 0,
+        "row": 20,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      },
+      "result": "pass"
+    }
+  }
+}

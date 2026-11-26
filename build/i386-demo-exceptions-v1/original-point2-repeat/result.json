@@ -1,0 +1,30 @@
+{
+  "markers": {
+    "D2 hndlr": [
+      [
+        1,
+        20
+      ]
+    ],
+    "Demo hndlr": [
+      [
+        1,
+        22
+      ]
+    ],
+    "Ch:Point2:": [
+      [
+        1,
+        21
+      ],
+      [
+        1,
+        23
+      ]
+    ]
+  },
+  "completed_sha256": "4931456e3748810b296d0c96dcb1352cabec7f19e34c14801e112ecb2fd354c7",
+  "result": "pass",
+  "image_sha256": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+  "source_sha256": "f7c89a3834e2a7a9daaf44da6f318e98a2abaee7626666caee3032bd60373146"
+}

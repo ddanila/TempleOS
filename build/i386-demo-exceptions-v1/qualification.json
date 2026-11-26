@@ -1,0 +1,73 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/cross-sign/kernel.img": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "/home/ddanila/fun/TempleOS/Demo/Exceptions.HC": "f7c89a3834e2a7a9daaf44da6f318e98a2abaee7626666caee3032bd60373146"
+  },
+  "font_sha256": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+  "cases": {
+    "catch": {
+      "original": {
+        "ordered_rows": [
+          19,
+          20,
+          21,
+          23,
+          24
+        ],
+        "completed_sha256": "2494896188bb21bcdf5caa8f225ac905aae5cdefce71dcf61e76c99d0d2ce86c"
+      },
+      "native": {
+        "ordered_rows": [
+          13,
+          14,
+          15,
+          17,
+          18
+        ],
+        "completed_sha256": "c246e5f112645bb6ce899e9be246dcba9c3d36d2968143435dda8f81c161185c"
+      }
+    },
+    "point2": {
+      "original": {
+        "ordered_rows": [
+          20,
+          21,
+          22,
+          23
+        ],
+        "completed_sha256": "4931456e3748810b296d0c96dcb1352cabec7f19e34c14801e112ecb2fd354c7"
+      },
+      "native": {
+        "ordered_rows": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "completed_sha256": "96ab1c07e30d789743e9155f2ebb38a6170d69e26d3a0e22e7ae97f73283fdd6"
+      }
+    },
+    "point4": {
+      "original": {
+        "ordered_rows": [
+          21,
+          22,
+          23,
+          24
+        ],
+        "completed_sha256": "730e5da0eec56b9e211160564ec24c452cd10385bb8eca26e04aae5c760e3e43"
+      },
+      "native": {
+        "ordered_rows": [
+          15,
+          16,
+          17,
+          18
+        ],
+        "completed_sha256": "99c630749a8b1cb3a57020091fc276c156b3450e2e3fe891e46804f83c8d4878"
+      }
+    }
+  }
+}
