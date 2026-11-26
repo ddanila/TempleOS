@@ -19,6 +19,7 @@ public _extern _GR_CIRCLE Bool GrCircle(CDC *dc=gr.dc,I64 cx,I64 cy,I64 radius,I
 public _extern _GR_ELLIPSE Bool GrEllipse(CDC *dc=gr.dc,I64 cx,I64 cy,I64 x_radius,I64 y_radius,F64 rot_angle=0,I64 step=1,F64 start_radians=0,F64 len_radians=2*ã);
 public _extern _GR_REG_POLY Bool GrRegPoly(CDC *dc=gr.dc,I64 cx,I64 cy,I64 x_radius,I64 y_radius,I64 sides,F64 rot_angle=0,I64 step=1,F64 start_radians=0,F64 len_radians=2*ã);
 public _extern _GR_FLOOD_FILL I64 GrFloodFill(CDC *dc=gr.dc,I64 x,I64 y,Bool not_color=FALSE,I64 z=0,I32 *db=NULL);
+public _extern _GR_PLOT Bool GrPlot(CDC *dc=gr.dc,I64 x,I64 y);
 public _extern _GR_PLOT0 Bool GrPlot0(CDC *dc=gr.dc,I64 x,I64 y);
 public _extern _GR_PEEK0 I64 GrPeek0(CDC *dc=gr.dc,I64 x,I64 y);
 public _extern _SPRITE_INTERPOLATE U8 *SpriteInterpolate(F64 t,U8 *elems0,U8 *elems1);

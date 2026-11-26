@@ -1,0 +1,69 @@
+{
+  "result": "pass",
+  "source_sha256": "dbf44756c00812f78e2eaf8e2520c4596e444cfe2367dce9ddbda93a786e3035",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-bounce-v1/cross-retry/kernel.img": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398"
+  },
+  "runs": {
+    "original": {
+      "trail_pixels": [
+        39391,
+        39026,
+        38336,
+        64
+      ],
+      "trail_colors": [
+        8,
+        8,
+        8,
+        1
+      ],
+      "changed_pixels": [
+        38153,
+        35959
+      ],
+      "screenshots_sha256": {
+        "before-key.png": "6d5ead861c8106c73d9a0c48bde36366f0ba9304fa652a03b0c0199a684e9838",
+        "before-key-1.png": "0002b35991a79db79821d0fa01c0d1fa34310ff10f72e7d9cc0e490f81b96f74",
+        "before-key-2.png": "8afc4a45cedcdc673554487c4a474c6c7f3a30cc00bb06e57dd56f048b3469e9",
+        "after-key.png": "7c6a5b781c59a370f61b75f2671157610841aed52fc289a22f925a5502232883"
+      }
+    },
+    "native": {
+      "trail_pixels": [
+        39071,
+        39031,
+        39300,
+        0
+      ],
+      "trail_colors": [
+        8,
+        8,
+        8,
+        0
+      ],
+      "changed_pixels": [
+        28310,
+        30373
+      ],
+      "screenshots_sha256": {
+        "before-key.png": "dd3877759063d1d04e605aec6a5cec53e94ebfd8f588a9ee92d30bd10dc8da53",
+        "before-key-1.png": "e9516c7e817eea43fc88687247f99ddd1af4f42f00a856e97ed27839b8e46a7b",
+        "before-key-2.png": "9baa55e8326cc5f0283e8be4978b0c98dd3d9bc76662e1efe94cca5791eb0c0c",
+        "after-key.png": "3d516c0cd93db877cedb4f0aae7cea582d15c51f9ef92486c95b073e7a2ef02a"
+      }
+    }
+  },
+  "delivered_source_files": 1572,
+  "delivered_source_identity_sha256": "e8a55a68401fd86c28b90fe1bd3bc3eb9ffaab6f3a7a8b3db7ca96bc2bdd8019",
+  "bios_instructions": 96,
+  "protected_mode_instructions": 332,
+  "evidence_sha256": {
+    "render/result.json": "1a653edbde37a89ec12f088a03aad6b415112caaeaf648a44ef31c9229981f95",
+    "source-audit.json": "c7559b34c1c6747c417d2805f0b03f10b9f071e7cc6fee4087e4878c558755f2",
+    "bootstrap-retry/result.json": "d791797519b6b7c4c9d308d855aea1d9cf81a702ae3e10871b8d3fe33ba6e948",
+    "cross-retry/result.json": "02f5f41a4bc81175fc51b05fa4aa146cb7d04012f0719edb9def4392efbf32d9",
+    "cross-retry/boot-instruction-audit.json": "3e4ab628657756a49ba9b0ad9b77be0c5df4cd98a0ba8ddf03d569b91679e6a8"
+  }
+}

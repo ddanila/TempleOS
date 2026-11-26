@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 50 (six apps and forty-four demos) |
+| Qualified | 51 (six apps and forty-five demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 606 |
+| Qualification gaps | 605 |
 | Linked to tests / with reference workflow and oracle | 210 / 139 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 44 of 224 |
+| Demos qualified | 45 of 224 |
 
-C1 has 606 qualification gaps, including entries that still need a reference
+C1 has 605 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -33,13 +33,12 @@ source audit, frozen 686-file content check, 8 MiB probe, all nine active
 64 MiB desktop commands, and configured HomeSys handoff. Its
 128 MiB retained-provider rebuild is the
 prerequisite for the queued two-generation reproduction. The latest
-application checks on this image qualify Lines and Box. The Bounce reference
-passes on the original guest. The same image rejects Bounce at the unresolved
-`GrPlot` call.
+application checks on this image qualify Lines and Box. Bounce also qualifies
+on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 50 workflows and records eighteen shared files
+- The inventory qualifies 51 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -324,9 +323,12 @@ passes on the original guest. The same image rejects Bounce at the unresolved
   cleared it on Space and returned to the prompt. See the
   [wireframe comparison](build/i386-demo-box-v1/qualification.json).
 
-- Bounce draws changing multicolor trails and clears them on Escape in the
-  pinned original guest. The audited `c4064751` i386 image stops at the
-  `GrPlot` call on line 27. See the
+- Bounce qualifies. The i386 public raster header binds the shared clipped
+  `GrPlot` routine. Both guests drew changing multicolor trails and cleared
+  them on Escape. The i386 guest returned fresh arithmetic. See the
+  [seeded Bounce comparison](build/i386-demo-bounce-v1/qualification.json).
+  The audited `c4064751` i386 image stops at the `GrPlot` call on line 27.
+  See the
   [original trail receipt](build/i386-demo-bounce-v1-baseline/original-receipt.json)
   and [i386 rejection](build/i386-demo-bounce-v1-baseline/result.json).
 
