@@ -318,10 +318,12 @@ both guests. The batch returned to native command input.
 ### Interactive assembly sound demo
 
 The AsmAndC1 386 path uses an indirect assembly call to the HolyC
-`Beep` routine and keeps the counted `LOOP` delays between notes.
-Entering `2` through the keyboard produced `Beeps:2` on the original
-and 386 guests. Both emitted PC speaker samples and cleared the
-speaker gate; the native guest returned to fresh arithmetic. Note
-order and duration still need a paired audio check.
-[Original run](../build/i386-asm-and-c1-port-v1/reference-count2/result.json) ·
-[386 run](../build/i386-asm-and-c1-port-v1/native-count2/result.json)
+`Beep` routine and counts the beeps with `LOOP`. It holds each
+descending note for the nominal 125 ms using the guest timer. Entering
+`2` produced `Beeps:2` and speaker notes 62, 60, and 50 in order on
+both guests. The native recording classified 120 ms of each descending
+note, while the original guest's CPU-counted loop classified 340 ms
+each. Both cleared the speaker gate and the native guest returned to
+fresh arithmetic.
+[Original run](../build/i386-asm-and-c1-port-v2/reference-count2/result.json) ·
+[386 run](../build/i386-asm-and-c1-port-v2/native-count2/result.json)

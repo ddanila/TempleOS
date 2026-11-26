@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Exercise the bundled AsmAndC1 prompt and PC speaker on either guest."""
 import argparse
+import array
 import hashlib
 import json
 from pathlib import Path
 import runpy
 import subprocess
+import sys
 import wave
+from statistics import median
 
 ROOT = Path(__file__).resolve().parents[1]
 DEMO = 'Demo/Asm/AsmAndC1.HC'
@@ -23,6 +26,38 @@ U0 AsmAndC1ProbeDone()
 }
 AsmAndC1ProbeDone;
 '''
+
+
+def speaker_tones(audio, count):
+    with wave.open(str(audio), 'rb') as recording:
+        rate = recording.getframerate()
+        if (recording.getnchannels(), recording.getsampwidth(), rate) != (1, 2, 44100):
+            raise ValueError('Expected 44.1 kHz mono 16-bit speaker audio')
+        samples = array.array('h', recording.readframes(recording.getnframes()))
+    if sys.byteorder != 'little':
+        samples.byteswap()
+
+    # Beep uses note 62. The second phase plays 10 * i + 40 down to 50.
+    expected = [62, *(10 * index + 40 for index in range(count, 0, -1))]
+    notes = {note: 440 * 2 ** ((note - 60) / 12) for note in expected}
+    width = rate // 50
+    runs = []
+    for start in range(0, len(samples) - width + 1, width):
+        window = samples[start:start + width]
+        mean = sum(window) / width
+        edges = [i for i, (a, b) in enumerate(zip(window, window[1:])) if a <= mean < b]
+        if len(edges) < 3 or max(window) - min(window) < 200:
+            continue
+        frequency = rate / median(b - a for a, b in zip(edges, edges[1:]))
+        nearest = min(notes, key=lambda note: abs(frequency - notes[note]))
+        if abs(frequency - notes[nearest]) > notes[nearest] * 0.05:
+            continue
+        if runs and runs[-1]['note'] == nearest:
+            runs[-1]['classified_ms'] += 20
+        else:
+            runs.append(dict(note=nearest, classified_ms=20))
+    stable = [run for run in runs if run['classified_ms'] >= 60]
+    return dict(frames=len(samples), sequence=stable, expected=expected)
 
 
 def main():
@@ -81,11 +116,9 @@ def main():
                 report['fresh_arithmetic'] = guest.result_pixels()
         finally:
             guest.close()
-        with wave.open(str(audio), 'rb') as recording:
-            frames = recording.getnframes()
-            if not frames or not any(recording.readframes(frames)):
-                raise ValueError('No nonzero PC speaker samples')
-            report['audio_frames'] = frames
+        report['audio'] = speaker_tones(audio, args.count)
+        if [run['note'] for run in report['audio']['sequence']] != report['audio']['expected']:
+            raise ValueError('PC speaker tones differ from the expected note sequence')
         report['result'] = 'pass'
     except Exception as error:
         report.update(result='fail', error=str(error))

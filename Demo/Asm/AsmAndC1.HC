@@ -24,16 +24,12 @@ U0 Beeps(I64 count)
 I64 AsmAndC1()
 {
   I64 i=GetI64("Num of beeps 1-5 (%d):",3,1,5),note;
-  U32 delay=cnts.time_stamp_freq>>3;
   Beeps(i);
 
   for (note=i;note>0;note--) {
     Snd(note*10+40);
-    if (delay)
-      asm {
-        MOV ECX,U32 &delay[EBP]
-@@10:   LOOP @@10
-      }
+    //The native timestamp frequency counts PIT ticks, not CPU iterations.
+    Sleep(125);
   }
   Snd;
   return i;
