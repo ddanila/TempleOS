@@ -65,7 +65,11 @@ def main():
         report['warning_sha256'] = hashlib.sha256(warning).hexdigest()
         log = guest.collect()
         report['publications'] = {name: log.count('PUBLIC '+name+' loaded\n')
-                                  for name in ('LEX', 'OPT', 'PARSER', 'BACKEND', 'JIT', 'ASM')}
+                                  for name in ('LEX', 'PARSER', 'BACKEND', 'JIT', 'ASM')}
+        optimizer = {mode: log.count('PUBLIC OPT '+mode+'\n')
+                     for mode in ('loaded', 'resident')}
+        report['optimizer_publication'] = optimizer
+        report['publications']['OPT'] = sum(optimizer.values())
         if any(count != 1 for count in report['publications'].values()):
             raise ValueError('Unexpected publication count: '+str(report['publications']))
         guest.command('6*7;')

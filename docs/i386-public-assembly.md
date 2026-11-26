@@ -136,3 +136,9 @@ complete assembly-form coverage, Cmp/CmpBuf/file/map workflows and native C5
 release generations. Functional 8/16 MiB welcome frames do not qualify startup
 performance or assembly at those memory sizes. C1-C5 remain active; bundled
 qualification remains 2/686.
+
+The version-276 managed image passed all 24 native assembly records and
+returned to rendered arithmetic. The publication check now recognizes
+both optimizer log markers and requires exactly one publication. This
+run recorded one resident publication and zero legacy publications.
+[Version-276 receipt](../build/i386-assembly-v276-control-v2/result.json)
