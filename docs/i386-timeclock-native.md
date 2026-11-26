@@ -204,3 +204,10 @@ session opens and closes successfully. The file locator returns
 `-1` on all four failed reads, before any payload read. After the
 overwrite the same locator returns `1` and the payload read succeeds.
 See the [lookup trace](../build/i386-timeclock-read-stages-v1/lookup-results.txt).
+
+The failed image stores `TimeClock` in the directory's self record.
+Original `RedSeaMkDir` writes the directory name there, whereas the
+retained reader required a literal dot. The unchanged disk stopped in
+kernel startup. Changing only that record's name to a dot in a copy let
+the same kernel boot, read TimeClock's archive, and display 42.
+See the [header control](../build/i386-redsea-named-self-v1/header-control/result.json).

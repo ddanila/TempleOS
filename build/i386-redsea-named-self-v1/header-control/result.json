@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "source_sha256": "72b220d73c0f2959fa2b068bbf079b6bd71bbd6a9b67121e354aab6757f60460",
+  "directory_block": 98267,
+  "changed_name": [
+    "TimeClock",
+    "."
+  ],
+  "arithmetic": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
