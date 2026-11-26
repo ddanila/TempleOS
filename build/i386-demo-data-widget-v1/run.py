@@ -39,7 +39,7 @@ def send(guest, native, text):
         time.sleep(1)
 
 
-def capture(guest_type, vision, font, image, out, native, edit, editor_key):
+def capture(guest_type, vision, font, image, out, native, edit, editor_key, physical):
     guest = guest_type(image,out,native,reference_cpus=1)
     try:
         guest.wait('DONE native kernel startup\n' if native else 'DEMO BATCH READY\n')
@@ -82,19 +82,45 @@ def capture(guest_type, vision, font, image, out, native, edit, editor_key):
             send(guest,native,'if(!StrCmp(buf,"Berry"))DWLog("DATA WRITEBACK PASS\\n");')
             guest.wait('DATA WRITEBACK PASS\n',timeout=10,start=start)
             result['edit'] = dict(value='Berry',sha256=sha(edited),writeback=True)
-        if editor_key:
+        if editor_key or physical:
             send(guest,native,'U0 DWLog(U8*s){while(*s)OutU8(0xE9,*s++);}')
             send(guest,native,'CDocEntry *DWField(CDoc*d){CDocEntry*e=d->head.next;while(e!=d && e->data!=buf)e=e->next;return e;}')
-            send(guest,native,'U0 DWEdit(){CDoc*d=DocPut;CDocEntry*e=DWField(d);Bool os=Bt(&d->flags,DOCf_OVERSTRIKE);if(e==d)return;d->cur_entry=e;d->cur_col=e->min_col;if(!os)DocPutKey(d,0,SC_INS);DocPutKey(d,66);if(!os)DocPutKey(d,0,SC_INS);DocBottom(d);}')
-            send(guest,native,'DWEdit;')
-            start = len(guest.collect())
-            send(guest,native,'if(!StrCmp(buf,"Berry"))DWLog("DATA WRITEBACK PASS\\n");')
-            guest.wait('DATA WRITEBACK PASS\n',timeout=10,start=start)
-            guest.screenshot('editor-key')
-            frame = out/'editor-key.png'
-            if not vision['matches'](frame,'Str:Berry',font,first_row=0):
-                raise ValueError('The edited backing value was not rendered')
-            result['editor_key'] = dict(value='Berry',sha256=sha(frame),writeback=True)
+            if physical:
+                send(guest,native,'U0 DWOpen(){CDoc*d=DocPut;CDocEntry*e=DWField(d);if(e==d)return;d->cur_entry=e;d->cur_col=e->min_col;DWLog("DATA EDITOR READY\\n");DocEd(d,DOF_DONT_HOME);if(!StrCmp(buf,"Tarry"))DWLog("DATA WRITEBACK PASS\\n");DocBottom(d);}')
+                start = len(guest.collect())
+                guest.type('DWOpen;')
+                guest.press('ret')
+                guest.wait('DATA EDITOR READY\n',timeout=15,start=start)
+                time.sleep(2)
+                guest.screenshot('editor-open')
+                guest.press('right')
+                guest.press('insert')
+                guest.press('a')
+                time.sleep(1)
+                guest.screenshot('physical-edit')
+                guest.press('esc')
+                if native:
+                    guest.wait('COMMAND OK\n',timeout=20,start=start)
+                guest.wait('DATA WRITEBACK PASS\n',timeout=10,start=start)
+                time.sleep(1)
+                guest.screenshot('physical-closed')
+                frame = out/'physical-closed.png'
+                if not vision['matches'](frame,'Str:Tarry',font,first_row=0):
+                    raise ValueError('Physical edit was not rendered after the editor closed')
+                result['physical_edit'] = dict(value='Tarry',sha256=sha(frame),writeback=True)
+                if native:
+                    guest.press('end')
+            else:
+                send(guest,native,'U0 DWEdit(){CDoc*d=DocPut;CDocEntry*e=DWField(d);Bool os=Bt(&d->flags,DOCf_OVERSTRIKE);if(e==d)return;d->cur_entry=e;d->cur_col=e->min_col;if(!os)DocPutKey(d,0,SC_INS);DocPutKey(d,66);if(!os)DocPutKey(d,0,SC_INS);DocBottom(d);}')
+                send(guest,native,'DWEdit;')
+                start = len(guest.collect())
+                send(guest,native,'if(!StrCmp(buf,"Berry"))DWLog("DATA WRITEBACK PASS\\n");')
+                guest.wait('DATA WRITEBACK PASS\n',timeout=10,start=start)
+                guest.screenshot('editor-key')
+                frame = out/'editor-key.png'
+                if not vision['matches'](frame,'Str:Berry',font,first_row=0):
+                    raise ValueError('The edited backing value was not rendered')
+                result['editor_key'] = dict(value='Berry',sha256=sha(frame),writeback=True)
         if native:
             guest.command('6*7;')
             result['fresh_result']=guest.result_pixels()
@@ -111,6 +137,7 @@ def main():
     edit_mode=parser.add_mutually_exclusive_group()
     edit_mode.add_argument('--edit',action='store_true')
     edit_mode.add_argument('--editor-key',action='store_true')
+    edit_mode.add_argument('--editor-physical',action='store_true')
     args=parser.parse_args()
     out=args.out.resolve()
     out.mkdir()
@@ -124,7 +151,7 @@ def main():
     font=vision['glyphs'](font_path)
     results={}
     with ThreadPoolExecutor(max_workers=2) as pool:
-        runs={side:pool.submit(capture,guest,vision,font,image,out/side,side=='native',args.edit,args.editor_key)
+        runs={side:pool.submit(capture,guest,vision,font,image,out/side,side=='native',args.edit,args.editor_key,args.editor_physical)
               for side,image in (('original',original),('native',disk))}
         for side,future in runs.items():
             try:

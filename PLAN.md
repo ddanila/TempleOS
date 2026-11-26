@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 65 (six apps and fifty-nine demos) |
+| Qualified | 66 (six apps and sixty demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 591 |
+| Qualification gaps | 590 |
 | Linked to tests / with reference workflow and oracle | 225 / 154 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 59 of 224 |
+| Demos qualified | 60 of 224 |
 
-C1 has 591 qualification gaps, including entries that still need a reference
+C1 has 590 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -41,7 +41,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 65 workflows and records eighteen shared files
+- The inventory qualifies 66 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -482,14 +482,14 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   fresh arithmetic. See the
   [cursor movement comparison](build/i386-demo-cursor-move-v1/table-comparison/result.json).
 
-- Data's live I16 field refreshed across three samples on both guests,
-  and both rendered the string Terry. The first click and Insert edit
-  probe failed to change the string on either guest. Direct caret
-  placement followed by the DolDoc Insert and character handlers
-  changed the displayed string and backing buffer to Berry on both
-  guests. Physical editor navigation remains open. See the
+- Data qualifies. Both guests refreshed the live I16 field and rendered
+  Terry. The fixture opened the DolDoc editor at the string field.
+  Physical Right, Insert, a, and Escape changed the displayed value and
+  backing buffer to Tarry, then closed the editor. The i386 prompt
+  evaluated fresh arithmetic. The earlier click in the command-line
+  document did not establish an editing caret. See the
   [live-field comparison](build/i386-demo-data-widget-v1/live-fields/result.json)
-  and [editor-key writeback](build/i386-demo-data-widget-v1/editor-key-fields/result.json).
+  and [physical editor comparison](build/i386-demo-data-widget-v1/physical-editor-writeback/result.json).
 
 ### Plan decisions (2026-11-24)
 

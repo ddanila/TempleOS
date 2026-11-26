@@ -16049,9 +16049,9 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": "Launch unchanged Data and sample its live I16 and string fields. Enter editor overstrike mode and replace the first character of the string.",
-      "oracle": "Check that the I16 value changes while the string remains Terry, then confirm Berry is rendered and stored in the demo's backing buffer after editing.",
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged Data and sample its live I16 and string fields. Enter the editor with the caret at the string, then use Right, Insert and a to overstrike the second character.",
+      "oracle": "Check that the I16 value changes while the string remains Terry, then confirm Tarry is rendered and stored in the demo's backing buffer after physical editor input.",
       "tests": [
         {
           "target": "native-original-live-data-fields",
@@ -16070,6 +16070,12 @@
           "result": "pass",
           "evidence": "build/i386-demo-data-widget-v1/editor-key-fields/result.json",
           "scope": "With the caret placed directly on the widget, editor overstrike changes the rendered string and its backing buffer to Berry on both guests. The i386 prompt evaluates fresh arithmetic."
+        },
+        {
+          "target": "native-original-physical-editor-data-writeback",
+          "result": "pass",
+          "evidence": "build/i386-demo-data-widget-v1/physical-editor-writeback/result.json",
+          "scope": "The fixture opens the editor at the string. Physical Right, Insert, a, and Escape change Terry to Tarry, write it back, and close the editor on both guests."
         }
       ]
     },

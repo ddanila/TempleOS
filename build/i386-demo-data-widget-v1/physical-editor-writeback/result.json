@@ -1,0 +1,89 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/cross-sign/kernel.img": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "/home/ddanila/fun/TempleOS/Demo/DolDoc/Data.HC": "360c3ae662e76def9727e697afc27e301f832924a5dd90f09960c134103e3e14",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "result": "pass",
+      "samples": [
+        {
+          "value": 791,
+          "sha256": "33747c68154db9218c6551231872bd85970b7adf5b55f33c793d41118974b305",
+          "string_cell": [
+            0,
+            9
+          ]
+        },
+        {
+          "value": 1245,
+          "sha256": "6d0aa06f2c482f5bdbf969adce3faa165ec3be5c62721b623d095cdb3ccab16d",
+          "string_cell": [
+            0,
+            9
+          ]
+        },
+        {
+          "value": 1680,
+          "sha256": "50d19c051e8f19d3e62a05ae5d216a58c92d3358de8743140815c6b2b9ea7fd0",
+          "string_cell": [
+            0,
+            9
+          ]
+        }
+      ],
+      "physical_edit": {
+        "value": "Tarry",
+        "sha256": "3c9bd69022c8c2f36f01b7d59fb4d48c17b9eb01c66de6df950e8be7564d0574",
+        "writeback": true
+      }
+    },
+    "native": {
+      "result": "pass",
+      "samples": [
+        {
+          "value": 124,
+          "sha256": "cfa482252a6f2f30ea144ed9ffb608f78df39f0a9719d17f82a9e62397ff105b",
+          "string_cell": [
+            0,
+            8
+          ]
+        },
+        {
+          "value": 172,
+          "sha256": "ee18295dda09bc220dec5c12b07d65308cfbd13e5c67034bf6208bae796b969f",
+          "string_cell": [
+            0,
+            8
+          ]
+        },
+        {
+          "value": 215,
+          "sha256": "93db191b1119d9b0e8408c30cf7f0898cd4822b7174e507be3a2105d3b2cb4f6",
+          "string_cell": [
+            0,
+            8
+          ]
+        }
+      ],
+      "physical_edit": {
+        "value": "Tarry",
+        "sha256": "5df0d2d1b8a604c7b7e8aadbc314ebad38b5aa09226df4669d914a16546cfa9b",
+        "writeback": true
+      },
+      "fresh_result": {
+        "column": 6,
+        "row": 18,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}
