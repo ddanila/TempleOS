@@ -1,0 +1,22 @@
+{
+  "status": "fail",
+  "ram_mib": 8,
+  "worker_arena_bytes": 262144,
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-256k-v1/cross/kernel-diagnostics.img": "c2f29ee3d835f6e55fbcfc5f76509288b39ffdbdb7870200aff9e8e3ac3469b7",
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-256k-v1/cross/result.json": "260fcf1f65c7d29f7f0e4dcf7c9ccbf38cd8f556a156ae719f483e5c85cbaee0",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-startup-memory.py": "cc4748a4118d5e498b26d490b719f79c92148a34dcd76d325f30744d859ec0de",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463"
+  },
+  "trace_sha256": "654da32c6bf8bfd48f49b45c922ac71662d0886c07b9587c4b03ec3e0a61ee40",
+  "terminal_trace": [
+    "MEMORY PROBE PRESERVED 0000000000000001 0000000000000010 0000000000002000",
+    "MEMORY PROBE ISOLATED 0000000000000001",
+    "MEMORY PROBE 0000000000000001",
+    "HEAP EXHAUSTED 000000000008BF3F 0000000000001520 0000000000040000 000000000003EAD0 0000000000000005",
+    "HEAP FAILURE CALLERS 0000000000165E1B 000000000010B5FE",
+    "PROBE SCRATCH restored 0000000000001520 0000000000000005",
+    "PROBE REJECT load reclaimed",
+    "FAIL native kernel"
+  ]
+}

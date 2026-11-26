@@ -1,0 +1,14 @@
+diff --git a/Kernel/I386/Kernel.HC b/Kernel/I386/Kernel.HC
+index dfe1e371..b350c9f4 100644
+--- a/Kernel/I386/Kernel.HC
++++ b/Kernel/I386/Kernel.HC
+@@ -305,0 +306 @@ I64 Main(CI386BootInfo *info,I64 unused)
++    I64 private_bytes=256*1024;
+@@ -307 +308 @@ I64 Main(CI386BootInfo *info,I64 unused)
+-      0x18,0x20,1048576);
++      0x18,0x20,private_bytes);
+@@ -310 +310,0 @@ I64 Main(CI386BootInfo *info,I64 unused)
+-    //Combined original compiler sources need 1 MiB of transient task storage.
+@@ -322 +322 @@ I64 Main(CI386BootInfo *info,I64 unused)
+-        pulse_used-kernel_heap.used<1048576+16384) KernelStop;
++        pulse_used-kernel_heap.used<private_bytes+16384) KernelStop;

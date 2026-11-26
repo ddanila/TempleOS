@@ -914,3 +914,10 @@ main arena's largest free block of 0x26FF0 bytes. The loader reclaimed its
 scratch allocations. The patch and terminal receipt are in
 `build/i386-diagnostic-worker-640k-v1/`. This establishes a separate peak at
 provider load while the worker's private heap is still reserved.
+
+The 256 KiB trial again passed the phase-one public memory probe. The provider
+loader then failed to allocate its 0x8BF3F-byte source file in the worker's
+private heap, before trying the linked image in the main arena. Together with
+the 640 KiB trial, this shows that resizing alone cannot accommodate the
+current loader's two allocations. The patch and receipt are in
+`build/i386-diagnostic-worker-256k-v1/`.
