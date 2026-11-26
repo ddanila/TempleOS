@@ -149,6 +149,8 @@ public _extern _DOC_SPRITE CDocEntry *DocSprite(CDoc *doc=NULL,U8 *elems,U8 *fmt
 public _extern _SPRITE CDocEntry *Sprite(U8 *elems,U8 *fmt=NULL);
 public _extern _DOC_GR U0 DocGR(CDoc *doc=NULL,U8 *filename);
 public _extern _DOC_DUMP U0 DocDump(CDoc *doc,I64 uS_delay=0);
+public _extern _CLASS_REP U0 ClassRep(U8 *_d,U8 *class_name=lastclass,I64 max_depth=2,Bool fun=FALSE,I64 offset=0);
+public _extern _CLASS_REP_D U0 ClassRepD(U8 *_d,U8 *class_name=lastclass,I64 max_depth=2,Bool fun=FALSE,I64 offset=0);
 public _extern _DOC_TYPE Bool DocType(CDoc *doc=NULL,U8 *filename,I64 trailing_new_lines=1);
 public _extern _TYPE Bool Type(U8 *filename,I64 trailing_new_lines=1);
 public _extern _DOC_TERM_NEW U0 DocTermNew();

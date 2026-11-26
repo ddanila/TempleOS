@@ -1,0 +1,29 @@
+{
+  "result": "pass",
+  "input_disk_sha256": "04d1eb8e27f10e21323c95f20590db349f3346185afbedd5f77b06d1608aea84",
+  "pointer_string_pixels": [
+    [
+      64,
+      15
+    ]
+  ],
+  "adjacent_u32": [
+    [
+      40,
+      11
+    ],
+    [
+      30,
+      17
+    ]
+  ],
+  "fresh_result": {
+    "column": 0,
+    "row": 22,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

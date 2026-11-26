@@ -1,0 +1,37 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-form-v1/cross-class-report/kernel.img": "04d1eb8e27f10e21323c95f20590db349f3346185afbedd5f77b06d1608aea84",
+    "/home/ddanila/fun/TempleOS/Demo/DolDoc/Form.HC": "8b070762a26b102c76781dc401bd5ded5fec1db9bf438c46db23822f59b7cf1f"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "result": "captured",
+      "screenshots_sha256": {
+        "accept-form": "c06bb176adad57128d57940d527935bbbdf606b72932cac983a7715f21583237",
+        "accept-result": "db3fc1dd72aebb214aae0040ba56f586e29fdf70e62391c1b27c7ab123ba048c",
+        "cancel-form": "aa3d3078624f4aa0b7930e87ea1add444057682b0ec828180c4152a0f0bc4774",
+        "cancel-result": "dd57ea2cd6a784495a3265439dbab44069440bcbecf5871f9154b83385b2e5fa"
+      }
+    },
+    "native": {
+      "result": "captured",
+      "screenshots_sha256": {
+        "accept-form": "a4b040a497c1942093aeb8803ea782e535bd85874080a125192201ef2839390d",
+        "accept-result": "6f52aeb4d9b24cf03c6e19e8b6afeff3a47dd85efcafe5c7bbad1bed5d976ec1",
+        "cancel-form": "a4b040a497c1942093aeb8803ea782e535bd85874080a125192201ef2839390d",
+        "cancel-result": "1185160a8bfdf77c62e069ef5d06434bd445e9aea4d5e4741adf0d5e7b11096b"
+      },
+      "fresh_result": {
+        "column": 0,
+        "row": 58,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

@@ -16199,7 +16199,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Launch unchanged Form, inspect defaults, accept with Escape, and reopen and cancel with Shift-Escape.",
       "oracle": "Match the default numeric, list, name, address, and checkbox fields, the accepted values, and the class report on both paths. Cancel must print Cancel.",
       "tests": [
@@ -16208,6 +16208,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-form-v1/initial/qualification.json",
           "scope": "The original renders the default form and class report after accept and cancel. The i386 compiler rejects the ClassRep call on line 45 before displaying the form."
+        },
+        {
+          "target": "native-original-form-with-class-report",
+          "result": "pass",
+          "evidence": "build/i386-demo-form-v1/class-report/qualification.json",
+          "scope": "Both guests render the form defaults, accepted values, cancellation, and FDStruct class reports. The i386 prompt renders fresh arithmetic after the form."
         }
       ]
     },

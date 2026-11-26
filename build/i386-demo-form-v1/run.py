@@ -28,6 +28,10 @@ def capture(guest_type, disk, output, native):
             guest.type(command)
             guest.press('ret')
             time.sleep(4)
+            if native:
+                log = guest.collect()[start:]
+                if 'INPUT REJECT ' in log:
+                    raise ValueError(log[-2000:])
             guest.screenshot(outcome+'-form')
             if outcome == 'cancel':
                 guest.key('shift', True)

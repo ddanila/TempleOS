@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 70 (six apps and sixty-four demos) |
+| Qualified | 71 (six apps and sixty-five demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 586 |
+| Qualification gaps | 585 |
 | Linked to tests / with reference workflow and oracle | 230 / 159 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 64 of 224 |
+| Demos qualified | 65 of 224 |
 
-C1 has 586 qualification gaps, including entries that still need a reference
+C1 has 585 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -41,7 +41,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 70 workflows and records eighteen shared files
+- The inventory qualifies 71 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -584,6 +584,17 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   the FDStruct class report. The i386 compiler rejects the ClassRep call
   on line 45 before opening the form. See the
   [form reference and native launch result](build/i386-demo-form-v1/initial/qualification.json).
+  The rebuilt i386 image publishes the shared class-report routines with
+  native-width pointer member reads. The unchanged Form now matches the
+  original defaults, accepted values, cancellation and report labels.
+  The native prompt evaluates fresh arithmetic. The image also passed
+  the 64 MiB active desktop baseline and the 1,575-file source audit.
+  See the [form comparison](build/i386-demo-form-v1/class-report/qualification.json),
+  [desktop baseline](build/i386-demo-form-v1/class-report-baseline64/result.json),
+  and [source audit](build/i386-demo-form-v1/class-report-source-audit.json).
+  A [live ClassRepD check](build/i386-demo-form-v1/dynamic-native/result.json)
+  updates the displayed pointer-backed text from Mapped to Capped at the
+  same location while the adjacent U32 retains its value.
 
 
 ### Plan decisions (2026-11-24)

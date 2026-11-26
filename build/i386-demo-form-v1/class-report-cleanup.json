@@ -1,0 +1,20 @@
+[
+  {
+    "removed": "build/i386-demo-form-v1/class-report/working.img",
+    "retained": "build/i386-demo-form-v1/cross-class-report/kernel.img",
+    "sha256": "04d1eb8e27f10e21323c95f20590db349f3346185afbedd5f77b06d1608aea84",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-form-v1/class-report-baseline64/working.img",
+    "retained": "build/i386-demo-form-v1/cross-class-report/kernel.img",
+    "sha256": "04d1eb8e27f10e21323c95f20590db349f3346185afbedd5f77b06d1608aea84",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-form-v1/dynamic-native/working.img",
+    "retained": "build/i386-demo-form-v1/cross-class-report/kernel.img",
+    "sha256": "04d1eb8e27f10e21323c95f20590db349f3346185afbedd5f77b06d1608aea84",
+    "allocated_bytes": 67108864
+  }
+]
