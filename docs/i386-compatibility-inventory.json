@@ -1416,7 +1416,13 @@
           "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Demo/WordSearch.HC"
+        ]
+      }
     },
     {
       "path": "Adam/AutoComplete/MakeAC.HC",
@@ -18089,10 +18095,16 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Run the unchanged demo and capture the explanatory allocator document, including the task chunk, system page and power-of-two bucket listings.",
-      "oracle": "Compare the complete DolDoc with the pinned original. A native-specific diagram must keep its bucket labels consistent with the native record widths and actual allocator alignment.",
+      "oracle": "Compare the complete DolDoc with the pinned original, accounting for the bucket index divisor of four on native versus eight on the original. Both use eight-byte allocation spans.",
       "tests": [
+        {
+          "target": "native-original-memdemo-layout",
+          "result": "pass",
+          "evidence": "build/i386-demo-mem-native-layout-v1/comparison/result.json",
+          "scope": "Bundled native demo uses aligned chunk sizes and the native pointer-size divisor. All 4933 bytes match after the original chunk bucket labels are mapped from /8 to /4; native arithmetic recovers."
+        },
         {
           "target": "native-original-demo-batch",
           "result": "fail",
@@ -20906,7 +20918,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Demo/DolDoc/FileRead.HC"
+        ]
+      }
     },
     {
       "path": "Doc/WhyNotMore.DD",
@@ -25456,7 +25474,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Demo/DolDoc/TextDemo.HC"
+        ]
+      }
     },
     {
       "path": "Misc/DoDistro.HC",

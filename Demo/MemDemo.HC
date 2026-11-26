@@ -30,12 +30,12 @@ $$HL,0$$$$FG$$
 
 
   "$$PURPLE$$Chunks in increments of 8 bytes, owned by the task.$$FG$$\n";
-  for (i=sizeof(CMemUnused);i<MEM_HEAP_HASH_SIZE;i+=8)
+  for (i=(sizeof(CMemUnused)+7)&~7;i<MEM_HEAP_HASH_SIZE;i+=8)
     if (i==0x48)
       "...\n";
     else if (!(0x48<i<0x3C8))
-      "Fs->data_heap->heap_hash[%X/8]"
-	  "$$BLACK$$ -->$$FG$$[X]$$BLACK$$ -->$$FG$$[X]$$BLACK$$ -->$$FG$$\n",i;
+      "Fs->data_heap->heap_hash[%X/%d]"
+	  "$$BLACK$$ -->$$FG$$[X]$$BLACK$$ -->$$FG$$[X]$$BLACK$$ -->$$FG$$\n",i,sizeof(U8 *);
   "\n\n";
 
   "$$PURPLE$$Pages of 512 bytes, owned by the system.$$FG$$\n";

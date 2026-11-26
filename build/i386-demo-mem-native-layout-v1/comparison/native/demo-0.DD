@@ -1,0 +1,84 @@
+$HL,1$$FG,0$
+#define MEM_PAG_BITS		9
+#define MEM_PAG_SIZE		(1<<MEM_PAG_BITS)
+#define MEM_HEAP_HASH_SIZE	1024
+#define MEM_FREE_PAG_HASH_SIZE	0x100
+#define MEM_EXTRA_HASH2_PAGS	2
+
+public class CBlkPool
+{
+  CMemBlk *free_pag_hash[MEM_FREE_PAG_HASH_SIZE],
+	  *free_pag_hash2[64-MEM_PAG_BITS];
+};
+
+public class CHeapCtrl
+{
+  CBlkPool *bp;
+  CMemUnused *heap_hash[MEM_HEAP_HASH_SIZE/sizeof(U8 *)];
+};
+
+public class CTask //The Fs segment reg points to current CTask.
+{
+  CHeapCtrl *code_heap,*data_heap;
+};
+$HL,0$$FG$
+
+$FG,5$Chunks in increments of 8 bytes, owned by the task.$FG$
+Fs->data_heap->heap_hash[10/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[18/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[20/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[28/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[30/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[38/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[40/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+...
+Fs->data_heap->heap_hash[3C8/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[3D0/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[3D8/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[3E0/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[3E8/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[3F0/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->heap_hash[3F8/4]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+
+
+$FG,5$Pages of 512 bytes, owned by the system.$FG$
+Fs->data_heap->bp->free_pag_hash[400/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[600/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[800/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[A00/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[C00/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[E00/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[1000/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+...
+Fs->data_heap->bp->free_pag_hash[1F200/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[1F400/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[1F600/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[1F800/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[1FA00/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[1FC00/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash[1FE00/512]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+
+
+$FG,5$Powers of two, owned by the system.$FG$
+Fs->data_heap->bp->free_pag_hash2[11] 0000000000020400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[12] 0000000000040400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[13] 0000000000080400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[14] 0000000000100400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[15] 0000000000200400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[16] 0000000000400400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[17] 0000000000800400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[18] 0000000001000400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[19] 0000000002000400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+...
+Fs->data_heap->bp->free_pag_hash2[37] 0080000000000400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[38] 0100000000000400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[39] 0200000000000400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[3A] 0400000000000400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[3B] 0800000000000400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[3C] 1000000000000400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[3D] 2000000000000400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[3E] 4000000000000400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+Fs->data_heap->bp->free_pag_hash2[3F] 8000000000000400$FG,0$ -->$FG$[X]$FG,0$ -->$FG$[X]$FG,0$ -->$FG$
+
+
+
