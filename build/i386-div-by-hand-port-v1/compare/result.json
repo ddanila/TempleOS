@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "input_sha256": "f689f94c22ae305f1071b97384f89307eb19f77dd3d59d135cb7983eeeca1468",
+  "entries": {
+    "Demo/Asm/DivByHand.HC": {
+      "source_sha256": "c1b4c83ac2b33887e8d3c606b480ec237f719f4b25047597fe52fcda22cc9744",
+      "output_file": "demo-0.DD",
+      "native_source_sha256": "aa720e1c64d3617b53545f9270d7a072811a2d62283ab5634af226a17d539bf1",
+      "original_sha256": "be08209b9932a369055d3bd1d56fb4c0015196b5fd517a86bb7512673dde61a8",
+      "bytes": 17,
+      "result": "pass",
+      "native_sha256": "be08209b9932a369055d3bd1d56fb4c0015196b5fd517a86bb7512673dde61a8"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "inputs_unchanged": true
+}

@@ -200,3 +200,18 @@ hexadecimal labels, FIZZ and BUZZ annotations, and trailing spaces. It
 also reproduced AsmHelloWorld and confirmed fresh arithmetic at the
 native prompt.
 [Paired comparison receipt](../build/i386-buzz-fizz-port-v1/compare/result.json)
+
+### DivByHand 32-bit port
+
+The native branch implements the original 64-step unsigned restoring
+division with two 32-bit register pairs. Carry transfers the next bit
+into the remainder, and borrow propagates between the words during
+subtraction. The original x64 assembly remains available in the other branch.
+
+The full image passed the 386 boot audit and reproduced the exact original
+DolDoc output for `123456/10=12345`. A separate native run checked ten
+vectors, including operands with nonzero upper words, maximum unsigned
+values, and the original all-ones result for a zero divisor. Both runs
+confirmed fresh arithmetic at the native prompt.
+[Demo comparison](../build/i386-div-by-hand-port-v1/compare/result.json) ·
+[Vector receipt](../build/i386-div-by-hand-port-v1/vectors/result.json)

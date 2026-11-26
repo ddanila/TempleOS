@@ -15650,10 +15650,10 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
       "reference_workflow": {
-        "status": "observed-reference",
+        "status": "qualified-workflows",
         "description": "Run the hand-written unsigned division and compare the printed quotient 12345 for 123456 divided by 10."
       },
       "oracle": {
@@ -15664,6 +15664,13 @@
         ]
       },
       "tests": [
+        {
+          "target": "native-assembly-div-by-hand-port",
+          "command": "python3 tools/test-i386-demo-batch.py IMAGE --out OUT --reference-at-prompt --demo Demo/Asm/DivByHand.HC --native-port Demo/Asm/DivByHand.HC",
+          "result": "pass",
+          "evidence": "build/i386-div-by-hand-port-v1/compare/result.json",
+          "scope": "Bundled 32-bit restoring division reproduces the complete original document and returns to native command input."
+        },
         {
           "target": "original-assembly-demo-output",
           "result": "pass",

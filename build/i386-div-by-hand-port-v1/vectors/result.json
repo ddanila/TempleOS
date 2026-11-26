@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "inputs": {
+    "/home/ddanila/fun/TempleOS/build/i386-buzz-fizz-port-v1/cross/kernel.img": "db2043efdc23b5706529a2c6c9e2c485a915775125a694f1516731ef8eb1b648",
+    "Demo/Asm/DivByHand.HC": "aa720e1c64d3617b53545f9270d7a072811a2d62283ab5634af226a17d539bf1"
+  },
+  "vector_count": 10,
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}
