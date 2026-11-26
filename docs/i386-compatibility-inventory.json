@@ -19434,10 +19434,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Seed with 1 and execute unchanged F64FileGen, then reopen the DolDoc and binary files in the writable home directory.",
+      "oracle": "Check ten distinct values in each format and compare bytes in both guests. Verify the native files are present on the RedSea disk.",
+      "tests": [
+        {
+          "target": "native-original-seeded-f64-generator",
+          "result": "pass",
+          "evidence": "build/i386-demo-f64-files-v1/generator-qualification.json",
+          "scope": "Both guests produce byte-identical DolDoc and binary files. Both compressed files persist on the native RedSea disk."
+        }
+      ]
     },
     {
       "path": "Demo/SortFileDemo/F64FileSort.HC",
@@ -19452,9 +19459,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Run unchanged F64FileSort after F64FileGen, then reopen both output formats.",
+      "oracle": "Check that each output file contains all ten corresponding input records in ascending order.",
+      "tests": [
+        {
+          "target": "original-f64-sorter",
+          "result": "pass",
+          "evidence": "build/i386-demo-f64-files-v1/comparison-sort/result.json",
+          "scope": "The original sorts and reopens both formats without changing or dropping records."
+        },
+        {
+          "target": "i386-f64-sorter-before-sign-binding",
+          "result": "fail",
+          "evidence": "build/i386-demo-f64-files-v1/comparison-sort/result.json",
+          "scope": "The LowPass1 image rejects the unresolved Sign call on line 7."
+        }
+      ]
     },
     {
       "path": "Demo/Spy.HC",

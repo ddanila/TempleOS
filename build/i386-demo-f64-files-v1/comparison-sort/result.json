@@ -1,0 +1,102 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-low-pass-v1/cross-public/kernel.img": "d891665b3bee1ce7402664e1a8e0a558e4048943dfe657589ae3946bdcd80308"
+  },
+  "inputs_unchanged": true,
+  "source_sha256": {
+    "F64FileGen.HC": "38676a7693d5b5a46e7d0964b3e529cf0b2d90ab564f30baac44853980cd64ca",
+    "F64FileSort.HC": "0ac8bd7d92368f3a3438e71b3a6337b69ad7548672e1a3163934fe892f97fc93"
+  },
+  "runs": {
+    "original": {
+      "generator": {
+        "result": "pass",
+        "binary_values": [
+          0.2459036464740686,
+          0.7392696648153417,
+          0.5005873812637927,
+          0.0857674579792582,
+          0.908352562296163,
+          0.3504071569329983,
+          0.21222056779821916,
+          0.6325011934944726,
+          0.7037905756936051,
+          0.3592605728277253
+        ],
+        "text_values": [
+          0.692837,
+          0.03763,
+          0.015609,
+          0.008619,
+          0.21216,
+          0.899511,
+          0.328804,
+          0.11482,
+          0.199544,
+          0.675514
+        ]
+      },
+      "sorter": {
+        "result": "pass",
+        "binary_values": [
+          0.0857674579792582,
+          0.21222056779821916,
+          0.2459036464740686,
+          0.3504071569329983,
+          0.3592605728277253,
+          0.5005873812637927,
+          0.6325011934944726,
+          0.7037905756936051,
+          0.7392696648153417,
+          0.908352562296163
+        ],
+        "text_values": [
+          0.008619,
+          0.015609,
+          0.03763,
+          0.11482,
+          0.199544,
+          0.21216,
+          0.328804,
+          0.675514,
+          0.692837,
+          0.899511
+        ]
+      },
+      "result": "pass"
+    },
+    "native": {
+      "generator": {
+        "result": "pass",
+        "binary_values": [
+          0.2459036464740686,
+          0.7392696648153417,
+          0.5005873812637927,
+          0.0857674579792582,
+          0.908352562296163,
+          0.3504071569329983,
+          0.21222056779821916,
+          0.6325011934944726,
+          0.7037905756936051,
+          0.3592605728277253
+        ],
+        "text_values": [
+          0.692837,
+          0.03763,
+          0.015609,
+          0.008619,
+          0.21216,
+          0.899511,
+          0.328804,
+          0.11482,
+          0.199544,
+          0.675514
+        ]
+      },
+      "result": "fail",
+      "error": "INPUT LINE ExeFile(\"C:/Demo/SortFileDemo/F64FileSort.HC\");\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token Sign file C:/Demo/SortFileDemo/F64FileSort.HC line 7\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND OK\n"
+    }
+  }
+}

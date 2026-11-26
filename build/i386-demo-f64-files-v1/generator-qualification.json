@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-low-pass-v1/cross-public/kernel.img": "d891665b3bee1ce7402664e1a8e0a558e4048943dfe657589ae3946bdcd80308"
+  },
+  "source_sha256": "38676a7693d5b5a46e7d0964b3e529cf0b2d90ab564f30baac44853980cd64ca",
+  "binary_records": 10,
+  "text_records": 10,
+  "files": {
+    "unsorted-data.bin": "24e9f77c813d302bd3dfa48c3d35eecbb3c2bcb7303ef5537a9fc98792fec5a7",
+    "unsorted-dd.bin": "3f27ac743e85d81111b1f56589cb9a00f2e138395203edb638b193af4072d21d"
+  },
+  "native_disk_files": {
+    "/Home/DemoUnsortedF64.DATA.Z": "378a0d77e0fc4793488ccfb972fdb4cb72858734a75847a27adc292075f39d80",
+    "/Home/DemoUnsortedF64.DD.Z": "ede82854ef79e11f905fd9180b54e6740d3422ba4ecb942e51ed0dcd27f21347"
+  }
+}

@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 58 (six apps and fifty-two demos) |
+| Qualified | 59 (six apps and fifty-three demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 598 |
-| Linked to tests / with reference workflow and oracle | 217 / 146 |
+| Qualification gaps | 597 |
+| Linked to tests / with reference workflow and oracle | 219 / 148 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 52 of 224 |
+| Demos qualified | 53 of 224 |
 
-C1 has 598 qualification gaps, including entries that still need a reference
+C1 has 597 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -38,7 +38,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 58 workflows and records eighteen shared files
+- The inventory qualifies 59 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -418,6 +418,13 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   affirmative, and kept the expected string and list definitions. The i386
   prompt evaluated fresh arithmetic. See the
   [locale comparison](build/i386-demo-define-v1/qualification.json).
+
+- F64FileGen qualifies. Both guests produced byte-identical DolDoc and
+  binary files with ten values in each format. The files persisted on
+  the native disk. F64FileSort reopens both formats in ascending order
+  on the original guest. The LowPass1 image rejects its `Sign` call.
+  See the [generator qualification](build/i386-demo-f64-files-v1/generator-qualification.json)
+  and [sorter comparison](build/i386-demo-f64-files-v1/comparison-sort/result.json).
 
 ### Plan decisions (2026-11-24)
 
