@@ -53,6 +53,11 @@ is complete and provides the foundation, but not desktop or application parity.
   Full compatibility qualification remains open. See the
   [two-generation receipt](build/i386-desktop-eea98cfa/generations128/completion-checkpoint.json)
   and [installed content receipt](build/i386-desktop-eea98cfa/generations128/full-content-checkpoint.json).
+- The 64 MiB baseline needed the managed pointer in its welcome-frame
+  oracle. Both KVM boots matched the expected welcome frame byte for
+  byte with the pointer included. The baseline runner now accepts the
+  profile explicitly. See the
+  [welcome-frame diagnosis](build/i386-desktop-eea98cfa/generations128/baseline-pointer-diagnosis.json).
 - The full desktop publishes the original autocomplete and task settings
   sources at startup. A cold direct include of ScrnCodes matched all
   256 original glyphs, returned on a keypress, and rendered fresh

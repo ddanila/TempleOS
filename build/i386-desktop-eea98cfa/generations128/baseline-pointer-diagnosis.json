@@ -1,0 +1,34 @@
+{
+  "result": "pass",
+  "scope": "Diagnose the initial welcome raster check; nine-command baseline is separate",
+  "generations": {
+    "gen1": {
+      "tcg_startup_timeout_receipt_sha256": "00fbaac7a55aa846fa8d78853ff2664d81680fe18ec6792c17dfd386f59c5d08",
+      "kvm_screen_timeout_receipt_sha256": "c1935b36f375853317987aabb7a85d8efe31b786456e8f0a13caf5a946a184c6",
+      "welcome_raster_sha256": "d24376e90790a0b3ea3a4f0edc513323a1b84261d5649fba8ebaba7292259c1f",
+      "pixel_difference_bounds": {
+        "without_pointer": [
+          320,
+          240,
+          329,
+          249
+        ],
+        "managed_pointer": null
+      }
+    },
+    "gen2": {
+      "tcg_startup_timeout_receipt_sha256": "e97e661ca4b98a95bd961c5c4033d6fd50751a55589c46c4e19bd27536ab7d56",
+      "kvm_screen_timeout_receipt_sha256": "c23bc460b6415da15f6a2b4a4c2f586794b1323133f333e1fba91a80ad33f51d",
+      "welcome_raster_sha256": "d24376e90790a0b3ea3a4f0edc513323a1b84261d5649fba8ebaba7292259c1f",
+      "pixel_difference_bounds": {
+        "without_pointer": [
+          320,
+          240,
+          329,
+          249
+        ],
+        "managed_pointer": null
+      }
+    }
+  }
+}
