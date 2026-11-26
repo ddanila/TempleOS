@@ -525,6 +525,13 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   [64 MiB desktop baseline](build/i386-demo-tag-callback-v1/baseline64/result.json),
   and [1,574-file source audit](build/i386-demo-tag-callback-v1/source-audit.json)
   passed.
+  At 8 MiB with KVM, both the border build and its predecessor reached
+  the welcome in about 64 seconds and passed all nine commands with
+  exact VGA checkpoints. The TCG run of the border build reached
+  window-manager startup and timed out before the prompt at 180 seconds.
+  See the [border build at 8 MiB](build/i386-demo-tag-callback-v1/startup8-kvm/result.json),
+  [predecessor at 8 MiB](build/i386-demo-tag-callback-v1/startup8-control-kvm/result.json)
+  and [TCG timeout](build/i386-demo-tag-callback-v1/startup8/result.json).
 
 ### Plan decisions (2026-11-24)
 

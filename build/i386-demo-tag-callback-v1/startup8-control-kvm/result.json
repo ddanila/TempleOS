@@ -1,0 +1,21 @@
+{
+  "input_sha256": "3f9a939a757a5653c9b38b46dd801207c3b951daf5c193a3f17af22360ecc9e5",
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "ram_mib": 8,
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 8,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 64.48051362903789,
+    "commands": 9,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "result": "pass",
+  "inputs_unchanged": true
+}
