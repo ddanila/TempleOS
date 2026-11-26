@@ -1,0 +1,10 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-extents-v2/candidate.img": "19f1f3e781ef1f2abb3be18480f24c87f96c4d388342c6156c52145c6bc16c32"
+  },
+  "source_sha256": "927a010f7777a539bf952940bdd93b22ca85a9585155aa849af2368290f55dfe",
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 000000000159ACC8 00000000536B7354\nINPUT LINE ExeFile(\"C:/Demo/Graphics/SpritePlot3D.HC\");\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token ScanChar file C:/Demo/Graphics/SpritePlot3D.HC line 41\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND OK\n",
+  "inputs_unchanged": true
+}

@@ -12,7 +12,7 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def capture(guest_type, image, out, native, source):
+def capture(guest_type, image, out, native, source, samples):
     guest = guest_type(image, out, native, reference_cpus=1)
     try:
         guest.wait('DONE native kernel startup\n' if native else 'DEMO BATCH READY\n')
@@ -22,6 +22,9 @@ def capture(guest_type, image, out, native, source):
         guest.press('ret')
         time.sleep(7)
         guest.screenshot('before-key')
+        for sample in range(1, samples):
+            time.sleep(0.25)
+            guest.screenshot(f'before-key-{sample}')
         guest.press('spc')
         if native:
             guest.wait('COMMAND OK\n', timeout=20, start=start)
@@ -41,7 +44,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('original_iso', type=Path)
     parser.add_argument('native_image', type=Path)
-    parser.add_argument('--demo', choices=('SpritePlot', 'Extents'), default='SpritePlot')
+    parser.add_argument('--demo', choices=('SpritePlot', 'Extents', 'SpritePlot3D'), default='SpritePlot')
+    parser.add_argument('--samples', choices=(1, 3), default=1, type=int)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
     original, native = (path.resolve() for path in (args.original_iso, args.native_image))
@@ -55,8 +59,8 @@ def main():
     report = dict(result='captured', input_sha256=pins, source_sha256=sha(Path(source[1:])))
     try:
         with ThreadPoolExecutor(max_workers=2) as pool:
-            reference = pool.submit(capture, guest, original, out / 'original', False, source)
-            target = pool.submit(capture, guest, disk, out / 'native', True, source)
+            reference = pool.submit(capture, guest, original, out / 'original', False, source, args.samples)
+            target = pool.submit(capture, guest, disk, out / 'native', True, source, args.samples)
             reference.result()
             target.result()
     except (RuntimeError, ValueError, TimeoutError) as error:

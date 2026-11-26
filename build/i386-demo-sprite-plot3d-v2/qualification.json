@@ -1,0 +1,65 @@
+{
+  "result": "pass",
+  "source_sha256": "927a010f7777a539bf952940bdd93b22ca85a9585155aa849af2368290f55dfe",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-plot3d-v2/candidate.img": "97580db17f88cb9bed418be9325753ff39c4d829b3f785f3234a734aed61f8b1"
+  },
+  "runs": {
+    "original": {
+      "samples": [
+        {
+          "pixels": 6225,
+          "visible_color_families": 3,
+          "screenshot_sha256": "f869d2ac8b9b7d9af10125d6fcfadd7a242fe013b64811851accb9afb8a73ec0"
+        },
+        {
+          "pixels": 5684,
+          "visible_color_families": 3,
+          "screenshot_sha256": "dccd64516f001ba9972206e3e64a70ad7af20b8716941ec65f5249bb5d0692dd"
+        },
+        {
+          "pixels": 6644,
+          "visible_color_families": 3,
+          "screenshot_sha256": "ea2e864bd3c79ee968aa0298fe8560cae5a7a535c4f7bde0ee00449042610b3d"
+        }
+      ],
+      "silhouette_changes": [
+        3117,
+        2314
+      ],
+      "cleared_after_key_sha256": "38b1c9714adf7555ad203bfe7c09251db0eb2f3ae1698f660998895ae0d8901f"
+    },
+    "native": {
+      "samples": [
+        {
+          "pixels": 6552,
+          "visible_color_families": 3,
+          "screenshot_sha256": "3bb1a824d4fbef9b3f7a03d69277d1ffd878b85fecd7324a7b29199c282f246c"
+        },
+        {
+          "pixels": 5877,
+          "visible_color_families": 3,
+          "screenshot_sha256": "cb1f2171d1c6552d85713fabb00a38632041a31fb7f7168e9e999b787e6862c4"
+        },
+        {
+          "pixels": 5256,
+          "visible_color_families": 3,
+          "screenshot_sha256": "1c2348d4db0d57a6f9704d5569a5acdedd9af48b5e037356d2c6ce7dd704f36e"
+        }
+      ],
+      "silhouette_changes": [
+        2243,
+        1635
+      ],
+      "cleared_after_key_sha256": "32bdae9d7f3720735bc9855a13e26c8b7f8ff981ba48f74ac9cd42e34155217c"
+    }
+  },
+  "delivered_source_files": 1572,
+  "evidence_sha256": {
+    "address8/result.json": "df1cc0d88ae444de3f5c887b04f66c7ff01bed768a76e81e2a5010fb96486851",
+    "rebuild/result.json": "ba7f6ee9c74909b08c71ccdcfeefe83dd4adb9719272dcffa5baf93ba8fd4104",
+    "source-audit.json": "68b254d71400e4a57c47282085d8efc1f43dca48f0a1555ed348e80643e7ba3b",
+    "render-sampled/result.json": "fb5c68587b2462ff6ee4473ad1d190c95fc440a9ed402cac996545051138db4b"
+  }
+}

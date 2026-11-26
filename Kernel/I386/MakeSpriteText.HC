@@ -6,6 +6,7 @@
 #include "/Kernel/I386/PublicFormat.HH"
 #include "/Kernel/I386/PublicHash.HH"
 #include "/Kernel/I386/PublicMath.HH"
+#include "/Kernel/I386/PublicMessage.HH"
 #include "/Adam/Gr/GrInitA.HC"
 #include "/Adam/AngleWrapCore.HC"
 #include "/Kernel/ColorToStringCore.HC"
@@ -13,3 +14,7 @@
 #include "/Adam/Gr/SpriteSummaryCore.HC"
 #include "/Adam/Gr/SpriteToCodeCore.HC"
 #include "/Adam/Gr/SpriteExtentsCore.HC"
+
+#define GR_SCALE (1<<32)
+#include "/Adam/Gr/MatrixRotationCore.HC"
+#include "/Kernel/SerialDev/KeyCharPollCore.HC"

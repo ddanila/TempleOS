@@ -17826,10 +17826,23 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged SpritePlot3D from both guest prompts, capture three animation samples, send Space, and verify the drawing clears and i386 returns to arithmetic.",
+      "oracle": "Check each guest independently for the expected mesh colors, substantial silhouette changes, and complete clearing. The animation samples are asynchronous.",
+      "tests": [
+        {
+          "target": "native-sprite-plot3d-before-public-input",
+          "result": "fail",
+          "evidence": "build/i386-demo-sprite-plot3d-v1/render/result.json",
+          "scope": "The preceding i386 image rejects the missing ScanChar routine."
+        },
+        {
+          "target": "native-original-sprite-plot3d",
+          "result": "pass",
+          "evidence": "build/i386-demo-sprite-plot3d-v2/qualification.json",
+          "scope": "Both guests animate the bundled sprite, change its silhouette between samples, and clear it after the Space key."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/SpritePut.HC",

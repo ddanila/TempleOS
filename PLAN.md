@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 46 (six apps and forty demos) |
+| Qualified | 47 (six apps and forty-one demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 610 |
-| Linked to tests / with reference workflow and oracle | 204 / 133 |
+| Qualification gaps | 609 |
+| Linked to tests / with reference workflow and oracle | 205 / 134 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 40 of 224 |
+| Demos qualified | 41 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 46 workflows and records eighteen shared files
+- The inventory qualifies 47 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -265,6 +265,12 @@ is complete and provides the foundation, but not desktop or application parity.
   aligned swatch and label pixels through the grayscale ramp, the
   change from white to yellow, and restoration of the standard palette.
   See the [interactive palette comparison](build/i386-demo-palette-v1/qualification.json).
+
+- SpritePlot3D qualifies. The i386 desktop publishes the shared keyboard
+  polling and matrix rotation routines. Both guests animated the colored
+  mesh through three distinct silhouettes, removed it on Space, and
+  returned to their prompts. The 8 MiB probe and two x86-64 rebuilds passed.
+  See the [3D animation comparison](build/i386-demo-sprite-plot3d-v2/qualification.json).
 
 ### Plan decisions (2026-11-24)
 
