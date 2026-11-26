@@ -854,7 +854,10 @@ exact VGA at each of the nine command checkpoints. The 0.357-second difference
 in a single pair is insufficient to establish a speedup, and both runs exceeded
 the 60-second startup limit. The candidate was set aside. The patch, comparison
 driver, and result are retained in `build/i386-ic-slab-validation-v1/`.
-The separate 16 MiB candidate diagnostic was still running at this checkpoint.
+The separate 16 MiB TCG candidate run subsequently passed the diagnostic
+suite and all nine VGA checkpoints. It reached interactive startup in 376.885
+seconds and released the worker after its full 1 MiB arena high-water mark.
+See `diagnostic16-guarded/result.json` in the same evidence directory.
 
 The frozen 128 MiB retained native-module run had reached EditorRuntime, the
 seventh of nine modules, at this checkpoint. Its terminal export audit is still

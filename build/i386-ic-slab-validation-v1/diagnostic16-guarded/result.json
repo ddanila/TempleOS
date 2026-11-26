@@ -1,0 +1,97 @@
+{
+  "status": "pass",
+  "cpu": "486,-fpu",
+  "ram_mib": 16,
+  "qualification": "diagnostic",
+  "diagnostics": true,
+  "managed_pointer": true,
+  "scope": "Startup diagnostics, retained static/function/literal behavior and exact VGA restoration; not complete OS acceptance",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-ic-slab-validation-v1/cross-guarded/kernel-diagnostics.img": "7051f0efc48d0cf033d2a81b1c48c2572f702c6a01f2fd4a2e513113a2ed3e51",
+    "/home/ddanila/fun/TempleOS/build/i386-ic-slab-validation-v1/cross-guarded/result.json": "d91a56b10dfee7de30bc54023856b41e893f86c7f7d0bf70bd89f8e224ac6ae9",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-startup-memory.py": "cc4748a4118d5e498b26d490b719f79c92148a34dcd76d325f30744d859ec0de",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463"
+  },
+  "commands": [
+    [
+      "I64 SPNext(){static I64 n=40;return ++n;}",
+      []
+    ],
+    [
+      "SPNext();",
+      [
+        "41"
+      ]
+    ],
+    [
+      "SPNext();",
+      [
+        "42"
+      ]
+    ],
+    [
+      "U8 *SPText(){return \"VGA\";}",
+      []
+    ],
+    [
+      "StrCmp(SPText(),\"VGA\")==0;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ],
+    [
+      "NativeGraphicsStart;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "I64 gp_ok=NativeTextBasePresent;NativeTextBaseRestore;gp_ok;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "I64 gp_frame=NativeGraphicsPresent;NativeTextBaseRestore;gp_frame;",
+      [
+        "1"
+      ]
+    ]
+  ],
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 16,
+    "startup_status": "ok",
+    "boot_mode": "diagnostic",
+    "startup_seconds": 376.885316631,
+    "commands": 9,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "build_provider_loads": 0,
+  "immediate_push_cases": 128,
+  "publication_cases": 22,
+  "program_publication_cases": 28,
+  "memory_probe_preserved": [
+    {
+      "phase": 0,
+      "used_bytes": 0,
+      "owned_bytes": 0
+    },
+    {
+      "phase": 1,
+      "used_bytes": 16,
+      "owned_bytes": 8192
+    }
+  ],
+  "interactive_budget_pass": false
+}
