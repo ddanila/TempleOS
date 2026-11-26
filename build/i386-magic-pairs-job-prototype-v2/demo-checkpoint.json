@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "production_integration": false,
+  "pair_count": 16,
+  "image_sha256": "4555477efc097a48ceacc5254f8c2357997f62dbcd11a64d606cd21708e2be01",
+  "original_elapsed_seconds": 9.5545,
+  "native_elapsed_seconds": 11.37,
+  "native_document_sha256": "7f40c1770464fbaf1350db5e0ef83661aaaa6b584ef103817b28c5aeb6ef073b",
+  "native_result_sha256": "91b6be0991732c6a897ad7fca58689224fad7cfc07d0ee6b15f3529426e9bbbe",
+  "scope": "Complete unchanged MagicPairs demo through the disposable processor-count and queue prototype, with independent divisor-sieve comparison and prompt recovery."
+}

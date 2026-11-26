@@ -2916,3 +2916,9 @@ already run by the caller's first observation after submission, so
 that observation cannot serve as a queue ordering assertion. The
 prototype routes calls through the existing native dispatcher.
 See the [call checkpoint](../build/i386-magic-pairs-job-prototype-v2/call-checkpoint.json).
+
+The same prototype ran the unchanged MagicPairs demo through the full
+million-number search. It produced the expected prime counts and
+all 16 pairs, then returned to fresh command input. The bundled
+workflow still needs production processor-count and queue bindings.
+See the [complete prototype result](../build/i386-magic-pairs-job-prototype-v2/demo-checkpoint.json).

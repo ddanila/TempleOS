@@ -18291,6 +18291,12 @@
           "result": "pass",
           "evidence": "build/i386-demo-magic-pairs-v1/count-probe/result.json",
           "scope": "A fixture-local virtual processor count advances parsing to the unresolved JobQue call; native returns to arithmetic after both rejected inputs."
+        },
+        {
+          "target": "native-magicpairs-queue-prototype",
+          "result": "pass",
+          "evidence": "build/i386-magic-pairs-job-prototype-v2/demo-checkpoint.json",
+          "scope": "The unchanged bundled demo produced the original complete set of 16 pairs and returned to the prompt through a disposable queue prototype."
         }
       ]
     },
