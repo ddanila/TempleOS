@@ -1,0 +1,20 @@
+[
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-generations128/gen1-desktop64/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen1-selfhost/target.img",
+    "sha256": "8b5da7baab6562806d623e9db883e4360b83e61174ee1309241e6854172af2c3",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-generations128/gen1-timeclock-keyboard64/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen1-selfhost/target.img",
+    "sha256": "8b5da7baab6562806d623e9db883e4360b83e61174ee1309241e6854172af2c3",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-man/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-ball/working.img",
+    "sha256": "961aa4a4a1d9d0bf27a576f43c37b1572fc839598d44bca6be0915a66ff4a9c5",
+    "allocated_bytes": 67108864
+  }
+]
