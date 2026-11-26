@@ -231,3 +231,20 @@ through `18446744073709551615`, and matched the entire expected decimal
 document. Both runs confirmed a fresh arithmetic result.
 [Paired demo comparison](../build/i386-put-dec-port-v1/compare/result.json) ·
 [Decimal vector receipt](../build/i386-put-dec-port-v1/vectors-fixed/result.json)
+
+### MulByHand 32-bit port
+
+The inline assembler now emits unsigned `MUL r/m32`. The native wide
+routine combines four 32-bit partial products into the original two-word
+128-bit result. The byte routine reproduces the original shift-and-add
+sequence, including its byte-sized addition. The pinned original guest
+returns `0x7F01` for `MulU8(255,255)`, which the port preserves.
+
+Both bootstrap generations and the 386 boot audit passed. The full
+image reproduced all 89 original MulByHand DolDoc bytes and also
+reproduced PutDec. The vector run checked five byte pairs, nine wide
+pairs and the register form of MUL. Both native runs returned to
+rendered arithmetic.
+[Paired demo comparison](../build/i386-mul-by-hand-port-v1/compare/result.json) ·
+[Vector receipt](../build/i386-mul-by-hand-port-v1/vectors/result.json) ·
+[Original byte carry observation](../build/i386-mul-by-hand-port-v1/original-edge/guest/debug.log)

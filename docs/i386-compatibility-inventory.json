@@ -15690,10 +15690,10 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
       "reference_workflow": {
-        "status": "observed-reference",
+        "status": "qualified-workflows",
         "description": "Run both multiplication routines. Compare the two narrow products and the full 128-bit product, including leading zeroes."
       },
       "oracle": {
@@ -15704,6 +15704,20 @@
         ]
       },
       "tests": [
+        {
+          "target": "native-assembly-mul-by-hand-port",
+          "command": "python3 tools/test-i386-demo-batch.py IMAGE --out OUT --reference-at-prompt --demo Demo/Asm/MulByHand.HC --native-port Demo/Asm/MulByHand.HC",
+          "result": "pass",
+          "evidence": "build/i386-mul-by-hand-port-v1/compare/result.json",
+          "scope": "Bundled 32-bit multiplication reproduces the complete original DolDoc and returns to command input."
+        },
+        {
+          "target": "native-mul-by-hand-boundary-values",
+          "command": "python3 build/i386-mul-by-hand-port-v1/check-vectors.py IMAGE OUT",
+          "result": "pass",
+          "evidence": "build/i386-mul-by-hand-port-v1/vectors/result.json",
+          "scope": "Five byte products with original carry behavior, nine exact 128-bit products and an independent register-form MUL check."
+        },
         {
           "target": "original-assembly-demo-output",
           "result": "pass",

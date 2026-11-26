@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "disk_sha256": "d419394439618d4d24a33a4b7a0dc84d872984bbcf6b77e79b5c28dae0172a6e",
+  "fixture_sha256": "1bd9c20947886cfab22c25b1e51738e0e6a7e23786d1c3a31281330ae809312c",
+  "wide_vectors": 9,
+  "narrow_vectors": 5,
+  "register_vectors": 1,
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 14,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

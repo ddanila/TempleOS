@@ -3,6 +3,65 @@ the 6502 chip had no multiply inst
 and this is how we had to do it, except,
 I used more regs in this example.
 */
+class U128
+{
+  U64 lo,hi;
+};
+
+#ifdef I386_PUBLIC_USER_INCLUDED
+U16 MulU8(U8 n1,U8 n2)
+{
+  U32 product;
+  asm {
+    MOV EAX,U32 &n1[EBP]
+    AND EAX,255
+    SHL EAX,8
+    MOV EDX,U32 &n2[EBP]
+    AND EDX,255
+    MOV EBX,8
+@@step:
+    SHL EAX,1
+    TEST EAX,0x10000
+    JZ @@advance
+    //The original ADD AL,BL does not propagate carry to AH.
+    MOV ECX,EAX
+    AND ECX,255
+    ADD ECX,EDX
+    AND ECX,255
+    AND EAX,0xFF00
+    OR EAX,ECX
+@@advance:
+    DEC EBX
+    JNZ @@step
+    MOV U32 &product[EBP],EAX
+  }
+  return product;
+}
+
+U64 MulByHandWords(U32 left,U32 right)
+{
+  U64 product;
+  asm {
+    MOV EAX,U32 &left[EBP]
+    MUL U32 &right[EBP]
+    MOV U32 &product[EBP],EAX
+    MOV U32 &product+4[EBP],EDX
+  }
+  return product;
+}
+
+U0 MulU64(I64 n1,I64 n2,U128 *product)
+{
+  U32 a_lo=n1,a_hi=(n1(U64))>>32,b_lo=n2,b_hi=(n2(U64))>>32;
+  U64 low=MulByHandWords(a_lo,b_lo);
+  U64 middle=(low>>32)+MulByHandWords(a_hi,b_lo);
+  U64 combined=(middle&0xFFFFFFFF)+MulByHandWords(a_lo,b_hi);
+
+  //Each middle addition combines a full product with one 32-bit word.
+  product->lo=(combined<<32)|(low&0xFFFFFFFF);
+  product->hi=MulByHandWords(a_hi,b_hi)+(middle>>32)+(combined>>32);
+}
+#else
 asm {
 //Opcodes are slightly different to make writing my x86_64 assembler easier.
 //See $LK,"::/Compiler/OpCodes.DD"$.
@@ -48,12 +107,8 @@ _MUL_U64_U64_TO_U128::
 //on C callable asm routines.
 _extern _MUL_BY_HAND_U8_U8_TO_U16 U16 MulU8(U8 n1,U8 n2);
 
-class U128
-{
-  U64 lo,hi;
-};
-
 _extern _MUL_U64_U64_TO_U128 U0 MulU64(I64 n1,I64 n2,U128 *_prod);
+#endif
 
 U0 MulByHand()
 {
