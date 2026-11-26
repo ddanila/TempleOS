@@ -6365,3 +6365,9 @@ baseline at 64 MiB under KVM with the window manager active. All nine
 commands matched the expected VGA pixels, and the build provider stayed
 unloaded throughout the check.
 [Generation-one desktop baseline](../build/i386-code-alloc-known-v1/native-generations128/gen1-desktop64/result.json)
+
+At 8 MiB under KVM, the same kernel completed 20 document development
+cycles with exact VGA at all 11 checkpoints. Document heap usage peaked
+at 37,840 live bytes and 55,808 reserved bytes.
+[Generation-one resource profile](../build/i386-code-alloc-known-v1/native-generations128/gen1-resource8/resource-result.json) ·
+[VGA verification](../build/i386-code-alloc-known-v1/native-generations128/gen1-resource8/result.json)
