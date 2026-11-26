@@ -15974,6 +15974,13 @@
       "oracle": "The complete 498-byte captured DolDoc matches the original. Check link navigation and button activation in a separate live window.",
       "tests": [
         {
+          "target": "original-textdemo-verse-action",
+          "command": "python3 build/i386-textdemo-verse-v1/run.py --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-textdemo-verse-v1/original/result.json",
+          "scope": "Dispatch the actual OKAY and explicit BF entries, observe the Genesis verse in the editor, dismiss it with Shift-Escape and verify restored document roles. Entry dispatch is invoked through DocEntryRun."
+        },
+        {
           "target": "native-original-demo-batch",
           "result": "pass",
           "evidence": "build/i386-demo-batch-compiler-text-v1/result.json",
