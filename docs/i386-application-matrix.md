@@ -2827,3 +2827,21 @@ game-over frame, lower-score restart, prompt recovery, and cold reopen of
 the 8–0 best score passed. The candidate is an unapplied experiment.
 See the [comparison](../build/i386-keepaway-render-yield-v1/comparison.json)
 and [patch](../build/i386-keepaway-render-yield-v1/experiment.patch).
+
+A repeat of the same candidate measured 520, 120, and 130 ms on the
+guest clock. The candidate also passed two bundled cold-launch cycles
+without a Window Manager exception, the 0–1 foul, and both physical shot
+inputs, with the score moving from two to eight points. A second patch
+restricts the yield to the native port and stops the drawing callback when an intervening input restarts
+the game or restores the caller's callback. See the
+[repeat checkpoint](../build/i386-keepaway-render-yield-v1/repeat-checkpoint.json)
+and [guarded patch](../build/i386-keepaway-render-yield-v2/experiment.patch).
+
+The first candidate also completed the untouched regulation timer in
+179.963 seconds. The guarded candidate's first run measured finish
+tones of 500, 100, and 100 ms with drawing enabled, and reopened the
+8–0 score after a cold boot. Speaker recordings matched in pitch and
+order, with total active time differences of 30 and 80 ms across the
+two pitches. These totals include scoring sounds. The guarded candidate
+still needs repeat and regulation checks before integration. See the
+[guarded candidate receipt](../build/i386-keepaway-render-yield-v2/first-checkpoint.json).

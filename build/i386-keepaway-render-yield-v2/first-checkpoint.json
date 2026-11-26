@@ -1,0 +1,82 @@
+{
+  "production_integration": false,
+  "candidate_sha256": {
+    "experiment.patch": "1b013821198617a17f7d949c687d5a53795ae29648d1bd44dc7b09c1944d6b28",
+    "KeepAway.HC": "c890f3de50e2370c8a008e72eaadde972e142683efbebb968bd1a3c3ff9df930",
+    "candidate.img": "cc52b6758e15642e0fe7b57d57446ab8a601112c91b4c78583b2b1c510fa5231"
+  },
+  "guest_clock": {
+    "original": {
+      "receipt_sha256": "1da7ff4978c9ddb2dba7fde0aaca403f0ca44596106e76dc46e7ad6766c821dc",
+      "trace_sha256": "88c2e9eea60b00648b9e533bc7f2ec15462f4633c286f239940e1a895a4c2cc0",
+      "finish_tone_seconds": [
+        0.499099,
+        0.099863,
+        0.101472
+      ],
+      "restart_tone_seconds": 0.499568,
+      "best_score": [
+        8,
+        0
+      ]
+    },
+    "native": {
+      "receipt_sha256": "65cb556c2c90d8ab2e1998261c5216ed0982b451dc02a9ac950dbaceaf5aa634",
+      "trace_sha256": "a33bc5cfd5e4af15bacffc53da56d8273ca5aea625ab4d0f6f85d40fab0ad3a8",
+      "finish_tone_seconds": [
+        0.5,
+        0.1,
+        0.1
+      ],
+      "restart_tone_seconds": 0.51,
+      "best_score": [
+        8,
+        0
+      ]
+    }
+  },
+  "whole_capture": {
+    "original": {
+      "sha256": "d43ab19d73adb40fa53c2489d14d5d5d661eec16cf4b9f5c34c385bb4374faf4",
+      "tones": [
+        {
+          "expected_hz": 493.88,
+          "median_hz": 490.0,
+          "active_seconds": 0.95
+        },
+        {
+          "expected_hz": 1975.53,
+          "median_hz": 1962.295081967213,
+          "active_seconds": 0.66
+        }
+      ],
+      "tone_order": [
+        1,
+        0,
+        1,
+        0
+      ]
+    },
+    "native": {
+      "sha256": "8885b05d1b86a1bb54091b8f45733cb03ef1215c615176f40fcfec7b6de833ab",
+      "tones": [
+        {
+          "expected_hz": 493.88,
+          "median_hz": 490.0,
+          "active_seconds": 0.98
+        },
+        {
+          "expected_hz": 1975.53,
+          "median_hz": 1962.295081967213,
+          "active_seconds": 0.74
+        }
+      ],
+      "tone_order": [
+        1,
+        0,
+        1,
+        0
+      ]
+    }
+  }
+}

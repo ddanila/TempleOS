@@ -1,0 +1,146 @@
+{
+  "image_sha256": "f588032f0803a27991462fa88d6cd94ab2a4871ddb8b2faeedbe4d7f1651b984",
+  "tone_runs": {
+    "original": {
+      "receipt_sha256": "1da7ff4978c9ddb2dba7fde0aaca403f0ca44596106e76dc46e7ad6766c821dc",
+      "trace_sha256": "88c2e9eea60b00648b9e533bc7f2ec15462f4633c286f239940e1a895a4c2cc0",
+      "finish_tone_seconds": [
+        0.499099,
+        0.099863,
+        0.101472
+      ],
+      "restart_tone_seconds": 0.499568,
+      "best_score": [
+        8,
+        0
+      ]
+    },
+    "first_native": {
+      "receipt_sha256": "2975e747ae32c43e689c9024bf0f4c2865c7bd9e2f7c25712d59908959ed83da",
+      "trace_sha256": "07fc059177b75451248f4dd6d7fb94ba7a724b2bba34ab4684e93d62b02d99ca",
+      "finish_tone_seconds": [
+        0.51,
+        0.13,
+        0.13
+      ],
+      "restart_tone_seconds": 0.51,
+      "best_score": [
+        8,
+        0
+      ]
+    },
+    "repeat_native": {
+      "receipt_sha256": "2975e747ae32c43e689c9024bf0f4c2865c7bd9e2f7c25712d59908959ed83da",
+      "trace_sha256": "44251cccd04e656010fa61bdfab693aae66051e526fdabdb02958a1bc13f7620",
+      "finish_tone_seconds": [
+        0.52,
+        0.12,
+        0.13
+      ],
+      "restart_tone_seconds": 0.54,
+      "best_score": [
+        8,
+        0
+      ]
+    }
+  },
+  "workflow_runs": {
+    "bundled-cold": {
+      "result": "pass",
+      "receipt_sha256": "58b60be4f34dea2e5ea6e4f841d1fb14f7b4fa27fa5c210cd02e1f59bf52aee4",
+      "runs": [
+        {
+          "arena_yellow_pixels": 295083,
+          "border_red_pixels": 4280
+        },
+        {
+          "arena_yellow_pixels": 295095,
+          "border_red_pixels": 4280
+        }
+      ],
+      "fresh_result": {
+        "column": 0,
+        "row": 4,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      },
+      "library_symbols_reused": true
+    },
+    "foul": {
+      "result": "pass",
+      "receipt_sha256": "e7473ac6baf4d1aa174db2d22cce613c767972a3171076abff4cd26bdffeed98",
+      "score": [
+        0,
+        1
+      ],
+      "fresh_result": {
+        "column": 0,
+        "row": 1,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    },
+    "mouse": {
+      "result": "pass",
+      "receipt_sha256": "5772ec5ba85355833dbeef2560eff0d0f5a64a1aa0c48855585334992b9041a8",
+      "shot_input": "left button",
+      "observed_scores": [
+        2,
+        8
+      ],
+      "fresh_result": {
+        "column": 0,
+        "row": 1,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    },
+    "space": {
+      "result": "pass",
+      "receipt_sha256": "eab2de4b381da3791b6f6ca2e0c55cd79f0c19d1eb6e6759b7df59c9a34fb1c4",
+      "shot_input": "space",
+      "observed_scores": [
+        2,
+        8
+      ],
+      "fresh_result": {
+        "column": 0,
+        "row": 1,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    },
+    "clock": {
+      "result": "pass",
+      "receipt_sha256": "8de22338d1e0753adfe87d8134df60341f7333a4dfe6e4d561d143255bedf129",
+      "markers": [
+        "KEEP popup",
+        "KEEP regulation clock",
+        "KEEP halftime",
+        "KEEP regulation finished 8-24 in 179.963 seconds",
+        "KEEP returned"
+      ],
+      "fresh_result": {
+        "column": 0,
+        "row": 1,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

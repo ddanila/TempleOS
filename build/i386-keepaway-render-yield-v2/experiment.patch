@@ -1,0 +1,51 @@
+diff --git a/Apps/KeepAway/KeepAway.HC b/Apps/KeepAway/KeepAway.HC
+index 90bbdf94..f41954f3 100644
+--- a/Apps/KeepAway/KeepAway.HC
++++ b/Apps/KeepAway/KeepAway.HC
+@@ -223,6 +223,9 @@ RegExe("TempleOS/KeepAway");
+ 
+ F64 game_t_end,foul_t_end;
+ I64 score0,score1;
++#ifdef I386_PUBLIC_USER_INCLUDED
++I64 keepaway_round;
++#endif
+ 
+ #define PER_SIDE_NUM	3
+ #define OBJS_NUM	(PER_SIDE_NUM*2+1)
+@@ -284,6 +287,9 @@ U0 DrawIt(CTask *task,CDC *dc)
+   F64 tt=tS,d,d_down,d_up;
+   I64 i;
+   I64 o_sort[OBJS_NUM];
++#ifdef I386_PUBLIC_USER_INCLUDED
++  I64 round=keepaway_round;
++#endif
+   Obj *o;
+ 
+   DCDepthBufAlloc(dc);
+@@ -374,8 +380,15 @@ U0 DrawIt(CTask *task,CDC *dc)
+   }
+ 
+   QSortI64(o_sort,OBJS_NUM,&ObjCompare);
+-  for (i=0;i<OBJS_NUM;i++)
++  for (i=0;i<OBJS_NUM;i++) {
+     DrawObj(dc,o_sort[i](Obj *),tt);
++#ifdef I386_PUBLIC_USER_INCLUDED
++    //Let ready sound tasks run between expensive sprite draws.
++    Yield;
++    if (round!=keepaway_round || task->draw_it!=&DrawIt)
++      return;
++#endif
++  }
+   tt=(game_t_end-tS)/60;
+   if (tt<=0) {
+     dc->color=RED;
+@@ -613,6 +626,9 @@ U0 AnimateTask(CTask *parent_task)
+ U0 Init()
+ {
+   I64 i;
++#ifdef I386_PUBLIC_USER_INCLUDED
++  keepaway_round++;
++#endif
+   someone_shooting=FALSE;
+   shot_land_t=0;
+   MemSet(&objs,0,sizeof(objs));

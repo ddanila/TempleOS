@@ -7,11 +7,12 @@ ROOT = Path(__file__).resolve().parents[2]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('disk', type=Path)
 parser.add_argument('--out', type=Path, required=True)
+parser.add_argument('--source', type=Path, default=ROOT / 'Apps/KeepAway/KeepAway.HC')
 args = parser.parse_args()
 helper = runpy.run_path(str(ROOT / 'tools/package-i386-native-image.py'))
 snapshot = helper['snapshot']
 name = '/Apps/KeepAway/KeepAway.HC'
-source = (ROOT / name[1:]).read_bytes()
+source = args.source.read_bytes()
 
 
 def updated_snapshot(image):
