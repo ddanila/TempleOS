@@ -1,0 +1,127 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-click-callback-v1/cross-replay/kernel.img": "49d0d5f92349c5c5126ec8429fa3643c007c859e604eaffbfb13559d705e0274",
+    "/home/ddanila/fun/TempleOS/Demo/DolDoc/ClickCallBack.HC": "f3968589ba33efaba8faac37bece522453853045d895031a276188a186750f44"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "clicks": [
+        {
+          "observed_pointer": [
+            39,
+            132
+          ],
+          "target": [
+            38,
+            132
+          ],
+          "frame": "jiffies-3-10"
+        },
+        {
+          "observed_pointer": [
+            39,
+            132
+          ],
+          "target": [
+            38,
+            132
+          ],
+          "frame": "jiffies-2-0"
+        },
+        {
+          "observed_pointer": [
+            39,
+            132
+          ],
+          "target": [
+            38,
+            132
+          ],
+          "frame": "jiffies-1-0"
+        },
+        {
+          "observed_pointer": [
+            40,
+            211
+          ],
+          "target": [
+            38,
+            212
+          ],
+          "frame": "sweep-5"
+        }
+      ],
+      "after_click_sha256": "3a8538f925b65bf892f6dc6cd857d63742ad9a6a7d395ef54335c26a07265f9e",
+      "tone_windows": {
+        "570": 1,
+        "780": 1
+      },
+      "audio_sha256": "b8a17a0e118437efd01895f719b6aad2ae023f27c2753d9706afc588bf64185a"
+    },
+    "native": {
+      "clicks": [
+        {
+          "observed_pointer": [
+            39,
+            132
+          ],
+          "target": [
+            38,
+            132
+          ],
+          "frame": "jiffies-3-10"
+        },
+        {
+          "observed_pointer": [
+            39,
+            132
+          ],
+          "target": [
+            38,
+            132
+          ],
+          "frame": "jiffies-2-5"
+        },
+        {
+          "observed_pointer": [
+            39,
+            132
+          ],
+          "target": [
+            38,
+            132
+          ],
+          "frame": "jiffies-1-4"
+        },
+        {
+          "observed_pointer": [
+            32,
+            141
+          ],
+          "target": [
+            30,
+            140
+          ],
+          "frame": "sweep-5"
+        }
+      ],
+      "after_click_sha256": "3db57ed62c4b59af48deac991f4712932b9cf5d70677d236ce5766941a220c80",
+      "fresh_result": {
+        "column": 0,
+        "row": 24,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      },
+      "tone_windows": {
+        "580": 1,
+        "760": 1
+      },
+      "audio_sha256": "8f0c084833df00889365a2ebeb0c59802efd18aa758eade54b59d376cd468e64"
+    }
+  }
+}

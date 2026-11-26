@@ -601,6 +601,7 @@ extern U0 Fmt(I64 drv_let,Bool quick=TRUE,Bool confirm=TRUE,I64 type=FSt_FAT32);
 extern I64 PressAKey();
 extern I64 DocGetKey(I64 *sc=NULL);
 extern U8 *DocGetStr2(I64 flags=0);
+extern U0 DocReplayEntryOnEscape(CDoc *doc);
 extern U8 *GetStr(U8 *msg=NULL,U8 *dft=NULL,I64 flags=0);
 extern I64 ExePrint2(U8 *fmt,...);
 extern I64 GetI64(U8 *msg=NULL,I64 dft=0,I64 lo=I64_MIN,I64 hi=I64_MAX);
@@ -1154,6 +1155,8 @@ U0 NativeTerminalInput()
       ch=event.ch;
       if(!ch && event.scan.u8[0]==SC_END && !(event.scan&(SCF_CTRL|SCF_ALT))) {
         DocPutKey(doc,ch,event.scan);
+      } else if(ch==CH_ESC) {
+        DocReplayEntryOnEscape(doc);
       } else if(ch==CH_SHIFT_ESC) {
         (*native_action_exit)();
       } else if(ch==3) {

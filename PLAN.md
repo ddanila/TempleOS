@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 69 (six apps and sixty-three demos) |
+| Qualified | 70 (six apps and sixty-four demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 587 |
+| Qualification gaps | 586 |
 | Linked to tests / with reference workflow and oracle | 229 / 158 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 63 of 224 |
+| Demos qualified | 64 of 224 |
 
-C1 has 587 qualification gaps, including entries that still need a reference
+C1 has 586 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -41,7 +41,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 69 workflows and records eighteen shared files
+- The inventory qualifies 70 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -562,6 +562,14 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   macro selected, its left callback present, and its Escape flag set.
   The standard document action queues Escape, which the native console
   loop did not handle.
+  The console now uses the original selected-entry replay when it receives
+  Escape. With the unchanged demo, both guests return three increasing
+  Jiffies values and emit the rising sweep on the inline click. The i386
+  prompt then evaluates fresh arithmetic. This image passed the active
+  64 MiB desktop baseline and exact packaged-source audit. See the
+  [callback qualification](build/i386-demo-click-callback-v1/replay-observed/qualification.json),
+  [desktop baseline](build/i386-demo-click-callback-v1/replay-baseline64/result.json),
+  and [source audit](build/i386-demo-click-callback-v1/replay-source-audit.json).
 
 
 ### Plan decisions (2026-11-24)

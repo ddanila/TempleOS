@@ -1,0 +1,61 @@
+{
+  "result": "pass",
+  "runs": {
+    "original": {
+      "jiffies": [
+        37817,
+        39012,
+        40208
+      ],
+      "sweep": {
+        "pcm_milliseconds": 221,
+        "active_windows_hz": [
+          500,
+          500,
+          600,
+          650,
+          600,
+          700,
+          750,
+          750,
+          850,
+          850,
+          950
+        ]
+      }
+    },
+    "native": {
+      "jiffies": [
+        84911,
+        87201,
+        89261
+      ],
+      "sweep": {
+        "pcm_milliseconds": 222,
+        "active_windows_hz": [
+          500,
+          500,
+          600,
+          650,
+          650,
+          700,
+          700,
+          750,
+          800,
+          850,
+          900
+        ]
+      }
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 24,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "mismatches": []
+}

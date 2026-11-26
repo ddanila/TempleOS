@@ -16021,7 +16021,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Launch unchanged ClickCallBack, click Jiffies in each of the three popups, then click the inline Click Me link.",
       "oracle": "Read three increasing Jiffies values from VGA, confirm a rising PC-speaker sweep after the final mouse click, and check that the native command prompt accepts new input.",
       "tests": [
@@ -16030,6 +16030,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-click-callback-v1/link-observed/qualification.json",
           "scope": "Both guests return three increasing Jiffies values. The original emits the sweep after the inline click. The i386 selection highlights without recorded audio, and the subsequent input does not produce the expected answer."
+        },
+        {
+          "target": "native-original-click-callback-replay",
+          "result": "pass",
+          "evidence": "build/i386-demo-click-callback-v1/replay-observed/qualification.json",
+          "scope": "Both guests return three increasing Jiffies values and produce a rising speaker sweep on the inline mouse click. The i386 prompt renders fresh arithmetic after activation."
         }
       ]
     },

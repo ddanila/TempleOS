@@ -1,5 +1,20 @@
 //Original document-backed string input, entry replay and extraction.
 #include "/Kernel/GetStrFlags.HH"
+U0 DocReplayEntryOnEscape(CDoc *doc)
+{
+  CDocEntry *doc_e;
+  if (!doc)
+    return;
+  DocLock(doc);
+  if (doc->doc_signature==DOC_SIGNATURE_VAL && doc->cur_entry!=doc) {
+    doc_e=DocEntryCopy(doc,doc->cur_entry);
+    DocBottom(doc);
+    DocEntryRun(doc,doc_e,TRUE);
+    DocEntryDel(doc,doc_e);
+  }
+  DocUnlock(doc);
+}
+
 U8 *DocGetStr2(I64 flags=0)
 {//$LK,"Flags",A="MN:GSF_SHIFT_ESC_EXIT"$
   CDoc *doc;
@@ -10,16 +25,7 @@ U8 *DocGetStr2(I64 flags=0)
   do {
     ch=DocGetKey(&sc);
     if (ch==CH_ESC) {
-      if (doc=DocPut) {
-	DocLock(doc);
-	if (doc->doc_signature==DOC_SIGNATURE_VAL && doc->cur_entry!=doc) {
-	  doc_e=DocEntryCopy(doc,doc->cur_entry);
-	  DocBottom(doc);
-	  DocEntryRun(doc,doc_e,TRUE);
-	  DocEntryDel(doc,doc_e);
-	}
-	DocUnlock(doc);
-      }
+      DocReplayEntryOnEscape(DocPut);
       if (flags&GSF_WITH_NEW_LINE)
 	break;
     } if (ch==CH_SHIFT_ESC) {
