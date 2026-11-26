@@ -17596,10 +17596,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged PanText from both welcome desktops, sample its text motion and verify the text returns to its initial position and the native prompt recovers.",
+      "oracle": "Track the same intact title glyphs through the horizontal then vertical pan. Confirm motion in both directions on both axes, capture the extrema, and compare the final text to the starting position.",
+      "tests": [
+        {
+          "target": "native-original-pan-text",
+          "result": "pass",
+          "evidence": "build/i386-demo-pan-text-v1/qualification.json",
+          "scope": "Each guest renders the 7-pixel extremes in both directions on both axes and returns its unchanged title to the starting point. One partial original frame is recorded."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Pick.HC",
