@@ -10467,14 +10467,14 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "partial",
-        "description": "Open the bundled Models menu, select Ball and Man in separate sessions, submit the default forms, and return to the prompt. For Man, exercise all four lighting choices. In a separate session, cancel the menu with Shift+Escape."
+        "description": "Open the bundled Models menu, select Ball and Man in separate sessions, submit the default forms, and return to the prompt. For Man, exercise all four lighting choices. In separate sessions, cancel the menu and the Ball lighting chooser with Shift+Escape."
       },
       "oracle": {
         "tool": "build/grmodels-menu-workflows-v1/run.py",
         "dataset": "build/i386-wide-pi-production-v3/qualification.json",
         "checks": [
           "Match the original Ball and Man document mesh bytes.",
-          "Require the menu to return without a mesh after Shift+Escape.",
+          "Require both cancellation workflows to return without a mesh after Shift+Escape.",
           "Return to the prompt and evaluate fresh arithmetic."
         ]
       },
@@ -10502,6 +10502,24 @@
           "result": "pass",
           "evidence": "build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-cancel-shift/result.json",
           "scope": "The guest-built kernel matches original Shift+Escape cancellation and returns to fresh arithmetic."
+        },
+        {
+          "target": "original-grmodels-ball-lighting-cancel",
+          "result": "pass",
+          "evidence": "build/i386-code-alloc-known-v1/native-generations128/grmodels-ball-lighting-cancel-original/result.json",
+          "scope": "The original Ball lighting chooser returns without creating a document mesh."
+        },
+        {
+          "target": "generation-two-grmodels-ball-lighting-cancel",
+          "result": "pass",
+          "evidence": "build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-ball-lighting-cancel/result.json",
+          "scope": "The second native generation matches original lighting cancellation and returns to fresh arithmetic."
+        },
+        {
+          "target": "generation-one-grmodels-ball-lighting-cancel",
+          "result": "pass",
+          "evidence": "build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-ball-lighting-cancel/result.json",
+          "scope": "The first native generation matches original lighting cancellation and returns to fresh arithmetic."
         },
         {
           "target": "native-grmodels-cold-run-menu",
