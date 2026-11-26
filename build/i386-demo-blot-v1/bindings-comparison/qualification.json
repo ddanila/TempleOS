@@ -1,0 +1,37 @@
+{
+  "result": "pass",
+  "capture_receipt_sha256": "9667b8157cb0556c9a11810e1669e1fc9f70d5c90ccf98fbb35ad7ca0212b52b",
+  "differences": {
+    "red": 0,
+    "blue": 0,
+    "yellow": 0
+  },
+  "observations": {
+    "original": {
+      "square_origin": [
+        240,
+        248
+      ],
+      "mask_pixels": {
+        "red": 6002,
+        "blue": 1464,
+        "yellow": 1600
+      },
+      "bitmap_sha256": "b4aa9c93a3b2b155966407cd60c63c004474318e423ee0e1510f29c6bfe5d3ed",
+      "after_key_sha256": "055deeececeb0b829db81db94d335ba8d1ebb8cb437d082604c8264f1afc8811"
+    },
+    "native": {
+      "square_origin": [
+        232,
+        232
+      ],
+      "mask_pixels": {
+        "red": 6002,
+        "blue": 1464,
+        "yellow": 1600
+      },
+      "bitmap_sha256": "4c47584c37d442a024bb95df1322800110631b1c2e8215ad90f88f0f967eab37",
+      "after_key_sha256": "d6e253be3883e741fca581bc498b47a80177e31c7bf53650c8b684a50a44bb5d"
+    }
+  }
+}

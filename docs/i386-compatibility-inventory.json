@@ -17340,7 +17340,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Launch the unchanged Blot demo, wait for the finished bitmap and press Space to clear it.",
       "oracle": "Compare the stamped red ring, blue cross and solid 40-by-40 yellow square in the shared raster region, then verify the bitmap clears and the i386 prompt recovers.",
       "tests": [
@@ -17355,6 +17355,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-blot-v1/comparison/result.json",
           "scope": "The pre-binding i386 image rejects GrFloodFill3 at line 8 of the unchanged demo."
+        },
+        {
+          "target": "native-original-blot-raster",
+          "result": "pass",
+          "evidence": "build/i386-demo-blot-v1/bindings-comparison/qualification.json",
+          "scope": "Both guests render identical red, blue and yellow masks in the shared bitmap region, clear the square on Space, and the i386 prompt evaluates fresh arithmetic."
         }
       ]
     },

@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 82 (six apps and seventy-six demos) |
+| Qualified | 83 (six apps and seventy-seven demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 574 |
+| Qualification gaps | 573 |
 | Linked to tests / with reference workflow and oracle | 241 / 170 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 76 of 224 |
+| Demos qualified | 77 of 224 |
 
-C1 has 574 qualification gaps, including entries that still need a reference
+C1 has 573 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `d5792939`.
@@ -44,7 +44,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 82 workflows and records eighteen shared files
+- The inventory qualifies 83 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -608,6 +608,15 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   about one quarter of its range, preserved both positions on release,
   and changed the map viewport. The i386 prompt recovered. See the
   [scrollbar comparison](build/i386-demo-scrollbars-v1/comparison/result.json).
+
+- Blot qualifies. The i386 port publishes the existing `GrBlot`
+  and `GrFloodFill3` raster routines. Both guests rendered identical
+  red, blue and yellow pixel masks in the shared bitmap region,
+  excluding the terminal text overlay in the original layout. Space
+  cleared the bitmap and the i386 prompt evaluated fresh arithmetic.
+  The image passed the 386 instruction and 1,578-file source audits.
+  See the [raster comparison](build/i386-demo-blot-v1/bindings-comparison/qualification.json)
+  and [source audit](build/i386-demo-blot-v1/delivered-source.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the
