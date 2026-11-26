@@ -1,0 +1,37 @@
+{
+  "result": "pass",
+  "stage": "complete",
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "scope": "Two native rebuild/install/boot generations and artifact audits only; full desktop/application compatibility suite and C1-C5 qualification are separate gates.",
+  "source_revision": "592a38b7a5d889fda7fc7227b7351187b58e0625",
+  "full_result_sha256": "ffcd536860be315c3f1fc4f86cda0f7ca089119626a7db54aeefce3b9898c822",
+  "stage_receipts": {
+    "input-source-audit": "62c50dd99554f3c1ab528ec6e01561b3a9be6354253c52ac4b8e47cbc9bd8083",
+    "gen1-install": "2960326f28d44f7c83ec1b7af3fb5e89ba2c2d625020601c5070af7d579b1699",
+    "gen1-selfhost": "e5493e844cc8ae84dc361285d129c2455044199e1acb85884eb587546a163cc1",
+    "gen1-audit": "86b4d6777365ee0baac6fae0d5c681f9b2c1329443dcb4c8a1a0cf2ab5f089a1",
+    "gen1-source-audit": "8092f45b661d33f8e477faf2a9c47df7001e271836e852f6b7223cf05909bddf",
+    "gen2-retained-build": "a3071174294f6e2f738d19faeabe8f43fb68487d0f045594f95513ae9b5dac36",
+    "gen2-install": "e6d64edd5fb05d2841df3ed7d03bc602d761b7f18b19c5bcff312274039528b5",
+    "gen2-selfhost": "dc396ceff9160c95a0150b0ecb99f92b07ee51bff6de345be0f8a6696e24dee5",
+    "gen2-audit": "fbe0eeae4f0723ea7c2b2d2eda275c9087eed60912ba74872807e0915cd58345",
+    "gen2-source-audit": "b1d87c44531597e1dc1104d1680a95c7fc2ec718f67601d5ccee4981a9e73e22",
+    "generation-identity": "5c3cd6eb7f09d9f94636b9154ac2aa03507fcaf4d272521e9cc85e410856de37"
+  },
+  "identity": {
+    "result": "pass",
+    "module_count": 16,
+    "flat_bytes": 468560,
+    "flat_sha256": "bd5adf2185249b73963cb5d080cfbaf711ba0d961cfec628757ac649f829e09b",
+    "boot_area_sha256": "7002af3e4945976ad83492057f7645c446d406e410821137c9b4b1170982d6f2",
+    "first_disk_sha256": "adb23ca7f7a509ff45a2397ae685840e40c4857a2c146273553e6efc73487d8e",
+    "second_disk_sha256": "e687a3a9eff730af284e905b3236392cfb2b57b7e2d83c8070ee53160a5bad05",
+    "comparison_scope": "All artifact bytes except exported eight-byte Kernel date; each actual boot payload/checksum/padding verified independently",
+    "kernel_build_dates": [
+      3179601114099438,
+      3179601275856656
+    ],
+    "normalized_flat_sha256": "985d88e0cd1e664023287c9c3a7ebbb79223437bd69b36acd1c5eedcd49d38d5"
+  }
+}

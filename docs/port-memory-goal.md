@@ -3110,3 +3110,12 @@ The frozen `592a38b7` image's
 [nine-module native rebuild](../build/i386-scheduler-ode-reap-v1/retained128/result.json)
 passed its persisted export audits. The two-generation runner is using
 that audited image as its input.
+
+The [two-generation receipt](../build/i386-scheduler-ode-reap-v1/generations128/completion-receipt.json)
+records successful native rebuild, installation, boot, source audit and
+reproduction for frozen revision `592a38b7`. The
+[first-generation 64 MiB desktop session](../build/i386-scheduler-ode-reap-v1/generations128/gen1-desktop64/result.json)
+passed Home Once, original geometry, bootstrap retirement and fresh
+arithmetic in 209.70 seconds. The matching second-generation desktop
+session is running. The complete compatibility corpus and production
+source after this frozen revision remain separate.
