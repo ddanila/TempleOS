@@ -1993,6 +1993,13 @@
       },
       "tests": [
         {
+          "target": "native-full-bible-link-kvm",
+          "command": "python3 build/i386-bible-trim-on-page-return-v1/run-full-link-kvm.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-bible-trim-on-page-return-v1/full-link-kvm/result.json",
+          "scope": "Full bundled Bible on 64 MiB KVM with live window manager. Bail-mode Genesis verse and range, invalid book, restoration of document roles, and a later arithmetic command."
+        },
+        {
           "command": "python3 tools/test-i386-doc-packed-sprite-editor.py IMAGE --mouse --out OUT",
           "result": "pass",
           "evidence": "build/i386-c4-mouse-present-final-sprite/result.json",
@@ -3052,6 +3059,13 @@
       "reference_workflow": null,
       "oracle": null,
       "tests": [
+        {
+          "target": "native-full-bible-link-kvm",
+          "command": "python3 build/i386-bible-trim-on-page-return-v1/run-full-link-kvm.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-bible-trim-on-page-return-v1/full-link-kvm/result.json",
+          "scope": "Full bundled Bible on 64 MiB KVM with live window manager. Bail-mode Genesis verse and range, invalid book, restoration of document roles, and a later arithmetic command."
+        },
         {
           "target": "original-prefixed-editor-link",
           "command": "python3 tools/test-i386-doc-prefixed-link.py --out OUT",

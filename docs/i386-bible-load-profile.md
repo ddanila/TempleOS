@@ -760,3 +760,10 @@ candidate measured 1.303 and 2.206 seconds. Most of the observed reduction
 was between find completion and cleanup completion. The runs overlapped
 other guests and provide a scoped comparison at 64 MiB TCG.
 See the [control result](../build/i386-bible-trim-on-page-return-v1/scaled-control/result.json).
+
+The [64 MiB KVM full-file contract](../build/i386-bible-trim-on-page-return-v1/full-link-kvm/result.json)
+passed the Genesis verse and range lookups, rejected the invalid book and
+restored the task's document roles. A separate arithmetic command then
+completed after several minutes and displayed 42. This run used the page
+return trim change with the window manager active. Interactive link
+activation and editor input remain separate checks.
