@@ -1,0 +1,26 @@
+[
+  {
+    "removed": "build/i386-demo-click-callback-v1/replay-observed/working.img",
+    "retained": "build/i386-demo-click-callback-v1/cross-replay/kernel.img",
+    "sha256": "49d0d5f92349c5c5126ec8429fa3643c007c859e604eaffbfb13559d705e0274",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-click-callback-v1/replay-baseline64/working.img",
+    "retained": "build/i386-demo-click-callback-v1/cross-replay/kernel.img",
+    "sha256": "49d0d5f92349c5c5126ec8429fa3643c007c859e604eaffbfb13559d705e0274",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-click-callback-v1/trace-observed/working.img",
+    "retained": "build/i386-demo-click-callback-v1/cross-click-trace/kernel.img",
+    "sha256": "daba2db16d93b1b02158c4b6d6f1140c4b2b47a940986cd61b352377dc58eef1",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-f64-files-v1/generations128/gen1-baseline64/working.img",
+    "retained": "build/i386-demo-f64-files-v1/generations128/gen1-selfhost/target.img",
+    "sha256": "794181c53d0d09dfe700358bcb8a5bc2695bf301288db24064363417eb09bcc7",
+    "allocated_bytes": 67108864
+  }
+]
