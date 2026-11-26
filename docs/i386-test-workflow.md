@@ -6414,3 +6414,10 @@ generation-one image at 128 MiB. Every emitted module matched its
 installed counterpart byte for byte. The pipeline proceeded to install
 the second-generation providers.
 [Second-generation retained rebuild](../build/i386-code-alloc-known-v1/native-generations128/gen2-retained-build/result.json)
+
+The installer verified the bytes of all nine second-generation
+providers. A separate 8 MiB KVM cold boot passed diagnostic growth
+and recovery and matched both VGA smoke checkpoints. The installed
+image then began the 128 MiB guest flat-kernel rebuild.
+[Second-generation installation](../build/i386-code-alloc-known-v1/native-generations128/gen2-install/result.json) ·
+[8 MiB cold boot](../build/i386-code-alloc-known-v1/native-generations128/gen2-install/boot/result.json)
