@@ -1,0 +1,24 @@
+{
+  "result": "pass",
+  "bytes": 51200,
+  "account": 7,
+  "name": "Ada",
+  "address": "Pine",
+  "database_sha256": "fe20e7934e4e959b322de1402c3788dc15144a3673899bbbb1970033e498ba3c",
+  "font_sha256": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+  "frames_sha256": {
+    "original": "d8b71443e5478767c943ac6b62465980278c0a11bf6027ba3706de794da93f0a",
+    "native": "2f5bfe63065729ce74ca5ffdd8c6f76016855982c51c92fa0a9c3508f928494e",
+    "cold": "1ba25e2a11f57f4229c3f0dedf4777aa73749f2c70ef7e2eac494b7208622840"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 26,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "cold_disk_sha256": "5e39ebdbdd5320b06c9ba647f77917d12d46664ab0fcd15c2c9031874261650c"
+}

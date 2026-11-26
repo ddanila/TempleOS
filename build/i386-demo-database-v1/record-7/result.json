@@ -1,0 +1,20 @@
+{
+  "inputs_unchanged": true,
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-blkdev-rep-v1/cross-kernel-pointers/kernel.img": "4ad652a8deffee85fca4feefcb939fb5775029e0c95a5cd6d0193bf47c33eb58",
+    "/home/ddanila/fun/TempleOS/Demo/Dsk/DataBase.HC": "1376f33b605dc2933eae1c75bfe5a358cc8048c50116a19677b4d5149203d2fa"
+  },
+  "written_disk_sha256": "5e39ebdbdd5320b06c9ba647f77917d12d46664ab0fcd15c2c9031874261650c",
+  "capture_note": "The initial native memory export wait matched a command echo. Read the persisted native bytes independently from the stopped RedSea disk. The original export came from guest memory.",
+  "runs": {
+    "original": {
+      "result": "captured",
+      "database_sha256": "fe20e7934e4e959b322de1402c3788dc15144a3673899bbbb1970033e498ba3c"
+    },
+    "native": {
+      "result": "captured",
+      "database_sha256": "fe20e7934e4e959b322de1402c3788dc15144a3673899bbbb1970033e498ba3c"
+    }
+  }
+}

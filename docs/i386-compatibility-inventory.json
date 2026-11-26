@@ -16489,10 +16489,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Create the database using the unchanged demo, write record seven with Ada and Pine via physical keyboard input, read it in the same session, then cold-reopen the native disk.",
+      "oracle": "Verify the class report and the full 51,200-byte database with only record seven populated. The native prompt must accept fresh input after the cold reopen.",
+      "tests": [
+        {
+          "target": "native-original-database-write-read-cold-reopen",
+          "result": "pass",
+          "evidence": "build/i386-demo-database-v1/qualification.json",
+          "scope": "Both guests create the same 100-block database and show the entered record. The native demo reads the record after cold boot, preserves the disk bytes, and returns to arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Dsk/DskRaw.HC",
