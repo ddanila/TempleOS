@@ -1,0 +1,32 @@
+{
+  "result": "fail",
+  "fixture_sha256": "ed6eae66c277579182e1ce71c37c2a25913d842ca08e8fdb723f388baddf9c62",
+  "scope": "Actual parsed TextDemo button command and Bible link via DocEntryRun",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "756bce70fe94e145e4f3aa077e5575087d9d473e6d051721d2f7e420013945d1",
+    "image_sha256": "0ffa8c1554ebb0e5e14e338f8885e48c5397c7b2cffd9ef4bd933983ed6a640c",
+    "boot_area_sha256": "03464d995cc5e93cc3b7b2bc4924fe93ab4ff00681ec394a4ae0e7a1d505c881",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 96172,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96175,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/TextDemo.HC": "ed6eae66c277579182e1ce71c37c2a25913d842ca08e8fdb723f388baddf9c62"
+    },
+    "added_attributes": {
+      "/Probe/TextDemo.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "error": "Missing b'In the beginning' in genesis"
+}

@@ -29,6 +29,24 @@ passing configured 64 MiB desktop handoff on frozen revision `592a38b7`.
 The full suite and newer production source still need qualification. The bounded-memory self-hosting goal below
 is complete and provides the foundation, but not desktop or application parity.
 
+### Checkpoint (2026-11-26)
+
+- C1–C4 inventory records 10 qualified workflows and six shared support
+  files. TextDemo matches 498 bytes of emitted DolDoc and dispatches the
+  OKAY button through `DocEntryRun` on both architectures. The physical
+  click and complete link workflow remain open. An explicit
+  `BF:Genesis,1:1` diagnostic displayed Genesis on the original guest,
+  where the post-dismissal completion marker was missing. The native guest
+  reached the link dispatch marker but did not display Genesis within
+  the 90-second observation window.
+- The 64 MiB native second-generation RegistryDemo reboot run stopped
+  at the first console raster wait, before reaching persistence checks.
+- C5 retains the two-generation desktop result on frozen revision
+  `592a38b7`. A full Bible lookup profile on that desktop found repeated
+  backing-region trims during DolDoc loading. The
+  [profile and allocator experiment](docs/i386-bible-load-profile.md#first-full-lookup-with-the-window-manager-active-2026-11-26)
+  record the evidence and pending checks.
+
 ### Plan decisions (2026-11-24)
 
 These resolve recurring problems found in the progress review.

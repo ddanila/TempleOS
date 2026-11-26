@@ -714,3 +714,26 @@ overlapped other guests and do not prove a regression, but provide no evidence
 of a gain. The unrolled code was therefore discarded. Its full-link test timed
 out at the 20-minute command limit with unchanged inputs
 (`build/i386-doc-bible-link-full-vga-unroll-v1`).
+
+## First full lookup with the window manager active (2026-11-26)
+
+A 64 MiB TCG run on the frozen native desktop image sampled the first
+`DocBibleLinkContract` lookup for 120 seconds with the window manager
+active. The command was still running when the sample ended. Of 550
+samples, 219 showed this stack:
+
+```text
+I386MemBackingValid <- I386MemBackingTrim <- MemoryReclaim <- MemoryFree <- DocPutS <- DocLoad
+```
+
+Another 64 samples showed heap scanning and 48 showed backing-region
+lookup through the same trim path. The retained
+[profile report](../build/i386-textdemo-actions-v2/native-bible-profile/result.json)
+includes the input hashes, stack counts and sample scope.
+
+The allocator experiment skips the physical backing trim when a small free
+returns the span to its heap bucket. That operation leaves the backing pages
+owned by the heap. Large frees still collect and trim, and task teardown
+continues to reclaim separately. The experiment passed both bootstrap build
+generations. It still needs a runtime check of reclamation and the full Bible
+lookup before it can qualify.
