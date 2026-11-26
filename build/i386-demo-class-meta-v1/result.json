@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "input_sha256": "756bce70fe94e145e4f3aa077e5575087d9d473e6d051721d2f7e420013945d1",
+  "entries": {
+    "Demo/ClassMeta.HC": {
+      "source_sha256": "be318d9ee4d65bf850946b7caf26f4a7461fc965a36e3debb583db7b503948e2",
+      "output_file": "demo-0.DD",
+      "result": "pass",
+      "original_sha256": "0acf5c729bb86bebb666cc7bf732b2edb5054f2416249a20b5387bd45790266f",
+      "native_sha256": "0acf5c729bb86bebb666cc7bf732b2edb5054f2416249a20b5387bd45790266f",
+      "bytes": 147
+    }
+  },
+  "seed": null,
+  "scope": "Exact DolDoc output, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}

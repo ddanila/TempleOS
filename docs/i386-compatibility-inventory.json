@@ -15564,6 +15564,12 @@
       "oracle": "docs/i386-class-meta.md: normal-image workflow, mask 511, three exact original 147-byte DolDoc documents and unchanged source digest. Individual demo workflow qualification on the recorded current image; C5 release generations/full-suite/resource qualification remains open.",
       "tests": [
         {
+          "target": "native-original-demo-batch",
+          "result": "pass",
+          "evidence": "build/i386-demo-class-meta-v1/result.json",
+          "scope": "Unchanged demo on the frozen C5 desktop cross-build. Exact 147-byte DolDoc comparison and later native arithmetic; retained callback and mutation checks are covered by the dedicated workflow below."
+        },
+        {
           "command": "python3 tools/test-i386-class-meta.py [IMAGE] --out OUT",
           "result": "pass",
           "evidence": "build/i386-class-meta-original-v2/result.json",
