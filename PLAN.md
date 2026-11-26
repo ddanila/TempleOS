@@ -285,6 +285,10 @@ is complete and provides the foundation, but not desktop or application parity.
   that image. See the
   [production cross-build](build/i386-sprite-plot3d-production-v1/cross-checkpoint.json)
   and [full-content checkpoint](build/i386-sprite-plot3d-production-v1/full-content-checkpoint.json).
+  Verified bootstrap output can be kept in a fresh directory with
+  `tools/test-rebuild.py --out` and supplied to the cross-build with
+  `tools/build-i386-kernel.py --bootstrap-dir`. See the
+  [isolated build receipt](build/i386-bootstrap-cli-v1/checkpoint.json).
 
 - PanText qualifies. Both guests moved the welcome text seven pixels in
   each direction on both axes, in the original horizontal-then-vertical

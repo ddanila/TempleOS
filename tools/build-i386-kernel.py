@@ -2492,6 +2492,8 @@ def main():
     parser.add_argument('--content-profile',choices=('minimal','full'),default='minimal',
                         help='Full includes every current inventory file and requires a 64 MiB disk')
     parser.add_argument('--out',type=Path,default=ROOT/'build/i386-kernel',help='Isolated build output directory')
+    parser.add_argument('--bootstrap-dir',type=Path,default=ROOT/'build/rebuild-test',
+                        help='Verified bootstrap output from tools/test-rebuild.py')
     parser.add_argument('--compiler-qmp-stdio',action='store_true',
                         help='Use QMP stdio for the original cross-compiler guest only')
     parser.add_argument('--compiler-timeout',type=int,default=90,
@@ -2510,17 +2512,18 @@ def main():
     run(sys.executable,'tools/gen-i386-resident-optimizer.py','--check')
     run(sys.executable,'tools/gen-i386-public-math.py','--check')
     run(sys.executable,'tools/gen-i386-date.py','--check')
-    bootstrap=json.loads((ROOT/'build/rebuild-test/result.json').read_text())
+    bootstrap_dir=args.bootstrap_dir.resolve()
+    bootstrap=json.loads((bootstrap_dir/'result.json').read_text())
     if bootstrap.get('result', 'pass') != 'pass':
         raise ValueError('Rerun tools/test-rebuild.py: bootstrap qualification failed')
     for name,digest in bootstrap['source_sha256'].items():
         if name.startswith(('Kernel/','Compiler/')) and hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=digest:
             raise ValueError(f'Rerun tools/test-rebuild.py: changed {name}')
     for name,path in [('Compiler.BIN','Compiler/Compiler.BIN'),('Kernel.BIN','0000Boot/0000Kernel.BIN.C')]:
-        if hashlib.sha256((ROOT/'build/rebuild-test/overlay'/path).read_bytes()).hexdigest()!=bootstrap['generations'][-1][name]:
+        if hashlib.sha256((bootstrap_dir/'overlay'/path).read_bytes()).hexdigest()!=bootstrap['generations'][-1][name]:
             raise ValueError('Stale bootstrap binary')
     iso=out/'compiler.iso'
-    run(sys.executable,'tools/build-iso.py','--overlay','build/rebuild-test/overlay',
+    run(sys.executable,'tools/build-iso.py','--overlay',str(bootstrap_dir/'overlay'),
         '--overlay','tools/guest/i386-kernel','--output',str(iso))
     exports=out/'exports'
     run(sys.executable,'tools/guest-run.py',str(iso),'--out',str(exports),'--timeout',str(args.compiler_timeout),

@@ -24,14 +24,17 @@ def sha(path):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--qmp-stdio',action='store_true')
+    parser.add_argument('--out',type=Path,default=OUT,
+                        help='Fresh directory for the bootstrap images and receipts')
     parser.add_argument('--guest-timeout',type=int,default=180,
                         help='Observation timeout per bootstrap guest (default: 180 seconds)')
     args=parser.parse_args()
     if not 1 <= args.guest_timeout <= 3600:
         parser.error('--guest-timeout must be between 1 and 3600 seconds')
-    if OUT.exists():
-        parser.error('Preserve the existing build/rebuild-test under a unique name before rebuilding')
-    OUT.mkdir(parents=True)
+    out=args.out.resolve()
+    if out.exists():
+        parser.error('Use a fresh --out directory to preserve any existing rebuild')
+    out.mkdir(parents=True)
     manifest = {'revision': subprocess.check_output(['git','rev-parse','HEAD'],
                 cwd=ROOT, text=True).strip(), 'source_sha256': {}, 'generations': [],
                 'qmp_stdio': args.qmp_stdio, 'guest_timeout': args.guest_timeout}
@@ -44,10 +47,10 @@ def main():
                                  if name.split('/')[0] in os_dirs})
     for name in names:
         manifest['source_sha256'][name] = sha(ROOT/name)
-    overlay = OUT/'overlay'
+    overlay = out/'overlay'
     for generation in (1, 2):
-        iso = OUT/f'generation-{generation}.iso'
-        exports = OUT/f'generation-{generation}'
+        iso = out/f'generation-{generation}.iso'
+        exports = out/f'generation-{generation}'
         cmd = [sys.executable, 'tools/build-iso.py', '--output', str(iso),
                '--overlay', 'tests/guest/rebuild']
         if generation == 2:
@@ -65,8 +68,8 @@ def main():
             shutil.copyfile(exports/name,target)
     manifest['differences'] = {}
     for name in ('Compiler.BIN','Kernel.BIN'):
-        a=(OUT/'generation-1'/name).read_bytes()
-        b=(OUT/'generation-2'/name).read_bytes()
+        a=(out/'generation-1'/name).read_bytes()
+        b=(out/'generation-2'/name).read_bytes()
         manifest['differences'][name] = {'sizes': [len(a),len(b)],
             'offsets': [i for i,(x,y) in enumerate(zip(a,b)) if x != y]}
     changed = [name for name, digest in manifest['source_sha256'].items()
@@ -75,7 +78,7 @@ def main():
     if changed:
         manifest['changed_sources'] = changed
     manifest['scope'] = 'Two native x86-64 rebuilds, second running generated binaries; not bit reproducibility'
-    (OUT/'result.json').write_text(json.dumps(manifest,indent=2)+'\n')
+    (out/'result.json').write_text(json.dumps(manifest,indent=2)+'\n')
     if changed:
         raise RuntimeError('Rebuild inputs changed: ' + ', '.join(changed))
     print('PASS: rebuilt compiler/kernel booted and rebuilt themselves. See result.json for binary differences.')

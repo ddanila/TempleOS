@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "bootstrap_generations": [
+    {
+      "Compiler.BIN": "7e84491e12cd1417e8a7eec130d54368a4a63db3423e79e874830b14c97d1bde",
+      "Kernel.BIN": "a662c28343cbe1e45e2bb1516843d5d99e4c94dbf14ef4b839bf490240dec1c3"
+    },
+    {
+      "Compiler.BIN": "ee1ba2ebd8b4856c0d979d8a50afd837002b5a9adf1fdef9507fa7dc2e3f2981",
+      "Kernel.BIN": "2505d9d93082fd6ad9a9d1407b44d8c2304c62a0be6169d7e0ffbe4eb6d697f8"
+    }
+  ],
+  "disk_sha256": "eab1cfca23ac5d75a7478508fc4b61e0993658e6ab4dc01f613c8aa8f7e008d4",
+  "module_count": 16,
+  "scope": "Separate CLI output directories for both x86-64 bootstrap generations and the full i386 cross-build, with matching bootstrap hashes and a passing 386 instruction audit.",
+  "evidence_sha256": {
+    "bootstrap/result.json": "e35b2f1eea4149fd7d2102442cefcd53ea9a5a61d3466dc28be091723c4e7f7a",
+    "cross/result.json": "6cd5011c2379317e35310a716c0a8ead681dfe2b511935bb0b417b7f11d9d052",
+    "cross/boot-instruction-audit.json": "3e4ab628657756a49ba9b0ad9b77be0c5df4cd98a0ba8ddf03d569b91679e6a8"
+  }
+}
