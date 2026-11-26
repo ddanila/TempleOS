@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "source_revision": "fc97e372cc5e87732b0155aee4fe50ec99a8d706",
+  "image_sha256": "9c2babe914327c106cf3af14edfd0e338b8675e217058549c10c22dea7b097cb",
+  "inventory_files": 686,
+  "delivered_source_files": 1571,
+  "accel": "kvm",
+  "inventory_sha256": "c6daf1fb2a341d93ad17d71503aaa3da581848c35be11917eafa92422bd35a06",
+  "evidence_sha256": {
+    "committed-source.json": "1717f38cba6469fde049f031e5515dbdbe5eb1ec6303b9fda3c031ebaa38fdac",
+    "full-content/result.json": "0894fdf2718629a3193590e205805ec6a5b235025bec0a1a788c5d42cbd5759a",
+    "memory-checkpoint.json": "22c03fbc67254ac5b35ad8859783453ca01972d17a6a3e1f6b23316224b00899"
+  }
+}

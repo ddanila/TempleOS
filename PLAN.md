@@ -148,10 +148,11 @@ is complete and provides the foundation, but not desktop or application parity.
   committed-source audit. Generation one installed those providers, rebuilt
   its flat kernel at 128 MiB, cold-booted at 8 MiB with exact VGA checkpoints,
   and passed its installed-image and 1,561-file source audits. Generation
-  two rebuilt and audited all nine retained providers at 128 MiB and
-  started installation. See the
-  [generation-one checkpoint](build/i386-parenwarn-links-v2/void-native-generations128/gen1-checkpoint.json)
-  and [generation-two retained build](build/i386-parenwarn-links-v2/void-native-generations128/gen2-retained-build/result.json).
+  two rebuilt, audited and installed all nine retained providers at 128 MiB
+  and started rebuilding its flat kernel. See the
+  [generation-one checkpoint](build/i386-parenwarn-links-v2/void-native-generations128/gen1-checkpoint.json),
+  [generation-two retained build](build/i386-parenwarn-links-v2/void-native-generations128/gen2-retained-build/result.json)
+  and [generation-two install](build/i386-parenwarn-links-v2/void-native-generations128/gen2-install/result.json).
 - GlblVars entered the pinned original compiler debugger on the first
   aggregate initializer at line 11 from both Once.HC and the standard guest
   prompt. The unchanged source now completes on i386, displaying all four
@@ -242,6 +243,9 @@ is complete and provides the foundation, but not desktop or application parity.
   x86-64 bootstrap rebuilds passed again. See the
   [initial image checkpoint](build/i386-demo-sprite-text-v4/desktop-content-checkpoint.json)
   and [memory regression checkpoint](build/i386-demo-sprite-text-v5/memory-checkpoint.json).
+  The corrected image also passed the frozen 686-file content check and
+  the 1,571-file committed-source audit. See the
+  [full-content checkpoint](build/i386-demo-sprite-text-v5/full-content-checkpoint.json).
 
 - SpritePlot qualifies. Both guests displayed the 167-byte image-size
   result and identical position-aligned final drawings. Pressing Space
