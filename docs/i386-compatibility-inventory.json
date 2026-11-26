@@ -17273,10 +17273,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged Cartesian, enter x/2, dismiss the first graph with Space, enter -x/2, and exit with Escape.",
+      "oracle": "Find the red axes in each guest and verify the black line's slope relative to the intersection. Verify graph removal and fresh native arithmetic after Escape.",
+      "tests": [
+        {
+          "target": "native-original-cartesian-equations",
+          "result": "pass",
+          "evidence": "build/i386-demo-cartesian-v1/comparison-retry/result.json",
+          "scope": "Both guests accept both equations and plot the expected slopes relative to their window origins. Escape clears the graph and the i386 prompt evaluates fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/CharAnimation.HC",

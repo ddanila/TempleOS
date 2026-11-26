@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 51 (six apps and forty-five demos) |
+| Qualified | 52 (six apps and forty-six demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 605 |
-| Linked to tests / with reference workflow and oracle | 210 / 139 |
+| Qualification gaps | 604 |
+| Linked to tests / with reference workflow and oracle | 211 / 140 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 45 of 224 |
+| Demos qualified | 46 of 224 |
 
-C1 has 605 qualification gaps, including entries that still need a reference
+C1 has 604 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -38,7 +38,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 51 workflows and records eighteen shared files
+- The inventory qualifies 52 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -335,6 +335,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   See the
   [original trail receipt](build/i386-demo-bounce-v1-baseline/original-receipt.json)
   and [i386 rejection](build/i386-demo-bounce-v1-baseline/result.json).
+
+- Cartesian qualifies on the same image as Bounce. Both guests plotted
+  `x/2` and `-x/2` from physical keyboard input, matching all 96 sampled
+  points on each expected slope relative to the red axes. Escape cleared
+  the graph and the i386 prompt evaluated fresh arithmetic. See the
+  [interactive graph comparison](build/i386-demo-cartesian-v1/comparison-retry/result.json).
 
 ### Plan decisions (2026-11-24)
 

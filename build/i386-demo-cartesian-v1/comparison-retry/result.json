@@ -1,0 +1,64 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-bounce-v1/cross-retry/kernel.img": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398"
+  },
+  "source_sha256": "1e595e9fa0eb85b0f065d5d57c99f270257b4c66bd9a936d06d892d0b319d7b2",
+  "runs": {
+    "original": {
+      "result": "pass",
+      "rising": {
+        "origin": [
+          164,
+          244
+        ],
+        "rising_samples": 96,
+        "falling_samples": 0,
+        "screenshot_sha256": "a9314e4617839b0c00f98e96d9ba2968718c51b8e174d884578cbd5801f002f2"
+      },
+      "falling": {
+        "origin": [
+          164,
+          244
+        ],
+        "rising_samples": 0,
+        "falling_samples": 96,
+        "screenshot_sha256": "025a3097f163bd4a94ca5da9b4e3823b9fb0ecdff00d81bd04a3aa4c49f5e4fd"
+      },
+      "after_escape_sha256": "17d369ead9689ee9128f1d31f3c0dc39a3f914f5f9662e9395fbd0cfc78e052c"
+    },
+    "native": {
+      "result": "pass",
+      "rising": {
+        "origin": [
+          320,
+          240
+        ],
+        "rising_samples": 96,
+        "falling_samples": 0,
+        "screenshot_sha256": "1176e1717f7de53dfe89e9300281291d324698338779e56e845dd5fea09a353d"
+      },
+      "falling": {
+        "origin": [
+          320,
+          240
+        ],
+        "rising_samples": 0,
+        "falling_samples": 96,
+        "screenshot_sha256": "e04c634659f87e4e328a243717cd5c8250e629091d1e3cc05b1cece336827ffb"
+      },
+      "after_escape_sha256": "1535a708c9a9475c4636e687f464317cc7ac13ca297eb43a9a91d8369e562a05",
+      "fresh_result": {
+        "column": 0,
+        "row": 5,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  },
+  "inputs_unchanged": true,
+  "result": "pass"
+}
