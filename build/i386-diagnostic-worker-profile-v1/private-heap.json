@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "ram_mib": 16,
+  "private_heap_peak_bytes": 1048576,
+  "private_heap_capacity_bytes": 1048576,
+  "disk_sha256": "044806ec0a8497188877c7014d1fdbbc07fa93aa3dc00a0bdd468b6a521571f1",
+  "driver_sha256": "4987086609fff8dae87d2a532778db0689ae7e3e586db98f52cba79719366234",
+  "debug_log_sha256": "5af38fa5acd8cb1f72b8c5e85843280717a1969a8a353adea0bac85ff55bcb86",
+  "diagnostic_receipt_sha256": "c7cbeaa44f08b2cf34140e72517ef36c38845f8785c060f941fb879a5325f6cc",
+  "scope": "Worker high-water mark after both compiler-probe phases, including deliberate heap-exhaustion tests"
+}

@@ -641,6 +641,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   released the diagnostic worker, and passed all nine console
   commands and VGA checks. See the
   [16 MiB control](build/i386-demo-blot-v1/diagnostic16-frozen/result.json).
+  A separate instrumented 16 MiB run passed the same diagnostic suite.
+  Its private worker reached the full 1,048,576-byte reservation.
+  The measurement includes deliberate exhaustion and does not establish
+  how small the worker reservation can be. See the
+  [private heap measurement](build/i386-diagnostic-worker-profile-v1/private-heap.json)
+  and [instrumented diagnostic receipt](build/i386-diagnostic-worker-profile-v1/diagnostic16/result.json).
 
 - 3DPoly qualifies. The i386 port publishes the existing symmetry,
   polygon fill, and three matrix rotation routines. In both guests

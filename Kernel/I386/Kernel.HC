@@ -315,6 +315,9 @@ I64 Main(CI386BootInfo *info,I64 unused)
       if(!I386SchedIdle(&kernel_scheduler,&i386_idle)) I386SchedYield(&kernel_scheduler);
     }
     pulse_used=kernel_heap.used;
+    KernelLog("PROBE TASK PRIVATE HEAP ");
+    KernelHex(kernel_pulse->local_heap.peak); KernelLog(" ");
+    KernelHex(kernel_pulse->local_heap.size); KernelLog("\n");
     if(!kernel_pulse->task.finished || !I386TaskDestroy(kernel_pulse) ||
         pulse_used-kernel_heap.used<1048576+16384) KernelStop;
     kernel_pulse=0;
