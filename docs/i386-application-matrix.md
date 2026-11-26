@@ -2643,3 +2643,13 @@ on the patched image. It scored and saved 1,915. The unchanged
 [physical play test](../build/titanium-finish-v1/mesh-repair/play/result.json)
 also passed with firing, exit and a fresh command. The
 [binary repair record](binary-repairs.md) identifies the bytes.
+
+### Vocabulary cold launch on the full desktop
+
+The unchanged `Run.HC` launched directly from a fresh managed desktop
+and loaded its bundled dictionary. The original and native runs used
+the same random seed, accepted a number key, opened and dismissed a
+definition popup, rendered the next question, and exited on Escape.
+The native guest confirmed more than 10,000 loaded words and rendered
+42 back at the prompt. See the
+[cold-launch comparison](../build/i386-vocabulary-cold-v1/comparison.json).

@@ -1,0 +1,57 @@
+{
+  "result": "pass",
+  "scope": "Seeded cold Run.HC launch with bundled dictionary, answer and definition popup, next question and Escape exit.",
+  "runs": {
+    "native": {
+      "input_sha256": {
+        "/home/ddanila/fun/TempleOS/build/i386-vocabulary-cold-v1/run.py": "81718884d13dffc7cb4835e7072766fa8ee86df7e2288dd4c33565a8c8203b6b",
+        "/home/ddanila/fun/TempleOS/build/i386-vocabulary-cold-v1/Probe.HC": "059ea4df1fa06dacd6728325f7d5a804141e3ca758308de434eadd8af91434d5",
+        "tools/test-i386-autocomplete-interaction.py": "9c96e317209ea0dba1ab36e9168b47cf448794cafe33285ee6dfb0bba233e101",
+        "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+        "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+        "Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+        "build/i386-settings-startup-production-v1/full/kernel.img": "21659873d758cb2d8c41ef8fd9a52575e345f4d2df00ca3611be74cc067530e1"
+      },
+      "frames": {
+        "question": "2df039748c255f2b7496955a007d004511f1ecd2aaeb1223de3e91205da215f5",
+        "definition": "6b5334cbc31191729f8fcfd223e24177b9a9d3f254f3c57f4167707e9ae59477",
+        "next-question": "be97b26aba81e7b299d0db97b29eb35a793d5e99bfd4e4cc37020a51db371b9f"
+      },
+      "markers": [
+        "VOCAB opening",
+        "VOCAB definition popup",
+        "VOCAB definition closed"
+      ],
+      "fresh_result": {
+        "column": 0,
+        "row": 58,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    },
+    "original": {
+      "input_sha256": {
+        "/home/ddanila/fun/TempleOS/build/i386-vocabulary-cold-v1/run.py": "81718884d13dffc7cb4835e7072766fa8ee86df7e2288dd4c33565a8c8203b6b",
+        "/home/ddanila/fun/TempleOS/build/i386-vocabulary-cold-v1/Probe.HC": "059ea4df1fa06dacd6728325f7d5a804141e3ca758308de434eadd8af91434d5",
+        "tools/test-i386-autocomplete-interaction.py": "9c96e317209ea0dba1ab36e9168b47cf448794cafe33285ee6dfb0bba233e101",
+        "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+        "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+        "Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+      },
+      "frames": {
+        "question": "4e2ef03429d28d67f6b19bc90a1a7cb5b7b7755b702da5660e064e786a3886db",
+        "definition": "f8dbf6f9366b831028aebdc6127201c080774791a6c62940fb34d915d0e8dbda",
+        "next-question": "31473269c471c449156cb58b89f5c2607038b8626df3903954f8fd20b0f20427"
+      },
+      "markers": [
+        "VOCAB opening",
+        "VOCAB definition popup",
+        "VOCAB definition closed",
+        "VOCAB returned"
+      ]
+    }
+  }
+}
