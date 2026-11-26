@@ -159,5 +159,12 @@
     "allocated_bytes": 67108864,
     "sha256": "c6c81e943614d6fd5428f0b7773222ab4dc718fe3786bcfdc632b3375506eda0",
     "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-blot-v1/diagnostic16-frozen/working.img",
+    "retained": "build/i386-demo-blot-v1/cross/kernel-diagnostics.img",
+    "allocated_bytes": 67112960,
+    "sha256": "8aaf482b3d9411c727145dfd2c363e572e833f46ff6836bb0876b93330abe7af",
+    "bytes": 67108864
   }
 ]

@@ -637,6 +637,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   the temporary diagnostic worker. The request was 1,070,343 bytes
   and the largest free block was 838,128 bytes. See the
   [8 MiB diagnostic receipt](build/i386-demo-blot-v1/diagnostic8-frozen/result.json).
+  The same image at 16 MiB completed both compiler-probe phases,
+  released the diagnostic worker, and passed all nine console
+  commands and VGA checks. See the
+  [16 MiB control](build/i386-demo-blot-v1/diagnostic16-frozen/result.json).
 
 - 3DPoly qualifies. The i386 port publishes the existing symmetry,
   polygon fill, and three matrix rotation routines. In both guests
