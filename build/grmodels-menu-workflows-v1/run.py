@@ -50,6 +50,15 @@ def click(guest, address, target):
         time.sleep(.2)
 
 
+def cancel_without_mesh(guest):
+    guest.key('shift', True)
+    try:
+        guest.press('esc')
+    finally:
+        guest.key('shift', False)
+    guest.wait('MODELS menu returned without a mesh\n', 60)
+
+
 def exercise(guest, model):
     log = guest.wait('MODELS pointer ', 120)
     pointer = int(re.search(r'MODELS pointer ([0-9A-F]+)\n',log)[1],16)
@@ -60,22 +69,22 @@ def exercise(guest, model):
         wait_text(guest,probe,font,b'Ball','menu-ball')
         guest.press('tab')
         wait_text(guest,probe,font,b'Man','menu-man')
-        guest.key('shift', True)
-        try:
-            guest.press('esc')
-        finally:
-            guest.key('shift', False)
-        guest.wait('MODELS menu returned without a mesh\n', 60)
+        cancel_without_mesh(guest)
         return None
     if model == 'man':
         # Move focus off Man before checking its unhighlighted label.
         guest.press('tab')
-    button = b'Ball' if model == 'ball' else b'Man'
+    ball = model in ('ball', 'ball-lighting-cancel')
+    button = b'Ball' if ball else b'Man'
     col,row = wait_text(guest,probe,font,button,'menu-button')
     click(guest,pointer,(col*8+12,row*8+3))
-    form_label = b'Longitude Faces' if model == 'ball' else b'Torso Length'
+    form_label = b'Longitude Faces' if ball else b'Torso Length'
     wait_text(guest,probe,font,form_label,'form')
     guest.press('esc')
+    if model == 'ball-lighting-cancel':
+        wait_text(guest,probe,font,b'Single-Sided Full-Range','chooser-cancel')
+        cancel_without_mesh(guest)
+        return None
     swatches = (4,) if model == 'ball' else (1,2,4,3)
     for index, color in enumerate(swatches):
         # The first Man chooser has a Shirt heading. The later choosers
@@ -100,7 +109,7 @@ def exercise(guest, model):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('model',choices=('ball','man','cancel'))
+    parser.add_argument('model',choices=('ball','man','cancel','ball-lighting-cancel'))
     parser.add_argument('--disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
     args = parser.parse_args()
@@ -110,7 +119,7 @@ def main():
     drive = 'C' if native else 'T'
     observer = Path(__file__).with_name('Observe.HC').read_bytes()
     finish = b'ModelCapture;\n'
-    if args.model == 'cancel':
+    if args.model in ('cancel', 'ball-lighting-cancel'):
         finish = b'ModelCancelCheck;\n'
     workflow = (observer + b'\nModelObserve;\n' +
                 f'#include "{drive}:/Apps/GrModels/Run.HC"\n'.encode() + finish)

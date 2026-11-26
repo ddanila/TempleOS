@@ -6475,3 +6475,9 @@ a document mesh. Each native guest then evaluated fresh arithmetic.
 [Original cancellation](../build/i386-code-alloc-known-v1/native-generations128/grmodels-cancel-original-shift/result.json) ·
 [First generation](../build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-cancel-shift/result.json) ·
 [Second generation](../build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-cancel-shift/result.json)
+
+Opening Ball's default form and cancelling its lighting chooser with
+Shift+Escape also returned without a document mesh on the original and
+second-generation guests. The native guest then evaluated fresh arithmetic.
+[Original lighting cancellation](../build/i386-code-alloc-known-v1/native-generations128/grmodels-ball-lighting-cancel-original/result.json) ·
+[Native lighting cancellation](../build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-ball-lighting-cancel/result.json)
