@@ -10465,9 +10465,31 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "reference_workflow": {
+        "status": "partial",
+        "description": "Open the bundled Models menu, select Ball and Man in separate sessions, submit the default forms, and return to the prompt. For Man, exercise all four lighting choices."
+      },
+      "oracle": {
+        "tool": "build/grmodels-menu-workflows-v1/run.py",
+        "dataset": "build/i386-wide-pi-production-v3/qualification.json",
+        "checks": [
+          "Match the original Ball and Man document mesh bytes.",
+          "Return to the prompt and evaluate fresh arithmetic."
+        ]
+      },
       "tests": [
+        {
+          "target": "generation-one-grmodels-ball",
+          "result": "pass",
+          "evidence": "build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-ball/result.json",
+          "scope": "Bundled menu and default Ball form on the guest-built flat kernel. Mesh bytes match the original."
+        },
+        {
+          "target": "generation-one-grmodels-man",
+          "result": "pass",
+          "evidence": "build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-man/result.json",
+          "scope": "Bundled menu, default Man form, and four lighting choices on the guest-built flat kernel. Mesh bytes match the original."
+        },
         {
           "target": "native-grmodels-cold-run-menu",
           "result": "pass",
