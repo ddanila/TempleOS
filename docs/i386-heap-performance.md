@@ -840,3 +840,23 @@ the prior image reproduces DEC rejection. See docs/i386-inline-asm.md. A fresh
 nine-module attempt is running in build/i386-inline-call-native-nine-v2 with
 paced keyboard input after the older harness left its command unsubmitted.
 This is a new build attempt, not qualification or a performance result.
+
+## Guarded instruction-slab retirement (2026-11-26)
+
+The candidate reused the compiler's validated code owner during instruction-slab
+retirement while interrupts remained disabled. The cross-build source audit
+identified only `Compiler/I386/Code.HC` as different. The candidate passed the
+task-symbol ownership suite with a fresh bootstrap.
+
+In one paired 8 MiB KVM run on `486,-fpu`, the control reached interactive
+startup in 64.877 seconds and the candidate in 64.520 seconds. Both matched
+exact VGA at each of the nine command checkpoints. The 0.357-second difference
+in a single pair is insufficient to establish a speedup, and both runs exceeded
+the 60-second startup limit. The candidate was set aside. The patch, comparison
+driver, and result are retained in `build/i386-ic-slab-validation-v1/`.
+The separate 16 MiB candidate diagnostic was still running at this checkpoint.
+
+The frozen 128 MiB retained native-module run had reached EditorRuntime, the
+seventh of nine modules, at this checkpoint. Its terminal export audit is still
+pending. The run is recorded under `build/i386-demo-insetip-v1/retained128/`.
+C1 through C5 remain open.

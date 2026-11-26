@@ -1,0 +1,34 @@
+diff --git a/Compiler/I386/Code.HC b/Compiler/I386/Code.HC
+index 33caf203..feba62b6 100644
+--- a/Compiler/I386/Code.HC
++++ b/Compiler/I386/Code.HC
+@@ -18,0 +19 @@ class CI386OwnedCode { CCodeCtrl header; CI386CodeAllocation lifetime; };
++#include "/Kernel/I386/HeapKnown.HC"
+@@ -26 +27,2 @@ class CI386ICSlab {
+-CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node)
++CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node,
++  Bool heap_validated=FALSE)
+@@ -30,0 +33 @@ CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node
++  U32 bytes;
+@@ -38,2 +41 @@ CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node
+-            slab->live>slab->issued || !slab->capacity || slab->capacity>I386_IC_SLAB_SLOTS ||
+-            I386HeapSize(heap,slab)!=offset(CI386ICSlab.body)+slab->capacity*I386_IC_SLAB_SLOT_BYTES)
++            slab->live>slab->issued || !slab->capacity || slab->capacity>I386_IC_SLAB_SLOTS)
+@@ -40,0 +43,4 @@ CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node
++        bytes=offset(CI386ICSlab.body)+slab->capacity*I386_IC_SLAB_SLOT_BYTES;
++        if(heap_validated) {
++          if(!I386HeapKnownSize(heap,slab,bytes)) return 0;
++        } else if(I386HeapSize(heap,slab)!=bytes) return 0;
+@@ -47 +53,2 @@ CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node
+-CI386CodeAllocation *I386ICLifetime(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node)
++CI386CodeAllocation *I386ICLifetime(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node,
++  Bool heap_validated=FALSE)
+@@ -53 +60 @@ CI386CodeAllocation *I386ICLifetime(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCo
+-  if(slab=I386ICSlabFind(heap,cc,node)) {
++  if(slab=I386ICSlabFind(heap,cc,node,heap_validated)) {
+@@ -66 +72,0 @@ CI386CodeAllocation *I386ICLifetime(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCo
+-#include "/Kernel/I386/HeapKnown.HC"
+@@ -238 +244,2 @@ Bool I386ICRetire(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node)
+-  if(!I386CmpCodeOwner(heap,cc) || !(record=I386ICLifetime(heap,cc,node)) ||
++  //The owner check validates the whole heap under this same IRQ exclusion.
++  if(!I386CmpCodeOwner(heap,cc) || !(record=I386ICLifetime(heap,cc,node,TRUE)) ||

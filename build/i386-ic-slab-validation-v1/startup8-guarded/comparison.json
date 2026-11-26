@@ -1,0 +1,47 @@
+{
+  "runs": {
+    "control": {
+      "result": "pass",
+      "behavior": {
+        "result": "pass",
+        "cpu": "486,-fpu",
+        "ram_mib": 8,
+        "startup_status": "ok",
+        "boot_mode": "interactive",
+        "startup_seconds": 64.87704139197012,
+        "commands": 9,
+        "setup_commands": 0,
+        "window_manager_pause_requested": false,
+        "vga": "all pixels matched at each checkpoint",
+        "interaction_latencies_seconds": {}
+      },
+      "budget_pass": false,
+      "disk_sha256": "d58d1d0ecfa6218a707583265dd04be3e02ddf0f06d62fe7c6550a3ff8c497a2"
+    },
+    "candidate": {
+      "result": "pass",
+      "behavior": {
+        "result": "pass",
+        "cpu": "486,-fpu",
+        "ram_mib": 8,
+        "startup_status": "ok",
+        "boot_mode": "interactive",
+        "startup_seconds": 64.52033672301332,
+        "commands": 9,
+        "setup_commands": 0,
+        "window_manager_pause_requested": false,
+        "vga": "all pixels matched at each checkpoint",
+        "interaction_latencies_seconds": {}
+      },
+      "budget_pass": false,
+      "disk_sha256": "50eac4ce159f512fe03cb8b89611a1a727520102ed4f6b6fd76d00c8860527c0"
+    }
+  },
+  "changed_os_sources": [
+    "Compiler/I386/Code.HC"
+  ],
+  "runner_sha256": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463",
+  "ram_mib": 8,
+  "accel": "kvm",
+  "cpu": "486,-fpu"
+}
