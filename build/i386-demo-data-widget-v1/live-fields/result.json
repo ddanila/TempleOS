@@ -1,0 +1,79 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/cross-sign/kernel.img": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "/home/ddanila/fun/TempleOS/Demo/DolDoc/Data.HC": "360c3ae662e76def9727e697afc27e301f832924a5dd90f09960c134103e3e14",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "result": "pass",
+      "samples": [
+        {
+          "value": 1154,
+          "sha256": "ea751abefa492b3f446fa8cf6e3c672176f69f0be6cdf6e2af41d96ec46010c5",
+          "string_cell": [
+            0,
+            9
+          ]
+        },
+        {
+          "value": 1630,
+          "sha256": "9a4c88b97b242e46b005ef25739c7ebc247db0cbb63b957e02457e5e07baf63a",
+          "string_cell": [
+            0,
+            9
+          ]
+        },
+        {
+          "value": 2103,
+          "sha256": "7d500e4a445462c0e898cc9d446053ceaef0708607bd5d33830fe83d624514b5",
+          "string_cell": [
+            0,
+            9
+          ]
+        }
+      ]
+    },
+    "native": {
+      "result": "pass",
+      "samples": [
+        {
+          "value": 133,
+          "sha256": "414255c5167bf585e1739a0a8bf461dfecf8659ff690aa74f043020b178067e5",
+          "string_cell": [
+            0,
+            8
+          ]
+        },
+        {
+          "value": 179,
+          "sha256": "ed04e98be35691fc9817151efb3b2446622e358c4df530320bd6bad00dc50c91",
+          "string_cell": [
+            0,
+            8
+          ]
+        },
+        {
+          "value": 223,
+          "sha256": "b4bb9bfd48ce66f63ec0b2910067b0ea65c257370c3f7d9d66040637560326a4",
+          "string_cell": [
+            0,
+            8
+          ]
+        }
+      ],
+      "fresh_result": {
+        "column": 0,
+        "row": 11,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 591 |
-| Linked to tests / with reference workflow and oracle | 224 / 153 |
+| Linked to tests / with reference workflow and oracle | 225 / 154 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 59 of 224 |
 
@@ -478,6 +478,14 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   spacing produced by DolDoc cursor commands. The i386 prompt evaluated
   fresh arithmetic. See the
   [cursor movement comparison](build/i386-demo-cursor-move-v1/table-comparison/result.json).
+
+- Data's live I16 field refreshed across three samples on both guests,
+  and both rendered the string Terry. The first click and Insert edit
+  probe failed to change the string on either guest. Establish the
+  original editor navigation and backing-buffer writeback before
+  qualifying the demo. See the
+  [live-field comparison](build/i386-demo-data-widget-v1/live-fields/result.json)
+  and [edit trial](build/i386-demo-data-widget-v1/edit-fields/result.json).
 
 ### Plan decisions (2026-11-24)
 

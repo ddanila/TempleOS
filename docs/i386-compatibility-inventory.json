@@ -16050,9 +16050,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch unchanged Data and sample its live I16 and string fields. Enter editor overstrike mode and replace the first character of the string.",
+      "oracle": "Check that the I16 value changes while the string remains Terry, then confirm Berry is rendered and stored in the demo's backing buffer after editing.",
+      "tests": [
+        {
+          "target": "native-original-live-data-fields",
+          "result": "pass",
+          "evidence": "build/i386-demo-data-widget-v1/live-fields/result.json",
+          "scope": "Both guests refresh the I16 field across three samples and display the original string. The i386 prompt evaluates fresh arithmetic."
+        },
+        {
+          "target": "data-field-overstrike-probe",
+          "result": "fail",
+          "evidence": "build/i386-demo-data-widget-v1/edit-fields/result.json",
+          "scope": "The click and Insert probe produced no writeback on either guest. An original editing workflow remains to be established."
+        }
+      ]
     },
     {
       "path": "Demo/DolDoc/DefineStr.HC",

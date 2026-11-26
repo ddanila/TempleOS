@@ -1,0 +1,20 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/cross-sign/kernel.img": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "/home/ddanila/fun/TempleOS/Demo/DolDoc/Data.HC": "360c3ae662e76def9727e697afc27e301f832924a5dd90f09960c134103e3e14",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "result": "fail",
+      "error": "Overstrike did not replace the first character of Terry"
+    },
+    "native": {
+      "result": "fail",
+      "error": "Overstrike did not replace the first character of Terry"
+    }
+  }
+}
