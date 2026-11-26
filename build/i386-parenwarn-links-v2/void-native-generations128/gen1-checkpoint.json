@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "source_revision": "2c2cb4b1268baf1cbb6de47802e17530e6e1ba13",
+  "disk_sha256": "2acbaabaeefcbd9bb52ed8e718b041b99319bc8990732cac3c821a3bba54ff0c",
+  "accel": "kvm",
+  "cpu": "486,-fpu",
+  "build_ram_mib": 128,
+  "boot_ram_mib": 8,
+  "boot_startup_seconds": 63.44566986098653,
+  "boot_vga": "all pixels matched at each checkpoint",
+  "delivered_source_files": 1561,
+  "evidence_sha256": {
+    "gen1-install/result.json": "3cb64a5c1a18045747cdedd1b8ecb5928d3ba4c7af583dd17f4a5d9dc8d3ffed",
+    "gen1-selfhost/result.json": "c8882780f2701cd8c61f2944ef712f6933c6c701b9a88f2195e48abae3f66ac4",
+    "gen1-audit/result.json": "a6aa7d13a6b19c7c772d20d84d310af9dd840d1a68a13d087ad94f888e89c4ea",
+    "gen1-source-audit/result.json": "3640d9db181b36e5a1eb2b2a67fdc2591761b46947ae51a02f554d02de983b42",
+    "gen1-selfhost/boot/result.json": "bd45210ccc4e46966dbf7c767bf3538f3114f5687832a7cfb7722d6949885b8a"
+  },
+  "scope": "Installed retained providers, self-hosted flat kernel build, 8 MiB cold boot and installed-image and committed-source audits for generation one."
+}

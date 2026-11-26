@@ -145,10 +145,12 @@ is complete and provides the foundation, but not desktop or application parity.
   and [native run](build/i386-demo-optimization-v1/comparison/result.json).
 - The corrected ParenWarn image at `2c2cb4b1` rebuilt and audited all nine
   retained providers at 128 MiB. The retained disk passed the 1,561-file
-  committed-source audit. Generation one installed those nine providers and
-  started rebuilding its flat kernel. See the
+  committed-source audit. Generation one installed those providers, rebuilt
+  its flat kernel at 128 MiB, cold-booted at 8 MiB with exact VGA checkpoints,
+  and passed its installed-image and 1,561-file source audits. Generation
+  two was rebuilding the retained providers at this checkpoint. See the
   [retained build receipt](build/i386-parenwarn-links-v2/void-retained128/checkpoint.json)
-  and [generation-one install](build/i386-parenwarn-links-v2/void-native-generations128/gen1-install/result.json).
+  and [generation-one checkpoint](build/i386-parenwarn-links-v2/void-native-generations128/gen1-checkpoint.json).
 - GlblVars entered the pinned original compiler debugger on the first
   aggregate initializer at line 11 from both Once.HC and the standard guest
   prompt. See the [boot run receipt](build/i386-demo-glblvars-v1/comparison/result.json)
