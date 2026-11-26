@@ -1099,3 +1099,10 @@ control. Both had passed the preceding identify, LBA and CHS read checks.
 [First KVM boot](../build/i386-ata-string-read-v1/interactive8-kvm/result.json) ·
 [Repeat KVM boot](../build/i386-ata-string-read-v1/interactive8-kvm-repeat/result.json) ·
 [TCG attempt](../build/i386-ata-string-read-v1/interactive8-tcg/result.json)
+
+The ATA candidate also passed the full 8 MiB diagnostic boot under KVM
+in 47.099 seconds. It completed 128 immediate-push checks, 22 declaration
+publication checks, and 28 program publication checks. Both memory-probe
+phases and all nine exact VGA checkpoints passed, with zero BuildRuntime
+loads and the source image unchanged.
+[8 MiB diagnostic receipt](../build/i386-ata-string-read-v1/diagnostic8-kvm/result.json)
