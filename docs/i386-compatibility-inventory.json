@@ -10631,9 +10631,34 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch cold, jump, restart, shoot with both input methods, verify scoring rules, complete the regulation clock and reopen the saved best score.",
+      "oracle": "Original timing and collision behavior, native rendered arena and finish caption, shot state and registry recovery.",
+      "tests": [
+        {
+          "target": "native-keepaway-cold-launch",
+          "result": "pass",
+          "evidence": "build/i386-keepaway-cold-v1/native/result.json",
+          "scope": "Bundled launch twice after normal startup, predefined libraries retained and prompt recovered."
+        },
+        {
+          "target": "original-native-keepaway-clock",
+          "result": "pass",
+          "evidence": "build/i386-keepaway-clock-v1/comparison.json",
+          "scope": "Both autonomous matches advance through halftime and complete the three-minute regulation timer."
+        },
+        {
+          "target": "native-keepaway-cold-best-score",
+          "result": "pass",
+          "evidence": "build/i386-keepaway-finish-v3/native/result.json",
+          "scope": "Game Over rendering, normal handoff and pass scoring, weaker restart preserves best score, and registry reload."
+        },
+        {
+          "target": "original-native-keepaway-foul",
+          "result": "fail",
+          "evidence": "build/i386-keepaway-foul-v3/comparison.json",
+          "scope": "Only the original records the foul under the staged live-pointer collision geometry."
+        }
+      ]
     },
     {
       "path": "Apps/Logic/Load.HC",
@@ -16056,9 +16081,16 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Generate the full line-numbered DolDoc from the bundled King James Bible and save it in Home.",
+      "oracle": "Compare every logical output byte including sequential prefixes and final blank lines.",
+      "tests": [
+        {
+          "target": "original-numbible-full-document",
+          "result": "pass",
+          "evidence": "build/i386-demo-numbible-v1/original-receipt.json",
+          "scope": "Original fixture verified all 100,117 sequential lines and 4,920,719 bytes."
+        }
+      ]
     },
     {
       "path": "Demo/DolDoc/TextDemo.HC",

@@ -1,0 +1,50 @@
+{
+  "result": "pass",
+  "scope": "Unmodified regulation clock and autonomous gameplay with patient finish and Escape recovery. Wall-timed score trajectories are independent.",
+  "runs": {
+    "original": {
+      "input_sha256": {
+        "/home/ddanila/fun/TempleOS/build/i386-keepaway-clock-v1/run.py": "d07198e4fb6267b5f046106546e0d3d243fbe5f4eee2aecfda647bea2eca59cf",
+        "/home/ddanila/fun/TempleOS/build/i386-keepaway-clock-v1/Probe.HC": "0a4769401d72f27bfe53adfa03b1d855a68d5f8621398ce6b08d4ea958b16562",
+        "tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+        "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+        "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237"
+      },
+      "markers": [
+        "KEEP popup",
+        "KEEP regulation clock",
+        "KEEP halftime",
+        "KEEP regulation finished 32-30 in 180.029 seconds",
+        "KEEP returned"
+      ],
+      "frame_sha256": "27c013f1177ff2d93f926f3e26fd9262aa6f8307f50f28ec4b937841ef8ff2e9"
+    },
+    "native": {
+      "input_sha256": {
+        "/home/ddanila/fun/TempleOS/build/i386-keepaway-clock-v1/run.py": "d07198e4fb6267b5f046106546e0d3d243fbe5f4eee2aecfda647bea2eca59cf",
+        "/home/ddanila/fun/TempleOS/build/i386-keepaway-clock-v1/Probe.HC": "0a4769401d72f27bfe53adfa03b1d855a68d5f8621398ce6b08d4ea958b16562",
+        "tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+        "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+        "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+        "build/i386-settings-startup-production-v1/full/kernel.img": "21659873d758cb2d8c41ef8fd9a52575e345f4d2df00ca3611be74cc067530e1"
+      },
+      "markers": [
+        "KEEP popup",
+        "KEEP regulation clock",
+        "KEEP halftime",
+        "KEEP regulation finished 20-18 in 179.873 seconds",
+        "KEEP returned"
+      ],
+      "prompt_42": {
+        "column": 0,
+        "row": 1,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      },
+      "frame_sha256": "b17fa7c374260401ecfad4bbbd06c4301cba60be89b14d9fb018df59765440da"
+    }
+  }
+}

@@ -2710,3 +2710,13 @@ the pinned original. Every one of its 100,117 lines carried the expected
 sequential number, including the final blank lines. The native comparison
 uses the same bundled input and will compare the complete logical output.
 See the [original receipt](../build/i386-demo-numbible-v1/original-receipt.json).
+
+Both guests completed a regulation match with the game clock running
+normally. The original finished in 180.029 seconds and native finished
+in 179.873 seconds. Each reached halftime, completed the match, and
+exited on Escape. In a separate foul test, both probes used the same
+live mouse position and staged collision. The original awarded the
+penalty, while native never reported it in the test window. The foul
+workflow remains open. See the
+[regulation comparison](../build/i386-keepaway-clock-v1/comparison.json)
+and [foul comparison](../build/i386-keepaway-foul-v3/comparison.json).
