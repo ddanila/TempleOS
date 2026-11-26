@@ -954,3 +954,9 @@ image at 128 MiB on KVM with `486,-fpu`. The persisted export audit passed
 and the build provider loaded once. The retained image hash matches the
 receipt in `build/i386-demo-insetip-v1/generations128/gen2-retained-build/`.
 The runner has started installing the second generation.
+
+The second retained install preserved all nine modules and passed its 8 MiB
+arithmetic and document-allocation VGA checkpoints, including diagnostic
+growth recovery. Startup took 71.983 seconds and still logged the sprite
+source allocation rejection. The runner advanced to the second flat-kernel
+rebuild. See `build/i386-demo-insetip-v1/generations128/gen2-install/`.
