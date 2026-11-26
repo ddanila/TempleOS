@@ -6456,3 +6456,9 @@ Generation two reproduced the original DolDoc bytes for all five
 bundled assembly demos tested on generation one and returned to native
 command input.
 [Second-generation assembly demo comparison](../build/i386-code-alloc-known-v1/native-generations128/gen2-assembly-demos64/result.json)
+
+The TimeClock keyboard check also passed on generation two at 64 MiB
+under KVM. All four typed records survived cold reboot byte for byte
+after emulated PS/2 input exercised multiline, cancelled, and empty
+descriptions. The final input hash check passed.
+[Second-generation TimeClock keyboard check](../build/i386-code-alloc-known-v1/native-generations128/gen2-timeclock-keyboard64-stable/result.json)
