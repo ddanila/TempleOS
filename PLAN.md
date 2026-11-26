@@ -511,6 +511,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   provider matches the corresponding installed generation-one module
   byte for byte. See the
   [generation-two retained rebuild](build/i386-demo-f64-files-v1/generations128/gen2-retained-build/result.json).
+  The next [retained install](build/i386-demo-f64-files-v1/generations128/gen2-install/result.json)
+  installed the same nine module hashes and passed its independent boot
+  and diagnostic growth recovery. The generation-two flat kernel build
+  runs from that installed image.
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the
