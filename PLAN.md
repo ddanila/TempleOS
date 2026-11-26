@@ -148,11 +148,11 @@ is complete and provides the foundation, but not desktop or application parity.
   committed-source audit. Generation one installed those providers, rebuilt
   its flat kernel at 128 MiB, cold-booted at 8 MiB with exact VGA checkpoints,
   and passed its installed-image and 1,561-file source audits. Generation
-  two rebuilt, audited and installed all nine retained providers at 128 MiB
-  and started rebuilding its flat kernel. See the
-  [generation-one checkpoint](build/i386-parenwarn-links-v2/void-native-generations128/gen1-checkpoint.json),
-  [generation-two retained build](build/i386-parenwarn-links-v2/void-native-generations128/gen2-retained-build/result.json)
-  and [generation-two install](build/i386-parenwarn-links-v2/void-native-generations128/gen2-install/result.json).
+  two passed the same build, install, 8 MiB cold boot and audits. All 16
+  modules and installed artifacts matched across the generations after
+  normalizing the eight-byte kernel build date. Full desktop and application
+  suite qualification remains open. See the
+  [two-generation checkpoint](build/i386-parenwarn-links-v2/void-native-generations128/completion-checkpoint.json).
 - GlblVars entered the pinned original compiler debugger on the first
   aggregate initializer at line 11 from both Once.HC and the standard guest
   prompt. The unchanged source now completes on i386, displaying all four
