@@ -1,0 +1,23 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-click-callback-v1/cross-replay/kernel.img": "49d0d5f92349c5c5126ec8429fa3643c007c859e604eaffbfb13559d705e0274",
+    "/home/ddanila/fun/TempleOS/Demo/DolDoc/Form.HC": "8b070762a26b102c76781dc401bd5ded5fec1db9bf438c46db23822f59b7cf1f"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "result": "captured",
+      "screenshots_sha256": {
+        "accept-form": "4f669439db15b6bb422feb01898be672a4935c046a25e3924dc6c08bd539fe36",
+        "accept-result": "2dd47614c003c936362841c70b479ddc36b9a145f4a639e5c6a461366d752aac",
+        "cancel-form": "cc5a6f1371f9493341c72d8a8c2a5899b83af88aec68f1ffc011cc5c1504bb53",
+        "cancel-result": "3b6d29f69e68277c4ce563576bb84318b844139072230b8d9b42d95596d751e0"
+      }
+    },
+    "native": {
+      "result": "fail",
+      "error": "INPUT LINE FormDemo;\nCOMPILER BREAK ready\nUndefined Extern\nTHROW 7478456665646E55\nINPUT REJECT exception 7478456665646E55 errors 0000000000000000 warnings 0000000000000000\nCOMMAND ERROR\n"
+    }
+  }
+}

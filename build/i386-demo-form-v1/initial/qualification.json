@@ -1,0 +1,41 @@
+{
+  "result": "fail",
+  "original": "pass",
+  "font_sha256": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+  "verified_labels": {
+    "accept-form": [
+      "Float 2:",
+      "4.50000000e3",
+      "0000000000001234",
+      "Teen",
+      "John",
+      "1234 Pine St.",
+      "Check"
+    ],
+    "accept-result": [
+      "4.50000000e3",
+      "4660",
+      "-567",
+      "Teen",
+      "John",
+      "Address1=1234 Pine St.",
+      "Address2=",
+      "Check",
+      "ClassRep Example",
+      "Class:\"FDStruct\""
+    ],
+    "cancel-form": [
+      "Float 2:",
+      "Teen",
+      "John",
+      "Check"
+    ],
+    "cancel-result": [
+      "Cancel",
+      "ClassRep Example",
+      "Class:\"FDStruct\""
+    ]
+  },
+  "native_rejection": "FRONTEND ERROR Undefined identifier at  file C:/Demo/DolDoc/Form.HC line 45",
+  "native_log_sha256": "7f1be23bf4a2aefa4ea36ed3ebc6fdf43ca8457f9570f53075a60fbafca32c6e"
+}

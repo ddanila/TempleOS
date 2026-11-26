@@ -16200,9 +16200,16 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch unchanged Form, inspect defaults, accept with Escape, and reopen and cancel with Shift-Escape.",
+      "oracle": "Match the default numeric, list, name, address, and checkbox fields, the accepted values, and the class report on both paths. Cancel must print Cancel.",
+      "tests": [
+        {
+          "target": "native-original-bundled-form",
+          "result": "fail",
+          "evidence": "build/i386-demo-form-v1/initial/qualification.json",
+          "scope": "The original renders the default form and class report after accept and cancel. The i386 compiler rejects the ClassRep call on line 45 before displaying the form."
+        }
+      ]
     },
     {
       "path": "Demo/DolDoc/MenuBttn.HC",

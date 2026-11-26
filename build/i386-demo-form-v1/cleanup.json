@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-demo-form-v1/initial/working.img",
+  "retained": "build/i386-demo-click-callback-v1/cross-replay/kernel.img",
+  "sha256": "49d0d5f92349c5c5126ec8429fa3643c007c859e604eaffbfb13559d705e0274",
+  "allocated_bytes": 67108864
+}

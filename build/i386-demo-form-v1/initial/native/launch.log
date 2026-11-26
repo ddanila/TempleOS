@@ -1,0 +1,6 @@
+INPUT LINE ExeFile("C:/Demo/DolDoc/Form.HC");
+COMPILER BREAK ready
+COMPILER BREAK ready
+FRONTEND ERROR Undefined identifier at  file C:/Demo/DolDoc/Form.HC line 45
+INPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000
+COMMAND OK

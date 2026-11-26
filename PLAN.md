@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 586 |
-| Linked to tests / with reference workflow and oracle | 229 / 158 |
+| Linked to tests / with reference workflow and oracle | 230 / 159 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 64 of 224 |
 
@@ -578,6 +578,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   [callback qualification](build/i386-demo-click-callback-v1/replay-observed/qualification.json),
   [desktop baseline](build/i386-demo-click-callback-v1/replay-baseline64/result.json),
   and [source audit](build/i386-demo-click-callback-v1/replay-source-audit.json).
+
+- The original bundled Form renders the default fields, reports accepted
+  values on Escape, and prints Cancel on Shift-Escape. Both paths show
+  the FDStruct class report. The i386 compiler rejects the ClassRep call
+  on line 45 before opening the form. See the
+  [form reference and native launch result](build/i386-demo-form-v1/initial/qualification.json).
 
 
 ### Plan decisions (2026-11-24)
