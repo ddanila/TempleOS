@@ -186,3 +186,17 @@ and the original source separately. The full image also passed the 386
 boot instruction audit.
 [Full image comparison](../build/i386-asm-hello-world-port-v2/compare/result.json) ·
 [Frozen image overlay comparison](../build/i386-asm-hello-world-port-v2/frozen-compare/result.json)
+
+### BuzzFizz 32-bit port
+
+The native branch keeps the loop and the two countdowns in 386 assembly.
+It passes the current number and label flags to a HolyC output helper in
+two eight-byte argument slots. The original assembly is preserved in the
+other branch.
+
+The fresh full image passed the 386 boot instruction audit. The paired
+demo test reproduced all 1,951 DolDoc bytes for BuzzFizz, including 100
+hexadecimal labels, FIZZ and BUZZ annotations, and trailing spaces. It
+also reproduced AsmHelloWorld and confirmed fresh arithmetic at the
+native prompt.
+[Paired comparison receipt](../build/i386-buzz-fizz-port-v1/compare/result.json)

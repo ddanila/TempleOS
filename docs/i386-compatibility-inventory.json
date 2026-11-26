@@ -15610,10 +15610,10 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
       "reference_workflow": {
-        "status": "observed-reference",
+        "status": "qualified-workflows",
         "description": "Run the assembly loop for 1 through 100. Compare all hexadecimal labels and FIZZ and BUZZ annotations at multiples of six and seven."
       },
       "oracle": {
@@ -15624,6 +15624,13 @@
         ]
       },
       "tests": [
+        {
+          "target": "native-assembly-buzz-fizz-port",
+          "command": "python3 tools/test-i386-demo-batch.py IMAGE --out OUT --reference-at-prompt --demo Demo/Asm/BuzzFizz.HC --native-port Demo/Asm/BuzzFizz.HC",
+          "result": "pass",
+          "evidence": "build/i386-buzz-fizz-port-v1/compare/result.json",
+          "scope": "Bundled 32-bit assembly loop and divisibility counters reproduce all 100 original lines and return to confirmed native command input."
+        },
         {
           "target": "original-assembly-demo-output",
           "result": "pass",

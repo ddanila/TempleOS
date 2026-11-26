@@ -1,0 +1,28 @@
+{
+  "result": "pass",
+  "input_sha256": "db2043efdc23b5706529a2c6c9e2c485a915775125a694f1516731ef8eb1b648",
+  "entries": {
+    "Demo/Asm/AsmHelloWorld.HC": {
+      "source_sha256": "69303dd9f6eb12e021d909986fee8546f3aa9f0fcdb5cc0485391f9671e3e963",
+      "output_file": "demo-0.DD",
+      "native_source_sha256": "64f7ffc5fd0c41e2ed5b87eed50d6f8cc0c5b220d2d9e42ee1ebe4ffdcdfbc59",
+      "original_sha256": "33f821a344a050785241010f080ee7d0a1fb55fb88b6c8224f6b14013265676e",
+      "bytes": 151,
+      "result": "pass",
+      "native_sha256": "33f821a344a050785241010f080ee7d0a1fb55fb88b6c8224f6b14013265676e"
+    },
+    "Demo/Asm/BuzzFizz.HC": {
+      "source_sha256": "41ec42ff7d81396b7cc54578135bfa30d1d73e30ec4627905b409e4a61683932",
+      "output_file": "demo-1.DD",
+      "native_source_sha256": "a353dcba8f7482c69e3329f14b7c1c7312920a1d9bb43bd3db4ca75a2d749862",
+      "original_sha256": "9f9a633edb35ecf530f628d09c0adac0e74c58ddf952a90c6309f521e382d92e",
+      "bytes": 1951,
+      "result": "pass",
+      "native_sha256": "9f9a633edb35ecf530f628d09c0adac0e74c58ddf952a90c6309f521e382d92e"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "inputs_unchanged": true
+}

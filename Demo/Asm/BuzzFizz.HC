@@ -4,6 +4,49 @@
 #define FIZZ_SPAN	6
 #define BUZZ_SPAN	7
  
+#ifdef I386_PUBLIC_USER_INCLUDED
+U0 BuzzFizzLine(I64 value,I64 labels)
+{
+  "%016X ",value;
+  if(labels&1) PutS("FIZZ ");
+  if(labels&2) PutS("BUZZ ");
+  PutS("\n");
+}
+
+U0 BuzzFizz()
+{
+  U8 *print_line=(&BuzzFizzLine)(U8 *);
+  //The HolyC callee preserves EBX, ESI and EDI across each line.
+  asm {
+    MOV ESI,FIZZ_SPAN-RANGE_START%FIZZ_SPAN+1
+    MOV EDI,BUZZ_SPAN-RANGE_START%BUZZ_SPAN+1
+    MOV EBX,RANGE_START
+@@05:
+    XOR ECX,ECX
+    DEC ESI
+    JNZ @@10
+    INC ECX
+    MOV ESI,FIZZ_SPAN
+@@10:
+    DEC EDI
+    JNZ @@15
+    ADD ECX,2
+    MOV EDI,BUZZ_SPAN
+@@15:
+    XOR EDX,EDX
+    PUSH EDX
+    PUSH ECX
+    PUSH EDX
+    PUSH EBX
+    CALL U32 &print_line[EBP]
+    INC EBX
+    CMP EBX,RANGE_END
+    JBE @@05
+  }
+}
+
+BuzzFizz;
+#else
 asm {
 _BUZZ_FIZZ::
 	PUSH	RBP
@@ -182,3 +225,5 @@ Call(_BUZZ_FIZZ);
 0000000000000063
 0000000000000064
 */
+
+#endif
