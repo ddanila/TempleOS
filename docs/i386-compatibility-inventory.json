@@ -18075,10 +18075,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Seed with 1, launch unchanged SunMoon, and let the animation finish without a keypress.",
+      "oracle": "Track the moon moving left, compare sun and moon RGB pixels at shared moon positions, verify drawing cleanup, and evaluate fresh native arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-sun-moon-animation",
+          "result": "pass",
+          "evidence": "build/i386-demo-sun-moon-v1/qualification.json",
+          "scope": "Four phases were sampled per guest. At the two shared positions, 41,789 and 42,448 colored pixels matched exactly. The animation cleared automatically and native arithmetic passed."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Symmetry.HC",

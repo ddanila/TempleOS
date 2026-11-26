@@ -1,0 +1,88 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-low-pass-v1/cross-public/kernel.img": "d891665b3bee1ce7402664e1a8e0a558e4048943dfe657589ae3946bdcd80308"
+  },
+  "source_sha256": "e7fe198ea581d148cf57c9e21347b79e8aa9b0bce3b25cad0a5c2007a67b3ad0",
+  "runs": {
+    "original": {
+      "result": "pass",
+      "frames": [
+        {
+          "frame": "animation-0.png",
+          "sha256": "785727d751f42da48eb1da45cae88efc41c526937e0b97e8b372667b510a8d3c",
+          "sun_pixels": 41176,
+          "moon_pixels": 613,
+          "moon_change": 613
+        },
+        {
+          "frame": "animation-1.png",
+          "sha256": "0d25e85d55608898e5213f232a1915f8dbd03b591efc69fc73d89c3a95133cf7",
+          "sun_pixels": 41176,
+          "moon_pixels": 1272,
+          "moon_change": 1761
+        },
+        {
+          "frame": "animation-2.png",
+          "sha256": "da83758334e1a649f2bcb0c727b1bc46c8446735e2d10ca469225ed5e2da1de0",
+          "sun_pixels": 41176,
+          "moon_pixels": 1703,
+          "moon_change": 2723
+        },
+        {
+          "frame": "animation-3.png",
+          "sha256": "0ba3f454eb0541b1443fa3a352d1b1a998051b8912fb821308afc762534e4713",
+          "sun_pixels": 41176,
+          "moon_pixels": 2298,
+          "moon_change": 3575
+        }
+      ],
+      "after_sha256": "32098edc0bf80fde0077b3cadbeb76ba5dbf4932197f7b03712d00c070af4f8d"
+    },
+    "native": {
+      "result": "pass",
+      "frames": [
+        {
+          "frame": "animation-0.png",
+          "sha256": "381921ef48e38ec23acd25c88765a45e56c46cb397fd5995037d7b90eb7ca7fd",
+          "sun_pixels": 41176,
+          "moon_pixels": 613,
+          "moon_change": 613
+        },
+        {
+          "frame": "animation-1.png",
+          "sha256": "07d54ba9023b6816bbfe352bbfdf85eee5d60f7fa26686f1710c72f35fd1bf0f",
+          "sun_pixels": 41176,
+          "moon_pixels": 753,
+          "moon_change": 1024
+        },
+        {
+          "frame": "animation-2.png",
+          "sha256": "e2814438de193464e8cd1e3010aaab00a1c5430b7a7677e5e902ff3b9f6318a4",
+          "sun_pixels": 41176,
+          "moon_pixels": 920,
+          "moon_change": 1313
+        },
+        {
+          "frame": "animation-3.png",
+          "sha256": "335206c53465ed6a37c0ce38c1bde3c4ad11439291d4ab2501c09ba1eb4a6428",
+          "sun_pixels": 41176,
+          "moon_pixels": 1272,
+          "moon_change": 1954
+        }
+      ],
+      "after_sha256": "210525f285fb74458d1bf74da33bc9c8cf7b8b4ce543cd6bd8780a2aeda7c2c0",
+      "fresh_result": {
+        "column": 0,
+        "row": 3,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  },
+  "inputs_unchanged": true,
+  "result": "pass"
+}

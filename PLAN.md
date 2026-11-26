@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 55 (six apps and forty-nine demos) |
+| Qualified | 56 (six apps and fifty demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 601 |
-| Linked to tests / with reference workflow and oracle | 214 / 143 |
+| Qualification gaps | 600 |
+| Linked to tests / with reference workflow and oracle | 215 / 144 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 49 of 224 |
+| Demos qualified | 50 of 224 |
 
-C1 has 601 qualification gaps, including entries that still need a reference
+C1 has 600 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -38,7 +38,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 55 workflows and records eighteen shared files
+- The inventory qualifies 56 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -391,6 +391,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   steps. The image passed the 386 instruction audit and the 1,573-file source
   comparison. See the [filter qualification](build/i386-demo-low-pass-v1/qualification.json)
   and [prior native rejection](build/i386-demo-low-pass-v1/native-baseline.json).
+
+- SunMoon qualifies. The moon moved left in four samples from each guest.
+  Matching phases had 41,789 and 42,448 identical colored pixels. The
+  drawing cleared automatically and the i386 prompt evaluated fresh
+  arithmetic. See the
+  [animation comparison](build/i386-demo-sun-moon-v1/qualification.json).
 
 ### Plan decisions (2026-11-24)
 
