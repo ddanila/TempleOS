@@ -1,0 +1,89 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/cross-sign/kernel.img": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "/home/ddanila/fun/TempleOS/Demo/DolDoc/Data.HC": "360c3ae662e76def9727e697afc27e301f832924a5dd90f09960c134103e3e14",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "result": "pass",
+      "samples": [
+        {
+          "value": 1059,
+          "sha256": "95fb87693e8119d1849b7585363efc49d7bc5ad183e151c9b84467063acdf141",
+          "string_cell": [
+            0,
+            9
+          ]
+        },
+        {
+          "value": 1531,
+          "sha256": "c3f2683e941649f2aa6a8a09846a854aa36bff0cfd3358e35e49d7db2a376b3a",
+          "string_cell": [
+            0,
+            9
+          ]
+        },
+        {
+          "value": 2014,
+          "sha256": "e3099e5471127bdd907d15d964e5dc8d0f271b45efadb996f1a3bdc6541e7732",
+          "string_cell": [
+            0,
+            9
+          ]
+        }
+      ],
+      "editor_key": {
+        "value": "Berry",
+        "sha256": "ac694381448ba20848bb6480b2173492ae1c9aad7a3aebc3ba0ba80fb2a1407e",
+        "writeback": true
+      }
+    },
+    "native": {
+      "result": "pass",
+      "samples": [
+        {
+          "value": 134,
+          "sha256": "432def0d279158fe8fcbacf52dad252171040b26fcc8461768e744b1c853d433",
+          "string_cell": [
+            0,
+            8
+          ]
+        },
+        {
+          "value": 176,
+          "sha256": "2d073a5a4aa2a953f7f342064a95ed951a6cba50acf3fa0b70b6faa3941c4048",
+          "string_cell": [
+            0,
+            8
+          ]
+        },
+        {
+          "value": 223,
+          "sha256": "b4bb9bfd48ce66f63ec0b2910067b0ea65c257370c3f7d9d66040637560326a4",
+          "string_cell": [
+            0,
+            8
+          ]
+        }
+      ],
+      "editor_key": {
+        "value": "Berry",
+        "sha256": "e1e07e44316e42199f382807c0cf3ad97725064b17d52d2d4735d5a7f33f911b",
+        "writeback": true
+      },
+      "fresh_result": {
+        "column": 0,
+        "row": 20,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

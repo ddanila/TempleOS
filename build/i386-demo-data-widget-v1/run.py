@@ -39,7 +39,7 @@ def send(guest, native, text):
         time.sleep(1)
 
 
-def capture(guest_type, vision, font, image, out, native, edit):
+def capture(guest_type, vision, font, image, out, native, edit, editor_key):
     guest = guest_type(image,out,native,reference_cpus=1)
     try:
         guest.wait('DONE native kernel startup\n' if native else 'DEMO BATCH READY\n')
@@ -82,6 +82,19 @@ def capture(guest_type, vision, font, image, out, native, edit):
             send(guest,native,'if(!StrCmp(buf,"Berry"))DWLog("DATA WRITEBACK PASS\\n");')
             guest.wait('DATA WRITEBACK PASS\n',timeout=10,start=start)
             result['edit'] = dict(value='Berry',sha256=sha(edited),writeback=True)
+        if editor_key:
+            send(guest,native,'U0 DWLog(U8*s){while(*s)OutU8(0xE9,*s++);}')
+            send(guest,native,'CDocEntry *DWField(CDoc*d){CDocEntry*e=d->head.next;while(e!=d && e->data!=buf)e=e->next;return e;}')
+            send(guest,native,'U0 DWEdit(){CDoc*d=DocPut;CDocEntry*e=DWField(d);Bool os=Bt(&d->flags,DOCf_OVERSTRIKE);if(e==d)return;d->cur_entry=e;d->cur_col=e->min_col;if(!os)DocPutKey(d,0,SC_INS);DocPutKey(d,66);if(!os)DocPutKey(d,0,SC_INS);DocBottom(d);}')
+            send(guest,native,'DWEdit;')
+            start = len(guest.collect())
+            send(guest,native,'if(!StrCmp(buf,"Berry"))DWLog("DATA WRITEBACK PASS\\n");')
+            guest.wait('DATA WRITEBACK PASS\n',timeout=10,start=start)
+            guest.screenshot('editor-key')
+            frame = out/'editor-key.png'
+            if not vision['matches'](frame,'Str:Berry',font,first_row=0):
+                raise ValueError('The edited backing value was not rendered')
+            result['editor_key'] = dict(value='Berry',sha256=sha(frame),writeback=True)
         if native:
             guest.command('6*7;')
             result['fresh_result']=guest.result_pixels()
@@ -95,7 +108,9 @@ def main():
     parser.add_argument('original_iso',type=Path)
     parser.add_argument('native_image',type=Path)
     parser.add_argument('--out',required=True,type=Path)
-    parser.add_argument('--edit',action='store_true')
+    edit_mode=parser.add_mutually_exclusive_group()
+    edit_mode.add_argument('--edit',action='store_true')
+    edit_mode.add_argument('--editor-key',action='store_true')
     args=parser.parse_args()
     out=args.out.resolve()
     out.mkdir()
@@ -109,7 +124,7 @@ def main():
     font=vision['glyphs'](font_path)
     results={}
     with ThreadPoolExecutor(max_workers=2) as pool:
-        runs={side:pool.submit(capture,guest,vision,font,image,out/side,side=='native',args.edit)
+        runs={side:pool.submit(capture,guest,vision,font,image,out/side,side=='native',args.edit,args.editor_key)
               for side,image in (('original',original),('native',disk))}
         for side,future in runs.items():
             try:

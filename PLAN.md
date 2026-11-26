@@ -483,11 +483,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 - Data's live I16 field refreshed across three samples on both guests,
   and both rendered the string Terry. The first click and Insert edit
-  probe failed to change the string on either guest. Establish the
-  original editor navigation and backing-buffer writeback before
-  qualifying the demo. See the
+  probe failed to change the string on either guest. Direct caret
+  placement followed by the DolDoc Insert and character handlers
+  changed the displayed string and backing buffer to Berry on both
+  guests. Physical editor navigation remains open. See the
   [live-field comparison](build/i386-demo-data-widget-v1/live-fields/result.json)
-  and [edit trial](build/i386-demo-data-widget-v1/edit-fields/result.json).
+  and [editor-key writeback](build/i386-demo-data-widget-v1/editor-key-fields/result.json).
 
 ### Plan decisions (2026-11-24)
 

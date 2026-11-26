@@ -16063,7 +16063,13 @@
           "target": "data-field-overstrike-probe",
           "result": "fail",
           "evidence": "build/i386-demo-data-widget-v1/edit-fields/result.json",
-          "scope": "The click and Insert probe produced no writeback on either guest. An original editing workflow remains to be established."
+          "scope": "The click and Insert probe produced no writeback on either guest. The physical editor navigation remains to be established."
+        },
+        {
+          "target": "native-original-editor-key-data-writeback",
+          "result": "pass",
+          "evidence": "build/i386-demo-data-widget-v1/editor-key-fields/result.json",
+          "scope": "With the caret placed directly on the widget, editor overstrike changes the rendered string and its backing buffer to Berry on both guests. The i386 prompt evaluates fresh arithmetic."
         }
       ]
     },
