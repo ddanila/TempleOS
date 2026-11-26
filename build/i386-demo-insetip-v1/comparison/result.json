@@ -1,0 +1,44 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-dskraw-v1/cross-drive-types/kernel.img": "49a5db5a95db18764f64e1d67e3b54a34f8a6e98c9c2e853f243bc227c99a343",
+    "/home/ddanila/fun/TempleOS/Demo/InFile/InSetIP.HC": "d39bd3fd43a39e328fa628d44ac7ddc3b5230dd9cc22460a9b818fc9d2ee3316"
+  },
+  "inputs_unchanged": true,
+  "working_disk_sha256": "49a5db5a95db18764f64e1d67e3b54a34f8a6e98c9c2e853f243bc227c99a343",
+  "runs": {
+    "original": {
+      "result": "fail",
+      "error": "The demo did not finish at the expected position with both buttons up",
+      "before": [
+        320,
+        240,
+        0,
+        0,
+        8,
+        16
+      ],
+      "after": [
+        28,
+        36,
+        0,
+        0,
+        32,
+        40
+      ]
+    },
+    "native": {
+      "result": "fail",
+      "error": "INPUT LINE ExeFile(\"C:/Demo/InFile/InSetIP.HC\");DemoMouseState;\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Demo/InFile/InSetIP.HC line 8\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\n\nMOUSE STATE 320 240 0 0 0 0\nCOMMAND OK\n",
+      "before": [
+        320,
+        240,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  }
+}

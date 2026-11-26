@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 579 |
-| Linked to tests / with reference workflow and oracle | 235 / 164 |
+| Linked to tests / with reference workflow and oracle | 236 / 165 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 71 of 224 |
 

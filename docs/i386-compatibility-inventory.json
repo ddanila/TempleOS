@@ -18438,9 +18438,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Run the unchanged InSetIP demo without physical mouse input and observe its final pointer position and buttons.",
+      "oracle": "The pointer ends 20 pixels right and down from the original task pixel origin before the window manager applies the border. Both buttons are released, and the native prompt accepts fresh arithmetic.",
+      "tests": [
+        {
+          "target": "original-insetip-pointer-state",
+          "result": "pass",
+          "evidence": "build/i386-demo-insetip-v1/original-verified/result.json",
+          "scope": "The pointer moved from (320, 240) to (28, 36), with both buttons released. The original pre-border task origin was (8, 16)."
+        },
+        {
+          "target": "i386-insetip-before-movement-binding",
+          "result": "fail",
+          "evidence": "build/i386-demo-insetip-v1/comparison/result.json",
+          "scope": "The pre-binding i386 image rejects InSetMs on line 8."
+        }
+      ]
     },
     {
       "path": "Demo/KeyBitMap.HC",
