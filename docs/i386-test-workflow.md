@@ -6316,3 +6316,13 @@ exports and fresh arithmetic. The group contains CompilerProbe,
 MemoryRuntime, FileRuntime, BuildRuntime, EditorRuntime,
 DocDiagnosticRuntime and Startup.
 [Support build receipt](../build/i386-code-alloc-known-v1/retained-current/support/result.json)
+
+ConsoleRuntime also completed its 128 MiB KVM build and passed the
+export and document allocation-wrapper audits. The assembler combined
+the nine outputs from CompilerRuntime, ConsoleRuntime, and the support
+group. It verified each payload against its guest receipt and preserved
+the boot area and the pre-existing files. The two-generation runner
+passed the assembled image's delivered-source preflight against
+`84d1c25f` and started generation-one installation.
+[Console build](../build/i386-code-alloc-known-v1/retained-current/console/result.json) ·
+[Assembled retained build](../build/i386-code-alloc-known-v1/retained-current/merged/result.json)
