@@ -1031,3 +1031,10 @@ the control took 63.255 seconds and the candidate took 62.902 seconds.
 Both passed all nine exact VGA checkpoints. This pair does not establish
 a repeatable speedup, and the candidate is retained as a patch while the
 60-second gate remains open. See `build/i386-loader-overflow-tail-v3/`.
+
+Both frozen self-hosted images passed the nine-command 64 MiB KVM desktop
+baseline with the managed pointer and Window Manager active. Generation one
+also matched all 686 inventoried files and passed the bounded guest read
+fixture. Generation two's full-content run was still in progress. These
+checks leave the complete desktop and application workflow suite open.
+See `build/i386-demo-insetip-v1/generations128/`.
