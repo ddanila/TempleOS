@@ -948,3 +948,9 @@ pressure cases and stopped before the resident-header marker. The next check,
 `SysUntry`, and `throw`. The trial establishes that deferring both header
 transactions breaks that dependency. See
 `build/i386-diagnostic-worker-defer-headers-v1/`.
+
+Generation two built all nine retained modules from the first self-hosted
+image at 128 MiB on KVM with `486,-fpu`. The persisted export audit passed
+and the build provider loaded once. The retained image hash matches the
+receipt in `build/i386-demo-insetip-v1/generations128/gen2-retained-build/`.
+The runner has started installing the second generation.
