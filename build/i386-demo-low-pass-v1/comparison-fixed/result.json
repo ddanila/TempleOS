@@ -1,0 +1,82 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-low-pass-v1/cross-public/kernel.img": "d891665b3bee1ce7402664e1a8e0a558e4048943dfe657589ae3946bdcd80308"
+  },
+  "source_sha256": "73607d12dc38957f8396f3d77eab576d26502670c75d1f6506ef0505857b7422",
+  "runs": {
+    "original": {
+      "result": "pass",
+      "traces": {
+        "step": {
+          "pixels": 676,
+          "widest_row": 305,
+          "screenshot_sha256": "7b9d8938e752e561f3158fba38bfe74fd792dc55f969520a60f8e469ee0e91c8"
+        },
+        "continuous": {
+          "pixels": 951,
+          "widest_row": 7,
+          "screenshot_sha256": "e0f41c28c938dda9b998549227ba2b5f7ebc91cdc773dbed7f214f9f900bff0f"
+        },
+        "discrete": {
+          "pixels": 1078,
+          "widest_row": 19,
+          "screenshot_sha256": "673a66ae92a2b30f4a02115e75bae722afec6f4840d4e13885ae4e180322df9f"
+        },
+        "random-slow": {
+          "pixels": 1219,
+          "widest_row": 8,
+          "screenshot_sha256": "d1c6b38b9adfb23970e8d91c5a14ad46a035c22d8fc73b7558fc61264f03d683"
+        },
+        "random-fast": {
+          "pixels": 763,
+          "widest_row": 262,
+          "screenshot_sha256": "3e7037328720da39de07a3777875d1fa7bf779a5a35d44a04587298aa34f9535"
+        }
+      },
+      "after_space_sha256": "e35ece6084f6bc69acbb24d2b9416f995668949f6207b42d16fa6060e8419c63"
+    },
+    "native": {
+      "result": "pass",
+      "traces": {
+        "step": {
+          "pixels": 676,
+          "widest_row": 305,
+          "screenshot_sha256": "2047073d5ce4059e1ad68e4e726a993f0570c96276aa0e52afe6e0f75ff10bbc"
+        },
+        "continuous": {
+          "pixels": 951,
+          "widest_row": 7,
+          "screenshot_sha256": "3d3b1e3e405678ff0228647b002fdc9d6e7687e5d0b49f162844e22c8b8f098b"
+        },
+        "discrete": {
+          "pixels": 924,
+          "widest_row": 7,
+          "screenshot_sha256": "aeecc73e7aefc5cdbf1971acc3014a1150b0c5d01a70b97753a27b639674431b"
+        },
+        "random-slow": {
+          "pixels": 1219,
+          "widest_row": 8,
+          "screenshot_sha256": "f829ad5469d2a8edd8f738de6425e5f5c472e350585c027a33161e53536f9c15"
+        },
+        "random-fast": {
+          "pixels": 763,
+          "widest_row": 262,
+          "screenshot_sha256": "91f1a75e1392eb53c3b57c034581ef02865e10472edede99e3ddd674bf72d172"
+        }
+      },
+      "after_space_sha256": "bbc78ee7eb4da2194ff7ed308e10970d49bb54f692859cdcfdb24102c36f2df0",
+      "fresh_result": {
+        "column": 0,
+        "row": 8,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  },
+  "inputs_unchanged": true,
+  "result": "pass"
+}

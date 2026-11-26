@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 54 (six apps and forty-eight demos) |
+| Qualified | 55 (six apps and forty-nine demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 602 |
+| Qualification gaps | 601 |
 | Linked to tests / with reference workflow and oracle | 214 / 143 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 48 of 224 |
+| Demos qualified | 49 of 224 |
 
-C1 has 602 qualification gaps, including entries that still need a reference
+C1 has 601 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -38,7 +38,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 54 workflows and records eighteen shared files
+- The inventory qualifies 55 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -383,11 +383,14 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   See the [Grid qualification](build/i386-demo-grid-v1/qualification.json)
   and [prior caret comparison](build/i386-demo-grid-v1/caret-baseline.json).
 
-- LowPassFilter draws five keyboard-stepped traces on the original
-  guest. The i386 image from `d3bd8963` rejects the call to `LowPass1`
-  on line 55. See the
-  [original traces](build/i386-demo-low-pass-v1/original-reference/result.json)
-  and [native rejection](build/i386-demo-low-pass-v1/native-baseline.json).
+- LowPassFilter qualifies. The shared original `LowPass1` implementation
+  is available through the resident i386 math bindings. The two guests
+  matched all 4,533 trace pixels in the comparison regions, cleared the
+  traces on the fifth Space, and the i386 prompt accepted fresh arithmetic.
+  An 8 MiB cold-boot probe verified the zero, default, and explicit decay time
+  steps. The image passed the 386 instruction audit and the 1,573-file source
+  comparison. See the [filter qualification](build/i386-demo-low-pass-v1/qualification.json)
+  and [prior native rejection](build/i386-demo-low-pass-v1/native-baseline.json).
 
 ### Plan decisions (2026-11-24)
 

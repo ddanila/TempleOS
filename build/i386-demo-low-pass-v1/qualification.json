@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-low-pass-v1/cross-public/kernel.img": "d891665b3bee1ce7402664e1a8e0a558e4048943dfe657589ae3946bdcd80308"
+  },
+  "source_sha256": "73607d12dc38957f8396f3d77eab576d26502670c75d1f6506ef0505857b7422",
+  "matching_pixels": {
+    "step": 676,
+    "continuous": 951,
+    "discrete": 924,
+    "random-slow": 1219,
+    "random-fast": 763
+  },
+  "delivered_source_files": 1573,
+  "delivered_source_identity_sha256": "1d38b36a000d02f264899b29e7b72d40cbbb4ce154649f481314d4a283aa2301",
+  "evidence_sha256": {
+    "comparison-fixed/result.json": "c083ace3a2b0a10ac7ae70fc9440670dbb8c50eefc430e2dbac04128b29cb4d0",
+    "probe8/result.json": "c5e662bda840e1e85914b349653bf6d531f3cfbfed5176f385c92987b630470f",
+    "cross-public/boot-instruction-audit.json": "3e4ab628657756a49ba9b0ad9b77be0c5df4cd98a0ba8ddf03d569b91679e6a8",
+    "delivered-source.json": "d4cd1383f66f186922b388d991e6f513c7b63889075e0fe40b411c11bf56a3fd"
+  }
+}

@@ -17576,9 +17576,9 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Seed with 1, launch unchanged LowPassFilter, and press Space after each of its five traces.",
-      "oracle": "Verify the blue step, continuous cyan and discrete black responses, randomized red and green responses, and trace removal on the final Space.",
+      "oracle": "Verify the blue step, continuous cyan and discrete black responses, randomized red and green responses, exact trace pixels outside the original desktop icon, and trace removal on the final Space.",
       "tests": [
         {
           "target": "original-low-pass-five-traces",
@@ -17591,6 +17591,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-low-pass-v1/native-baseline.json",
           "scope": "The End-key image rejects the call to LowPass1 at line 55, before any trace is drawn."
+        },
+        {
+          "target": "native-original-low-pass-traces",
+          "result": "pass",
+          "evidence": "build/i386-demo-low-pass-v1/qualification.json",
+          "scope": "All five seeded traces match at 4,533 pixels in the comparison regions. The final Space clears the drawing and the i386 prompt evaluates arithmetic."
         }
       ]
     },

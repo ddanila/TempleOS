@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "image_sha256": "d891665b3bee1ce7402664e1a8e0a558e4048943dfe657589ae3946bdcd80308",
+  "ram_mib": 8,
+  "inputs_unchanged": true,
+  "cases": [
+    "ZERO STEP",
+    "DEFAULT STEP",
+    "DECAY"
+  ],
+  "fresh_result": {
+    "column": 0,
+    "row": 16,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
