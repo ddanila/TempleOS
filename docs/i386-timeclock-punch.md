@@ -53,3 +53,20 @@ duplicate-file identities match the original oracle, and the reopened logical
 file is byte-identical. The application source remains unchanged. See
 [i386-timeclock-native.md](i386-timeclock-native.md), including the separate
 strict report failure caused by missing original welcome-document state.
+
+## Frozen native rebuild punch and keyboard workflows
+
+Both installed generations from frozen revision `5303f095` passed at 64 MiB
+under KVM. The managed desktop test ran ten first-boot commands and four
+cold-reopen commands per generation. The four decoded records, bounded dates,
+intermediate prefixes and byte-identical duplicate punches matched the original
+oracle. Reopening reproduced the final saved bytes.
+[First rebuild punch receipt](../build/i386-demo-insetip-v1/generations128/gen1-timeclock-punch64/result.json) ·
+[Second rebuild punch receipt](../build/i386-demo-insetip-v1/generations128/gen2-timeclock-punch64/result.json)
+
+A separate test used QEMU PS/2 key events to enter multiline descriptions,
+accept with Escape, and cancel with Shift+Escape. Both generations saved the
+expected four records and recovered each guest's saved bytes after a cold
+reboot. The keyboard test accepts `--accel kvm` and defaults to TCG.
+[First rebuild keyboard receipt](../build/i386-demo-insetip-v1/generations128/gen1-timeclock-keyboard64/result.json) ·
+[Second rebuild keyboard receipt](../build/i386-demo-insetip-v1/generations128/gen2-timeclock-keyboard64/result.json)

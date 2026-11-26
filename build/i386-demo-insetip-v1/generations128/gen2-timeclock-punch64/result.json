@@ -1,0 +1,214 @@
+{
+  "result": "pass",
+  "ram_mib": 64,
+  "cpu": "486,-fpu",
+  "managed_desktop": true,
+  "scope": "Unchanged TimeClock scripted punch commands, independent typed-file decoding, duplicate/cancel behavior and cold reboot reopen; not physical keyboard or complete application qualification",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-insetip-v1/generations128/gen2-selfhost/target.img": "d9652f593e580f188ae71414722bb1fb82d8c3590215ff177b3ef7f544f753a7",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-timeclock-punch-native/Contract.HC": "f73971848ca56c3ca7e12d030aff5eb72b75cd201d3145805a70929b5e620342",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "8b97bca4bd59d0ca074338b68c4102504a376f41f972b1e6acb8cd281614290a",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "4912a06939338450c4b119da9d43c51088dbdea74165bd93029c84067e3231be",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-punch-reference.py": "db8fe4740b5f784b9e93376e0aea39e8e90b728976af9ab9ea942d7c8188d1dd",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "fb10215fb905a7dfe6ebeded060ba63bc79f8c6bb47d248ba4684bc2f5cacf30",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-punch-native.py": "d548a0a51c0b5c65d8a8c6fb6d8e3338eaf60c5f8b5b8c8791b82feddd12bb88",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/check-i386-autocomplete-numeric-pixels.py": "158d83ad3e0ae2db17c11d24dab6a7813e0dfa47d6f9f33ba8a80da34af270fd",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+  },
+  "application_sha256": {
+    "/Apps/TimeClock/Install.HC": "93a6eaa93c12c52ce8bb378725092355c36c77770029acedfb6f1d05570ea5ec",
+    "/Apps/TimeClock/Load.HC": "c075ba921d2fa92f2ebfe4171362d32e3629d73480140af5236d00b020510606",
+    "/Apps/TimeClock/TimeClk.HC": "ea0574db2d51cc57b3b5197cb0d3fdf3c4179a65bd142838b2381c5e6764e599"
+  },
+  "commands": [
+    [
+      "!FileFind(\"~/TimeClock\",,FUF_JUST_DIRS);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "#include \"C:/PunchNative.HC\"",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(0);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(1);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(2);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(3);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(4);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(5);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchStage(6);",
+      [
+        "1"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "reopen_commands": [
+    [
+      "#include \"C:/PunchNative.HC\"",
+      [
+        "1"
+      ]
+    ],
+    [
+      "!TimeRep;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "PunchSave(\"C:/punch-reopen.DATA\");",
+      [
+        "1"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "d9652f593e580f188ae71414722bb1fb82d8c3590215ff177b3ef7f544f753a7",
+    "image_sha256": "6c3691acfd1a92f8869fceb14f99fcd953dcbcaac7b15f6e5713be49f57f3a25",
+    "boot_area_sha256": "19cc8afeead4e077a51c03d788425b7ff6b4e36aa3804a45d34f7fad960fbcc1",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1950,
+      "owned_sectors": 98187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1951,
+      "owned_sectors": 98189,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/PunchNative.HC": "f73971848ca56c3ca7e12d030aff5eb72b75cd201d3145805a70929b5e620342"
+    },
+    "added_attributes": {
+      "/PunchNative.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "behavior": {
+    "commands": [
+      "if(!(!FileFind(\"~/TimeClock\",,FUF_JUST_DIRS)))throw('Punch',TRUE);",
+      "#include \"C:/PunchNative.HC\"",
+      "if(!(PunchStage(0)))throw('Punch',TRUE);",
+      "if(!(PunchStage(1)))throw('Punch',TRUE);",
+      "if(!(PunchStage(2)))throw('Punch',TRUE);",
+      "if(!(PunchStage(3)))throw('Punch',TRUE);",
+      "if(!(PunchStage(4)))throw('Punch',TRUE);",
+      "if(!(PunchStage(5)))throw('Punch',TRUE);",
+      "if(!(PunchStage(6)))throw('Punch',TRUE);",
+      "6*7;"
+    ],
+    "arithmetic": {
+      "column": 0,
+      "row": 58,
+      "foreground": [
+        0,
+        168,
+        0
+      ]
+    }
+  },
+  "records": [
+    {
+      "type": 1,
+      "date_ticks": 3179610811827389,
+      "description": "alpha\nbeta\n"
+    },
+    {
+      "type": 2,
+      "date_ticks": 3179610812771884,
+      "description": "finish\n"
+    },
+    {
+      "type": 1,
+      "date_ticks": 3179610813716379,
+      "description": ""
+    },
+    {
+      "type": 2,
+      "date_ticks": 3179610814213482,
+      "description": ""
+    }
+  ],
+  "persisted_sha256": {
+    "/punch-bounds.DATA": "173fcc601eda4f4b416fd6423742b6141b69716bfbde144d1ba526e003f2b8f6",
+    "/punch-cancel-in.DATA": "fecf2152909cd5bc507102677a898fb21634bfdc96b4d056bc516477c9093062",
+    "/punch-duplicate-in.DATA": "eccbf76b5e60d9863c3fe0d6881683bbbd27703bbd277ae0c296bd35cfa28b4f",
+    "/punch-duplicate-out.DATA": "6114565906ff34c7dd8eb0fc190378cdc1c29b11ea0784300c256d9109401415",
+    "/punch-empty.DATA": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+    "/punch-final.DATA": "4c21f25e7bb1d723fcdc3fe1609c271f949682c58e2774ecd888ac9dd81e5a39",
+    "/punch-in.DATA": "eccbf76b5e60d9863c3fe0d6881683bbbd27703bbd277ae0c296bd35cfa28b4f",
+    "/punch-out.DATA": "6114565906ff34c7dd8eb0fc190378cdc1c29b11ea0784300c256d9109401415"
+  },
+  "reopen": {
+    "commands": [
+      "#include \"C:/PunchNative.HC\"",
+      "if(!(!TimeRep))throw('Punch',TRUE);",
+      "if(!(PunchSave(\"C:/punch-reopen.DATA\")))throw('Punch',TRUE);",
+      "6*7;"
+    ],
+    "arithmetic": {
+      "column": 0,
+      "row": 25,
+      "foreground": [
+        0,
+        168,
+        0
+      ]
+    }
+  },
+  "reopened_sha256": "4c21f25e7bb1d723fcdc3fe1609c271f949682c58e2774ecd888ac9dd81e5a39",
+  "inputs_unchanged": true
+}
