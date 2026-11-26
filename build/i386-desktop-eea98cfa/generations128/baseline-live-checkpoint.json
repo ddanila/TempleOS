@@ -1,0 +1,39 @@
+{
+  "result": "pass",
+  "accel": "kvm",
+  "scope": "Nine retained-state and VGA checks on each native generation with the window manager active",
+  "generations": {
+    "gen1": {
+      "disk_sha256": "87dfab2082a8193415358de4e20225c9306265834c23497054d1197dc3378659",
+      "result_sha256": "70692550bd15ec9644ca52eda78d39d52e35d73d248fb9492ba69aab334393a8",
+      "qemu_command_sha256": "c295360f1a2bfd7bc1e0a612dbcee77d57edf3252997dbce9ecf60f7b45456a9",
+      "result": "pass",
+      "cpu": "486,-fpu",
+      "ram_mib": 64,
+      "startup_status": "ok",
+      "boot_mode": "interactive",
+      "startup_seconds": 58.839937192969956,
+      "commands": 9,
+      "setup_commands": 0,
+      "window_manager_pause_requested": false,
+      "vga": "all pixels matched at each checkpoint",
+      "interaction_latencies_seconds": {}
+    },
+    "gen2": {
+      "disk_sha256": "5b2f1f4fd13eb0165cd9eed9f9e5f8bbd69149332be988282de0770f3bf8a52a",
+      "result_sha256": "4eacb72ac32645da671c7c1532d367adcb6cbdffc0a3165f0e18ba448509b290",
+      "qemu_command_sha256": "aa75c8eacda8c13f8590228365ac24e1c0c2107c5d00345457f55ab2836ce648",
+      "result": "pass",
+      "cpu": "486,-fpu",
+      "ram_mib": 64,
+      "startup_status": "ok",
+      "boot_mode": "interactive",
+      "startup_seconds": 58.74028718401678,
+      "commands": 9,
+      "setup_commands": 0,
+      "window_manager_pause_requested": false,
+      "vga": "all pixels matched at each checkpoint",
+      "interaction_latencies_seconds": {}
+    }
+  }
+}

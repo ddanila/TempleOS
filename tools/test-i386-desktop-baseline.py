@@ -24,6 +24,8 @@ def main():
                         help='Expect the original welcome document at the initial prompt')
     parser.add_argument('--managed-pointer', action='store_true',
                         help='Expect the Window Manager pointer in welcome screens')
+    parser.add_argument('--keep-window-manager', action='store_true',
+                        help='Run the baseline with the desktop compositor active')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     if out.exists():
@@ -36,6 +38,7 @@ def main():
     shutil.copyfile(source, disk)
     report = dict(result='running', input_sha256=pins, ram_mib=args.ram_mib, accel=args.accel,
                   welcome=args.welcome, managed_pointer=args.managed_pointer,
+                  keep_window_manager=args.keep_window_manager,
                   scope='Existing nine-command retained-state and VGA baseline at larger RAM; not full original desktop or application compatibility',
                   commands=commands)
     try:
@@ -43,7 +46,8 @@ def main():
             disk, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
             cpu='486,-fpu', accel=args.accel, qmp_stdio=True, welcome=args.welcome,
             managed_pointer=args.managed_pointer,
-            startup_check={'status':'ok', 'answers':[], 'commands':commands})
+            startup_check={'status':'ok', 'answers':[], 'commands':commands,
+                           'pause_window_manager':not args.keep_window_manager})
         log = (out/'qemu/debug.log').read_text()
         if 'BUILD PROVIDER loaded\n' in log:
             raise ValueError('Normal startup loaded build-only support')

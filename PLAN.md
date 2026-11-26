@@ -56,8 +56,12 @@ is complete and provides the foundation, but not desktop or application parity.
 - The 64 MiB baseline needed the managed pointer in its welcome-frame
   oracle. Both KVM boots matched the expected welcome frame byte for
   byte with the pointer included. The baseline runner now accepts the
-  profile explicitly. See the
-  [welcome-frame diagnosis](build/i386-desktop-eea98cfa/generations128/baseline-pointer-diagnosis.json).
+  profile explicitly. With the Window Manager active, both installed
+  generations passed all nine retained-state and VGA commands at 64 MiB.
+  The test's earlier explicit suspension completed but prevented its
+  next full-frame checkpoint from appearing. See the
+  [welcome-frame diagnosis](build/i386-desktop-eea98cfa/generations128/baseline-pointer-diagnosis.json)
+  and [active desktop baseline](build/i386-desktop-eea98cfa/generations128/baseline-live-checkpoint.json).
 - The full desktop publishes the original autocomplete and task settings
   sources at startup. A cold direct include of ScrnCodes matched all
   256 original glyphs, returned on a keypress, and rendered fresh
