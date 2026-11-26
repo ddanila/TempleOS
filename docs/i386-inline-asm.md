@@ -170,3 +170,19 @@ line 22. The later four demos have only original output evidence from
 these runs.
 [First native generation and original output](../build/i386-assembly-demos-reference-v2/result.json) ·
 [Second native generation](../build/i386-assembly-demos-reference-v1/result.json)
+
+### AsmHelloWorld 32-bit port
+
+The native branch runs the countdown and indirect call in inline 386
+assembly. It preserves ECX across the output helper and passes the count
+in the native eight-byte argument slot. A HolyC helper prints the
+two-digit hexadecimal count and the two pieces of the greeting. The
+original standalone assembly remains byte-identical in the other branch.
+
+Both a disposable overlay of the first frozen rebuild and a fresh full
+cross-built image produced all 151 original DolDoc bytes and returned to
+the prompt for arithmetic. The comparison pins the bundled port bytes
+and the original source separately. The full image also passed the 386
+boot instruction audit.
+[Full image comparison](../build/i386-asm-hello-world-port-v2/compare/result.json) ·
+[Frozen image overlay comparison](../build/i386-asm-hello-world-port-v2/frozen-compare/result.json)

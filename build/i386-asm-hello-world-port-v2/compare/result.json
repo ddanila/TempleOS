@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "input_sha256": "0a322c6cd902cb49a99d7ca6d7a2476998025cb23089b6b1361d25504dd8efb1",
+  "entries": {
+    "Demo/Asm/AsmHelloWorld.HC": {
+      "source_sha256": "69303dd9f6eb12e021d909986fee8546f3aa9f0fcdb5cc0485391f9671e3e963",
+      "output_file": "demo-0.DD",
+      "native_source_sha256": "64f7ffc5fd0c41e2ed5b87eed50d6f8cc0c5b220d2d9e42ee1ebe4ffdcdfbc59",
+      "original_sha256": "33f821a344a050785241010f080ee7d0a1fb55fb88b6c8224f6b14013265676e",
+      "bytes": 151,
+      "result": "pass",
+      "native_sha256": "33f821a344a050785241010f080ee7d0a1fb55fb88b6c8224f6b14013265676e"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "inputs_unchanged": true
+}

@@ -15564,10 +15564,10 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
       "reference_workflow": {
-        "status": "observed-reference",
+        "status": "qualified-workflows",
         "description": "Run the standalone assembly demo and compare the ten countdown lines from 0A to 01, each followed by Hello World."
       },
       "oracle": {
@@ -15583,6 +15583,13 @@
           "result": "pass",
           "evidence": "build/i386-assembly-demos-reference-v2/result.json",
           "scope": "Complete output captured on the pinned original and checked independently."
+        },
+        {
+          "target": "native-assembly-hello-world-port",
+          "command": "python3 tools/test-i386-demo-batch.py IMAGE --out OUT --reference-at-prompt --demo Demo/Asm/AsmHelloWorld.HC --native-port Demo/Asm/AsmHelloWorld.HC",
+          "result": "pass",
+          "evidence": "build/i386-asm-hello-world-port-v2/compare/result.json",
+          "scope": "Bundled 32-bit inline assembly countdown and HolyC output call reproduce all 151 original DolDoc bytes and return to confirmed native command input."
         },
         {
           "target": "native-assembly-demo-batch",

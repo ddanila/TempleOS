@@ -1,3 +1,31 @@
+#ifdef I386_PUBLIC_USER_INCLUDED
+//The 32-bit compiler's callable assembly runs inside a HolyC function.
+//Call a HolyC output routine with one eight-byte argument on the stack.
+U0 AsmHelloWorldLine(I64 count)
+{
+  "%02X Hello ",count;
+  PutS("World\n");
+}
+
+U0 AsmHelloWorld()
+{
+  U8 *print_line=(&AsmHelloWorldLine)(U8 *);
+  asm {
+    MOV ECX,10
+@@05:
+    PUSH ECX
+    XOR EDX,EDX
+    PUSH EDX //High half of the I64 argument.
+    PUSH ECX //Low half.
+    CALL U32 &print_line[EBP]
+    POP ECX
+    DEC ECX
+    JNZ @@05
+  }
+}
+
+AsmHelloWorld;
+#else
 /*Asm labels can only be defined once
 in a task.  <F5> will spawn a new task
 each time, so you don't get redefine
@@ -48,3 +76,5 @@ _HELLO_WORLD::
 };
 
 Call(_HELLO_WORLD);
+
+#endif

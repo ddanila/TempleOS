@@ -98,16 +98,21 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--demo', type=demo_path, action='append', required=True)
+    parser.add_argument('--native-port', type=demo_path, action='append', default=[],
+                        help='Require the bundled native source to match the checked-out port')
     parser.add_argument('--seed', type=int, help='Reset the task RNG to this seed before each demo')
     parser.add_argument('--reference-at-prompt', action='store_true',
                         help='Launch the original fixture through the keyboard after Once.HC')
     args = parser.parse_args()
     if len(set(args.demo)) != len(args.demo):
         parser.error('Each demo may be selected once')
+    if not set(args.native_port) <= set(args.demo):
+        parser.error('Every native port must also be selected as a demo')
     if args.seed is not None and not 1 <= args.seed < 1 << 63:
         parser.error('Use a positive signed 64-bit seed')
     disk, out = args.disk.resolve(), args.out.resolve()
     input_hash = sha(disk.read_bytes())
+    port_hashes = {path: sha((ROOT/path).read_bytes()) for path in args.native_port}
     out.mkdir()
     report = dict(result='running', input_sha256=input_hash, entries={}, seed=args.seed,
                   scope='Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos')
@@ -121,12 +126,15 @@ def main():
         for index, path in enumerate(args.demo):
             original = (overlay/path).read_bytes()
             native = delivered['/'+path][2]
-            if original != native:
-                raise ValueError(f'Delivered source differs from the reference: {path}')
+            expected_hash = port_hashes.get(path, sha(original))
+            if sha(native) != expected_hash:
+                raise ValueError(f'Delivered source differs from the expected source: {path}')
             name = f'demo-{index}.DD'
             outputs.append(name)
             calls.append(f'DemoBatchRun("::/{path}","{name}",{args.seed or 0});')
             report['entries'][path] = {'source_sha256': sha(original), 'output_file': name}
+            if path in port_hashes:
+                report['entries'][path]['native_source_sha256'] = expected_hash
         body = (FIXTURE+'\n'.join(calls)+'\nDemoBatchLog("DEMO BATCH DONE\\n");\n').encode()
         (out/'fixture.HC').write_bytes(body)
         if args.reference_at_prompt:
@@ -172,7 +180,9 @@ def main():
         report.update(result='fail', error=str(error))
         raise
     finally:
-        report['inputs_unchanged'] = sha(disk.read_bytes()) == input_hash
+        report['inputs_unchanged'] = (sha(disk.read_bytes()) == input_hash
+                                      and all(sha((ROOT/path).read_bytes()) == digest
+                                              for path, digest in port_hashes.items()))
         (out/'result.json').write_text(json.dumps(report, indent=2)+'\n')
     if report['result'] != 'pass' or not report['inputs_unchanged']:
         raise SystemExit('Demo batch failed; see result.json')
