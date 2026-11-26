@@ -56,6 +56,17 @@ def exercise(guest, model):
     probe = runpy.run_path('tools/check-i386-autocomplete-numeric-pixels.py')
     font = probe['font_bytes']()
     wait_text(guest,probe,font,b'Make a CSprite model.','menu')
+    if model == 'cancel':
+        wait_text(guest,probe,font,b'Ball','menu-ball')
+        guest.press('tab')
+        wait_text(guest,probe,font,b'Man','menu-man')
+        guest.key('shift', True)
+        try:
+            guest.press('esc')
+        finally:
+            guest.key('shift', False)
+        guest.wait('MODELS menu returned without a mesh\n', 60)
+        return None
     if model == 'man':
         # Move focus off Man before checking its unhighlighted label.
         guest.press('tab')
@@ -89,7 +100,7 @@ def exercise(guest, model):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('model',choices=('ball','man'))
+    parser.add_argument('model',choices=('ball','man','cancel'))
     parser.add_argument('--disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
     args = parser.parse_args()
@@ -98,9 +109,11 @@ def main():
     native = bool(args.disk)
     drive = 'C' if native else 'T'
     observer = Path(__file__).with_name('Observe.HC').read_bytes()
+    finish = b'ModelCapture;\n'
+    if args.model == 'cancel':
+        finish = b'ModelCancelCheck;\n'
     workflow = (observer + b'\nModelObserve;\n' +
-                f'#include "{drive}:/Apps/GrModels/Run.HC"\n'.encode() +
-                b'ModelCapture;\n')
+                f'#include "{drive}:/Apps/GrModels/Run.HC"\n'.encode() + finish)
     report = {'model':args.model, 'workflow_sha256':hashlib.sha256(workflow).hexdigest()}
     if native:
         image = out/'working.img'

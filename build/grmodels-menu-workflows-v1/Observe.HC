@@ -41,3 +41,13 @@ U0 ModelObserve()
   StrPrint(line,"MODELS pointer %X\n",model_pointer);
   ModelLog(line);
 }
+
+U0 ModelCancelCheck()
+{
+  CDoc *doc=DocPut;
+  CDocBin *bin;
+  for (bin=doc->bin_head.next;bin!=&doc->bin_head;bin=bin->next)
+    if (bin->data && bin->size && *bin->data==SPT_MESH)
+      return;
+  ModelLog("MODELS menu returned without a mesh\n");
+}
