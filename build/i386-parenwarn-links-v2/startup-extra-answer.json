@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "scope": "The rejected retained-build welcome frame matches the original frame with one additional answer row.",
+  "extra_answer": "0",
+  "row": 9,
+  "retained_build_result_sha256": "e31c403676e6f1e6c2908aa756d8f170e80cbb07cbdb55af852cb508e7779b15",
+  "frame_sha256": "6bc6a70e508421aa90a11eb81278a7c854c5034bfc4255454a9c2f8d01582eb2"
+}

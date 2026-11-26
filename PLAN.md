@@ -95,7 +95,12 @@ is complete and provides the foundation, but not desktop or application parity.
 - A fresh full image containing the ParenWarn changes cross-built from
   committed source and passed the boot instruction and 1,561-file source
   audits. An x86-64 bootstrap rebuilt twice before the cross-build.
-  See the [production build receipt](build/i386-parenwarn-links-v2/production-build-checkpoint.json).
+  Its new startup call exposed an extra numeric answer on the welcome
+  screen. Publishing through a void command restored the original frame.
+  The corrected image passed the nine-command 64 MiB desktop baseline
+  with the Window Manager active. See the
+  [production build receipt](build/i386-parenwarn-links-v2/production-build-checkpoint.json)
+  and [startup fix receipt](build/i386-parenwarn-links-v2/startup-fix-checkpoint.json).
 
 ### Plan decisions (2026-11-24)
 

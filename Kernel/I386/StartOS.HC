@@ -70,4 +70,8 @@ if(FileFind("::/HomeSys.HC")) {
   AdamFile("::/Adam/TaskSettings.HC",FALSE);
 }
 
-AdamFile("::/Compiler/PrsOptions.HC",FALSE);
+U0 NativePublishCompilerOptions()
+{
+  AdamFile("::/Compiler/PrsOptions.HC",FALSE);
+}
+NativePublishCompilerOptions;

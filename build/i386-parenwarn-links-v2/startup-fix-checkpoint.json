@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "image_sha256": "4555477efc097a48ceacc5254f8c2357997f62dbcd11a64d606cd21708e2be01",
+  "startup_source_sha256": "994163eb3a2b2944e72ffca7e402e94264c5fb29de4baa8f46a72c1ccde89439",
+  "unchanged_base_image_sha256": "f123f413a00c0b76469801977b40b7f581f819abb544a107a87ad4dc78efd828",
+  "delivered_source_files": 1561,
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 64,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 54.31963250198169,
+    "commands": 9,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "evidence_sha256": {
+    "void-packaging.json": "d081b4d9c21a9cff78f896e2a163a7ba43077f7073caa74518476ef31c9b1730",
+    "void-source-audit.json": "c69572a673289f9336288380e590741291878a938f8f10f2fd529aed89e67942",
+    "void-baseline64/result.json": "11cd5edecd76f3eebbbbed4559747cef54be47eaed07e6732e37085cfa76aa58",
+    "startup-extra-answer.json": "a4573331d3ef4057b04400a2a3d621808375e55c76585c496f95b63417d05c09"
+  },
+  "scope": "Startup publishes compiler options through a void command and retains the exact welcome and nine-command desktop baseline."
+}
