@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "source_sha256": {
+    "F64FileGen.HC": "38676a7693d5b5a46e7d0964b3e529cf0b2d90ab564f30baac44853980cd64ca",
+    "F64FileSort.HC": "0ac8bd7d92368f3a3438e71b3a6337b69ad7548672e1a3163934fe892f97fc93"
+  },
+  "disk_sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+  "delivered_source_files": 1573,
+  "records_per_file": 10,
+  "matching_files": {
+    "unsorted-data.bin": "24e9f77c813d302bd3dfa48c3d35eecbb3c2bcb7303ef5537a9fc98792fec5a7",
+    "unsorted-dd.bin": "3f27ac743e85d81111b1f56589cb9a00f2e138395203edb638b193af4072d21d",
+    "sorted-data.bin": "100888fd1dc47ea6c2ef0b7416c8f3a4f4c61041623eb428a2eefb25514a46d6",
+    "sorted-dd.bin": "29de1b4002a5152b5a361f6a878615e7bd9addbfd2c1bbafba83082a5615fcc2"
+  },
+  "evidence_sha256": {
+    "comparison-fixed/result.json": "a259a3300868892c9dc707f0ebed4e77e8dead4f770b374731c903b98e725a44",
+    "baseline64/result.json": "32e73c07f1d5dd692bb4e98f51b070356032bc4509bc1b90b7be68aaf1402a9a",
+    "source-audit.json": "824020a44889912eb5b37b861538542f106e35a09ff399abc32baaac2aa23e1b",
+    "cross-sign/boot-instruction-audit.json": "3e4ab628657756a49ba9b0ad9b77be0c5df4cd98a0ba8ddf03d569b91679e6a8"
+  }
+}

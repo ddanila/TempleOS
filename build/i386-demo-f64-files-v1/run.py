@@ -112,10 +112,17 @@ def main():
                 for side,image in (('original',original),('native',working))}
         results={name:future.result() for name,future in runs.items()}
     unchanged=all(sha(Path(p))==h for p,h in inputs.items())
-    passed=unchanged and all(r['result']=='pass' for r in results.values())
-    report=dict(result='pass' if passed else 'fail',input_sha256=inputs,inputs_unchanged=unchanged,
-                source_sha256={name:sha(Path(DEMO)/name) for name in ('F64FileGen.HC','F64FileSort.HC')},
-                runs=results)
+    passed = unchanged and all(r['result'] == 'pass' for r in results.values())
+    report = dict(input_sha256=inputs, inputs_unchanged=unchanged,
+                  source_sha256={name: sha(Path(DEMO) / name)
+                                 for name in ('F64FileGen.HC', 'F64FileSort.HC')},
+                  runs=results)
+    if passed:
+        files = [f'{stage}-{fmt}.bin' for stage in ('unsorted', 'sorted') for fmt in ('data', 'dd')]
+        report['matching_exports'] = {name: sha(out / 'native' / name) for name in files
+                                      if (out / 'native' / name).read_bytes() == (out / 'original' / name).read_bytes()}
+        passed = len(report['matching_exports']) == len(files)
+    report['result'] = 'pass' if passed else 'fail'
     (out/'result.json').write_text(json.dumps(report,indent=2)+'\n')
     if not passed:
         raise SystemExit(1)

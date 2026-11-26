@@ -21,6 +21,13 @@ F64 Ceil(F64 value)
   return result(F64);
 }
 
+F64 Sign(F64 value)
+{
+  I64 order=I386F64Compare(value(U64),0);
+  if(order==I386_F64_UNORDERED) return 0.0;
+  return I386F64FromI64(order)(F64);
+}
+
 #include "/Kernel/I386/Pow10.HC"
 #include "/Kernel/I386/FloatLog.HC"
 #include "/Kernel/I386/FloatExp.HC"

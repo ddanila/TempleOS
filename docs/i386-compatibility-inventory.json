@@ -19458,7 +19458,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Run unchanged F64FileSort after F64FileGen, then reopen both output formats.",
       "oracle": "Check that each output file contains all ten corresponding input records in ascending order.",
       "tests": [
@@ -19473,6 +19473,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-f64-files-v1/comparison-sort/result.json",
           "scope": "The LowPass1 image rejects the unresolved Sign call on line 7."
+        },
+        {
+          "target": "native-original-f64-sorter",
+          "result": "pass",
+          "evidence": "build/i386-demo-f64-files-v1/sorter-qualification.json",
+          "scope": "Both guests' saved outputs exactly match each other and preserve all ten records in ascending order in both formats."
         }
       ]
     },
