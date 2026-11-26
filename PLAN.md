@@ -579,6 +579,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   [mouse comparison](build/i386-demo-insetip-v1/calibrated-comparison/result.json),
   [source audit](build/i386-demo-insetip-v1/delivered-source.json),
   and [desktop baseline](build/i386-demo-insetip-v1/desktop64-exports/result.json).
+  The exact `5303f095` snapshot then passed the 1,578-file source
+  audit and the 686-entry content check, including the bounded guest
+  Bible read. The first content run overlapped an inventory edit and
+  failed its input-integrity check. The frozen rerun preserved all inputs.
+  See the [frozen source audit](build/i386-demo-insetip-v1/frozen-source-audit.json)
+  and [frozen content check](build/i386-demo-insetip-v1/full-content64-frozen/result.json).
 
 - InPopUp qualifies. The unchanged demo used `In` to select YES
   and `InStr` to move right and select NO. Both guests exported the
