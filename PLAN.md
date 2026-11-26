@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 52 (six apps and forty-six demos) |
+| Qualified | 53 (six apps and forty-seven demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 604 |
-| Linked to tests / with reference workflow and oracle | 211 / 140 |
+| Qualification gaps | 603 |
+| Linked to tests / with reference workflow and oracle | 212 / 141 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 46 of 224 |
+| Demos qualified | 47 of 224 |
 
-C1 has 604 qualification gaps, including entries that still need a reference
+C1 has 603 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -38,7 +38,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 52 workflows and records eighteen shared files
+- The inventory qualifies 53 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -345,6 +345,11 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   points on each expected slope relative to the red axes. Escape cleared
   the graph and the i386 prompt evaluated fresh arithmetic. See the
   [interactive graph comparison](build/i386-demo-cartesian-v1/comparison-retry/result.json).
+
+- NetOfDots qualifies. All 2,006 red pixels matched at window-relative
+  coordinates in the shared crop. Space cleared the drawing on both guests
+  and the i386 prompt evaluated fresh arithmetic. See the
+  [dotted-line comparison](build/i386-demo-net-of-dots-v1/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

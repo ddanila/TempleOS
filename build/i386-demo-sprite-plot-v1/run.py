@@ -45,7 +45,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('original_iso', type=Path)
     parser.add_argument('native_image', type=Path)
-    parser.add_argument('--demo', choices=('SpritePlot', 'Extents', 'SpritePlot3D', 'Lines', 'Box', 'Bounce'),
+    parser.add_argument('--demo', choices=('SpritePlot', 'Extents', 'SpritePlot3D', 'Lines', 'Box', 'Bounce', 'NetOfDots'),
                         default='SpritePlot')
     parser.add_argument('--samples', default=1, type=int)
     parser.add_argument('--seed', type=int)

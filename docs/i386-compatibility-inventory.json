@@ -17608,10 +17608,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged NetOfDots, capture the red dotted net, and press Space to clear it and return to the prompt.",
+      "oracle": "Compare red pixel positions in the shared window-relative crop, check that Space removes the net, and evaluate fresh native arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-net-of-dots",
+          "result": "pass",
+          "evidence": "build/i386-demo-net-of-dots-v1/qualification.json",
+          "scope": "All 2,006 red pixels in the shared crop match. Space clears the net on both guests, and the native prompt returns fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Palette.HC",
