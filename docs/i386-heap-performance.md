@@ -1210,3 +1210,12 @@ All three tests used 64 MiB KVM guests and preserved the source image.
 [Editor save and reopen](../build/i386-code-alloc-known-v1/native-compiler-edit-save64/result.json) ·
 [TimeClock report](../build/i386-code-alloc-known-v1/native-compiler-timeclock64/result.json) ·
 [Budget templates](../build/i386-code-alloc-known-v1/native-compiler-budget64/result.json)
+
+The installed native compiler also passed all 24 public assembly
+records, with one publication of each compiler service and fresh
+arithmetic. RegistryDemo ran for three boots on the same base image.
+It incremented the value to 1236 and verified the saved score on the
+third boot. The only file changes were the configured Home registry
+and the three capture files. Both tests preserved their source image.
+[Public assembly](../build/i386-code-alloc-known-v1/native-compiler-public-assembly64/result.json) ·
+[RegistryDemo three-boot receipt](../build/i386-code-alloc-known-v1/native-compiler-registry64/result.json)
