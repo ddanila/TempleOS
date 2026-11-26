@@ -341,6 +341,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   The full-content check matched all 686 inventory files against the frozen
   checkout. The guest read the full Bible and returned to arithmetic. See the
   [full-content checkpoint](build/i386-demo-bounce-v1/full-content-checkpoint.json).
+  The configured 64 MiB boot selected Home Once and matched all 83 original
+  desktop geometry values. The handoff took 212.44 seconds, accepted fresh
+  arithmetic, and physically freed the bootstrap task allocation. See the
+  [configured desktop checkpoint](build/i386-demo-bounce-v1/configured-desktop-checkpoint.json).
   The audited `c4064751` i386 image stops at the `GrPlot` call on line 27.
   See the
   [original trail receipt](build/i386-demo-bounce-v1-baseline/original-receipt.json)
