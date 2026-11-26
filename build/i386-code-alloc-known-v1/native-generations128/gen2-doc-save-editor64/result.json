@@ -1,0 +1,75 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-doc-save-editor.py": "c17b799a0f76b3af51e5e7ef519b24b38c8224f37199e1f935955ea16d660f37",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-doc-save-editor/Contract.HC": "76242ee193d751d38e31a7547f9592ece9993f72e91b27e20c56532197350178",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "aa504bbd15abc0dcfbdc600eff9a0d29bedf099416cb1adb10dcb6d09ee3bd4b",
+    "/home/ddanila/fun/TempleOS/build/i386-code-alloc-known-v1/native-generations128/gen2-selfhost/target.img": "7d4cb10862a1ccfe21613731434f25d24927cdaeb1b29a60e35b413f71aba5cc"
+  },
+  "scope": "Physical Z, Ctrl-S, two Shift-Ctrl-S and Escape through DocEd(DOF_DONT_HOME); exact saved text/cursor, autosave toggles, caller roles/lock and native reboot. No default-editor migration, timed autosave, heap or visual qualification.",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "7d4cb10862a1ccfe21613731434f25d24927cdaeb1b29a60e35b413f71aba5cc",
+    "image_sha256": "c41754fd44873d385ca5ad27e6e2d5b0b052255a82b68b74238da486ace48e9f",
+    "boot_area_sha256": "848480c53625a6f27d06b33fa629622faecd0b6c30d78ac9cda7bea54a672f72",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1950,
+      "owned_sectors": 98211,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1951,
+      "owned_sectors": 98215,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/SaveEditor.HC": "76242ee193d751d38e31a7547f9592ece9993f72e91b27e20c56532197350178"
+    },
+    "added_attributes": {
+      "/Probe/SaveEditor.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "mask": 63,
+  "text_hex": "5a054b6565700a",
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "filesystem": {
+    "directories": 63,
+    "files": 1952,
+    "owned_sectors": 98216,
+    "bitmap": "matches reachable extents"
+  },
+  "reboot_arithmetic_pixels": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "reboot_filesystem": {
+    "directories": 63,
+    "files": 1952,
+    "owned_sectors": 98216,
+    "bitmap": "matches reachable extents"
+  },
+  "inputs_unchanged": true
+}

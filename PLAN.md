@@ -39,14 +39,15 @@ TCG requirement remains open.
 [Composition checks](docs/i386-persistent-composition.md#frozen-native-rebuild-checkpoint) ·
 [Startup and resource measurements](docs/i386-heap-performance.md)
 
-On the newer frozen revision `84d1c25f`, generation one rebuilt all nine
-retained providers, the 469,000-byte flat kernel, and the compiler program
-probe. Its installed image passed the 8 MiB cold boot, artifact audit,
-1,578-file source audit, and 686-file content check. Generation two started
-from that installed image. The later assembler revision `f40c9790` also
-passed the normal and diagnostic 8 MiB KVM boots and delivered-source and
-content audits.
-[Generation-one self-build](build/i386-code-alloc-known-v1/native-generations128/gen1-selfhost/result.json) ·
+Both native generations from the newer frozen revision `84d1c25f`
+rebuilt all nine retained providers, the 469,000-byte flat kernel, and
+the compiler program probe. Both passed 8 MiB cold boot and document
+resource checks, delivered-source and content audits, and the 64 MiB
+desktop baseline, HomeSys handoff, persistent-window VGA, editor save
+and reboot, and TimeClock report workflows. The artifact comparison
+matched 16 modules after normalizing the kernel build date. The later
+parser-adoption image reached the 8 MiB TCG prompt in 275.026 seconds.
+[Generation comparison](build/i386-code-alloc-known-v1/native-generations128/generation-identity/result.json) ·
 [Verification history](docs/i386-test-workflow.md)
 
 The audited cross-build from `c4064751` passed the exact 1,572-file

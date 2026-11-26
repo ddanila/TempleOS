@@ -6444,3 +6444,10 @@ reboot workflow.
 [Document resource profile](../build/i386-code-alloc-known-v1/native-generations128/gen2-resource8/resource-result.json) ·
 [Full content](../build/i386-code-alloc-known-v1/native-generations128/gen2-full-content/result.json) ·
 [TimeClock report](../build/i386-code-alloc-known-v1/native-generations128/gen2-timeclock-report64/result.json)
+
+The second generation also passed the configured HomeSys handoff and
+the editor save and reboot workflow. HomeSys selected `/Home/Once.HC`,
+matched the original geometry, and freed the bootstrap task's block.
+The editor check verified the persisted text and cursor after reboot.
+[Configured HomeSys handoff](../build/i386-code-alloc-known-v1/native-generations128/gen2-configured-desktop/result.json) ·
+[Editor save and reboot](../build/i386-code-alloc-known-v1/native-generations128/gen2-doc-save-editor64/result.json)
