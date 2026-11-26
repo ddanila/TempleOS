@@ -6,7 +6,7 @@
 386+/VGA port, preserving their HolyC and DolDoc behavior, with automated
 compatibility tests and native self-hosting.**
 
-### Current status (2026-11-24)
+### Current status (2026-11-26)
 
 Measured with `python3 tools/inventory-i386-compatibility.py --check`; update
 this table instead of repeating "C1–C5 remain open" in checkpoint entries.
@@ -31,21 +31,28 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- C1–C4 inventory records 10 qualified workflows and six shared support
-  files. TextDemo matches 498 bytes of emitted DolDoc and dispatches the
-  OKAY button through `DocEntryRun` on both architectures. The native
-  Bible editor now preserves the selected verse on entry. Both guests
-  show Genesis and restore document roles on Shift-Escape. Both also
-  accept a physical double-click on OKAY and a single click on the
-  explicit Genesis link. Native arithmetic succeeds after dismissal.
-- RegistryDemo passed three 64 MiB KVM boots on the frozen second
-  native generation. The harness verified the exact console frames and
-  persisted increments through the configured Home registry.
-- C5 retains the two-generation desktop result on frozen revision
-  `592a38b7`. A full Bible lookup profile on that desktop found repeated
-  backing-region trims during DolDoc loading. The
-  [profile and allocator experiment](docs/i386-bible-load-profile.md#first-full-lookup-with-the-window-manager-active-2026-11-26)
-  record the evidence and pending checks.
+- The inventory qualifies 19 workflows and records nine shared files
+  covered by them. Recent passes cover TextDemo's physical Bible navigation,
+  ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
+  dictionary loading on cold launch. RegistryDemo passed three 64 MiB
+  KVM boots on the frozen second native generation, including exact
+  console frames and persisted increments in the configured Home registry.
+- The frozen `eea98cfa` desktop image passed the delivered-source audit
+  for 1,561 source and documentation files, and the full-content check
+  verified all 686 inventory files. The bounded guest probe read the full
+  Bible and returned to arithmetic. The 128 MiB native provider build
+  for that image was still running at this checkpoint. The completed
+  two-generation result remains pinned to `592a38b7`.
+- The original ScrnCodes run captured all 256 glyphs and returned on a
+  keypress. Native inclusion stops at the undefined `SettingsPush`
+  identifier on line 20. The [original and native receipts](build/i386-demo-scrncodes-v2)
+  preserve the comparison.
+- TimeClock's newly written archive resolves by name and decodes on the
+  host. Guest `FileRead` fails on that file and succeeds on a prepackaged
+  copy. See the [TimeClock report investigation](docs/i386-timeclock-native.md#fresh-report-failure-on-the-newer-desktop-image).
+- The [Bible lookup profile](docs/i386-bible-load-profile.md#first-full-lookup-with-the-window-manager-active-2026-11-26)
+  records repeated backing-region trims during DolDoc loading and a slower
+  allocator experiment that was discarded.
 
 ### Plan decisions (2026-11-24)
 

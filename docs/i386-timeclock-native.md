@@ -141,3 +141,12 @@ and absolute filename. Public FileRead returned no data through either
 path, while public ExpandBuf accepted a raw copy of the captured archive.
 The compressed file read path needs further isolation.
 See the [read trace](../build/i386-timeclock-read-paths-v1/read-evidence.json).
+
+A follow-up on the 64 MiB desktop image added the captured archive bytes
+as `/Packed.DATA.Z` before boot. Public `FileRead` returned a buffer for
+that path. The `.Z` suffix selects compressed decoding. The probe checked
+buffer presence, and the packaged copy also had a different directory
+and storage history from the TimeClock file. The new Home archive still
+failed through the absolute path. A cold-boot attempt on a copy of the
+written disk stopped during kernel startup before it could retry the read.
+See the [guest report markers](../build/i386-timeclock-read-paths-v2/report-markers.txt).

@@ -1,0 +1,5 @@
+{
+  "result": "fail",
+  "input_sha256": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+  "error": "Missing aligned ScrnCodes grid"
+}
