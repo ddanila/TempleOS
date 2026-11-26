@@ -18375,9 +18375,16 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Enter a number containing punctuation, compare the dictionary matches and display order, then submit an empty reply to exit.",
+      "oracle": "435-56 yields Elk, Ell, Hell and Hello with the same DolDoc formatting as on the original. The empty reply returns to usable input.",
+      "tests": [
+        {
+          "target": "native-original-phone-words",
+          "result": "fail",
+          "evidence": "build/i386-demo-phone-words-v1/comparison/result.json",
+          "scope": "Both guests consume the same queued input and exit. The bundled native launch displays no words before the dictionary has been initialized. Original output contains the four expected matches."
+        }
+      ]
     },
     {
       "path": "Demo/Print.HC",

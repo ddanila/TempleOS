@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 7 (Linux tools and sources) |
 | Shared files covered by qualified workflows | 6 (Span and Strut support sources) |
 | Qualification gaps | 657 |
-| Linked to tests / with reference workflow and oracle | 176 / 105 |
+| Linked to tests / with reference workflow and oracle | 177 / 106 |
 | Apps qualified | 2 of 12 (all 12 have partial tests) |
 | Demos qualified | 14 of 224 |
 

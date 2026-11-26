@@ -1,0 +1,17 @@
+{
+  "result": "fail",
+  "input_sha256": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+  "entries": {
+    "Demo/PhoneNumWords.HC": {
+      "source_sha256": "8714bd1a15e81b43f765182a76b64d8db3e985269796d398a20c00be2c743a1b",
+      "output_file": "demo-0.DD",
+      "result": "fail",
+      "original_sha256": "e34b68f0b93e4757b1f53c6440d3bb6bfa558468bd66ceb11e23f7a475e1e8ee",
+      "native_sha256": "e74d3eb38482a01f01b3603ec04f4008c3364afc56dbdd426575a901eb740e86",
+      "bytes": 126
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}
