@@ -1,0 +1,139 @@
+{
+  "result": "pass",
+  "source_disk_sha256": "3547456d5b7cfab3dc3b79ef3b05d39073341bb0cba0d98ec22d7299e27eb296",
+  "module_order": [
+    "ConsoleRuntime",
+    "CompilerRuntime",
+    "CompilerProbe",
+    "FileRuntime",
+    "MemoryRuntime",
+    "BuildRuntime",
+    "EditorRuntime",
+    "DocDiagnosticRuntime",
+    "Startup"
+  ],
+  "modules": {
+    "ConsoleRuntime": {
+      "bytes": 2737158,
+      "records": 13696,
+      "exports": 1451,
+      "sha256": "b2a70c34883d7e48a2795f37aa011a52a4297048f323be1f6327f19ea2da0583",
+      "reference_sha256": "b2a70c34883d7e48a2795f37aa011a52a4297048f323be1f6327f19ea2da0583"
+    },
+    "CompilerRuntime": {
+      "bytes": 1358331,
+      "records": 4711,
+      "exports": 544,
+      "sha256": "e14f30a4356ff781d0453f7a3a2602b30e99b143ad55d6edb8e03850581b3b6d",
+      "reference_sha256": "e14f30a4356ff781d0453f7a3a2602b30e99b143ad55d6edb8e03850581b3b6d"
+    },
+    "CompilerProbe": {
+      "bytes": 588353,
+      "records": 2349,
+      "exports": 139,
+      "sha256": "77f2c716ef4c2f98271a2bcd3075d9599a391e7b8ea5c0fc905b55e576df42f9",
+      "reference_sha256": "77f2c716ef4c2f98271a2bcd3075d9599a391e7b8ea5c0fc905b55e576df42f9"
+    },
+    "FileRuntime": {
+      "bytes": 295839,
+      "records": 998,
+      "exports": 148,
+      "sha256": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38",
+      "reference_sha256": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38"
+    },
+    "MemoryRuntime": {
+      "bytes": 251008,
+      "records": 1178,
+      "exports": 177,
+      "sha256": "798a02ce1e9ddc4dcd016ff46b02d286d47630ddf608127bfb59db7c4e101fd1",
+      "reference_sha256": "798a02ce1e9ddc4dcd016ff46b02d286d47630ddf608127bfb59db7c4e101fd1"
+    },
+    "BuildRuntime": {
+      "bytes": 97307,
+      "records": 300,
+      "exports": 45,
+      "sha256": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d",
+      "reference_sha256": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d"
+    },
+    "EditorRuntime": {
+      "bytes": 53736,
+      "records": 259,
+      "exports": 49,
+      "sha256": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e",
+      "reference_sha256": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e"
+    },
+    "DocDiagnosticRuntime": {
+      "bytes": 49623,
+      "records": 274,
+      "exports": 29,
+      "sha256": "10ae3b166ccca52dcdfa1ea271c2e7b7973ec2e4a9e91087d96cef6e9544d9e6",
+      "reference_sha256": "10ae3b166ccca52dcdfa1ea271c2e7b7973ec2e4a9e91087d96cef6e9544d9e6"
+    },
+    "Startup": {
+      "bytes": 391,
+      "records": 6,
+      "exports": 1,
+      "sha256": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7",
+      "reference_sha256": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7"
+    }
+  },
+  "build_receipts": [
+    "/home/ddanila/fun/TempleOS/build/i386-code-alloc-known-v1/retained-current/assembly-test-fixtures/0/result.json",
+    "/home/ddanila/fun/TempleOS/build/i386-code-alloc-known-v1/retained-current/assembly-test-fixtures/1/result.json"
+  ],
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-insetip-v1/generations128/gen1-selfhost/target.img": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-retained-build.py": "be2c521ffb8c0209fda5fb65bea1794738d974cc8c4b6e3dcc48045fb7ddc432",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "aa504bbd15abc0dcfbdc600eff9a0d29bedf099416cb1adb10dcb6d09ee3bd4b",
+    "/home/ddanila/fun/TempleOS/tools/assemble-i386-retained-build.py": "53025a353a5b8a6a0c6b321b92b10134a37b408e9aaac6b58f39c4d8b06ea5a4",
+    "/home/ddanila/fun/TempleOS/build/i386-code-alloc-known-v1/retained-current/assembly-test-fixtures/0/result.json": "b0267354242da98c48fceacfc5263312c175262ad0c60d87f8c45405544c581b",
+    "/home/ddanila/fun/TempleOS/build/i386-code-alloc-known-v1/retained-current/assembly-test-fixtures/0/source.img": "901c1d7e25fa68bed125fd38ee498f1c8940e3e6aae7c86e496900d37fadaed2",
+    "/home/ddanila/fun/TempleOS/build/i386-code-alloc-known-v1/retained-current/assembly-test-fixtures/1/result.json": "63f592f6b79b4f492dba59e134670b54e5f8e848d6574d47e9e6c2801bdde219",
+    "/home/ddanila/fun/TempleOS/build/i386-code-alloc-known-v1/retained-current/assembly-test-fixtures/1/source.img": "ca9f55f593e0a6d199b98e5cbd53e935a00e7aecad5280ccb1c6a7ba9b3f6a76"
+  },
+  "inputs_unchanged": true,
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+    "image_sha256": "3547456d5b7cfab3dc3b79ef3b05d39073341bb0cba0d98ec22d7299e27eb296",
+    "boot_area_sha256": "6b8dded2998bfbb5c05a2847f55a5633ccfc2f45d063a53fdff204469292db40",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1950,
+      "owned_sectors": 98187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1959,
+      "owned_sectors": 108800,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/RetainedBuildRuntime.t32m": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d",
+      "/Probe/RetainedCompilerProbe.t32m": "77f2c716ef4c2f98271a2bcd3075d9599a391e7b8ea5c0fc905b55e576df42f9",
+      "/Probe/RetainedCompilerRuntime.t32m": "e14f30a4356ff781d0453f7a3a2602b30e99b143ad55d6edb8e03850581b3b6d",
+      "/Probe/RetainedConsoleRuntime.t32m": "b2a70c34883d7e48a2795f37aa011a52a4297048f323be1f6327f19ea2da0583",
+      "/Probe/RetainedDocDiagnosticRuntime.t32m": "10ae3b166ccca52dcdfa1ea271c2e7b7973ec2e4a9e91087d96cef6e9544d9e6",
+      "/Probe/RetainedEditorRuntime.t32m": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e",
+      "/Probe/RetainedFileRuntime.t32m": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38",
+      "/Probe/RetainedMemoryRuntime.t32m": "798a02ce1e9ddc4dcd016ff46b02d286d47630ddf608127bfb59db7c4e101fd1",
+      "/Probe/RetainedStartup.t32m": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7"
+    },
+    "added_attributes": {
+      "/Probe/RetainedBuildRuntime.t32m": 2048,
+      "/Probe/RetainedCompilerProbe.t32m": 2048,
+      "/Probe/RetainedCompilerRuntime.t32m": 2048,
+      "/Probe/RetainedConsoleRuntime.t32m": 2048,
+      "/Probe/RetainedDocDiagnosticRuntime.t32m": 2048,
+      "/Probe/RetainedEditorRuntime.t32m": 2048,
+      "/Probe/RetainedFileRuntime.t32m": 2048,
+      "/Probe/RetainedMemoryRuntime.t32m": 2048,
+      "/Probe/RetainedStartup.t32m": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "scope": "Byte-verified assembly of complete guest-built retained module outputs"
+}

@@ -6282,3 +6282,30 @@ build inputs, bootstrap, images/modules, the unchanged pre-release baseline and
 all normal regressions to raw artifacts. It preserves the failed ordering,
 packet-lifetime and unscoped-output variants. See
 `docs/i386-public-assembly.md` for exact scope and remaining qualification gaps.
+
+## Assemble retained builds from independent guest runs
+
+Large retained builds can run in separate guests from copies of the
+same input disk. Use `test-i386-retained-build.py --module NAME` for each
+group, then assemble the nine results before the native-generation
+runner. For example, if the compiler, console and support groups
+together cover all providers, run:
+
+```sh
+python3 tools/assemble-i386-retained-build.py BASE.img \
+  --build COMPILER_OUT --build CONSOLE_OUT --build SUPPORT_OUT --out RETAINED_OUT
+```
+
+The assembler checks the boot area and all pre-existing files, requires
+each module exactly once, and rechecks the module records and exports
+against the recorded build and the base disk. It writes a fresh
+`RETAINED_OUT/source.img` and its receipt. Pass that directory to
+`test-i386-native-generations.py --retained-build`.
+
+A host fixture partitioned the nine previously audited guest outputs
+and reproduced them through the assembler. Duplicate, incomplete and
+wrong-base inputs were rejected before packaging. For the newer
+compiler allocation image, the delivered-source audit matched all
+1,578 files to `84d1c25f`.
+[Assembler fixture receipt](../build/i386-code-alloc-known-v1/retained-current/assembly-two-shard-test/result.json) ·
+[Delivered-source audit](../build/i386-code-alloc-known-v1/current-source-audit.json)

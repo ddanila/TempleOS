@@ -1,0 +1,54 @@
+{
+  "result": "pass",
+  "welcome": true,
+  "source_disk_sha256": "901c1d7e25fa68bed125fd38ee498f1c8940e3e6aae7c86e496900d37fadaed2",
+  "module_order": [
+    "ConsoleRuntime",
+    "CompilerRuntime",
+    "CompilerProbe",
+    "FileRuntime",
+    "MemoryRuntime",
+    "BuildRuntime",
+    "EditorRuntime",
+    "DocDiagnosticRuntime",
+    "Startup"
+  ],
+  "modules": {
+    "ConsoleRuntime": {
+      "bytes": 2737158,
+      "records": 13696,
+      "exports": 1451,
+      "sha256": "b2a70c34883d7e48a2795f37aa011a52a4297048f323be1f6327f19ea2da0583",
+      "reference_sha256": "b2a70c34883d7e48a2795f37aa011a52a4297048f323be1f6327f19ea2da0583"
+    },
+    "CompilerRuntime": {
+      "bytes": 1358331,
+      "records": 4711,
+      "exports": 544,
+      "sha256": "e14f30a4356ff781d0453f7a3a2602b30e99b143ad55d6edb8e03850581b3b6d",
+      "reference_sha256": "e14f30a4356ff781d0453f7a3a2602b30e99b143ad55d6edb8e03850581b3b6d"
+    },
+    "CompilerProbe": {
+      "bytes": 588353,
+      "records": 2349,
+      "exports": 139,
+      "sha256": "77f2c716ef4c2f98271a2bcd3075d9599a391e7b8ea5c0fc905b55e576df42f9",
+      "reference_sha256": "77f2c716ef4c2f98271a2bcd3075d9599a391e7b8ea5c0fc905b55e576df42f9"
+    },
+    "FileRuntime": {
+      "bytes": 295839,
+      "records": 998,
+      "exports": 148,
+      "sha256": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38",
+      "reference_sha256": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38"
+    }
+  },
+  "cpu": "486,-fpu",
+  "ram_mib": 128,
+  "keyboard_harness": false,
+  "managed_pointer": true,
+  "build_provider_loads": 1,
+  "byte_identical_to_installed": "/home/ddanila/fun/TempleOS/build/i386-demo-insetip-v1/generations128/gen1-selfhost/target.img",
+  "installed_disk_sha256": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+  "scope": "Host fixture partition of previously verified guest-built modules"
+}
