@@ -1,0 +1,30 @@
+{
+  "result": "pass",
+  "image_sha256": "4555477efc097a48ceacc5254f8c2357997f62dbcd11a64d606cd21708e2be01",
+  "commands": {
+    "mp_cnt;": {
+      "result": "reject",
+      "diagnostic": "KEYBOARD MESSAGE first 0000000000000002 000000000000006D 0000000001592BE8 00000000536B7354\nINPUT LINE mp_cnt;\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Home/Console.HC line 1\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    },
+    "#define mp_cnt 1": {
+      "result": "accept"
+    },
+    "#include \"C:/Demo/MagicPairs.HC\"": {
+      "result": "reject",
+      "diagnostic": "INPUT LINE #include \"C:/Demo/MagicPairs.HC\"\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token JobQue file C:/Demo/MagicPairs.HC line 364\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    },
+    "6*7;": {
+      "result": "accept"
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 15,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

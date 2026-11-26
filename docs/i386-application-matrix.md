@@ -2903,3 +2903,9 @@ the `mp_cnt` array bound at line 262 before the demo can launch its
 worker jobs. See the
 [original reference](../build/i386-demo-magic-pairs-v1/original-receipt.json)
 and [native run](../build/i386-demo-magic-pairs-v1/comparison/result.json).
+
+A processor-count probe confirmed that `mp_cnt` is unavailable at the
+native prompt. Defining it to one for the probe moved the unchanged
+demo to the unresolved `JobQue` call on line 364. The prompt recovered
+after both rejections. See the
+[processor-count probe](../build/i386-demo-magic-pairs-v1/count-probe/result.json).

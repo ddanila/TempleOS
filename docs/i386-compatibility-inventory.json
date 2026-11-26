@@ -18285,6 +18285,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-magic-pairs-v1/comparison/result.json",
           "scope": "Native rejects the mp_cnt array bound before queuing worker jobs."
+        },
+        {
+          "target": "native-magicpairs-processor-count-probe",
+          "result": "pass",
+          "evidence": "build/i386-demo-magic-pairs-v1/count-probe/result.json",
+          "scope": "A fixture-local virtual processor count advances parsing to the unresolved JobQue call; native returns to arithmetic after both rejected inputs."
         }
       ]
     },
