@@ -1,0 +1,29 @@
+{
+  "result": "pass",
+  "source_sha256": "4555477efc097a48ceacc5254f8c2357997f62dbcd11a64d606cd21708e2be01",
+  "image_sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+  "boot_area_sha256": "547dd38fc0df560b513e9b4810355c29347afe706eda44b386ad8c84edede9de",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1932,
+    "owned_sectors": 96185,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1932,
+    "owned_sectors": 96194,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification",
+  "replacements": {
+    "/Modules/I386/ConsoleRuntime.t32m": "732f27925e7ac21e573b0529718a5baefa9ed219e075582890cb6352ddceea7f",
+    "/Kernel/I386/JobRequests.HC": "f14609a795779123b3443b08930d53553cc9f6ac41362138f2353d46f5346894",
+    "/Kernel/I386/PublicTerminal.HH": "37caf7a622f75cf78aeae1ef65703cb77c5385f9315784052fbe25816ac52478",
+    "/Kernel/I386/PublicTask.HH": "007efc82f08324719bea4ddb91f3d40a34930e5eff2f26bf8bb531aaf9923517",
+    "/Kernel/I386/ConsoleRuntime.HC": "34a24ff41778cfb472c7c11085527f8e8a255f0fae515d4003c973a66eb881ba"
+  }
+}

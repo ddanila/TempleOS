@@ -12,6 +12,10 @@ public _extern _IN_FILE U0 InFile(U8 *filename);
 public _extern _XTALK_STR_WAIT U0 XTalkStrWait(CTask *task,U8 *fmt,...);
 public _extern _IN U0 In(U8 *fmt,...);
 public _extern _JOB_RES_SCAN Bool JobResScan(CJob *rqst=NULL,I64 *_res=NULL);
+public _extern _JOB_RES_GET I64 JobResGet(CJob *rqst=NULL);
+public _extern _JOB_QUE CJob *JobQue(I64 (*fp_addr)(U8 *data),U8 *data=NULL,
+  I64 target_cpu=1,I64 flags=1<<JOBf_FREE_ON_COMPLETE,
+  I64 job_code=JOBT_CALL,U8 *aux_str=NULL,I64 aux1=0,I64 aux2=0);
 public _extern _JOB_DEL U0 JobDel(CJob *job);
 public _extern _TASK_EXE CJob *TaskExe(CTask *srv,CTask *master,U8 *data,I64 flags);
 public _extern _SRV_TASK_CONT U0 SrvTaskCont();

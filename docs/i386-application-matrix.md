@@ -2922,3 +2922,12 @@ million-number search. It produced the expected prime counts and
 all 16 pairs, then returned to fresh command input. The bundled
 workflow still needs production processor-count and queue bindings.
 See the [complete prototype result](../build/i386-magic-pairs-job-prototype-v2/demo-checkpoint.json).
+
+The i386 runtime now publishes its single processor count and implements
+public JobQue and JobResGet through the retained Seth dispatcher and
+result queues. The guest contract checked processor-zero calls, rejection
+of an unavailable CPU, and collection of a TaskExe result without an
+explicit request. The unchanged MagicPairs demo matched the original
+prime counts and all 16 pairs and returned to the prompt. The same image
+passed the nine-command 64 MiB baseline and the 8 MiB ParenWarn check.
+See the [production workflow receipt](../build/i386-magic-pairs-native-v1/qualification.json).

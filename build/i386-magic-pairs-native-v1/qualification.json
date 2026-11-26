@@ -1,0 +1,106 @@
+{
+  "result": "pass",
+  "image_sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+  "source_sha256": "dfea168865ace5c2246effd8fa56e6af3bdabb6ac7c504a20aeacad470511903",
+  "pairs": [
+    [
+      48,
+      75
+    ],
+    [
+      140,
+      195
+    ],
+    [
+      1050,
+      1925
+    ],
+    [
+      1575,
+      1648
+    ],
+    [
+      2024,
+      2295
+    ],
+    [
+      5775,
+      6128
+    ],
+    [
+      8892,
+      16587
+    ],
+    [
+      9504,
+      20735
+    ],
+    [
+      62744,
+      75495
+    ],
+    [
+      186615,
+      206504
+    ],
+    [
+      196664,
+      219975
+    ],
+    [
+      199760,
+      309135
+    ],
+    [
+      266000,
+      507759
+    ],
+    [
+      312620,
+      549219
+    ],
+    [
+      526575,
+      544784
+    ],
+    [
+      573560,
+      817479
+    ]
+  ],
+  "native_elapsed_seconds": 11.36,
+  "reference_elapsed_seconds": 9.5545,
+  "worker_contract": [
+    "Processor-zero async call and argument result",
+    "Invalid target raises MultCore",
+    "Original TaskExe result consumed via JobResGet with no explicit request"
+  ],
+  "startup64": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 64,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 55.29192934301682,
+    "commands": 9,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "startup8_probe_sha256": "b16c1e032aad88cc6846df2c9a489a332de10595f6da5f08ce701a76c299ba91",
+  "source_replacements": {
+    "/Modules/I386/ConsoleRuntime.t32m": "732f27925e7ac21e573b0529718a5baefa9ed219e075582890cb6352ddceea7f",
+    "/Kernel/I386/JobRequests.HC": "f14609a795779123b3443b08930d53553cc9f6ac41362138f2353d46f5346894",
+    "/Kernel/I386/PublicTerminal.HH": "37caf7a622f75cf78aeae1ef65703cb77c5385f9315784052fbe25816ac52478",
+    "/Kernel/I386/PublicTask.HH": "007efc82f08324719bea4ddb91f3d40a34930e5eff2f26bf8bb531aaf9923517",
+    "/Kernel/I386/ConsoleRuntime.HC": "34a24ff41778cfb472c7c11085527f8e8a255f0fae515d4003c973a66eb881ba"
+  },
+  "evidence_sha256": {
+    "packaging.json": "b4282359cfa4fdf1f5f78374a5b9319e723e06fe0a37775e1ca2ae22b9eb9ad6",
+    "full-demo/result.json": "0703d96aac1d7accfc4a53688640409aeeb233ddb4b41178035e0c15ed260426",
+    "boot8/result.json": "b16c1e032aad88cc6846df2c9a489a332de10595f6da5f08ce701a76c299ba91",
+    "baseline64/result.json": "e06afda835fdf1e0ab9d3897a378796c5beb9b85f60a7caa1849f1588abb41e3",
+    "cross-wait.log": "7051eb8f1c06e83427c50f6d74d309b6f9fe196fd0f653d23fe7ca3541377064"
+  }
+}

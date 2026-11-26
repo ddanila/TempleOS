@@ -1,0 +1,111 @@
+{
+  "result": "pass",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+    "image_sha256": "2c6ce8f6b019ce02d3ed34baa3ded449f91f8cf2e6e26d52815d11787e50b4dc",
+    "boot_area_sha256": "547dd38fc0df560b513e9b4810355c29347afe706eda44b386ad8c84edede9de",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96194,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1934,
+      "owned_sectors": 96198,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/JobContract.HC": "b534951014e24dc19d4b159b0addd639bff20300902d3a6160b03fce413baaa9",
+      "/Probe/MagicPairs.HC": "205df79d4c621a8ee395e09566d5475ae9c2a0f46c83685ace8f7430d6356b55"
+    },
+    "added_attributes": {
+      "/Probe/JobContract.HC": 2048,
+      "/Probe/MagicPairs.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "document": {
+    "sha256": "44c507060e75e1dc9e277a5c1a3fb52178419f519efbf619dc64b11964c5c323",
+    "elapsed_seconds": 11.36,
+    "pairs": [
+      [
+        48,
+        75
+      ],
+      [
+        140,
+        195
+      ],
+      [
+        1050,
+        1925
+      ],
+      [
+        1575,
+        1648
+      ],
+      [
+        2024,
+        2295
+      ],
+      [
+        5775,
+        6128
+      ],
+      [
+        8892,
+        16587
+      ],
+      [
+        9504,
+        20735
+      ],
+      [
+        62744,
+        75495
+      ],
+      [
+        186615,
+        206504
+      ],
+      [
+        196664,
+        219975
+      ],
+      [
+        199760,
+        309135
+      ],
+      [
+        266000,
+        507759
+      ],
+      [
+        312620,
+        549219
+      ],
+      [
+        526575,
+        544784
+      ],
+      [
+        573560,
+        817479
+      ]
+    ]
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

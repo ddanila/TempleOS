@@ -18270,7 +18270,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Launch the bundled demo and let its worker jobs finish the divisor-pair search below one million.",
       "oracle": "The 16 mutually matched proper-divisor pairs excluding divisor one, the prime counts, the final total, and return to the prompt. Elapsed time and worker output order may vary.",
       "tests": [
@@ -18297,6 +18297,12 @@
           "result": "pass",
           "evidence": "build/i386-magic-pairs-job-prototype-v2/demo-checkpoint.json",
           "scope": "The unchanged bundled demo produced the original complete set of 16 pairs and returned to the prompt through a disposable queue prototype."
+        },
+        {
+          "target": "native-magicpairs-public-worker-bindings",
+          "result": "pass",
+          "evidence": "build/i386-magic-pairs-native-v1/qualification.json",
+          "scope": "Unchanged bundled workflow using public processor-count and worker APIs. Matches the original 16 divisor pairs and returns to the prompt."
         }
       ]
     },
