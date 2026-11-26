@@ -17,6 +17,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('image', type=Path)
     ap.add_argument('--out', type=Path, required=True)
+    ap.add_argument('--accel', choices=('tcg', 'kvm'), default='tcg')
     args = ap.parse_args()
     source, out = args.image.resolve(), args.out.resolve()
     if out.exists():
@@ -30,7 +31,7 @@ def main():
     entries = json.loads(inventory.read_text())['entries']
     paths += [ROOT/e['path'] for e in entries]
     pins = {str(p): sha(p) for p in paths}
-    report = {'result':'running', 'scope':'All inventory bytes against current workspace and bounded guest lookup/read; not application or desktop qualification', 'input_sha256':pins}
+    report = {'result':'running', 'accel':args.accel, 'scope':'All inventory bytes against current workspace and bounded guest lookup/read; not application or desktop qualification', 'input_sha256':pins}
     try:
         helper = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))
         wanted = {'/'+e['path'] for e in entries}
@@ -47,7 +48,8 @@ def main():
         disk = out/'working.img'
         report['packaging'] = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](source, disk, additions=files)
         commands = ['#include "C:/Probe/FullContent.HC"', "if(FullContentContract!=63)throw('Content',TRUE);", '6*7;']
-        runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](disk, out/'guest', commands, 64, True, command_timeout=600)
+        runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](
+            disk, out/'guest', commands, 64, True, command_timeout=600, accel=args.accel)
         if helper['mutated_file_contents'](disk, set(files)) != files:
             raise ValueError('Delivered fixture changed')
         report['result'] = 'pass'

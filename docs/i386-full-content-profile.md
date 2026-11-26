@@ -36,3 +36,11 @@ whole-Bible read but timed out at
 recovery (`build/i386-full-content-runtime-v2`). This is not a startup timing
 gate; large-file latency remains a performance concern. Full application, desktop,
 two-generation installation and C1–C5 qualification remain open.
+
+The full desktop image with original task-settings startup passed
+the 64 MiB KVM full-content check. All 686 inventory payloads matched
+the current workspace, the RedSea bitmap matched reachable extents,
+and the bounded guest probe read the full Bible and returned to
+arithmetic. The TCG run reached startup source execution and exceeded
+the helper's 180-second startup limit during concurrent build activity.
+See the [KVM receipt](../build/i386-settings-startup-production-v1/full-content-kvm/result.json).
