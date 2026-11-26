@@ -10467,14 +10467,14 @@
       "compatibility": "unqualified",
       "reference_workflow": {
         "status": "partial",
-        "description": "Open the bundled Models menu, select Ball and Man in separate sessions, submit the default forms, and return to the prompt. For Man, exercise all four lighting choices. In separate sessions, cancel the menu and the Ball lighting chooser with Shift+Escape."
+        "description": "Open the bundled Models menu, select Ball and Man in separate sessions, submit the default forms, and return to the prompt. For Man, exercise all four lighting choices. In separate sessions, cancel the menu, the Ball lighting chooser, and the Man form with Shift+Escape."
       },
       "oracle": {
         "tool": "build/grmodels-menu-workflows-v1/run.py",
         "dataset": "build/i386-wide-pi-production-v3/qualification.json",
         "checks": [
           "Match the original Ball and Man document mesh bytes.",
-          "Require both cancellation workflows to return without a mesh after Shift+Escape.",
+          "Require the menu, chooser, and form cancellation workflows to return without a mesh after Shift+Escape.",
           "Return to the prompt and evaluate fresh arithmetic."
         ]
       },
@@ -10520,6 +10520,24 @@
           "result": "pass",
           "evidence": "build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-ball-lighting-cancel/result.json",
           "scope": "The first native generation matches original lighting cancellation and returns to fresh arithmetic."
+        },
+        {
+          "target": "original-grmodels-man-form-cancel",
+          "result": "pass",
+          "evidence": "build/i386-code-alloc-known-v1/native-generations128/grmodels-man-form-cancel-original/result.json",
+          "scope": "The original Man form returns without a mesh or lighting selection."
+        },
+        {
+          "target": "generation-two-grmodels-man-form-cancel",
+          "result": "pass",
+          "evidence": "build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-man-form-cancel/result.json",
+          "scope": "The second native generation matches original form cancellation and returns to fresh arithmetic."
+        },
+        {
+          "target": "generation-one-grmodels-man-form-cancel",
+          "result": "pass",
+          "evidence": "build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-man-form-cancel/result.json",
+          "scope": "The first native generation matches original form cancellation and returns to fresh arithmetic."
         },
         {
           "target": "native-grmodels-cold-run-menu",
