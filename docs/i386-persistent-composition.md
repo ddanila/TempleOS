@@ -116,10 +116,10 @@ python3 tools/test-i386-persistent-window.py "$base/gen1-selfhost/target.img" \
   --out "$base/gen1-persistent-window64-repeat" --ram-mib 64 --accel kvm --plain-start
 ```
 
-The [first rebuilt disk receipt](../build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain-final/result.json)
-records three commands and exact VGA matches for the red persistent pixel, the
+Both rebuilt disks passed three commands with exact VGA matches for the red persistent pixel, the
 green final hook, the blue pixel after hook removal, the cleared white
 background, and the restored prompt with `6*7` returning 42. The pointer is
 absent during the custom final hook and returns when the hook is removed.
+[First rebuild receipt](../build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain-final/result.json) · [Second rebuild receipt](../build/i386-demo-insetip-v1/generations128/gen2-persistent-window64-plain-final/result.json)
 This is a 64 MiB focused composition check. The separate 8 MiB interactive
 startup budget and broader C1–C5 qualification remain open.
