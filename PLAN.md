@@ -551,13 +551,14 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   commands, matched all 83 original desktop geometry values, accepted
   fresh arithmetic and verified physical bootstrap retirement. See the
   [generation-two configured handoff](build/i386-demo-f64-files-v1/generations128/gen2-desktop64/result.json).
-  The installed generation-one image also passed twenty measured
-  document create, save, reopen, execute and error-unwind cycles at
-  8 MiB from the original welcome with the window manager active.
-  The shared task heap peaked at 34,088 live bytes from a 26,264-byte
-  baseline, within its 47,616-byte reservation. See the
+  Both installed generations also passed twenty measured document
+  create, save, reopen, execute and error-unwind cycles at 8 MiB from
+  the original welcome with the window manager active. Their shared
+  task heap measurements agreed across both disks. The heap peaked at
+  34,088 live bytes from a 26,264-byte baseline, within the 47,616-byte
+  reservation. See the
   [generation-one heap profile](build/i386-demo-f64-files-v1/generations128/gen1-managed-resource8/resource-result.json)
-  and [console verification](build/i386-demo-f64-files-v1/generations128/gen1-managed-resource8/result.json).
+  and [generation-two heap profile](build/i386-demo-f64-files-v1/generations128/gen2-managed-resource8/resource-result.json).
 
 - PullDownMenu qualifies for physical selection of both Misc commands
   and keyboard Help, About and exit. Both guests rendered the selected
