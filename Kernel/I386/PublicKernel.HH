@@ -42,6 +42,7 @@ public extern CDate sys_compile_time;
 #include "/Kernel/RunLevelTypes.HH"
 public _extern _SYS_RUN_LEVEL U32 sys_run_level;
 public _extern _GET_TSC I64 GetTSC();
+public _extern SYS_CACHE_LINE_WIDTH I64 sys_cache_line_width;
 public _extern _ADAM_TASK CTask *adam_task;
 public _extern _IS_SINGLE_USER Bool IsSingleUser();
 public _intern 0x15 CTask *Fs();

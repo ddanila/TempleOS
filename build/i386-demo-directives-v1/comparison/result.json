@@ -1,0 +1,14 @@
+{
+  "result": "fail",
+  "input_sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+  "entries": {
+    "Demo/Directives.HC": {
+      "source_sha256": "a38fd433cdf8cee2563db660ffddcde70653d5f9d83b95aff0603d17cb3822b9",
+      "output_file": "demo-0.DD"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 0000000001594490 00000000536B7354\nINPUT LINE #include \"C:/Probe/DemoBatch.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nEXPORT demo-0.DD 11ED0 0\n",
+  "inputs_unchanged": true
+}

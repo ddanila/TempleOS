@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "image_sha256": "a6e192b53c6436cff23c04c0f2cd9ca104355f95bb65401c38b3bb9b6a3cab6e",
+  "cache_line_width": 0,
+  "cache_line_width_scope": "Unreported on the native 386 baseline CPU interface.",
+  "prime_counts": [
+    25,
+    25,
+    78498,
+    78498
+  ],
+  "evidence_sha256": {
+    "packaging.json": "467077d49171698571dee78bc65affcba84df0f5e70a76a09f64e9d7480de08c",
+    "qualification.json": "1d7ce3ce55fb225b7c68a66cc6f5313ee0afc9d36989650f5c05b0b660407121",
+    "baseline64/result.json": "79d28956550f1346f9b77775f0ab0fa4484e4034a9a31eac14c42d3a13ffc3e8",
+    "boot8/result.json": "bd2e4a46545a1ab6354e860c517aabe6933ca68a244da066fd70e56420cfcdf3",
+    "cross.log": "9bf1ede58a95b632a4fe9772ac34c4362788f08c400618d858c27b9d7c79fa20"
+  }
+}

@@ -15943,9 +15943,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch the unchanged demonstration and examine the compiler metadata and both instruction links.",
+      "oracle": "Compile date/time fields, bundled source path and directory, source line 7, command-line flag zero, and two ordered instruction links that resolve within Directives.",
+      "tests": [
+        {
+          "target": "original-directives-metadata-and-links",
+          "result": "pass",
+          "evidence": "build/i386-demo-directives-v1/original-receipt.json",
+          "scope": "The original emits all eight fields with the correct bundled path and two distinct instruction addresses in one function."
+        },
+        {
+          "target": "native-directives-bundled",
+          "result": "fail",
+          "evidence": "build/i386-demo-directives-v1/comparison/result.json",
+          "scope": "The native compiler rejects the bundled command before the demo emits any DolDoc bytes."
+        }
+      ]
     },
     {
       "path": "Demo/DolDoc/CallBack.HC",
@@ -18565,7 +18578,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Launch the unchanged demo and run both processor-count variants at each sieve size.",
       "oracle": "Prime counts of 25 below 100 and 78,498 below a million, with exact trailing prime lists. Timing can vary.",
       "tests": [
@@ -18586,6 +18599,12 @@
           "result": "pass",
           "evidence": "build/i386-demo-primes-v1/no-cache-report-checkpoint.json",
           "scope": "The complete demo works with a fixture-local width of zero. The public processor cache value is still absent."
+        },
+        {
+          "target": "native-primes-public-cpu-binding",
+          "result": "pass",
+          "evidence": "build/i386-primes-native-v1/qualification.json",
+          "scope": "The unmodified demo uses the public sys_cache_line_width binding, completes all four reports, and returns to the prompt."
         }
       ]
     },

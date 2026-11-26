@@ -2951,3 +2951,16 @@ With a fixture-provided zero cache-line width, native Primes completed
 all four searches and matched the independent counts and trailing lists.
 Production still needs to publish the architecture's cache information.
 See the [Primes experiment](../build/i386-demo-primes-v1/no-cache-report-checkpoint.json).
+
+Native startup now publishes `sys_cache_line_width`. The 386 baseline
+CPU interface reports zero for the unknown width. The unchanged
+Primes demo matched all four independent prime reports and returned
+to the prompt. The image also passed the nine-command desktop check
+at 64 MiB and the ParenWarn check at 8 MiB. See the
+[production checkpoint](../build/i386-primes-native-v1/production-checkpoint.json).
+
+The original Directives demo reported all six metadata fields and
+two instruction links into the same compiled function. Native
+rejected the unchanged demo before it wrote any DolDoc output. See
+the [original receipt](../build/i386-demo-directives-v1/original-receipt.json)
+and [native run](../build/i386-demo-directives-v1/comparison/result.json).

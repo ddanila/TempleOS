@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 29 (six apps and twenty-three demos) |
+| Qualified | 30 (six apps and twenty-four demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 627 |
-| Linked to tests / with reference workflow and oracle | 186 / 116 |
+| Qualification gaps | 626 |
+| Linked to tests / with reference workflow and oracle | 187 / 117 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 23 of 224 |
+| Demos qualified | 24 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 29 workflows and records eighteen shared files
+- The inventory qualifies 30 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -117,6 +117,12 @@ is complete and provides the foundation, but not desktop or application parity.
   [MPPrint receipt](build/i386-demo-mpprint-v1/qualification.json),
   [Palindrome receipt](build/i386-demo-palindrome-v1/qualification.json),
   and [image audit](build/i386-magic-pairs-native-v1/full-content-checkpoint.json).
+
+- Primes now qualifies with the public i386 cache-line width binding.
+  The baseline CPU interface reports zero when it cannot determine
+  the width. The unchanged demo matched both independent counts
+  and both trailing prime lists in all four reports. See the
+  [Primes receipt](build/i386-primes-native-v1/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

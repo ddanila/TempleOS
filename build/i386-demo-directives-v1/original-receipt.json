@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "sha256": "4337b7f8f2d1d2b837ebd48e177e1e60fa194b551e96255b0724f6407b3c77c4",
+  "fields": {
+    "Date": "11/26/26",
+    "Time": "11:17:33",
+    "File": "T:/Demo/Directives.HC",
+    "Dir": "T:/Demo",
+    "Line": "7",
+    "CmdLine": "0",
+    "Inst1": "$LK,\"&Directives+0x0087\",A=\"AD:0x6DE3CD57\"$:6DE3CD4C",
+    "Inst2": "$LK,\"&Directives+0x00AD\",A=\"AD:0x6DE3CD7D\"$:6DE3CD72"
+  },
+  "instructions": [
+    {
+      "offset": 135,
+      "target": 1843645783,
+      "address": 1843645772
+    },
+    {
+      "offset": 173,
+      "target": 1843645821,
+      "address": 1843645810
+    }
+  ]
+}
