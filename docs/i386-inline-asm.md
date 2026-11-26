@@ -281,3 +281,9 @@ check matched all 686 inventory files and passed the guest read probe.
 [Diagnostics](../build/i386-optimization-port-v1/diagnostic8-kvm/result.json) ·
 [Delivered-source audit](../build/i386-optimization-port-v1/committed-source-audit.json) ·
 [Full content](../build/i386-optimization-port-v1/full-content64/result.json)
+
+The 8 MiB TCG run on the same benchmark image reached the prompt in
+278.656 seconds and matched all nine VGA checkpoints. The 60-second
+gate failed. The native retained rebuild was active on the host during
+this measurement.
+[TCG startup receipt](../build/i386-optimization-port-v1/interactive8-tcg/result.json)
