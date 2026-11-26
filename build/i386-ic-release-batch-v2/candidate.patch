@@ -1,0 +1,63 @@
+diff --git a/Compiler/I386/Code.HC b/Compiler/I386/Code.HC
+index 33caf203..07bbfb6b 100644
+--- a/Compiler/I386/Code.HC
++++ b/Compiler/I386/Code.HC
+@@ -15,0 +16 @@ class CI386OwnedCode { CCodeCtrl header; CI386CodeAllocation lifetime; };
++#include "/Kernel/I386/HeapKnown.HC"
+@@ -26 +27,2 @@ class CI386ICSlab {
+-CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node)
++CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node,
++  Bool heap_validated=FALSE)
+@@ -30,0 +33 @@ CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node
++  U32 bytes;
+@@ -38,2 +41 @@ CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node
+-            slab->live>slab->issued || !slab->capacity || slab->capacity>I386_IC_SLAB_SLOTS ||
+-            I386HeapSize(heap,slab)!=offset(CI386ICSlab.body)+slab->capacity*I386_IC_SLAB_SLOT_BYTES)
++            slab->live>slab->issued || !slab->capacity || slab->capacity>I386_IC_SLAB_SLOTS)
+@@ -40,0 +43,4 @@ CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node
++        bytes=offset(CI386ICSlab.body)+slab->capacity*I386_IC_SLAB_SLOT_BYTES;
++        if(heap_validated) {
++          if(!I386HeapKnownSize(heap,slab,bytes))return 0;
++        } else if(I386HeapSize(heap,slab)!=bytes)return 0;
+@@ -66 +71,0 @@ CI386CodeAllocation *I386ICLifetime(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCo
+-#include "/Kernel/I386/HeapKnown.HC"
+@@ -100 +105,2 @@ U0 I386CodeAttach(CCmpCtrl *cc,CI386CodeAllocation *record,U8 *allocation,U32 ki
+-U0 I386CodeFree(CI386CmpRelease *state,CI386CodeAllocation *record)
++U0 I386CodeFree(CI386CmpRelease *state,CI386CodeAllocation *record,
++  Bool *heap_validated=0)
+@@ -109 +115 @@ U0 I386CodeFree(CI386CmpRelease *state,CI386CodeAllocation *record)
+-    slab=I386ICSlabFind(state->heap,state->control,allocation);
++    slab=I386ICSlabFind(state->heap,state->control,allocation,heap_validated && *heap_validated);
+@@ -127,0 +134 @@ U0 I386CodeFree(CI386CmpRelease *state,CI386CodeAllocation *record)
++  if(heap_validated)*heap_validated=FALSE;
+@@ -141 +148 @@ U0 I386ICSlabsCollect(CI386CmpRelease *state)
+-U0 I386CodeFreeIC(U8 *context,CIntermediateCode *node)
++U0 I386CodeReleaseIC(CI386CmpRelease *state,CIntermediateCode *node,Bool *heap_validated)
+@@ -143 +149,0 @@ U0 I386CodeFreeIC(U8 *context,CIntermediateCode *node)
+-  CI386CmpRelease *state=context;
+@@ -151 +157 @@ U0 I386CodeFreeIC(U8 *context,CIntermediateCode *node)
+-      I386CodeFree(context,record); return;
++      I386CodeFree(state,record,heap_validated); return;
+@@ -154,0 +161,4 @@ U0 I386CodeFreeIC(U8 *context,CIntermediateCode *node)
++U0 I386CodeFreeIC(U8 *context,CIntermediateCode *node)
++{
++  I386CodeReleaseIC(context,node,0);
++}
+@@ -271 +281,2 @@ Bool I386COCInstructionsRelease(CI386Heap *heap,CCmpCtrl *cc)
+-  Bool live=FALSE;
++  Bool live=FALSE,heap_validated;
++  I64 batch;
+@@ -277 +288,12 @@ Bool I386COCInstructionsRelease(CI386Heap *heap,CCmpCtrl *cc)
+-    irq=I386IrqSave;ICDetach(node);I386CodeFreeIC(&state,node);I386IrqRestore(irq);
++    //Slab slot release changes only payload bytes. Reuse the full heap
++    //validation until IRQs resume or a standalone node enters the free path.
++    irq=I386IrqSave;
++    heap_validated=I386CmpControlValid(heap,cc);
++    if(!heap_validated) state.ok=FALSE;
++    for(batch=0;batch<16 && state.ok && heap_validated;batch++) {
++      node=cc->coc.coc_head.next;
++      if(node==&cc->coc.coc_head.next)break;
++      ICDetach(node);
++      I386CodeReleaseIC(&state,node,&heap_validated);
++    }
++    I386IrqRestore(irq);

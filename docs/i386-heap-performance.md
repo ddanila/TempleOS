@@ -1008,3 +1008,12 @@ instruction-slab release. The latter runs through `I386COCInstructionsRelease`.
 These are statistical samples. The independent KVM run measured elapsed
 startup time. See
 `build/i386-diagnostic-worker-defer-user640-v1/interactive8-profile-retry/result.json`.
+
+A bounded instruction-slab release trial validated the control and heap
+once per batch of up to 16 slots. The task-symbol ownership test and 386
+boot audit passed. In the paired 8 MiB KVM run, both images passed all nine
+VGA checkpoints. The control took 64.561 seconds and the candidate took
+63.420 seconds. The earlier control run took 63.584 seconds, so this pair
+does not establish a repeatable speedup. Both exceeded the 60-second gate.
+The candidate remains a patch while its full diagnostic runs. See
+`build/i386-ic-release-batch-v2/`.
