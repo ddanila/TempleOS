@@ -1,3 +1,39 @@
+#ifdef I386_PUBLIC_USER_INCLUDED
+U64 PutDecDivide10(U64 value,U32 *remainder)
+{
+  U64 quotient;
+  U32 radix=10;
+  //Divide the high word, then carry its remainder into the low word.
+  asm {
+    MOV ECX,U32 &radix[EBP]
+    MOV EAX,U32 &value+4[EBP]
+    XOR EDX,EDX
+    DIV ECX
+    MOV U32 &quotient+4[EBP],EAX
+    MOV EAX,U32 &value[EBP]
+    DIV U32 &radix[EBP]
+    MOV U32 &quotient[EBP],EAX
+    MOV ECX,U32 &remainder[EBP]
+    MOV U32 [ECX],EDX
+  }
+  return quotient;
+}
+
+U0 PutDecU64(U64 value)
+{
+  U8 digits[21],*cursor=digits+20;
+  U32 remainder;
+  *cursor=0;
+  do {
+    value=PutDecDivide10(value,&remainder);
+    *--cursor='0'+remainder;
+  } while(value);
+  PutS(cursor);
+}
+
+PutDecU64(122333221);
+'\n';
+#else
 asm {
 PUT_DEC_U64::
 //RAX is number to print in decimal.
@@ -47,3 +83,5 @@ _DO_IT::	//The convention is C-callable routines have underscores.
 }
 
 Call(_DO_IT);
+
+#endif

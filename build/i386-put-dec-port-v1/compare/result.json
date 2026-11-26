@@ -1,0 +1,28 @@
+{
+  "result": "pass",
+  "input_sha256": "6f1c7987c04065b2a970543a0b55aedb6ae0b6fd23f3d63a68e768b7f2598b82",
+  "entries": {
+    "Demo/Asm/PutDec.HC": {
+      "source_sha256": "8002730a5834122472ee090a95e4b0d1dbfb4030bda1ace3a24bbd646ca120cd",
+      "output_file": "demo-0.DD",
+      "native_source_sha256": "cf64bc7538526ed3c93346cc4f39a4bdcc925216cf6c2e0ba14a76b79c9ee0bc",
+      "original_sha256": "59502a553d387d8ec664b34963c5a3c766012ad85eeff32c83ad8b1cc0de0b92",
+      "bytes": 11,
+      "result": "pass",
+      "native_sha256": "59502a553d387d8ec664b34963c5a3c766012ad85eeff32c83ad8b1cc0de0b92"
+    },
+    "Demo/Asm/DivByHand.HC": {
+      "source_sha256": "c1b4c83ac2b33887e8d3c606b480ec237f719f4b25047597fe52fcda22cc9744",
+      "output_file": "demo-1.DD",
+      "native_source_sha256": "aa720e1c64d3617b53545f9270d7a072811a2d62283ab5634af226a17d539bf1",
+      "original_sha256": "be08209b9932a369055d3bd1d56fb4c0015196b5fd517a86bb7512673dde61a8",
+      "bytes": 17,
+      "result": "pass",
+      "native_sha256": "be08209b9932a369055d3bd1d56fb4c0015196b5fd517a86bb7512673dde61a8"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "inputs_unchanged": true
+}

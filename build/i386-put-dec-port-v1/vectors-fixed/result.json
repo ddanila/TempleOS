@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "disk_sha256": "6f1c7987c04065b2a970543a0b55aedb6ae0b6fd23f3d63a68e768b7f2598b82",
+  "values": [
+    0,
+    9,
+    10,
+    4294967295,
+    4294967296,
+    9223372036854775808,
+    18446744073709551615
+  ],
+  "expected_sha256": "7692dfd4a4d14ecfffe07b3d1ac8d14b74b8355ef42fe713cc7a92d2389d005b",
+  "fixture_sha256": "cac2dc3f66b25bffcb35c90cb8e26c3ab50c89507a0c655c4d6f9c8d528e3f13",
+  "actual_sha256": "7692dfd4a4d14ecfffe07b3d1ac8d14b74b8355ef42fe713cc7a92d2389d005b",
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

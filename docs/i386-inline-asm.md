@@ -215,3 +215,19 @@ values, and the original all-ones result for a zero divisor. Both runs
 confirmed fresh arithmetic at the native prompt.
 [Demo comparison](../build/i386-div-by-hand-port-v1/compare/result.json) ·
 [Vector receipt](../build/i386-div-by-hand-port-v1/vectors/result.json)
+
+### PutDec 32-bit port
+
+The native inline assembler now emits unsigned `DIV r/m32`. PutDec divides
+the high word by ten, then uses the high-word remainder as the upper half
+of the dividend for the low-word division. It writes each resulting digit
+backwards into a 21-byte buffer, including the terminator. The original
+x64 assembly stays in the other branch.
+
+Both bootstrap generations and the 386 boot audit passed. The full image
+reproduced every original DolDoc byte for PutDec and DivByHand. A separate
+native check exercised both DIV operand forms with seven inputs, from zero
+through `18446744073709551615`, and matched the entire expected decimal
+document. Both runs confirmed a fresh arithmetic result.
+[Paired demo comparison](../build/i386-put-dec-port-v1/compare/result.json) ·
+[Decimal vector receipt](../build/i386-put-dec-port-v1/vectors-fixed/result.json)

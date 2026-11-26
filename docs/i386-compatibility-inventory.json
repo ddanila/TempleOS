@@ -15723,10 +15723,10 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
       "reference_workflow": {
-        "status": "observed-reference",
+        "status": "qualified-workflows",
         "description": "Run the assembly decimal conversion and compare the printed value 122333221."
       },
       "oracle": {
@@ -15737,6 +15737,20 @@
         ]
       },
       "tests": [
+        {
+          "target": "native-assembly-put-dec-port",
+          "command": "python3 tools/test-i386-demo-batch.py IMAGE --out OUT --reference-at-prompt --demo Demo/Asm/PutDec.HC --native-port Demo/Asm/PutDec.HC",
+          "result": "pass",
+          "evidence": "build/i386-put-dec-port-v1/compare/result.json",
+          "scope": "Bundled decimal conversion through 32-bit DIV reproduces the entire original document and returns to command input."
+        },
+        {
+          "target": "native-put-dec-boundary-values",
+          "command": "python3 build/i386-put-dec-port-v1/check-vectors.py IMAGE OUT",
+          "result": "pass",
+          "evidence": "build/i386-put-dec-port-v1/vectors-fixed/result.json",
+          "scope": "Seven exact decimal strings cover zero, digit boundaries, the low-word limit, a nonzero high word and the maximum unsigned value."
+        },
         {
           "target": "original-assembly-demo-output",
           "result": "pass",
