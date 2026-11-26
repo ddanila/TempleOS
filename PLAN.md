@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 603 |
-| Linked to tests / with reference workflow and oracle | 212 / 141 |
+| Linked to tests / with reference workflow and oracle | 213 / 142 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 47 of 224 |
 
@@ -360,6 +360,13 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   coordinates in the shared crop. Space cleared the drawing on both guests
   and the i386 prompt evaluated fresh arithmetic. See the
   [dotted-line comparison](build/i386-demo-net-of-dots-v1/qualification.json).
+
+- Grid draws the same three five-pixel snapped points on both guests.
+  Left-click clears the trail and restores the saved grid settings and
+  pointer callback. The i386 arithmetic probe after the click and End
+  submitted an empty input line. Compare the original console's caret
+  and prompt behavior after the same click before qualifying Grid. See the
+  [mouse comparison](build/i386-demo-grid-v1/comparison-checkpoint.json).
 
 ### Plan decisions (2026-11-24)
 

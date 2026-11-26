@@ -17447,9 +17447,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Start unchanged Grid with the mouse in the window, send four physical motion packets, then left-click to exit.",
+      "oracle": "Match isolated points on the five-pixel grid, verify the trail clears, compare saved mouse settings and pointer callback, and check native prompt recovery.",
+      "tests": [
+        {
+          "target": "original-grid-motion",
+          "result": "pass",
+          "evidence": "build/i386-demo-grid-v1/comparison-end/result.json",
+          "scope": "The original draws three snapped trail points and restores the settings and pointer callback after a left click."
+        },
+        {
+          "target": "native-grid-motion-and-recovery",
+          "result": "fail",
+          "evidence": "build/i386-demo-grid-v1/comparison-end/result.json",
+          "scope": "The same three points, trail cleanup, and settings restoration passed. Typing fresh arithmetic after the exit click and End submitted an empty input line."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Hanoi.HC",

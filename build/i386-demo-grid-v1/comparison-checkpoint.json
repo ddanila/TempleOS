@@ -1,0 +1,30 @@
+{
+  "result": "partial",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-bounce-v1/cross-retry/kernel.img": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398"
+  },
+  "source_sha256": "658b19432e51da6140814d16647da7b66ac08a64786385932f546f466b299f27",
+  "snapped_points": [
+    [
+      105,
+      265
+    ],
+    [
+      115,
+      270
+    ],
+    [
+      125,
+      255
+    ]
+  ],
+  "settings_restored": true,
+  "trails_cleared": true,
+  "fresh_native_command": "submitted an empty input line after End",
+  "screenshots_sha256": {
+    "initial": "1f69069e898fbd8899eeaddc793bd15fcfd34df20210448536ed7c6d19dd952d",
+    "moved": "bc66d691055580d6d9ce39bd48b2d0ef2e23f436c1087f73b436c16b8530c0d6",
+    "after-click": "3a1639482461baa438a1ac8f49026a4a2399f8e61584c0ce240488be75550ee5"
+  }
+}

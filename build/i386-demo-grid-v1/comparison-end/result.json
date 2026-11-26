@@ -1,0 +1,56 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-bounce-v1/cross-retry/kernel.img": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398"
+  },
+  "source_sha256": "658b19432e51da6140814d16647da7b66ac08a64786385932f546f466b299f27",
+  "moves": [
+    [
+      27,
+      34
+    ],
+    [
+      31,
+      -19
+    ],
+    [
+      -18,
+      37
+    ],
+    [
+      39,
+      13
+    ]
+  ],
+  "runs": {
+    "original": {
+      "result": "pass",
+      "snapped_points": [
+        [
+          105,
+          265
+        ],
+        [
+          115,
+          270
+        ],
+        [
+          125,
+          255
+        ]
+      ],
+      "settings_restored": true,
+      "screenshots_sha256": {
+        "initial": "7134983d907b583354d6e2dce539a1763726b7719eeb89c97a8816fc8fefc771",
+        "moved": "cb0e90dc26efcfda180d5537c513fa684ed58a3c7a8791d7d0844c917903c6ce",
+        "after-click": "9e86fab939ed1bcbb903ca6ef57c531f33bff7a22464ebba68b16296bb4d0cdc"
+      }
+    },
+    "native": {
+      "result": "fail",
+      "error": "Executed result 42 is missing from console pixels"
+    }
+  },
+  "inputs_unchanged": true,
+  "result": "fail"
+}
