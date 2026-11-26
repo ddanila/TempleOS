@@ -12,5 +12,19 @@
     "sha256": "3f9a939a757a5653c9b38b46dd801207c3b951daf5c193a3f17af22360ecc9e5",
     "logical_bytes": 67108864,
     "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-tag-callback-v1/border-candidate/working.img",
+    "retained": "build/i386-demo-tag-callback-v1/cross-border/kernel.img",
+    "sha256": "457174e03bf6fc9976dbdd65936005af26f07c81a736ac60e3cd906f5b9a860a",
+    "logical_bytes": 67108864,
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-tag-callback-v1/baseline64/working.img",
+    "retained": "build/i386-demo-tag-callback-v1/cross-border/kernel.img",
+    "sha256": "457174e03bf6fc9976dbdd65936005af26f07c81a736ac60e3cd906f5b9a860a",
+    "logical_bytes": 67108864,
+    "allocated_bytes": 67112960
   }
 ]

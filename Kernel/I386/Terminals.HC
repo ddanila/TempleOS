@@ -9,7 +9,7 @@ class CNativeTerminal {
   CI386Text surface;
   U8 *planes;
   U8 *cells;
-  CDoc *document;
+  CDoc *document,*border;
   U0 (*cleanup)(CI386Task *task);
   I64 loss_seen;
   CNativeTextInput *input_head,*input_tail;
@@ -136,6 +136,10 @@ U0 NativeTerminalRelease(CI386Task *task)
   CNativeTextInput *input;
   if(!terminal) return;
   if(terminal->cleanup) terminal->cleanup(task);
+  if(terminal->border) {
+    if(task->border_doc==terminal->border) task->border_doc=NULL;
+    DocDel(terminal->border);
+  }
   if(terminal->document && terminal->owns_document) {
     if(task->put_doc==terminal->document) task->put_doc=NULL;
     if(task->display_doc==terminal->document) task->display_doc=NULL;
@@ -205,6 +209,8 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE,CDoc *document=NULL)
     } else terminal->document=DocNew(NULL,task);
     if(!terminal->document) throw('OutMem');
     if(terminal->owns_document) {
+      terminal->border=DocBorderNew(terminal->document);
+      if(!terminal->border) throw('OutMem');
       //DocTermNew installs these even when the document hides its scrollbars.
       //The wheel callback still updates the public scroll/cursor state.
       old_h=CtrlFindUnique(task,CTRLT_WIN_HSCROLL);
@@ -224,6 +230,7 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE,CDoc *document=NULL)
       }
     }
     if(terminal) {
+      if(terminal->border) DocDel(terminal->border);
       if(terminal->document && terminal->owns_document) DocDel(terminal->document);
       if(terminal->owns_planes) I386HeapFree(console_config->heap,terminal->planes);
       if(terminal->cells)I386HeapFree(console_config->heap,terminal->cells);
@@ -243,6 +250,7 @@ CNativeTerminal *NativeTerminalCreate(Bool root=FALSE,CDoc *document=NULL)
   if(terminal->owns_document) {
     task->text_attr=terminal->surface.background<<4|terminal->surface.foreground;
     task->put_doc=task->display_doc=terminal->document;
+    task->border_doc=terminal->border;
   }
   I386IrqRestore(irq);
   return terminal;

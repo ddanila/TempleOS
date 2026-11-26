@@ -1,0 +1,64 @@
+{
+  "result": "pass",
+  "font_sha256": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+  "runs": {
+    "original": {
+      "clock-first": {
+        "console": [
+          "11/26/26 15:09:11"
+        ],
+        "border": [
+          "589196=00:00:11"
+        ]
+      },
+      "clock-second": {
+        "console": [
+          "11/26/26 15:09:12"
+        ],
+        "border": [
+          "673738=00:00:13"
+        ]
+      },
+      "undo": {
+        "console": [
+          "11/26/26 15:09:17"
+        ],
+        "border": []
+      }
+    },
+    "native": {
+      "clock-first": {
+        "console": [
+          "11/26/26 15:10:13"
+        ],
+        "border": [
+          "1682186=00:00:33"
+        ]
+      },
+      "clock-second": {
+        "console": [
+          "11/26/26 15:10:15"
+        ],
+        "border": [
+          "1782103=00:00:35"
+        ]
+      },
+      "undo": {
+        "console": [
+          "11/26/26 15:10:21"
+        ],
+        "border": []
+      }
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 14,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "mismatches": []
+}

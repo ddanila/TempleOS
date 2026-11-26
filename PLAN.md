@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 68 (six apps and sixty-two demos) |
+| Qualified | 69 (six apps and sixty-three demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 588 |
+| Qualification gaps | 587 |
 | Linked to tests / with reference workflow and oracle | 228 / 157 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 62 of 224 |
+| Demos qualified | 63 of 224 |
 
-C1 has 588 qualification gaps, including entries that still need a reference
+C1 has 587 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -41,7 +41,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 68 workflows and records eighteen shared files
+- The inventory qualifies 69 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -518,6 +518,13 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   shows that both `Fs->border_doc` and `DocBorder` are null at the root
   prompt while `DocPut` is live. Both the demo's border write and UndoIt
   therefore use the standard put document as their default destination.
+  Native terminals now construct and own a separate standard border
+  document when they create a put document. The rebuilt i386 guest
+  matches the original callback lifetime and returns to arithmetic.
+  The [callback qualification](build/i386-demo-tag-callback-v1/border-candidate/qualification.json),
+  [64 MiB desktop baseline](build/i386-demo-tag-callback-v1/baseline64/result.json),
+  and [1,574-file source audit](build/i386-demo-tag-callback-v1/source-audit.json)
+  passed.
 
 ### Plan decisions (2026-11-24)
 
