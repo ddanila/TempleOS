@@ -19471,10 +19471,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Load the unchanged Util1 template and invoke MyUtil on the bundled DolDoc HolyC files. Capture the resulting document and verify prompt recovery.",
+      "oracle": "Build the sorted list of matching paths from the pinned inventory. Compare every rendered label and file target with the full expected DolDoc for each guest drive.",
+      "tests": [
+        {
+          "target": "native-original-util-template",
+          "result": "pass",
+          "evidence": "build/i386-demo-util-template-v1/qualification.json",
+          "scope": "Both guests emit the complete sorted list of all 13 DolDoc HolyC paths. Each label and its target match the guest drive and pinned path."
+        }
+      ]
     },
     {
       "path": "Demo/Templates/Util2.HC",

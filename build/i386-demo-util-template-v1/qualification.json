@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "image_sha256": "9cfdf8dfe66f476c0277225221ca1e72d719028307395180d4f80047a0b1c280",
+  "source_sha256": "7d72cd256782b011e08c234a66a7443ea5217c374fe73453ee27700387d13cc5",
+  "document_sha256": {
+    "original": "026ae02ea02a840c71ebcf86035cc848ad6079c47101c225c7c1d461437fcd02",
+    "native": "3ac9d617fd85015e6889bf5f0a5f33320a74bc2404d1156e2c8089f72e8ea781"
+  },
+  "file_links": 13,
+  "paths": [
+    "Demo/DolDoc/CallBack.HC",
+    "Demo/DolDoc/ClickCallBack.HC",
+    "Demo/DolDoc/CursorMove.HC",
+    "Demo/DolDoc/Data.HC",
+    "Demo/DolDoc/DefineStr.HC",
+    "Demo/DolDoc/FileRead.HC",
+    "Demo/DolDoc/Form.HC",
+    "Demo/DolDoc/MenuBttn.HC",
+    "Demo/DolDoc/MenuSprite.HC",
+    "Demo/DolDoc/NumBible.HC",
+    "Demo/DolDoc/TextDemo.HC",
+    "Demo/DolDoc/TreeDemo.HC",
+    "Demo/DolDoc/UnusedDefine.HC"
+  ]
+}

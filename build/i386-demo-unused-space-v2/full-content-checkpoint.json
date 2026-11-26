@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "source_revision": "9dbf172d6e4914c974a04ba026d9015ebd59f2d9",
+  "image_sha256": "9cfdf8dfe66f476c0277225221ca1e72d719028307395180d4f80047a0b1c280",
+  "inventory_files": 686,
+  "delivered_source_files": 1566,
+  "accel": "kvm",
+  "inventory_sha256": "0d381e3bcec720b54777928b39f12f4ba88c23ea2f37df436f5ce6505a221707",
+  "evidence_sha256": {
+    "committed-source.json": "0862a902a24ce20bda5d405524800e690877407602c0edaea46ed7c4caf8b1c7",
+    "full-content/result.json": "a769fe2ee771b439c5c686324989d31e9a4de9d746d0e0ebba19c2ec14b70d20"
+  },
+  "scope": "Frozen inventory, bounded Bible read, arithmetic recovery and committed source identity."
+}

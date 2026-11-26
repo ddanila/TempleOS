@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 37 (six apps and thirty-one demos) |
+| Qualified | 38 (six apps and thirty-two demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 619 |
-| Linked to tests / with reference workflow and oracle | 195 / 124 |
+| Qualification gaps | 618 |
+| Linked to tests / with reference workflow and oracle | 196 / 125 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 31 of 224 |
+| Demos qualified | 32 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 37 workflows and records eighteen shared files
+- The inventory qualifies 38 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -192,11 +192,18 @@ is complete and provides the foundation, but not desktop or application parity.
   That image also passed the nine-command active desktop baseline at 64 MiB
   and the 1,566-file committed-source audit. See the
   [desktop checkpoint](build/i386-demo-unused-space-v2/desktop-checkpoint.json).
+  The same image passed the frozen 686-file content check and bounded
+  Bible read. See the
+  [full-content checkpoint](build/i386-demo-unused-space-v2/full-content-checkpoint.json).
 
 - Lex1 qualifies on the unchanged NullCase fixture. The public lexer returned
   all 67 tokens in order, with matching values and 634 identical DolDoc
   bytes on both guests. See the
   [lexer template comparison](build/i386-demo-lex-template-v1/fixed/result.json).
+
+- Util1 qualifies against the pinned DolDoc source directory. On both guests
+  all 13 ordered link labels and targets match the inventory and the guest
+  drive. See the [file utility template comparison](build/i386-demo-util-template-v1/qualification.json).
 
 ### Plan decisions (2026-11-24)
 
