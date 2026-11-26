@@ -45,10 +45,10 @@ is complete and provides the foundation, but not desktop or application parity.
   `eea98cfa` installed generation one's providers and passed the 8 MiB
   reboot and document-allocation checks. The first self-hosted kernel build
   is underway. See the [installation receipt](build/i386-desktop-eea98cfa/generations128/gen1-install/result.json).
-- ScrnCodes matches all 256 original glyph cells after loading the packaged
-  settings and autocomplete sources. Both guests return on a keypress and
-  native arithmetic still works. A cold direct include still stops at
-  `SettingsPush`. See the [VGA comparison](build/i386-demo-scrncodes-v3/comparison.json).
+- The full desktop publishes the original autocomplete and task settings
+  sources at startup. A cold direct include of ScrnCodes matched all
+  256 original glyphs, returned on a keypress, and rendered fresh
+  arithmetic. See the [VGA comparison](build/i386-task-settings-startup-v2/comparison.json).
 - TimeClock reads its first compressed write and reproduces the original
   5,400-second DolDoc report across cold reboot with the window manager
   active. The RedSea reader now accepts original directory self records.

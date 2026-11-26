@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "glyphs_equal": 256,
+  "pixels_equal": 16384,
+  "native_frame_sha256": "fd38836174ec5485eff2e25bc35461ef6a489e5bbeee644c7799da26c77034ba",
+  "original_frame_sha256": "2b0036fe10275b9ed878ee710a3e65f4fe5cfe83164afb799688e66f1456853a",
+  "native_input_sha256": "7c02e99d275665eaa6de2c45584146fc14f75ed52a9b833bba75e114c11c1f6a",
+  "startup_source_sha256": "799bcc3c634b7a71d3a5c31963da3d5f6786c9e31afd02ecc25f1f5324b45e87",
+  "arithmetic": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "scope": "Full desktop startup source on derivative of c51ab0fc, unchanged ScrnCodes cold include, original glyph pixels, physical key exit and arithmetic"
+}

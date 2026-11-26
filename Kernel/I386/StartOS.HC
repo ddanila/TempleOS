@@ -63,3 +63,9 @@ if(!native_srv_startup || !native_srv_startup->exe_addr)throw('SrvStart',TRUE);
 AdamFile("::/Compiler/I386/MakeCommandPrompt.HC",FALSE);
 CHashFun *native_command_prompt=HashFind("CmdLinePmt",adam_task->hash_table,HTT_FUN);
 if(!native_command_prompt || !native_command_prompt->exe_addr)throw('CmdPmt',TRUE);
+
+//Publish the original Adam libraries for the full desktop's bundled programs.
+if(FileFind("::/HomeSys.HC")) {
+  AdamFile("::/Adam/AutoComplete/MakeAC.HC",FALSE);
+  AdamFile("::/Adam/TaskSettings.HC",FALSE);
+}
