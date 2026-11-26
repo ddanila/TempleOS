@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "source_revision": "c40647513cbe0732de62fbf14733c6c86bdfe4e6",
+  "delivered_source_files": 1572,
+  "disk_sha256": "980c6e73bc83aa9012484ea14cecf94a0e3e697d2c1704fa8389712a17ad952c",
+  "ram_mib": 128,
+  "provider_count": 9,
+  "providers": [
+    "BuildRuntime",
+    "CompilerProbe",
+    "CompilerRuntime",
+    "ConsoleRuntime",
+    "DocDiagnosticRuntime",
+    "EditorRuntime",
+    "FileRuntime",
+    "MemoryRuntime",
+    "Startup"
+  ],
+  "evidence_sha256": {
+    "retained128-console-recovery.json": "7ab0bf8a4578d72ff234d5f84d787bfa359539a83ed979507da95df1b531472d",
+    "retained128-resumed-modules.json": "8c7217be8d04fce1014916802ada3cbd6f214f3a9550c09a3d0f91cb6d317534",
+    "retained128-resume/result.json": "278c497be11dfc5571ddf40d07eb2dd78d7f952d08a347ec6f18075e7d5b983d",
+    "retained128-source-audit.json": "619540553481c9d2a89a03461a4f9849bfeb48827d2fe26bbe9501289cee9aa2"
+  }
+}

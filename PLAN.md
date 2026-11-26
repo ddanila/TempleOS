@@ -31,8 +31,8 @@ Both passed the configured 64 MiB desktop handoff and 8 MiB cold boot.
 The latest audited cross-build uses `c4064751`. It passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
 64 MiB desktop commands, and configured HomeSys handoff. Its
-128 MiB retained-provider rebuild is the
-prerequisite for the queued two-generation reproduction. The latest
+128 MiB retained-provider rebuild and all-provider audit passed.
+Two-generation reproduction is running from the frozen source. The latest
 application checks on this image qualify Lines and Box. Bounce also qualifies
 on a fresh cross-build that publishes the shared `GrPlot` routine.
 
@@ -290,9 +290,11 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   content comparison and all nine active desktop commands at 64 MiB.
   The first 128 MiB build persisted ConsoleRuntime before its process
   stopped during CompilerRuntime. An export audit passed on the saved
-  ConsoleRuntime. A resumed build on a copy of the disk is running for the
-  other eight providers, followed by an all-provider audit and the
-  two-generation run. See the
+  ConsoleRuntime. The resumed build completed the other eight providers.
+  The saved disk passed an all-provider export audit and a 1,572-file
+  source audit. The two-generation run is installing generation one using
+  the frozen checkout. See the
+  [retained-build checkpoint](build/i386-sprite-plot3d-production-v1/retained128-checkpoint.json),
   [recovered ConsoleRuntime receipt](build/i386-sprite-plot3d-production-v1/retained128-console-recovery.json),
   [production cross-build](build/i386-sprite-plot3d-production-v1/cross-checkpoint.json)
   and [full-content checkpoint](build/i386-sprite-plot3d-production-v1/full-content-checkpoint.json).
