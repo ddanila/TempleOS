@@ -2694,3 +2694,11 @@ The Game Over caption was at the same coordinates and matched 171 of
 loader recovered that score from the registry and the prompt rendered
 fresh arithmetic. See the
 [native finish receipt](../build/i386-keepaway-finish-v3/native/result.json).
+
+The same full desktop image also passed both physical shot inputs.
+Space and the left mouse button each advanced the shot animation,
+cleared the active flag, and changed the ball's flight deadline. The
+scoring fixture observed the original 2- and 8-point totals before
+the shot, and both guests returned to a working prompt.
+See the [Space receipt](../build/i386-keepaway-shot-production-v1/space/result.json)
+and [mouse receipt](../build/i386-keepaway-shot-production-v1/mouse/result.json).
