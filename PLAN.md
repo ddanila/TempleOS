@@ -394,6 +394,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   The same image passed all nine 64 MiB desktop baseline commands, the
   frozen 686-file content comparison, and the bounded guest Bible read.
   See the [full-content checkpoint](build/i386-demo-low-pass-v1/full-content-checkpoint.json).
+  Its configured 64 MiB boot selected Home Once, matched all 83 original
+  desktop geometry values, accepted fresh arithmetic, and reclaimed the
+  bootstrap allocation. Startup took 214.18 seconds. See the
+  [configured desktop checkpoint](build/i386-demo-low-pass-v1/configured-desktop-checkpoint.json).
 
 - SunMoon qualifies. The moon moved left in four samples from each guest.
   Matching phases had 41,789 and 42,448 identical colored pixels. The
