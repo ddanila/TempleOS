@@ -1,0 +1,45 @@
+{
+  "result": "pass",
+  "image_sha256": "44318f80f55a1c959ab4e22d62747c1c11fb713f5fecc4b1016dfb42d8bb34ba",
+  "source_sha256": "844d2c942df22e8a54fe98f30444b553126c7dbbe3937e7290acf1c5362f2392",
+  "delivered_source_files": 1565,
+  "source_identity_sha256": "a7f83678fe6922fb37dcd67613f2025e58ad4d3327ea1d2885e210f80c70c784",
+  "runs": {
+    "original": {
+      "result": "pass",
+      "document_sha256": "1a2a04d115ddac519d06295bfc24d6004e8c7708c1eefe87064ebcf04c9ed95f",
+      "tree_sha256": "b196460fdd9833e87946b82047606be40492d72295ae6a55cd24cf699d088529",
+      "records": 26,
+      "file_links": 9,
+      "serialized_bytes": 1708,
+      "archive_bytes": 476
+    },
+    "native": {
+      "result": "pass",
+      "document_sha256": "b694972a52ecffc296cc8801b45e2783887616f27619b5aab27d34008e2047d1",
+      "tree_sha256": "cefeadc4eddee7d914a5e1ea0f2b06dc8725b6d37f1f902cb851e713e9693ed5",
+      "records": 26,
+      "file_links": 9,
+      "serialized_bytes": 1708,
+      "archive_bytes": 483
+    }
+  },
+  "desktop_baseline_commands": 9,
+  "x86_64_bootstrap_generations": [
+    {
+      "Compiler.BIN": "0969c2dbb959487b009f3fc39e8d709591fbf4837e1ca8d9c3c843127311c49a",
+      "Kernel.BIN": "a1ce41e6230e2e26bd8e5234fde63a11d0d13431d4e72a353e5b0dcc40c0236b"
+    },
+    {
+      "Compiler.BIN": "e5a7f1dabbd82a9e8e1d2173c4ea80d71b841575c05a45bda9628960461bcdcc",
+      "Kernel.BIN": "9ccb9ad91b7d9d464ecb96a7918d4d9583561df098f5163e6195565bb04d5c34"
+    }
+  ],
+  "evidence_sha256": {
+    "comparison/result.json": "c01b1f615ab1f6cae7c297b8cd4c2f9358d98400f5344e3681d215d3f48ca1aa",
+    "source-audit.json": "766892db90ac82c00b601c5c5ee89db69c2716a05edea169e2e313adc23a7478",
+    "baseline64/result.json": "c24a89e9ed0509a2445e6a1877dc7178299425c18ee169b5057bbd35c05697e7",
+    "rebuild/result.json": "4f9f1ca2d7fb2710b6ca2a38da3255eea1beefd0c5424a9e16dd7ede30e1711c"
+  },
+  "scope": "Unchanged original and native SerializeTree match all record names, kinds and depths. Each guest independently recovers every byte of its serialized metadata. Volume-specific fields can differ."
+}

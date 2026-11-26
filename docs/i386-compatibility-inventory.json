@@ -16417,9 +16417,9 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Launch the unchanged demo on each guest and capture the original tree, serialized and compressed dumps, and rebuilt tree.",
-      "oracle": "Parse the archive length fields, compare all serialized and expanded bytes, decode every directory record and compare the two displayed trees with the decoded order and depth.",
+      "oracle": "Parse the archive length fields, compare all serialized and expanded bytes, decode every directory record and compare the two displayed trees with the decoded order and depth. Compare record names, kinds and depths between guests and verify native prompt recovery.",
       "tests": [
         {
           "target": "original-serialize-tree",
@@ -16432,6 +16432,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-serialize-tree-v1/comparison/result.json",
           "scope": "The native compiler rejects the first LineRep1 call on line 14 before serialization."
+        },
+        {
+          "target": "native-original-serialize-tree",
+          "result": "pass",
+          "evidence": "build/i386-demo-serialize-tree-v2/qualification.json",
+          "scope": "The unchanged original and native demo each recover all 26 records and all 1,708 serialized bytes. The decoded tree matches and the native prompt returns."
         }
       ]
     },

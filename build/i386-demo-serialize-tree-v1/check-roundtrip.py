@@ -63,11 +63,7 @@ def decode_tree(data):
     return rows
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('document', type=Path)
-    args = parser.parse_args()
-    data = args.document.read_bytes()
+def inspect_roundtrip(data):
     before, first_size, packed_text, size1, archive_text, size2, expanded_text, size3, after = DIVIDER.split(data)
     packed = read_dump(packed_text)
     archive = read_dump(archive_text)
@@ -85,10 +81,25 @@ def main():
         raise ValueError('A source file link is missing its tree target')
     if any(count or target for _, _, _, count, target in restored):
         raise ValueError('The rebuilt report unexpectedly has line counts or link targets')
-    print(json.dumps(dict(result='pass', document_sha256=hashlib.sha256(data).hexdigest(),
-                          tree_sha256=hashlib.sha256(packed).hexdigest(), records=len(decoded),
-                          file_links=len(links), serialized_bytes=len(packed),
-                          archive_bytes=len(archive)), indent=2))
+    receipt = dict(result='pass', document_sha256=hashlib.sha256(data).hexdigest(),
+                   tree_sha256=hashlib.sha256(packed).hexdigest(), records=len(decoded),
+                   file_links=len(links), serialized_bytes=len(packed),
+                   archive_bytes=len(archive))
+    return receipt, decoded
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('document', type=Path)
+    parser.add_argument('--reference', type=Path)
+    args = parser.parse_args()
+    receipt, decoded = inspect_roundtrip(args.document.read_bytes())
+    if args.reference:
+        original, expected = inspect_roundtrip(args.reference.read_bytes())
+        if decoded != expected:
+            raise ValueError('The directory tree differs from the original guest')
+        receipt['reference_document_sha256'] = original['document_sha256']
+    print(json.dumps(receipt, indent=2))
 
 
 if __name__ == '__main__':

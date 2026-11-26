@@ -68,6 +68,7 @@ if(!native_command_prompt || !native_command_prompt->exe_addr)throw('CmdPmt',TRU
 if(FileFind("::/HomeSys.HC")) {
   AdamFile("::/Adam/AutoComplete/MakeAC.HC",FALSE);
   AdamFile("::/Adam/TaskSettings.HC",FALSE);
+  AdamFile("::/Kernel/I386/MakeDirectoryDiagnostics.HC",FALSE);
 }
 
 U0 NativePublishCompilerOptions()

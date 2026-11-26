@@ -1,0 +1,18 @@
+{
+  "result": "fail",
+  "input_sha256": "44318f80f55a1c959ab4e22d62747c1c11fb713f5fecc4b1016dfb42d8bb34ba",
+  "entries": {
+    "Demo/Dsk/SerializeTree.HC": {
+      "source_sha256": "844d2c942df22e8a54fe98f30444b553126c7dbbe3937e7290acf1c5362f2392",
+      "output_file": "demo-0.DD",
+      "result": "fail",
+      "original_sha256": "1a2a04d115ddac519d06295bfc24d6004e8c7708c1eefe87064ebcf04c9ed95f",
+      "native_sha256": "b694972a52ecffc296cc8801b45e2783887616f27619b5aab27d34008e2047d1",
+      "bytes": 20426
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "inputs_unchanged": true
+}

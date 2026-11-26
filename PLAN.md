@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 34 (six apps and twenty-eight demos) |
+| Qualified | 35 (six apps and twenty-nine demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 622 |
+| Qualification gaps | 621 |
 | Linked to tests / with reference workflow and oracle | 193 / 122 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 28 of 224 |
+| Demos qualified | 29 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 34 workflows and records eighteen shared files
+- The inventory qualifies 35 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -170,11 +170,12 @@ is complete and provides the foundation, but not desktop or application parity.
   produced the same 35 DolDoc bytes. See the
   [single-CPU template comparison](build/i386-demo-multicore-template-v1/comparison/result.json).
 
-- SerializeTree recovered all 26 directory records and reproduced all
-  1,708 serialized bytes after compression and expansion on the pinned
-  original. The native compiler rejects the first call to LineRep1.
-  See the [original round-trip receipt](build/i386-demo-serialize-tree-v1/original-receipt.json)
-  and [native comparison](build/i386-demo-serialize-tree-v1/comparison/result.json).
+- SerializeTree now qualifies. The full i386 startup publishes the original
+  directory reporting, tree serialization and memory dump helpers. Both
+  guests reproduced their 1,708-byte serialized payload after compression
+  and expansion, and all 26 decoded nodes match in kind, name and depth.
+  The 64 MiB desktop baseline and both x86-64 bootstrap rebuilds passed.
+  See the [round-trip receipt](build/i386-demo-serialize-tree-v2/qualification.json).
 
 ### Plan decisions (2026-11-24)
 
