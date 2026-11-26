@@ -6,7 +6,7 @@
 386+/VGA port, preserving their HolyC and DolDoc behavior, with automated
 compatibility tests and native self-hosting.**
 
-### Current status (2026-11-26)
+### Current status (2026-11-27)
 
 Measured with `python3 tools/inventory-i386-compatibility.py --check`; update
 this table instead of repeating "C1–C5 remain open" in checkpoint entries.
@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 89 (six apps and eighty-three demos) |
+| Qualified | 90 (six apps and eighty-four demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 567 |
-| Linked to tests / with reference workflow and oracle | 247 / 176 |
+| Qualification gaps | 566 |
+| Linked to tests / with reference workflow and oracle | 248 / 177 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 83 of 224 |
+| Demos qualified | 84 of 224 |
 
-C1 has 567 qualification gaps, including entries that still need a reference
+C1 has 566 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.

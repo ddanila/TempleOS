@@ -6326,3 +6326,9 @@ passed the assembled image's delivered-source preflight against
 `84d1c25f` and started generation-one installation.
 [Console build](../build/i386-code-alloc-known-v1/retained-current/console/result.json) ·
 [Assembled retained build](../build/i386-code-alloc-known-v1/retained-current/merged/result.json)
+
+Generation one installed the nine assembled providers and verified the
+installed bytes. A separate 8 MiB KVM boot passed the document allocation
+check, the diagnostic provider load/recovery/unload sequence, and fresh
+arithmetic. The runner then started the 128 MiB guest flat-kernel build.
+[Installation and cold boot](../build/i386-code-alloc-known-v1/native-generations128/gen1-install/result.json)

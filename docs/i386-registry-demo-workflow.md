@@ -249,3 +249,13 @@ The filesystem audit found changes only to `/Home/Registry.HC.Z` and the
 three test capture files, with 1,950 source-image files preserved per run.
 [First rebuild receipt](../build/i386-demo-insetip-v1/generations128/gen1-registry64/result.json) ·
 [Second rebuild receipt](../build/i386-demo-insetip-v1/generations128/gen2-registry64/result.json)
+
+## Bundled Registry1 template
+
+Both the pinned original and the native compiler image ran the unchanged
+`Demo/Templates/Registry1.HC` against an isolated registry document.
+With queued key input, the first launch wrote `9999.0000`. After seeding
+a score of 42.125, the second launch preserved it as `42.1250`. The
+native guest returned to rendered arithmetic. Only the isolated registry
+and the fixture changed on its disposable disk.
+[Registry1 comparison](../build/i386-code-alloc-known-v1/registry-template64/result.json)

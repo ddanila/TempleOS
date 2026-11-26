@@ -20096,10 +20096,18 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged Registry1 template with a new registry, give it a queued key, then repeat with an existing best score and verify the saved normalized values.",
+      "oracle": "Require one saved score of 9999.0000 for a new registry and 42.1250 for a pre-existing score on both guests. Verify native file changes are limited to the registry and fixture and regain the native prompt.",
+      "tests": [
+        {
+          "target": "original-native-registry-template-scores",
+          "command": "python3 tools/test-i386-registry-template.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-code-alloc-known-v1/registry-template64/result.json",
+          "scope": "Unchanged template persists the reference default and existing score with queued key input on both architectures."
+        }
+      ]
     },
     {
       "path": "Demo/Templates/Util1.HC",
