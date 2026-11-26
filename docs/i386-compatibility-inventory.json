@@ -16453,7 +16453,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Launch the unchanged BlkDevRep demo from the standard guest prompt and capture the class reports for each initialized block device.",
       "oracle": "Check the complete ordered CBlkDev field list and verify each device signature, class, drive letter, flags and sector size against the guest hardware profile.",
       "tests": [
@@ -16468,6 +16468,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-blkdev-rep-v1/comparison/result.json",
           "scope": "The i386 compiler rejects the ClassRep call on line 7."
+        },
+        {
+          "target": "native-original-block-device-reports",
+          "result": "pass",
+          "evidence": "build/i386-demo-blkdev-rep-v1/kernel-pointers/qualification.json",
+          "scope": "The unchanged demo prints all 22 fields for each configured device. The original has RAM and ATAPI drives. The i386 guest reports the complete ATA disk extent and returns to arithmetic."
         }
       ]
     },

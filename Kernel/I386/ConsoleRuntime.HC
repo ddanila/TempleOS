@@ -13,6 +13,7 @@
 #define ON 1
 #define OFF 0
 #include "/Kernel/I386/ConsoleRuntime.HH"
+#include "/Kernel/I386/BootMemory.HH"
 #include "/Kernel/I386/JitSupport.HH"
 CI386JitSupport native_jit_support;
 extern U0 CmpCodeAbort(CCmpCtrl *cc,CCodeCtrl *boundary,Bool clear_base);
@@ -1301,10 +1302,17 @@ U0 NativeActionExit() { (*native_action_exit)(); }
 #define PopUpPrint NativePopUpPrint
 #define WinToTop NativeWinToTop
 Bool NativeClassRepPointer(U8 *ptr)
-{//Flat protected mode uses conventional RAM and the boot-validated heap arena.
+{//The loaded kernel image is reserved independently of the heap arena.
   U64 address=(ptr+0)(U64);
-  return 0x10000<=address<0xA0000 ||
-    (console_config->heap->base+0)(U64)<=address<mem_mapped_space;
+  CI386BootInfo *boot=I386_BOOT_INFO_ADDRESS;
+  CI386BootImageInfo *image=I386_BOOT_IMAGE_ADDRESS;
+  if((console_config->heap->base+0)(U64)<=address<mem_mapped_space)
+    return TRUE;
+  if(boot->stage_begin<=address<boot->conventional_kib*1024 &&
+      (!boot->ebda_base || address<boot->ebda_base))
+    return TRUE;
+  return boot->stage_end==0x11000 && image->magic==I386_BOOT_IMAGE_MAGIC &&
+    image->base<=address<image->base(U64)+image->bytes;
 }
 #define CLASS_REP_POINTER_VALID NativeClassRepPointer
 #include "/Compiler/OptClassFwdCore.HC"

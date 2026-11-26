@@ -1,0 +1,30 @@
+{
+  "result": "pass",
+  "fields_per_device": 22,
+  "devices": {
+    "original": {
+      "B": {
+        "type": 1,
+        "block_size": 512,
+        "flags": 2,
+        "max_blk": 262144
+      },
+      "T": {
+        "type": 5,
+        "block_size": 2048,
+        "flags": 39,
+        "max_blk": 90271
+      }
+    },
+    "native": {
+      "C": {
+        "type": 2,
+        "block_size": 512,
+        "flags": 2,
+        "max_blk": 131071
+      }
+    }
+  },
+  "input_sha256": "4ad652a8deffee85fca4feefcb939fb5775029e0c95a5cd6d0193bf47c33eb58",
+  "source_sha256": "2172d8e3fa42c8e12cc12ef83f8fc7bed4eb3face35653062a2a361c704bfc04"
+}

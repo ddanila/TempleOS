@@ -1,0 +1,18 @@
+{
+  "result": "fail",
+  "input_sha256": "4ad652a8deffee85fca4feefcb939fb5775029e0c95a5cd6d0193bf47c33eb58",
+  "entries": {
+    "Demo/Dsk/BlkDevRep.HC": {
+      "source_sha256": "2172d8e3fa42c8e12cc12ef83f8fc7bed4eb3face35653062a2a361c704bfc04",
+      "output_file": "demo-0.DD",
+      "result": "fail",
+      "original_sha256": "f9805d5c209c771a1e9cd1fcfa28a119546d60a19a60451a7c67cf99e4583732",
+      "native_sha256": "d006efb91a1806a518abc38a23f71ec1ea523b845152f78988050f4d0bce43e5",
+      "bytes": 2354
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "inputs_unchanged": true
+}
