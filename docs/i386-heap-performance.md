@@ -1187,3 +1187,15 @@ Window Manager active. The 8 MiB document resource profile passed all
 tests preserved the installed source image.
 [Desktop baseline](../build/i386-code-alloc-known-v1/native-compiler-desktop64/result.json) ·
 [Document resource receipt](../build/i386-code-alloc-known-v1/native-compiler-resource8/resource-result.json)
+
+The image with guest-built CompilerRuntime also passed three 64 MiB KVM
+checks. Configured HomeSys selected the Home Once file, matched all 83
+original geometry values, reclaimed the bootstrap task, and returned
+fresh arithmetic. Its geometry capture is byte-identical to the previous
+frozen generation's capture. The persistent graphics trial passed the
+red, green, blue, and cleared frames and returned to exact prompt input
+using its disposable plain-start fixture. The five bundled assembly
+demos also matched their original DolDoc output byte for byte.
+[Configured HomeSys](../build/i386-code-alloc-known-v1/native-compiler-homesys64/result.json) ·
+[Persistent composition](../build/i386-code-alloc-known-v1/native-compiler-composition64/result.json) ·
+[Bundled assembly comparison](../build/i386-code-alloc-known-v1/native-compiler-demos64/result.json)
