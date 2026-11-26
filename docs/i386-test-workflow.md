@@ -6391,3 +6391,8 @@ saved text and cursor state, and checked the persisted file after
 native reboot.
 [TimeClock report](../build/i386-code-alloc-known-v1/native-generations128/gen1-timeclock-report64/result.json) ·
 [Editor save and reboot](../build/i386-code-alloc-known-v1/native-generations128/gen1-doc-save-editor64/result.json)
+
+The unchanged Registry1 template also matched the original on the
+guest-built kernel. The saved score was `9999.0000` with a fresh
+registry and `42.1250` with an existing score.
+[Registry1 comparison](../build/i386-code-alloc-known-v1/native-generations128/gen1-registry-template64/result.json)
