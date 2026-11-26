@@ -62,6 +62,11 @@ is complete and provides the foundation, but not desktop or application parity.
   next full-frame checkpoint from appearing. See the
   [welcome-frame diagnosis](build/i386-desktop-eea98cfa/generations128/baseline-pointer-diagnosis.json)
   and [active desktop baseline](build/i386-desktop-eea98cfa/generations128/baseline-live-checkpoint.json).
+- Configured HomeSys handoff passed on both frozen native generations at
+  64 MiB. Both selected the Home Once, reproduced all 83 original geometry
+  values, returned fresh arithmetic, and physically reclaimed the bootstrap
+  task. Configured startup took about 205 seconds in each run. See the
+  [desktop handoff receipt](build/i386-desktop-eea98cfa/generations128/configured-desktop-checkpoint.json).
 - The full desktop publishes the original autocomplete and task settings
   sources at startup. A cold direct include of ScrnCodes matched all
   256 original glyphs, returned on a keypress, and rendered fresh
