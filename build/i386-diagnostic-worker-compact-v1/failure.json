@@ -1,0 +1,24 @@
+{
+  "status": "fail",
+  "ram_mib": 8,
+  "worker_arena_bytes": 196608,
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-compact-v1/cross/kernel-diagnostics.img": "3e70c032eb30b172f7571d33a7fb7b436beb3b53421be5211593df7dc860d18a",
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-compact-v1/cross/result.json": "767557450ca0751cb2e9a5a077ad16fddfa8d78670e3f8382c1f2b5ffec05896",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-startup-memory.py": "cc4748a4118d5e498b26d490b719f79c92148a34dcd76d325f30744d859ec0de",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463"
+  },
+  "trace_sha256": "0ddce4fa245f174cac74d89ce85ccd1d2021959a112763d8b8c388db258a858d",
+  "provider_loads": [
+    "PROBE LOAD 0000000000312478 000000000007F500 000000000007F510",
+    "PROBE LOAD 0000000000749010 000000000007F500 000000000007F510"
+  ],
+  "terminal_trace": [
+    "NATIVE RESIDENT 0000000000000001 0000000000002005 0000000000001EF8",
+    "NATIVE PACKER 0000000000000001 0000000000001A52 00000000000019F8",
+    "HEAP EXHAUSTED 0000000000000048 000000000002FEE0 0000000000030000 0000000000000030 00000000000001F4",
+    "HEAP FAILURE CALLERS 0000000000144C91 000000000019615F",
+    "UNHANDLED 0000000000000000 72656C69706D6F43",
+    "FAIL native kernel"
+  ]
+}

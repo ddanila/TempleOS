@@ -921,3 +921,9 @@ private heap, before trying the linked image in the main arena. Together with
 the 640 KiB trial, this shows that resizing alone cannot accommodate the
 current loader's two allocations. The patch and receipt are in
 `build/i386-diagnostic-worker-256k-v1/`.
+
+Using the existing in-place loader, the 192 KiB worker passed the public
+memory probe and loaded the compiler provider. The private arena then ran out
+of space on a 72-byte request after the phase-one native packer probe. This
+locates the next failure inside the compiler workload after provider load.
+See `build/i386-diagnostic-worker-compact-v1/failure.json`.
