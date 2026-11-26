@@ -465,6 +465,14 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   the [flat rebuild and cold boot](build/i386-demo-f64-files-v1/generations128/gen1-selfhost/result.json),
   [installed-image audit](build/i386-demo-f64-files-v1/generations128/gen1-audit/result.json),
   and [source audit](build/i386-demo-f64-files-v1/generations128/gen1-source-audit/result.json).
+  This installed generation also passed the nine-command 64 MiB VGA
+  baseline with the window manager active and the full 686-entry content
+  check, including the bounded Bible read. Its configured 64 MiB desktop
+  selected Home Once, matched all 83 geometry values, accepted fresh
+  arithmetic and verified physical bootstrap retirement. See the
+  [desktop baseline](build/i386-demo-f64-files-v1/generations128/gen1-baseline64/result.json),
+  [content check](build/i386-demo-f64-files-v1/generations128/gen1-content64/result.json),
+  and [configured handoff](build/i386-demo-f64-files-v1/generations128/gen1-desktop64/result.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the
