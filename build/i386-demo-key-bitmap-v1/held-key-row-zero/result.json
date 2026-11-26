@@ -1,0 +1,82 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/cross-sign/kernel.img": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "/home/ddanila/fun/TempleOS/Demo/KeyBitMap.HC": "fd380a8919639f2fe07c0ab2ccb987d56a5ea56b0654ee394850afb31e8f073e"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "result": "pass",
+      "samples": [
+        {
+          "frame": "held-1.png",
+          "sha256": "cd4eae03c36a88d0b402109b2550d83e9eae90e9dc4545cac2727bd096018ebb",
+          "pixels": 1254,
+          "left": 47
+        },
+        {
+          "frame": "held-2.png",
+          "sha256": "bd6ee90b08755a521727ddc1455c9d97ed80b2edd873bd06eba9f43aaa465234",
+          "pixels": 1254,
+          "left": 72
+        },
+        {
+          "frame": "held-3.png",
+          "sha256": "be72aff38417e4ab9acd44d48ae848dbf0d84e3f310b35da6a3890c7f7e35359",
+          "pixels": 1254,
+          "left": 96
+        },
+        {
+          "frame": "held-4.png",
+          "sha256": "f14887f5f19ceb1159d55b2f6fb6f9de1e75d0bdccbf83afdc9e4f3e0582ad8e",
+          "pixels": 912,
+          "left": 121
+        }
+      ],
+      "idle_sha256": "4a6aaa9f61e3094879002bd463001118473bb8e962ad17c19fcf3f11623ca2a3",
+      "after_release_sha256": "de2b6d3f70ceae75ab3f6e3af62e0b57096aa254272c09d84b0892d5d36c5caf"
+    },
+    "native": {
+      "result": "pass",
+      "samples": [
+        {
+          "frame": "held-1.png",
+          "sha256": "28dc5821530181306acfdba349a940ce469357f237069f82540de103ed5d75bc",
+          "pixels": 1254,
+          "left": 41
+        },
+        {
+          "frame": "held-2.png",
+          "sha256": "725859e808c0ab73eeedc3f4bec92367af8a6b51c39814d37ce49547f5889cbc",
+          "pixels": 1254,
+          "left": 61
+        },
+        {
+          "frame": "held-3.png",
+          "sha256": "f9c1036e410d4d7a928858cfae8ce00e418a11d5ced28e14f99515c3742d2c08",
+          "pixels": 1324,
+          "left": 81
+        },
+        {
+          "frame": "held-4.png",
+          "sha256": "0ecd05ad0162c2943e5a1695c6f4086eacc0a66573fe4ed0f310df9cb2aef382",
+          "pixels": 1254,
+          "left": 106
+        }
+      ],
+      "idle_sha256": "6870c18b4628152026b98570ddabc949dbb05c144307ee60c4ad1eeaa41e1565",
+      "after_release_sha256": "7a862bf5bc66554673687e625e91e59246f871f8cb63628c104327e748fc48c5",
+      "fresh_result": {
+        "column": 0,
+        "row": 3,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

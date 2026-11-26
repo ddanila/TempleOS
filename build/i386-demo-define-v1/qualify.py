@@ -18,12 +18,12 @@ def glyphs(path):
     return tuple(tuple(int(bits, 16).to_bytes(8, 'little')) for bits in values)
 
 
-def matches(path, phrase, font):
+def matches(path, phrase, font, first_row=1):
     with Image.open(path) as image:
         pixels = image.convert('RGB').load()
         hits = []
         letters = phrase.encode('ascii')
-        for row in range(1, image.height // 8):
+        for row in range(first_row, image.height // 8):
             for col in range(image.width // 8 - len(letters) + 1):
                 if all(
                     all((pixels[(col+i)*8+x, row*8+y] != (255, 255, 255)) == bool(mask & (1 << x))

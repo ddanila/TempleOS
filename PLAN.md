@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 63 (six apps and fifty-seven demos) |
+| Qualified | 64 (six apps and fifty-eight demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 593 |
-| Linked to tests / with reference workflow and oracle | 222 / 151 |
+| Qualification gaps | 592 |
+| Linked to tests / with reference workflow and oracle | 223 / 152 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 57 of 224 |
+| Demos qualified | 58 of 224 |
 
-C1 has 593 qualification gaps, including entries that still need a reference
+C1 has 592 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -38,7 +38,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 63 workflows and records eighteen shared files
+- The inventory qualifies 64 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -461,6 +461,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   seed 2. The timer-seeded sequences differed within each guest. The i386
   prompt evaluated fresh arithmetic. See the
   [random sequence comparison](build/i386-demo-rand-v1/sequence-comparison/result.json).
+
+- KeyBitMap qualifies. Both guests moved the sprite while the physical
+  `i` key was held and cleared it on release. Two frames matched all
+  1,254 sprite pixels after aligning their origins. The i386 prompt
+  evaluated fresh arithmetic. See the
+  [held-key comparison](build/i386-demo-key-bitmap-v1/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

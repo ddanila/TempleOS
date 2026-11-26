@@ -18324,10 +18324,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged KeyBitMap, hold the physical i key, and release it after capturing moving sprite frames.",
+      "oracle": "Verify horizontal movement, match the sprite masks after aligning origins, check removal on release, and evaluate fresh native arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-held-key-bitmap",
+          "result": "pass",
+          "evidence": "build/i386-demo-key-bitmap-v1/qualification.json",
+          "scope": "Both guests animate a matching 1,254-pixel sprite while i is held and clear it on release. The i386 prompt evaluates fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/LastClass.HC",
