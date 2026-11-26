@@ -17989,9 +17989,16 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Run the unchanged demo and capture the explanatory allocator document, including the task chunk, system page and power-of-two bucket listings.",
+      "oracle": "Compare the complete DolDoc with the pinned original. A native-specific diagram must keep its bucket labels consistent with the native record widths and actual allocator alignment.",
+      "tests": [
+        {
+          "target": "native-original-demo-batch",
+          "result": "fail",
+          "evidence": "build/i386-demo-mem-v1/result.json",
+          "scope": "The unchanged demo completes and native arithmetic succeeds afterward. The task chunk rows start at 0xC on native and 0x10 on the original because CMemUnused has a different size. The subsequent page listings match. The demo mixes native record size with original 8-byte labels."
+        }
+      ]
     },
     {
       "path": "Demo/MsgLoop.HC",
