@@ -1,0 +1,25 @@
+diff --git a/Kernel/I386/Kernel.HC b/Kernel/I386/Kernel.HC
+index dfe1e371..017c1184 100644
+--- a/Kernel/I386/Kernel.HC
++++ b/Kernel/I386/Kernel.HC
+@@ -305,0 +306,2 @@ I64 Main(CI386BootInfo *info,I64 unused)
++    CI386Heap *pulse_heap;
++    I64 private_bytes;
+@@ -307,0 +310,5 @@ I64 Main(CI386BootInfo *info,I64 unused)
++    //Keep the main arena available for the public allocation and provider
++    //load when the full worker reservation cannot fit there.
++    if(!kernel_pulse && kernel_task_fallback_heap.signature==I386_HEAP_MAGIC)
++      kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_task_fallback_heap,16384,
++        &KernelPulse,0,0x18,0x20,524288);
+@@ -310 +316,0 @@ I64 Main(CI386BootInfo *info,I64 unused)
+-    //Combined original compiler sources need 1 MiB of transient task storage.
+@@ -317 +323,2 @@ I64 Main(CI386BootInfo *info,I64 unused)
+-    pulse_used=kernel_heap.used;
++    pulse_heap=kernel_pulse->heap; private_bytes=kernel_pulse->local_heap.size;
++    pulse_used=pulse_heap->used;
+@@ -322 +329 @@ I64 Main(CI386BootInfo *info,I64 unused)
+-        pulse_used-kernel_heap.used<1048576+16384) KernelStop;
++        pulse_used-pulse_heap->used<private_bytes+16384) KernelStop;
+@@ -324 +331 @@ I64 Main(CI386BootInfo *info,I64 unused)
+-    KernelLog("PROBE TASK RELEASE "); KernelHex(pulse_used-kernel_heap.used); KernelLog("\n");
++    KernelLog("PROBE TASK RELEASE "); KernelHex(pulse_used-pulse_heap->used); KernelLog("\n");

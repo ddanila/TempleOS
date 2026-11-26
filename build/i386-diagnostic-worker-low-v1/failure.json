@@ -1,0 +1,18 @@
+{
+  "status": "fail",
+  "ram_mib": 8,
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-low-v1/cross/kernel-diagnostics.img": "d1a8c4573d322d145edf918d66e6a6642599823bef5c4bc8c83d38b81f854037",
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-low-v1/cross/result.json": "6026c1541b6b41a9f404d23da5442eaa9ea0b94c91b39bafa403237ea22a4de0",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-startup-memory.py": "cc4748a4118d5e498b26d490b719f79c92148a34dcd76d325f30744d859ec0de",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463"
+  },
+  "trace_sha256": "64606b9ef71f76c724920e9f3fc44e4415d4ff0b1e9941225e09017aca659f6f",
+  "terminal_trace": [
+    "HEAP EXHAUSTED 0000000000105507 000000000059AD80 000000000066F200 00000000000CBBE0 0000000000004665",
+    "HEAP FAILURE CALLERS 0000000000129120 000000000012AE03",
+    "HEAP EXHAUSTED 0000000000085507 000000000007EA00 0000000000086C00 00000000000081F0 0000000000000004",
+    "HEAP FAILURE CALLERS 0000000000129120 000000000012AE03",
+    "FAIL native kernel"
+  ]
+}

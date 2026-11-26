@@ -899,3 +899,10 @@ logged the sprite source allocation rejection. The artifact audit passed for
 the boot code, 16 modules, and reachable filesystem extents. The delivered
 source audit matched 1,578 files to frozen revision `5303f095`. Generation two
 has begun rebuilding the retained modules from that guest-built image.
+
+The 512 KiB low-memory worker alternative failed before task creation. The low
+arena had 0x86C00 bytes in total, but 0x7EA00 bytes were already in use and its
+largest remaining block was 0x81F0 bytes. The worker required 0x85507 bytes
+including its stack and task metadata. A solution must account for the
+existing low-memory users as well as the main-arena peak. The patch and
+terminal receipt are in `build/i386-diagnostic-worker-low-v1/`.
