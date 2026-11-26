@@ -25,11 +25,17 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 C1 has 572 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
-pending. C5 reproduced two native generations from frozen revision `d5792939`.
-Both passed the 8 MiB cold boot, the 64 MiB desktop baseline and configured
-Home Once handoff, and the frozen 686-entry content check. Reproducibility
-covered all 16 modules with the flat kernel build date normalized. The full
-compatibility suite and release resource gates remain open.
+pending. C5 reproduced two native generations from frozen revision `5303f095`.
+Both passed the 8 MiB cold boot and document allocation profile, frozen
+686-entry content check, and 64 MiB desktop baseline, configured Home Once
+handoff, and persistent graphics composition checks. The artifact audit
+reproduced all 16 modules with the flat kernel build date normalized.
+The full compatibility suite and release resource gates remain open. The
+newer version-276 interactive image reached startup in 63.584 seconds at
+8 MiB, above the 60-second requirement.
+[Native rebuild receipt](build/i386-demo-insetip-v1/generations128/result.json) ·
+[Composition checks](docs/i386-persistent-composition.md#frozen-native-rebuild-checkpoint) ·
+[Startup and resource measurements](docs/i386-heap-performance.md)
 
 The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
