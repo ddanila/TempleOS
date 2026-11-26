@@ -1,0 +1,24 @@
+{
+  "result": "pass",
+  "image_sha256": "cc52b6758e15642e0fe7b57d57446ab8a601112c91b4c78583b2b1c510fa5231",
+  "commands": {
+    "#include \"C:/Compiler/PrsOptions.HC\"": {
+      "result": "accept"
+    },
+    "Bool old=GetOption(17);if(Option(17,!old)!=old || GetOption(17)==old)throw('Opt',TRUE);Option(17,old);": {
+      "result": "accept"
+    },
+    "#include \"C:/Demo/ParenWarn.HC\"": {
+      "result": "accept"
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 22,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

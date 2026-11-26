@@ -10662,7 +10662,7 @@
           "target": "native-keepaway-foul-positive-tick",
           "result": "pass",
           "evidence": "build/i386-keepaway-numbible-production-v1/foul/result.json",
-          "scope": "Production image scores the original 0–1 foul and recovers the prompt."
+          "scope": "Production image scores the original 0\u20131 foul and recovers the prompt."
         },
         {
           "target": "native-keepaway-regulation-positive-tick",
@@ -18556,9 +18556,28 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch the unchanged demo, enable and exercise the redundant-parenthesis option, then disable warnings and return to the prompt.",
+      "oracle": "Five original compiler warnings at lines 6, 8, 9, 10 and 14, with navigable source links and fresh command input afterward.",
+      "tests": [
+        {
+          "target": "native-original-parenwarn-demo",
+          "result": "fail",
+          "evidence": "build/i386-demo-parenwarn-v1/comparison/result.json",
+          "scope": "The original completes and writes five warnings. Native rejects the first Option call."
+        },
+        {
+          "target": "native-parenwarn-option-availability",
+          "result": "pass",
+          "evidence": "build/i386-demo-parenwarn-v1/probe/result.json",
+          "scope": "On the frozen desktop, the constant resolves, both option functions are missing, and arithmetic recovers."
+        },
+        {
+          "target": "native-parenwarn-shared-startup-candidate",
+          "result": "fail",
+          "evidence": "build/i386-demo-parenwarn-v1/startup-comparison/result.json",
+          "scope": "Publishing the shared option code lets the demo finish with five warnings and fresh input. Native warning documents omit the original source links and token context."
+        }
+      ]
     },
     {
       "path": "Demo/PhoneNumWords.HC",

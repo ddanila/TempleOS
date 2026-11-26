@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "image_sha256": "957f7ef76581ebad716f33ab0d0c232fa55bf10061c7c88c578c011e3338515b",
+  "commands": {
+    "OPTf_WARN_PAREN;": {
+      "result": "accept"
+    },
+    "Option(17,ON);": {
+      "result": "reject",
+      "diagnostic": "INPUT LINE Option(17,ON);\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Home/Console.HC line 1\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    },
+    "GetOption(17);": {
+      "result": "reject",
+      "diagnostic": "INPUT LINE GetOption(17);\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Home/Console.HC line 1\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 17,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

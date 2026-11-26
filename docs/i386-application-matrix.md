@@ -2852,3 +2852,21 @@ The guarded patch is now in the bundled source. Its repeat measured 520,
 cold launches, the foul, both shot inputs, and the untouched regulation
 timer in 179.843 seconds. See the
 [guarded repeat and gameplay receipts](../build/i386-keepaway-render-yield-v2/repeat-checkpoint.json).
+
+The bundled ParenWarn demo produced five original warning links at lines
+6, 8, 9, 10, and 14. Native rejects its first statement. A keyboard probe
+confirmed that the native compiler resolves `OPTf_WARN_PAREN` and rejects
+`Option` and `GetOption`. The prompt accepted arithmetic after both
+rejections. The compiler's private parser code already loads the shared
+option implementation, which gives a path to testing public publication.
+See the [demo comparison](../build/i386-demo-parenwarn-v1/comparison/result.json)
+and [prompt probe](../build/i386-demo-parenwarn-v1/probe/result.json).
+
+Loading the shared `PrsOptions.HC` from the prompt allowed the option
+to be read, changed, and restored on the active compiler control. A
+native startup candidate published that same file to Adam's task.
+The unchanged demo then completed with five warnings and fresh command
+input. Its warning text still lacks the original token context and
+navigable source links, so the differential remains open. See the
+[active-control probe](../build/i386-demo-parenwarn-v1/shared-probe/result.json)
+and [startup comparison](../build/i386-demo-parenwarn-v1/startup-comparison/result.json).

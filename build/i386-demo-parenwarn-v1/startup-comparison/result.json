@@ -1,0 +1,17 @@
+{
+  "result": "fail",
+  "input_sha256": "a9619d06028f31baae17467d4477082804655032520a97a15a4b7c4ebd39cbd3",
+  "entries": {
+    "Demo/ParenWarn.HC": {
+      "source_sha256": "8d82094c3f7cdaecfb1ca56855780c115fad9533429bd308536da8a53a03ba7a",
+      "output_file": "demo-0.DD",
+      "result": "fail",
+      "original_sha256": "bcb1d000ff5a964c328b4153c5a391739c4e99409617ed22b90c1d2a233a13df",
+      "native_sha256": "57eb3d4e1fed5c544775f447d404410bbd2aa42a489736e92162a7577497dc42",
+      "bytes": 891
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}
