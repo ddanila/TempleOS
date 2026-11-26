@@ -2931,3 +2931,18 @@ explicit request. The unchanged MagicPairs demo matched the original
 prime counts and all 16 pairs and returned to the prompt. The same image
 passed the nine-command 64 MiB baseline and the 8 MiB ParenWarn check.
 See the [production workflow receipt](../build/i386-magic-pairs-native-v1/qualification.json).
+
+MPPrint now qualifies once the first processor-zero worker call has
+completed. The unchanged demo produced 1,000 CPU0 records, and both
+guests saved the same 11,006 bytes of DolDoc. The earlier original
+boot sample returned before the worker processed its first request.
+Palindrome also qualifies. Both guests matched an independent scan of
+the pinned Bible on all nine records and returned to the prompt.
+See the [MPPrint receipt](../build/i386-demo-mpprint-v1/qualification.json)
+and [Palindrome receipt](../build/i386-demo-palindrome-v1/qualification.json).
+
+The original Primes demo matched an independent sieve for both range
+limits and both invocations at each limit. Native compilation reaches
+the unpublished `sys_cache_line_width` on line 9. See the
+[prime reference](../build/i386-demo-primes-v1/original-receipt.json)
+and [native rejection](../build/i386-demo-primes-v1/comparison/result.json).

@@ -1,0 +1,12 @@
+{
+  "result": "pass",
+  "image_sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+  "source_sha256": "44f716247b78b7d98d3b67f94304098cc14aa6177d9f6463b3c9af9ecef4a30e",
+  "output_sha256": "4d12883100d3ca9be08ececb92c60bea775626a8bf0be74351df1f3731bd8c70",
+  "jobs": 500,
+  "records": 1000,
+  "bytes": 11006,
+  "ready_batch_sha256": "23b9ed067e698cb7ced1893844d90fd0c327f6c90324f4cdb7806f615258f17b",
+  "cold_batch_sha256": "f48fe7812d89e231b513cc148477a4aab695311cade7af947c5a02905c13bd43",
+  "scope": "After the first public worker call finishes, both one-CPU boots run the unchanged demo and produce identical documents."
+}

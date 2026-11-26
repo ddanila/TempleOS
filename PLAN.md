@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 27 (six apps and twenty-one demos) |
+| Qualified | 29 (six apps and twenty-three demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 629 |
-| Linked to tests / with reference workflow and oracle | 184 / 113 |
+| Qualification gaps | 627 |
+| Linked to tests / with reference workflow and oracle | 186 / 116 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 21 of 224 |
+| Demos qualified | 23 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 27 workflows and records eighteen shared files
+- The inventory qualifies 29 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -109,6 +109,14 @@ is complete and provides the foundation, but not desktop or application parity.
   pair and returned to the prompt. The same image passed the nine-command
   desktop baseline at 64 MiB and the 8 MiB ParenWarn probe. See the
   [MagicPairs receipt](build/i386-magic-pairs-native-v1/qualification.json).
+
+- MPPrint and Palindrome now qualify through the public worker queue.
+  MPPrint produced all 1,000 records after the first worker call
+  completed. Palindrome matched all nine independent Bible records.
+  The same image passed the frozen 686-file content check. See the
+  [MPPrint receipt](build/i386-demo-mpprint-v1/qualification.json),
+  [Palindrome receipt](build/i386-demo-palindrome-v1/qualification.json),
+  and [image audit](build/i386-magic-pairs-native-v1/full-content-checkpoint.json).
 
 ### Plan decisions (2026-11-24)
 

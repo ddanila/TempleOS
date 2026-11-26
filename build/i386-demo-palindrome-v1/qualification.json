@@ -1,0 +1,39 @@
+{
+  "result": "pass",
+  "image_sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+  "source_sha256": "44b56d5067b4990c31b42b97092fbc5ee835564a926a3be9be4a7cc6e157b2e2",
+  "bible_sha256": "1e26eba1eb07409b64f460406f380de91b94d92cece17e1598312a131c13fedd",
+  "runs": {
+    "original": {
+      "sha256": "d86d3c2945b1fdf10e015f516741ca98b435df0b3031b2d2ff95838564aea72b",
+      "records": [
+        "W",
+        "TOT",
+        "ETETE",
+        "XXXXXX",
+        "XXXXXXX",
+        "XXXXXXXX",
+        "XXXXXXXXX",
+        "AMASAWASAMA",
+        "NOMANEVENAMON"
+      ],
+      "elapsed_seconds": 8.65061
+    },
+    "native": {
+      "sha256": "49c1d7aa920ad275dc09613a430e4fe9629f8054399a629ce714b4d0836486d8",
+      "records": [
+        "W",
+        "TOT",
+        "ETETE",
+        "XXXXXX",
+        "XXXXXXX",
+        "XXXXXXXX",
+        "XXXXXXXXX",
+        "AMASAWASAMA",
+        "NOMANEVENAMON"
+      ],
+      "elapsed_seconds": 26.83
+    }
+  },
+  "scope": "Both one-CPU guests produced the complete independent record sequence. Time may vary."
+}

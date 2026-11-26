@@ -1,0 +1,17 @@
+{
+  "result": "fail",
+  "input_sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+  "entries": {
+    "Demo/MultiCore/Palindrome.HC": {
+      "source_sha256": "44b56d5067b4990c31b42b97092fbc5ee835564a926a3be9be4a7cc6e157b2e2",
+      "output_file": "demo-0.DD",
+      "result": "fail",
+      "original_sha256": "d86d3c2945b1fdf10e015f516741ca98b435df0b3031b2d2ff95838564aea72b",
+      "native_sha256": "49c1d7aa920ad275dc09613a430e4fe9629f8054399a629ce714b4d0836486d8",
+      "bytes": 205
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}

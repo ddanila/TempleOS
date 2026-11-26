@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "image_sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+  "source_revision": "40a3e04013c2dc3ed73ce99fe5645bce9a784e2d",
+  "inventory_files": 686,
+  "delivered_source_files": 1561,
+  "inventory_sha256": "4bca56b3ddf62d121445cf9a80a3e2c8047b61b72513b7f4035b6aaf2c801e18",
+  "accel": "kvm",
+  "evidence_sha256": {
+    "content": "7e6b6949641dfbcd5b3fe34fc8a119ff16e27efc52afea4f5e09b767da044d6a",
+    "source": "f3175e804f054ad9148b31b60b0235c334ed120ec66db932547cb955b9191473"
+  },
+  "scope": "Frozen full inventory and bounded guest read test on the image with the public worker queue."
+}

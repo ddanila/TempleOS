@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "input_sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+  "entries": {
+    "Demo/MultiCore/MPPrint.HC": {
+      "source_sha256": "44f716247b78b7d98d3b67f94304098cc14aa6177d9f6463b3c9af9ecef4a30e",
+      "output_file": "demo-0.DD",
+      "result": "pass",
+      "original_sha256": "4d12883100d3ca9be08ececb92c60bea775626a8bf0be74351df1f3731bd8c70",
+      "native_sha256": "4d12883100d3ca9be08ececb92c60bea775626a8bf0be74351df1f3731bd8c70",
+      "bytes": 11006
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}

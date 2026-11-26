@@ -18488,15 +18488,27 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged demo after a one-CPU worker is ready.",
+      "oracle": "1,000 CPU0 records with original DolDoc attributes, followed by prompt recovery.",
       "tests": [
         {
           "target": "native-original-demo-batch",
           "result": "fail",
           "evidence": "build/i386-demo-mpprint-v1/result.json",
           "scope": "The native compiler reported an undefined identifier at the JobQue call on line 12. The single-CPU original capture contained no job text, so the generic batch still needs a worker-completion oracle for this demo."
+        },
+        {
+          "target": "original-native-mpprint-worker-ready",
+          "result": "pass",
+          "evidence": "build/i386-demo-mpprint-v1/qualification.json",
+          "scope": "Identical 11,006-byte documents from 500 asynchronous submissions after a public worker readiness call."
+        },
+        {
+          "target": "original-native-mpprint-early-boot",
+          "result": "fail",
+          "evidence": "build/i386-demo-mpprint-v1/comparison/result.json",
+          "scope": "The cold Once fixture samples before the original worker starts; native produced all 1,000 records."
         }
       ]
     },
@@ -18529,10 +18541,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged demo on one CPU and scan the bundled Bible to completion.",
+      "oracle": "The complete ordered sequence of nine record-setting palindromes and a return to the prompt. Timing can vary.",
+      "tests": [
+        {
+          "target": "original-native-palindrome-bible-scan",
+          "result": "pass",
+          "evidence": "build/i386-demo-palindrome-v1/qualification.json",
+          "scope": "Both one-CPU guests matched all records from an independent Bible scan, including NOMANEVENAMON."
+        }
+      ]
     },
     {
       "path": "Demo/MultiCore/Primes.HC",
@@ -18547,9 +18566,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch the unchanged demo and run both processor-count variants at each sieve size.",
+      "oracle": "Prime counts of 25 below 100 and 78,498 below a million, with exact trailing prime lists. Timing can vary.",
+      "tests": [
+        {
+          "target": "original-primes-independent-sieve",
+          "result": "pass",
+          "evidence": "build/i386-demo-primes-v1/original-receipt.json",
+          "scope": "The pinned one-CPU reference matched an independent sieve on all four reports."
+        },
+        {
+          "target": "native-primes-bundled",
+          "result": "fail",
+          "evidence": "build/i386-demo-primes-v1/comparison/result.json",
+          "scope": "The unchanged native demo rejects sys_cache_line_width at line 9."
+        }
+      ]
     },
     {
       "path": "Demo/NullCase.HC",
