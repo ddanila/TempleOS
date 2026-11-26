@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "demo": "106f84a73ac5708daf5409875a3f2873060b89ca18b0b080d6a132e85ec51419",
+    "archive_dictionary": "649c61e15c401948ac72433cd81114f288222c36eb23c5ddced5a3f89eb4f10d",
+    "image": "bc4ffd167f31b14c0d4e800efc10760b44474ef6daba8708f40ac90195689ffa",
+    "fixture": "f09c8dbdff47e031b3bab2cc3941138625fc502b710c4c586e479c15de1b2a1d",
+    "output": "65883d1163c2147f4a8f3f6396ef386675e4b0d92e572dd9acdb6772886a8c4c"
+  },
+  "query": "xylophone",
+  "matches": [
+    "Xylophone"
+  ],
+  "doc_bytes": 71,
+  "scope": "Original terminal example with the cold dictionary initialized, one query and an empty reply"
+}

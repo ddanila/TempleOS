@@ -19775,9 +19775,16 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Run the terminal demo with the original dictionary available, enter xylophone, then submit an empty reply to exit.",
+      "oracle": "The original outputs one suggestion, Xylophone, and the second prompt exits on the empty answer. Compare all DolDoc bytes and verify the i386 prompt recovers.",
+      "tests": [
+        {
+          "target": "original-suggest-spelling-dictionary",
+          "result": "pass",
+          "evidence": "build/i386-demo-suggest-spelling-v1/reference-result.json",
+          "scope": "The original guest exports all 71 DolDoc bytes for one query and an empty reply."
+        }
+      ]
     },
     {
       "path": "Demo/Templates/Game1.HC",
