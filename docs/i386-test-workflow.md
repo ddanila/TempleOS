@@ -6332,3 +6332,14 @@ installed bytes. A separate 8 MiB KVM boot passed the document allocation
 check, the diagnostic provider load/recovery/unload sequence, and fresh
 arithmetic. The runner then started the 128 MiB guest flat-kernel build.
 [Installation and cold boot](../build/i386-code-alloc-known-v1/native-generations128/gen1-install/result.json)
+
+The image with all nine guest-built retained providers installed also
+passed the managed 64 MiB desktop baseline with nine exact VGA
+checkpoints. Its 8 MiB document resource test completed 20 cycles and
+11 exact VGA checkpoints, with 37,840 live bytes and 55,808 reserved
+bytes at peak. The bundled Registry1 template matched both original
+saved scores. These checks used the generation-one retained installation
+while the flat kernel was still being built.
+[Desktop baseline](../build/i386-code-alloc-known-v1/all-retained-desktop64/result.json) ·
+[Document resource profile](../build/i386-code-alloc-known-v1/all-retained-resource8/resource-result.json) ·
+[Registry1 comparison](../build/i386-code-alloc-known-v1/all-retained-registry-template64/result.json)
