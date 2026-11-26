@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "glyphs_equal": 256,
+  "pixels_equal": 16384,
+  "original_origin": [
+    1,
+    2
+  ],
+  "native_origin": [
+    0,
+    0
+  ],
+  "original_frame_sha256": "2b0036fe10275b9ed878ee710a3e65f4fe5cfe83164afb799688e66f1456853a",
+  "native_frame_sha256": "fd38836174ec5485eff2e25bc35461ef6a489e5bbeee644c7799da26c77034ba",
+  "native_input_sha256": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+  "native_arithmetic": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "native_inputs_unchanged": true,
+  "scope": "Unchanged demo after loading packaged autocomplete and task settings; cold direct include remains open."
+}

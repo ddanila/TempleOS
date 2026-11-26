@@ -18706,9 +18706,28 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Run the bundled ScrnCodes demo, inspect the 16-by-16 character grid, and dismiss it with a key.",
+      "oracle": "Match the eight raster rows of every glyph against the original VGA frame, then verify key dismissal and recovery of the caller's prompt.",
+      "tests": [
+        {
+          "target": "original-scrncodes-grid",
+          "result": "pass",
+          "evidence": "build/i386-demo-scrncodes-v2/original/result.json",
+          "scope": "Original reference reached all 256 glyph positions and returned on an emulated physical keypress."
+        },
+        {
+          "target": "native-scrncodes-cold-launch",
+          "result": "fail",
+          "evidence": "build/i386-demo-scrncodes-v2/native/compiler-trace.txt",
+          "scope": "The configured desktop cold include rejects the SettingsPush identifier before rendering the grid."
+        },
+        {
+          "target": "native-original-scrncodes-rendered-grid",
+          "result": "pass",
+          "evidence": "build/i386-demo-scrncodes-v3/comparison.json",
+          "scope": "After loading packaged original settings and autocomplete sources, native matched all 16,384 glyph-cell pixels, returned on a keypress and displayed the result of fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Snd/ASCIIOrgan.HC",

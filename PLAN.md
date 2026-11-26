@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 9 (six app support sources and three shared data files) |
 | Qualification gaps | 646 |
-| Linked to tests / with reference workflow and oracle | 177 / 106 |
+| Linked to tests / with reference workflow and oracle | 178 / 107 |
 | Apps qualified | 2 of 12 (all 12 have partial tests) |
 | Demos qualified | 17 of 224 |
 
@@ -43,10 +43,10 @@ is complete and provides the foundation, but not desktop or application parity.
   Bible and returned to arithmetic. The 128 MiB native provider build
   for that image was still running at this checkpoint. The completed
   two-generation result remains pinned to `592a38b7`.
-- The original ScrnCodes run captured all 256 glyphs and returned on a
-  keypress. Native inclusion stops at the undefined `SettingsPush`
-  identifier on line 20. The [original and native receipts](build/i386-demo-scrncodes-v2)
-  preserve the comparison.
+- ScrnCodes matches all 256 original glyph cells after loading the packaged
+  settings and autocomplete sources. Both guests return on a keypress and
+  native arithmetic still works. A cold direct include still stops at
+  `SettingsPush`. See the [VGA comparison](build/i386-demo-scrncodes-v3/comparison.json).
 - TimeClock's newly written archive resolves by name and decodes on the
   host. Guest `FileRead` fails on that file and succeeds on a prepackaged
   copy. See the [TimeClock report investigation](docs/i386-timeclock-native.md#fresh-report-failure-on-the-newer-desktop-image).
