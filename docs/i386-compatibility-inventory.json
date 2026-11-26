@@ -18573,7 +18573,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Launch the unchanged demo, enable and exercise the redundant-parenthesis option, then disable warnings and return to the prompt.",
       "oracle": "Five original compiler warnings at lines 6, 8, 9, 10 and 14, with navigable source links and fresh command input afterward.",
       "tests": [
@@ -18594,6 +18594,24 @@
           "result": "fail",
           "evidence": "build/i386-demo-parenwarn-v1/startup-comparison/result.json",
           "scope": "Publishing the shared option code lets the demo finish with five warnings and fresh input. Native warning documents omit the original source links and token context."
+        },
+        {
+          "target": "native-original-parenwarn-rich-warnings",
+          "result": "pass",
+          "evidence": "build/i386-parenwarn-links-v2/qualification.json",
+          "scope": "Five matching warning tokens, source snippets, styled warnings and correct file-line targets. The native host compiler callback omits the original HolyC parser frames."
+        },
+        {
+          "target": "native-parenwarn-source-link-activation",
+          "result": "pass",
+          "evidence": "build/i386-parenwarn-links-v2/activation64-fixed/result.json",
+          "scope": "The emitted line-nine link opens the editor at the source position, saves the queued edit and restores the caller."
+        },
+        {
+          "target": "native-parenwarn-option-round-trip-8m",
+          "result": "pass",
+          "evidence": "build/i386-parenwarn-links-v2/public8/result.json",
+          "scope": "Startup publication, active compiler option read/write/restore, demo completion and fresh arithmetic at 8 MiB."
         }
       ]
     },

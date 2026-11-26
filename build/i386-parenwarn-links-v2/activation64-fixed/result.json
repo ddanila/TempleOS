@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "scope": "The actual emitted warning link opened and saved line nine, including the DolDoc cursor position. The caller accepted and displayed 42.",
+  "image_sha256": "461ecd790fec15320a9c1661664415f28e55df4ad4ad99f1642394d6a5962244",
+  "warnings_sha256": "356858c4b3d91c0f5613043ea929faf850581534d8a923eb6a5e9d11c1513543",
+  "contract_sha256": "98977913b941c146f21f52bcb53d11893f3e816a04275f25fb2b5f9f7e675da2",
+  "log_sha256": "e7ef589b5467a0f4d9f5341db24cf51e1f483f1d32a434e32f6a6a9dfade2209",
+  "line": 9,
+  "saved_line": "Z\u0005d=(d1+d2)+(d1+d2);",
+  "fresh_result": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

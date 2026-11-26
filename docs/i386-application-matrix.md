@@ -2889,3 +2889,9 @@ on that path. Public option toggling, the bundled demo, and fresh
 arithmetic also passed on an 8 MiB KVM boot. See the
 [warning comparison](../build/i386-parenwarn-links-v2/qualification.json)
 and [source checkpoint](../build/i386-parenwarn-links-v2/source-checkpoint.json).
+
+The emitted warning link for line nine also passed a real editor
+session. An edit was saved at the expected position on a disposable
+copy of the source, and the caller accepted and displayed fresh
+arithmetic. The inventory qualifies the bundled demo.
+See the [activation receipt](../build/i386-parenwarn-links-v2/activation64-fixed/result.json).
