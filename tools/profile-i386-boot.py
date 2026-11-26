@@ -193,6 +193,7 @@ def main():
             if proc.poll() is None:
                 proc.kill()
                 proc.wait()
+            (out / 'samples.json').write_text(json.dumps(samples, indent=2) + '\n')
     counts = defaultdict(Counter)
     stacks = defaultdict(Counter)
     for sample in samples:
@@ -207,7 +208,6 @@ def main():
                   profiler_sha256=sha(Path(__file__)), interval_seconds=args.interval,
                   samples=len(samples), phases={name:dict(counter.most_common()) for name,counter in counts.items()},
                   stacks={name:dict(counter.most_common()) for name,counter in stacks.items()})
-    (out / 'samples.json').write_text(json.dumps(samples, indent=2) + '\n')
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     for name, counter in counts.items():
         print(name, 'samples:', counter.total(), 'top:', counter.most_common(5))
