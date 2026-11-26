@@ -17290,9 +17290,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch the unchanged demo, observe the filled polygon faces rotate, then press Space.",
+      "oracle": "The three face colors contribute to the rotating VGA raster. Space clears the graphics, and the i386 prompt accepts fresh arithmetic.",
+      "tests": [
+        {
+          "target": "original-rotating-filled-polygons",
+          "result": "pass",
+          "evidence": "build/i386-demo-3d-poly-v1/original-cleared/result.json",
+          "scope": "The original guest renders changes in all three face colors and clears the new colored pixels on Space."
+        },
+        {
+          "target": "native-3d-poly-before-transform-bindings",
+          "result": "fail",
+          "evidence": "build/i386-demo-3d-poly-v1/comparison/result.json",
+          "scope": "The pre-binding i386 image rejects DCSymmetrySet at line 11."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/BSpline.HC",

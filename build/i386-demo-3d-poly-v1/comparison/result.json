@@ -1,0 +1,36 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-blot-v1/cross/kernel.img": "c6c81e943614d6fd5428f0b7773222ab4dc718fe3786bcfdc632b3375506eda0",
+    "/home/ddanila/fun/TempleOS/Demo/Graphics/3DPoly.HC": "7cf5c8a305beaa7603535c259618d44ab9c6b67b8659a4093870b22b7b26197d"
+  },
+  "inputs_unchanged": true,
+  "working_disk_sha256": "c6c81e943614d6fd5428f0b7773222ab4dc718fe3786bcfdc632b3375506eda0",
+  "runs": {
+    "original": {
+      "result": "pass",
+      "face_pixels": [
+        {
+          "red": 114,
+          "green": 207,
+          "blue": 7149
+        },
+        {
+          "red": 206,
+          "green": 291,
+          "blue": 7205
+        }
+      ],
+      "changed_pixels": {
+        "red": 252,
+        "green": 396,
+        "blue": 882
+      }
+    },
+    "native": {
+      "result": "fail",
+      "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 00000000015A2A48 00000000536B7354\nINPUT LINE ExeFile(\"C:/Demo/Graphics/3DPoly.HC\");\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Demo/Graphics/3DPoly.HC line 11\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND OK\n"
+    }
+  }
+}

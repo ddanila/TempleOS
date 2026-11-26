@@ -124,5 +124,12 @@
     "allocated_bytes": 67108864,
     "sha256": "c6c81e943614d6fd5428f0b7773222ab4dc718fe3786bcfdc632b3375506eda0",
     "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-3d-poly-v1/comparison/working.img",
+    "retained": "build/i386-demo-blot-v1/cross/kernel.img",
+    "allocated_bytes": 67108864,
+    "sha256": "c6c81e943614d6fd5428f0b7773222ab4dc718fe3786bcfdc632b3375506eda0",
+    "bytes": 67108864
   }
 ]

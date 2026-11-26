@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 573 |
-| Linked to tests / with reference workflow and oracle | 241 / 170 |
+| Linked to tests / with reference workflow and oracle | 242 / 171 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 77 of 224 |
 
@@ -617,6 +617,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   The image passed the 386 instruction and 1,578-file source audits.
   See the [raster comparison](build/i386-demo-blot-v1/bindings-comparison/qualification.json)
   and [source audit](build/i386-demo-blot-v1/delivered-source.json).
+  Under TCG at 8 MiB, the interactive run reached the window manager
+  but did not signal startup completion within the harness's 180-second
+  wait. The 60-second release target remains unmet on that run. See the
+  [8 MiB interactive receipt](build/i386-demo-blot-v1/interactive8/result.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the

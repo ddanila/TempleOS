@@ -1,0 +1,26 @@
+{
+  "input_sha256": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+  "result": "pass",
+  "face_pixels": [
+    {
+      "red": 114,
+      "green": 207,
+      "blue": 7149
+    },
+    {
+      "red": 206,
+      "green": 291,
+      "blue": 7205
+    }
+  ],
+  "changed_pixels": {
+    "red": 252,
+    "green": 396,
+    "blue": 882
+  },
+  "after_key_new_pixels": {
+    "red": 0,
+    "green": 0,
+    "blue": 0
+  }
+}
