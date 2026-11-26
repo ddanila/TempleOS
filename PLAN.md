@@ -371,6 +371,9 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   DolDoc boundary handler. Both guests evaluated fresh arithmetic after End.
   The rebuilt image passed the 386 instruction audit, exact 1,572-file source
   comparison, 8 MiB graphics probe, and nine 64 MiB desktop baseline commands.
+  The frozen image from `d3bd8963` also passed the 686-file content check
+  and bounded guest Bible read. See the
+  [full-content checkpoint](build/i386-demo-grid-v1/full-content-checkpoint.json).
   See the [Grid qualification](build/i386-demo-grid-v1/qualification.json)
   and [prior caret comparison](build/i386-demo-grid-v1/caret-baseline.json).
 

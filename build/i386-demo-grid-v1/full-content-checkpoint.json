@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "source_revision": "d3bd896384aed93a1be90cdccaefe21df9ca7ef8",
+  "disk_sha256": "54e63626162c292f95b5bef812ac0234578925454bc0c56f006273dedc865bf1",
+  "inventory_files": 686,
+  "delivered_source_files": 1572,
+  "active_desktop_commands": 9,
+  "plot_probe_ram_mib": 8,
+  "evidence_sha256": {
+    "committed-source.json": "c6e2df54309c33d468880dffe954f3a9c47b3238f7bfd722f3a544d0a9c02902",
+    "baseline64/result.json": "dc169ca1a4c3092433c8f1287f019c678aad0102f12499a53111d2972ac63f54",
+    "full-content64/result.json": "c62052d9a36206f786b653092989a10922e405407b9f06c6b8979654e3d669b3",
+    "plot8/result.json": "8d179975b36ec08dba73643b58a2a0b660335e8e29e3d13a28bcc731185e83af"
+  }
+}
