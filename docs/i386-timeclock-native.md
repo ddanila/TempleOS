@@ -251,3 +251,9 @@ between iterations. Both guests returned their task data and code
 heaps to the measured baseline and preserved the exact saved record.
 Native also returned to the prompt and rendered fresh arithmetic.
 See the [resource comparison](../build/i386-timeclock-resource-v1/comparison.json).
+
+The keyboard-driven run on the same RedSea fix passed with multiline
+input, Shift-Escape cancellation, and byte-identical records after
+cold reboot. The inventory now qualifies the TimeClock launch, punch,
+report, and reopen workflows and covers its two supporting sources.
+See the [keyboard receipt](../build/i386-redsea-named-self-v1/timeclock-keyboard/result.json).
