@@ -17576,6 +17576,12 @@
           "scope": "The pinned original enters its compiler debugger on the first aggregate initializer at line 11. The boot fixture never completes, so this run provides no native comparison."
         },
         {
+          "target": "rebuilt-x64-glblvars-boot-fixture",
+          "result": "fail",
+          "evidence": "build/i386-demo-glblvars-x64-rebuild-v1/result.json",
+          "scope": "The rebuilt x64 compiler reports a missing semicolon at the first aggregate initializer on line 11. The fixture completes and exports that diagnostic."
+        },
+        {
           "target": "native-glblvars-prompt",
           "result": "pass",
           "evidence": "build/i386-demo-glblvars-native-v1/run/result.json",

@@ -1,0 +1,11 @@
+{
+  "result": "fail",
+  "scope": "Unchanged GlblVars launched with the current rebuilt x64 compiler and kernel; the test fixture completed and exported the compiler diagnostic.",
+  "bootstrap_revision": "2b13304d50eaef06d7f7c22ba7e010d7e775328f",
+  "bootstrap_result_sha256": "e28dc0e70a48b59bd55cab2e07b4c1785a0e5fdecbce4b1c0b683690ab7a2eba",
+  "demo_source_sha256": "70d2ef4e34378455ddf42dcf62a77093e3f415f8e73623cca0b3dd68ba8f2d21",
+  "fixture_sha256": "adb37319d4a71a59d4ff682da2329b44b03dff2d362e41f5ff54d80abbac38a1",
+  "iso_sha256": "6a0b3aad4f5e11813dd77c40ec530e95ce183211b8b1b5e4f9b360df0a4acc73",
+  "output_sha256": "acfe7e98d6c35bdd563c0e35e6c31c0dadf16cee5cb4a8859f286531f0fa7327",
+  "output": "&LexExcept PrsHostReport PrsGlblVarLstCore PrsStmtCore $FG,12$$BK,1$ERROR:$FG$$BK,0$ Missing ';' at\"{\" $LK,\"T:/Demo/GlblVars.HC,0011\",A=\"FL:T:/Demo/GlblVars.HC,11\"$   {10,\"Name1\"},\n\u0005"
+}
