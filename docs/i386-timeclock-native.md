@@ -150,3 +150,11 @@ and storage history from the TimeClock file. The new Home archive still
 failed through the absolute path. A cold-boot attempt on a copy of the
 written disk stopped during kernel startup before it could retry the read.
 See the [guest report markers](../build/i386-timeclock-read-paths-v2/report-markers.txt).
+
+A separate 64 MiB guest probe expanded that captured record and passed it
+directly to public `FileWrite`. All five immediate reads returned the exact
+34 bytes. This covered plain and compressed writes at the root and under
+`Home/TimeClock`, plus a compressed write through TimeClock's exact
+home-relative filename. The probe leaves the application's failing call
+sequence open and gives a controlled passing case on the same base image.
+See the [round-trip results](../build/i386-timeclock-write-read-matrix-v1/guest-results.txt).

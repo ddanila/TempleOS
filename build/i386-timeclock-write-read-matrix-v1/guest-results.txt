@@ -1,0 +1,5 @@
+C:/ProbeData.DATA READ exact
+C:/ProbeData.DATA.Z READ exact
+C:/Home/TimeClock/ProbeData.DATA READ exact
+C:/Home/TimeClock/ProbeData.DATA.Z READ exact
+~/TimeClock/TimeFile.DATA.Z READ exact
