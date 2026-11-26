@@ -32,8 +32,10 @@ The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
 64 MiB desktop commands, and configured HomeSys handoff. Its
 128 MiB retained-provider rebuild and all-provider audit passed.
-Two-generation reproduction is running from the frozen source. The latest
-application checks on this image qualify Lines and Box. Bounce also qualifies
+Both native generations from this frozen source cold-booted at 8 MiB and
+reproduced all 16 modules after kernel build-date normalization. Generation
+two desktop checks are running. Application checks on the cross-built
+image qualify Lines and Box. Bounce also qualifies
 on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
@@ -295,9 +297,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   source audit. Generation one installed all nine providers, built its
   flat kernel at 128 MiB, cold-booted at 8 MiB, and passed the installed
   module and source audits. Generation two rebuilt all nine retained
-  providers at 128 MiB with byte-identical outputs, installed them, and
-  started the flat-kernel self-host build.
+  providers at 128 MiB with byte-identical outputs, installed them, built
+  its flat kernel, and cold-booted at 8 MiB. The two-generation audit
+  matched all 16 modules after normalizing the eight-byte kernel build
+  date. Both source and installed-image audits passed.
   See the
+  [two-generation completion checkpoint](build/i386-sprite-plot3d-production-v1/generations128-frozen/completion-checkpoint.json),
   [retained-build checkpoint](build/i386-sprite-plot3d-production-v1/retained128-checkpoint.json),
   [generation-one install](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-install/result.json),
   [generation-one checkpoint](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-checkpoint.json),

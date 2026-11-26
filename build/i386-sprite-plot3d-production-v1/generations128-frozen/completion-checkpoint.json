@@ -1,0 +1,36 @@
+{
+  "result": "pass",
+  "source_revision": "c40647513cbe0732de62fbf14733c6c86bdfe4e6",
+  "module_count": 16,
+  "normalized_flat_sha256": "9c16ee28f9b30b9e629db85a6341b56aa77122eeab7ebcddb7a0bc799420bb00",
+  "kernel_build_dates": [
+    3179609661482040,
+    3179609818665912
+  ],
+  "generations": {
+    "gen1": {
+      "disk_sha256": "650e519a076620077108344bd0bc8738fcec21c04b319c543dac5637083ae6ac",
+      "flat_sha256": "49bbc80a3623b6a4a418e26f6790a1a86c75d81b860c4bf1e9e5823a3ffd0882",
+      "source_files": 1572,
+      "build_ram_mib": 128,
+      "boot_ram_mib": 8
+    },
+    "gen2": {
+      "disk_sha256": "db6a5647cb9e400d77db32849928ff34ed14a9aa5b87b47a52a3fec1cc4869e6",
+      "flat_sha256": "736ac9ca6741cebd30debb8e6d622978284a34d2b9bb3a0f351502f6ece8e549",
+      "source_files": 1572,
+      "build_ram_mib": 128,
+      "boot_ram_mib": 8
+    }
+  },
+  "evidence_sha256": {
+    "result.json": "d674858c4bb6534b817fe183309dfdb61148e883e5f0812a9031dec172057a09",
+    "generation-identity/result.json": "985b26b2f3953872e36c2c651fdc5447e0558b92872c1c0cffab42f82c518aaf",
+    "gen1-selfhost/result.json": "fd442aa77b945e825d87cb33de620191e7f0f415169e134313f425a355f2f444",
+    "gen1-audit/result.json": "2eb8646dd997034cc10ee1aa809f4ba58925c05b25a503dc752137d3fd9b8f48",
+    "gen1-source-audit/result.json": "9bdbd53b6f5078ea4c837f5785986fe9dc1999714b428e47a3de8eb1185f8d15",
+    "gen2-selfhost/result.json": "952d600ff5eda8025387fb795ad7ad74ed5839752241cbadbcaebae6d3d866df",
+    "gen2-audit/result.json": "0c523f016c0a9bd4ee5c3520caa12b25bfba9994ea1abfef3f6ad39d35f642f9",
+    "gen2-source-audit/result.json": "f01c0db59be5aae3050e450457d4992f5c79a6cbd482c32cbdf3c5630c03f0c1"
+  }
+}
