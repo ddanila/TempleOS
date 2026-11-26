@@ -19368,10 +19368,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged template on the pinned original with one CPU and on the baseline i386 desktop. Capture the child and parent DolDoc and verify return to arithmetic.",
+      "oracle": "The child covers 0 through 99 and emits 4950. The parent emits the same grand total after the completion flag clears. Compare the entire document.",
+      "tests": [
+        {
+          "target": "native-original-multicore-template-single-cpu",
+          "result": "pass",
+          "evidence": "build/i386-demo-multicore-template-v1/comparison/result.json",
+          "scope": "All 35 DolDoc bytes match on the declared single-CPU target, including the child subtotal and the parent total. Native prompt recovery passes."
+        }
+      ]
     },
     {
       "path": "Demo/Templates/ODE1.HC",

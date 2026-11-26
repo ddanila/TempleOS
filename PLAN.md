@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 33 (six apps and twenty-seven demos) |
+| Qualified | 34 (six apps and twenty-eight demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 623 |
-| Linked to tests / with reference workflow and oracle | 191 / 120 |
+| Qualification gaps | 622 |
+| Linked to tests / with reference workflow and oracle | 192 / 121 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 27 of 224 |
+| Demos qualified | 28 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 33 workflows and records eighteen shared files
+- The inventory qualifies 34 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -161,6 +161,12 @@ is complete and provides the foundation, but not desktop or application parity.
   additional file targets match the native image. See the
   [NullCase control](build/i386-demo-prompt-control-v2/comparison/result.json)
   and [TreeDemo comparison](build/i386-demo-treedoc-v2/qualification.json).
+
+- MultiCore1 qualifies on the declared single-CPU i386 target. The
+  unchanged template spawned its child, covered indices 0 through 99, and
+  published the matching subtotal and grand total of 4,950. Both guests
+  produced the same 35 DolDoc bytes. See the
+  [single-CPU template comparison](build/i386-demo-multicore-template-v1/comparison/result.json).
 
 ### Plan decisions (2026-11-24)
 
