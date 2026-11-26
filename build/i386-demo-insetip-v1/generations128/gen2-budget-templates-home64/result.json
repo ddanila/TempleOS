@@ -1,0 +1,127 @@
+{
+  "result": "pass",
+  "fixture_sha256": "f2654a8c86b99b548164569e5e330a55aba98fd44fc9aa47a4f75f8985aef35c",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-budget-templates.py": "7488a82070fe4cb2b5c0ea1df2223e8b4b755a2c3ae364b050a783606c5d18c7",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-budget-templates/Contract.HC": "f2654a8c86b99b548164569e5e330a55aba98fd44fc9aa47a4f75f8985aef35c",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "fb10215fb905a7dfe6ebeded060ba63bc79f8c6bb47d248ba4684bc2f5cacf30",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/i386-budget-source.py": "3b0c62f74a6ddcc3d6a7ec0fc61b59139e056fe9ab04de8eb7cda15d9069665a",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/guest-run.py": "58e0b848613303f2680594edb6eec7c43823bc2554983d2af4451f11d7d24cd3",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "4912a06939338450c4b119da9d43c51088dbdea74165bd93029c84067e3231be",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-insetip-v1/generations128/gen2-selfhost/target.img": "d9652f593e580f188ae71414722bb1fb82d8c3590215ff177b3ef7f544f753a7",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/result.json": "eef30520dc8b9a93b1ea8e713328456e8759892f1a5c5ce1f9e6c5365246b9a7",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/before.DD": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/after.DD": "3cea4c146bc30f79588f151039af640d67f8ed267ec2189253c704f72d7b8f13",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/mask.bin": "8a6af763b3d3d7f5d7a1d516e195ac0752043440aa34e7cf9a92b78ea241bf60",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/data.bin": "fc043397de956701f1e96575f2b407f0a7e1df6f401c24c19acd815b71ffe5a8",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/strings.DD": "b721f53b3144580c9428d6cfc1f37db765cb225c62db709faf3aafb50bb21ead",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/accounts.DD": "326a9a7bbe6eacda718c2a97303d0ae72dec52fcd30f68486de59bb358fcf0b4",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/reopen-before.DD": "99ef82f1408e3657706163ada4bb874a4c43e1ec36b83df5ee7fd730967df2e3",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/reopen-after.DD": "99ef82f1408e3657706163ada4bb874a4c43e1ec36b83df5ee7fd730967df2e3",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/reopen-mask.bin": "8250ab532e40d24a67c08f58e0cd1d76cef63a045599ae5dc9279472cada42dd",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/reopen-data.bin": "fc043397de956701f1e96575f2b407f0a7e1df6f401c24c19acd815b71ffe5a8",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/reopen-strings.DD": "b721f53b3144580c9428d6cfc1f37db765cb225c62db709faf3aafb50bb21ead",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/reopen-accounts.DD": "326a9a7bbe6eacda718c2a97303d0ae72dec52fcd30f68486de59bb358fcf0b4",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/reopen-live.bin": "70e05c2d845f6e7799746638717bb3d297a431ef448b2e58dea25b9aa2aa4771",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/cancel-schedule.DD": "2571cb58a04da4426524b7f46ebdf17ad61842c6568f88bbb1d183228b152b4a",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/cancel-schedule.fields": "5b41f46a24f0d2f39dc1c6e06c8493afb82e20bc437b8a5ddea20e29225d7986",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/cancel-schedule.state": "caa72c5ed2d8646aad81c6ff02eab9de0476bfd024a42c25ba687df8d08fbd12",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/template-schedule.DD": "2571cb58a04da4426524b7f46ebdf17ad61842c6568f88bbb1d183228b152b4a",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/template-schedule.fields": "b743ac4f8275005352556a9caa6b5bcb5b30a7a380d7c4c650e1029b9a2dfe7c",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/template-schedule.state": "caa72c5ed2d8646aad81c6ff02eab9de0476bfd024a42c25ba687df8d08fbd12",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/template-entry.DD": "85a793be1f24e2972bf14faade84426a14a9c698b6979eb09061e16f9fa6302b",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/template-entry.fields": "4612167be6b05b79ab05b624fb92bd4a31d7cf1bebc8b2dde6eeee91642f0f12",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/template-entry.state": "6537308c1267c4fea33d8c35fef86da410ca4be8555ce91a4d03d878ef07c265",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-cancel-schedule.DD": "2571cb58a04da4426524b7f46ebdf17ad61842c6568f88bbb1d183228b152b4a",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-cancel-schedule.fields": "06db685f0d06ddd25032a83342e017ca6012aa95b26e28ddbba81777f330a34f",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-cancel-schedule.state": "6409766409471a2c402b90ce5d42a1ee1ccf689b61c73aabf58d59ecee521dd8",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-cancel-entry.DD": "85a793be1f24e2972bf14faade84426a14a9c698b6979eb09061e16f9fa6302b",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-cancel-entry.fields": "dae9dd85f9edefb47526372b30f6efec21606e53b4801e072fa6704f16324eea",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-cancel-entry.state": "887703596afc99e4c172589e9f09ac4e2eff8a2962d583a6c0c092aa5221242a",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-return-schedule.DD": "6fc90a100ca377fbacac0b7473004bee140e561919deac5882c3e7f900e1bde7",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-return-schedule.fields": "06db685f0d06ddd25032a83342e017ca6012aa95b26e28ddbba81777f330a34f",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-return-schedule.state": "32732e168892de2bab24afe380b8622872133a9a515e79ffb10072d1c3d6fbff",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-schedule.DD": "2571cb58a04da4426524b7f46ebdf17ad61842c6568f88bbb1d183228b152b4a",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-schedule.fields": "06db685f0d06ddd25032a83342e017ca6012aa95b26e28ddbba81777f330a34f",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-schedule.state": "6409766409471a2c402b90ce5d42a1ee1ccf689b61c73aabf58d59ecee521dd8",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-entry.DD": "85a793be1f24e2972bf14faade84426a14a9c698b6979eb09061e16f9fa6302b",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-entry.fields": "dae9dd85f9edefb47526372b30f6efec21606e53b4801e072fa6704f16324eea",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-entry.state": "887703596afc99e4c172589e9f09ac4e2eff8a2962d583a6c0c092aa5221242a",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/cancelled.DD": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/template.DD": "c6f0cf39dabe27b8cd091f134dfcaef6449c3a2b0a9c206487168bfa269f87f6",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/template-live.bin": "2035f4d3cf00052c6222cf9fa002836b9dd5a915e943371ae95c98bbe2b46ce9",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-cancelled.DD": "7f3d729d5a9482c7ce5493c5d35607e24663363b3d55bbb550ecceffe996e600",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/periodic-cancelled-live.bin": "2035f4d3cf00052c6222cf9fa002836b9dd5a915e943371ae95c98bbe2b46ce9",
+    "/home/ddanila/fun/TempleOS/build/budget-templates-original-v4/final-live.bin": "122101681961103d1a2023919b121de2d49b6921ac0bc4c50a54f52ccafe3d53"
+  },
+  "scope": "Real Budget t interval template creation/cancellation and p periodic copy with nested entry cancellation, retained schedule and final acceptance. No seeded transactions. Exact forms/backing fields, generated versus owned rows, saved templates/normal records and caller restoration; native cold restart/read-only abort, original same-boot reopen. Not full application qualification.",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "d9652f593e580f188ae71414722bb1fb82d8c3590215ff177b3ef7f544f753a7",
+    "image_sha256": "89a7f23ef9afb0942c49503a721822cff004794685c24c66dde30032b569a8cb",
+    "boot_area_sha256": "19cc8afeead4e077a51c03d788425b7ff6b4e36aa3804a45d34f7fad960fbcc1",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1950,
+      "owned_sectors": 98187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1951,
+      "owned_sectors": 98206,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/BudgetEntry.HC": "f2654a8c86b99b548164569e5e330a55aba98fd44fc9aa47a4f75f8985aef35c"
+    },
+    "added_attributes": {
+      "/Probe/BudgetEntry.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "commands": [
+    "AdamFile(\"C:/Adam/AutoComplete/MakeAC.HC\",FALSE);",
+    "AdamFile(\"C:/Adam/TaskSettings.HC\",FALSE);",
+    "#include \"C:/Apps/Budget/Load.HC\"",
+    "#include \"C:/Apps/Budget/Install.HC\"",
+    "#include \"C:/Probe/BudgetEntry.HC\""
+  ],
+  "cold_reopen_files_unchanged": true,
+  "reopen_mask": 63,
+  "native_home": "/Home",
+  "changed_files": [
+    "/Home/Budget/Accts.DD.Z",
+    "/Home/Budget/Bgt.DATA.Z",
+    "/Home/Budget/Strs.DD.Z",
+    "/Probe/BudgetEntry.HC"
+  ],
+  "preserved_files": 1950,
+  "filesystem": {
+    "directories": 64,
+    "files": 1954,
+    "owned_sectors": 98210,
+    "bitmap": "matches reachable extents"
+  },
+  "saved_numeric_differences": [
+    32,
+    64,
+    116,
+    148
+  ],
+  "mask": 262143,
+  "normalized_documents": [
+    "",
+    "$FG,1$\u0005$MU-UL,\"09/04/98     BANK     RENT: -100.00   100.00:rent plan\",U=<entry>$\n$MU-UL,\"09/05/98     BANK     RENT: -200.00   100.00:cash batch\",U=<entry>$\n$MU-UL,\"09/06/98     BANK     RENT: -300.00   100.00:cash batch\",U=<entry>$\n$MU-UL,\"09/06/98     BANK     RENT: -400.00   100.00:rent plan\",U=<entry>$\n$MU-UL,\"09/08/98     BANK     RENT: -500.00   100.00:rent plan\",U=<entry>$\n",
+    "0,JOB\n1,CASH\n2,MISC\n3,CHARITY\n4,RENT\n5,HEALTH\n6,CREDIT\n7,CLOTHS\n8,CAR\n9,UTILITIES\n10,BANK\n11,cash batch\n12,rent plan\n",
+    "$FG,6$JOB\n$FG,1$BANK\n$FG,4$CREDIT\n$FG,2$CASH\n$FG,0$RENT\nCAR\nUTILITIES\nMISC\nCLOTHS\nHEALTH\nCHARITY\n"
+  ],
+  "inputs_unchanged": true
+}

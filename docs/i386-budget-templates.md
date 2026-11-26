@@ -96,3 +96,14 @@ only to the installed archive under `/Home/Budget` and the test's exported
 template. The runner accepts `--native-home /Home` for the host audit.
 [First rebuild installer receipt](../build/i386-demo-insetip-v1/generations128/gen1-budget-install-home64/result.json) ·
 [Second rebuild installer receipt](../build/i386-demo-insetip-v1/generations128/gen2-budget-install-home64/result.json)
+
+Both rebuilds also passed the original-reference template workflow with
+`--native-home /Home`. It exercised template creation and cancellation,
+periodic copy, nested entry cancellation and return to the schedule form.
+Each guest then cold-booted, reopened the records, and aborted the read-only
+view with file bytes and metadata unchanged. The raw saved records differ
+from the original at the same four expected numerical byte offsets documented
+above. The filesystem audit found only the three Budget files and the probe
+changed.
+[First rebuild workflow receipt](../build/i386-demo-insetip-v1/generations128/gen1-budget-templates-home64/result.json) ·
+[Second rebuild workflow receipt](../build/i386-demo-insetip-v1/generations128/gen2-budget-templates-home64/result.json)
