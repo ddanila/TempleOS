@@ -1,0 +1,35 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-blkdev-rep-v1/cross-kernel-pointers/kernel.img": "4ad652a8deffee85fca4feefcb939fb5775029e0c95a5cd6d0193bf47c33eb58",
+    "/home/ddanila/fun/TempleOS/Demo/LastClass.HC": "d951d46ff7e302f8d31aaae20ad6ead4f7fdacd5bee2171de2700e1b6ec38b1c"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "result": "captured",
+      "screenshots_sha256": {
+        "inferred-classes": "078d96f488378571b0c69660ba07c857df09a77af9bde36dcf9c7f3541b55958",
+        "live-report": "2430fe4dc988a6cc20f3ef077880b66ff5a28b1840325b093ad4742341973414",
+        "static-report": "f1208a61a4a2912ce85022057ae2ba4a0987119d2492b7a6b2f918c2b609b8c7"
+      }
+    },
+    "native": {
+      "result": "captured",
+      "screenshots_sha256": {
+        "inferred-classes": "96acc210ad2397c512e0269595a74a6db7e47e844149389fefd0d5c88281b6ef",
+        "live-report": "d0f17d73cc8118623884d6680175808ed0e07e88e9e9f08978577d514cc15b7d",
+        "static-report": "9f065625d87ed366bd64aa8d5c928914b9e9b761e3e841d31f8b76d2deccbc9f"
+      },
+      "fresh_result": {
+        "column": 0,
+        "row": 58,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

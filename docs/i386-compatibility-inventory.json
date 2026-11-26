@@ -18451,10 +18451,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged LastClass, read the inferred names, press Space to show the live CPU report, then press Space to show the task report.",
+      "oracle": "Verify the four inferred class names, the live CCPU class and fields, the static CTask fields, and a fresh command on the i386 prompt.",
+      "tests": [
+        {
+          "target": "native-original-inferred-class-reports",
+          "result": "pass",
+          "evidence": "build/i386-demo-lastclass-v1/live-wait/qualification.json",
+          "scope": "Both guests infer CTask, Student, School and I64i. Each shows the live CPU report and static task report after physical Space. The i386 prompt renders fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Lectures/64BitAsmQuiz.DD",

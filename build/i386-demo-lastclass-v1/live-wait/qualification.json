@@ -1,0 +1,175 @@
+{
+  "result": "pass",
+  "font_sha256": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+  "runs": {
+    "original": {
+      "inferred-classes": {
+        "is a \"CTask\".": [
+          [
+            10,
+            16
+          ]
+        ],
+        "is a \"Student\".": [
+          [
+            10,
+            17
+          ]
+        ],
+        "is a \"School\".": [
+          [
+            10,
+            18
+          ]
+        ],
+        "is a \"I64i\".": [
+          [
+            10,
+            19
+          ]
+        ]
+      },
+      "live-report": {
+        "Class:\"CCPU\"": [
+          [
+            1,
+            19
+          ]
+        ],
+        "idle_pt_hits": [
+          [
+            10,
+            27
+          ]
+        ],
+        "idle_factor": [
+          [
+            10,
+            29
+          ]
+        ],
+        "profiler_timer_irq": [
+          [
+            10,
+            40
+          ]
+        ]
+      },
+      "static-report": {
+        "except_callers": [
+          [
+            10,
+            3
+          ]
+        ],
+        "answer_type": [
+          [
+            10,
+            8
+          ]
+        ],
+        "popup_task": [
+          [
+            10,
+            48
+          ]
+        ],
+        "user_data": [
+          [
+            10,
+            54
+          ]
+        ]
+      }
+    },
+    "native": {
+      "inferred-classes": {
+        "is a \"CTask\".": [
+          [
+            8,
+            10
+          ]
+        ],
+        "is a \"Student\".": [
+          [
+            8,
+            11
+          ]
+        ],
+        "is a \"School\".": [
+          [
+            8,
+            12
+          ]
+        ],
+        "is a \"I64i\".": [
+          [
+            8,
+            13
+          ]
+        ]
+      },
+      "live-report": {
+        "Class:\"CCPU\"": [
+          [
+            0,
+            15
+          ]
+        ],
+        "idle_pt_hits": [
+          [
+            9,
+            20
+          ]
+        ],
+        "idle_factor": [
+          [
+            9,
+            21
+          ]
+        ],
+        "profiler_timer_irq": [
+          [
+            9,
+            27
+          ]
+        ]
+      },
+      "static-report": {
+        "except_callers": [
+          [
+            9,
+            20
+          ]
+        ],
+        "answer_type": [
+          [
+            9,
+            25
+          ]
+        ],
+        "popup_task": [
+          [
+            9,
+            52
+          ]
+        ],
+        "user_data": [
+          [
+            9,
+            56
+          ]
+        ]
+      }
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 58,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

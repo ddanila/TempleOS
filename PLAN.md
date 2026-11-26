@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 72 (six apps and sixty-six demos) |
+| Qualified | 73 (six apps and sixty-seven demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 584 |
-| Linked to tests / with reference workflow and oracle | 230 / 159 |
+| Qualification gaps | 583 |
+| Linked to tests / with reference workflow and oracle | 231 / 160 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 66 of 224 |
+| Demos qualified | 67 of 224 |
 
-C1 has 584 qualification gaps, including entries that still need a reference
+C1 has 583 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -41,7 +41,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 72 workflows and records eighteen shared files
+- The inventory qualifies 73 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -340,6 +340,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   accepts fresh arithmetic after the report. See the
   [device profile comparison](build/i386-demo-blkdev-rep-v1/kernel-pointers/qualification.json)
   and [source audit](build/i386-demo-blkdev-rep-v1/kernel-pointers-source-audit.json).
+
+- LastClass qualifies on both guests. It infers CTask, Student, School
+  and I64i from the preceding arguments. Physical Space advances from
+  the names to the live CPU report and then the static task report.
+  The i386 prompt accepts fresh arithmetic. See the
+  [inferred-class comparison](build/i386-demo-lastclass-v1/live-wait/qualification.json).
 
 - Lines qualifies. Both guests accumulated multicolor line drawings from
   seed 1, changed the drawings across three asynchronous samples, and
