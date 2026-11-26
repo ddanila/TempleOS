@@ -1,0 +1,8 @@
+{
+  "result": "pass",
+  "source_sha256": "e867f45d478d2fda01068d6e23812b7329ae29aad5305e8da1baace304fc54d7",
+  "output_bytes": 4920719,
+  "output_sha256": "741e3e8b00f3b7b7ed98d88986161efc72eea74c92ee5e37b770564bc52ab905",
+  "numbered_lines": 100117,
+  "scope": "Pinned original NumBible reads the full bundled Bible and writes the complete numbered DolDoc to Home."
+}

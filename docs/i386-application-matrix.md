@@ -2702,3 +2702,11 @@ scoring fixture observed the original 2- and 8-point totals before
 the shot, and both guests returned to a working prompt.
 See the [Space receipt](../build/i386-keepaway-shot-production-v1/space/result.json)
 and [mouse receipt](../build/i386-keepaway-shot-production-v1/mouse/result.json).
+
+### NumBible full-document reference
+
+The unchanged demo generated a 4,920,719-byte DolDoc file in Home on
+the pinned original. Every one of its 100,117 lines carried the expected
+sequential number, including the final blank lines. The native comparison
+uses the same bundled input and will compare the complete logical output.
+See the [original receipt](../build/i386-demo-numbible-v1/original-receipt.json).
