@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "source_sha256": "a6e192b53c6436cff23c04c0f2cd9ca104355f95bb65401c38b3bb9b6a3cab6e",
+  "image_sha256": "c2f2b2084341a20531c6b889ad415b39b440315e35ce0c89b628c24c7d49d0ac",
+  "boot_area_sha256": "547dd38fc0df560b513e9b4810355c29347afe706eda44b386ad8c84edede9de",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1932,
+    "owned_sectors": 96194,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1932,
+    "owned_sectors": 96195,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification",
+  "replacements": {
+    "/Modules/I386/CompilerRuntime.t32m": "fd174c9b8ca1ea147683a2067c26be5468c86ef0a693f4eb0a9016768e44b73e",
+    "/Compiler/I386/BackendCore.HC": "bcca9f36decc45bfe7462fd48dc47e15b5d2ce1a4838e77b962feb66432d3f5c"
+  }
+}

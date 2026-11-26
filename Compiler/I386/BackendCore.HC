@@ -968,6 +968,13 @@ U0 I386BackendCore(CI386Backend *backend)
             I386PushDword(out,ic->ic_data.u32[0]);
             depth++;
             break;
+          case IC_RIP:
+            //Return the start of this expression, like the original location counter.
+            I386Byte(out,0xE8); I386Dword(out,0);
+            I386Bytes(out,"\x58\x8D\x40\xFB",4); //pop eax; lea eax,[eax-5]
+            I386Bytes(out,"\x6A\x00\x50",3);
+            depth++;
+            break;
           case IC_GET_LABEL:
             label=OptLabelFwd(ic->ic_data);
             if(!label) throw('Compiler');

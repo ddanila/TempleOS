@@ -15942,7 +15942,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Launch the unchanged demonstration and examine the compiler metadata and both instruction links.",
       "oracle": "Compile date/time fields, bundled source path and directory, source line 7, command-line flag zero, and two ordered instruction links that resolve within Directives.",
       "tests": [
@@ -15963,6 +15963,12 @@
           "result": "pass",
           "evidence": "build/i386-demo-directives-v1/isolated-native/result.json",
           "scope": "Six public metadata directives compile independently. Both expressions using the instruction-position operator reject. Fresh arithmetic displays after the rejects."
+        },
+        {
+          "target": "native-original-directives-location-counter",
+          "result": "pass",
+          "evidence": "build/i386-directive-position-v2/qualification.json",
+          "scope": "Complete unchanged demo, both instruction links, an 8 MiB check of the emitted instruction address, and prompt recovery."
         }
       ]
     },

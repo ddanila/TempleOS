@@ -1,0 +1,9 @@
+Date	:11/26/26
+Time	:11:24:25
+File	:C:/Demo/Directives.HC
+Dir	:C:/Demo
+Line	:7
+CmdLine	:0
+Inst1	:$LK,"&Directives+0x01A0",A="AD:0x978C8"$:000978BC
+Inst2	:$LK,"&Directives+0x01EE",A="AD:0x97916"$:0009790A
+

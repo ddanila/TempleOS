@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 30 (six apps and twenty-four demos) |
+| Qualified | 31 (six apps and twenty-five demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 626 |
+| Qualification gaps | 625 |
 | Linked to tests / with reference workflow and oracle | 187 / 117 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 24 of 224 |
+| Demos qualified | 25 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 30 workflows and records eighteen shared files
+- The inventory qualifies 31 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -125,6 +125,12 @@ is complete and provides the foundation, but not desktop or application parity.
   passed the frozen 686-file check and the 1,561-file source audit.
   See the [Primes receipt](build/i386-primes-native-v1/qualification.json)
   and [image audit](build/i386-primes-native-v1/full-content-checkpoint.json).
+
+- Directives now qualifies. The i386 backend emits the start address
+  for the instruction-position operator. The bundled demo reports its
+  source metadata and both instruction links, and an 8 MiB probe
+  verified the address on generated code. See the
+  [Directives receipt](build/i386-directive-position-v2/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

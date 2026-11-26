@@ -2970,3 +2970,10 @@ Both commands using the `$$` instruction-position operator were
 rejected, and the prompt recovered. The i386 backend lacks the
 location-counter opcode emitted for those expressions. See the
 [isolated commands](../build/i386-demo-directives-v1/isolated-native/result.json).
+
+The i386 backend now materializes the start address of the `$$`
+expression with 386 instructions. The unchanged Directives demo
+emitted all six metadata fields and both instruction links, and
+the prompt accepted fresh input. The 8 MiB test read the opcode at
+the returned address. The same image passed the 64 MiB desktop
+baseline. See the [Directives receipt](../build/i386-directive-position-v2/qualification.json).
