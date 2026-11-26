@@ -304,3 +304,9 @@ and passed the 8 MiB KVM diagnostic boot with nine exact VGA checkpoints.
 Normal 8 MiB KVM startup reached the prompt in 31.306 seconds and
 matched all nine VGA checkpoints.
 [8 MiB interactive startup](../build/i386-asm-and-c3-port-v2/interactive8-kvm/result.json)
+
+The seven-demo regression batch passed on the same image. Six demos
+matched the original DolDoc byte for byte. Optimization matched the
+expected sum in all four loops and reported positive elapsed times on
+both guests. The batch returned to native command input.
+[Assembly regression batch](../build/i386-asm-and-c3-port-v2/assembly-regression64/result.json)
