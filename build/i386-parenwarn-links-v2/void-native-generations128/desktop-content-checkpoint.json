@@ -1,0 +1,35 @@
+{
+  "result": "pass",
+  "source_revision": "2c2cb4b1268baf1cbb6de47802e17530e6e1ba13",
+  "inventory_sha256": "c26498bf0b6f509928075fdb33446bf8cdaeef45c94e12bc116095d3dc37d77d",
+  "ram_mib": 64,
+  "accel": "kvm",
+  "generations": {
+    "gen1": {
+      "disk_sha256": "2acbaabaeefcbd9bb52ed8e718b041b99319bc8990732cac3c821a3bba54ff0c",
+      "inventory_files": 686,
+      "desktop_commands": 9,
+      "content_result_sha256": "5b522651ebc0821b6ef7a839cef2bdff8f7a7cc8a2c5cb85dc29395f1d54df4d",
+      "desktop_result_sha256": "ce65342cb1a9e16cd7ee5200ac70849945d2c24458dfa6ac98af078a3c6bda05",
+      "filesystem": {
+        "directories": 63,
+        "files": 1933,
+        "owned_sectors": 98100,
+        "bitmap": "matches reachable extents"
+      }
+    },
+    "gen2": {
+      "disk_sha256": "550a4d569e2fafa45d89791239e0a3d640f6ba50c3e558c4aea0ea3979715c99",
+      "inventory_files": 686,
+      "desktop_commands": 9,
+      "content_result_sha256": "4987e253d9f4178162f14af7816a7e78ad82d402fd5d31dc29d03f7326541064",
+      "desktop_result_sha256": "cd8ad8f1df0227fa793d6e7935793560adda03c789aae0cecf7e8941d472af68",
+      "filesystem": {
+        "directories": 63,
+        "files": 1933,
+        "owned_sectors": 98100,
+        "bitmap": "matches reachable extents"
+      }
+    }
+  }
+}

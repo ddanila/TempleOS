@@ -153,6 +153,9 @@ is complete and provides the foundation, but not desktop or application parity.
   normalizing the eight-byte kernel build date. Full desktop and application
   suite qualification remains open. See the
   [two-generation checkpoint](build/i386-parenwarn-links-v2/void-native-generations128/completion-checkpoint.json).
+  Both installed images passed all nine active desktop commands at 64 MiB,
+  the frozen 686-file check and the bounded Bible read. See the
+  [installed desktop and content checks](build/i386-parenwarn-links-v2/void-native-generations128/desktop-content-checkpoint.json).
 - GlblVars entered the pinned original compiler debugger on the first
   aggregate initializer at line 11 from both Once.HC and the standard guest
   prompt. The unchanged source now completes on i386, displaying all four
