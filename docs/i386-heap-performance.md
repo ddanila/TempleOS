@@ -985,3 +985,9 @@ loaded in place in the main arena. The console service version is 276 because
 its header callback now selects the publication phase. Diagnostic startup
 took 427.445 seconds. The separate 60-second interactive budget is still
 open. See `build/i386-diagnostic-worker-defer-user640-v1/diagnostic8/result.json`.
+
+The corresponding normal 8 MiB image passed all nine VGA checkpoints under
+KVM with `486,-fpu` and live WinMgr. It reached interactive startup in 63.584
+seconds, above the 60-second gate. Its boot trace has no
+`SpriteToCodeCore.HC` allocation rejection. See
+`build/i386-diagnostic-worker-defer-user640-v1/interactive8-kvm/budget.json`.
