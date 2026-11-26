@@ -391,6 +391,9 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   steps. The image passed the 386 instruction audit and the 1,573-file source
   comparison. See the [filter qualification](build/i386-demo-low-pass-v1/qualification.json)
   and [prior native rejection](build/i386-demo-low-pass-v1/native-baseline.json).
+  The same image passed all nine 64 MiB desktop baseline commands, the
+  frozen 686-file content comparison, and the bounded guest Bible read.
+  See the [full-content checkpoint](build/i386-demo-low-pass-v1/full-content-checkpoint.json).
 
 - SunMoon qualifies. The moon moved left in four samples from each guest.
   Matching phases had 41,789 and 42,448 identical colored pixels. The
