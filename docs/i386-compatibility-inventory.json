@@ -15991,10 +15991,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": "Render both markup examples, follow the Genesis link, and activate the OKAY button.",
-      "oracle": "The complete 498-byte captured DolDoc matches the original. Check link navigation and button activation in a separate live window.",
+      "compatibility": "qualified",
+      "reference_workflow": "Render both markup examples, activate the explicit Genesis link and the OKAY button with the mouse, dismiss the editor, and return to the prompt.",
+      "oracle": "Exact 498-byte original DolDoc, physical activation of the second explicit Genesis link and OKAY button, verse pixels, command 1, and document-role restoration. Native arithmetic succeeds after both workflows.",
       "tests": [
+        {
+          "target": "native-textdemo-physical-verse-link",
+          "command": "python3 build/i386-textdemo-mouse-link-v2/run.py --disk IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-textdemo-mouse-link-v2/native/result.json",
+          "scope": "Physical click of the explicit Genesis link in the live menu. Correct verse, Shift-Escape dismissal, menu return, restored caller document roles and exact arithmetic result 42."
+        },
         {
           "target": "original-textdemo-physical-verse-link",
           "command": "python3 build/i386-textdemo-mouse-link-v2/run.py --out OUT",

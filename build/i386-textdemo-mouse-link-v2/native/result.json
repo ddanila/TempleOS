@@ -1,0 +1,41 @@
+{
+  "result": "pass",
+  "fixture_sha256": "16cb613f7c1183ca5a9e88613b5edb22e7506f47be1909c19ffb7e16f98127f5",
+  "scope": "Physical mouse activation of the unchanged explicit Genesis link with editor dismissal and restored document roles",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "297484ae02255575e6880f15ea91a826e8b6acc31745772bc2da42cdd16f83a8",
+    "image_sha256": "b3545790eea0f8e84f88b375992edb787e1e711c7698d76b354438e056886922",
+    "boot_area_sha256": "4ec03683e63ebc782d8422e290570e1e69bf7cb3c4b717fc55c7ee207042d292",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96177,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 96179,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/TextDemo.HC": "16cb613f7c1183ca5a9e88613b5edb22e7506f47be1909c19ffb7e16f98127f5"
+    },
+    "added_attributes": {
+      "/Probe/TextDemo.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "arithmetic": {
+    "column": 0,
+    "row": 11,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "link": true
+}

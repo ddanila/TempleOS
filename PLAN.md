@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 13 (two apps and eleven demos) |
+| Qualified | 14 (two apps and twelve demos) |
 | Explicit host-only exclusions | 7 (Linux tools and sources) |
 | Shared files covered by qualified workflows | 6 (Span and Strut support sources) |
-| Qualification gaps | 660 |
+| Qualification gaps | 659 |
 | Linked to tests / with reference workflow and oracle | 175 / 104 |
 | Apps qualified | 2 of 12 (all 12 have partial tests) |
-| Demos qualified | 11 of 224 |
+| Demos qualified | 12 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -36,8 +36,8 @@ is complete and provides the foundation, but not desktop or application parity.
   OKAY button through `DocEntryRun` on both architectures. The native
   Bible editor now preserves the selected verse on entry. Both guests
   show Genesis and restore document roles on Shift-Escape. Both also
-  accept a physical double-click on OKAY. Physical activation of the
-  Genesis link remains open.
+  accept a physical double-click on OKAY and a single click on the
+  explicit Genesis link. Native arithmetic succeeds after dismissal.
 - RegistryDemo passed three 64 MiB KVM boots on the frozen second
   native generation. The harness verified the exact console frames and
   persisted increments through the configured Home registry.
