@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 614 |
-| Linked to tests / with reference workflow and oracle | 200 / 129 |
+| Linked to tests / with reference workflow and oracle | 201 / 130 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 36 of 224 |
 
@@ -227,6 +227,12 @@ is complete and provides the foundation, but not desktop or application parity.
   four binary records and matched all pixels in three 143 by 83 flag
   rasters and the 6,300-pixel map. See the
   [inline sprite comparison](build/i386-demo-sprite-put-v1/qualification.json).
+
+- SpriteText has an executable original oracle. All 18 decoded elements
+  and 491 packed poly-point steps match the original report. The i386
+  compiler rejects the first call to SpriteElem2Summary. See the
+  [original receipt](build/i386-demo-sprite-text-v1/original-receipt.json)
+  and [native run](build/i386-demo-sprite-text-v1/comparison/result.json).
 
 ### Plan decisions (2026-11-24)
 

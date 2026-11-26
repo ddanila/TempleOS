@@ -1,0 +1,15 @@
+{
+  "result": "fail",
+  "input_sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+  "entries": {
+    "Demo/Graphics/SpriteText.HC": {
+      "source_sha256": "471b3559bcb82175f6479cf31731ac93e863f2486717c3626ac81e899635a6a7",
+      "output_file": "demo-0.DD"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 000000000159ACC8 00000000536B7354\nINPUT LINE #include \"C:/Probe/DemoBatch.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token SpriteElem2Summary file C:/Demo/Graphics/SpriteText.HC line 39\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nEXPORT demo-0.DD 15018 19\n",
+  "inputs_unchanged": true
+}
