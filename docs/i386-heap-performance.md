@@ -1000,3 +1000,11 @@ The normal version-276 image passed the delivered-source audit for all
 1,578 packaged source and documentation files against the committed
 diagnostic fix at `ba76aa5c`. The audit found no source differences.
 See `build/i386-diagnostic-worker-defer-user640-v1/committed-source-audit.json`.
+
+The normal version-276 image produced 1,394 PC samples under the paused TCG
+profiler. During startup source compilation, 52 samples were in heap
+validation under instruction allocation and 51 were in heap validation under
+instruction-slab release. The latter runs through `I386COCInstructionsRelease`.
+These are statistical samples. The independent KVM run measured elapsed
+startup time. See
+`build/i386-diagnostic-worker-defer-user640-v1/interactive8-profile-retry/result.json`.
