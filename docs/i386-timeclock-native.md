@@ -181,3 +181,13 @@ image with the expected archive but the immediate guest read failed.
 TimeClock's installer also creates its directory with an explicit
 `DirMk`. See the
 [first-write trace](../build/i386-timeclock-first-write-v1/guest-results.txt).
+
+On a fresh guest, explicitly creating `~/TimeClock` reproduced the
+failure with a direct first write to the exact application filename.
+A second write to that path made it readable. In a separate run,
+`FileFind` returned the expected RedSea metadata and guest `BlkRead`
+returned the exact packed bytes while public `FileRead` still failed
+on the same file. The difference remains inside the whole-file read
+path or its decompression step. See the
+[explicit directory trace](../build/i386-timeclock-explicit-directory-v1/guest-results.txt)
+and [guest sector trace](../build/i386-timeclock-read-layer-v1/guest-results.txt).

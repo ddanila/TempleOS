@@ -1,0 +1,7 @@
+SEQUENCE application write missing
+SEQUENCE after cleanup missing
+SEQUENCE absolute read after cleanup missing
+SEQUENCE directory metadata exact
+SEQUENCE raw archive exact
+SEQUENCE after raw sector read missing
+SEQUENCE direct replacement exact
