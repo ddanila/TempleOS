@@ -71,7 +71,7 @@ def exercise(guest, model):
         wait_text(guest,probe,font,b'Man','menu-man')
         cancel_without_mesh(guest)
         return None
-    if model == 'man':
+    if model in ('man', 'man-form-cancel'):
         # Move focus off Man before checking its unhighlighted label.
         guest.press('tab')
     ball = model in ('ball', 'ball-lighting-cancel')
@@ -80,6 +80,9 @@ def exercise(guest, model):
     click(guest,pointer,(col*8+12,row*8+3))
     form_label = b'Longitude Faces' if ball else b'Torso Length'
     wait_text(guest,probe,font,form_label,'form')
+    if model == 'man-form-cancel':
+        cancel_without_mesh(guest)
+        return None
     guest.press('esc')
     if model == 'ball-lighting-cancel':
         wait_text(guest,probe,font,b'Single-Sided Full-Range','chooser-cancel')
@@ -109,7 +112,7 @@ def exercise(guest, model):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('model',choices=('ball','man','cancel','ball-lighting-cancel'))
+    parser.add_argument('model',choices=('ball','man','cancel','ball-lighting-cancel','man-form-cancel'))
     parser.add_argument('--disk',type=Path)
     parser.add_argument('--out',type=Path,required=True)
     args = parser.parse_args()
@@ -119,7 +122,7 @@ def main():
     drive = 'C' if native else 'T'
     observer = Path(__file__).with_name('Observe.HC').read_bytes()
     finish = b'ModelCapture;\n'
-    if args.model in ('cancel', 'ball-lighting-cancel'):
+    if args.model in ('cancel', 'ball-lighting-cancel', 'man-form-cancel'):
         finish = b'ModelCancelCheck;\n'
     workflow = (observer + b'\nModelObserve;\n' +
                 f'#include "{drive}:/Apps/GrModels/Run.HC"\n'.encode() + finish)

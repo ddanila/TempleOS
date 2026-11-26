@@ -6481,3 +6481,9 @@ Shift+Escape also returned without a document mesh on the original and
 second-generation guests. The native guest then evaluated fresh arithmetic.
 [Original lighting cancellation](../build/i386-code-alloc-known-v1/native-generations128/grmodels-ball-lighting-cancel-original/result.json) ·
 [Native lighting cancellation](../build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-ball-lighting-cancel/result.json)
+
+Shift+Escape also cancelled the Man form on the original and second
+native guests before any lighting choice. Neither added a document
+mesh, and the native guest evaluated fresh arithmetic.
+[Original Man form cancellation](../build/i386-code-alloc-known-v1/native-generations128/grmodels-man-form-cancel-original/result.json) ·
+[Native Man form cancellation](../build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-man-form-cancel/result.json)
