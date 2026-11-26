@@ -1164,3 +1164,17 @@ files against the working tree and passed the bounded guest content
 workflow under KVM at 64 MiB. The volume audit covered 1,949 files and
 matched the allocation bitmap to reachable extents.
 [Full-content receipt](../build/i386-code-alloc-known-v1/full-content64/result.json)
+
+The guest rebuilt CompilerRuntime from the same image at 128 MiB under
+KVM. The emitted 1,360,717-byte module passed the export audit and was
+the only added file. The source image contained 1,151 kernel and compiler
+files matching committed revision `84d1c25f` and the cross-build pins.
+
+The installer replaced CompilerRuntime with those exact guest-built
+bytes. A separate 8 MiB KVM cold boot passed the allocation check and
+rendered fresh arithmetic. Installation changed only the module and its
+build-output path. The allocation check added its expected `AllocRead.DD`
+fixture, and the volume audit verified the reachable extents at each step.
+[Native build](../build/i386-code-alloc-known-v1/native-compiler128/result.json) ·
+[Install and cold boot](../build/i386-code-alloc-known-v1/native-compiler-install/result.json) ·
+[Source and disk audit](../build/i386-code-alloc-known-v1/native-compiler128/provenance.json)
