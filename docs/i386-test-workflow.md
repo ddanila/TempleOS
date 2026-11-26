@@ -6396,3 +6396,9 @@ The unchanged Registry1 template also matched the original on the
 guest-built kernel. The saved score was `9999.0000` with a fresh
 registry and `42.1250` with an existing score.
 [Registry1 comparison](../build/i386-code-alloc-known-v1/native-generations128/gen1-registry-template64/result.json)
+
+The five bundled assembly demos on this frozen kernel also matched the
+original guest's DolDoc output byte for byte. The batch exercised
+AsmHelloWorld, BuzzFizz, DivByHand, MulByHand, and PutDec and returned
+to native command input.
+[Assembly demo comparison](../build/i386-code-alloc-known-v1/native-generations128/gen1-assembly-demos64/result.json)
