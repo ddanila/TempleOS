@@ -2653,3 +2653,10 @@ definition popup, rendered the next question, and exited on Escape.
 The native guest confirmed more than 10,000 loaded words and rendered
 42 back at the prompt. See the
 [cold-launch comparison](../build/i386-vocabulary-cold-v1/comparison.json).
+
+A second cold-launch comparison answered the first question correctly
+and the second incorrectly. Both guests opened and dismissed two
+definition popups and exited from the third question. The 1,270 bytes
+of serialized quiz questions, answer choices, and colored feedback
+matched exactly. The native prompt rendered fresh arithmetic on
+return. See the [feedback comparison](../build/i386-vocabulary-feedback-v2/comparison.json).
