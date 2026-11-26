@@ -17782,10 +17782,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged SpritePlot animation on both guests, capture its final drawing and size report, send a physical key, and verify drawing removal and native arithmetic.",
+      "oracle": "Check the 167-byte sprite record and the rasterized size message. Compare the complete aligned final drawing and verify that the drawing area clears after input.",
+      "tests": [
+        {
+          "target": "native-original-sprite-plot",
+          "result": "pass",
+          "evidence": "build/i386-demo-sprite-plot-v1/qualification.json",
+          "scope": "Both guests show the 167-byte report and identical final drawing pixels, then clear the drawing on the physical Space key."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/SpritePlot3D.HC",

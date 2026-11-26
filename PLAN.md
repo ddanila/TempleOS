@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 43 (six apps and thirty-seven demos) |
+| Qualified | 44 (six apps and thirty-eight demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 613 |
-| Linked to tests / with reference workflow and oracle | 201 / 130 |
+| Qualification gaps | 612 |
+| Linked to tests / with reference workflow and oracle | 202 / 131 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 37 of 224 |
+| Demos qualified | 38 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 43 workflows and records eighteen shared files
+- The inventory qualifies 44 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -242,6 +242,11 @@ is complete and provides the foundation, but not desktop or application parity.
   x86-64 bootstrap rebuilds passed again. See the
   [initial image checkpoint](build/i386-demo-sprite-text-v4/desktop-content-checkpoint.json)
   and [memory regression checkpoint](build/i386-demo-sprite-text-v5/memory-checkpoint.json).
+
+- SpritePlot qualifies. Both guests displayed the 167-byte image-size
+  result and identical position-aligned final drawings. Pressing Space
+  removed the drawing on both guests, and the native prompt returned
+  fresh arithmetic. See the [interactive SpritePlot comparison](build/i386-demo-sprite-plot-v1/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

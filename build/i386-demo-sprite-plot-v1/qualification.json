@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "source_sha256": "746012113eaa97bdb21fa144a3a3e1c9537164003e9692865f0cdafb82a47271",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-raw-v2/candidate.img": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8"
+  },
+  "sprite_bytes": 167,
+  "pose_raster_sha256": "4b1b34266618172ebbe22b82904fe67ec49a3b43afa0adb419a797363ae05de5",
+  "screenshot_sha256": {
+    "original": {
+      "before-key.png": "dbc4d91b0249f44d5ab56c6f34663cd8993090cc4dabbe7111b4d3b833a7061b",
+      "after-key.png": "ba6431415c3c8886b2945bbe5bc797fde4c58fe6e31571c82e8ecbf8c19c64e2"
+    },
+    "native": {
+      "before-key.png": "95145a7cafa41d592b72dd0c6a35f890850d03e17b93395de95b0f882e45dc36",
+      "after-key.png": "278e5abc692e18c0a8c3e70421889e2141f3ed1dec38dcef590e4d34458a259c"
+    }
+  },
+  "cleared_after_key": true
+}
