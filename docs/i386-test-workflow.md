@@ -6371,3 +6371,13 @@ cycles with exact VGA at all 11 checkpoints. Document heap usage peaked
 at 37,840 live bytes and 55,808 reserved bytes.
 [Generation-one resource profile](../build/i386-code-alloc-known-v1/native-generations128/gen1-resource8/resource-result.json) ·
 [VGA verification](../build/i386-code-alloc-known-v1/native-generations128/gen1-resource8/result.json)
+
+The generation-one kernel passed the configured HomeSys handoff and
+persistent window checks at 64 MiB under KVM. HomeSys selected
+`/Home/Once.HC`, matched all 83 original desktop geometry values, and
+returned to a prompt that evaluated fresh arithmetic. The memory audit
+found no bootstrap task record and confirmed the block containing it
+was free. On a separate disposable image with a plain startup document,
+all three persistent window commands matched the expected VGA pixels.
+[Configured HomeSys handoff](../build/i386-code-alloc-known-v1/native-generations128/gen1-configured-desktop/result.json) ·
+[Persistent window check](../build/i386-code-alloc-known-v1/native-generations128/gen1-persistent-window64/result.json)
