@@ -1117,3 +1117,10 @@ validation account for 109 of 141 samples. These samples identify the
 remaining TCG work after the ATA change. Pausing the guest makes the
 profile unsuitable for judging elapsed startup time.
 [Verified TCG sample summary](../build/i386-ata-string-read-v1/startup-profile8-tcg/summary.json)
+
+An isolated unpaused TCG run used `--startup-timeout 380` on the same image.
+It reached the prompt in 291.886 seconds and passed all nine VGA checks
+with the managed pointer and Window Manager active. The observation
+limit allowed a complete measurement. The runner rejected the result
+against the unchanged 60-second target and verified the input hashes.
+[Completed reference timing receipt](../build/i386-ata-string-read-v1/interactive8-tcg-extended/result.json)

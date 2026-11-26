@@ -31,8 +31,10 @@ Both passed the 8 MiB cold boot and document allocation profile, frozen
 handoff, and persistent graphics composition checks. The artifact audit
 reproduced all 16 modules with the flat kernel build date normalized.
 The full compatibility suite and release resource gates remain open. The
-newer version-276 interactive image reached startup in 63.584 seconds at
-8 MiB, above the 60-second requirement.
+current ATA word-input candidate reached interactive startup at 8 MiB in
+31.505 and 31.504 seconds under KVM. The same image completed the reference
+TCG run in 291.886 seconds with all nine exact VGA checks. The 60-second
+TCG requirement remains open.
 [Native rebuild receipt](build/i386-demo-insetip-v1/generations128/result.json) ·
 [Composition checks](docs/i386-persistent-composition.md#frozen-native-rebuild-checkpoint) ·
 [Startup and resource measurements](docs/i386-heap-performance.md)

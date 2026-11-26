@@ -33,9 +33,13 @@ def main():
     parser.add_argument('--diagnostics', action='store_true',
                         help='Use the diagnostic image and require all startup diagnostics')
     parser.add_argument('--accel', choices=('tcg', 'kvm'), default='tcg')
+    parser.add_argument('--startup-timeout', type=int, default=180,
+                        help='Seconds to observe normal startup before stopping the guest (budget stays 60)')
     parser.add_argument('--ram-mib', type=int, choices=(8, 16), default=8,
                         help='16 MiB alone is a resource probe; use --diagnostics for startup diagnostics')
     args = parser.parse_args()
+    if args.startup_timeout < 1:
+        parser.error('--startup-timeout must be positive')
     disk = args.disk.resolve()
     out = args.out.resolve()
     if out.exists():
@@ -59,6 +63,7 @@ def main():
     if sha(working) != expected or pins[str(disk)] != expected:
         raise ValueError('Working disk differs from its cross-build manifest')
     result = dict(status='running', cpu='486,-fpu', ram_mib=args.ram_mib, accel=args.accel,
+                  startup_timeout_seconds=args.startup_timeout,
                   qualification='diagnostic' if args.diagnostics else 'interactive' if args.ram_mib == 8 else 'resource-probe',
                   diagnostics=args.diagnostics, managed_pointer=args.managed_pointer,
                   scope='Startup diagnostics, retained static/function/literal behavior and exact VGA restoration; not complete OS acceptance' if args.diagnostics else 'Startup, retained static/function/literal behavior and exact VGA restoration; not complete OS acceptance',
@@ -66,7 +71,7 @@ def main():
     try:
         result['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out, snapshot=False, cpu='486,-fpu', ram_mib=args.ram_mib, accel=args.accel,
-            qmp_stdio=True, diagnostics=args.diagnostics, welcome=True, startup_timeout=180,
+            qmp_stdio=True, diagnostics=args.diagnostics, welcome=True, startup_timeout=args.startup_timeout,
             managed_pointer=args.managed_pointer,
             startup_check={'status': 'ok', 'answers': [], 'commands': COMMANDS,'pause_window_manager':False,
                            'rejection_prefixes': ('INPUT REJECT ',)})
