@@ -78,10 +78,17 @@ def capture(guest_type, disk, out, native):
             raise ValueError(f'Trail remained after left click on {out.name}')
         result = dict(snapped_points=snapped, settings_restored=True,
                       screenshots_sha256={stage: sha(path) for stage, path in frames.items()})
-        if native:
-            guest.press('end')
-            guest.command('6*7;')
-            result['fresh_result'] = guest.result_pixels()
+        guest.press('end')
+        guest.screenshot('after-end')
+        start = len(guest.collect())
+        guest.type('if(6*7==42)GTLog("GRID ARITHMETIC PASS\\n");')
+        guest.press('ret')
+        try:
+            guest.wait('GRID ARITHMETIC PASS\n', timeout=12, start=start)
+            result['fresh_result'] = 'pass'
+        except TimeoutError:
+            result['fresh_result'] = 'missing'
+        guest.screenshot('after-arithmetic')
         return result
     finally:
         guest.close()
@@ -110,7 +117,9 @@ def main():
             except (RuntimeError, TimeoutError, ValueError) as ex:
                 report['runs'][side] = dict(result='fail', error=str(ex))
     report['inputs_unchanged'] = all(sha(Path(path)) == digest for path, digest in inputs.items())
-    passed = report['inputs_unchanged'] and all(run['result'] == 'pass' for run in report['runs'].values())
+    passed = report['inputs_unchanged'] and all(
+        run['result'] == 'pass' and run['fresh_result'] == 'pass'
+        for run in report['runs'].values())
     if passed and report['runs']['original']['snapped_points'] != report['runs']['native']['snapped_points']:
         report['error'] = 'The guests drew different snapped trail points'
         passed = False

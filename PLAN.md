@@ -366,9 +366,11 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 - Grid draws the same three five-pixel snapped points on both guests.
   Left-click clears the trail and restores the saved grid settings and
   pointer callback. The i386 arithmetic probe after the click and End
-  submitted an empty input line. Compare the original console's caret
-  and prompt behavior after the same click before qualifying Grid. See the
-  [mouse comparison](build/i386-demo-grid-v1/comparison-checkpoint.json).
+  submitted an empty input line. The original console evaluated the same
+  arithmetic after End. The i386 terminal input loop drops the End scan
+  code before it can reach the DolDoc document-boundary handler. See the
+  [mouse comparison](build/i386-demo-grid-v1/comparison-checkpoint.json)
+  and [caret comparison](build/i386-demo-grid-v1/caret-baseline.json).
 
 ### Plan decisions (2026-11-24)
 
