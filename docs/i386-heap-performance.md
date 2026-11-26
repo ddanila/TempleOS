@@ -1017,3 +1017,8 @@ VGA checkpoints. The control took 64.561 seconds and the candidate took
 does not establish a repeatable speedup. Both exceeded the 60-second gate.
 The candidate remains a patch while its full diagnostic runs. See
 `build/i386-ic-release-batch-v2/`.
+
+The bounded instruction-release candidate also passed the full 8 MiB
+diagnostic and all nine VGA checkpoints. Its measured startup comparison
+still leaves the 60-second gate open. The diagnostic receipt is in
+`build/i386-ic-release-batch-v2/diagnostic8/result.json`.
