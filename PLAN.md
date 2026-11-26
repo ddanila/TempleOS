@@ -45,8 +45,10 @@ is complete and provides the foundation, but not desktop or application parity.
   `eea98cfa` installed generation one's providers and passed the 8 MiB
   reboot and document-allocation checks. Generation one then built its flat
   kernel at 128 MiB, passed an 8 MiB cold boot, and passed the installed
-  image and source audits. Generation two's retained provider build has
-  started. See the [generation-one receipt](build/i386-desktop-eea98cfa/generations128/gen1-checkpoint.json).
+  image and source audits. Generation two rebuilt all nine retained
+  providers byte for byte. Its install and subsequent boot checks remain
+  pending. See the [generation-one receipt](build/i386-desktop-eea98cfa/generations128/gen1-checkpoint.json)
+  and [generation-two provider receipt](build/i386-desktop-eea98cfa/generations128/gen2-retained-build/result.json).
 - The full desktop publishes the original autocomplete and task settings
   sources at startup. A cold direct include of ScrnCodes matched all
   256 original glyphs, returned on a keypress, and rendered fresh
@@ -58,6 +60,12 @@ is complete and provides the foundation, but not desktop or application parity.
 - The [Bible lookup profile](docs/i386-bible-load-profile.md#first-full-lookup-with-the-window-manager-active-2026-11-26)
   records repeated backing-region trims during DolDoc loading and a slower
   allocator experiment that was discarded.
+
+- The KeepAway drawing experiment cut the native finish tones from 610,
+  330, and 310 ms to 510, 130, and 130 ms. The game-over frame, 8–0
+  score and cold registry reopen passed. The patch remains experimental
+  pending a repeat and full desktop checks. See the
+  [KeepAway comparison](build/i386-keepaway-render-yield-v1/comparison.json).
 
 ### Plan decisions (2026-11-24)
 

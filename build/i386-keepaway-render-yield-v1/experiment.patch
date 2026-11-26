@@ -1,0 +1,16 @@
+diff --git a/Apps/KeepAway/KeepAway.HC b/Apps/KeepAway/KeepAway.HC
+index 90bbdf94..2d741810 100644
+--- a/Apps/KeepAway/KeepAway.HC
++++ b/Apps/KeepAway/KeepAway.HC
+@@ -374,8 +374,10 @@ U0 DrawIt(CTask *task,CDC *dc)
+   }
+ 
+   QSortI64(o_sort,OBJS_NUM,&ObjCompare);
+-  for (i=0;i<OBJS_NUM;i++)
++  for (i=0;i<OBJS_NUM;i++) {
+     DrawObj(dc,o_sort[i](Obj *),tt);
++    Yield;
++  }
+   tt=(game_t_end-tS)/60;
+   if (tt<=0) {
+     dc->color=RED;

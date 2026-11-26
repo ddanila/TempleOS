@@ -2818,3 +2818,12 @@ pixels of the AND circuit and return on Escape. The inventory
 qualifies Logic's launcher using this result, the ten-gate synthesis
 oracle, and the empty-table cancellation check.
 See the [cold-launch comparison](../build/i386-logic-cold-v1/comparison.json).
+
+A KeepAway candidate yielded after drawing each sorted object and kept the
+draw callback active. In one native run the finish tones lasted 510, 130,
+and 130 ms, compared with 610, 330, and 310 ms on the native baseline and
+499.1, 99.9, and 101.5 ms on the original. The handoff and pass scoring,
+game-over frame, lower-score restart, prompt recovery, and cold reopen of
+the 8–0 best score passed. The candidate is an unapplied experiment.
+See the [comparison](../build/i386-keepaway-render-yield-v1/comparison.json)
+and [patch](../build/i386-keepaway-render-yield-v1/experiment.patch).

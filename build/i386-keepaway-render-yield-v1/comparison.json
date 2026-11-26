@@ -1,0 +1,73 @@
+{
+  "fixture_result": "pass",
+  "scope": "KeepAway handoff and pass scoring, staged clock expiration, lower-score restart, registry persistence and prompt recovery",
+  "production_integration": false,
+  "draw_callback_enabled": true,
+  "best_score": [
+    8,
+    0
+  ],
+  "game_over_red_pixels": [
+    171,
+    173
+  ],
+  "finish_events": [
+    [
+      62,
+      3.77
+    ],
+    [
+      0,
+      4.28
+    ],
+    [
+      86,
+      4.48
+    ],
+    [
+      0,
+      4.61
+    ],
+    [
+      86,
+      4.71
+    ],
+    [
+      0,
+      4.84
+    ]
+  ],
+  "finish_tone_seconds": {
+    "original": [
+      0.499099,
+      0.099863,
+      0.101472
+    ],
+    "native_baseline": [
+      0.61,
+      0.33,
+      0.31
+    ],
+    "native_candidate": [
+      0.51,
+      0.13,
+      0.13
+    ]
+  },
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-sound-phases-v1/run.py": "cda2ee9950006a6349afdfc6f4d271a7b84d9d1abcb9c4bfc8a7e7baf13018bf",
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-sound-phases-v1/Probe.HC": "6ab9363394bad31dcc56ffc29bceb55240b20880b4315333419b39299053e3b1",
+    "tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/i386-keepaway-render-yield-v1/candidate.img": "f588032f0803a27991462fa88d6cd94ab2a4871ddb8b2faeedbe4d7f1651b984"
+  },
+  "evidence_sha256": {
+    "Apps/KeepAway/KeepAway.HC": "cbf685fa3e2ee9ac9ec915f816cfa9e63eaa9a7736c9f14cfb0f349ab3985312",
+    "build/i386-keepaway-render-yield-v1/KeepAway.HC": "2f25ff1856daab5dedc8d1f75546f58c39d9f00c0099860ebc666d967a7e0af5",
+    "build/i386-keepaway-render-yield-v1/experiment.patch": "dae6595c48f0e0ea6858e1d4bfbd29728f66cbd4f6b622d6dab6a2b9961742ff",
+    "build/i386-keepaway-render-yield-v1/native/result.json": "2975e747ae32c43e689c9024bf0f4c2865c7bd9e2f7c25712d59908959ed83da",
+    "build/i386-keepaway-render-yield-v1/native/guest/debug.log": "07fc059177b75451248f4dd6d7fb94ba7a724b2bba34ab4684e93d62b02d99ca",
+    "build/i386-keepaway-sound-phases-v1/comparison.json": "38240fcac2a441f214357035385d2cd5f992e0a0577d10028612e6ada57f6e08"
+  }
+}
