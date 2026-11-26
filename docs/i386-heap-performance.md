@@ -933,3 +933,10 @@ on the same 72-byte request after the native packer marker, with only 48
 contiguous bytes free. The next probe compiles the native bundle, and the
 extra 32 KiB did not carry the worker through that step. The patch and
 terminal receipt are in `build/i386-diagnostic-worker-compact224-v1/`.
+
+The 16 MiB diagnostic measured the worker's native bundle probe separately
+from the suite's deliberate exhaustion tests. The private arena went from
+5,984 bytes in use before the bundle to 394,048 bytes at peak, including
+the existing allocations. The full diagnostic and all nine VGA checks
+passed. See `build/i386-diagnostic-bundle-peak-v1/` for the measurement and
+test receipt.

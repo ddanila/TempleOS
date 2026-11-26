@@ -1415,7 +1415,8 @@ U0 ProbeProgramNativeBundle(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
   U8 *module=0,*disk=0;
   I64 module_bytes,disk_bytes,image_bytes,i;
   CI386BackingCheck backing_check;
-  U32 irq;
+  U32 irq,saved_peak=heap->peak,baseline=heap->used;
+  if(probe->phase) heap->peak=baseline;
   if(!I386BackingCheckSave(&backing_check,heap,task->code_heap))KernelStop;
   if(!probe->compiler->load_scalar_types(heap,probe->internal_types,
       probe->files,probe->disk_include,roots)) KernelStop;
@@ -1455,6 +1456,11 @@ U0 ProbeProgramNativeBundle(CI386CompilerProbe *probe,CI386Heap *heap,CCmpCtrl *
         !I386HashDel(heap,roots[i])) KernelStop;
   I386IrqRestore(irq);
   if(!I386BackingCheckRestored(&backing_check)) KernelStop;
+  if(probe->phase) {
+    KernelLog("NATIVE BUNDLE HEAP "); KernelHex(baseline); KernelLog(" ");
+    KernelHex(heap->peak); KernelLog(" "); KernelHex(heap->size); KernelLog("\n");
+    if(saved_peak>heap->peak)heap->peak=saved_peak;
+  }
   KernelLog("NATIVE BUNDLE "); KernelHex(probe->phase); KernelLog(" ");
   KernelHex(module_bytes); KernelLog(" "); KernelHex(image_bytes); KernelLog("\n");
 }

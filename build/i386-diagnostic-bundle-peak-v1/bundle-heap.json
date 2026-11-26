@@ -1,0 +1,8 @@
+{
+  "ram_mib": 16,
+  "baseline_bytes": 5984,
+  "peak_bytes": 394048,
+  "arena_bytes": 1048576,
+  "trace_line": "NATIVE BUNDLE HEAP 0000000000001760 0000000000060340 0000000000100000",
+  "trace_sha256": "495ef1441601229e012a1dc034f085c6ddce9b76e1d27f53eb3758f961ed0e27"
+}
