@@ -519,6 +519,15 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   installed the same nine module hashes and passed its independent boot
   and diagnostic growth recovery. The generation-two flat kernel build
   runs from that installed image.
+  Generation two rebuilt and installed its flat kernel at 128 MiB,
+  cold-booted at 8 MiB, and passed the installed-image and 1,573-file
+  source audits. The two-generation comparison verified all 16 modules
+  and installed artifacts after normalizing the eight-byte kernel
+  build date. Both physical boot payloads, checksums and padding
+  were checked independently. See the
+  [generation-two flat rebuild](build/i386-demo-f64-files-v1/generations128/gen2-selfhost/result.json),
+  [source audit](build/i386-demo-f64-files-v1/generations128/gen2-source-audit/result.json),
+  and [generation identity](build/i386-demo-f64-files-v1/generations128/generation-identity/result.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the
