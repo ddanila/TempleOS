@@ -1,0 +1,38 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-code-alloc-known-v1/native-generations128/gen1-selfhost/target.img": "8b5da7baab6562806d623e9db883e4360b83e61174ee1309241e6854172af2c3",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-keyboard.py": "4c93c9e473785d68da8a33e1c9c5ec51583b5d44dd2d900ae720c135021cf54a",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "aa504bbd15abc0dcfbdc600eff9a0d29bedf099416cb1adb10dcb6d09ee3bd4b",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-punch-reference.py": "db8fe4740b5f784b9e93376e0aea39e8e90b728976af9ab9ea942d7c8188d1dd",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "e1c5b021e6ac2a9ebc574b806453098ce054214196c0a451ad698344521e9b65",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+  },
+  "accel": "kvm",
+  "scope": "Unchanged TimeClock PunchIn/PunchOut with QEMU keyboard events, multiline and cancelled descriptions and cold-reboot record recovery; not full VGA or application qualification",
+  "logical_sha256": "a55afbfa0692c6f3665033f3a6cbb7eeda4bc78736131995257f3788053695cc",
+  "records": [
+    {
+      "type": 1,
+      "date_ticks": 3179611345019741,
+      "description": "alpha\nbeta\n"
+    },
+    {
+      "type": 2,
+      "date_ticks": 3179611345665975,
+      "description": "finish\n"
+    },
+    {
+      "type": 1,
+      "date_ticks": 3179611346262498,
+      "description": ""
+    },
+    {
+      "type": 2,
+      "date_ticks": 3179611346859021,
+      "description": ""
+    }
+  ],
+  "inputs_unchanged": true
+}

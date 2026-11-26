@@ -6392,6 +6392,12 @@ native reboot.
 [TimeClock report](../build/i386-code-alloc-known-v1/native-generations128/gen1-timeclock-report64/result.json) ·
 [Editor save and reboot](../build/i386-code-alloc-known-v1/native-generations128/gen1-doc-save-editor64/result.json)
 
+The TimeClock keyboard workflow also passed at 64 MiB under KVM.
+Emulated PS/2 input exercised multiline punch descriptions, cancellation,
+and empty descriptions. All four decoded records reopened byte for
+byte after a cold boot, and the input hashes were unchanged.
+[TimeClock keyboard and cold reopen](../build/i386-code-alloc-known-v1/native-generations128/gen1-timeclock-keyboard64-kvm-stable/result.json)
+
 The unchanged Registry1 template also matched the original on the
 guest-built kernel. The saved score was `9999.0000` with a fresh
 registry and `42.1250` with an existing score.
