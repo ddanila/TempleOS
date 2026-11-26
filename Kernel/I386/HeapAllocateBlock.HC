@@ -1,3 +1,5 @@
+#ifndef I386_HEAP_ALLOCATE_BLOCK_INCLUDED
+#define I386_HEAP_ALLOCATE_BLOCK_INCLUDED
 //Internal mutation only. Caller has validated the complete arena and selected
 //a fitting physical free block while holding exclusion without intervening calls.
 U8 *I386HeapAllocateBlock(CI386Heap *hc,CI386HeapBlock *block,U32 size,
@@ -34,3 +36,4 @@ U8 *I386HeapAllocateBlock(CI386Heap *hc,CI386HeapBlock *block,U32 size,
   if(zero) for(i=0;i<requested;i++) result[i]=0;
   return result;
 }
+#endif

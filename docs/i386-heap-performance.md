@@ -1139,3 +1139,22 @@ seconds. Both exceed the 60-second gate. The source batch remains an
 experimental patch pending repeat timing on this profile.
 [Timing comparison](../build/i386-ic-release-tcg-v1/comparison.json) ·
 [Task-symbol ownership receipt](../build/i386-ic-release-tcg-v1/task-symbols/result.json)
+
+### Reuse compiler ownership validation for code allocations
+
+The instruction slab, standalone instruction, miscellaneous record, and
+saved code header allocation paths now use the existing validated-arena
+selector. Each call follows `I386CmpCodeOwner` in the same IRQ-disabled
+section. They preserve first-fit placement, zeroing policy, and the
+public allocator's exhaustion reporting. The heap mutation helper is
+shared with parser allocations and has an include guard for test modules
+that compile both callers together.
+
+Both bootstrap generations, the boot audit, task-symbol ownership,
+compiler-control cleanup, and the 8 MiB full KVM diagnostics passed.
+The isolated 8 MiB TCG run passed nine exact VGA checkpoints and reached
+the prompt in 269.148 seconds. The earlier ATA control took 291.886
+seconds. The runs were measured separately, and the 60-second TCG gate
+remains open.
+[TCG timing](../build/i386-code-alloc-known-v1/interactive8-tcg/result.json) ·
+[KVM diagnostics](../build/i386-code-alloc-known-v1/diagnostic8-kvm/result.json)

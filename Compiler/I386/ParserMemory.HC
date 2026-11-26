@@ -21,22 +21,6 @@ U0 I386ParserFailure(U8 *label,CCmpCtrl *cc)
   KernelLog("\n");
 }
 #endif
-#include "/Kernel/I386/HeapAllocateBlock.HC"
-#include "/Compiler/I386/ParserHeapSelect.HC"
-U8 *I386ParserHeapAllocKnown(CI386Heap *heap,I64 bytes,Bool zeroed,Bool high)
-{//Only after CodeOwner validates the entire heap, with IRQ exclusion retained.
-  CI386HeapBlock *selected;
-  U32 need;
-  if(bytes<0 || bytes>0xFFFFFFFF-23)return 0;
-  need=(bytes+7)&~7;
-  if(!need)need=8;
-  need+=16;
-  selected=I386ParserHeapSelectKnown(heap,need,high);
-  if(selected)return I386HeapAllocateBlock(heap,selected,bytes,need,zeroed,high);
-  //Preserve the public allocator's failure diagnostics on exhaustion.
-  if(high)return I386HeapAllocHigh(heap,bytes,zeroed);
-  return I386HeapAlloc(heap,bytes,zeroed);
-}
 U8 *I386ParserAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes,Bool zeroed=TRUE)
 {
   CI386CmpCtrl *owned=cc;

@@ -162,6 +162,22 @@ U0 I386CodeLabel(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)
   CI386CmpRelease *state=context;
   if(state->label) (*state->label)(state->context,cc,name,undefined);
 }
+#include "/Kernel/I386/HeapAllocateBlock.HC"
+#include "/Compiler/I386/ParserHeapSelect.HC"
+U8 *I386ParserHeapAllocKnown(CI386Heap *heap,I64 bytes,Bool zeroed,Bool high)
+{//Only after CodeOwner validates the entire heap, with IRQ exclusion retained.
+  CI386HeapBlock *selected;
+  U32 need;
+  if(bytes<0 || bytes>0xFFFFFFFF-23)return 0;
+  need=(bytes+7)&~7;
+  if(!need)need=8;
+  need+=16;
+  selected=I386ParserHeapSelectKnown(heap,need,high);
+  if(selected)return I386HeapAllocateBlock(heap,selected,bytes,need,zeroed,high);
+  //Preserve the public allocator's failure diagnostics on exhaustion.
+  if(high)return I386HeapAllocHigh(heap,bytes,zeroed);
+  return I386HeapAlloc(heap,bytes,zeroed);
+}
 CIntermediateCode *I386ICSlabSlot(CI386Heap *heap,CCmpCtrl *cc)
 {//Owner/arena already validated with IRQs excluded. No fixed node-count limit.
   CI386CmpCtrl *owned=cc;
@@ -183,7 +199,7 @@ CIntermediateCode *I386ICSlabSlot(CI386Heap *heap,CCmpCtrl *cc)
     }
     //One-slot slabs cost more than the existing individual compact allocation.
     if(capacity<2)return 0;
-    slab=I386HeapAlloc(heap,offset(CI386ICSlab.body)+capacity*I386_IC_SLAB_SLOT_BYTES,FALSE);
+    slab=I386ParserHeapAllocKnown(heap,offset(CI386ICSlab.body)+capacity*I386_IC_SLAB_SLOT_BYTES,FALSE,FALSE);
     if(!slab)return 0;
     slab->capacity=capacity;slab->issued=slab->live=0;slab->free_nodes=0;
     slab->next=owned->ic_slabs;owned->ic_slabs=slab;
@@ -204,7 +220,7 @@ CIntermediateCode *I386ICAddBytes(CI386Heap *heap,CCmpCtrl *cc,
   CI386CodeAllocation *record;
   if(I386CmpCodeOwner(heap,cc)) {
     if(node_bytes==I386_FRONTEND_IC_BYTES)node=I386ICSlabSlot(heap,cc);
-    if(!node)node=I386HeapAlloc(heap,node_bytes+sizeof(CI386CodeAllocation),FALSE);
+    if(!node)node=I386ParserHeapAllocKnown(heap,node_bytes+sizeof(CI386CodeAllocation),FALSE,FALSE);
     if(node) {
       record=node(U8 *)+node_bytes;
       I386CodeAttach(cc,record,node,1);
@@ -223,7 +239,7 @@ CCodeMisc *I386COCMiscNew(CI386Heap *heap,CCmpCtrl *cc,I64 type)
   U32 irq=I386IrqSave;
   CI386OwnedMisc *owned=0;
   if(type>=CMT_LABEL && type<=CMT_HASH_ENTRY && I386CmpCodeOwner(heap,cc)) {
-    owned=I386HeapAlloc(heap,sizeof(CI386OwnedMisc),TRUE);
+    owned=I386ParserHeapAllocKnown(heap,sizeof(CI386OwnedMisc),TRUE,FALSE);
     if(owned) {
       I386CodeAttach(cc,&owned->lifetime,owned,2);
       COCMiscSeed(cc,&owned->node,type);
@@ -323,7 +339,7 @@ CCodeCtrl *I386COCSave(CI386Heap *heap,CCmpCtrl *cc)
   CI386OwnedCode *saved=0;
   CI386CmpCtrl *owned=cc;
   if(I386CmpCodeOwner(heap,cc) && owned->code_headers!=0xFFFFFFFF) {
-    saved=I386HeapAlloc(heap,sizeof(CI386OwnedCode),FALSE);
+    saved=I386ParserHeapAllocKnown(heap,sizeof(CI386OwnedCode),FALSE,FALSE);
     if(saved) { COCCopy(&saved->header,&cc->coc); I386CodeAttach(cc,&saved->lifetime,saved,3); }
   }
   I386IrqRestore(irq); return saved;

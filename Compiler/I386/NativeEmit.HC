@@ -4,8 +4,6 @@ extern U0 I386ParserFailure(U8 *label,CCmpCtrl *cc);
 //Included after native Control.HC; the containing module supplies throw.
 #include "/Compiler/I386/NativeEmit.HH"
 #include "/Compiler/I386/EmitCore.HC"
-//Implemented later by ParserMemory.HC in this same retained module.
-extern U8 *I386ParserHeapAllocKnown(CI386Heap *heap,I64 bytes,Bool zeroed,Bool high);
 #define I386_OUT_CHUNK_BYTES 512
 class CI386OutChunk {
   CI386OutChunk *next;
