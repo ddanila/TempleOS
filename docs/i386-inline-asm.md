@@ -300,3 +300,7 @@ and passed the 8 MiB KVM diagnostic boot with nine exact VGA checkpoints.
 [Delivered-source audit](../build/i386-asm-and-c3-port-v2/committed-source-audit.json) ·
 [Full content](../build/i386-asm-and-c3-port-v2/full-content64/result.json) ·
 [8 MiB diagnostics](../build/i386-asm-and-c3-port-v2/diagnostic8-kvm/result.json)
+
+Normal 8 MiB KVM startup reached the prompt in 31.306 seconds and
+matched all nine VGA checkpoints.
+[8 MiB interactive startup](../build/i386-asm-and-c3-port-v2/interactive8-kvm/result.json)
