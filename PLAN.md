@@ -621,6 +621,11 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   but did not signal startup completion within the harness's 180-second
   wait. The 60-second release target remains unmet on that run. See the
   [8 MiB interactive receipt](build/i386-demo-blot-v1/interactive8/result.json).
+  The frozen diagnostic image completed the initial program compiler
+  probes. It then failed before spawning the console when allocating
+  the temporary diagnostic worker. The request was 1,070,343 bytes
+  and the largest free block was 838,128 bytes. See the
+  [8 MiB diagnostic receipt](build/i386-demo-blot-v1/diagnostic8-frozen/result.json).
 
 - 3DPoly qualifies. The i386 port publishes the existing symmetry,
   polygon fill, and three matrix rotation routines. In both guests
