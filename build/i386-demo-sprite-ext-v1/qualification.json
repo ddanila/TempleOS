@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "image_sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+  "demo_sha256": "04d2f5c3f4b7fc5b4e327a01e7493357174e10ce6d1accfde6bf6bc05aeda386",
+  "asset_sha256": "27461cb5e9706cecf2e156afae7b598912b6bd8d658b45ec4fc528da56ea8dbe",
+  "sprite_sha256": "47c8d70c3b2ee1d668103dc8294a9b4d4980a90bcd382a5b9b959caba57d3da2",
+  "sprite_bytes": 12546,
+  "document_bytes": 37781,
+  "sprites": 3,
+  "gray_pixels": 6300,
+  "screenshots_sha256": {
+    "original": "7cd983cd4b1ba62178e090081c700c38919a7be1b1dbd3ddd93a388d21b0f7f3",
+    "native": "6e10e99d690f20ed87109fbf0eae906bf864dfabf11b09c5478ec8eb45dfbb41"
+  }
+}

@@ -17833,10 +17833,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged SpritePutExt demo on both guests. Capture the whole DolDoc and render the three external maps from each prompt.",
+      "oracle": "Compare all three embedded binary records to sprite 2 in the pinned SpritePut source. Compare the complete text, document bytes and position-aligned map masks.",
+      "tests": [
+        {
+          "target": "native-original-sprite-external",
+          "result": "pass",
+          "evidence": "build/i386-demo-sprite-ext-v1/qualification.json",
+          "scope": "Both guests save the same 37,781 bytes with three copies of the pinned 12,546-byte external sprite, and draw three matching 6,300-pixel map masks."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/SpriteRaw.HC",

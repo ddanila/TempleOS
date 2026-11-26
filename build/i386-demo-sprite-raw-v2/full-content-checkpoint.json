@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "source_revision": "24b3e6f4469e7479a6c630940dd706dc98460b95",
+  "image_sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+  "inventory_files": 686,
+  "delivered_source_files": 1566,
+  "accel": "kvm",
+  "inventory_sha256": "e773b414e206ddcf6f3453c0d6722395d9b028e521116358bfe0ac6dc6a39031",
+  "active_desktop_commands": 9,
+  "evidence_sha256": {
+    "committed-source.json": "f838245f630829ae4ae49373f0e48b5cb43c3a0c22e1f57b2b434c9e4036cb11",
+    "full-content/result.json": "08d604a8b5de9cdb0b5856bb697e7544ff2c7cfd6dfaea67b40c0733cf90a105",
+    "baseline64/result.json": "210a7e6458012b25ba0a0f4811b9b85d6d3eda27fd1055cbed618c6affa46417"
+  }
+}
