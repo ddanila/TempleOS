@@ -1169,6 +1169,13 @@ nine VGA checkpoints.
 [Task-symbol ownership](../build/i386-parser-take-known-v1/task-symbols/result.json) ·
 [8 MiB diagnostics](../build/i386-parser-take-known-v1/diagnostic8-kvm/result.json)
 
+The parser-adoption image matched all 1,578 delivered source and
+documentation files to revision `d02fb3d2`. Its 64 MiB KVM content
+check verified all 686 inventory files and passed the bounded guest
+lookup and read workflow.
+[Delivered-source audit](../build/i386-parser-take-known-v1/committed-source-audit.json) ·
+[Full content](../build/i386-parser-take-known-v1/full-content64/result.json)
+
 The paused TCG profile of the preceding assembler image collected 2,916
 samples. The three heap walks accounted for 709 of 976 root-header
 samples and 1,179 of 1,641 startup-source samples. The control validation
