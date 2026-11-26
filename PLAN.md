@@ -288,8 +288,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   A fresh full cross-build from `c4064751` passed the 386 instruction
   audit, exact 1,572-file source audit, 8 MiB probe and frozen 686-file
   content comparison and all nine active desktop commands at 64 MiB.
-  The 128 MiB retained-provider build started from
-  that image. See the
+  The first 128 MiB build persisted ConsoleRuntime before its process
+  stopped during CompilerRuntime. An export audit passed on the saved
+  ConsoleRuntime. A resumed build on a copy of the disk is running for the
+  other eight providers, followed by an all-provider audit and the
+  two-generation run. See the
+  [recovered ConsoleRuntime receipt](build/i386-sprite-plot3d-production-v1/retained128-console-recovery.json),
   [production cross-build](build/i386-sprite-plot3d-production-v1/cross-checkpoint.json)
   and [full-content checkpoint](build/i386-sprite-plot3d-production-v1/full-content-checkpoint.json).
   The configured 64 MiB HomeSys boot selected Home Once in 211.67 seconds.

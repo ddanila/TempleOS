@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "welcome": true,
+  "source_disk_sha256": "0eaa413f3d0a721d4cd10cba6fd429f68de53a8fd508d6d84c3f6d2b600d542b",
+  "module_order": [
+    "ConsoleRuntime"
+  ],
+  "modules": {
+    "ConsoleRuntime": {
+      "bytes": 2712058,
+      "records": 13544,
+      "exports": 1439,
+      "sha256": "1c5779fd63522d009d563aa38ea1160abdb1e09804b3a06e3f8f1e633c20c003",
+      "reference_sha256": "99913a21f65978263945f396d3bf857c6a505c81190c89eebd0fbd8011019aea"
+    }
+  }
+}
