@@ -1,0 +1,112 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-insetip-v1/generations128/gen1-selfhost/target.img": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+    "/home/ddanila/fun/TempleOS/Demo/RegistryDemo.HC": "d9056ef5e96acbc2594ecf18c6fc5ad2f6ffd08bee0af600249c3b8fdfab85a8",
+    "/home/ddanila/fun/TempleOS/build/i386-registry-demo-repeat-reference-v3/result.json": "a789b303c5c65dcc32f2eb7b5f171779430ba43a5c73fbf46585108d936e695e",
+    "/home/ddanila/fun/TempleOS/build/i386-registry-demo-repeat-reference-v3/guest/demo-record.bin": "ced1ed78922fd8bf8f092d27cec1a3fbbe070e07db7fea65bdbd2b9b6b2ac925",
+    "/home/ddanila/fun/TempleOS/build/i386-registry-demo-repeat-reference-v3/guest/demo-registry.HC": "428356421ec2ea87e0baeea6a5e35ad2518bdc23a97ebb15fef2a45baec844e3",
+    "/home/ddanila/fun/TempleOS/build/i386-registry-demo-repeat-reference-v3/guest/demo-output.DD": "3d55884b6b376b7fa1417a2264096b40f5ca537f13112241fc369d5b3e9dc096",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-registry-demo.py": "af0503bbd8e4c93e816c45d658ed5e71b9fad503190dee1dc42cbc4f645a71e0",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "8b97bca4bd59d0ca074338b68c4102504a376f41f972b1e6acb8cd281614290a",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "4912a06939338450c4b119da9d43c51088dbdea74165bd93029c84067e3231be",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+  },
+  "commands": [
+    [
+      "#include \"/Kernel/I386/PublicUser.HH\"",
+      []
+    ],
+    [
+      "F64 demo_before=tS;",
+      []
+    ],
+    [
+      "#include \"C:/Demo/RegistryDemo.HC\"",
+      [
+        "High Score:1.23000",
+        "Val:1234"
+      ]
+    ],
+    [
+      "F64 demo_after=tS;",
+      []
+    ],
+    [
+      "RegExe(\"DemoCompany/Game1/SimpleVal\")==1235 && demo_before<=best_score && best_score<=demo_after;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "U0 SaveDemoRegistry(){I64 n;U8 *name=sys_registry_doc->filename.name,*p=FileRead(name,&n);FileWrite(\"C:/DemoRegistryState.HC\",p,n);FileWrite(\"C:/DemoRegistryPath.DATA\",name,StrLen(name));Free(p);}",
+      []
+    ],
+    [
+      "U0 SaveDemoTimes(){F64 v[3];v[0]=demo_before;v[1]=best_score;v[2]=demo_after;FileWrite(\"C:/DemoTimes.DATA\",v,24);}",
+      []
+    ],
+    [
+      "SaveDemoRegistry;SaveDemoTimes;",
+      []
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "scope": "Actual unchanged RegistryDemo first launch with fresh seeded defaults at 64 MiB; exact displayed values, time bounds, persisted increment/score, fixture identity and filesystem. No second boot or whole registry qualification",
+  "demo_source": "bundled",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+    "image_sha256": "4d37f79a5cb98fbabcd9623688e0929665fab844b3753737c602341ce53dde1d",
+    "boot_area_sha256": "6b8dded2998bfbb5c05a2847f55a5633ccfc2f45d063a53fdff204469292db40",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1950,
+      "owned_sectors": 98187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1950,
+      "owned_sectors": 98186,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {},
+    "added_attributes": {},
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 64,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 74.34400047198869,
+    "commands": 9,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "registry_path": "/Home/Registry.HC.Z",
+  "score": 29.92,
+  "time_bounds": [
+    27.29,
+    31.41
+  ],
+  "persisted_sha256": "c5e85fd9589bf79c37fa7b58bbd976f0ced381e53259868b7bc22df449d80076",
+  "filesystem": {
+    "directories": 63,
+    "files": 1954,
+    "owned_sectors": 98190,
+    "bitmap": "matches reachable extents"
+  },
+  "inputs_unchanged": true
+}

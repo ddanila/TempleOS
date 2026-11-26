@@ -237,3 +237,15 @@ for the default, customized and reload workflows above. Broader
 registry API failure handling is tracked separately.
 See the [original customized run](../build/i386-registry-demo-custom-v2/original/result.json)
 and [native customized run](../build/i386-registry-demo-custom-v2/native-seed-answer/result.json).
+
+## Three-boot check on both frozen native rebuilds
+
+Both installed generations from frozen revision `5303f095` passed the
+three-boot RegistryDemo test at 64 MiB under KVM with the Window Manager
+active and the managed pointer visible. The bundled demo persisted value
+1235 on first launch, incremented it to 1236 after reboot, and reopened
+the saved score and value on the third boot without changing the records.
+The filesystem audit found changes only to `/Home/Registry.HC.Z` and the
+three test capture files, with 1,950 source-image files preserved per run.
+[First rebuild receipt](../build/i386-demo-insetip-v1/generations128/gen1-registry64/result.json) ·
+[Second rebuild receipt](../build/i386-demo-insetip-v1/generations128/gen2-registry64/result.json)
