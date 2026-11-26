@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "source_revision": "c40647513cbe0732de62fbf14733c6c86bdfe4e6",
+  "disk_sha256": "650e519a076620077108344bd0bc8738fcec21c04b319c543dac5637083ae6ac",
+  "inventory_files": 686,
+  "commands": 9,
+  "ram_mib": 64,
+  "evidence_sha256": {
+    "gen1-checkpoint.json": "c72a51ae73c8e7b9c30061016285ddf4ec488de66f3d6184eac131d5a1a73547",
+    "gen1-baseline64/result.json": "cb2f644cda7f1c1981505ee6efff9361d144cd985c7fcbd234a4e9bfb77b842a",
+    "gen1-full-content64/result.json": "63658779e54004cd824d6ed2dda4280aaf78d57bb7e09d8608163b2fd35b3574"
+  }
+}
