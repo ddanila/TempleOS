@@ -1,0 +1,6 @@
+{
+  "result": "pass",
+  "fixture_sha256": "418a16c51cfe4bad6fa1177b0f43f683907cf27556cdcfb19b018586000f6662",
+  "scope": "Actual parsed TextDemo button command via DocEntryRun and caller document roles",
+  "mask": 11
+}

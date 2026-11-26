@@ -15945,6 +15945,18 @@
           "result": "pass",
           "evidence": "build/i386-demo-batch-compiler-text-v1/result.json",
           "scope": "Exact serialized markup, including control and link records. Interactive activation remains open."
+        },
+        {
+          "target": "original-textdemo-button-action",
+          "result": "pass",
+          "evidence": "build/i386-textdemo-button-v1/original/result.json",
+          "scope": "Actual OKAY entry posts command 1 and restores the caller document roles. Physical click and full Bible link remain open."
+        },
+        {
+          "target": "native-textdemo-button-action",
+          "result": "pass",
+          "evidence": "build/i386-textdemo-button-v1/native/result.json",
+          "scope": "Actual OKAY entry posts command 1 and restores the caller document roles. Physical click and full Bible link remain open."
         }
       ]
     },
