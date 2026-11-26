@@ -2909,3 +2909,10 @@ native prompt. Defining it to one for the probe moved the unchanged
 demo to the unresolved `JobQue` call on line 364. The prompt recovered
 after both rejections. See the
 [processor-count probe](../build/i386-demo-magic-pairs-v1/count-probe/result.json).
+
+The original and a native queue prototype both ran a processor-zero
+call in the designated Seth task and returned 67. Both workers had
+already run by the caller's first observation after submission, so
+that observation cannot serve as a queue ordering assertion. The
+prototype routes calls through the existing native dispatcher.
+See the [call checkpoint](../build/i386-magic-pairs-job-prototype-v2/call-checkpoint.json).

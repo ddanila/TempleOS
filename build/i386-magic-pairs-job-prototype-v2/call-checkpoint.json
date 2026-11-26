@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "scope": "One queued JOBT_CALL to processor zero ran on Seth and returned the expected result.",
+  "input_sha256": {
+    "build/i386-magic-pairs-job-prototype-v2/Contract.HC": "771919c25f1727b86bbecdb7b169a4b045ba64fc66b5ec5227263dc54c0b3c4a",
+    "build/i386-magic-pairs-job-prototype-v2/Jobs.HC": "6a8d65f3bda70a1c1b873e3a8014548cb57a763d1eb327a249e7c2c43dd3007a",
+    "build/i386-magic-pairs-job-prototype-v2/run.py": "f68d1b5f8c532678a41a5fdac16644fecb2f2221b3a7925e4848bd60ebad70fb",
+    "build/i386-magic-pairs-job-prototype-v2/original.iso": "f64ae7fc9d4472ad6281372fa0ab04e828da82e4e9d4a92c0f2f6a27b5215649",
+    "build/i386-magic-pairs-job-prototype-v2/original/command.json": "559c660022aa472ae0ca264ec6a3a163ce6b7583200991eaa726e942f6a0fa79",
+    "build/i386-magic-pairs-job-prototype-v2/native/guest/command.json": "f9358e83032591fd4c72d6de2d94dc8d08aacaf12e75189b30c539c108f5f310",
+    "build/i386-parenwarn-links-v2/void-production.img": "4555477efc097a48ceacc5254f8c2357997f62dbcd11a64d606cd21708e2be01"
+  },
+  "original_marker": "CALL early=1 result=67 correct_task=1",
+  "native_command_trace": [
+    "INPUT LINE #include \"C:/Probe/JobContract.HC\"",
+    "COMPILER BREAK ready",
+    "CALL early=1 result=67 correct_task=1",
+    "COMMAND OK"
+  ],
+  "production_integration": false
+}
