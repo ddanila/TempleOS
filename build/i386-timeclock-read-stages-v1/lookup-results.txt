@@ -1,0 +1,36 @@
+stored entry b'~/TimeClock/TimeFile.DATA.Z'
+file load entry eax=0x00000001 flags=0x00000046
+begin returned eax=0x00000001 flags=0x00000002
+file locate returned eax=0xffffffff flags=0x00000086
+end returned eax=0x00000001 flags=0x00000002
+file load returned eax=0x00000000 flags=0x00000046
+stored return eax=0x00000000 flags=0x00000202
+stored entry b'~/TimeClock/TimeFile.DATA.Z'
+file load entry eax=0x00000001 flags=0x00000046
+begin returned eax=0x00000001 flags=0x00000002
+file locate returned eax=0xffffffff flags=0x00000086
+end returned eax=0x00000001 flags=0x00000002
+file load returned eax=0x00000000 flags=0x00000046
+stored return eax=0x00000000 flags=0x00000202
+stored entry b'C:/Home/TimeClock/TimeFile.DATA.Z'
+file load entry eax=0x00000001 flags=0x00000046
+begin returned eax=0x00000001 flags=0x00000002
+file locate returned eax=0xffffffff flags=0x00000086
+end returned eax=0x00000001 flags=0x00000002
+file load returned eax=0x00000000 flags=0x00000046
+stored return eax=0x00000000 flags=0x00000202
+stored entry b'~/TimeClock/TimeFile.DATA.Z'
+file load entry eax=0x00000001 flags=0x00000046
+begin returned eax=0x00000001 flags=0x00000002
+file locate returned eax=0xffffffff flags=0x00000086
+end returned eax=0x00000001 flags=0x00000002
+file load returned eax=0x00000000 flags=0x00000046
+stored return eax=0x00000000 flags=0x00000202
+stored entry b'~/TimeClock/TimeFile.DATA.Z'
+file load entry eax=0x00000001 flags=0x00000046
+begin returned eax=0x00000001 flags=0x00000002
+file locate returned eax=0x00000001 flags=0x00000002
+raw payload returned eax=0x015ad7e8 flags=0x00000002
+end returned eax=0x00000001 flags=0x00000002
+file load returned eax=0x015ad7e8 flags=0x00000002
+stored return eax=0x015ad7e8 flags=0x00000202

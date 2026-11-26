@@ -198,3 +198,9 @@ failed reads, including the absolute read and the retry after the guest
 read the raw sector. The overwrite allowed the same bytes to reach the
 compact decompressor and the public read passed. See the
 [file service trace](../build/i386-timeclock-file-service-trace-v1/file-service-results.txt).
+
+A second trace localizes the stored-file failure further. The read
+session opens and closes successfully. The file locator returns
+`-1` on all four failed reads, before any payload read. After the
+overwrite the same locator returns `1` and the payload read succeeds.
+See the [lookup trace](../build/i386-timeclock-read-stages-v1/lookup-results.txt).
