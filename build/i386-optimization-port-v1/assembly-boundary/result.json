@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "source_disk_sha256": "374d0081c34dca70b107ee0180d67c29deda3d22b88b98efc6019f42fba7dea1",
+  "fixtures": {
+    "/Probe/LoopCarry.HC": "3645e7a32a5b9601563a4d4f3fd4981b5d636e3109db4265df39ed2d0dcc0bcc",
+    "/Probe/LoopTooFar.HC": "b032e432d3f1e3df3503442ccb1a9dc4cf601328be365a8c3d23b0dae5c82189"
+  },
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "accepted_displacement": 127,
+  "rejected_displacement": 130,
+  "inputs_unchanged": true
+}

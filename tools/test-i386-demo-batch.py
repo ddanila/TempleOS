@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
+import re
 import runpy
 import subprocess
 import time
@@ -69,6 +70,20 @@ def calendar_matches(doc, started, finished):
                 if doc == expected.encode('ascii'):
                     return True
     return False
+
+
+def optimization_times(doc, native):
+    """Require the exact benchmark transcript apart from measured times and CPU frequency."""
+    header = rb'001 Cores ([1-9][0-9]*) Hz counter\n' if native else rb'001 Cores +[0-9]+\.[0-9]+[kMGT]Hz\n'
+    total = 80_000_000 * 80_000_001 // 2
+    result = rb'\nRes:' + str(total).encode() + rb' Time: *([0-9]+\.[0-9]{6})\n'
+    pattern = header + result.join((b'Bad Code', b'Good Code #1',
+                                    b'Good Code #2', b'Good Code #3')) + result + b'\x05'
+    match = re.fullmatch(pattern, doc)
+    if not match:
+        return []
+    times = [float(value) for value in match.groups()[-4:]]
+    return times if all(value > 0 for value in times) else []
 
 
 def run(image, out, native, outputs, reference_at_prompt=False):
@@ -171,6 +186,11 @@ def main():
                                         'native': [native_start, native_end]}
                 matches = (calendar_matches(original, original_start, original_end)
                            and calendar_matches(native, native_start, native_end))
+            elif path == 'Demo/Lectures/Optimization.HC':
+                times = {'original': optimization_times(original, False),
+                         'native': optimization_times(native, True)}
+                entry['elapsed_seconds'] = times
+                matches = all(times.values())
             else:
                 matches = original == native
             result = 'pass' if matches else 'fail'

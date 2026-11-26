@@ -12,6 +12,104 @@ speed-up.  Depressing.
 
 #define SAMPLES	(8*10000000+1)
 
+#ifdef I386_PUBLIC_USER_INCLUDED
+I64 Loop1()
+{
+  I64 result;
+  U32 limit=SAMPLES;
+  asm {
+    XOR EAX,EAX
+    XOR EBX,EBX
+    MOV ECX,1
+@@05:
+    MOV ESI,ECX
+    INC ECX
+    ADD EAX,ESI
+    ADC EBX,0
+    LEA EDI,U32 &limit-16[EBP]
+    CMP ECX,U32 16[EDI]
+    JB @@05
+    MOV U32 &result[EBP],EAX
+    MOV U32 &result+4[EBP],EBX
+  }
+  return result;
+}
+
+I64 Loop2()
+{
+  I64 result;
+  asm {
+    XOR EAX,EAX
+    XOR EBX,EBX
+    MOV ECX,SAMPLES-1
+@@05:
+    ADD EAX,ECX
+    ADC EBX,0
+    DEC ECX
+    JNZ @@05
+    MOV U32 &result[EBP],EAX
+    MOV U32 &result+4[EBP],EBX
+  }
+  return result;
+}
+
+I64 Loop3()
+{
+  I64 result;
+  asm {
+    XOR EAX,EAX
+    XOR EBX,EBX
+    MOV ECX,SAMPLES-1
+@@05:
+    ADD EAX,ECX
+    ADC EBX,0
+    DEC ECX
+    ADD EAX,ECX
+    ADC EBX,0
+    DEC ECX
+    ADD EAX,ECX
+    ADC EBX,0
+    DEC ECX
+    ADD EAX,ECX
+    ADC EBX,0
+    DEC ECX
+    ADD EAX,ECX
+    ADC EBX,0
+    DEC ECX
+    ADD EAX,ECX
+    ADC EBX,0
+    DEC ECX
+    ADD EAX,ECX
+    ADC EBX,0
+    DEC ECX
+    ADD EAX,ECX
+    ADC EBX,0
+    DEC ECX
+    JNZ @@05
+    MOV U32 &result[EBP],EAX
+    MOV U32 &result+4[EBP],EBX
+  }
+  return result;
+}
+
+I64 Loop4()
+{
+  I64 result;
+  asm {
+    XOR EAX,EAX
+    XOR EBX,EBX
+    MOV ECX,SAMPLES-1
+@@05:
+    ADD EAX,ECX
+    ADC EBX,0
+    LOOP @@05
+    MOV U32 &result[EBP],EAX
+    MOV U32 &result+4[EBP],EBX
+  }
+  return result;
+}
+
+#else
 asm {
 
 LIMIT::	DU64	SAMPLES;	//Memory reference should be bad, right?
@@ -69,11 +167,16 @@ _extern _BADLY_UNOPTIMIZED I64 Loop1();
 _extern _WELL_OPTIMIZED1   I64 Loop2();
 _extern _WELL_OPTIMIZED2   I64 Loop3();
 _extern _WELL_OPTIMIZED3   I64 Loop4();
+#endif
 
 I64 i;
 F64 t0;
 
+#ifdef I386_PUBLIC_USER_INCLUDED
+"%03X Cores %d Hz counter\n",mp_cnt,cnts.time_stamp_freq;
+#else
 CPURep;
+#endif
 
 "Bad Code\n";
 t0=tS;

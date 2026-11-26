@@ -253,3 +253,20 @@ All five assembly ports passed together on the compiler allocation
 image. Each native DolDoc output matched the original byte for byte,
 and the batch returned to fresh arithmetic at the prompt.
 [Combined comparison](../build/i386-code-alloc-known-v1/assembly-demos64/result.json)
+
+### Optimization lecture benchmark
+
+The 386 port keeps the four assembly loops, including the memory-based
+limit, descending counter, eight-way unrolling, and the x86 `LOOP`
+instruction. Each loop accumulates the sum in two words using `ADC`.
+The native header reports the guest's timer counter frequency. The
+original branch continues to report the original CPU information.
+
+Both bootstrap generations and the 386 boot audit passed. The benchmark
+reported the closed-form sum `3200000040000000` and a positive elapsed
+time in all four cases on both guests. All five earlier assembly demos
+also passed in the same batch. A focused native check exercised carry
+on register and memory ADC forms, accepted a 127-byte LOOP displacement,
+rejected a 130-byte displacement, and returned to fresh arithmetic.
+[Benchmark comparison](../build/i386-optimization-port-v1/comparison/result.json) ·
+[Native operand and branch checks](../build/i386-optimization-port-v1/assembly-boundary/result.json)

@@ -18867,11 +18867,18 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": "Run the unchanged benchmark on the pinned original guest with one CPU and capture its DolDoc.",
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
+      "reference_workflow": "Run the benchmark on the pinned original and the bundled i386 port with one CPU. Capture the output of all four assembly loops.",
       "oracle": "All four loops report the independently calculated sum and a positive elapsed time. Elapsed times depend on the guest.",
       "tests": [
+        {
+          "target": "native-optimization-assembly-port",
+          "command": "python3 tools/test-i386-demo-batch.py IMAGE --out OUT --reference-at-prompt --demo Demo/Lectures/Optimization.HC --native-port Demo/Lectures/Optimization.HC",
+          "result": "pass",
+          "evidence": "build/i386-optimization-port-v1/comparison/result.json",
+          "scope": "All four original loop variants match the independently calculated sum on both guests and report positive elapsed times."
+        },
         {
           "target": "original-optimization",
           "result": "pass",
