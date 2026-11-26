@@ -977,3 +977,11 @@ checkpoints and reached interactive startup in 72.231 seconds. It still logged
 the sprite source allocation rejection. The full desktop and application
 suite and the 60-second startup budget remain open. See
 `build/i386-demo-insetip-v1/generations128/`.
+
+The 640 KiB worker passed the full 8 MiB TCG diagnostic and all nine VGA
+checkpoints with `486,-fpu`. Kernel declarations were published before the
+worker, and user headers loaded after it released its allocation. The provider
+loaded in place in the main arena. The console service version is 276 because
+its header callback now selects the publication phase. Diagnostic startup
+took 427.445 seconds. The separate 60-second interactive budget is still
+open. See `build/i386-diagnostic-worker-defer-user640-v1/diagnostic8/result.json`.

@@ -725,7 +725,7 @@ extern I64 AdamFile(U8 *filename,Bool warn_ext=TRUE);
 extern I64 ExePrint(U8 *fmt,...);
 extern I64 ExePutS2(U8 *buf,U8 *filename=NULL,I64 flags=0);
 extern I64 ExeFile2(U8 *name,I64 flags=0);
-extern Bool ConsoleRootHeaders();
+extern Bool ConsoleRootHeaders(Bool kernel,Bool user);
 extern Bool NativeOriginalView();
 #include "/Kernel/I386/CallExtStrRuntime.HC"
 CCmpGlbls cmp;
@@ -967,7 +967,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   config->block_globals->home_dir=DirNameAbs("~");
   *config->drive_cache_handoff=(&NativeDriveCacheHandoff+0)(U64);
   if(config->defer_root_headers) return TRUE;
-  return ConsoleRootHeaders;
+  return ConsoleRootHeaders(TRUE,TRUE);
 }
 CDoc *NativeIncludeDocumentCreate(U8 *name,U8 *source,I64 size)
 {
@@ -1006,23 +1006,27 @@ U8 *NativeIncludeDocumentFormat(CI386Heap *heap,CDoc *doc,CDocEntry *entry)
   Free(quoted);Free(plain);
   return result;
 }
-Bool ConsoleRootHeaders()
+Bool ConsoleRootHeaders(Bool kernel,Bool user)
 {
-  //Publish the resident reader with root declarations, after early diagnostics.
-  console_config->files->public_reader(&NativeResidentReadBridge);
-  //Publish the core first so its temporary parser arena is gone before the
-  //remaining declarations. Each header transaction keeps atomic defines;
-  //the complete user guard is committed only by the second compilation.
-  KernelLog("ROOT KERNEL HEADERS begin\n");
-  if(!ConsoleSource("#define NULL 0\n#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/PublicKernel.HH\"\n",
-      "RootKernelHeaders.HC",I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
-  KernelLog("ROOT KERNEL HEADERS ok\n");
-  //The immortal CPU root owns shared declarations; children inherit its scope.
-  KernelLog("ROOT USER HEADERS begin\n");
-  if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
-      "RootUserHeaders.HC",I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
-  KernelLog("ROOT USER HEADERS ok\n");
-  console_config->files->public_document(&NativeIncludeDocumentCreate,&NativeIncludeDocumentDestroy,&NativeIncludeDocumentFormat);
+  if(kernel) {
+    //Publish the resident reader with root declarations, after early diagnostics.
+    console_config->files->public_reader(&NativeResidentReadBridge);
+    //Publish the core first so its temporary parser arena is gone before the
+    //remaining declarations. Each header transaction keeps atomic defines;
+    //the complete user guard is committed only by the second compilation.
+    KernelLog("ROOT KERNEL HEADERS begin\n");
+    if(!ConsoleSource("#define NULL 0\n#define TRUE 1\n#define FALSE 0\n#include \"/Kernel/I386/PublicKernel.HH\"\n",
+        "RootKernelHeaders.HC",I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
+    KernelLog("ROOT KERNEL HEADERS ok\n");
+  }
+  if(user) {
+    //The immortal CPU root owns shared declarations; children inherit its scope.
+    KernelLog("ROOT USER HEADERS begin\n");
+    if(!ConsoleSource("#include \"/Kernel/I386/PublicUser.HH\"\n",
+        "RootUserHeaders.HC",I386_INPUT_ATOMIC_DEFINES|CCF_JUST_LOAD)) return FALSE;
+    KernelLog("ROOT USER HEADERS ok\n");
+    console_config->files->public_document(&NativeIncludeDocumentCreate,&NativeIncludeDocumentDestroy,&NativeIncludeDocumentFormat);
+  }
   return TRUE;
 }
 Bool ConsoleCancelRead(CI386Task *task)

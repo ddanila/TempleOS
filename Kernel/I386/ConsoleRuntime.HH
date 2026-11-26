@@ -7,7 +7,7 @@
 //Native task extensions include public heap ownership callbacks.
 #include "/Kernel/I386/DocDiagnostic.HH"
 #include "/Kernel/I386/EditorRuntime.HH"
-#define I386_CONSOLE_VERSION 275
+#define I386_CONSOLE_VERSION 276
 class CI386ConsoleConfig {
   CI386Heap *heap;
   //Kernel-owned original-width stage flags; borrowed for the console lifetime.
@@ -47,7 +47,7 @@ class CI386ConsoleServices {
   Bool (*key_irq)(U8 data,U8 status);
   Bool (*cpu_capture)(CI386ExceptionFrame *frame);
   U0 (*cpu_debug)(CI386ExceptionFrame *frame);
-  Bool (*root_headers)();
+  Bool (*root_headers)(Bool kernel,Bool user);
   U0 (*window_ensure)();
 };
 #endif

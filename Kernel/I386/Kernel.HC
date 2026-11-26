@@ -280,8 +280,8 @@ I64 Main(CI386BootInfo *info,I64 unused)
     KernelCompilerProbe(0);
     //The worker loads its provider after its independent memory probe. Keeping
     //that temporary module here needlessly overlaps both diagnostic workloads.
-  if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
-    if(!kernel_console.root_headers || !kernel_console.root_headers()) KernelStop;
+    if(!kernel_compiler.load_scalar_types(&kernel_heap,kernel_types.by_raw,&kernel_files,&kernel_file_include,kernel_scalars)) KernelStop;
+    if(!kernel_console.root_headers || !kernel_console.root_headers(TRUE,FALSE)) KernelStop;
   }
   KernelStartup;
   if(!kernel_files.bind(&kernel_scheduler,&kernel_volume)) KernelStop;
@@ -303,11 +303,11 @@ I64 Main(CI386BootInfo *info,I64 unused)
   KernelLog(kernel_ready_message);
   if(mouse_ready) I386PicMask(0xEFF8); else I386PicMask(0xFFFC);
   if(kernel_diagnostics) {
+    I64 private_bytes=640*1024;
     kernel_pulse=I386TaskSpawn(&kernel_scheduler,&kernel_heap,16384,&KernelPulse,0,
-      0x18,0x20,1048576);
+      0x18,0x20,private_bytes);
     if(!kernel_pulse) KernelStop;
     //This diagnostic compiler arena is released with the worker after its probes.
-    //Combined original compiler sources need 1 MiB of transient task storage.
     //The full bit-assignment corpus needs more than the former 8 KiB stack;
     //retain the parser's 4 KiB reserve and provide 16 KiB for this worker.
     //Finish heap-accounting diagnostics before accepting interactive allocations.
@@ -319,9 +319,11 @@ I64 Main(CI386BootInfo *info,I64 unused)
     KernelHex(kernel_pulse->local_heap.peak); KernelLog(" ");
     KernelHex(kernel_pulse->local_heap.size); KernelLog("\n");
     if(!kernel_pulse->task.finished || !I386TaskDestroy(kernel_pulse) ||
-        pulse_used-kernel_heap.used<1048576+16384) KernelStop;
+        pulse_used-kernel_heap.used<private_bytes+16384) KernelStop;
     kernel_pulse=0;
     KernelLog("PROBE TASK RELEASE "); KernelHex(pulse_used-kernel_heap.used); KernelLog("\n");
+    //Publish user headers after the temporary compiler and worker are reclaimed.
+    if(!kernel_console.root_headers(FALSE,TRUE)) KernelStop;
   }
   if(kernel_target_mount_probe ||
       (!kernel_diagnostics && !kernel_install_copy_probe && !kernel_target_format_probe)) {
@@ -782,7 +784,7 @@ U0 KernelCompilerProbeLoad()
   CI386Heap *scratch=I386TaskSelf->memory;
   U8 *source;
   I64 source_size=file.size,scratch_used,scratch_allocations;
-  if(scratch && scratch!=&kernel_heap) {
+  if(scratch && scratch!=&kernel_heap && source_size<scratch->size) {
     //The worker's private arena is idle between memory and compiler probes.
     //Keep the file there only while the shared loader validates and relocates.
     if(!I386HeapValid(scratch) || (file.attr&0x710) || !(file.attr&0x800) ||
