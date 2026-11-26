@@ -18386,10 +18386,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged demo without host input once launched. Its In and InStr jobs choose the first popup's default and move right before choosing the second.",
+      "oracle": "The complete DolDoc output contains PopUp #1:1 and PopUp #2:0, with an exact byte match across guests. The i386 prompt evaluates fresh arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-scripted-popup-input",
+          "result": "pass",
+          "evidence": "build/i386-demo-inpopup-v1/comparison/result.json",
+          "scope": "Both guests return YES then NO through the original scripted input and export the same 23 DolDoc bytes. The native prompt recovers."
+        }
+      ]
     },
     {
       "path": "Demo/InFile/InPopUpWait.IN",

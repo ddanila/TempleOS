@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "input_sha256": "7c73ab428b78811f224b1aeacf5b76cd94cc0954441b71bf839c524a76790828",
+  "entries": {
+    "Demo/InFile/InPopUp.HC": {
+      "source_sha256": "f97002d56a2696d9f08154a38d48f3c29db3e0f348b9579161c65b4161e68949",
+      "output_file": "demo-0.DD",
+      "result": "pass",
+      "original_sha256": "7611c3a0f539d734b0063df78fe7ff0ff8c352b054dae1a8250752535dcf04fb",
+      "native_sha256": "7611c3a0f539d734b0063df78fe7ff0ff8c352b054dae1a8250752535dcf04fb",
+      "bytes": 23
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "inputs_unchanged": true
+}
