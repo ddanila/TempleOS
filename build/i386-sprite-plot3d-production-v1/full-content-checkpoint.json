@@ -8,6 +8,8 @@
   "evidence_sha256": {
     "cross-checkpoint.json": "8cf77336b0ebad4b83bfa8f88468335146b657fa19cce0daafc8107f461c60f4",
     "full-content/result.json": "f6a1378dfe8cc0839bcfa2a473da8baf2fd5464c44c937416b13965de04f45df",
-    "address8/result.json": "54c54dbce5189b1c8f346077f78d0533055a753bfa223a84f26111ad93afd70f"
-  }
+    "address8/result.json": "54c54dbce5189b1c8f346077f78d0533055a753bfa223a84f26111ad93afd70f",
+    "baseline64/result.json": "4d300eaba324d35243e62e881ae3d9a830644aaf22b8ee012c3a49910f9fb00f"
+  },
+  "active_desktop_commands": 9
 }

@@ -17500,10 +17500,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Seed both guests with 1, launch unchanged Lines, capture three animation samples, send Space and verify line removal and native prompt recovery.",
+      "oracle": "Check each workspace for growing, changing multicolor line coverage and a cleared image after Space. Compare behavior across asynchronous samples and different viewport widths.",
+      "tests": [
+        {
+          "target": "native-original-lines",
+          "result": "pass",
+          "evidence": "build/i386-demo-lines-v1/qualification.json",
+          "scope": "Both guests drew accumulating multicolor lines, changed their drawing across three samples and cleared it on Space."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/LowPassFilter.HC",

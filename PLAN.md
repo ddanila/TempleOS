@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 48 (six apps and forty-two demos) |
+| Qualified | 49 (six apps and forty-three demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 608 |
-| Linked to tests / with reference workflow and oracle | 207 / 136 |
+| Qualification gaps | 607 |
+| Linked to tests / with reference workflow and oracle | 208 / 137 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 42 of 224 |
+| Demos qualified | 43 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 48 workflows and records eighteen shared files
+- The inventory qualifies 49 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -280,7 +280,8 @@ is complete and provides the foundation, but not desktop or application parity.
   See the [3D animation comparison](build/i386-demo-sprite-plot3d-v2/qualification.json).
   A fresh full cross-build from `c4064751` passed the 386 instruction
   audit, exact 1,572-file source audit, 8 MiB probe and frozen 686-file
-  content comparison. The 128 MiB retained-provider build started from
+  content comparison and all nine active desktop commands at 64 MiB.
+  The 128 MiB retained-provider build started from
   that image. See the
   [production cross-build](build/i386-sprite-plot3d-production-v1/cross-checkpoint.json)
   and [full-content checkpoint](build/i386-sprite-plot3d-production-v1/full-content-checkpoint.json).
@@ -296,6 +297,11 @@ is complete and provides the foundation, but not desktop or application parity.
   call to ClassRep. See the
   [original receipt](build/i386-demo-blkdev-rep-v1/original-receipt.json)
   and [native run](build/i386-demo-blkdev-rep-v1/comparison/result.json).
+
+- Lines qualifies. Both guests accumulated multicolor line drawings from
+  seed 1, changed the drawings across three asynchronous samples, and
+  cleared them on Space. See the
+  [interactive Lines comparison](build/i386-demo-lines-v1/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

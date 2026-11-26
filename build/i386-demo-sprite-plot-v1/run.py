@@ -12,15 +12,16 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def capture(guest_type, image, out, native, source, samples):
+def capture(guest_type, image, out, native, source, samples, seed, observe_seconds):
     guest = guest_type(image, out, native, reference_cpus=1)
     try:
         guest.wait('DONE native kernel startup\n' if native else 'DEMO BATCH READY\n')
         start = len(guest.collect())
         drive = 'C' if native else 'T'
-        guest.type(f'ExeFile("{drive}:{source}");')
+        prefix = f'Seed({seed});' if seed is not None else ''
+        guest.type(f'{prefix}ExeFile("{drive}:{source}");')
         guest.press('ret')
-        time.sleep(7)
+        time.sleep(observe_seconds)
         guest.screenshot('before-key')
         for sample in range(1, samples):
             time.sleep(0.25)
@@ -44,8 +45,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('original_iso', type=Path)
     parser.add_argument('native_image', type=Path)
-    parser.add_argument('--demo', choices=('SpritePlot', 'Extents', 'SpritePlot3D'), default='SpritePlot')
+    parser.add_argument('--demo', choices=('SpritePlot', 'Extents', 'SpritePlot3D', 'Lines'),
+                        default='SpritePlot')
     parser.add_argument('--samples', choices=(1, 3), default=1, type=int)
+    parser.add_argument('--seed', type=int)
+    parser.add_argument('--observe-seconds', type=int, default=7, choices=(7, 20))
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
     original, native = (path.resolve() for path in (args.original_iso, args.native_image))
@@ -56,11 +60,14 @@ def main():
     pins = {str(path): sha(path) for path in (original, native)}
     source = f'/Demo/Graphics/{args.demo}.HC'
     guest = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Guest']
-    report = dict(result='captured', input_sha256=pins, source_sha256=sha(Path(source[1:])))
+    report = dict(result='captured', input_sha256=pins, source_sha256=sha(Path(source[1:])),
+                  seed=args.seed, observe_seconds=args.observe_seconds)
     try:
         with ThreadPoolExecutor(max_workers=2) as pool:
-            reference = pool.submit(capture, guest, original, out / 'original', False, source, args.samples)
-            target = pool.submit(capture, guest, disk, out / 'native', True, source, args.samples)
+            reference = pool.submit(capture, guest, original, out / 'original', False,
+                                    source, args.samples, args.seed, args.observe_seconds)
+            target = pool.submit(capture, guest, disk, out / 'native', True,
+                                 source, args.samples, args.seed, args.observe_seconds)
             reference.result()
             target.result()
     except (RuntimeError, ValueError, TimeoutError) as error:

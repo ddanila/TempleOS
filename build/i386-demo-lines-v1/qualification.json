@@ -1,0 +1,55 @@
+{
+  "result": "pass",
+  "seed": 1,
+  "source_sha256": "470b1db7207bcbe011b513a93144e36a6b755f8c8dfd44ee4ccd28c731b67d68",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-sprite-plot3d-production-v1/cross/kernel.img": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5"
+  },
+  "runs": {
+    "original": {
+      "drawn_pixels": [
+        39103,
+        43664,
+        51414
+      ],
+      "drawing_colors": [
+        10,
+        11,
+        11
+      ],
+      "changed_pixels": [
+        16686,
+        10989
+      ],
+      "screenshots_sha256": {
+        "before-key.png": "5c8c47ad00cc307ca54886d9b49659105fb575df2ddd49cda90e35b108a70e49",
+        "before-key-1.png": "3f3c2dec8e5b6075686ad5c62567cce5d61ccfd84f013c582a919c2195f4e121",
+        "before-key-2.png": "fdb71f641180f0c0ff4760cab80147ad03e176f45caa3da090726d693026bc5a",
+        "after-key.png": "b5e2c452678b4a7d9697abbb79597a6c22548f20d8bb80c8e71284d8397d2c47"
+      }
+    },
+    "native": {
+      "drawn_pixels": [
+        76645,
+        79235,
+        81926
+      ],
+      "drawing_colors": [
+        2,
+        2,
+        3
+      ],
+      "changed_pixels": [
+        2590,
+        2691
+      ],
+      "screenshots_sha256": {
+        "before-key.png": "95b41ecf137fddf6cb23af509cb850bcb00ffab00170595024c1767e0f18bec9",
+        "before-key-1.png": "b4f46ab56c4bf2341f65936fff5f2963c633abd9c9ce269871e506e92105a770",
+        "before-key-2.png": "3fb25ab3e7031fea54fd65b590338b79db384a340b3cf1a84aa5c15f885abe4b",
+        "after-key.png": "a1e2dcfa0433e4f0d133c7af7d86bf892d0c6503b79511ab6cef6f5ec0ba4f34"
+      }
+    }
+  }
+}
