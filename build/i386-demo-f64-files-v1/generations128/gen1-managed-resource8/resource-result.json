@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "cpu": "486,-fpu",
+  "ram_mib": 8,
+  "disk_sha256": "794181c53d0d09dfe700358bcb8a5bc2695bf301288db24064363417eb09bcc7",
+  "accel": "kvm",
+  "source_disk_unchanged": true,
+  "disk_policy": "QEMU snapshot",
+  "arena_start": 1517568,
+  "arena_bytes": 6739968,
+  "document_development_cycles": 20,
+  "bytes": {
+    "doc_session_data_used": 26264,
+    "doc_session_code_used": 26264,
+    "doc_session_data_reserved": 47616,
+    "doc_session_code_reserved": 47616,
+    "doc_session_heap_base": 26264,
+    "doc_session_heap_peak": 34088,
+    "doc_session_heap_reserved_peak": 47616
+  },
+  "temporary_live_growth": 7824,
+  "managed_welcome": true
+}

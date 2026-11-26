@@ -25,6 +25,8 @@ def main():
     parser.add_argument('--parse-only', action='store_true',
                         help='Parse a completed run without starting QEMU again')
     parser.add_argument('--qmp-stdio',action='store_true')
+    parser.add_argument('--managed-welcome', action='store_true',
+                        help='Measure from the original welcome with the window manager active')
     parser.add_argument('--writable-copy',action='store_true',help='Use a fresh disk copy without QEMU snapshot temporary files')
     args = parser.parse_args()
     out = args.out.resolve()
@@ -36,6 +38,8 @@ def main():
         disk=out/'working.img'
         identity.update(working_disk=str(disk),storage_policy='writable copy')
     if args.qmp_stdio:identity['qmp_stdio']=True
+    if args.managed_welcome:
+        identity['managed_welcome'] = True
     provenance = out / 'resource-input.json'
     if args.parse_only:
         if not provenance.exists() or json.loads(provenance.read_text()) != identity:
@@ -59,8 +63,11 @@ def main():
                 raise ValueError('Resource disk copy differs from source')
         run_input(disk, out, accel=args.accel, cpu='486,-fpu', ram_mib=8,
                   qmp_stdio=args.qmp_stdio,snapshot=not args.writable_copy,
+                  welcome=args.managed_welcome, managed_pointer=args.managed_welcome,
+                  keep_window_manager=args.managed_welcome,
                   startup_timeout=180, startup_check={
                       'status': 'ok', 'answers': [], 'command_timeout': 180,
+                      'pause_window_manager': not args.managed_welcome,
                       'commands': commands})
     elif json.loads((out / 'result.json').read_text())['result'] != 'pass':
         raise ValueError('No passing QEMU run to parse')
@@ -101,6 +108,8 @@ def main():
               'document_development_cycles': 20, 'bytes': values,
               'temporary_live_growth': values['doc_session_heap_peak'] -
               values['doc_session_heap_base']}
+    if args.managed_welcome:
+        result['managed_welcome'] = True
     (out / 'resource-result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(result)
 

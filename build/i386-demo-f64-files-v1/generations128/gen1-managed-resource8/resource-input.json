@@ -1,0 +1,8 @@
+{
+  "disk": "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/generations128/gen1-selfhost/target.img",
+  "disk_sha256": "794181c53d0d09dfe700358bcb8a5bc2695bf301288db24064363417eb09bcc7",
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "ram_mib": 8,
+  "managed_welcome": true
+}
