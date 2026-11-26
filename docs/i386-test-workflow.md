@@ -6468,3 +6468,10 @@ native generations. Each mesh also matched the pinned original hash,
 and both workflows returned to fresh arithmetic.
 [Second-generation Ball](../build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-ball/result.json) ·
 [Second-generation Man](../build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-man/result.json)
+
+The bundled GrModels menu also handled Shift+Escape on both native
+generations. As on the original guest, the menu returned without adding
+a document mesh. Each native guest then evaluated fresh arithmetic.
+[Original cancellation](../build/i386-code-alloc-known-v1/native-generations128/grmodels-cancel-original-shift/result.json) ·
+[First generation](../build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-cancel-shift/result.json) ·
+[Second generation](../build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-cancel-shift/result.json)
