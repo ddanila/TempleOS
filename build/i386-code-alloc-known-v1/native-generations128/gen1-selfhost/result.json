@@ -1,0 +1,44 @@
+{
+  "result": "pass",
+  "flat_bytes": 469000,
+  "flat_sha256": "289b6fcaea1b48b9548f88d53f431a93ec231ae9edea772c85bc5dcda19d6d92",
+  "guest_built_flat_modules": [
+    "Kernel",
+    "SysTry",
+    "TaskContext",
+    "ExceptContext",
+    "IrqEntry",
+    "ExceptionEntry"
+  ],
+  "guest_built_auxiliary_modules": [
+    "CompilerProgramRuntimeProbe"
+  ],
+  "auxiliary_module_sha256": {
+    "CompilerProgramRuntimeProbe": "6aa0aa0504d110ff1303c0485273dce578a96531229994f27ff442a53a6ad466"
+  },
+  "guest_built_retained_modules": [
+    "Startup",
+    "MemoryRuntime",
+    "FileRuntime",
+    "ConsoleRuntime",
+    "CompilerProbe",
+    "CompilerRuntime",
+    "BuildRuntime",
+    "DocDiagnosticRuntime",
+    "EditorRuntime"
+  ],
+  "retained_origin": "guest-built supplied inputs",
+  "source_disk_sha256": "2d7ab99c8d94776e7fabc63358ba68d8a9780c468711a0ca98a7570d68665807",
+  "target_disk_sha256": "8b5da7baab6562806d623e9db883e4360b83e61174ee1309241e6854172af2c3",
+  "cross_build_manifest_sha256": null,
+  "retained_evidence": {
+    "build_result_sha256": "9939e6846717aad484e4daf9b1b8e41af8abeb69586078037f92cba3807f73c6",
+    "install_result_sha256": "69419b28012a4eee2341909deff531097702d98ed2a67abdba6fe364f89fef48"
+  },
+  "cpu": "486,-fpu",
+  "welcome": true,
+  "build_ram_mib": 128,
+  "boot_ram_mib": 8,
+  "managed_pointer": true,
+  "scope": "Guest flat-kernel build with supplied guest-built retained modules"
+}

@@ -6343,3 +6343,14 @@ while the flat kernel was still being built.
 [Desktop baseline](../build/i386-code-alloc-known-v1/all-retained-desktop64/result.json) ·
 [Document resource profile](../build/i386-code-alloc-known-v1/all-retained-resource8/resource-result.json) ·
 [Registry1 comparison](../build/i386-code-alloc-known-v1/all-retained-registry-template64/result.json)
+
+Generation one completed its 128 MiB flat-kernel self-build using all
+nine guest-built retained providers. It produced a 469,000-byte flat
+kernel and the guest-built program probe. The installed image passed
+the independent artifact audit, matched all 1,578 delivered source
+files to `84d1c25f`, and cold-booted at 8 MiB with exact VGA on both
+smoke commands. Generation two then started its retained rebuild from
+that installed image.
+[Self-build](../build/i386-code-alloc-known-v1/native-generations128/gen1-selfhost/result.json) ·
+[Artifact audit](../build/i386-code-alloc-known-v1/native-generations128/gen1-audit/result.json) ·
+[Source audit](../build/i386-code-alloc-known-v1/native-generations128/gen1-source-audit/result.json)
