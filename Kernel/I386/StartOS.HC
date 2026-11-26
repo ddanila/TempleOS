@@ -69,6 +69,7 @@ if(FileFind("::/HomeSys.HC")) {
   AdamFile("::/Adam/AutoComplete/MakeAC.HC",FALSE);
   AdamFile("::/Adam/TaskSettings.HC",FALSE);
   AdamFile("::/Kernel/I386/MakeDirectoryDiagnostics.HC",FALSE);
+  AdamFile("::/Kernel/I386/MakeSpriteText.HC",FALSE);
 }
 
 U0 NativePublishCompilerOptions()

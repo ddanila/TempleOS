@@ -1,0 +1,13 @@
+//Make the original sprite inspection and text conversion routines available to user tasks.
+#include "/Kernel/I386/PublicKernel.HH"
+#include "/Kernel/I386/PublicDocument.HH"
+#include "/Kernel/I386/PublicGraphicsContext.HH"
+#include "/Kernel/I386/PublicFormat.HH"
+#include "/Kernel/I386/PublicHash.HH"
+#include "/Kernel/I386/PublicMath.HH"
+#include "/Adam/Gr/GrInitA.HC"
+#include "/Adam/AngleWrapCore.HC"
+#include "/Kernel/ColorToStringCore.HC"
+#include "/Adam/Gr/SpriteElementSizeCore.HC"
+#include "/Adam/Gr/SpriteSummaryCore.HC"
+#include "/Adam/Gr/SpriteToCodeCore.HC"

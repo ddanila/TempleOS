@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "input_sha256": "e90ab362a7b175fbe5a1b4174a4eef0921bf816a161079374985e7e671c97cc7",
+  "entries": {
+    "Demo/Graphics/SpriteText.HC": {
+      "source_sha256": "471b3559bcb82175f6479cf31731ac93e863f2486717c3626ac81e899635a6a7",
+      "output_file": "demo-0.DD",
+      "result": "pass",
+      "original_sha256": "36bf263b9efef958d0218b1425a866d781bd9672e3d6e146cf51abfd4ba7ac3c",
+      "native_sha256": "36bf263b9efef958d0218b1425a866d781bd9672e3d6e146cf51abfd4ba7ac3c",
+      "bytes": 1315
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "inputs_unchanged": true
+}

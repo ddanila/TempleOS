@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 42 (six apps and thirty-six demos) |
+| Qualified | 43 (six apps and thirty-seven demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 614 |
+| Qualification gaps | 613 |
 | Linked to tests / with reference workflow and oracle | 201 / 130 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 36 of 224 |
+| Demos qualified | 37 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 42 workflows and records eighteen shared files
+- The inventory qualifies 43 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -228,11 +228,12 @@ is complete and provides the foundation, but not desktop or application parity.
   rasters and the 6,300-pixel map. See the
   [inline sprite comparison](build/i386-demo-sprite-put-v1/qualification.json).
 
-- SpriteText has an executable original oracle. All 18 decoded elements
-  and 491 packed poly-point steps match the original report. The i386
-  compiler rejects the first call to SpriteElem2Summary. See the
-  [original receipt](build/i386-demo-sprite-text-v1/original-receipt.json)
-  and [native run](build/i386-demo-sprite-text-v1/comparison/result.json).
+- SpriteText qualifies. The i386 desktop publishes the shared sprite
+  inspection and code-generation routines. Both guests matched all 18
+  decoded elements, all 491 packed poly-point steps and the complete
+  1,315-byte DolDoc. Both x86-64 bootstrap rebuilds passed after extracting
+  the shared routines. See the
+  [sprite text comparison](build/i386-demo-sprite-text-v4/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

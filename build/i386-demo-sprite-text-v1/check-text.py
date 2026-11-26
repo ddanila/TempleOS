@@ -1,5 +1,6 @@
 """Independently decode SpriteText's bundled sprite into its two reports."""
 import hashlib
+import argparse
 import json
 from pathlib import Path
 import runpy
@@ -64,11 +65,15 @@ def reports(sprite):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('document', type=Path, nargs='?',
+                        default=HERE / 'comparison/original/demo-0.DD')
+    args = parser.parse_args()
     asset = SOURCE.read_bytes()
     read_bins = runpy.run_path('build/i386-demo-sprite-ext-v1/qualify.py')['bins']
     _, records = read_bins(asset)
     expected, count = reports(records[0][3])
-    data = (HERE / 'comparison/original/demo-0.DD').read_bytes()
+    data = args.document.read_bytes()
     if data != expected:
         raise ValueError('Report differs from the decoded sprite')
     print(json.dumps(dict(result='pass', records=count,

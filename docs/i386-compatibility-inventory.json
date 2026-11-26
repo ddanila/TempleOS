@@ -17894,7 +17894,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Launch the unchanged SpriteText demo and capture the element summaries and regenerated textual sprite code for its embedded binary asset.",
       "oracle": "Independently decode all 18 packed elements and compare the entire DolDoc, including all 491 packed poly-point steps.",
       "tests": [
@@ -17909,6 +17909,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-sprite-text-v1/comparison/result.json",
           "scope": "The public i386 scope lacks SpriteElem2Summary. The bundled demo rejects at its first call before emitting the summaries."
+        },
+        {
+          "target": "native-original-sprite-text",
+          "result": "pass",
+          "evidence": "build/i386-demo-sprite-text-v4/qualification.json",
+          "scope": "The shared sprite inspection and conversion routines return all 18 summaries and 491 packed steps. Both guests match the entire 1,315-byte independently derived document."
         }
       ]
     },
