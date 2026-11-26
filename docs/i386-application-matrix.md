@@ -2802,3 +2802,12 @@ guests accepted an empty gate list and table size, printed the
 original abort message, and restored the caller's drawing callback
 and task settings. Native rendered fresh arithmetic afterward.
 See the [cancellation comparison](../build/i386-logic-cancel-v2/comparison.json).
+
+The native control with the game's draw callback disabled during the
+sound phases produced finish tones of 500, 100, and 100 ms. It kept
+the same scoring, match expiry, sound calls, and registry write, then
+restored the draw callback for the finish-frame check. The original
+pitch sequence and cold best-score reopen still passed. Rendering
+load is the condition that distinguishes this control from the
+delayed run. See the
+[render control receipt](../build/i386-keepaway-sound-no-draw-v1/comparison.json).
