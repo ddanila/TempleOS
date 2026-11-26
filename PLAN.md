@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 76 (six apps and seventy demos) |
+| Qualified | 77 (six apps and seventy-one demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 580 |
-| Linked to tests / with reference workflow and oracle | 234 / 163 |
+| Qualification gaps | 579 |
+| Linked to tests / with reference workflow and oracle | 235 / 164 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 70 of 224 |
+| Demos qualified | 71 of 224 |
 
-C1 has 580 qualification gaps, including entries that still need a reference
+C1 has 579 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `d5792939`.
@@ -44,7 +44,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 76 workflows and records eighteen shared files
+- The inventory qualifies 77 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -551,6 +551,13 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   commands, matched all 83 original desktop geometry values, accepted
   fresh arithmetic and verified physical bootstrap retirement. See the
   [generation-two configured handoff](build/i386-demo-f64-files-v1/generations128/gen2-desktop64/result.json).
+
+- PullDownMenu qualifies for physical selection of both Misc commands
+  and keyboard Help, About and exit. Both guests rendered the selected
+  rows and command responses, and the native prompt evaluated fresh
+  arithmetic. The original window manager needed the press to remain on
+  the menu bar before the pointer moved. See the
+  [VGA comparison](build/i386-demo-pulldown-v1/mouse-latched/qualification.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the

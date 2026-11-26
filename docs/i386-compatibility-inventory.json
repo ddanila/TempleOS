@@ -19264,10 +19264,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Open Misc with the physical pointer, drag to Opt1 and Opt2 in turn, invoke Help and About with F1 and Shift+F1, and exit with Shift+Esc.",
+      "oracle": "Verify both submenu labels and selection highlights, the two command responses and both help messages in VGA captures, and native prompt recovery.",
+      "tests": [
+        {
+          "target": "native-original-pull-down-menu",
+          "result": "pass",
+          "evidence": "build/i386-demo-pulldown-v1/mouse-latched/qualification.json",
+          "scope": "Both guests highlight and dispatch Opt1 and Opt2 with real mouse events and render Help and About. The native prompt evaluates fresh arithmetic after exit."
+        }
+      ]
     },
     {
       "path": "Demo/RadixSort.HC",

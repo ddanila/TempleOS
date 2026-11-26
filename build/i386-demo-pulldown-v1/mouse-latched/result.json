@@ -1,0 +1,92 @@
+{
+  "inputs_unchanged": true,
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-dskraw-v1/cross-drive-types/kernel.img": "49a5db5a95db18764f64e1d67e3b54a34f8a6e98c9c2e853f243bc227c99a343",
+    "/home/ddanila/fun/TempleOS/Demo/PullDownMenu.HC": "2d1cd9f8bd851ea0114f6208451bbda0f842625e48f57a3fe831743ae560a86f"
+  },
+  "working_disk_sha256": "49a5db5a95db18764f64e1d67e3b54a34f8a6e98c9c2e853f243bc227c99a343",
+  "runs": {
+    "original": {
+      "result": "captured",
+      "clicks": [
+        {
+          "top": [
+            109,
+            4
+          ],
+          "item": [
+            123,
+            19
+          ]
+        },
+        {
+          "top": [
+            109,
+            4
+          ],
+          "item": [
+            123,
+            27
+          ]
+        }
+      ],
+      "frames_sha256": {
+        "ready": "c4b149b002423befb05d6bdd15f8f5fed45d5f6531dcc5296715f52d8489d7ef",
+        "menu-1": "64156564f556cb99416b8256f1e2eac7c1a987e7a40c0d972be7c26c99dc6c6f",
+        "highlight-1": "c7c65264c888c6d39bae23f0e2103981da2192d759654ba6e01c385adf29cde2",
+        "option-1": "3e027f8c0c7cc66bfe18435ed0fda5d6f4b94a285071520cdde17294875fa9fe",
+        "menu-2": "ded401498800689317a00ef1bc88b929c5838ba1bc08e5f02624a7fed4db071b",
+        "highlight-2": "fb17a39a9c1b8d1138e41e42be7cc0d5f29a78fe2cb5d4d8c8c1c0897c20177d",
+        "option-2": "704d45a2ea6c91bcf3a92b0f7918f14d6ed878c3c05db562f9ebb4636cf25ab5",
+        "help": "4a3f3d2f07ebcc77bae4c944c8c4614239cc87772094676d64bd850e5fe9ee50",
+        "about": "38ae3b8df193206d468e8e6c82fea3b5e876e504bb47fa4ce87ad7dea29eda75"
+      }
+    },
+    "native": {
+      "result": "captured",
+      "clicks": [
+        {
+          "top": [
+            109,
+            4
+          ],
+          "item": [
+            123,
+            19
+          ]
+        },
+        {
+          "top": [
+            109,
+            4
+          ],
+          "item": [
+            123,
+            27
+          ]
+        }
+      ],
+      "frames_sha256": {
+        "ready": "5cd83b753864cc832e3acdc45a10069df6af51b87a55441b95fac89ceb78b1aa",
+        "menu-1": "cf57164105b9771ed95c1c39cab2d31b35ac6733b0fbf7990733453e7edcc2d1",
+        "highlight-1": "2d9545a81aa54637671e324ef4793e82a7f03d08fd4095ac234493fb82303a45",
+        "option-1": "13fc7c944ecb94eda649eeed47a3e330e67396377d29f3abca11b3bc813fc97f",
+        "menu-2": "9270ee3158a5aa53f7f6d38e6283fb4b618003161693d3dfc07dbdac32232604",
+        "highlight-2": "542b2346a2ee6933f884df2f0511788e606048b05df452e6e0df302f2a090a92",
+        "option-2": "38d5b9815739a661533b48265046d6d27b0eec14dc2ac8434afb0447f7829780",
+        "help": "4e710d3ad9c1cc941b89a726fec60b1abdee62e20d24e8beb966939574f3d505",
+        "about": "15ca75237eee383e20da19ed0d26dc6be307d90740404187141afc9a532cef3a"
+      },
+      "fresh_result": {
+        "column": 0,
+        "row": 41,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}
