@@ -1,0 +1,14 @@
+{
+  "result": "fail",
+  "input_sha256": "756bce70fe94e145e4f3aa077e5575087d9d473e6d051721d2f7e420013945d1",
+  "entries": {
+    "Demo/DateTime.HC": {
+      "source_sha256": "ad5b53e8807c7f2eba1acda72872f339b8c315b296c5f590bb2a46c6c79e82e7",
+      "output_file": "demo-0.DD"
+    }
+  },
+  "seed": null,
+  "scope": "Exact DolDoc output, document cleanup and return to native command input for a batch of noninteractive demos",
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 00000000015923E8 00000000536B7354\nINPUT LINE #include \"C:/Probe/DemoBatch.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nUNDEFINED DEFINE ST_DAYS_OF_WEEK\nVGA ROWS 60\nVGA ROWS 01\nVGA ROWS 01\nTHROW 6665446665646E55\nINPUT REJECT exception 6665446665646E55 errors 0000000000000000 warnings 0000000000000000\nCOMMAND ERROR\n",
+  "inputs_unchanged": true
+}

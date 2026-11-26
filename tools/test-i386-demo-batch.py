@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Compare complete DolDoc output for deterministic, noninteractive demos."""
+"""Validate complete DolDoc output for noninteractive demos."""
 import argparse
+from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import runpy
 import subprocess
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = r'''
@@ -47,6 +49,28 @@ def demo_path(value):
     return path.as_posix()
 
 
+def calendar_matches(doc, started, finished):
+    """Compare the full DateTime document against the guest's UTC run window."""
+    weekdays = ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
+    months = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+              'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')
+    for second in range(started - 1, finished + 2):
+        # The demo calls Now three times. A read can straddle a second boundary.
+        date = datetime.fromtimestamp(second, timezone.utc)
+        for clock_tick in (second, second + 1):
+            clock = datetime.fromtimestamp(clock_tick, timezone.utc)
+            for fields_tick in (clock_tick, clock_tick + 1):
+                fields = datetime.fromtimestamp(fields_tick, timezone.utc)
+                expected = (f"\n\n{date:%m/%d/%y} {clock:%H:%M:%S}\n\n\n"
+                            f"Hour:{fields.hour:02d} Minute:{fields.minute:02d} "
+                            f"Second:{fields.second:02d}\n\n\n"
+                            f"Day Name:{weekdays[fields.weekday()]}\n\n\n"
+                            f"Month Name:{months[fields.month - 1]}\n\n\n\x05")
+                if doc == expected.encode('ascii'):
+                    return True
+    return False
+
+
 def run(image, out, native, outputs):
     Guest = runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest']
     guest = Guest(image, out, native, reference_cpus=1)
@@ -80,7 +104,7 @@ def main():
     input_hash = sha(disk.read_bytes())
     out.mkdir()
     report = dict(result='running', input_sha256=input_hash, entries={}, seed=args.seed,
-                  scope='Exact DolDoc output, document cleanup and return to native command input for a batch of noninteractive demos')
+                  scope='Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos')
     try:
         overlay = out/'original-source'
         runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'))['restore_reference'](overlay)
@@ -105,10 +129,22 @@ def main():
                         '--output', str(original_image)], cwd=ROOT, check=True)
         native_image = out/'native.img'
         pack['package'](disk, native_image, additions={'/Probe/DemoBatch.HC': body})
+        original_start = int(time.time())
         original_outputs = run(original_image, out/'original', False, outputs)
+        original_end = int(time.time())
+        native_start = int(time.time())
         native_outputs = run(native_image, out/'native', True, outputs)
+        native_end = int(time.time())
         for path, original, native in zip(args.demo, original_outputs, native_outputs):
-            result = 'pass' if original == native else 'fail'
+            entry = report['entries'][path]
+            if path == 'Demo/DateTime.HC':
+                entry['utc_windows'] = {'original': [original_start, original_end],
+                                        'native': [native_start, native_end]}
+                matches = (calendar_matches(original, original_start, original_end)
+                           and calendar_matches(native, native_start, native_end))
+            else:
+                matches = original == native
+            result = 'pass' if matches else 'fail'
             report['entries'][path].update(result=result, original_sha256=sha(original),
                                            native_sha256=sha(native), bytes=len(original))
         report['result'] = 'pass' if all(e['result'] == 'pass' for e in report['entries'].values()) else 'fail'

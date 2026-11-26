@@ -952,6 +952,7 @@ Bool ConsoleInit(CI386ConsoleConfig *config)
   winmgr.ideal_refresh_tS=tS;
   winmgr.last_refresh_tS=winmgr.ideal_refresh_tS;
   NativeBreakpointInstall;
+#include "/Kernel/DateDefinesCore.HC"
 #include "/Kernel/FileUtilFlagsDefineCore.HC"
   *native_owner_retire_slot=(&NativeStorageOwnerRetire+0)(U64);
   *native_task_window_init_slot=(&NativeTaskWindowDefaults+0)(U64);

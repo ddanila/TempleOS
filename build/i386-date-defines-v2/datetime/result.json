@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "input_sha256": "6e05345edddd4aaec70e4aa9368dc5cd3df571fea790540a924f610f7298e951",
+  "entries": {
+    "Demo/DateTime.HC": {
+      "source_sha256": "ad5b53e8807c7f2eba1acda72872f339b8c315b296c5f590bb2a46c6c79e82e7",
+      "output_file": "demo-0.DD",
+      "utc_windows": {
+        "original": [
+          1795680498,
+          1795680505
+        ],
+        "native": [
+          1795680505,
+          1795680566
+        ]
+      },
+      "result": "pass",
+      "original_sha256": "6abddf0044ae7cf3132d0bfc873ebf0f31995a1cedfe86e1b1c24ab759a754b9",
+      "native_sha256": "20a0134cf6b007155a0dd2e5b55a09f5468fce2210f9e9b8b2bc195e3622e5d0",
+      "bytes": 85
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}

@@ -15685,10 +15685,23 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged demo against the guest RTC and return to the prompt. Capture the complete formatted date, time and calendar labels.",
+      "oracle": "The two 85-byte DolDoc documents match independently calculated UTC calendar output within their respective guest run windows. Fresh native arithmetic succeeds after cleanup.",
+      "tests": [
+        {
+          "target": "native-original-demo-batch",
+          "result": "fail",
+          "evidence": "build/i386-demo-datetime-v1/result.json",
+          "scope": "The frozen desktop rejected the unchanged demo at ST_DAYS_OF_WEEK."
+        },
+        {
+          "target": "native-original-demo-batch",
+          "result": "pass",
+          "evidence": "build/i386-date-defines-v2/datetime/result.json",
+          "scope": "Complete original and native documents checked against an independent UTC calendar, with weekday and month names supplied by the shared original definitions."
+        }
+      ]
     },
     {
       "path": "Demo/DbgDemo.HC",

@@ -26,10 +26,7 @@ U0 SysDefinesLoad()
 	"Class\0IntType\0Funct\0Word\0DictWord\0KeyWord\0AsmKeyWord\0OpCode\0"
 	"Reg\0File\0Module\0HelpFile\0Frame Ptr\0 \0 \0 \0 \0 \0 \0Private\0"
 	"Public\0Export\0Import\0Imm\0Goto\0Res\0Unres\0Local\0");
-  DefineLstLoad("ST_DAYS_OF_WEEK","Sunday\0Monday\0Tuesday\0Wednesday\0"
-	"Thursday\0Friday\0Saturday\0");
-  DefineLstLoad("ST_MONTHS","January\0February\0March\0April\0May\0"
-	"June\0July\0August\0September\0October\0November\0December\0");
+#include "/Kernel/DateDefinesCore.HC"
   DefineLstLoad("ST_FILE_ATTRS","R\0H\0S\0V\0D\0A\0 \0 \0X\0T\0Z\0C\0F\0");
 #include "/Kernel/FileUtilFlagsDefineCore.HC"
   DefineLstLoad("ST_BLKDEV_TYPES",
