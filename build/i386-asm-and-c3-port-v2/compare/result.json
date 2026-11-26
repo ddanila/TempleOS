@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "input_sha256": "c2e097a0df0c59524664c90272ab507b6085e3f779094ac5abc6e2d0de15742d",
+  "entries": {
+    "Demo/Asm/AsmAndC3.HC": {
+      "source_sha256": "b86fc74479da36127cf75db0664499e2962ac947657ac9f8cc7ef94f0c928b47",
+      "output_file": "demo-0.DD",
+      "native_source_sha256": "a1972b9d39e06d164b834e2fa93f6a15091116147128c26b8e9bcf15ca419d4f",
+      "original_sha256": "89274070c3a702c3a0bda825a794af9efc096f383728bc9b1f6757db04e5a380",
+      "bytes": 58,
+      "result": "pass",
+      "native_sha256": "89274070c3a702c3a0bda825a794af9efc096f383728bc9b1f6757db04e5a380"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}

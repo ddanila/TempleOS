@@ -15569,11 +15569,27 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "qualified-workflows",
+        "description": "Run the mixed HolyC and assembly demo and compare its three hexadecimal output lines with the original."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-demo-batch.py",
+        "checks": [
+          "Compare the complete DolDoc bytes, including three Meaning of life:42 lines and the end marker.",
+          "Require ordinary native command input after the demo returns."
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-and-native-asm-and-c3",
+          "command": "python3 tools/test-i386-demo-batch.py IMAGE --out OUT --demo Demo/Asm/AsmAndC3.HC --native-port Demo/Asm/AsmAndC3.HC",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c3-port-v2/compare/result.json"
+        }
+      ]
     },
     {
       "path": "Demo/Asm/AsmHelloWorld.HC",
