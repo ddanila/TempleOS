@@ -20,6 +20,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--managed-desktop', action='store_true',
+                        help='Run on the managed desktop with KVM and WinMgr active')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     if out.exists():
@@ -30,8 +32,13 @@ def main():
     package = ROOT/'tools/package-i386-native-image.py'
     reference = ROOT/'tools/test-i386-timeclock-punch-reference.py'
     inventory = ROOT/'docs/i386-compatibility-inventory.json'
+    interaction = ROOT/'tools/test-i386-autocomplete-interaction.py'
     pins = {str(p): sha(p) for p in [source, FIXTURE, runner, build, package,
                                    reference, inventory, Path(__file__).resolve()]}
+    if args.managed_desktop:
+        for path in (interaction, ROOT/'tools/test-i386-timeclock-welcome.py',
+                     ROOT/'tools/check-i386-autocomplete-numeric-pixels.py', ROOT/'Kernel/FontStd.HC'):
+            pins[str(path)] = sha(path)
     read_files = runpy.run_path(str(build))['mutated_file_contents']
     decode = runpy.run_path(str(reference))['decode']
     expected_sources = {('/'+e['path']): e['reference_sha256']
@@ -42,7 +49,7 @@ def main():
         raise ValueError('TimeClock application differs from the pinned original sources')
     out.mkdir(parents=True)
     working = out/'working.img'
-    report = dict(result='running', ram_mib=64, cpu='486,-fpu',
+    report = dict(result='running', ram_mib=64, cpu='486,-fpu', managed_desktop=args.managed_desktop,
                   scope='Unchanged TimeClock scripted punch commands, independent typed-file decoding, duplicate/cancel behavior and cold reboot reopen; not physical keyboard or complete application qualification',
                   input_sha256=pins, application_sha256=expected_sources,
                   commands=COMMANDS, reopen_commands=REOPEN)
@@ -50,6 +57,21 @@ def main():
         source, working, additions={'/PunchNative.HC': FIXTURE.read_bytes()})
     run_input = runpy.run_path(str(runner))['run_input']
     def execute(commands, destination):
+        if args.managed_desktop:
+            Guest = runpy.run_path(str(interaction))['Guest']
+            guest = Guest(working, destination, True)
+            executed = []
+            try:
+                guest.wait('DONE native kernel startup\n')
+                for source, _ in commands:
+                    command = source
+                    if not source.startswith('#include ') and source != '6*7;':
+                        command = f"if(!({source.rstrip(';')}))throw('Punch',TRUE);"
+                    guest.command(command)
+                    executed.append(command)
+                return dict(commands=executed, arithmetic=guest.result_pixels())
+            finally:
+                guest.close()
         return run_input(working, destination, snapshot=False, ram_mib=64,
                          cpu='486,-fpu', accel='tcg', qmp_stdio=True,
                          startup_check={'status':'ok', 'answers':[], 'commands':commands,

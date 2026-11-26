@@ -236,3 +236,11 @@ were unchanged. The image also passed the audit of 1,561 delivered
 source and documentation files against `c51ab0fc`. See the
 [report receipt](../build/i386-redsea-named-self-v1/timeclock-report-audited/result.json)
 and [source audit](../build/i386-redsea-named-self-v1/delivered-source.json).
+
+The managed-desktop punch test passed on the same image. The original
+punch commands preserved the saved file on duplicate calls, accepted
+multiline descriptions, committed an empty description after cancellation,
+and kept every timestamp within the measured `Now` bounds. The four
+records reopened byte for byte after a cold boot, and fresh arithmetic
+rendered on both boots. See the
+[managed punch receipt](../build/i386-redsea-named-self-v1/punch-managed/result.json).
