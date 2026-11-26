@@ -18271,9 +18271,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch the bundled demo and let its worker jobs finish the divisor-pair search below one million.",
+      "oracle": "The 16 mutually matched proper-divisor pairs excluding divisor one, the prime counts, the final total, and return to the prompt. Elapsed time and worker output order may vary.",
+      "tests": [
+        {
+          "target": "original-magicpairs-divisor-sieve",
+          "result": "pass",
+          "evidence": "build/i386-demo-magic-pairs-v1/original-receipt.json",
+          "scope": "The unchanged original demo printed the expected prime counts and every pair, verified against an independent sieve."
+        },
+        {
+          "target": "native-magicpairs-bundled",
+          "result": "fail",
+          "evidence": "build/i386-demo-magic-pairs-v1/comparison/result.json",
+          "scope": "Native rejects the mp_cnt array bound before queuing worker jobs."
+        }
+      ]
     },
     {
       "path": "Demo/MemDemo.HC",

@@ -1,0 +1,14 @@
+{
+  "result": "fail",
+  "input_sha256": "4555477efc097a48ceacc5254f8c2357997f62dbcd11a64d606cd21708e2be01",
+  "entries": {
+    "Demo/MagicPairs.HC": {
+      "source_sha256": "dfea168865ace5c2246effd8fa56e6af3bdabb6ac7c504a20aeacad470511903",
+      "output_file": "demo-0.DD"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 0000000001592BE8 00000000536B7354\nINPUT LINE #include \"C:/Probe/DemoBatch.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token mp_cnt file C:/Demo/MagicPairs.HC line 262\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nEXPORT demo-0.DD 3FAC5A8 19\n",
+  "inputs_unchanged": true
+}

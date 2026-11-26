@@ -2895,3 +2895,11 @@ session. An edit was saved at the expected position on a disposable
 copy of the source, and the caller accepted and displayed fresh
 arithmetic. The inventory qualifies the bundled demo.
 See the [activation receipt](../build/i386-parenwarn-links-v2/activation64-fixed/result.json).
+
+MagicPairs completed on the pinned original and printed all 16
+mutually matched divisor pairs below one million. An independent
+divisor sieve verified the complete set. The native compiler rejects
+the `mp_cnt` array bound at line 262 before the demo can launch its
+worker jobs. See the
+[original reference](../build/i386-demo-magic-pairs-v1/original-receipt.json)
+and [native run](../build/i386-demo-magic-pairs-v1/comparison/result.json).
