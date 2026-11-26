@@ -16514,9 +16514,16 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch unchanged DskRaw on a disposable disk, advance through the drive summary and class reports, and read physical sector zero.",
+      "oracle": "Verify the drive and block device reports and the 512-byte dump against the selected disk. The native prompt should accept fresh arithmetic and the disk bytes must be preserved.",
+      "tests": [
+        {
+          "target": "native-original-raw-sector-report",
+          "result": "fail",
+          "evidence": "build/i386-demo-dskraw-v1/sector-zero/result.json",
+          "scope": "The original reports its drive and block device, then renders a sector dump. The i386 compiler rejects the opening drive-report sequence before the first prompt."
+        }
+      ]
     },
     {
       "path": "Demo/Dsk/FPrintF.HC",

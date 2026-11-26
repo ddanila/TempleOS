@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-demo-dskraw-v1/sector-zero/working.img",
+  "retained": "build/i386-demo-fprintf-v1/cross-save-form/kernel.img",
+  "sha256": "b868fed461d30b4a6abb7fdf758fad3499ba320665f6bc2a8425b4aa1a61c05e",
+  "allocated_bytes": 67108864
+}

@@ -1,0 +1,24 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-fprintf-v1/cross-save-form/kernel.img": "b868fed461d30b4a6abb7fdf758fad3499ba320665f6bc2a8425b4aa1a61c05e",
+    "/home/ddanila/fun/TempleOS/Demo/Dsk/DskRaw.HC": "b41863beceb974f8e777a0c6bcd4a56cd221fa724373715fbb8cc00fe28f2c4e"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "result": "captured",
+      "screenshots_sha256": {
+        "drive-summary": "7b788feffc452647a666942e07e6399263addce700d98167bc8387e726967afb",
+        "drive-class": "611e8e01e9ca4421cd217010c2488427e7980ee6e33d7515e5e6532275152f4e",
+        "device-class": "9233f2408a6566a7767e891303982be1278a748938ea66eaa372e96269d683a9",
+        "sector-prompt": "963a7e82ef1355bcd75e2630946588d972342fe3fbc7f887bba72fb13e4f0fc2",
+        "sector-dump": "23607de74a00a61c9fc03e6942a9373685cf0ff5c646461b5b673b7019a7814e"
+      }
+    },
+    "native": {
+      "result": "fail",
+      "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 000000000159FD58 00000000536B7354\nINPUT LINE ExeFile(\"C:/Demo/Dsk/DskRaw.HC\");\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Demo/Dsk/DskRaw.HC line 9\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND OK\n"
+    }
+  }
+}

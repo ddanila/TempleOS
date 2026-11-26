@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 581 |
-| Linked to tests / with reference workflow and oracle | 233 / 162 |
+| Linked to tests / with reference workflow and oracle | 234 / 163 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 69 of 224 |
 
@@ -364,6 +364,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   After changing the fixture tree, Shift-Escape in the filename form
   preserves the entire saved native disk byte for byte and returns to
   arithmetic. See the [cancel regression](build/i386-demo-fprintf-v1/cancel-save/result.json).
+
+- The original DskRaw demo lists the drives, reports the selected
+  drive and block-device classes, and dumps sector zero of its RAM
+  disk. The tested i386 image rejects the opening drive-report
+  sequence before input. See the
+  [sector read reference and native launch result](build/i386-demo-dskraw-v1/sector-zero/result.json).
 
 - Lines qualifies. Both guests accumulated multicolor line drawings from
   seed 1, changed the drawings across three asynchronous samples, and
