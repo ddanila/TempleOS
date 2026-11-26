@@ -451,6 +451,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   desktop geometry values, accepted fresh arithmetic, and freed the
   bootstrap allocation. See the
   [configured desktop checkpoint](build/i386-demo-f64-files-v1/configured-desktop-checkpoint.json).
+  The 128 MiB guest rebuilt all nine retained providers, with one build
+  provider load and the expected public exports. The retained image
+  still matches all 1,573 packaged source and document files at
+  `d5792939`. See the
+  [retained build result](build/i386-demo-f64-files-v1/retained128/result.json)
+  and [generation input audit](build/i386-demo-f64-files-v1/generations128/input-source-audit/result.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the
