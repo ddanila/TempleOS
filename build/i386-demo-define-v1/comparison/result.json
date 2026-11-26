@@ -1,0 +1,77 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-low-pass-v1/cross-public/kernel.img": "d891665b3bee1ce7402664e1a8e0a558e4048943dfe657589ae3946bdcd80308"
+  },
+  "source_sha256": "dd0b25a98b2bbc64175c4275d314bb887bbd1cdd61f681a239aab61a1bf9718f",
+  "runs": {
+    "original-english": {
+      "result": "pass",
+      "label": "Exit",
+      "answer": "yES",
+      "invalid_rejected": true,
+      "definitions_verified": true,
+      "screenshots_sha256": {
+        "localized-prompt": "40338c03c0bcbc82607d8142d6d2bea072464369c5026b00b8a3e39e4272c70e",
+        "retry": "7c76142f7c664f584c1d36c86ef2e91b84c25e5906361fe9e6a39c2b9d6c5bab",
+        "completed": "7f7ad0b9c1b66c5c2bacc8e7254243ffddaab4b2f63fa886f4fb642933bc38eb"
+      }
+    },
+    "original-spanish": {
+      "result": "pass",
+      "label": "Salida",
+      "answer": "sI",
+      "invalid_rejected": true,
+      "definitions_verified": true,
+      "screenshots_sha256": {
+        "localized-prompt": "3a398d5ec6ced060095124d93632fe42a78091d6b15dbc2b38546e4d37ca7cac",
+        "retry": "e468152ca28e6bfd6bf1905e4a859ea62f0f4a0b09511e9d8fb8b6d190d68a56",
+        "completed": "1e29e18078bcb3b93045ff1882b4eda2c534abd62ac2f2a7d50a81804cfe3f21"
+      }
+    },
+    "native-english": {
+      "result": "pass",
+      "label": "Exit",
+      "answer": "yES",
+      "invalid_rejected": true,
+      "definitions_verified": true,
+      "screenshots_sha256": {
+        "localized-prompt": "7348d291ac0d2524b1a36abbab08c8cb411701705c86f62aaf3eb7bd6258e067",
+        "retry": "fb8279fdad2b86f8c84d96e41258a7695c32f03caa14fe0186b1adc3008f3d20",
+        "completed": "ff48f612c6c9860257b0da042be5d70ed292160ffbd7ad4d7679139a3df2ca17"
+      },
+      "fresh_result": {
+        "column": 0,
+        "row": 16,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    },
+    "native-spanish": {
+      "result": "pass",
+      "label": "Salida",
+      "answer": "sI",
+      "invalid_rejected": true,
+      "definitions_verified": true,
+      "screenshots_sha256": {
+        "localized-prompt": "81f3d912344dba6a7f457c553ae58c49f2b03ab6d813e3f785a943d82f60f329",
+        "retry": "033838110241d81296b997b418fb21f5acc11e5b81ac7aeb4e7c568285dc1139",
+        "completed": "0fdfde63a52382565606d3623799c3270410e805572216305e538b3121a6825d"
+      },
+      "fresh_result": {
+        "column": 0,
+        "row": 16,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  },
+  "inputs_unchanged": true,
+  "result": "pass"
+}

@@ -15925,10 +15925,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run unchanged Define in fresh guests for both English and Spanish, submit an invalid answer, then submit a mixed-case affirmative.",
+      "oracle": "Check the localized prompt in VGA pixels, its repetition after invalid input, the localized definition and list match, and fresh native arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-define-locales",
+          "result": "pass",
+          "evidence": "build/i386-demo-define-v1/qualification.json",
+          "scope": "Both guests show the localized prompt and retry, accept the mixed-case answer, and retain the expected definitions. The i386 prompt returns fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Directives.HC",

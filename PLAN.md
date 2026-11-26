@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 57 (six apps and fifty-one demos) |
+| Qualified | 58 (six apps and fifty-two demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 599 |
-| Linked to tests / with reference workflow and oracle | 216 / 145 |
+| Qualification gaps | 598 |
+| Linked to tests / with reference workflow and oracle | 217 / 146 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 51 of 224 |
+| Demos qualified | 52 of 224 |
 
-C1 has 599 qualification gaps, including entries that still need a reference
+C1 has 598 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -38,7 +38,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 57 workflows and records eighteen shared files
+- The inventory qualifies 58 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -411,6 +411,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   the grid and pointer settings were preserved, and both guests evaluated
   fresh arithmetic after End. See the
   [MouseDemo comparison](build/i386-demo-mouse-v1-pointer-filter/result.json).
+
+- Define qualifies in English and Spanish. Both guests displayed the
+  localized prompt again after invalid input, accepted a mixed-case
+  affirmative, and kept the expected string and list definitions. The i386
+  prompt evaluated fresh arithmetic. See the
+  [locale comparison](build/i386-demo-define-v1/qualification.json).
 
 ### Plan decisions (2026-11-24)
 
