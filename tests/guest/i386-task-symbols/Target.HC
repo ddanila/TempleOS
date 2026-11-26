@@ -284,6 +284,7 @@ U0 throw(I64 ch=0,Bool no_log=FALSE)
 {//Unexpected optimizer failure terminates this fixture with an observable marker.
   OutU8(0xE9,'!'); while(TRUE) {}
 }
+#include "/Compiler/I386/ParserMemory.HC"
 #include "/Compiler/I386/NativeEmit.HC"
 #include "/Compiler/I386/OptBranch.HC"
 #include "T:/Branch.HC"

@@ -159,6 +159,8 @@ def main():
                         help='Protected-mode runner timeout (1..3600 seconds; default: 180 for arc-expand, 20 otherwise)')
     parser.add_argument('--out', type=Path,
                         help='Fresh isolated output directory for a single corpus run')
+    parser.add_argument('--bootstrap-dir', type=Path, default=ROOT/'build/rebuild-test',
+                        help='Bootstrap result and binary overlay for source-compiled tests')
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument('--functions', action='store_true',
                         help='Test normal function compilation using test-rebuild.py output')
@@ -362,14 +364,16 @@ def main():
             OUT = ROOT/('build/i386-parser-select-source-test' if args.heap_source else 'build/i386-parser-select-test')
         if args.task_runtime_core:
             OUT = ROOT/'build/i386-task-runtime-core-test'
-        manifest = json.loads((ROOT/'build/rebuild-test/result.json').read_text())
+        manifest = json.loads((args.bootstrap_dir/'result.json').read_text())
+        if manifest.get('result', 'pass') != 'pass':
+            raise ValueError('Rerun tools/test-rebuild.py: bootstrap qualification failed')
         for name, digest in manifest['source_sha256'].items():
             if name.startswith(('Compiler/', 'Kernel/')):
                 if hashlib.sha256((ROOT/name).read_bytes()).hexdigest() != digest:
                     raise ValueError(f'Rerun tools/test-rebuild.py: changed source {name}')
         for name, path in [('Compiler.BIN', 'Compiler/Compiler.BIN'),
                            ('Kernel.BIN', '0000Boot/0000Kernel.BIN.C')]:
-            binary = ROOT/'build/rebuild-test/overlay'/path
+            binary = args.bootstrap_dir/'overlay'/path
             if hashlib.sha256(binary.read_bytes()).hexdigest() != manifest['generations'][-1][name]:
                 raise ValueError(f'Rerun tools/test-rebuild.py: stale {name}')
     redsea_owned_inputs = {}
@@ -433,7 +437,7 @@ def main():
     exports = OUT/'exports'
     build = [sys.executable, 'tools/build-iso.py', '--overlay', str(OUT/'overlay')]
     if functions:
-        build += ['--overlay', 'build/rebuild-test/overlay']
+        build += ['--overlay', str(args.bootstrap_dir.resolve()/'overlay')]
     build += ['--overlay', 'tests/guest/i386-task-runtime-core' if args.task_runtime_core else f'tests/guest/i386-{kind}' if functions else 'tests/guest/i386',
               '--output', str(iso)]
     if args.heap_core or args.heap_public or args.heap_cache or args.heap_source or args.heap_window_reserve or args.heap_backing_reserve or args.heap_high or args.heap_backing_accounting or args.heap_backing_preferred or args.heap_parser_select:
