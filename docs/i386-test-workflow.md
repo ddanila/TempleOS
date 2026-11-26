@@ -6402,3 +6402,9 @@ original guest's DolDoc output byte for byte. The batch exercised
 AsmHelloWorld, BuzzFizz, DivByHand, MulByHand, and PutDec and returned
 to native command input.
 [Assembly demo comparison](../build/i386-code-alloc-known-v1/native-generations128/gen1-assembly-demos64/result.json)
+
+Generation two rebuilt all nine retained providers from the installed
+generation-one image at 128 MiB. Every emitted module matched its
+installed counterpart byte for byte. The pipeline proceeded to install
+the second-generation providers.
+[Second-generation retained rebuild](../build/i386-code-alloc-known-v1/native-generations128/gen2-retained-build/result.json)
