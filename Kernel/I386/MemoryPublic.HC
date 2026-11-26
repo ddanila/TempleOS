@@ -99,8 +99,9 @@ U0 MemoryFree(U8 *ptr)
   collect=(ptr-offset(CMemUsed.start))(CMemUsed *)->size>=MEM_HEAP_HASH_SIZE;
   if(!I386MemFree(ptr)) { KernelLog("BAD FREE\n"); KernelStop; }
   if(collect && !I386MemHeapCollect(hc)) { KernelLog("BAD HEAP COLLECT\n"); KernelStop; }
-  //Core Free has finished reading the page header. The provider remains live.
-  if(pool->reclaim) (*pool->reclaim)(pool);
+  //A cached small span leaves its backing pages owned by the heap. Only a
+  //page return can empty a backing region and require a physical trim here.
+  if(collect && pool->reclaim) (*pool->reclaim)(pool);
   I386IrqRestore(flags);
 }
 I64 MemorySize(U8 *ptr)

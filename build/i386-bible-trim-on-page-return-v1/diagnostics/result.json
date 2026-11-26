@@ -1,0 +1,68 @@
+{
+  "status": "fail",
+  "cpu": "486,-fpu",
+  "ram_mib": 16,
+  "qualification": "diagnostic",
+  "diagnostics": true,
+  "managed_pointer": false,
+  "scope": "Startup diagnostics, retained static/function/literal behavior and exact VGA restoration; not complete OS acceptance",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-bible-trim-on-page-return-v1/full/kernel-diagnostics.img": "a540a4f84998b65c413ce3432d749c63d26fb68fed6075d8d22793a96ac1f7ac",
+    "/home/ddanila/fun/TempleOS/build/i386-bible-trim-on-page-return-v1/full/result.json": "796a0a6f9f5c4baf3ffe67ffb77ad277d3d9dd1ab8266f8db405ebde3733092b",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-startup-memory.py": "cc4748a4118d5e498b26d490b719f79c92148a34dcd76d325f30744d859ec0de",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463"
+  },
+  "commands": [
+    [
+      "I64 SPNext(){static I64 n=40;return ++n;}",
+      []
+    ],
+    [
+      "SPNext();",
+      [
+        "41"
+      ]
+    ],
+    [
+      "SPNext();",
+      [
+        "42"
+      ]
+    ],
+    [
+      "U8 *SPText(){return \"VGA\";}",
+      []
+    ],
+    [
+      "StrCmp(SPText(),\"VGA\")==0;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ],
+    [
+      "NativeGraphicsStart;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "I64 gp_ok=NativeTextBasePresent;NativeTextBaseRestore;gp_ok;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "I64 gp_frame=NativeGraphicsPresent;NativeTextBaseRestore;gp_frame;",
+      [
+        "1"
+      ]
+    ]
+  ],
+  "error": "Console check timed out; inspect /home/ddanila/fun/TempleOS/build/i386-bible-trim-on-page-return-v1/diagnostics"
+}

@@ -737,3 +737,18 @@ owned by the heap. Large frees still collect and trim, and task teardown
 continues to reclaim separately. The experiment passed both bootstrap build
 generations. It still needs a runtime check of reclamation and the full Bible
 lookup before it can qualify.
+
+The candidate cross-built and passed the 1,600- and 3,200-line excerpt
+checks, including cleanup and return to the command prompt. Both isolated
+heap probes completed and checked immediate reclamation for large frees
+and preservation of existing task storage. The broader 16 MiB diagnostic
+runner timed out waiting for the initial console image after startup.
+See the [excerpt result](../build/i386-bible-trim-on-page-return-v1/scaled-load/result.json),
+[heap probe markers](../build/i386-bible-trim-on-page-return-v1/diagnostics/memory-probes.log)
+and [diagnostic result](../build/i386-bible-trim-on-page-return-v1/diagnostics/result.json).
+
+The candidate's 120-second full lookup profile recorded 548 samples.
+The previous trim stack through `DocPutS` disappeared and allocation became
+the largest sampled cost. `I386MemFreeSpansMerge` accounted for 177 samples
+and `I386MemPoolValid` for 155. The lookup was still running when sampling
+ended. See the [candidate profile](../build/i386-bible-trim-on-page-return-v1/first-lookup-profile/result.json).

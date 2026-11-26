@@ -1,0 +1,90 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-bible-trim-on-page-return-v1/full/kernel.img": "3a3bbcd3b4d374df759ebafcba09a06b19adf5c3d0e2a94c42127eeb43ac8883",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-bible-load-profile/Contract.HC": "0110ed04caf8b20be463e313d7887b4c3f824262cfeca575edb25b0cad0d94af",
+    "/home/ddanila/fun/TempleOS/Misc/Bible.TXT": "1e26eba1eb07409b64f460406f380de91b94d92cece17e1598312a131c13fedd",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-bible-load-profile.py": "d917eba5f5bbddf2feedbf7fabfcc89ecec9924c7441e1c925d69040a3ff3319",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "3e723e125a4941a1be5678c03b4690ea1e1856f7cf841d9b7fbef00384ef3217",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+  },
+  "scope": "Host-observed elapsed stages for bounded native Bible excerpts; not full-file performance qualification",
+  "sample_sha256": {
+    "1600": "0726b477c41d503f4d76d45daf5de05d2c7a198c373103a8cdaf7766e4909620",
+    "3200": "5bd9a32fa3f3ffcf71a72767d96f831ec1a74bb5f4fabbcdac7dcbf93b9ae7c9"
+  },
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "3a3bbcd3b4d374df759ebafcba09a06b19adf5c3d0e2a94c42127eeb43ac8883",
+    "image_sha256": "3b04b430513aeb1d5e17f1df53309e8109a09b63d8c3fc5824d3006c3d5079b2",
+    "boot_area_sha256": "64a77ebeb3ff005da324a3e59ed9a14e99a6c1354ecd796f923d52099c1932e7",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1931,
+      "owned_sectors": 96172,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1934,
+      "owned_sectors": 96579,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/Bible1600.TXT": "0726b477c41d503f4d76d45daf5de05d2c7a198c373103a8cdaf7766e4909620",
+      "/Probe/Bible3200.TXT": "5bd9a32fa3f3ffcf71a72767d96f831ec1a74bb5f4fabbcdac7dcbf93b9ae7c9",
+      "/Probe/BibleProfile.HC": "0110ed04caf8b20be463e313d7887b4c3f824262cfeca575edb25b0cad0d94af"
+    },
+    "added_attributes": {
+      "/Probe/Bible1600.TXT": 2048,
+      "/Probe/Bible3200.TXT": 2048,
+      "/Probe/BibleProfile.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "elapsed_seconds": {
+    "1600": {
+      "read-begin": 0.0,
+      "read-end": 0.301,
+      "put-begin": 0.301,
+      "put-end": 0.902,
+      "layout-end": 0.902,
+      "find-end": 1.203,
+      "free-end": 1.303
+    },
+    "3200": {
+      "read-begin": 0.0,
+      "read-end": 0.401,
+      "put-begin": 0.401,
+      "put-end": 1.604,
+      "layout-end": 1.704,
+      "find-end": 1.805,
+      "free-end": 2.206
+    }
+  },
+  "region_counts": {
+    "1600": 67,
+    "3200": 113
+  },
+  "observed_markers_seconds": {
+    "BIBLE PROFILE 1600 read-begin": 0.0,
+    "BIBLE PROFILE 1600 read-end": 0.301,
+    "BIBLE PROFILE 1600 put-begin": 0.301,
+    "BIBLE PROFILE 1600 put-end": 0.902,
+    "BIBLE PROFILE 1600 layout-end": 0.902,
+    "BIBLE PROFILE 1600 find-end": 1.203,
+    "BIBLE PROFILE 1600 free-end": 1.303,
+    "BIBLE PROFILE 3200 read-begin": 1.303,
+    "BIBLE PROFILE 3200 read-end": 1.704,
+    "BIBLE PROFILE 3200 put-begin": 1.704,
+    "BIBLE PROFILE 3200 put-end": 2.908,
+    "BIBLE PROFILE 3200 layout-end": 3.008,
+    "BIBLE PROFILE 3200 find-end": 3.108,
+    "BIBLE PROFILE 3200 free-end": 3.509
+  },
+  "inputs_unchanged": true
+}
