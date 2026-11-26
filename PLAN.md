@@ -40,9 +40,10 @@ is complete and provides the foundation, but not desktop or application parity.
 - The frozen `eea98cfa` desktop image passed the delivered-source audit
   for 1,561 source and documentation files, and the full-content check
   verified all 686 inventory files. The bounded guest probe read the full
-  Bible and returned to arithmetic. The 128 MiB native provider build
-  for that image was still running at this checkpoint. The completed
-  two-generation result remains pinned to `592a38b7`.
+  Bible and returned to arithmetic. At 128 MiB, the guest rebuilt and
+  audited all nine retained providers. The two-generation pipeline for
+  `eea98cfa` has begun. The completed two-generation result remains pinned
+  to `592a38b7`. See the [retained-build receipt](build/i386-desktop-eea98cfa/retained128/result.json).
 - ScrnCodes matches all 256 original glyph cells after loading the packaged
   settings and autocomplete sources. Both guests return on a keypress and
   native arithmetic still works. A cold direct include still stops at
