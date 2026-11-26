@@ -1,0 +1,14 @@
+{
+  "result": "fail",
+  "scope": "TimeClock writes the expected packed bytes; both filenames resolve but public FileRead does not return the data.",
+  "stages": [
+    "REPORT HOME FIND yes",
+    "REPORT ABS FIND yes",
+    "REPORT ABS READ no",
+    "REPORT DIRECT EXPAND yes",
+    "REPORT INPUT FileRead failed"
+  ],
+  "archive_sha256": "40597e9748fb6f023b3e0682290ff6b2f6ff98281207cb744e446b83d3b91e9e",
+  "independent_host_expansion_sha256": "f5ecc13cd3d99a3efe3fc9208e158d5fa0b94a6ec47884de48d176e23ca4e04b",
+  "expanded_matches_original_reference": true
+}

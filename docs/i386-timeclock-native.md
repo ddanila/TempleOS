@@ -131,3 +131,13 @@ The independently decoded typed records remain byte-identical after cold reboot
 `6a5ec9a51635f81452f3e8c052b43bd494deb3f11e9d4b8aefb6e73e56036161`).
 All inputs are unchanged. This covers emulated keyboard entry, not physical
 input, full VGA or the entire application.
+
+## Fresh report failure on the newer desktop image
+
+The unchanged TimeClock report fixture wrote a 50-byte compressed archive
+under the configured Home. An independent host decoder recovered the exact
+34-byte original golden record. The guest resolved both the home-relative
+and absolute filename. Public FileRead returned no data through either
+path, while public ExpandBuf accepted a raw copy of the captured archive.
+The compressed file read path needs further isolation.
+See the [read trace](../build/i386-timeclock-read-paths-v1/read-evidence.json).
