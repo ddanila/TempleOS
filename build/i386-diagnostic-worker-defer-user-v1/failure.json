@@ -1,0 +1,22 @@
+{
+  "status": "fail",
+  "ram_mib": 8,
+  "worker_arena_bytes": 458752,
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-defer-user-v1/cross/kernel-diagnostics.img": "d73ced7082c6c628b78e90b6aeb26d3b29d7289dd2ed73424f264ad2530e4c17",
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-defer-user-v1/cross/result.json": "6cc75d956c5067b38d77699e213a2298dc4dedfdcd9e3286b52aa16612ac973b",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-startup-memory.py": "cc4748a4118d5e498b26d490b719f79c92148a34dcd76d325f30744d859ec0de",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463"
+  },
+  "trace_sha256": "60303dbca3e3b80c853c29c48eaf540367607ee711c86f123ee16a16e98e2c20",
+  "completed_checks": [
+    "RESIDENT HEADERS PRESERVED 0000000000000001",
+    "NATIVE BUNDLE HEAP 0000000000001760 0000000000061DF8 0000000000070000",
+    "NATIVE LOADER 0000000000000001 000000000000A053 0000000000009A80"
+  ],
+  "terminal_trace": [
+    "EMITTER CHUNK SPACE REJECT C:/Kernel/I386/ModuleCheck.HC",
+    "UNHANDLED 0000000000000000 00006D654D74754F",
+    "FAIL native kernel"
+  ]
+}

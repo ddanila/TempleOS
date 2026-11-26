@@ -960,3 +960,10 @@ arithmetic and document-allocation VGA checkpoints, including diagnostic
 growth recovery. Startup took 71.983 seconds and still logged the sprite
 source allocation rejection. The runner advanced to the second flat-kernel
 rebuild. See `build/i386-demo-insetip-v1/generations128/gen2-install/`.
+
+Deferring only root user headers let the 448 KiB worker pass the inherited
+resident-header checks, the native bundle, and the native loader at 8 MiB.
+The bundle used 400,888 bytes at peak. The subsequent probe exhausted emitter
+space in `ModuleCheck.HC`, so the worker did not reach user header publication
+or the interactive checks. See
+`build/i386-diagnostic-worker-defer-user-v1/failure.json`.
