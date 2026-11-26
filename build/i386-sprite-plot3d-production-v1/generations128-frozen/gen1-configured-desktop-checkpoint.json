@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "source_revision": "c40647513cbe0732de62fbf14733c6c86bdfe4e6",
+  "disk_sha256": "650e519a076620077108344bd0bc8738fcec21c04b319c543dac5637083ae6ac",
+  "ram_mib": 64,
+  "startup_seconds": 223.58771190303378,
+  "once_selected": [
+    "HOME"
+  ],
+  "geometry_matches": 83,
+  "bootstrap_retired": true,
+  "fresh_result": {
+    "column": 1,
+    "row": 21,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "result_sha256": "85727d9c0b5f27820f3c201986b1b19921a9310fed36b032b9684148d6d2f654",
+  "physical_sha256": "ce46d438947b9b59b2e4d791b137d9d3b654cd0db11dfbf88aee517faed6b234"
+}
