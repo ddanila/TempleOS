@@ -21,7 +21,10 @@
     "void-packaging.json": "d081b4d9c21a9cff78f896e2a163a7ba43077f7073caa74518476ef31c9b1730",
     "void-source-audit.json": "c69572a673289f9336288380e590741291878a938f8f10f2fd529aed89e67942",
     "void-baseline64/result.json": "11cd5edecd76f3eebbbbed4559747cef54be47eaed07e6732e37085cfa76aa58",
-    "startup-extra-answer.json": "a4573331d3ef4057b04400a2a3d621808375e55c76585c496f95b63417d05c09"
+    "startup-extra-answer.json": "a4573331d3ef4057b04400a2a3d621808375e55c76585c496f95b63417d05c09",
+    "void-public8/result.json": "538d3afa8ff18cbf9947ae47dc8465338215fbe0e0dba108d5fccce4e4d563cb",
+    "void-committed-audit.json": "2eccafef35c92cc7eeaae2a517aa304e00eeb3e8d118bb322a4bfc6bd7aa32f0"
   },
-  "scope": "Startup publishes compiler options through a void command and retains the exact welcome and nine-command desktop baseline."
+  "scope": "Startup publishes compiler options through a void command and retains the exact welcome and nine-command desktop baseline.",
+  "source_revision": "2c2cb4b1268baf1cbb6de47802e17530e6e1ba13"
 }

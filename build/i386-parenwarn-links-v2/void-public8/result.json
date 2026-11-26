@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "image_sha256": "4555477efc097a48ceacc5254f8c2357997f62dbcd11a64d606cd21708e2be01",
+  "commands": {
+    "Bool old=GetOption(17);if(Option(17,!old)!=old || GetOption(17)==old)throw('Opt',TRUE);Option(17,old);": {
+      "result": "accept"
+    },
+    "#include \"C:/Demo/ParenWarn.HC\"": {
+      "result": "accept"
+    }
+  },
+  "ram_mib": 8,
+  "fresh_result": {
+    "column": 0,
+    "row": 21,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
