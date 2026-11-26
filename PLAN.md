@@ -48,9 +48,11 @@ is complete and provides the foundation, but not desktop or application parity.
   image and source audits. Generation two completed the same rebuild,
   installation, 8 MiB cold boot, and audits. Both images reproduced all
   16 modules and the installed artifacts after normalizing the original
-  eight-byte kernel build date. The full compatibility suite still needs
-  to run on both images. See the
-  [two-generation receipt](build/i386-desktop-eea98cfa/generations128/completion-checkpoint.json).
+  eight-byte kernel build date. Both installed images then passed the
+  686-file inventory content and bounded guest read checks at 64 MiB.
+  Full compatibility qualification remains open. See the
+  [two-generation receipt](build/i386-desktop-eea98cfa/generations128/completion-checkpoint.json)
+  and [installed content receipt](build/i386-desktop-eea98cfa/generations128/full-content-checkpoint.json).
 - The full desktop publishes the original autocomplete and task settings
   sources at startup. A cold direct include of ScrnCodes matched all
   256 original glyphs, returned on a keypress, and rendered fresh
