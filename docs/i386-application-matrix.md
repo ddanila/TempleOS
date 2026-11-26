@@ -2845,3 +2845,10 @@ order, with total active time differences of 30 and 80 ms across the
 two pitches. These totals include scoring sounds. The guarded candidate
 still needs repeat and regulation checks before integration. See the
 [guarded candidate receipt](../build/i386-keepaway-render-yield-v2/first-checkpoint.json).
+
+The guarded patch is now in the bundled source. Its repeat measured 520,
+110, and 100 ms on the guest clock, and the speaker recording stayed within
+90 ms of the original for both pitch totals. The same image passed two
+cold launches, the foul, both shot inputs, and the untouched regulation
+timer in 179.843 seconds. See the
+[guarded repeat and gameplay receipts](../build/i386-keepaway-render-yield-v2/repeat-checkpoint.json).
