@@ -257,3 +257,15 @@ input, Shift-Escape cancellation, and byte-identical records after
 cold reboot. The inventory now qualifies the TimeClock launch, punch,
 report, and reopen workflows and covers its two supporting sources.
 See the [keyboard receipt](../build/i386-redsea-named-self-v1/timeclock-keyboard/result.json).
+
+## Frozen native rebuild report and cold reopen
+
+Both installed generations from frozen revision `5303f095` passed the
+deterministic TimeClock report test at 64 MiB with KVM, the managed pointer,
+and the Window Manager active. Each passed four commands on the first boot
+and three after cold reboot with exact VGA matches. The bundled TimeClock
+sources matched the original hashes. Both guests produced identical logical
+records and the exact original 5,400-second DolDoc report, then reproduced
+that report after reboot. The test seeds records through the guest fixture.
+[First rebuild receipt](../build/i386-demo-insetip-v1/generations128/gen1-timeclock-report64/result.json) ·
+[Second rebuild receipt](../build/i386-demo-insetip-v1/generations128/gen2-timeclock-report64/result.json)
