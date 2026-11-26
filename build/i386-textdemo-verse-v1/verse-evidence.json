@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "scope": "Genesis verse rendered, OKAY dispatch and post-dismissal document roles checked using the actual TextDemo entries",
+  "guests": {
+    "original": {
+      "verse_column_row": [
+        5,
+        31
+      ],
+      "mask": 15,
+      "genesis_frame_sha256": "3281adf0d465782a6b0c1d84cbaa1afd916325b5cec0f4b3292888025fdc8454"
+    },
+    "native": {
+      "verse_column_row": [
+        4,
+        30
+      ],
+      "mask": 15,
+      "genesis_frame_sha256": "aa48929f5302a760c45cfd1aa1301ec90a1a979d3c7f61acda81726064c2157f"
+    }
+  }
+}

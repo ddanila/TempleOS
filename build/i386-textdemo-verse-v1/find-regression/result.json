@@ -1,0 +1,111 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-doc-find-editor.py": "64be2b96fb48b074526bf425115dc4f738d1d5787a88aea387e8e5f13d272b9e",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-doc-find-keys/Contract.HC": "f670cb86bf209d871e9cfede0fb01290a69cefe5c4c65a0f905edadf6bd6bb85",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "9c96e317209ea0dba1ab36e9168b47cf448794cafe33285ee6dfb0bba233e101",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "3e723e125a4941a1be5678c03b4690ea1e1856f7cf841d9b7fbef00384ef3217",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-doc-find-editor/Prelude.HC": "d2f49b7ae719cb9b92a64ab05c9ca0406a9f6e88f1571cb1d5830b23cafb5656",
+    "/home/ddanila/fun/TempleOS/build/i386-textdemo-verse-v1/full/kernel.img": "e4a61b3a1343d694a099c5b242300adf94a9c51f34e7200e2a70159feff4baa2"
+  },
+  "scope": "Ten F3 action cases (direction, case/whole-label options, no match, selected/filtered entries, incoming lock and Alt suppression) plus six metadata/modifier cases; exact search record, cursor/text, description, roles/locks and caller heap. Eight physical F3/Shift-F3 cases run through focused DocEd(DOF_DONT_HOME); the two Alt suppression cases and metadata remain direct API calls because default Home plug-ins consume physical Alt-F3 as colour insertion. Observer waits for editor readiness and a nonconsuming callback confirms actual key delivery. No find-prompt, visual or default-editor qualification.",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "e4a61b3a1343d694a099c5b242300adf94a9c51f34e7200e2a70159feff4baa2",
+    "image_sha256": "ef706349d978c5af4ba0da8a5696c07940b67d72a3353c504a009e2ec4afedda",
+    "boot_area_sha256": "5684a31f570201ae7bd8c9d2642d86148a0d31e88b7103f1bf32a72597385b59",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96175,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 96185,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/DocFindKeys.HC": "55acd27bd2ca4dc1d2c47a92fe05f64e85e95779155efdc27fe0d7dbf3872e36"
+    },
+    "added_attributes": {
+      "/Probe/DocFindKeys.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "actions": [
+    127,
+    127,
+    127,
+    127,
+    127,
+    127,
+    127,
+    127,
+    127,
+    127
+  ],
+  "metadata": [
+    127,
+    127,
+    127,
+    127,
+    127,
+    127
+  ],
+  "positions": [
+    0,
+    5,
+    1,
+    0,
+    12,
+    1,
+    0,
+    21,
+    1,
+    0,
+    16,
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1,
+    0,
+    5,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 14,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "filesystem": {
+    "directories": 63,
+    "files": 1933,
+    "owned_sectors": 96185,
+    "bitmap": "matches reachable extents"
+  },
+  "inputs_unchanged": true
+}

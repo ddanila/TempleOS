@@ -1801,7 +1801,9 @@ public Bool Ed(U8 *filename,I64 flags=0)
       }
       if(flags&EDF_WAS_WRITE) result=FALSE;
       if(!(flags&EDF_BAIL)) {
-        if(flags) accept=DocEd(doc,flags|DOF_DONT_HOME);
+        //The Bible search already selected the verse. The default editor
+        //homes the cursor, so keep the link target when entering the session.
+        if(flags || link_type==LK_BIBLE_FIND) accept=DocEd(doc,flags|DOF_DONT_HOME);
         else accept=DocEd(doc);
         if(accept) {
           DocLock(doc);entry=doc->cur_entry;
