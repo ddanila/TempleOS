@@ -16530,10 +16530,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged FPrintF from the fixture drive, accept the filename form with Escape, and reopen the saved tree.",
+      "oracle": "Require the same DolDoc tree bytes, mapped directory macro and two file links. The native disk must contain the saved report and accept fresh console input.",
+      "tests": [
+        {
+          "target": "native-original-directory-tree-save",
+          "result": "pass",
+          "evidence": "build/i386-demo-fprintf-v1/save-and-export/qualification.json",
+          "scope": "Both guests show the filename form and save the same 162-byte directory tree. The native file persists and fresh arithmetic succeeds."
+        }
+      ]
     },
     {
       "path": "Demo/Dsk/SerializeTree.HC",

@@ -344,8 +344,11 @@ public Bool DocWrite(CDoc *doc,Bool prompt=FALSE)
   U8 *buffer;
   I64 size;
   Bool result;
-  if(!doc || prompt || !console_config || !console_config->files ||
+  if(!doc || !console_config || !console_config->files ||
       !console_config->files->write_public) return FALSE;
+  if(prompt && !DocForm(&doc->filename) ||
+      doc->filename.name[0]=='A' && doc->filename.name[2]==':')
+    return FALSE;
   buffer=DocSave(doc,&size);
   if(!buffer) return FALSE;
   result=FileWrite(doc->filename.name,buffer,size,0,doc->file_attr)!=0;

@@ -1,0 +1,30 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-fprintf-v1/cross-save-form/kernel.img": "b868fed461d30b4a6abb7fdf758fad3499ba320665f6bc2a8425b4aa1a61c05e",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-fprintf-v1/save-and-export/original.iso": "fa421b864a1faf9594714ec4702c5edb37a1f226f7425ed2b48493314bc7cbf5",
+    "/home/ddanila/fun/TempleOS/Demo/Dsk/FPrintF.HC": "8a965780e47855c7d4e112b888ff1f76dd422c92922c3b179fe50dfff8b55230",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-fprintf-v1/TreeHarness.HC": "ca34b4aabfdf6c31b229f53ec85a0c01e68fd42426d4e94905a6b4c7a3b2a90d"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "result": "saved",
+      "screenshot_sha256": "17b342282966b00eee86528d733d302ab175b1cff0cad48dd358decbc5b23128",
+      "document_sha256": "0f08c9d7f41b69ff83aeb49575fc5ba6001e3560e604ee6478448c6e3b7603df"
+    },
+    "native": {
+      "result": "saved",
+      "screenshot_sha256": "38825578baa88ed9bddd0c9a2b2c421795e3abdb38a8b93c824b61b45d6215ca",
+      "document_sha256": "0f08c9d7f41b69ff83aeb49575fc5ba6001e3560e604ee6478448c6e3b7603df",
+      "fresh_result": {
+        "column": 0,
+        "row": 17,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

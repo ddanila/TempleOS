@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "bytes": 162,
+  "document_sha256": {
+    "original": "0f08c9d7f41b69ff83aeb49575fc5ba6001e3560e604ee6478448c6e3b7603df",
+    "native": "0f08c9d7f41b69ff83aeb49575fc5ba6001e3560e604ee6478448c6e3b7603df"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 17,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
