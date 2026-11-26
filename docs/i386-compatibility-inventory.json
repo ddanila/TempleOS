@@ -15584,11 +15584,34 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "qualified-workflows",
+        "description": "Enter each count from 1 to 5 in a fresh guest, compare the displayed count and descending notes, and verify that the speaker turns off."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-asm-and-c1.py",
+        "checks": [
+          "Observe the count prompt and the matching Beeps result in VGA.",
+          "Classify the beep pitch and descending tones from the captured PC speaker samples.",
+          "Verify the speaker gate is clear and return to native command input."
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-asm-and-c1",
+          "command": "python3 tools/test-i386-asm-and-c1.py --count 5 --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c1-port-v2/reference-count5/result.json"
+        },
+        {
+          "target": "native-asm-and-c1",
+          "command": "python3 tools/test-i386-asm-and-c1.py --count 5 --disk IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c1-port-v2/native-count5/result.json"
+        }
+      ]
     },
     {
       "path": "Demo/Asm/AsmAndC2.HC",

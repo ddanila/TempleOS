@@ -1,0 +1,78 @@
+{
+  "result": "pass",
+  "count": 3,
+  "native": true,
+  "fixture_sha256": "416047d20e1c48e81acd14da109875e8924740db8e056bcb019bd65f88ad8019",
+  "package": {
+    "result": "pass",
+    "source_sha256": "5f56a04b4684832d93f08707d9faec9f2284c20e66ca43fd645d813568dd0e2f",
+    "image_sha256": "2b30eef0bfb9144a425b6a9bbcd5691b39fa2c10dfbde96a35e848fafbbc5064",
+    "boot_area_sha256": "da4a72fc1f92928d3d8053d6b7bd79fd978c5667e1ba5d757a0564d938817244",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1949,
+      "owned_sectors": 96299,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1950,
+      "owned_sectors": 96300,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/AsmAndC1Probe.HC": "416047d20e1c48e81acd14da109875e8924740db8e056bcb019bd65f88ad8019"
+    },
+    "added_attributes": {
+      "/AsmAndC1Probe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "demo_sha256": "924ae7e2a0637ae37434d71a595134bdca7bcbf938d95243956812d74be2db71",
+  "prompt": [
+    0,
+    10
+  ],
+  "result_pixels": [
+    0,
+    11
+  ],
+  "speaker_disabled": true,
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "audio": {
+    "frames": 82571,
+    "sequence": [
+      {
+        "note": 62,
+        "classified_ms": 1500
+      },
+      {
+        "note": 70,
+        "classified_ms": 120
+      },
+      {
+        "note": 60,
+        "classified_ms": 140
+      },
+      {
+        "note": 50,
+        "classified_ms": 100
+      }
+    ],
+    "expected": [
+      62,
+      70,
+      60,
+      50
+    ]
+  }
+}

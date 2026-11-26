@@ -1,0 +1,53 @@
+{
+  "result": "pass",
+  "count": 5,
+  "native": false,
+  "fixture_sha256": "416047d20e1c48e81acd14da109875e8924740db8e056bcb019bd65f88ad8019",
+  "demo_sha256": "8956514483014dfa90edc9ef962383bbf5f8eae852f36180b5b52c712771ebe3",
+  "prompt": [
+    1,
+    13
+  ],
+  "result_pixels": [
+    1,
+    14
+  ],
+  "speaker_disabled": true,
+  "audio": {
+    "frames": 193241,
+    "sequence": [
+      {
+        "note": 62,
+        "classified_ms": 2480
+      },
+      {
+        "note": 90,
+        "classified_ms": 400
+      },
+      {
+        "note": 80,
+        "classified_ms": 360
+      },
+      {
+        "note": 70,
+        "classified_ms": 400
+      },
+      {
+        "note": 60,
+        "classified_ms": 380
+      },
+      {
+        "note": 50,
+        "classified_ms": 360
+      }
+    ],
+    "expected": [
+      62,
+      90,
+      80,
+      70,
+      60,
+      50
+    ]
+  }
+}

@@ -327,3 +327,10 @@ each. Both cleared the speaker gate and the native guest returned to
 fresh arithmetic.
 [Original run](../build/i386-asm-and-c1-port-v2/reference-count2/result.json) ·
 [386 run](../build/i386-asm-and-c1-port-v2/native-count2/result.json)
+
+All five legal keyboard counts passed on both guests. The recordings
+matched the expected note order and the classified time at note 62
+matched between guests for every count, from 500 to 2,480 ms. Each
+run ended with the speaker disabled.
+[Original maximum count](../build/i386-asm-and-c1-port-v2/reference-count5/result.json) ·
+[Native maximum count](../build/i386-asm-and-c1-port-v2/native-count5/result.json)
