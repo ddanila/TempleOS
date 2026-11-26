@@ -33,8 +33,9 @@ source audit, frozen 686-file content check, 8 MiB probe, all nine active
 64 MiB desktop commands, and configured HomeSys handoff. Its
 128 MiB retained-provider rebuild and all-provider audit passed.
 Both native generations from this frozen source cold-booted at 8 MiB and
-reproduced all 16 modules after kernel build-date normalization. Generation
-two desktop checks are running. Application checks on the cross-built
+reproduced all 16 modules after kernel build-date normalization. Both passed
+the nine-command desktop baseline and the frozen 686-file content check.
+Generation two's configured handoff is running. Application checks on the cross-built
 image qualify Lines and Box. Bounce also qualifies
 on a fresh cross-build that publishes the shared `GrPlot` routine.
 
@@ -310,6 +311,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   [generation-one configured handoff](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-configured-desktop-checkpoint.json),
   [generation-two retained build](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen2-retained-checkpoint.json),
   [generation-two install](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen2-install/result.json),
+  [generation-two desktop and content checks](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen2-desktop-content-checkpoint.json),
   [recovered ConsoleRuntime receipt](build/i386-sprite-plot3d-production-v1/retained128-console-recovery.json),
   [production cross-build](build/i386-sprite-plot3d-production-v1/cross-checkpoint.json)
   and [full-content checkpoint](build/i386-sprite-plot3d-production-v1/full-content-checkpoint.json).
