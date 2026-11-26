@@ -6381,3 +6381,13 @@ was free. On a separate disposable image with a plain startup document,
 all three persistent window commands matched the expected VGA pixels.
 [Configured HomeSys handoff](../build/i386-code-alloc-known-v1/native-generations128/gen1-configured-desktop/result.json) ·
 [Persistent window check](../build/i386-code-alloc-known-v1/native-generations128/gen1-persistent-window64/result.json)
+
+Two cold-reopen workflows passed on the same generation-one kernel.
+TimeClock loaded the unchanged application sources, reproduced the
+original typed records and exact 5,400-second DolDoc report, and
+regenerated the report after reboot. The editor accepted keyboard
+edits and save commands through `DocEd(DOF_DONT_HOME)`, verified
+saved text and cursor state, and checked the persisted file after
+native reboot.
+[TimeClock report](../build/i386-code-alloc-known-v1/native-generations128/gen1-timeclock-report64/result.json) ·
+[Editor save and reboot](../build/i386-code-alloc-known-v1/native-generations128/gen1-doc-save-editor64/result.json)
