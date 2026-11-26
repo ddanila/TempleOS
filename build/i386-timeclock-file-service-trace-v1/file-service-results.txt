@@ -1,0 +1,12 @@
+stored reads b'~/TimeClock/TimeFile.DATA.Z'
+stored returns 0x00000000
+stored reads b'~/TimeClock/TimeFile.DATA.Z'
+stored returns 0x00000000
+stored reads b'C:/Home/TimeClock/TimeFile.DATA.Z'
+stored returns 0x00000000
+stored reads b'~/TimeClock/TimeFile.DATA.Z'
+stored returns 0x00000000
+stored reads b'~/TimeClock/TimeFile.DATA.Z'
+expand reads 3200000000000000220000000000000003010004840069c4020073e8849143470100010101802068d04c1a3769e6a0690800
+expand returns 0x000128e0
+stored returns 0x000128e0

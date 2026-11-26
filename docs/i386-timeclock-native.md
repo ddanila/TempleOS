@@ -191,3 +191,10 @@ on the same file. The difference remains inside the whole-file read
 path or its decompression step. See the
 [explicit directory trace](../build/i386-timeclock-explicit-directory-v1/guest-results.txt)
 and [guest sector trace](../build/i386-timeclock-read-layer-v1/guest-results.txt).
+
+A debugger trace on the same 64 MiB image places the failure before
+decompression. The stored-file service returned null for all four
+failed reads, including the absolute read and the retry after the guest
+read the raw sector. The overwrite allowed the same bytes to reach the
+compact decompressor and the public read passed. See the
+[file service trace](../build/i386-timeclock-file-service-trace-v1/file-service-results.txt).
