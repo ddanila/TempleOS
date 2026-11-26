@@ -428,6 +428,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   comparison, and nine 64 MiB desktop baseline commands. See the
   [generator qualification](build/i386-demo-f64-files-v1/generator-qualification.json)
   and [sorter qualification](build/i386-demo-f64-files-v1/sorter-qualification.json).
+  An 8 MiB cold boot reopened all four files byte-for-byte and verified
+  the `Sign` results for positive and negative values, negative zero,
+  and NaN. See the
+  [cold-boot receipt](build/i386-demo-f64-files-v1/reopen8/result.json).
 
 ### Plan decisions (2026-11-24)
 

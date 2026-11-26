@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "ram_mib": 8,
+  "input_disk_sha256": "5a7efb842b933e02f5963c6d3bc5f707292684086dd603a574826ee13e13ec9c",
+  "inputs_unchanged": true,
+  "sign_vectors": true,
+  "files": {
+    "unsorted-data.bin": "24e9f77c813d302bd3dfa48c3d35eecbb3c2bcb7303ef5537a9fc98792fec5a7",
+    "unsorted-dd.bin": "3f27ac743e85d81111b1f56589cb9a00f2e138395203edb638b193af4072d21d",
+    "sorted-data.bin": "100888fd1dc47ea6c2ef0b7416c8f3a4f4c61041623eb428a2eefb25514a46d6",
+    "sorted-dd.bin": "29de1b4002a5152b5a361f6a878615e7bd9addbfd2c1bbafba83082a5615fcc2"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 21,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
