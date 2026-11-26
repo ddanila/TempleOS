@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "source_revision": "da0234894ae8fa8390f2aacab27bbd503a398d93",
+  "image_sha256": "a6e192b53c6436cff23c04c0f2cd9ca104355f95bb65401c38b3bb9b6a3cab6e",
+  "inventory_files": 686,
+  "delivered_source_files": 1561,
+  "accel": "kvm",
+  "inventory_sha256": "94de58d2c6b17776d579dd1a40c12f65ae2661dc5168feeb9531f098b44e8696",
+  "evidence_sha256": {
+    "full-content/result.json": "e5672dec042caffd1f03708bfae4efa8dfff9575422ec5e6e76f5810e16349e6",
+    "committed-source.json": "a9fe561af1d651c79f39682c0c38414075f07b72ba70ab8902918aab3df2296b"
+  },
+  "scope": "Committed sources, frozen full-content inventory and bounded native read probe on the Primes image."
+}

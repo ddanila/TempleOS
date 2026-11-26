@@ -121,8 +121,10 @@ is complete and provides the foundation, but not desktop or application parity.
 - Primes now qualifies with the public i386 cache-line width binding.
   The baseline CPU interface reports zero when it cannot determine
   the width. The unchanged demo matched both independent counts
-  and both trailing prime lists in all four reports. See the
-  [Primes receipt](build/i386-primes-native-v1/qualification.json).
+  and both trailing prime lists in all four reports. The same image
+  passed the frozen 686-file check and the 1,561-file source audit.
+  See the [Primes receipt](build/i386-primes-native-v1/qualification.json)
+  and [image audit](build/i386-primes-native-v1/full-content-checkpoint.json).
 
 ### Plan decisions (2026-11-24)
 
