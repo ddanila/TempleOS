@@ -513,7 +513,11 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   original, UndoIt clears the border clock and the console clock keeps
   advancing. The audited i386 image clears both. The
   [pixel-decoded tag comparison](build/i386-demo-tag-callback-v1/comparison/qualification.json)
-  captures the open document-lifetime difference.
+  captures the open document-lifetime difference. The
+  [task pointer probe](build/i386-demo-tag-callback-v1/diagnosis/native/pointers.png)
+  shows that both `Fs->border_doc` and `DocBorder` are null at the root
+  prompt while `DocPut` is live. Both the demo's border write and UndoIt
+  therefore use the standard put document as their default destination.
 
 ### Plan decisions (2026-11-24)
 
