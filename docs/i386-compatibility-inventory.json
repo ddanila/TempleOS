@@ -17572,10 +17572,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged Palette demo on both guests. Capture grayscale, send Space, capture the replacement of white with yellow, send Space again and verify restoration and native prompt recovery.",
+      "oracle": "Verify all 16 DAC-quantized colors in each phase and compare the complete position-aligned swatch and text pixels.",
+      "tests": [
+        {
+          "target": "native-original-palette-demo",
+          "result": "pass",
+          "evidence": "build/i386-demo-palette-v1/qualification.json",
+          "scope": "Both guests match all 16 colors and the aligned swatch raster at both pauses and after SettingsPop restores the standard palette."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/PanText.HC",
