@@ -1,0 +1,4 @@
+Company: $TX,"Acme Inc",D="COMPANY"$
+Age : $TX,"23.3",D="COMPANY_AGE"$ years
+Time: $TX,"11:28:31",D="COMPANY_TIME"$
+

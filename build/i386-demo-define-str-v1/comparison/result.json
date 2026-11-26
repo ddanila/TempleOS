@@ -1,0 +1,17 @@
+{
+  "result": "fail",
+  "input_sha256": "c2f2b2084341a20531c6b889ad415b39b440315e35ce0c89b628c24c7d49d0ac",
+  "entries": {
+    "Demo/DolDoc/DefineStr.HC": {
+      "source_sha256": "ef22df19fea2dd73214c5ed5ddc9b06d0512186c0bc7d772322cb0621a22ede0",
+      "output_file": "demo-0.DD",
+      "result": "fail",
+      "original_sha256": "5cdfd362422c4820e1ad6a60ef2151611c871d4860e5b1ca309b6a30d552c652",
+      "native_sha256": "0c55c980013539899b62e9905d7081b9239bd608477ee6696a811dcce7f30c6a",
+      "bytes": 117
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}

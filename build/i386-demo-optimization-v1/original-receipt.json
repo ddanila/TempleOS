@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "source_sha256": "eb5ab761e57e46406a680faa7ef9f45e5f98e20a8e0af2cf67aa2153552ec566",
+  "document_sha256": "f4c8d08783be0f2bbc2c9b40c638422f8f3f8025f62c07c579e21c5f9a1f177b",
+  "sum": 3200000040000000,
+  "elapsed_seconds": [
+    0.233178,
+    0.193147,
+    0.024994,
+    0.193587
+  ],
+  "scope": "Independent closed-form sum agrees with all four unchanged assembly loops in the original guest."
+}

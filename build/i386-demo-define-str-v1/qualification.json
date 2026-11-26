@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "image_sha256": "c2f2b2084341a20531c6b889ad415b39b440315e35ce0c89b628c24c7d49d0ac",
+  "source_sha256": "ef22df19fea2dd73214c5ed5ddc9b06d0512186c0bc7d772322cb0621a22ede0",
+  "batch_receipt_sha256": "8c258d27cd43180fc308d9f48c5be1eed8ce834a9fabf9a15594c987eca4c430",
+  "runs": {
+    "original": {
+      "company": "Acme Inc",
+      "age_years": "23.3",
+      "time": "11:27:29",
+      "sha256": "5cdfd362422c4820e1ad6a60ef2151611c871d4860e5b1ca309b6a30d552c652"
+    },
+    "native": {
+      "company": "Acme Inc",
+      "age_years": "23.3",
+      "time": "11:28:31",
+      "sha256": "0c55c980013539899b62e9905d7081b9239bd608477ee6696a811dcce7f30c6a"
+    }
+  },
+  "scope": "Original and native documents contain each resolved define and preserve its widget binding. Wall-clock time may vary."
+}

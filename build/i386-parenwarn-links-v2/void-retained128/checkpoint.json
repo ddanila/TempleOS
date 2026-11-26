@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "source_revision": "2c2cb4b1268baf1cbb6de47802e17530e6e1ba13",
+  "source_disk_sha256": "5d1cd1d7dbfed64aeeef96eeff9b518f98a2a13075a7bedd4661378a438970f7",
+  "ram_mib": 128,
+  "accel": "kvm",
+  "cpu": "486,-fpu",
+  "providers": [
+    "ConsoleRuntime",
+    "CompilerRuntime",
+    "CompilerProbe",
+    "FileRuntime",
+    "MemoryRuntime",
+    "BuildRuntime",
+    "EditorRuntime",
+    "DocDiagnosticRuntime",
+    "Startup"
+  ],
+  "retained_receipt_sha256": "de7557afc4be979b1ca013efebcb52aafdbca230135add91f427afd16ac56494",
+  "delivered_source_files": 1561,
+  "input_source_audit_sha256": "689e12aab20fac036f03d826392d5112da1cf4fa264c60ad25ec3cabe24f6eca",
+  "scope": "Native retained provider build and export audit, plus committed source audit of the retained disk used by the generation pipeline."
+}

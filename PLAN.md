@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 31 (six apps and twenty-five demos) |
+| Qualified | 32 (six apps and twenty-six demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 625 |
-| Linked to tests / with reference workflow and oracle | 187 / 117 |
+| Qualification gaps | 624 |
+| Linked to tests / with reference workflow and oracle | 189 / 119 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 25 of 224 |
+| Demos qualified | 26 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 31 workflows and records eighteen shared files
+- The inventory qualifies 32 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -131,6 +131,23 @@ is complete and provides the foundation, but not desktop or application parity.
   source metadata and both instruction links, and an 8 MiB probe
   verified the address on generated code. See the
   [Directives receipt](build/i386-directive-position-v2/qualification.json).
+  The image passed the frozen 686-file content check and the 1,561-file
+  committed-source audit. See the
+  [image audit](build/i386-directive-position-v2/full-content-checkpoint.json).
+
+- DefineStr now qualifies. Both guests resolved the three DolDoc bindings
+  and showed the same company and age. The wall-clock display was checked
+  for format and varied by launch time. See the
+  [DefineStr receipt](build/i386-demo-define-str-v1/qualification.json).
+- Optimization produced the expected sum in all four loops on the pinned
+  original guest. The i386 frontend rejects its inline assembly on line 15.
+  See the [original benchmark receipt](build/i386-demo-optimization-v1/original-receipt.json)
+  and [native run](build/i386-demo-optimization-v1/comparison/result.json).
+- The corrected ParenWarn image at `2c2cb4b1` rebuilt and audited all nine
+  retained providers at 128 MiB. The retained disk passed the 1,561-file
+  committed-source audit. The follow-on generation-one installer was running
+  at this checkpoint. See the
+  [retained build receipt](build/i386-parenwarn-links-v2/void-retained128/checkpoint.json).
 
 ### Plan decisions (2026-11-24)
 
