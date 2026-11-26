@@ -6354,3 +6354,8 @@ that installed image.
 [Self-build](../build/i386-code-alloc-known-v1/native-generations128/gen1-selfhost/result.json) ·
 [Artifact audit](../build/i386-code-alloc-known-v1/native-generations128/gen1-audit/result.json) ·
 [Source audit](../build/i386-code-alloc-known-v1/native-generations128/gen1-source-audit/result.json)
+
+The installed generation-one image matched all 686 inventoried files
+against the frozen source and passed the bounded guest lookup/read
+workflow. The allocation bitmap matched the reachable extents.
+[Generation-one content check](../build/i386-code-alloc-known-v1/native-generations128/gen1-full-content/result.json)
