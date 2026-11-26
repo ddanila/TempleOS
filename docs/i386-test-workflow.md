@@ -6451,3 +6451,8 @@ matched the original geometry, and freed the bootstrap task's block.
 The editor check verified the persisted text and cursor after reboot.
 [Configured HomeSys handoff](../build/i386-code-alloc-known-v1/native-generations128/gen2-configured-desktop/result.json) ·
 [Editor save and reboot](../build/i386-code-alloc-known-v1/native-generations128/gen2-doc-save-editor64/result.json)
+
+Generation two reproduced the original DolDoc bytes for all five
+bundled assembly demos tested on generation one and returned to native
+command input.
+[Second-generation assembly demo comparison](../build/i386-code-alloc-known-v1/native-generations128/gen2-assembly-demos64/result.json)
