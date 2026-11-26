@@ -43,6 +43,10 @@ def phase(log):
         return 'after_root_headers'
     if 'ROOT USER HEADERS begin\n' in log:
         return 'root_headers'
+    if 'ROOT KERNEL HEADERS ok\n' in log:
+        return 'after_root_kernel_headers'
+    if 'ROOT KERNEL HEADERS begin\n' in log:
+        return 'root_kernel_headers'
     return 'foundation'
 
 
@@ -54,6 +58,7 @@ def main():
     parser.add_argument('--disk', type=Path,
                         help='Profile an installed disk using its own retained modules')
     parser.add_argument('--cpu', default='486,-fpu')
+    parser.add_argument('--accel', choices=('tcg', 'kvm'), default='tcg')
     parser.add_argument('--qmp-stdio', action='store_true', help='Use pipes instead of a QMP Unix socket')
     parser.add_argument('--no-snapshot', action='store_true', help='Use a caller-provided disposable disk without a temporary overlay')
     args = parser.parse_args()
@@ -85,7 +90,7 @@ def main():
     log_path, qmp = out / 'debug.log', out / 'qmp.sock'
     qmp.unlink(missing_ok=True)
     log_path.write_text('')
-    cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg', '-cpu', args.cpu,
+    cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', args.accel, '-cpu', args.cpu,
            '-m', '8', '-nic', 'none', *([] if args.no_snapshot else ['-snapshot']),
            '-drive', f'file={disk},format=raw,if=ide', '-display', 'none', '-no-reboot',
            '-debugcon', f'file:{log_path}', '-qmp', 'stdio' if args.qmp_stdio else f'unix:{qmp},server=on,wait=off']
@@ -203,7 +208,7 @@ def main():
     if sha(disk) != disk_hash:
         raise ValueError('Profiling changed the source disk')
     report = dict(scope='Statistical PC samples of normal QEMU boot; not call counts or an elapsed-time benchmark',
-                  disk_sha256=disk_hash, cpu=args.cpu, source_disk_unchanged=True,
+                  disk_sha256=disk_hash, cpu=args.cpu, accel=args.accel, source_disk_unchanged=True,
                   module_sha256={name:hashlib.sha256(data).hexdigest() for name,data in modules.items()},
                   profiler_sha256=sha(Path(__file__)), interval_seconds=args.interval,
                   samples=len(samples), phases={name:dict(counter.most_common()) for name,counter in counts.items()},

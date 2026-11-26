@@ -1066,3 +1066,15 @@ run used the startup test's new `--accel kvm` option, with TCG still
 the default. Both timings exceed the 60-second target.
 [First timing receipt](../build/i386-mul-by-hand-port-v1/interactive8-kvm/budget.json) ·
 [Repeat timing receipt](../build/i386-mul-by-hand-port-v1/interactive8-kvm-repeat/result.json)
+
+The paused KVM profile of the same image collected 709 samples. ATA
+transfer accounted for 192 of 236 foundation samples, including 184
+stacks through the bounded RedSea loader. During kernel and user header
+publication, it accounted for 34 of 48 and 66 of 170 samples respectively.
+The most frequent header transfer stack went through RedSea directory
+lookup. Startup source had 70 heap scan samples and 67 ATA transfer
+samples out of 251. These are sampled PCs from a paused guest. The two
+unpaused runs above supply the elapsed times. An initial TCG profile
+timed out at 260 seconds during startup source and retained its partial
+samples locally.
+[Verified KVM sample summary](../build/i386-mul-by-hand-port-v1/startup-profile8-kvm/summary.json)

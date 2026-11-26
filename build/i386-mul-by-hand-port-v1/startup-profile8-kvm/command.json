@@ -1,0 +1,23 @@
+[
+  "qemu-system-i386",
+  "-machine",
+  "pc",
+  "-accel",
+  "kvm",
+  "-cpu",
+  "486,-fpu",
+  "-m",
+  "8",
+  "-nic",
+  "none",
+  "-snapshot",
+  "-drive",
+  "file=/home/ddanila/fun/TempleOS/build/i386-mul-by-hand-port-v1/cross-v2/kernel.img,format=raw,if=ide",
+  "-display",
+  "none",
+  "-no-reboot",
+  "-debugcon",
+  "file:/home/ddanila/fun/TempleOS/build/i386-mul-by-hand-port-v1/startup-profile8-kvm/debug.log",
+  "-qmp",
+  "stdio"
+]
