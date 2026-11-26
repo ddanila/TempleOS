@@ -22,12 +22,18 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--portable-index', action='store_true',
                         help='Compile the shared index builder without its native assembly path')
+    parser.add_argument('--out', type=Path, help='Isolated test output directory')
+    parser.add_argument('--bootstrap-dir', type=Path, default=ROOT/'build/rebuild-test',
+                        help='Verified output from tools/test-rebuild.py')
     parser.add_argument('--native-module', type=Path,
                         help='Also load a guest-built module whose Main returns --native-expected')
     parser.add_argument('--native-expected', type=int)
     args=parser.parse_args()
     if args.portable_index:
         OUT = ROOT/'build/i386-loader-portable-test'
+    if args.out is not None:
+        OUT = args.out.resolve()
+    bootstrap = args.bootstrap_dir.resolve()
     if (args.native_module is None)!=(args.native_expected is None):
         parser.error('--native-module and --native-expected must be used together')
     native_module=None
@@ -35,21 +41,26 @@ def main():
         native_module=args.native_module.read_bytes()
         if len(native_module)>2020:
             parser.error('Native module exceeds the existing 2048-byte case packet')
-    manifest = json.loads((ROOT/'build/rebuild-test/result.json').read_text())
+    manifest = json.loads((bootstrap/'result.json').read_text())
     for name, digest in manifest['source_sha256'].items():
         if name.startswith(('Compiler/', 'Kernel/')):
             if hashlib.sha256((ROOT/name).read_bytes()).hexdigest() != digest:
                 raise ValueError(f'Rerun tools/test-rebuild.py: changed {name}')
     for name, path in [('Compiler.BIN', 'Compiler/Compiler.BIN'),
                        ('Kernel.BIN', '0000Boot/0000Kernel.BIN.C')]:
-        binary = ROOT/'build/rebuild-test/overlay'/path
+        binary = bootstrap/'overlay'/path
         if hashlib.sha256(binary.read_bytes()).hexdigest() != manifest['generations'][-1][name]:
             raise ValueError(f'Rerun tools/test-rebuild.py: stale {name}')
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT/'result.json').unlink(missing_ok=True)
     # Regenerate input modules with this source/compiler and audit their code.
-    run(sys.executable, 'tools/test-i386.py', '--data')
-    fixtures = ROOT/'build/i386-data-test/exports'
+    data_args = [sys.executable, 'tools/test-i386.py', '--data', '--bootstrap-dir', str(bootstrap)]
+    data_out = ROOT/'build/i386-data-test'
+    if args.out is not None:
+        data_out = OUT/'data'
+        data_args.extend(('--out', str(data_out)))
+    run(*data_args)
+    fixtures = data_out/'exports'
     inputs = {}
     for line in (fixtures/'debug.log').read_text().splitlines():
         match = re.match(r'EXPORT (data-(\d+)-(\d+)\.t32m) ',line)
@@ -129,7 +140,7 @@ def main():
             raise ValueError('Expected one native index build switch')
         (overlay/'Target.HC').write_text(source.replace(define,''))
         extra_overlay=['--overlay',str(overlay)]
-    run(sys.executable,'tools/build-iso.py','--overlay','build/rebuild-test/overlay',
+    run(sys.executable,'tools/build-iso.py','--overlay',str(bootstrap/'overlay'),
         '--overlay','tests/guest/i386-loader',*extra_overlay,'--output',str(iso))
     run(sys.executable,'tools/guest-run.py',str(iso),'--out',str(exports),'--timeout','90')
     code = (exports/'loader.bin').read_bytes()
@@ -147,9 +158,9 @@ def main():
             raise ValueError('Invalid loader data')
         covered[begin:begin+length] = b'D'*length
     boundaries = sorted(set(starts+[begin for begin,_ in regions]+[len(code)]))
-    allowed = {'push','pop','mov','lea','movzx','movsx','add','adc','sub','sbb','and','or','xor',
+    allowed = {'push','pop','pushf','popf','mov','lea','movzx','movsx','add','adc','sub','sbb','and','or','xor',
                'in','out','neg','not','mul','imul','div','inc','dec','rcl','shl','shr','sar','shld','shrd',
-               'cmp','test','call','ret','jmp','jz','jnz','jc','jnc','ja','jna','jns',
+               'cmp','test','bt','call','ret','jmp','jz','jnz','jc','jnc','ja','jna','jns',
                'setz','setnz','setl','setnl','setg','setng','setc','setnc','seta','setna','cdq'}
     listing = []
     for start in starts:
