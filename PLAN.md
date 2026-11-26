@@ -22,12 +22,20 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 44 of 224 |
 
-C1 inventory exists but most per-item references are missing. C2 has passing
-editor save/reboot, Home handoff, menus and form input on specific images, not
-end-to-end qualification. C5 has two reproduced native generations with
-passing configured 64 MiB desktop handoff on frozen revision `592a38b7`.
-The full suite and newer production source still need qualification. The bounded-memory self-hosting goal below
-is complete and provides the foundation, but not desktop or application parity.
+C1 has 606 qualification gaps, including entries that still need a reference
+workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
+and form-input checks on specific images. End-to-end desktop qualification is
+pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
+Both passed the configured 64 MiB desktop handoff and 8 MiB cold boot.
+
+The latest audited cross-build uses `c4064751`. It passed the exact 1,572-file
+source audit, frozen 686-file content check, 8 MiB probe, all nine active
+64 MiB desktop commands, and configured HomeSys handoff. Its
+128 MiB retained-provider rebuild is the
+prerequisite for the queued two-generation reproduction. The latest
+application checks on this image qualify Lines and Box. The next graphics
+candidate is Bounce, which uses the shared `GrPlot` routine and needs its
+public i386 binding checked before qualification.
 
 ### Checkpoint (2026-11-26)
 
@@ -285,6 +293,11 @@ is complete and provides the foundation, but not desktop or application parity.
   that image. See the
   [production cross-build](build/i386-sprite-plot3d-production-v1/cross-checkpoint.json)
   and [full-content checkpoint](build/i386-sprite-plot3d-production-v1/full-content-checkpoint.json).
+  The configured 64 MiB HomeSys boot selected Home Once in 211.67 seconds.
+  It matched all 83 original geometry values, returned fresh arithmetic,
+  and verified that the bootstrap task record was gone and its allocation
+  was free. See the
+  [configured desktop receipt](build/i386-sprite-plot3d-production-v1/configured-desktop-checkpoint.json).
   Verified bootstrap output can be kept in a fresh directory with
   `tools/test-rebuild.py --out` and supplied to the cross-build with
   `tools/build-i386-kernel.py --bootstrap-dir`. See the
