@@ -1,0 +1,8 @@
+[
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-compiler-desktop64/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-compiler-install/candidate.img",
+    "sha256": "cc050dff325bcaf349c4dda37b68b40e9b461b8448aaeb01a66e2eef591d9d3e",
+    "allocated_bytes": 67112960
+  }
+]

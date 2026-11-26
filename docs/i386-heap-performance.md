@@ -1199,3 +1199,14 @@ demos also matched their original DolDoc output byte for byte.
 [Configured HomeSys](../build/i386-code-alloc-known-v1/native-compiler-homesys64/result.json) ·
 [Persistent composition](../build/i386-code-alloc-known-v1/native-compiler-composition64/result.json) ·
 [Bundled assembly comparison](../build/i386-code-alloc-known-v1/native-compiler-demos64/result.json)
+
+On the same installed-compiler image, the original-body editor accepted
+Save and both autosave toggles, saved the exact text and cursor position,
+and reopened the file after cold boot. TimeClock reproduced the original
+5,400-second report and exact VGA frames after reboot. Budget completed
+its original-reference template and periodic-copy workflows under
+`/Home` and reopened the saved data without changing files or metadata.
+All three tests used 64 MiB KVM guests and preserved the source image.
+[Editor save and reopen](../build/i386-code-alloc-known-v1/native-compiler-edit-save64/result.json) ·
+[TimeClock report](../build/i386-code-alloc-known-v1/native-compiler-timeclock64/result.json) ·
+[Budget templates](../build/i386-code-alloc-known-v1/native-compiler-budget64/result.json)

@@ -6309,3 +6309,10 @@ compiler allocation image, the delivered-source audit matched all
 1,578 files to `84d1c25f`.
 [Assembler fixture receipt](../build/i386-code-alloc-known-v1/retained-current/assembly-two-shard-test/result.json) ·
 [Delivered-source audit](../build/i386-code-alloc-known-v1/current-source-audit.json)
+
+On the compiler allocation image, the seven-provider support group
+finished its 128 MiB KVM build with one BuildRuntime load, matching
+exports and fresh arithmetic. The group contains CompilerProbe,
+MemoryRuntime, FileRuntime, BuildRuntime, EditorRuntime,
+DocDiagnosticRuntime and Startup.
+[Support build receipt](../build/i386-code-alloc-known-v1/retained-current/support/result.json)
