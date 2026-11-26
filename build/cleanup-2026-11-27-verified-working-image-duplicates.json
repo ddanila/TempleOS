@@ -1,0 +1,542 @@
+[
+  {
+    "removed": "build/psalmody-doc-stream-batch-v1/stream64-welcome/working.img",
+    "retained": "build/psalmody-doc-stream-batch-v1/candidate.img",
+    "sha256": "638a9cda19dfe6223f6e5f74c02a0b889e620cae2bc7cab159b24c963c994b36",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/psalmody-doc-stream-batch-v1/stream64/working.img",
+    "retained": "build/psalmody-doc-stream-batch-v1/candidate.img",
+    "sha256": "638a9cda19dfe6223f6e5f74c02a0b889e620cae2bc7cab159b24c963c994b36",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/preload-heap-comparison/backing_trace_v2/working.img",
+    "retained": "build/compiler-backing-trace-v2/candidate.img",
+    "sha256": "8736fc1d521aff9f4fb928e4519821aef80caaf1a9fe91dcac5281dfde42aedf",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/default-home-production-regressions-v2/minimal-startup-budget/working.img",
+    "retained": "build/default-home-production-regressions-v2/minimal-image/kernel.img",
+    "sha256": "c3c3b2216b100faef43a817b5c9004e395c0f220632e9b102d6e53ec5a576d32",
+    "allocated_bytes": 16777216
+  },
+  {
+    "removed": "build/preload-heap-comparison/high_v2/working.img",
+    "retained": "build/compiler-high-headers-v2/candidate.img",
+    "sha256": "ff0b755555bb691d3d67754ffa60ff8c6f6e01f1cf3bf57565c601fcba9aa076",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/emitter-known-regressions-v1/minimal-startup-budget/working.img",
+    "retained": "build/emitter-known-regressions-v1/minimal-image/kernel.img",
+    "sha256": "d5a8811ec97da719caefa98e465d0cc2f3c5a438cb54706c92a5b2c2ec9f9a1b",
+    "allocated_bytes": 16777216
+  },
+  {
+    "removed": "build/i386-demo-scrncodes-v1/native/working.img",
+    "retained": "build/i386-demo-doc-fileread-cleanup-v1/full/kernel.img",
+    "sha256": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-scrncodes-v2/native/working.img",
+    "retained": "build/i386-demo-doc-fileread-cleanup-v1/full/kernel.img",
+    "sha256": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-strut-run-current-v1/working.img",
+    "retained": "build/i386-demo-doc-fileread-cleanup-v1/full/kernel.img",
+    "sha256": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-scrncodes-v3/native/working.img",
+    "retained": "build/i386-demo-doc-fileread-cleanup-v1/full/kernel.img",
+    "sha256": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/async-popup-focus-retire-v1/lifetime64/working.img",
+    "retained": "build/async-popup-focus-retire-v1/candidate.img",
+    "sha256": "2ee37ed0c3295ef8d52f4664a4b29f410b3421264157ce781bc63794edaba311",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/async-popup-focus-retire-v1/lifetime-managed64/working.img",
+    "retained": "build/async-popup-focus-retire-v1/candidate.img",
+    "sha256": "2ee37ed0c3295ef8d52f4664a4b29f410b3421264157ce781bc63794edaba311",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/async-popup-focus-retire-v1/popup-order8/working.img",
+    "retained": "build/async-popup-focus-retire-v1/candidate.img",
+    "sha256": "2ee37ed0c3295ef8d52f4664a4b29f410b3421264157ce781bc63794edaba311",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-data-widget-v1/physical-editor/working.img",
+    "retained": "build/i386-demo-f64-files-v1/cross-sign/kernel.img",
+    "sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/preload-heap-comparison/baseline/working.img",
+    "retained": "build/resident-opt-public-v5/candidate.img",
+    "sha256": "047eeae06731ba6b462472d0637519a92acd47875166ad237e5633370d22de4b",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-serialize-tree-v2/address8/working.img",
+    "retained": "build/i386-demo-serialize-tree-v2/candidate.img",
+    "sha256": "44318f80f55a1c959ab4e22d62747c1c11fb713f5fecc4b1016dfb42d8bb34ba",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-raw-v2/address8/working.img",
+    "retained": "build/i386-demo-sprite-raw-v2/candidate.img",
+    "sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-raw-v2/render/working.img",
+    "retained": "build/i386-demo-sprite-raw-v2/candidate.img",
+    "sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-ext-v1/render/working.img",
+    "retained": "build/i386-demo-sprite-raw-v2/candidate.img",
+    "sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-raw-v1/render/working.img",
+    "retained": "build/i386-demo-unused-space-v2/candidate.img",
+    "sha256": "9cfdf8dfe66f476c0277225221ca1e72d719028307395180d4f80047a0b1c280",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-sprite-put-v1/render/working.img",
+    "retained": "build/i386-demo-sprite-raw-v2/candidate.img",
+    "sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-glblvars-native-v1/run/working.img",
+    "retained": "build/i386-demo-serialize-tree-v2/candidate.img",
+    "sha256": "44318f80f55a1c959ab4e22d62747c1c11fb713f5fecc4b1016dfb42d8bb34ba",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/preload-heap-comparison/preload/working.img",
+    "retained": "build/compiler-preload-v2/candidate.img",
+    "sha256": "ba0f2934a8ab94fb0bdfa199a7c78173ecb98ce453df2ae1e851cb7cd3593857",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/preload-heap-comparison/large_high_v1/working.img",
+    "retained": "build/compiler-backing-large-high-v1/candidate.img",
+    "sha256": "c1e6e5b526889105723699393140ab5cd1d8043423867d524ec9b72e54182807",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/bootstrap-managed-boot-capture-v1/working.img",
+    "retained": "build/bootstrap-managed-kernel-boot-v1/target.img",
+    "sha256": "2769eea45a0f6fa3095d5d4b8dd0cffbe7bd2197c075f9b229b2cb7c21f809dc",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-compact224-v1/diagnostic8/working.img",
+    "retained": "build/i386-diagnostic-worker-compact224-v1/cross/kernel-diagnostics.img",
+    "sha256": "089454f56f821587f8c9ddfa0bf06ee79ac9b1273224732ecfdaeb565ade3fb2",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-settings-startup-production-v1/scrncodes/working.img",
+    "retained": "build/i386-settings-startup-production-v1/full/kernel.img",
+    "sha256": "21659873d758cb2d8c41ef8fd9a52575e345f4d2df00ca3611be74cc067530e1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-256k-v1/diagnostic8/working.img",
+    "retained": "build/i386-diagnostic-worker-256k-v1/cross/kernel-diagnostics.img",
+    "sha256": "c2f29ee3d835f6e55fbcfc5f76509288b39ffdbdb7870200aff9e8e3ac3469b7",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-directive-position-v2/baseline64/working.img",
+    "retained": "build/i386-directive-position-v2/candidate.img",
+    "sha256": "c2f2b2084341a20531c6b889ad415b39b440315e35ce0c89b628c24c7d49d0ac",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-directive-position-v2/address8/working.img",
+    "retained": "build/i386-directive-position-v2/candidate.img",
+    "sha256": "c2f2b2084341a20531c6b889ad415b39b440315e35ce0c89b628c24c7d49d0ac",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/all-retained-desktop64/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen1-install/candidate.img",
+    "sha256": "2d7ab99c8d94776e7fabc63358ba68d8a9780c468711a0ca98a7570d68665807",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-parenwarn-v1/shared-probe/working.img",
+    "retained": "build/i386-keepaway-render-yield-v2/candidate.img",
+    "sha256": "cc52b6758e15642e0fe7b57d57446ab8a601112c91b4c78583b2b1c510fa5231",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v1/public8/working.img",
+    "retained": "build/i386-parenwarn-links-v1/candidate.img",
+    "sha256": "d9ea7e1f05e03db88ce9cf95937b3d7b63654fa393797967c7e5f30369a8b118",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-parenwarn-v1/probe/working.img",
+    "retained": "build/i386-keepaway-numbible-production-v1/full/kernel.img",
+    "sha256": "957f7ef76581ebad716f33ab0d0c232fa55bf10061c7c88c578c011e3338515b",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-logic-cold-v1/native/working.img",
+    "retained": "build/i386-keepaway-numbible-production-v1/full/kernel.img",
+    "sha256": "957f7ef76581ebad716f33ab0d0c232fa55bf10061c7c88c578c011e3338515b",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/preload-heap-comparison/split_prompt_v2/working.img",
+    "retained": "build/original-user-split-prompt-v2/candidate.img",
+    "sha256": "8e1e5a1adc6969e5cf219a3152d1196b1e6223ec385cc93b0fb042c2a257c56b",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-defer-user-v1/diagnostic8/working.img",
+    "retained": "build/i386-diagnostic-worker-defer-user-v1/cross/kernel-diagnostics.img",
+    "sha256": "d73ced7082c6c628b78e90b6aeb26d3b29d7289dd2ed73424f264ad2530e4c17",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-ic-slab-validation-v1/diagnostic16-guarded/working.img",
+    "retained": "build/i386-ic-slab-validation-v1/cross-guarded/kernel-diagnostics.img",
+    "sha256": "7051f0efc48d0cf033d2a81b1c48c2572f702c6a01f2fd4a2e513113a2ed3e51",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-defer-user640-v1/diagnostic8/working.img",
+    "retained": "build/i386-diagnostic-worker-defer-user640-v1/cross-version276/kernel-diagnostics.img",
+    "sha256": "04bda7488327f777c13876602fca6510bbea78f75167c413f7a9708ea66d0b0f",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-defer-user640-v1/diagnostic16/working.img",
+    "retained": "build/i386-diagnostic-worker-defer-user640-v1/cross-version276/kernel-diagnostics.img",
+    "sha256": "04bda7488327f777c13876602fca6510bbea78f75167c413f7a9708ea66d0b0f",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-extents-v2/address8/working.img",
+    "retained": "build/i386-demo-extents-v2/candidate.img",
+    "sha256": "19f1f3e781ef1f2abb3be18480f24c87f96c4d388342c6156c52145c6bc16c32",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-sprite-plot3d-v2/address8/working.img",
+    "retained": "build/i386-demo-sprite-plot3d-v2/candidate.img",
+    "sha256": "97580db17f88cb9bed418be9325753ff39c4d829b3f785f3234a734aed61f8b1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/preload-heap-comparison/original_preload_v2/working.img",
+    "retained": "build/compiler-preload-original-v2/candidate.img",
+    "sha256": "cc7e86d339e058667072448215dc783b4752beaee83708b5e570783bb1fc1e5d",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/preload-heap-comparison/stack_reserve_v5/working.img",
+    "retained": "build/original-user-stack-reserve-v5/candidate.img",
+    "sha256": "d8050449b48b98318981ecb48cdf9c310e6b76f8f90fab18e47ff90af0b53cf9",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/parser-selector-production-regressions-v1/minimal-startup-budget/working.img",
+    "retained": "build/parser-selector-production-regressions-v1/minimal-image/kernel.img",
+    "sha256": "abad76575e754a7c5aaafbd3f91c3bcf3229a99e35732d4a28722631ac4a2b75",
+    "allocated_bytes": 16777216
+  },
+  {
+    "removed": "build/i386-bible-trim-on-page-return-v1/diagnostics/working.img",
+    "retained": "build/i386-bible-trim-on-page-return-v1/full/kernel-diagnostics.img",
+    "sha256": "a540a4f84998b65c413ce3432d749c63d26fb68fed6075d8d22793a96ac1f7ac",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-low-v1/diagnostic8/working.img",
+    "retained": "build/i386-diagnostic-worker-low-v1/cross/kernel-diagnostics.img",
+    "sha256": "d1a8c4573d322d145edf918d66e6a6642599823bef5c4bc8c83d38b81f854037",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-text-v5/address8/working.img",
+    "retained": "build/i386-demo-sprite-text-v5/candidate.img",
+    "sha256": "9c2babe914327c106cf3af14edfd0e338b8675e217058549c10c22dea7b097cb",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-sprite-text-v5/address8-final/working.img",
+    "retained": "build/i386-demo-sprite-text-v5/candidate.img",
+    "sha256": "9c2babe914327c106cf3af14edfd0e338b8675e217058549c10c22dea7b097cb",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-sprite-plot-v1/render-v2/working.img",
+    "retained": "build/i386-demo-sprite-text-v4/candidate.img",
+    "sha256": "e90ab362a7b175fbe5a1b4174a4eef0921bf816a161079374985e7e671c97cc7",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-sprite-text-v4/address8/working.img",
+    "retained": "build/i386-demo-sprite-text-v4/candidate.img",
+    "sha256": "e90ab362a7b175fbe5a1b4174a4eef0921bf816a161079374985e7e671c97cc7",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/code-header-known-regressions-v4/minimal-startup-budget/working.img",
+    "retained": "build/code-header-known-regressions-v4/minimal-image/kernel.img",
+    "sha256": "7bc46541f6a6b3e089355b3945c4ac2b0215bb82a5d7a4333453ee1da346a3dc",
+    "allocated_bytes": 16777216
+  },
+  {
+    "removed": "build/i386-desktop-eea98cfa/generations128/gen1-baseline64-live/working.img",
+    "retained": "build/i386-desktop-eea98cfa/generations128/gen1-selfhost/target.img",
+    "sha256": "87dfab2082a8193415358de4e20225c9306265834c23497054d1197dc3378659",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-desktop-eea98cfa/generations128/gen1-baseline64-kvm/working.img",
+    "retained": "build/i386-desktop-eea98cfa/generations128/gen1-selfhost/target.img",
+    "sha256": "87dfab2082a8193415358de4e20225c9306265834c23497054d1197dc3378659",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-desktop-eea98cfa/generations128/gen1-baseline64-pointer/working.img",
+    "retained": "build/i386-desktop-eea98cfa/generations128/gen1-selfhost/target.img",
+    "sha256": "87dfab2082a8193415358de4e20225c9306265834c23497054d1197dc3378659",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-desktop-eea98cfa/generations128/gen1-baseline64/working.img",
+    "retained": "build/i386-desktop-eea98cfa/generations128/gen1-selfhost/target.img",
+    "sha256": "87dfab2082a8193415358de4e20225c9306265834c23497054d1197dc3378659",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-desktop-eea98cfa/generations128/gen2-baseline64-pointer/working.img",
+    "retained": "build/i386-desktop-eea98cfa/generations128/gen2-selfhost/target.img",
+    "sha256": "5b2f1f4fd13eb0165cd9eed9f9e5f8bbd69149332be988282de0770f3bf8a52a",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-desktop-eea98cfa/generations128/gen2-baseline64-live/working.img",
+    "retained": "build/i386-desktop-eea98cfa/generations128/gen2-selfhost/target.img",
+    "sha256": "5b2f1f4fd13eb0165cd9eed9f9e5f8bbd69149332be988282de0770f3bf8a52a",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-desktop-eea98cfa/generations128/gen2-baseline64/working.img",
+    "retained": "build/i386-desktop-eea98cfa/generations128/gen2-selfhost/target.img",
+    "sha256": "5b2f1f4fd13eb0165cd9eed9f9e5f8bbd69149332be988282de0770f3bf8a52a",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-desktop-eea98cfa/generations128/gen2-baseline64-kvm/working.img",
+    "retained": "build/i386-desktop-eea98cfa/generations128/gen2-selfhost/target.img",
+    "sha256": "5b2f1f4fd13eb0165cd9eed9f9e5f8bbd69149332be988282de0770f3bf8a52a",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-sprite-plot3d-production-v1/baseline64/working.img",
+    "retained": "build/i386-sprite-plot3d-production-v1/cross/kernel.img",
+    "sha256": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-sprite-plot3d-production-v1/address8/working.img",
+    "retained": "build/i386-sprite-plot3d-production-v1/cross/kernel.img",
+    "sha256": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-box-v1/render/working.img",
+    "retained": "build/i386-sprite-plot3d-production-v1/cross/kernel.img",
+    "sha256": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-baseline64/working.img",
+    "retained": "build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-selfhost/target.img",
+    "sha256": "650e519a076620077108344bd0bc8738fcec21c04b319c543dac5637083ae6ac",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-sprite-plot3d-production-v1/generations128-frozen/gen2-baseline64/working.img",
+    "retained": "build/i386-sprite-plot3d-production-v1/generations128-frozen/gen2-selfhost/target.img",
+    "sha256": "db6a5647cb9e400d77db32849928ff34ed14a9aa5b87b47a52a3fec1cc4869e6",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/parser-record-select-regressions-v1/minimal-startup-budget/working.img",
+    "retained": "build/parser-record-select-regressions-v1/minimal-image/kernel.img",
+    "sha256": "69d83474fb043ed9ad38bbfbd8dd00a5227bf1b8657bcc75965f011b5d876460",
+    "allocated_bytes": 16777216
+  },
+  {
+    "removed": "build/i386-diagnostic-bundle-peak-v1/diagnostic16/working.img",
+    "retained": "build/i386-diagnostic-bundle-peak-v1/cross/kernel-diagnostics.img",
+    "sha256": "dc479a71f29c9093573275c9797e441d3769ce2224ccbe3d652be99f97345e4b",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-heap-sorted-spans-v1/diagnostics/working.img",
+    "retained": "build/i386-heap-sorted-spans-v1/full/kernel-diagnostics.img",
+    "sha256": "d8ec9309a6f586be44a3c8fd444e789074b5d3161f70de6a369a4d9e63d7bda3",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-compact-v1/diagnostic8/working.img",
+    "retained": "build/i386-diagnostic-worker-compact-v1/cross/kernel-diagnostics.img",
+    "sha256": "3e70c032eb30b172f7571d33a7fb7b436beb3b53421be5211593df7dc860d18a",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-native-cache-footprint-v2/debug-map/working.img",
+    "retained": "build/i386-native-cache-footprint-v2/full/kernel.img",
+    "sha256": "3a48655b5950dfc187fe2f9cfe32d36e31fc1ba222825ce551eff9acaef4fed8",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/native-ode-production-v1/strut-run64/working.img",
+    "retained": "build/native-ode-production-v1/full/kernel.img",
+    "sha256": "607c4381ba559907374f1fb309e90808f65845023f93124b32a038cf69e0bf9f",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-keyboard-high-v2/assembled-native/persistent-window64/working.img",
+    "retained": "build/i386-keyboard-high-v2/assembled-native/install/candidate.img",
+    "sha256": "df71f7a29af11688fee5d95760757cdf23204f09c3e85089ca275d6681a4ec37",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-keyboard-high-v2/assembled-native/persistent-window-kvm64/working.img",
+    "retained": "build/i386-keyboard-high-v2/assembled-native/install/candidate.img",
+    "sha256": "df71f7a29af11688fee5d95760757cdf23204f09c3e85089ca275d6681a4ec37",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-ic-release-batch-v2/diagnostic8/working.img",
+    "retained": "build/i386-ic-release-batch-v2/cross/kernel-diagnostics.img",
+    "sha256": "90f26f14c24d3bbb27bc8e36d59cd517da51414c413cf8eaae55208421e2b448",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-defer-headers-v1/diagnostic8/working.img",
+    "retained": "build/i386-diagnostic-worker-defer-headers-v1/cross/kernel-diagnostics.img",
+    "sha256": "760dc148c9f54625aa53995fb12cae41477df23abc388ef297800a27d1dfe7e0",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen1-baseline64-live/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen1-selfhost/target.img",
+    "sha256": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen1-selfhost/target.img",
+    "sha256": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen2-persistent-window64/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen2-selfhost/target.img",
+    "sha256": "d9652f593e580f188ae71414722bb1fb82d8c3590215ff177b3ef7f544f753a7",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen2-baseline64-live/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen2-selfhost/target.img",
+    "sha256": "d9652f593e580f188ae71414722bb1fb82d8c3590215ff177b3ef7f544f753a7",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-directives-v1/isolated-native/working.img",
+    "retained": "build/i386-primes-native-v1/candidate.img",
+    "sha256": "a6e192b53c6436cff23c04c0f2cd9ca104355f95bb65401c38b3bb9b6a3cab6e",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-magic-pairs-native-v1/baseline64/working.img",
+    "retained": "build/i386-magic-pairs-native-v1/candidate.img",
+    "sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-magic-pairs-native-v1/boot8/working.img",
+    "retained": "build/i386-magic-pairs-native-v1/candidate.img",
+    "sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-primes-native-v1/baseline64/working.img",
+    "retained": "build/i386-primes-native-v1/candidate.img",
+    "sha256": "a6e192b53c6436cff23c04c0f2cd9ca104355f95bb65401c38b3bb9b6a3cab6e",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-primes-native-v1/boot8/working.img",
+    "retained": "build/i386-primes-native-v1/candidate.img",
+    "sha256": "a6e192b53c6436cff23c04c0f2cd9ca104355f95bb65401c38b3bb9b6a3cab6e",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-768k-v1/diagnostic8/working.img",
+    "retained": "build/i386-diagnostic-worker-768k-v1/cross-fresh/kernel-diagnostics.img",
+    "sha256": "d48671de33c208c6f3eac7b3fbe9319765d1a3e14743ada210db831ab5e4c468",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-profile-v1/diagnostic16/working.img",
+    "retained": "build/i386-diagnostic-worker-profile-v1/cross/kernel-diagnostics.img",
+    "sha256": "044806ec0a8497188877c7014d1fdbbc07fa93aa3dc00a0bdd468b6a521571f1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-optimization-port-v1/interactive8-kvm/working.img",
+    "retained": "build/i386-optimization-port-v1/cross/kernel.img",
+    "sha256": "374d0081c34dca70b107ee0180d67c29deda3d22b88b98efc6019f42fba7dea1",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-optimization-port-v1/diagnostic8-kvm/working.img",
+    "retained": "build/i386-optimization-port-v1/cross/kernel-diagnostics.img",
+    "sha256": "e5618db149ee1cedf94c30d8a1d9b2b81a0b2fad13a246a59cd164cf13899f34",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-640k-v1/diagnostic8/working.img",
+    "retained": "build/i386-diagnostic-worker-640k-v1/cross/kernel-diagnostics.img",
+    "sha256": "a1df2300025fee9219eb4533563f18150a98403ebef68bafeb161662aefd2dea",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-bounce-v1/plot8-retry/working.img",
+    "retained": "build/i386-demo-bounce-v1/cross-retry/kernel.img",
+    "sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+    "allocated_bytes": 67112960
+  }
+]

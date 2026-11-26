@@ -270,3 +270,14 @@ on register and memory ADC forms, accepted a 127-byte LOOP displacement,
 rejected a 130-byte displacement, and returned to fresh arithmetic.
 [Benchmark comparison](../build/i386-optimization-port-v1/comparison/result.json) ·
 [Native operand and branch checks](../build/i386-optimization-port-v1/assembly-boundary/result.json)
+
+The benchmark image passed the normal and full diagnostic 8 MiB KVM
+checks, with nine exact VGA checkpoints in each run. Normal startup
+took 31.578 seconds with the retained rebuild running on the host.
+The 60-second TCG reference gate remains open. The delivered-source
+audit matched all 1,578 files to `f40c9790`, and the 64 MiB content
+check matched all 686 inventory files and passed the guest read probe.
+[Normal startup](../build/i386-optimization-port-v1/interactive8-kvm/result.json) ·
+[Diagnostics](../build/i386-optimization-port-v1/diagnostic8-kvm/result.json) ·
+[Delivered-source audit](../build/i386-optimization-port-v1/committed-source-audit.json) ·
+[Full content](../build/i386-optimization-port-v1/full-content64/result.json)

@@ -1,0 +1,86 @@
+{
+  "status": "pass",
+  "cpu": "486,-fpu",
+  "ram_mib": 8,
+  "accel": "kvm",
+  "startup_timeout_seconds": 180,
+  "qualification": "interactive",
+  "diagnostics": false,
+  "managed_pointer": true,
+  "scope": "Startup, retained static/function/literal behavior and exact VGA restoration; not complete OS acceptance",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-optimization-port-v1/cross/kernel.img": "374d0081c34dca70b107ee0180d67c29deda3d22b88b98efc6019f42fba7dea1",
+    "/home/ddanila/fun/TempleOS/build/i386-optimization-port-v1/cross/result.json": "75646864dd5e47b8f63ea01358bbb8e2a0d4c3ba256757cb939259d629802794",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-startup-memory.py": "8b4d75ffa82b87538d3fd520573463a001609ce8a69bdbc39744f95971bac1cd",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "8b97bca4bd59d0ca074338b68c4102504a376f41f972b1e6acb8cd281614290a",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+  },
+  "commands": [
+    [
+      "I64 SPNext(){static I64 n=40;return ++n;}",
+      []
+    ],
+    [
+      "SPNext();",
+      [
+        "41"
+      ]
+    ],
+    [
+      "SPNext();",
+      [
+        "42"
+      ]
+    ],
+    [
+      "U8 *SPText(){return \"VGA\";}",
+      []
+    ],
+    [
+      "StrCmp(SPText(),\"VGA\")==0;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ],
+    [
+      "NativeGraphicsStart;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "I64 gp_ok=NativeTextBasePresent;NativeTextBaseRestore;gp_ok;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "I64 gp_frame=NativeGraphicsPresent;NativeTextBaseRestore;gp_frame;",
+      [
+        "1"
+      ]
+    ]
+  ],
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 8,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 31.57823826704407,
+    "commands": 9,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "build_provider_loads": 0,
+  "interactive_budget_pass": true,
+  "inputs_unchanged": true
+}
