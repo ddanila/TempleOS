@@ -1,0 +1,40 @@
+{
+  "result": "fail",
+  "runs": {
+    "original": {
+      "jiffies": [
+        37340,
+        38541,
+        39709
+      ],
+      "sweep": {
+        "pcm_milliseconds": 211,
+        "active_windows_hz": [
+          500,
+          500,
+          650,
+          600,
+          700,
+          700,
+          750,
+          850,
+          800,
+          850
+        ]
+      }
+    },
+    "native": {
+      "jiffies": [
+        82531,
+        84591,
+        86681
+      ],
+      "sweep": null
+    }
+  },
+  "fresh_result": null,
+  "mismatches": [
+    "native: Missing low-to-high speaker sweep: []",
+    "native: Executed result 42 is missing from console pixels"
+  ]
+}

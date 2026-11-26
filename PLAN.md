@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 587 |
-| Linked to tests / with reference workflow and oracle | 228 / 157 |
+| Linked to tests / with reference workflow and oracle | 229 / 158 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 63 of 224 |
 
@@ -457,6 +457,9 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   `d5792939`. See the
   [retained build result](build/i386-demo-f64-files-v1/retained128/result.json)
   and [generation input audit](build/i386-demo-f64-files-v1/generations128/input-source-audit/result.json).
+  The [generation-one install](build/i386-demo-f64-files-v1/generations128/gen1-install/result.json)
+  passed for all nine rebuilt providers, including its independent boot
+  and diagnostic growth recovery. The generation-one flat rebuild follows.
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the
@@ -538,6 +541,14 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   See the [border build at 8 MiB](build/i386-demo-tag-callback-v1/startup8-kvm/result.json),
   [predecessor at 8 MiB](build/i386-demo-tag-callback-v1/startup8-control-kvm/result.json)
   and [TCG timeout](build/i386-demo-tag-callback-v1/startup8/result.json).
+
+- ClickCallBack returns three increasing Jiffies values after physical
+  mouse clicks on both guests. The original emits a roughly 211 ms
+  speaker sweep after the inline Click Me link is clicked. The i386 link
+  highlights on selection, with no recorded playback and a blank command
+  submitted by the following arithmetic probe. See the
+  [mouse callback comparison](build/i386-demo-click-callback-v1/link-observed/qualification.json).
+
 
 ### Plan decisions (2026-11-24)
 
