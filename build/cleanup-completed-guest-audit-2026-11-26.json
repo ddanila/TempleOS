@@ -26,5 +26,12 @@
     "allocated_bytes": 67108864,
     "sha256": "49a5db5a95db18764f64e1d67e3b54a34f8a6e98c9c2e853f243bc227c99a343",
     "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-pulldown-v1/mouse-capture/working.img",
+    "retained": "build/i386-demo-dskraw-v1/cross-drive-types/kernel.img",
+    "allocated_bytes": 67108864,
+    "sha256": "49a5db5a95db18764f64e1d67e3b54a34f8a6e98c9c2e853f243bc227c99a343",
+    "bytes": 67108864
   }
 ]

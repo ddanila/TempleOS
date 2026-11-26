@@ -25,8 +25,11 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 C1 has 580 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
-pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
-Both passed the configured 64 MiB desktop handoff and 8 MiB cold boot.
+pending. C5 reproduced two native generations from frozen revision `d5792939`.
+Both passed the 8 MiB cold boot, the 64 MiB desktop baseline and configured
+Home Once handoff, and the frozen 686-entry content check. Reproducibility
+covered all 16 modules with the flat kernel build date normalized. The full
+compatibility suite and release resource gates remain open.
 
 The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
