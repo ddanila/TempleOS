@@ -537,6 +537,17 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   [generation-two flat rebuild](build/i386-demo-f64-files-v1/generations128/gen2-selfhost/result.json),
   [source audit](build/i386-demo-f64-files-v1/generations128/gen2-source-audit/result.json),
   and [generation identity](build/i386-demo-f64-files-v1/generations128/generation-identity/result.json).
+  The installed generation-two image passed all nine baseline commands
+  at 64 MiB with the window manager active. The 686-entry content check
+  and bounded guest Bible read also passed against frozen source
+  `d5792939`. The initial content run used the newer checkout and
+  reported four source differences before boot. See the
+  [generation-two desktop baseline](build/i386-demo-f64-files-v1/generations128/gen2-baseline64/result.json)
+  and [frozen-source content check](build/i386-demo-f64-files-v1/generations128/gen2-content64-frozen/result.json).
+  The configured 64 MiB boot selected Home Once without host startup
+  commands, matched all 83 original desktop geometry values, accepted
+  fresh arithmetic and verified physical bootstrap retirement. See the
+  [generation-two configured handoff](build/i386-demo-f64-files-v1/generations128/gen2-desktop64/result.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the

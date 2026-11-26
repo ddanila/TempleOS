@@ -5,5 +5,12 @@
     "allocated_bytes": 67108864,
     "sha256": "692597ef8b6adbf0b61804ae26b9550185c0bf0b8f0f5346f4b342c3d0a6c423",
     "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-f64-files-v1/generations128/gen2-baseline64/working.img",
+    "retained": "build/i386-demo-f64-files-v1/generations128/gen2-selfhost/target.img",
+    "allocated_bytes": 67108864,
+    "sha256": "a72831333fcbd67e4c112fd5f570c10c6dd60b57f11dd40469de17f7f5f8cb39",
+    "bytes": 67108864
   }
 ]
