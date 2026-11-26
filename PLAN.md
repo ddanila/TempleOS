@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 606 |
-| Linked to tests / with reference workflow and oracle | 209 / 138 |
+| Linked to tests / with reference workflow and oracle | 210 / 139 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 44 of 224 |
 
@@ -33,9 +33,9 @@ source audit, frozen 686-file content check, 8 MiB probe, all nine active
 64 MiB desktop commands, and configured HomeSys handoff. Its
 128 MiB retained-provider rebuild is the
 prerequisite for the queued two-generation reproduction. The latest
-application checks on this image qualify Lines and Box. The next graphics
-candidate is Bounce, which uses the shared `GrPlot` routine and needs its
-public i386 binding checked before qualification.
+application checks on this image qualify Lines and Box. The Bounce reference
+passes on the original guest. The same image rejects Bounce at the unresolved
+`GrPlot` call.
 
 ### Checkpoint (2026-11-26)
 
@@ -323,6 +323,12 @@ public i386 binding checked before qualification.
 - Box qualifies. Both guests animated and resized the red wireframe,
   cleared it on Space and returned to the prompt. See the
   [wireframe comparison](build/i386-demo-box-v1/qualification.json).
+
+- Bounce draws changing multicolor trails and clears them on Escape in the
+  pinned original guest. The audited `c4064751` i386 image stops at the
+  `GrPlot` call on line 27. See the
+  [original trail receipt](build/i386-demo-bounce-v1-baseline/original-receipt.json)
+  and [i386 rejection](build/i386-demo-bounce-v1-baseline/result.json).
 
 ### Plan decisions (2026-11-24)
 

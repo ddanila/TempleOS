@@ -26,7 +26,7 @@ def capture(guest_type, image, out, native, source, samples, seed, observe_secon
         for sample in range(1, samples):
             time.sleep(0.25)
             guest.screenshot(f'before-key-{sample}')
-        guest.press('spc')
+        guest.press('esc' if source.endswith('/Bounce.HC') else 'spc')
         if native:
             guest.wait('COMMAND OK\n', timeout=20, start=start)
             command_log = guest.collect()[start:]
@@ -45,7 +45,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('original_iso', type=Path)
     parser.add_argument('native_image', type=Path)
-    parser.add_argument('--demo', choices=('SpritePlot', 'Extents', 'SpritePlot3D', 'Lines', 'Box'),
+    parser.add_argument('--demo', choices=('SpritePlot', 'Extents', 'SpritePlot3D', 'Lines', 'Box', 'Bounce'),
                         default='SpritePlot')
     parser.add_argument('--samples', default=1, type=int)
     parser.add_argument('--seed', type=int)

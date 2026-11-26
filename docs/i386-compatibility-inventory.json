@@ -17214,9 +17214,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Seed with 1, launch unchanged Bounce, capture three animation samples, then press Escape to clear the trails and return to the prompt.",
+      "oracle": "Check multicolor trail coverage, changing pixels between samples and trail removal after Escape.",
+      "tests": [
+        {
+          "target": "original-seeded-bounce",
+          "result": "pass",
+          "evidence": "build/i386-demo-bounce-v1-baseline/original-receipt.json",
+          "scope": "The pinned original guest draws and clears changing multicolor trails with the unchanged demo."
+        },
+        {
+          "target": "i386-bounce-before-public-gr-plot",
+          "result": "fail",
+          "evidence": "build/i386-demo-bounce-v1-baseline/result.json",
+          "scope": "The audited c4064751 image rejects the unresolved GrPlot call on line 27."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Box.HC",

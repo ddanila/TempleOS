@@ -1,0 +1,33 @@
+{
+  "result": "pass",
+  "source_sha256": "dbf44756c00812f78e2eaf8e2520c4596e444cfe2367dce9ddbda93a786e3035",
+  "seed": 1,
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-sprite-plot3d-production-v1/cross/kernel.img": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5"
+  },
+  "original": {
+    "trail_pixels": [
+      38392,
+      38784,
+      38456,
+      0
+    ],
+    "trail_colors": [
+      8,
+      8,
+      8,
+      0
+    ],
+    "changed_pixels": [
+      39815,
+      33076
+    ],
+    "screenshots_sha256": {
+      "before-key.png": "1ec2ecc4e1268b0c7a158eca6d4b61ccce96586693ccba519f7b2174508d45a3",
+      "before-key-1.png": "b1e0ae30b47e69b47ee2acdfadeb9fe69e1727122be078c017cd78e5e25f70c3",
+      "before-key-2.png": "53241af2c71006188480773ac6accf5dded01c211fb33697c9c020d9c89002b4",
+      "after-key.png": "5c113cd38e6e13f2774c585afe86d12bcc3d63678caad0366963b6f8f8403083"
+    }
+  }
+}

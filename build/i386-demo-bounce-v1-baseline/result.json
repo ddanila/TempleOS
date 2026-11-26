@@ -1,0 +1,12 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-sprite-plot3d-production-v1/cross/kernel.img": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5"
+  },
+  "source_sha256": "dbf44756c00812f78e2eaf8e2520c4596e444cfe2367dce9ddbda93a786e3035",
+  "seed": 1,
+  "observe_seconds": 7,
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 000000000159ACC8 00000000536B7354\nINPUT LINE Seed(1);ExeFile(\"C:/Demo/Graphics/Bounce.HC\");\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Demo/Graphics/Bounce.HC line 27\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND OK\n",
+  "inputs_unchanged": true
+}
