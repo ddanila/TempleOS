@@ -435,6 +435,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   The frozen `d5792939` image passed the 686-file content check and
   bounded guest Bible read. See the
   [full-content checkpoint](build/i386-demo-f64-files-v1/full-content-checkpoint.json).
+  Its configured 64 MiB boot selected Home Once, matched all 83 original
+  desktop geometry values, accepted fresh arithmetic, and freed the
+  bootstrap allocation. See the
+  [configured desktop checkpoint](build/i386-demo-f64-files-v1/configured-desktop-checkpoint.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the
