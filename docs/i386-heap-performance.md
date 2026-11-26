@@ -1022,3 +1022,12 @@ The bounded instruction-release candidate also passed the full 8 MiB
 diagnostic and all nine VGA checkpoints. Its measured startup comparison
 still leaves the 60-second gate open. The diagnostic receipt is in
 `build/i386-ic-release-batch-v2/diagnostic8/result.json`.
+
+The loader overflow trial reused the indexed prefix and scanned only the
+unindexed suffix for saturated buckets. Its 16-bit bucket heads kept the
+emitted stack audit to 15,984 of 16,384 bytes. The assembly and portable
+index builders both passed the 40-case loader suite. In one 8 MiB KVM pair,
+the control took 63.255 seconds and the candidate took 62.902 seconds.
+Both passed all nine exact VGA checkpoints. This pair does not establish
+a repeatable speedup, and the candidate is retained as a patch while the
+60-second gate remains open. See `build/i386-loader-overflow-tail-v3/`.

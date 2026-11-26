@@ -1,0 +1,103 @@
+diff --git a/Kernel/I386/ModuleLoad.HC b/Kernel/I386/ModuleLoad.HC
+index b5149547..3099cf5f 100644
+--- a/Kernel/I386/ModuleLoad.HC
++++ b/Kernel/I386/ModuleLoad.HC
+@@ -18 +18,2 @@ Bool I386BuffersOverlap(U8 *a,I64 an,U8 *b,I64 bn)
+-I64 I386FindSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches)
++I64 I386FindSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches,
++  I64 first_module=0,U32 first_record=0)
+@@ -28,3 +29,4 @@ I64 I386FindSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches)
+-  for (i=0;i<count;i++) {
+-    h=modules[i]; r=modules[i]+h->records_offset;
+-    for (j=0;j<h->record_count;j++,r++)
++  for(i=0;i<first_module;i++) base+=modules[i](CI386ModuleHeader *)->code_size;
++  for (i=first_module;i<count;i++) {
++    h=modules[i]; r=modules[i]+h->records_offset+first_record*sizeof(CI386ModuleRecord);
++    for (j=first_record;j<h->record_count;j++,r++)
+@@ -36,0 +39 @@ I64 I386FindSymbol(U8 **modules,I64 count,U8 *name,I64 kind,I64 *matches)
++    first_record=0;
+@@ -49 +52 @@ class CI386SymbolIndex {
+-  U32 heads[256];
++  U16 heads[256];
+@@ -51 +54,2 @@ class CI386SymbolIndex {
+-  Bool complete;
++  Bool complete,overflow;
++  U32 first_module,first_record;
+@@ -68 +72 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
+-  index->complete=FALSE;
++  index->complete=FALSE; index->overflow=FALSE;
+@@ -76,2 +80,2 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
+-    MOV U32 [EDI],EAX
+-    ADD EDI,4
++    MOV U16 [EDI],AX
++    ADD EDI,2
+@@ -124 +128 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
+-    SHL EAX,2
++    SHL EAX,1
+@@ -127 +131 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
+-    MOV ECX,U32 [EAX]
++    MOVZX ECX,U16 [EAX]
+@@ -138 +142 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
+-    MOV U32 [EAX],ECX
++    MOV U16 [EAX],CX
+@@ -151,0 +156,9 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
++    CMP U8 CI386SymbolIndex.overflow[EBX],0
++    JNE I32 @@83
++    MOV U8 CI386SymbolIndex.overflow[EBX],1
++    MOV EAX,U32 &module_number[EBP]
++    MOV U32 CI386SymbolIndex.first_module[EBX],EAX
++    MOV EAX,U32 CI386ModuleHeader.record_count[ESI]
++    SUB EAX,U32 &remaining[EBP]
++    MOV U32 CI386SymbolIndex.first_record[EBX],EAX
++@@83:
+@@ -169 +182 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
+-    SHL EAX,2
++    SHL EAX,1
+@@ -171,4 +184,3 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
+-    MOV ECX,U32 CI386SymbolIndex.heads[EAX]
+-    MOV EDX,0x80000000
+-    OR ECX,EDX
+-    MOV U32 CI386SymbolIndex.heads[EAX],ECX
++    MOVZX ECX,U16 CI386SymbolIndex.heads[EAX]
++    OR ECX,0x8000
++    MOV U16 CI386SymbolIndex.heads[EAX],CX
+@@ -184 +196 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
+-  index->complete=FALSE;
++  index->complete=FALSE; index->overflow=FALSE;
+@@ -193 +205,4 @@ U0 I386SymbolIndexBuild(CI386SymbolIndex *index,U8 **modules,I64 count)
+-          index->heads[bucket]|=0x80000000;
++          if(!index->overflow) {
++            index->overflow=TRUE; index->first_module=i; index->first_record=j;
++          }
++          index->heads[bucket]|=0x8000;
+@@ -212 +227,2 @@ I64 I386IndexedSymbol(CI386SymbolIndex *index,U8 **modules,I64 count,
+-  I64 i,j,base,result=0;
++  I64 i,j,base,result=0,tail_matches,tail_result;
++  Bool overflow;
+@@ -215 +231,2 @@ I64 I386IndexedSymbol(CI386SymbolIndex *index,U8 **modules,I64 count,
+-  if(cursor&0x80000000) return I386FindSymbol(modules,count,name,kind,matches);
++  overflow=(cursor&0x8000)!=0;
++  cursor&=2047;
+@@ -225 +242,2 @@ I64 I386IndexedSymbol(CI386SymbolIndex *index,U8 **modules,I64 count,
+-      (*matches)++; result=base+record->offset;
++      if(!*matches) result=base+record->offset;
++      (*matches)++;
+@@ -229,3 +247,8 @@ I64 I386IndexedSymbol(CI386SymbolIndex *index,U8 **modules,I64 count,
+-  //A repeated module pointer can occur at different loaded bases. Preserve
+-  //the linear resolver's last-match result whenever a name is ambiguous.
+-  if(*matches>1) return I386FindSymbol(modules,count,name,kind,matches);
++  //The indexed prefix is traversed in reverse. Unindexed records, when
++  //present in this bucket, are all later in the original linear order.
++  if(overflow) {
++    tail_result=I386FindSymbol(modules,count,name,kind,&tail_matches,
++      index->first_module,index->first_record);
++    *matches+=tail_matches;
++    if(tail_matches)result=tail_result;
++  }
+diff --git a/tests/guest/i386-loader/SymbolIndex.HC b/tests/guest/i386-loader/SymbolIndex.HC
+index cc045ffe..3feec4b9 100644
+--- a/tests/guest/i386-loader/SymbolIndex.HC
++++ b/tests/guest/i386-loader/SymbolIndex.HC
+@@ -34 +34 @@ I64 SymbolIndexStress()
+-    for(i=0;i<256;i++) if(index.heads[i]&0x80000000) flagged++;
++    for(i=0;i<256;i++) if(index.heads[i]&0x8000) flagged++;

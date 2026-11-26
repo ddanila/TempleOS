@@ -1,0 +1,42 @@
+{
+  "status": "pass",
+  "scope": "Emitted direct-call frames plus explicit caller/guard reserve; indirect callbacks require runtime qualification",
+  "module": "/home/ddanila/fun/TempleOS/build/i386-loader-overflow-tail-v3/cross/exports/Kernel.t32m",
+  "module_sha256": "1804d143906a7b0863912ce69fac45a4eeb4627eec8986368ebfdef250219c3c",
+  "stack_bytes": 16384,
+  "caller_reserve": 6144,
+  "loader_bytes": 9840,
+  "total_bytes": 15984,
+  "path": [
+    "I386RedSeaLoadBound",
+    "I386RedSeaLoadBoundCapacity",
+    "I386ModuleCompactOwned",
+    "I386LoadBoundAt",
+    "I386BoundSymbol",
+    "I386IndexedSymbol",
+    "I386FindSymbol",
+    "I386NameEqual"
+  ],
+  "frames": {
+    "I386RedSeaLoadBound": 0,
+    "I386RedSeaLoadBoundCapacity": 16,
+    "I386ModuleCompactOwned": 32,
+    "I386LoadBoundAt": 8824,
+    "I386BoundSymbol": 16,
+    "I386IndexedSymbol": 72,
+    "I386FindSymbol": 40,
+    "I386NameEqual": 0
+  },
+  "argument_bytes": {
+    "I386RedSeaLoadBound": 48,
+    "I386RedSeaLoadBoundCapacity": 56,
+    "I386ModuleCompactOwned": 56,
+    "I386LoadBoundAt": 72,
+    "I386BoundSymbol": 72,
+    "I386IndexedSymbol": 48,
+    "I386FindSymbol": 56,
+    "I386NameEqual": 16
+  },
+  "linkage_per_call": 20,
+  "transient_allowance_per_call": 32
+}
