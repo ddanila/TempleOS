@@ -1,0 +1,15 @@
+{
+  "result": "fail",
+  "input_sha256": "44318f80f55a1c959ab4e22d62747c1c11fb713f5fecc4b1016dfb42d8bb34ba",
+  "entries": {
+    "Demo/Dsk/UnusedSpaceRep.HC": {
+      "source_sha256": "82cad3fa5dc51111649193ca2690d0d43e8b4abdc3ca4cb497f0ab65a7c837cf",
+      "output_file": "demo-0.DD"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 0000000001594538 00000000536B7354\nINPUT LINE #include \"C:/Probe/DemoBatch.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token DrvUnused file C:/Demo/Dsk/UnusedSpaceRep.HC line 9\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nEXPORT demo-0.DD 13E48 19\n",
+  "inputs_unchanged": true
+}

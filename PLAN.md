@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 35 (six apps and twenty-nine demos) |
+| Qualified | 36 (six apps and thirty demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 621 |
-| Linked to tests / with reference workflow and oracle | 193 / 122 |
+| Qualification gaps | 620 |
+| Linked to tests / with reference workflow and oracle | 194 / 123 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 29 of 224 |
+| Demos qualified | 30 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 35 workflows and records eighteen shared files
+- The inventory qualifies 36 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -182,6 +182,13 @@ is complete and provides the foundation, but not desktop or application parity.
   The same image passed the frozen 686-file check, the 1,565-file
   committed-source audit and the 8 MiB code-position regression. See the
   [image checkpoint](build/i386-demo-serialize-tree-v2/full-content-checkpoint.json).
+
+- UnusedSpaceRep qualifies on the original and native boot profiles.
+  The i386 desktop publishes the shared drive-space routines. An independent
+  allocation bitmap audit found 16,787,968 free bytes on the i386 guest disk,
+  matching the demo's 25.413% report. The original reported its own RAM disk
+  and CD. See the
+  [drive-space comparison](build/i386-demo-unused-space-v2/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

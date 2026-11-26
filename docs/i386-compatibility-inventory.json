@@ -16453,10 +16453,23 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged demo on the pinned original and baseline i386 desktop. Capture each mounted-volume report and verify native prompt recovery.",
+      "oracle": "Check the pinned original RAM disk and CD reports. Independently count free RedSea blocks from the native disk image and verify the reported percentage to three decimal places.",
+      "tests": [
+        {
+          "target": "native-unused-space-before-drive-reporting",
+          "result": "fail",
+          "evidence": "build/i386-demo-unused-space-v1/comparison/result.json",
+          "scope": "The old i386 image rejects the missing DrvUnused function."
+        },
+        {
+          "target": "native-original-unused-space",
+          "result": "pass",
+          "evidence": "build/i386-demo-unused-space-v2/qualification.json",
+          "scope": "Original RAM disk and CD reports match. The i386 C drive reports 25.413%, matching 16,787,968 free bytes from the independently audited RedSea bitmap."
+        }
+      ]
     },
     {
       "path": "Demo/Exceptions.HC",

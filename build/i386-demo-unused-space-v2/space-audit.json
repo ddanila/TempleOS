@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "disk_sha256": "32d4251ed813970dc591e74d2588e0e23366da1a56de6784cf9dc88f20141e97",
+  "filesystem": {
+    "directories": 63,
+    "files": 1938,
+    "owned_sectors": 96202,
+    "bitmap": "matches reachable extents"
+  },
+  "free_bytes": 16787968,
+  "largest_free_extent_bytes": 16787968,
+  "free_extents": 1,
+  "scope": "Verified bitmap space; not proof a requested file operation succeeds"
+}
