@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "disk_sha256": "957f7ef76581ebad716f33ab0d0c232fa55bf10061c7c88c578c011e3338515b",
+  "source_revision": "b59047b0e4ca09b4bcbe76cc681fbef8680658b3",
+  "delivered_source_files": 1561,
+  "modified_demo_sha256": {
+    "Apps/KeepAway/KeepAway.HC": "cbf685fa3e2ee9ac9ec915f816cfa9e63eaa9a7736c9f14cfb0f349ab3985312",
+    "Demo/DolDoc/NumBible.HC": "4721c5e0c00d018c2581913cb51d1d720b7947da960763f0a9d40feb343bb513"
+  },
+  "complete_source_audit_sha256": "024faf327b2c0aedd1037470a907b432b926a7bfb69ce8f48bc22959f74a8e93"
+}

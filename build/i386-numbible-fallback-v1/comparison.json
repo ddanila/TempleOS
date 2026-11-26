@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "sample": "Alpha\n\nBeta without a final newline",
+  "logical_hex": "303030303120416c7068610a30303030320a3030303033204265746120776974686f757420612066696e616c206e65776c696e65",
+  "output_bytes": 52,
+  "output_sha256": "5991c8419bda9f2babfbff2e2d89ec91746519acbccf6ec3e396e27840d2e086",
+  "native": {
+    "result": "pass",
+    "input_sha256": "5d43260b17ca8238614a59460b66c3245f74819e4d959ecb8d7b47862802c07e",
+    "arithmetic": {
+      "column": 0,
+      "row": 12,
+      "foreground": [
+        0,
+        168,
+        0
+      ]
+    },
+    "output_bytes": 52,
+    "output_sha256": "5991c8419bda9f2babfbff2e2d89ec91746519acbccf6ec3e396e27840d2e086"
+  }
+}

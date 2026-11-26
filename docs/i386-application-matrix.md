@@ -2751,3 +2751,14 @@ keeps the original DolDoc path for other input. At 64 MiB, its saved
 file matched all 4,920,719 original bytes and all 100,117 numbered
 lines. The native prompt rendered 42 after the save. See the
 [byte comparison](../build/i386-demo-numbible-plain-v1/comparison.json).
+
+A fallback test supplied plain input without a final newline. Both
+the original demo and the updated native demo saved the same 52
+DolDoc bytes. This exercises the original document path retained for
+input outside the optimized format. See the
+[fallback receipt](../build/i386-numbible-fallback-v1/comparison.json).
+
+The refreshed full image contains the committed KeepAway and NumBible
+sources. Its boot instruction audit and the audit of 1,561 packaged
+source and documentation files passed. See the
+[combined build receipt](../build/i386-keepaway-numbible-production-v1/build-receipt.json).
