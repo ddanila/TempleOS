@@ -1,0 +1,208 @@
+{
+  "result": "pass",
+  "production_integration": false,
+  "image_sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+  "source_sha256": "948136b2ce5b638f2d920603ed7800253ca103d0e6019df14d888d8f6252239e",
+  "batch_sha256": "8a9c271661341d0bd95f246db5dca9ffac53186f144867ca03b61aaa8902f8ec",
+  "scope": "The unchanged Primes demo used a fixture-provided zero cache-line width. All four prime counts and trailing lists match the independent original reference; timing can vary.",
+  "runs": {
+    "original": {
+      "sha256": "f11c83b210f4a3ca433907e6e0c3f39e51c1a106d8b1d9b4c68b7b0abdf8eb65",
+      "runs": [
+        {
+          "limit": 100,
+          "count": 25,
+          "tail": [
+            2,
+            3,
+            5,
+            7,
+            11,
+            13,
+            17,
+            19,
+            23,
+            29,
+            31,
+            37,
+            41,
+            43,
+            47,
+            53,
+            59,
+            61,
+            67,
+            71,
+            73,
+            79,
+            83,
+            89,
+            97
+          ],
+          "elapsed_seconds": 6.759695
+        },
+        {
+          "limit": 100,
+          "count": 25,
+          "tail": [
+            2,
+            3,
+            5,
+            7,
+            11,
+            13,
+            17,
+            19,
+            23,
+            29,
+            31,
+            37,
+            41,
+            43,
+            47,
+            53,
+            59,
+            61,
+            67,
+            71,
+            73,
+            79,
+            83,
+            89,
+            97
+          ],
+          "elapsed_seconds": 0.000216
+        },
+        {
+          "limit": 1000000,
+          "count": 78498,
+          "tail": [
+            999907,
+            999917,
+            999931,
+            999953,
+            999959,
+            999961,
+            999979,
+            999983
+          ],
+          "elapsed_seconds": 0.013174
+        },
+        {
+          "limit": 1000000,
+          "count": 78498,
+          "tail": [
+            999907,
+            999917,
+            999931,
+            999953,
+            999959,
+            999961,
+            999979,
+            999983
+          ],
+          "elapsed_seconds": 0.013029
+        }
+      ]
+    },
+    "native": {
+      "sha256": "504770176500e04be55859cab8523edf8f9348a2168c2b267c665d3127b463a7",
+      "runs": [
+        {
+          "limit": 100,
+          "count": 25,
+          "tail": [
+            2,
+            3,
+            5,
+            7,
+            11,
+            13,
+            17,
+            19,
+            23,
+            29,
+            31,
+            37,
+            41,
+            43,
+            47,
+            53,
+            59,
+            61,
+            67,
+            71,
+            73,
+            79,
+            83,
+            89,
+            97
+          ],
+          "elapsed_seconds": 0.02
+        },
+        {
+          "limit": 100,
+          "count": 25,
+          "tail": [
+            2,
+            3,
+            5,
+            7,
+            11,
+            13,
+            17,
+            19,
+            23,
+            29,
+            31,
+            37,
+            41,
+            43,
+            47,
+            53,
+            59,
+            61,
+            67,
+            71,
+            73,
+            79,
+            83,
+            89,
+            97
+          ],
+          "elapsed_seconds": 0.02
+        },
+        {
+          "limit": 1000000,
+          "count": 78498,
+          "tail": [
+            999907,
+            999917,
+            999931,
+            999953,
+            999959,
+            999961,
+            999979,
+            999983
+          ],
+          "elapsed_seconds": 0.02
+        },
+        {
+          "limit": 1000000,
+          "count": 78498,
+          "tail": [
+            999907,
+            999917,
+            999931,
+            999953,
+            999959,
+            999961,
+            999979,
+            999983
+          ],
+          "elapsed_seconds": 0.03
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "result": "fail",
+  "input_sha256": "60723b2a1d7d6753c2ece6bea7c739c9aa98a08b0abd7b2203b5bde4d07f684b",
+  "entries": {
+    "Demo/MultiCore/Primes.HC": {
+      "source_sha256": "948136b2ce5b638f2d920603ed7800253ca103d0e6019df14d888d8f6252239e",
+      "output_file": "demo-0.DD",
+      "result": "fail",
+      "original_sha256": "f11c83b210f4a3ca433907e6e0c3f39e51c1a106d8b1d9b4c68b7b0abdf8eb65",
+      "native_sha256": "504770176500e04be55859cab8523edf8f9348a2168c2b267c665d3127b463a7",
+      "bytes": 515
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}

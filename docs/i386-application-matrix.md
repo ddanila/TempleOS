@@ -2946,3 +2946,8 @@ limits and both invocations at each limit. Native compilation reaches
 the unpublished `sys_cache_line_width` on line 9. See the
 [prime reference](../build/i386-demo-primes-v1/original-receipt.json)
 and [native rejection](../build/i386-demo-primes-v1/comparison/result.json).
+
+With a fixture-provided zero cache-line width, native Primes completed
+all four searches and matched the independent counts and trailing lists.
+Production still needs to publish the architecture's cache information.
+See the [Primes experiment](../build/i386-demo-primes-v1/no-cache-report-checkpoint.json).

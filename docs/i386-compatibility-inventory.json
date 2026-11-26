@@ -18580,6 +18580,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-primes-v1/comparison/result.json",
           "scope": "The unchanged native demo rejects sys_cache_line_width at line 9."
+        },
+        {
+          "target": "native-primes-unreported-cache-line-prototype",
+          "result": "pass",
+          "evidence": "build/i386-demo-primes-v1/no-cache-report-checkpoint.json",
+          "scope": "The complete demo works with a fixture-local width of zero. The public processor cache value is still absent."
         }
       ]
     },
