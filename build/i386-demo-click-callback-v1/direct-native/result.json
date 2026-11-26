@@ -1,0 +1,30 @@
+{
+  "result": "pass",
+  "sweep": {
+    "pcm_milliseconds": 211,
+    "active_windows_hz": [
+      500,
+      500,
+      550,
+      650,
+      600,
+      700,
+      700,
+      800,
+      800,
+      850
+    ]
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 20,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "input_disk_sha256": "457174e03bf6fc9976dbdd65936005af26f07c81a736ac60e3cd906f5b9a860a",
+  "audio_sha256": "b34fe43bf3a1683ec7507d19508abb3c3924383fd8367d0bdac9e774b55b34cf",
+  "scope": "After keyboard completion of the popups in the unchanged demo, directly call MyLeftCB1 and then evaluate fresh arithmetic."
+}

@@ -548,6 +548,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   highlights on selection, with no recorded playback and a blank command
   submitted by the following arithmetic probe. See the
   [mouse callback comparison](build/i386-demo-click-callback-v1/link-observed/qualification.json).
+  A [direct native call](build/i386-demo-click-callback-v1/direct-native/result.json)
+  to the demo's unchanged `MyLeftCB1` produces a 211 ms rising sweep
+  and restores the prompt, isolating the remaining gap to activation
+  from the console document.
 
 
 ### Plan decisions (2026-11-24)

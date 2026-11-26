@@ -14,6 +14,14 @@
       {
         "removed": "build/i386-demo-click-callback-v1/countdown-observed/working.img",
         "allocated_bytes": 67112960
+      },
+      {
+        "removed": "build/i386-demo-click-callback-v1/direct-native/working.img",
+        "allocated_bytes": 67108864
+      },
+      {
+        "removed": "build/i386-demo-click-callback-v1/link-observed/working.img",
+        "allocated_bytes": 67108864
       }
     ]
   },
@@ -1537,5 +1545,5 @@
       ]
     ]
   },
-  "total_allocated_bytes": 480894976
+  "total_allocated_bytes": 615112704
 }
