@@ -435,7 +435,9 @@ U0 AnimateTask(CTask *parent_task)
       }
     }
 
-    if (game_t_end) {
+    //The clock can return the same tick twice. Do not advance collisions
+    //or consume a foul cooldown until simulation time advances.
+    if (game_t_end && dt>0.0) {
       MemSet(&nearest_ball,0,sizeof(nearest_ball));
       for (i=0;i<OBJS_NUM;i++) {
 	o=&objs[i];

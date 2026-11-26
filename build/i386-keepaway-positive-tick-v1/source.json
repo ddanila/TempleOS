@@ -1,0 +1,9 @@
+{
+  "path": "/Apps/KeepAway/KeepAway.HC",
+  "source_sha256": "cbf685fa3e2ee9ac9ec915f816cfa9e63eaa9a7736c9f14cfb0f349ab3985312",
+  "candidate_sha256": "68e3f6ba815a565a934cd1010a8974792228603e7aab511e0f456748e3297734",
+  "tested": [
+    "foul",
+    "shot"
+  ]
+}

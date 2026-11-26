@@ -2736,3 +2736,12 @@ cooldown prevented the penalty. The source of the staged timestamp
 difference is still under investigation.
 See the [original predicate](../build/i386-keepaway-foul-conditions-v1/original-predicate.txt)
 and [native predicate](../build/i386-keepaway-foul-conditions-v1/native-predicate.txt).
+
+The native clock can return the same tick twice. Such a frame used
+to enter collision handling and consume the foul cooldown before it
+could score. KeepAway now advances physics only when elapsed time is
+positive. The uninstrumented game awarded the original 0–1 foul with
+the live-pointer fixture, and the Space shot regression passed on
+the same image. See the
+[foul receipt](../build/i386-keepaway-positive-tick-v1/foul/result.json)
+and [Space receipt](../build/i386-keepaway-positive-tick-v1/shot/result.json).
