@@ -2720,3 +2720,10 @@ penalty, while native never reported it in the test window. The foul
 workflow remains open. See the
 [regulation comparison](../build/i386-keepaway-clock-v1/comparison.json)
 and [foul comparison](../build/i386-keepaway-foul-v3/comparison.json).
+
+The unchanged NumBible demo exhausted the native 64 MiB guest heap
+on an 80-byte allocation before saving the numbered output. An
+independent host check showed that prefixing the bundled Bible's
+plain lines reproduces all 4,920,719 original output bytes. This gives
+an exact oracle for a lower-memory implementation.
+See the [native baseline receipt](../build/i386-demo-numbible-v1/native/result.json).

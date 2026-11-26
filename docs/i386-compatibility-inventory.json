@@ -16089,6 +16089,12 @@
           "result": "pass",
           "evidence": "build/i386-demo-numbible-v1/original-receipt.json",
           "scope": "Original fixture verified all 100,117 sequential lines and 4,920,719 bytes."
+        },
+        {
+          "target": "native-numbible-full-document",
+          "result": "fail",
+          "evidence": "build/i386-demo-numbible-v1/native/result.json",
+          "scope": "64 MiB full-content desktop exhausts the public heap before producing the numbered document."
         }
       ]
     },
