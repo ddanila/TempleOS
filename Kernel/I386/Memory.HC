@@ -181,26 +181,36 @@ CMemBlk **I386MemPoolFreeHead(CI386PublicPool *pool,I64 index)
 Bool I386MemPoolRemove(CI386PublicPool *pool,CI386PoolRegion *region)
 {//Return only a wholly unused region. Caller releases its record/backing storage.
   U32 flags=I386IrqSave;
-  CI386PoolRegion *other;
+  CI386PoolRegion *other,*owner;
   CMemBlk *block,**link;
   I64 i,total=0,remaining;
+  U64 base,limit,address;
   Bool found=FALSE,result=FALSE;
   if(!I386MemPoolValid(pool) || pool->locked_flags || !region) goto done;
   for(other=pool->regions;other;other=other->next) if(other==region) found=TRUE;
   if(!found || region->used) goto done;
   //Preflight every list before mutation; no dangling free-list pointer may remain.
+  base=(region->base+0)(U64);limit=base+region->size;
   remaining=pool->size/512;
   for(i=0;i<1+MEM_FREE_PAG_HASH_SIZE+64-MEM_PAG_BITS;i++)
     for(block=*I386MemPoolFreeHead(pool,i);block;block=block->next) {
-      if(!remaining-- || !I386MemBlockValid(pool,block,MBS_UNUSED_SIGNATURE_VAL)) goto done;
-      if(I386MemBlockRegion(pool,block)==region) total+=(block->pags+0)(U64)*512;
+      if(!remaining-- || !(owner=I386MemBlockRegion(pool,block)) ||
+          block->mb_signature!=MBS_UNUSED_SIGNATURE_VAL || !block->pags) goto done;
+      address=(block+0)(U64);
+      if(address+(block->pags+0)(U64)*512>(owner->base+0)(U64)+owner->size) goto done;
+      if(base<=address && address<limit) {
+        if(owner!=region) goto done;
+        total+=(block->pags+0)(U64)*512;
+      }
     }
   if(total!=region->size) goto done;
   pool->locked_flags=1;
   for(i=0;i<1+MEM_FREE_PAG_HASH_SIZE+64-MEM_PAG_BITS;i++) {
     link=I386MemPoolFreeHead(pool,i);
     while(block=*link) {
-      if(I386MemBlockRegion(pool,block)==region) *link=block->next;
+      //Preflight verified each block's owner and address before mutation.
+      address=(block+0)(U64);
+      if(base<=address && address<limit) *link=block->next;
       else link=&block->next;
     }
   }

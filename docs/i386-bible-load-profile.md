@@ -792,3 +792,18 @@ recorded 545 of 548 samples in `I386MemBlockRegion`. Of those, 544
 were in calls from pool removal while the compiler released parser
 storage. The arithmetic command had not returned when sampling ended.
 This identifies the relevant removal path for the post-lookup delay.
+
+## Reuse the validated owner during pool removal
+
+Pool removal now resolves each free block's owner once during preflight,
+checks the header and extent, and unlinks validated blocks by address.
+The public heap test passed all three pool-region, backing and lifetime
+cycles. Both bootstrap builds and the full-content 386 cross-build passed.
+
+In a 64 MiB KVM run, the full Bible contract returned and the next
+arithmetic command completed 83.4 seconds after sampling started. The
+previous post-lookup profile was still inside pool removal when its
+120-second window ended. The remaining ownership lookup still accounted
+for 369 of 381 samples on the new build.
+See the [public heap result](../build/i386-heap-pool-remove-v1/public-heap/result.json)
+and [post-lookup profile](../build/i386-heap-pool-remove-v1/post-bible-profile/result.json).
