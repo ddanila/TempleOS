@@ -16080,7 +16080,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Generate the full line-numbered DolDoc from the bundled King James Bible and save it in Home.",
       "oracle": "Compare every logical output byte including sequential prefixes and final blank lines.",
       "tests": [
@@ -16095,6 +16095,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-numbible-v1/native/result.json",
           "scope": "64 MiB full-content desktop exhausts the public heap before producing the numbered document."
+        },
+        {
+          "target": "native-numbible-numbered-plain-text",
+          "result": "pass",
+          "evidence": "build/i386-demo-numbible-plain-v1/comparison.json",
+          "scope": "Exact 4,920,719-byte original output, all 100,117 line prefixes, and prompt recovery at 64 MiB."
         }
       ]
     },

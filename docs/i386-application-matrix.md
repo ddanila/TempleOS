@@ -2745,3 +2745,9 @@ the live-pointer fixture, and the Space shot regression passed on
 the same image. See the
 [foul receipt](../build/i386-keepaway-positive-tick-v1/foul/result.json)
 and [Space receipt](../build/i386-keepaway-positive-tick-v1/shot/result.json).
+
+NumBible now numbers plain printable LF-delimited input directly and
+keeps the original DolDoc path for other input. At 64 MiB, its saved
+file matched all 4,920,719 original bytes and all 100,117 numbered
+lines. The native prompt rendered 42 after the save. See the
+[byte comparison](../build/i386-demo-numbible-plain-v1/comparison.json).

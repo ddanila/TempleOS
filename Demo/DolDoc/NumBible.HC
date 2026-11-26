@@ -1,7 +1,7 @@
 //  This makes a new Bible file
 //with line numbers.
 
-U0 NumBible()
+U0 NumBibleDocument()
 {
   CDoc *doc_in=DocRead("::/Misc/Bible.TXT.Z",DOCF_PLAIN_TEXT_TABS),
 	*doc_out=DocNew("~/DemoNumBible.DD.Z");
@@ -24,6 +24,63 @@ U0 NumBible()
   DocWrite(doc_out);
   DocDel(doc_out);
   DocDel(doc_in);
+}
+
+Bool NumBiblePlain(U8 *input,I64 size)
+{//Number plain LF-delimited text without building two large DolDoc trees.
+  I64 i,start=0,row=1,width=5,next_width=100000,extra=0,offset=0,length;
+  U8 *output;
+  if (!size || input[size-1]!='\n')
+    return FALSE;
+  for (i=0;i<size;i++)
+    if (input[i]=='\n') {
+      if (row==next_width) {
+	width++;
+	next_width*=10;
+      }
+      extra+=width;
+      if (i>start)
+	extra++;
+      start=i+1;
+      row++;
+    } else if (input[i]<' ' || input[i]>'~' || input[i]==0x24)
+      return FALSE;
+
+  output=MAlloc(size+extra+1);
+  start=0;
+  row=1;
+  for (i=0;i<size;i++)
+    if (input[i]=='\n') {
+      StrPrint(output+offset,"%05d",row);
+      row++;
+      offset+=StrLen(output+offset);
+      length=i-start;
+      if (length) {
+	output[offset]=' ';
+	offset++;
+	MemCpy(output+offset,input+start,length);
+	offset+=length;
+      }
+      output[offset]='\n';
+      offset++;
+      start=i+1;
+    }
+  FileWrite("~/DemoNumBible.DD.Z",output,offset);
+  Free(output);
+  return TRUE;
+}
+
+U0 NumBible()
+{
+  I64 size;
+  U8 *input=FileRead("::/Misc/Bible.TXT.Z",&size);
+  Bool numbered=FALSE;
+  if (input) {
+    numbered=NumBiblePlain(input,size);
+    Free(input);
+  }
+  if (!numbered)
+    NumBibleDocument;
 }
 
 NumBible;

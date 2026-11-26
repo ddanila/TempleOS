@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "input_sha256": "5d43260b17ca8238614a59460b66c3245f74819e4d959ecb8d7b47862802c07e",
+  "arithmetic": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "output_bytes": 4920719,
+  "output_sha256": "741e3e8b00f3b7b7ed98d88986161efc72eea74c92ee5e37b770564bc52ab905",
+  "source_sha256": "4721c5e0c00d018c2581913cb51d1d720b7947da960763f0a9d40feb343bb513",
+  "numbered_lines": 100117,
+  "ram_mib": 64,
+  "candidate_image_sha256": "5d43260b17ca8238614a59460b66c3245f74819e4d959ecb8d7b47862802c07e",
+  "original_receipt": "build/i386-demo-numbible-v1/original-receipt.json"
+}
