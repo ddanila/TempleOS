@@ -18022,10 +18022,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged demo, click the two slider tracks at the tested positions with the physical pointer, then press Space.",
+      "oracle": "VGA captures show both initial knob positions and an independent change after each click. Both guests print Left: 8  Right: 5, and the native prompt evaluates fresh arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-physical-slider-controls",
+          "result": "pass",
+          "evidence": "build/i386-demo-slider-v1/comparison/qualification.json",
+          "scope": "The original and i386 guests draw both knobs, update them independently on physical left clicks, and report the same two values."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Speedline.HC",

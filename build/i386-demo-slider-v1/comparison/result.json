@@ -1,0 +1,55 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-insetip-v1/cross-exports/kernel.img": "7c73ab428b78811f224b1aeacf5b76cd94cc0954441b71bf839c524a76790828",
+    "/home/ddanila/fun/TempleOS/Demo/Graphics/Slider.HC": "30f61bfe583ec1255c020d7ced911f135c322b1244f0b98ee4b5917e9318ce10"
+  },
+  "inputs_unchanged": true,
+  "working_disk_sha256": "7c73ab428b78811f224b1aeacf5b76cd94cc0954441b71bf839c524a76790828",
+  "runs": {
+    "original": {
+      "result": "pass",
+      "origin": [
+        133,
+        209
+      ],
+      "clicks": [
+        [
+          155,
+          233
+        ],
+        [
+          172,
+          241
+        ]
+      ]
+    },
+    "native": {
+      "result": "pass",
+      "origin": [
+        289,
+        205
+      ],
+      "clicks": [
+        [
+          310,
+          230
+        ],
+        [
+          328,
+          237
+        ]
+      ],
+      "fresh_arithmetic": {
+        "column": 0,
+        "row": 17,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

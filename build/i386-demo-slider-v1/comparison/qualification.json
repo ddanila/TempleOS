@@ -1,0 +1,74 @@
+{
+  "result": "pass",
+  "capture_receipt_sha256": "9118a39a6a84971d7601b6f46a2ce49036b87c2a1081758a83389d518cd0eb97",
+  "observations": {
+    "original": {
+      "knob_centers": [
+        [
+          49.0,
+          49.0
+        ],
+        [
+          24.0,
+          49.0
+        ],
+        [
+          24.0,
+          32.0
+        ]
+      ],
+      "output_locations": [
+        [
+          1,
+          23
+        ]
+      ],
+      "captures": {
+        "slider": "4b0846beacbcdfd93f4c757c92079b4b5cec59cd3a05f12726933e443ff235bd",
+        "click-1": "32060eb6b75da6463c57de241549d74d158aef281d4781b274a8a2a966a3a6c4",
+        "click-2": "f74a1e6c9becae028fe2aae15e750a34de8ab8f0197ffa87e4bd705688eab1fc",
+        "output": "a89257e018dc4ea22b06f166663199c1ffb59441fa46c3f0e47d54bcaba7f0cd"
+      }
+    },
+    "native": {
+      "knob_centers": [
+        [
+          49.0,
+          49.0
+        ],
+        [
+          25.0,
+          49.0
+        ],
+        [
+          25.0,
+          32.0
+        ]
+      ],
+      "output_locations": [
+        [
+          0,
+          14
+        ]
+      ],
+      "captures": {
+        "slider": "5121abef5f76c7bb7a175b750e206454447336c02ca5c1cf9f5719aa2a9a7520",
+        "click-1": "0f67017a6699e8f5544b70bd2bf11976945b1d876fe7d6c09c58154c4150f750",
+        "click-2": "68cfe051af881db23706a7cbf282335f4d6d4383e136aa680afa59af19086da2",
+        "output": "1fdda44b650209e79158c2b45f416c94b83199a167d6b573b22cd19d383288a1"
+      },
+      "fresh_arithmetic": {
+        "match": {
+          "column": 0,
+          "row": 17,
+          "foreground": [
+            0,
+            168,
+            0
+          ]
+        },
+        "sha256": "325f19a3862276581b89d2ca6caa666c4eb75fae0b60fa87ec1d54f8f60da53c"
+      }
+    }
+  }
+}
