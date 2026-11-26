@@ -1047,3 +1047,10 @@ seconds in this configured test. Generation two passed the same handoff
 and reaping checks in 223.827 seconds and produced a byte-identical
 geometry capture. See the `gen1-desktop64` and `gen2-desktop64` receipts in
 `build/i386-demo-insetip-v1/generations128/`.
+
+The first self-hosted image passed the 8 MiB managed-welcome resource
+profile. Twenty document development cycles peaked at 37,840 live bytes,
+7,824 bytes above baseline, with 55,808 bytes reserved. All 11 VGA
+checkpoints matched and the source disk hash was unchanged. The second
+generation was running the same fixture. See
+`build/i386-demo-insetip-v1/generations128/gen1-resource8/`.
