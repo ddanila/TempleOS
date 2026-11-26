@@ -17577,9 +17577,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Seed with 1, launch unchanged LowPassFilter, and press Space after each of its five traces.",
+      "oracle": "Verify the blue step, continuous cyan and discrete black responses, randomized red and green responses, and trace removal on the final Space.",
+      "tests": [
+        {
+          "target": "original-low-pass-five-traces",
+          "result": "pass",
+          "evidence": "build/i386-demo-low-pass-v1/original-reference/result.json",
+          "scope": "The original guest draws all five traces and clears them after the final Space."
+        },
+        {
+          "target": "i386-low-pass-before-public-binding",
+          "result": "fail",
+          "evidence": "build/i386-demo-low-pass-v1/native-baseline.json",
+          "scope": "The End-key image rejects the call to LowPass1 at line 55, before any trace is drawn."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/MathAudioDemo.HC",

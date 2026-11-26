@@ -1,0 +1,10 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-grid-v1/cross/kernel.img": "54e63626162c292f95b5bef812ac0234578925454bc0c56f006273dedc865bf1"
+  },
+  "source_sha256": "73607d12dc38957f8396f3d77eab576d26502670c75d1f6506ef0505857b7422",
+  "inputs_unchanged": true,
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 000000000159AEC8 00000000536B7354\nINPUT LINE Seed(1);ExeFile(\"C:/Demo/Graphics/LowPassFilter.HC\");\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token LowPass1 file C:/Demo/Graphics/LowPassFilter.HC line 55\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND OK\n"
+}

@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 602 |
-| Linked to tests / with reference workflow and oracle | 213 / 142 |
+| Linked to tests / with reference workflow and oracle | 214 / 143 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 48 of 224 |
 
@@ -376,6 +376,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   [full-content checkpoint](build/i386-demo-grid-v1/full-content-checkpoint.json).
   See the [Grid qualification](build/i386-demo-grid-v1/qualification.json)
   and [prior caret comparison](build/i386-demo-grid-v1/caret-baseline.json).
+
+- LowPassFilter draws five keyboard-stepped traces on the original
+  guest. The i386 image from `d3bd8963` rejects the call to `LowPass1`
+  on line 55. See the
+  [original traces](build/i386-demo-low-pass-v1/original-reference/result.json)
+  and [native rejection](build/i386-demo-low-pass-v1/native-baseline.json).
 
 ### Plan decisions (2026-11-24)
 
