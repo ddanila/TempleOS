@@ -1176,6 +1176,14 @@ lookup and read workflow.
 [Delivered-source audit](../build/i386-parser-take-known-v1/committed-source-audit.json) ·
 [Full content](../build/i386-parser-take-known-v1/full-content64/result.json)
 
+The parser-adoption image reached the 8 MiB TCG prompt in 275.026
+seconds with all nine VGA checkpoints exact. The preceding assembler
+image measured 278.656 seconds. The retained rebuild was active
+during both runs, and the profiling guest also overlapped part of
+each run. The difference is a single observation and both runs
+exceeded the 60-second gate.
+[Parser-adoption TCG timing](../build/i386-parser-take-known-v1/interactive8-tcg/result.json)
+
 The paused TCG profile of the preceding assembler image collected 2,916
 samples. The three heap walks accounted for 709 of 976 root-header
 samples and 1,179 of 1,641 startup-source samples. The control validation
