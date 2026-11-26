@@ -497,6 +497,11 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   [desktop baseline](build/i386-demo-f64-files-v1/generations128/gen1-baseline64/result.json),
   [content check](build/i386-demo-f64-files-v1/generations128/gen1-content64/result.json),
   and [configured handoff](build/i386-demo-f64-files-v1/generations128/gen1-desktop64/result.json).
+  At 128 MiB this installed generation rebuilt all nine retained
+  providers for generation two, with one build-provider load. Every
+  provider matches the corresponding installed generation-one module
+  byte for byte. See the
+  [generation-two retained rebuild](build/i386-demo-f64-files-v1/generations128/gen2-retained-build/result.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the
