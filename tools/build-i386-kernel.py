@@ -723,7 +723,7 @@ def audit(exports, out, guest_compiler_template=False):
             for line in lines[:last+1]:
                 parts = line.split()
                 locked_bit = parts[2:] in (["lock", op, "[eax],esi"] for op in ("bts", "btr", "btc"))
-                if parts[2] not in allowed and not locked_bit:
+                if parts[2] not in allowed and not locked_bit and parts[2:] != ['rep', 'insw']:
                     raise ValueError(f'Unexpected instruction: {line}')
             listing.append(f'; {name} offset {start:X}\n'+'\n'.join(lines[:last+1]))
         if resident: base+=size

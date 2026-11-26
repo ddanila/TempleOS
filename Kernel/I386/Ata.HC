@@ -1,5 +1,15 @@
 #include "/Kernel/I386/Ports.HH"
 #include "/Kernel/I386/Ata.HH"
+U0 I386AtaReadWords(U16 io,U16 *words)
+{//The caller holds the data phase and has already checked DRQ.
+  asm {
+    MOV EDX,U32 &io[EBP]
+    MOV EDI,U32 &words[EBP]
+    MOV ECX,256
+    CLD
+    REP_INSW
+  }
+}
 U0 I386AtaPause(U16 control)
 {
   I64 i;
@@ -84,7 +94,6 @@ Bool I386AtaDecode(CI386Ata *disk,U16 *words,I64 channel,I64 drive)
 public Bool I386AtaIdentifyPolled(CI386Ata *disk,I64 channel,I64 drive,I64 polls,CI386AtaPoll *poll)
 {//Boot-owned compatibility ports, IF clear. Leave device IRQs disabled.
   U16 words[256],io=0x1F0,control=0x3F6;
-  I64 i;
   if (!disk || !disk->public_device || channel<0 || channel>1 || drive<0 || drive>1 || polls<1 || polls>100000)
     return FALSE;
   if (channel) { io=0x170; control=0x376; }
@@ -95,7 +104,7 @@ public Bool I386AtaIdentifyPolled(CI386Ata *disk,I64 channel,I64 drive,I64 polls
   OutU8(io+2,0); OutU8(io+3,0); OutU8(io+4,0); OutU8(io+5,0);
   OutU8(io+7,0xEC); I386AtaPause(control);
   if (!I386AtaWait(io,8,8,TRUE,polls,poll)) return FALSE;
-  for (i=0;i<256;i++) words[i]=InU16(io);
+  I386AtaReadWords(io,words);
   I386AtaPause(control);
   if (!I386AtaWait(io,8,0,TRUE,polls,poll)) return FALSE;
   return I386AtaDecode(disk,words,channel,drive);
@@ -140,7 +149,7 @@ public Bool I386AtaTransfer(CI386Ata *disk,I64 lba,U8 *buffer,I64 polls,Bool wri
   if (write) {
     for (i=0;i<256;i++) OutU16(io,words[i]);
   } else {
-    for (i=0;i<256;i++) words[i]=InU16(io);
+    I386AtaReadWords(io,words);
   }
   I386AtaPause(disk->control);
   if (!I386AtaWait(io,8,0,TRUE,polls,poll)) return FALSE;

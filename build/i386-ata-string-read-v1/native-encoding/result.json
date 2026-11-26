@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-ata-string-read-v1/cross-audited/kernel.img": "a0259ebe2b8a3138f26620df29d7fee608e24f5a33c3288064ca30e18a88faf3",
+    "Kernel/I386/Ata.HC": "c21e4e39924361ff8077d22a08810413ee8f35598f9f8efbed0ac5d373090e6c"
+  },
+  "encoding": "f3666d",
+  "fixture_sha256": "f8647b1f7d9d63122e13930ff5b5b8719f6d48122db10da36c12a1c32c343948",
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 11,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

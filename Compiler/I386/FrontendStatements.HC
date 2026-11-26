@@ -373,6 +373,7 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
       else if(!StrCmp(cc->cur_str,"CALL")) opcode=20;
       else if(!StrCmp(cc->cur_str,"DIV")) opcode=21;
       else if(!StrCmp(cc->cur_str,"MUL")) opcode=22;
+      else if(!StrCmp(cc->cur_str,"REP_INSW")) opcode=23;
       else if(!StrCmp(cc->cur_str,"LGDT")) opcode=7;
       else if(!StrCmp(cc->cur_str,"SGDT")) opcode=8;
       else if(!StrCmp(cc->cur_str,"LIDT")) opcode=9;
@@ -412,6 +413,11 @@ CAOT *I386FrontendJoin(U8 *context,CCmpCtrl *cc,I64 flags)
         else if(op==8) I386FrontendAsmModRM(state,bytes,&count,0,&dst);
         else if(op==9) I386FrontendAsmModRM(state,bytes,&count,3,&dst);
         else I386FrontendAsmModRM(state,bytes,&count,1,&dst);
+      } else if(opcode==23) {
+        I386FrontendAsmByte(state,bytes,&count,0xF3);
+        I386FrontendAsmByte(state,bytes,&count,0x66);
+        I386FrontendAsmByte(state,bytes,&count,0x6D);
+        I386FrontendLex(state,cc);
       } else if(opcode==21 || opcode==22) {
         I386FrontendLex(state,cc);
         I386FrontendAsmOperand(state,cc,&dst);

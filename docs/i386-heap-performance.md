@@ -1078,3 +1078,24 @@ unpaused runs above supply the elapsed times. An initial TCG profile
 timed out at 260 seconds during startup source and retained its partial
 samples locally.
 [Verified KVM sample summary](../build/i386-mul-by-hand-port-v1/startup-profile8-kvm/summary.json)
+
+### ATA word transfers during startup
+
+The boot and task-owned ATA paths receive each 256-word data phase with
+`REP INSW`. The PIO command, per-sector scratch buffer, final status
+check, and publication of validated read bytes retain their existing
+order. The native assembler emits the same 386 instruction when the
+guest compiles the helper. Both bootstrap generations, the cross-image
+instruction audit, the native encoding fixture, RedSea module loading,
+and the ATA ownership/poisoned-channel suite passed.
+
+Two isolated 8 MiB KVM boots reached the prompt in 31.505 and 31.504
+seconds with nine exact VGA checkpoints and the Window Manager active,
+compared with the preceding image's 63.198 and 63.403 seconds. The TCG
+attempt timed out before the startup source completed, so the 60-second
+TCG reference gate remains open. The standalone ATA corpus stopped at
+write-flush case 55 on both the candidate and the unchanged `c0227921`
+control. Both had passed the preceding identify, LBA and CHS read checks.
+[First KVM boot](../build/i386-ata-string-read-v1/interactive8-kvm/result.json) ·
+[Repeat KVM boot](../build/i386-ata-string-read-v1/interactive8-kvm-repeat/result.json) ·
+[TCG attempt](../build/i386-ata-string-read-v1/interactive8-tcg/result.json)

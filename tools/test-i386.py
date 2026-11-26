@@ -690,7 +690,7 @@ def main():
                 parts = line.split()
                 mnemonic = parts[2]
                 locked_bit = parts[2:] in (["lock", op, "[eax],esi"] for op in ("bts", "btr", "btc"))
-                if mnemonic not in allowed and not locked_bit:
+                if mnemonic not in allowed and not locked_bit and parts[2:] != ['rep', 'insw']:
                     raise ValueError(f'Unexpected instruction: {line}')
                 audited_lines.append(line)
             if functions:

@@ -1,0 +1,30 @@
+Built /home/ddanila/fun/TempleOS/build/i386-ata-string-read-v1/ata-isolated/compiler.iso (45,488,128 bytes)
+START native ATA
+LINKED 0
+RANGE 0 7AF8
+RANGE 0 3F10
+RANGE 0 BED0
+RANGE 0 B740
+RANGE 0 95E8
+RANGE 0 59A0
+RANGE 0 8DB0
+RANGE 0 74B0
+RANGE 0 2B08
+RANGE 0 BF40
+RANGE 0 8
+RANGE 0 7400
+RANGE 0 B620
+RANGE 0 7788
+RANGE 0 73D0
+RANGE 0 B6B0
+EXPORT expressions.bin 6DB8F828 BFC0
+DONE native ATA
+Traceback (most recent call last):
+  File "/home/ddanila/fun/TempleOS/tools/test-i386.py", line 1342, in <module>
+    main()
+    ~~~~^^
+  File "/home/ddanila/fun/TempleOS/tools/test-i386.py", line 1068, in main
+    raise RuntimeError(f'Protected-mode runner failed: {log.read_text()}')
+RuntimeError: Protected-mode runner failed: FAIL i386 functions
+00:37
+
