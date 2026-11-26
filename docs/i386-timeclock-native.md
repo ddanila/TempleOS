@@ -171,3 +171,13 @@ the same filename with the captured record made the next read return all 34
 bytes. This reproduces the original failure without the report runner and
 rules out record cleanup as the trigger. See the
 [guest trace](../build/i386-timeclock-write-sequence-v1/guest-results.txt).
+
+A first-write probe isolated a case outside TimeClock. A direct write
+to the app's exact filename succeeded when `FileWrite` created its
+missing parent directory. Plain and compressed writes with freshly
+created parents also read back exactly. After an explicit `DirMk`,
+the first compressed file under that directory was present in the
+image with the expected archive but the immediate guest read failed.
+TimeClock's installer also creates its directory with an explicit
+`DirMk`. See the
+[first-write trace](../build/i386-timeclock-first-write-v1/guest-results.txt).

@@ -1,0 +1,7 @@
+~/TimeClock/TimeFile.DATA.Z READ exact
+~/TimeClock/TimeFile.DATA.Z READ exact
+C:/Fresh/Plain/First.DATA READ exact
+C:/Fresh/Plain/First.DATA READ exact
+C:/Fresh/Packed/First.DATA.Z READ exact
+C:/Fresh/Packed/First.DATA.Z READ exact
+C:/Explicit/First.DATA.Z READ missing
