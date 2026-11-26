@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "source_revision": "d3bd896384aed93a1be90cdccaefe21df9ca7ef8",
+  "disk_sha256": "54e63626162c292f95b5bef812ac0234578925454bc0c56f006273dedc865bf1",
+  "startup_seconds": 212.65594218601473,
+  "original_geometry_values": 83,
+  "once_selected": [
+    "HOME"
+  ],
+  "bootstrap_retired": true,
+  "result_sha256": "50e010be50785622d69bd10850337ff8b6790e3971002cf80de7c4c572b36ef8",
+  "physical_sha256": "9382663152494a0acd1fbea144fac1ac78ff2ec2a46c776a3fc90babad4e47d8"
+}

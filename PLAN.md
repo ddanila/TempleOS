@@ -292,11 +292,13 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   stopped during CompilerRuntime. An export audit passed on the saved
   ConsoleRuntime. The resumed build completed the other eight providers.
   The saved disk passed an all-provider export audit and a 1,572-file
-  source audit. The two-generation run installed all nine providers into
-  generation one from the frozen checkout and started the flat-kernel build.
+  source audit. Generation one installed all nine providers, built its
+  flat kernel at 128 MiB, cold-booted at 8 MiB, and passed the installed
+  module and source audits. Generation two is rebuilding retained providers.
   See the
   [retained-build checkpoint](build/i386-sprite-plot3d-production-v1/retained128-checkpoint.json),
   [generation-one install](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-install/result.json),
+  [generation-one checkpoint](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-checkpoint.json),
   [recovered ConsoleRuntime receipt](build/i386-sprite-plot3d-production-v1/retained128-console-recovery.json),
   [production cross-build](build/i386-sprite-plot3d-production-v1/cross-checkpoint.json)
   and [full-content checkpoint](build/i386-sprite-plot3d-production-v1/full-content-checkpoint.json).
@@ -374,6 +376,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   The frozen image from `d3bd8963` also passed the 686-file content check
   and bounded guest Bible read. See the
   [full-content checkpoint](build/i386-demo-grid-v1/full-content-checkpoint.json).
+  Its configured HomeSys boot selected Home Once, matched 83 desktop geometry
+  values, and freed the bootstrap task allocation after a 212.66-second
+  startup. See the
+  [configured desktop checkpoint](build/i386-demo-grid-v1/configured-desktop-checkpoint.json).
   See the [Grid qualification](build/i386-demo-grid-v1/qualification.json)
   and [prior caret comparison](build/i386-demo-grid-v1/caret-baseline.json).
 

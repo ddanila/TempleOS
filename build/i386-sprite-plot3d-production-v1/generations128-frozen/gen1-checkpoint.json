@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "source_revision": "c40647513cbe0732de62fbf14733c6c86bdfe4e6",
+  "disk_sha256": "650e519a076620077108344bd0bc8738fcec21c04b319c543dac5637083ae6ac",
+  "modules": 16,
+  "delivered_source_files": 1572,
+  "build_ram_mib": 128,
+  "boot_ram_mib": 8,
+  "evidence_sha256": {
+    "gen1-install/result.json": "e4b1481c269c2bdafd2602819a52409139f8ae6dcf6e9c6f2239ab161d61d237",
+    "gen1-selfhost/result.json": "fd442aa77b945e825d87cb33de620191e7f0f415169e134313f425a355f2f444",
+    "gen1-audit/result.json": "2eb8646dd997034cc10ee1aa809f4ba58925c05b25a503dc752137d3fd9b8f48",
+    "gen1-source-audit/result.json": "9bdbd53b6f5078ea4c837f5785986fe9dc1999714b428e47a3de8eb1185f8d15"
+  }
+}
