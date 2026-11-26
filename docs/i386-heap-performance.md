@@ -1169,6 +1169,15 @@ nine VGA checkpoints.
 [Task-symbol ownership](../build/i386-parser-take-known-v1/task-symbols/result.json) ·
 [8 MiB diagnostics](../build/i386-parser-take-known-v1/diagnostic8-kvm/result.json)
 
+The paused TCG profile of the preceding assembler image collected 2,916
+samples. The three heap walks accounted for 709 of 976 root-header
+samples and 1,179 of 1,641 startup-source samples. The control validation
+path through `I386CmpCodeOwner` accounted for 159 and 395 samples,
+respectively. These are sampling counts. The unpaused run records the
+startup time separately.
+[TCG profile summary](../build/i386-optimization-port-v1/startup-profile8-tcg/summary.json) ·
+[Unpaused startup receipt](../build/i386-optimization-port-v1/interactive8-tcg/result.json)
+
 The full image with the code-allocation change matched all 686 inventory
 files against the working tree and passed the bounded guest content
 workflow under KVM at 64 MiB. The volume audit covered 1,949 files and
