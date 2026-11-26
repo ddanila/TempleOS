@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "source_revision": "c9390c24a9540a04b225d0ac046b716e140561e4",
+  "image_sha256": "44318f80f55a1c959ab4e22d62747c1c11fb713f5fecc4b1016dfb42d8bb34ba",
+  "inventory_files": 686,
+  "delivered_source_files": 1565,
+  "accel": "kvm",
+  "inventory_sha256": "d480fb490e41c427bd5a3be19b8ffc25265e5ec344c60af2e9d4634711bd1e30",
+  "evidence_sha256": {
+    "committed-source.json": "3cd5b5070a52028335a60d358471574bef1707a1834d828bd0c7b8decbf7459f",
+    "full-content/result.json": "ef4889e0c718a8d0f2d30e4c3be9e0c1aa1f540d53b39829cd5355ed75991c60",
+    "address8/result.json": "8cdff1207043e878c6185c08288b1915ce6705145bddf00671ba7f9cd97ed72d"
+  },
+  "scope": "Committed source identity, frozen content and bounded Bible read at 64 MiB, and the public code-position regression at 8 MiB."
+}

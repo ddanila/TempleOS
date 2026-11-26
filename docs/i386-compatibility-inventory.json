@@ -17098,6 +17098,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-glblvars-v1/comparison/result.json",
           "scope": "The pinned original enters its compiler debugger on the first aggregate initializer at line 11. The boot fixture never completes, so this run provides no native comparison."
+        },
+        {
+          "target": "native-glblvars-prompt",
+          "result": "pass",
+          "evidence": "build/i386-demo-glblvars-native-v1/run/result.json",
+          "scope": "The unchanged demo displays all four global and static memory dumps and returns to arithmetic on i386. The pinned original reference remains unresolved."
         }
       ]
     },

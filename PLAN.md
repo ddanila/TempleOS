@@ -153,8 +153,11 @@ is complete and provides the foundation, but not desktop or application parity.
   and [generation-one checkpoint](build/i386-parenwarn-links-v2/void-native-generations128/gen1-checkpoint.json).
 - GlblVars entered the pinned original compiler debugger on the first
   aggregate initializer at line 11 from both Once.HC and the standard guest
-  prompt. See the [boot run receipt](build/i386-demo-glblvars-v1/comparison/result.json)
-  and [prompt debugger screenshot](build/i386-demo-glblvars-direct-v1/original/after-execute.png).
+  prompt. The unchanged source now completes on i386, displaying all four
+  initializer dumps and returning to fresh arithmetic. The original failure
+  leaves the comparison open. See the
+  [original debugger](build/i386-demo-glblvars-direct-v1/original/after-execute.png)
+  and [native output](build/i386-demo-glblvars-native-v1/run/guest/demo-output.png).
 - The batch runner can launch from the original prompt through the keyboard.
   NullCase matched all 31 DolDoc bytes through this launch path. TreeDemo
   produced 62 directory macros and 1,906 file links on the pinned original,
@@ -176,6 +179,9 @@ is complete and provides the foundation, but not desktop or application parity.
   and expansion, and all 26 decoded nodes match in kind, name and depth.
   The 64 MiB desktop baseline and both x86-64 bootstrap rebuilds passed.
   See the [round-trip receipt](build/i386-demo-serialize-tree-v2/qualification.json).
+  The same image passed the frozen 686-file check, the 1,565-file
+  committed-source audit and the 8 MiB code-position regression. See the
+  [image checkpoint](build/i386-demo-serialize-tree-v2/full-content-checkpoint.json).
 
 ### Plan decisions (2026-11-24)
 

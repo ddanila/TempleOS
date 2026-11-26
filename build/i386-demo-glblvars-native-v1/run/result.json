@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "image_sha256": "44318f80f55a1c959ab4e22d62747c1c11fb713f5fecc4b1016dfb42d8bb34ba",
+  "source_sha256": "70d2ef4e34378455ddf42dcf62a77093e3f415f8e73623cca0b3dd68ba8f2d21",
+  "fresh_result": {
+    "column": 0,
+    "row": 29,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}
