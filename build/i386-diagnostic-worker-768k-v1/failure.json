@@ -1,0 +1,22 @@
+{
+  "status": "fail",
+  "ram_mib": 8,
+  "worker_arena_bytes": 786432,
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-768k-v1/cross-fresh/kernel-diagnostics.img": "d48671de33c208c6f3eac7b3fbe9319765d1a3e14743ada210db831ab5e4c468",
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-768k-v1/cross-fresh/result.json": "ecd85013c2e5975db9ab4c2b2fbdbb0e46bf8970f4a734a49061cdf00984fa29",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-startup-memory.py": "cc4748a4118d5e498b26d490b719f79c92148a34dcd76d325f30744d859ec0de",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463"
+  },
+  "trace_sha256": "ff4dbd30743410ade934f27bf71062e7fb2a91d58235061de89bb8d417fe0a15",
+  "terminal_trace": [
+    "TICK 0000000000000032",
+    "STRING COPY PROBE 0000000000000001",
+    "PUBLIC ALLOC EXHAUSTED 0000000001000000 0000000000000028 0000000000002000 0000000000002000 0000000000002000",
+    "PUBLIC HASH TABLES OK",
+    "PUBLIC DEFINE LIST OK",
+    "PUBLIC ALLOC EXHAUSTED 000000000001FFB8 00000000000009E8 0000000000000A00 0000000000000A00 0000000000002000",
+    "UNHANDLED 0000000000000000 00006D654D74754F",
+    "FAIL native kernel"
+  ]
+}

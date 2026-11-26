@@ -881,3 +881,13 @@ an emitter allocation rejection in `C:/Adam/Gr/SpriteToCodeCore.HC`, so this
 smoke result leaves that startup source path and the 60-second budget open.
 The generation run proceeded to the first self-hosted rebuild. Receipts and
 the boot trace are in `build/i386-demo-insetip-v1/generations128/gen1-install/`.
+
+## 8 MiB diagnostic worker with a 768 KiB arena
+
+The smaller reservation let the worker start and reach the phase-one public
+memory probe. The probe's 131,000-byte zeroed allocation required a 0x1FFB8-byte
+backing request and raised an unhandled `OutMem` before the compiler probe
+provider was loaded. This profile still needs to reduce overlapping backing
+allocations. The experiment preserves the full probe and leaves the production
+reservation at 1 MiB. The patch and terminal receipt are in
+`build/i386-diagnostic-worker-768k-v1/`.
