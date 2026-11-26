@@ -1,0 +1,84 @@
+diff --git a/Kernel/I386/Memory.HC b/Kernel/I386/Memory.HC
+index 1a6f4236..b260e6a4 100644
+--- a/Kernel/I386/Memory.HC
++++ b/Kernel/I386/Memory.HC
+@@ -420,25 +420,32 @@ U0 I386MemFreeSpansMerge(CHeapCtrl *hc)
+       next=span->next; span->next=head; head=span; span=next;
+     }
+   }
+-  //Bottom-up linked-list merge sort bounds comparisons without stack storage.
+-  while(head) {
+-    span=head;head=0;tail=&head;merges=0;
+-    while(span) {
+-      merges++;left=span;left_count=0;
+-      while(left_count<width && span) { left_count++;span=span->next; }
+-      right=span;right_count=width;
+-      while(left_count || right_count && right) {
+-        if(!left_count) { node=right;right=right->next;right_count--; }
+-        else if(!right_count || !right || (left+0)(U64)<(right+0)(U64)) {
+-          node=left;left=left->next;left_count--;
+-        } else { node=right;right=right->next;right_count--; }
+-        *tail=node;tail=&node->next;
++  //A quiet heap often has only the already-sorted remainder from the last
++  //merge. Keep that ordering and go straight to the coalescing pass.
++  span=head;
++  while(span && (next=span->next) && (span+0)(U64)<(next+0)(U64))
++    span=next;
++  if(span && next) {
++    //Bottom-up linked-list merge sort bounds comparisons without stack storage.
++    while(head) {
++      span=head;head=0;tail=&head;merges=0;
++      while(span) {
++        merges++;left=span;left_count=0;
++        while(left_count<width && span) { left_count++;span=span->next; }
++        right=span;right_count=width;
++        while(left_count || right_count && right) {
++          if(!left_count) { node=right;right=right->next;right_count--; }
++          else if(!right_count || !right || (left+0)(U64)<(right+0)(U64)) {
++            node=left;left=left->next;left_count--;
++          } else { node=right;right=right->next;right_count--; }
++          *tail=node;tail=&node->next;
++        }
++        span=right;
+       }
+-      span=right;
++      *tail=0;
++      if(merges<=1)break;
++      width*=2;
+     }
+-    *tail=0;
+-    if(merges<=1)break;
+-    width*=2;
+   }
+   //One forward pass performs the same address-adjacent coalescing.
+   span=head;
+diff --git a/tests/guest/i386-heap/CacheTarget.HC b/tests/guest/i386-heap/CacheTarget.HC
+index b38b533b..06e711c3 100644
+--- a/tests/guest/i386-heap/CacheTarget.HC
++++ b/tests/guest/i386-heap/CacheTarget.HC
+@@ -38,20 +38,23 @@ I64 CacheMergeParity()
+ {
+   CHeapCtrl *a=&merge_a,*b=&merge_b;
+   CMemUnused *left,*right,*node;I64 round,i,slot,bucket,count,stride,size,spans;
+-  for(round=0;round<6;round++) {
++  for(round=0;round<8;round++) {
+     for(i=0;i<sizeof(CHeapCtrl);i++) { a(U8 *)[i]=0;b(U8 *)[i]=0; }
+     spans=128;if(round==5)spans=257;
+     for(i=0;i<spans;i++) {
+       if(round==0)slot=i;
+       else if(round==1)slot=127-i;
+       else if(round==5)slot=(i*73)%257;
++      //The inserts prepend spans. Cover both main-list orders without buckets.
++      else if(round==6)slot=127-i;
++      else if(round==7)slot=i;
+       else slot=(i*73+round*11)&127;
+       stride=32;size=32;
+       if(round>=4) { stride=64;if(!(slot&1))size=64; }
+       if(!(round==3 && slot%7==3)) for(bucket=0;bucket<2;bucket++) {
+         if(bucket)node=merge_arena_b+slot*stride;else node=merge_arena_a+slot*stride;
+         node->size=size;
+-        if(i&1) {
++        if(round<6 && i&1) {
+           if(bucket) { node->next=b->heap_hash[i&15];b->heap_hash[i&15]=node; }
+           else { node->next=a->heap_hash[i&15];a->heap_hash[i&15]=node; }
+         } else {

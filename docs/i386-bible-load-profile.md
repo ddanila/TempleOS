@@ -767,3 +767,21 @@ restored the task's document roles. A separate arithmetic command then
 completed after several minutes and displayed 42. This run used the page
 return trim change with the window manager active. Interactive link
 activation and editor input remain separate checks.
+
+## Ordered free-span experiment
+
+An experiment skipped the merge sort when the allocator's combined
+free-span list was already ordered. The expanded cache test compared
+ascending, descending and mixed layouts against the reference merge.
+The 16 MiB diagnostic passed both heap probes, 22 publication cases,
+28 program publication cases and nine console commands. The diagnostic
+used the standard managed-pointer expectation, which matches the pointer
+shown in the earlier initial-frame timeout.
+
+The full lookup profile recorded 171 of 546 samples in the merge routine,
+compared with 177 of 548 on the preceding candidate. Neither lookup
+finished during sampling. This run did not demonstrate a meaningful
+performance gain, so the production allocator keeps the existing sort.
+See the [experimental patch](../build/i386-heap-sorted-spans-v1/candidate.patch),
+[diagnostic result](../build/i386-heap-sorted-spans-v1/diagnostics/result.json)
+and [full lookup profile](../build/i386-heap-sorted-spans-v1/full-link-profile/result.json).
