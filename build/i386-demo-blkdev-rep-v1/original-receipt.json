@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "document_sha256": "af78f5affcdc6b42bf483df66775faeefb208877aeda7c9296a60654f4a3ec4e",
+  "fields_per_device": 22,
+  "devices": {
+    "B": {
+      "type": 1,
+      "block_size": 512,
+      "flags": 2,
+      "blocks": 262144
+    },
+    "T": {
+      "type": 5,
+      "block_size": 2048,
+      "flags": 39,
+      "blocks": 90251
+    }
+  }
+}

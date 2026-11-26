@@ -1,0 +1,82 @@
+{
+  "result": "pass",
+  "source_revision": "2c2cb4b1268baf1cbb6de47802e17530e6e1ba13",
+  "ram_mib": 64,
+  "accel": "kvm",
+  "generations": {
+    "gen1": {
+      "disk_sha256": "2acbaabaeefcbd9bb52ed8e718b041b99319bc8990732cac3c821a3bba54ff0c",
+      "result_sha256": "780d1e257b788da32e6ceeed6d14dd4652596fb76fc1df6ce76bc29f378feb83",
+      "configured_startup_seconds": 209.19906149600865,
+      "once_selected": [
+        "HOME"
+      ],
+      "original_geometry_values": 83,
+      "bootstrap_retired": true,
+      "fresh_result": {
+        "column": 1,
+        "row": 21,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      },
+      "physical": {
+        "result": "pass",
+        "task_record_count": 5,
+        "bootstrap_records": [],
+        "containing_free_block": {
+          "block": 22647256,
+          "span": 88432,
+          "requested": 0,
+          "tag": 1179792201
+        },
+        "memory_tasks_address": 18223640,
+        "kernel_heap_address": 1504512,
+        "heap_used": 19780176,
+        "heap_peak": 21720176,
+        "heap_allocations": 20107,
+        "scope": "Post-handoff record absence and free containing block; not total heap recovery"
+      },
+      "physical_report_sha256": "abf3e5c678fcbe8edf135c90e0054e9f90a6bd0fc3149ed8b6679d07d44ffe5b"
+    },
+    "gen2": {
+      "disk_sha256": "550a4d569e2fafa45d89791239e0a3d640f6ba50c3e558c4aea0ea3979715c99",
+      "result_sha256": "0252d391356a9587696778a726c9abf01b5e3981db53dd2f742b9b2d847b8238",
+      "configured_startup_seconds": 209.6994034659583,
+      "once_selected": [
+        "HOME"
+      ],
+      "original_geometry_values": 83,
+      "bootstrap_retired": true,
+      "fresh_result": {
+        "column": 1,
+        "row": 21,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      },
+      "physical": {
+        "result": "pass",
+        "task_record_count": 5,
+        "bootstrap_records": [],
+        "containing_free_block": {
+          "block": 22647256,
+          "span": 88432,
+          "requested": 0,
+          "tag": 1179792201
+        },
+        "memory_tasks_address": 18223640,
+        "kernel_heap_address": 1504512,
+        "heap_used": 19779752,
+        "heap_peak": 21720160,
+        "heap_allocations": 20101,
+        "scope": "Post-handoff record absence and free containing block; not total heap recovery"
+      },
+      "physical_report_sha256": "e721f1a5138b54ad3b5c1e61ce076dfcc84290f30186b1a083247661a1c29312"
+    }
+  }
+}

@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 608 |
-| Linked to tests / with reference workflow and oracle | 206 / 135 |
+| Linked to tests / with reference workflow and oracle | 207 / 136 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 42 of 224 |
 
@@ -156,6 +156,10 @@ is complete and provides the foundation, but not desktop or application parity.
   Both installed images passed all nine active desktop commands at 64 MiB,
   the frozen 686-file check and the bounded Bible read. See the
   [installed desktop and content checks](build/i386-parenwarn-links-v2/void-native-generations128/desktop-content-checkpoint.json).
+  Both configured HomeSys boots selected the Home Once, matched all 83
+  original geometry values, returned arithmetic and physically reclaimed
+  the bootstrap task. Configured startup took 209.20 and 209.70 seconds.
+  See the [configured handoff checks](build/i386-parenwarn-links-v2/void-native-generations128/configured-desktop-checkpoint.json).
 - GlblVars entered the pinned original compiler debugger on the first
   aggregate initializer at line 11 from both Once.HC and the standard guest
   prompt. The unchanged source now completes on i386, displaying all four
@@ -280,6 +284,12 @@ is complete and provides the foundation, but not desktop or application parity.
   order, and restored the initial position. One partial original frame
   was recorded during the sweep. See the
   [text-panning comparison](build/i386-demo-pan-text-v1/qualification.json).
+
+- BlkDevRep has an executable original reference covering all 22 fields
+  for the configured RAM disk and ATAPI CD. The i386 image rejects the
+  call to ClassRep. See the
+  [original receipt](build/i386-demo-blkdev-rep-v1/original-receipt.json)
+  and [native run](build/i386-demo-blkdev-rep-v1/comparison/result.json).
 
 ### Plan decisions (2026-11-24)
 
