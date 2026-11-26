@@ -869,3 +869,12 @@ BuildRuntime provider load. The receipt records the native and cross-build
 module hashes. The generation runner verified the retained image and receipt
 hashes and proceeded to the first native install. Two-generation boot and
 resource qualification remain pending.
+
+The first install preserved all nine native modules byte for byte and passed
+the 8 MiB boot smoke test. Both arithmetic and document allocation matched the
+VGA checkpoints, and the document diagnostic loaded, recovered from a growth
+failure, and unloaded. Startup took 71.404 seconds. The boot log also records
+an emitter allocation rejection in `C:/Adam/Gr/SpriteToCodeCore.HC`, so this
+smoke result leaves that startup source path and the 60-second budget open.
+The generation run proceeded to the first self-hosted rebuild. Receipts and
+the boot trace are in `build/i386-demo-insetip-v1/generations128/gen1-install/`.
