@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "source_revision": "c40647513cbe0732de62fbf14733c6c86bdfe4e6",
+  "image_sha256": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5",
+  "inventory_files": 686,
+  "delivered_source_files": 1572,
+  "inventory_sha256": "64430aee6a1f8e7e74ef8416617426d3d04c115a4e6a05988a27972c8599609a",
+  "evidence_sha256": {
+    "cross-checkpoint.json": "8cf77336b0ebad4b83bfa8f88468335146b657fa19cce0daafc8107f461c60f4",
+    "full-content/result.json": "f6a1378dfe8cc0839bcfa2a473da8baf2fd5464c44c937416b13965de04f45df",
+    "address8/result.json": "54c54dbce5189b1c8f346077f78d0533055a753bfa223a84f26111ad93afd70f"
+  }
+}

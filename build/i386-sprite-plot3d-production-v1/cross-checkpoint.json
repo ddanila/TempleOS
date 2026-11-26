@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "source_revision": "c40647513cbe0732de62fbf14733c6c86bdfe4e6",
+  "disk_sha256": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5",
+  "delivered_source_files": 1572,
+  "flat_kernel_sha256": "e38efd30444282c80d8563eeaa5564230b0bbcb58204b7dabacf68bde44e603f",
+  "flat_kernel_bytes": 461344,
+  "module_count": 16,
+  "bios_instructions": 96,
+  "protected_mode_instructions": 332,
+  "evidence_sha256": {
+    "committed-source.json": "22a75cd61073e58ba725bf4bcdcb4285e83fc200400fc3c4874af59f7a0bbf2f",
+    "cross/result.json": "62b6babb50f814280c1401e9e66e43cec9e8032df8f6fe45005672814d21b979",
+    "cross/kernel-stage.lst": "fed162eb6adb7800fd411a561d250a8a3d2c634b2fe4806f15ee1356f7c80964",
+    "cross/boot-instruction-audit.json": "3e4ab628657756a49ba9b0ad9b77be0c5df4cd98a0ba8ddf03d569b91679e6a8"
+  },
+  "scope": "Fresh full i386 cross-build, retained export contracts and exact source and boot-instruction audits."
+}

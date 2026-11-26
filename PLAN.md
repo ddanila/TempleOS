@@ -278,6 +278,12 @@ is complete and provides the foundation, but not desktop or application parity.
   mesh through three distinct silhouettes, removed it on Space, and
   returned to their prompts. The 8 MiB probe and two x86-64 rebuilds passed.
   See the [3D animation comparison](build/i386-demo-sprite-plot3d-v2/qualification.json).
+  A fresh full cross-build from `c4064751` passed the 386 instruction
+  audit, exact 1,572-file source audit, 8 MiB probe and frozen 686-file
+  content comparison. The 128 MiB retained-provider build started from
+  that image. See the
+  [production cross-build](build/i386-sprite-plot3d-production-v1/cross-checkpoint.json)
+  and [full-content checkpoint](build/i386-sprite-plot3d-production-v1/full-content-checkpoint.json).
 
 - PanText qualifies. Both guests moved the welcome text seven pixels in
   each direction on both axes, in the original horizontal-then-vertical
