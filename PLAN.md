@@ -625,6 +625,13 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   and passed all nine input and VGA checks with the window manager
   active. It missed the 60-second target by 4.326 seconds. See the
   [KVM interactive receipt](build/i386-demo-blot-v1/interactive8-kvm/result.json).
+  A separate 8 MiB TCG boot profile collected 1,003 program-counter
+  samples through successful startup. Heap scanning, free, and
+  allocation selection accounted for 626 samples. The startup-source
+  phase accounted for 557 samples and root headers for 329. The
+  most frequent startup-source heap-scan stacks include compiler
+  control checks and intermediate-code slab release. See the
+  [startup profile](build/i386-demo-blot-v1/boot-profile8/result.json).
   The frozen diagnostic image completed the initial program compiler
   probes. It then failed before spawning the console when allocating
   the temporary diagnostic worker. The request was 1,070,343 bytes
