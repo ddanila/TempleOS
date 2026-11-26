@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 41 (six apps and thirty-five demos) |
+| Qualified | 42 (six apps and thirty-six demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 615 |
-| Linked to tests / with reference workflow and oracle | 199 / 128 |
+| Qualification gaps | 614 |
+| Linked to tests / with reference workflow and oracle | 200 / 129 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 35 of 224 |
+| Demos qualified | 36 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 41 workflows and records eighteen shared files
+- The inventory qualifies 42 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -222,6 +222,11 @@ is complete and provides the foundation, but not desktop or application parity.
   SpritePut source and saved three exact copies in the same 37,781-byte
   DolDoc. Each of the three rendered map masks matched all 6,300 pixels.
   See the [external sprite comparison](build/i386-demo-sprite-ext-v1/qualification.json).
+
+- SpritePut qualifies. Both guests saved the same 48,647-byte DolDoc with
+  four binary records and matched all pixels in three 143 by 83 flag
+  rasters and the 6,300-pixel map. See the
+  [inline sprite comparison](build/i386-demo-sprite-put-v1/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

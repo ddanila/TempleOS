@@ -17816,10 +17816,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged SpritePut on both guests. Capture the whole DolDoc and render the three flags and map from each prompt.",
+      "oracle": "Compare all four embedded output records to the two pinned source sprites. Compare complete position-aligned flag rasters and the full map silhouette.",
+      "tests": [
+        {
+          "target": "native-original-sprite-put",
+          "result": "pass",
+          "evidence": "build/i386-demo-sprite-put-v1/qualification.json",
+          "scope": "Both guests save the same 48,647 bytes, draw three matching 143 by 83 flags and match all 6,300 map pixels."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/SpritePutExt.HC",

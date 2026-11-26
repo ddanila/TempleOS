@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "image_sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+  "source_sha256": "27461cb5e9706cecf2e156afae7b598912b6bd8d658b45ec4fc528da56ea8dbe",
+  "document_sha256": "2330a91653c1a9f3e3977046a20c7423942719b3872426a00ce120dac967ce54",
+  "document_bytes": 48647,
+  "flag_count": 3,
+  "flag_size": [
+    143,
+    83
+  ],
+  "flag_raster_sha256": "0429720040abda8ad0d30bdd4415cf31d5bf652e5879e10311238b0f5e11614a",
+  "map_pixels": 6300,
+  "screenshots_sha256": {
+    "original": "370d993162a1cc7d81db2c4fde9d78ceb7dfc423d32544fac52d0fc9631d911f",
+    "native": "5e01c59e996c327775cee306eda7b46cedfdf80f3cbd9b148fd0ad94f2fbc4a7"
+  }
+}

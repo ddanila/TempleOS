@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "input_sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+  "entries": {
+    "Demo/Graphics/SpritePut.HC": {
+      "source_sha256": "27461cb5e9706cecf2e156afae7b598912b6bd8d658b45ec4fc528da56ea8dbe",
+      "output_file": "demo-0.DD",
+      "result": "pass",
+      "original_sha256": "2330a91653c1a9f3e3977046a20c7423942719b3872426a00ce120dac967ce54",
+      "native_sha256": "2330a91653c1a9f3e3977046a20c7423942719b3872426a00ce120dac967ce54",
+      "bytes": 48647
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "inputs_unchanged": true
+}
