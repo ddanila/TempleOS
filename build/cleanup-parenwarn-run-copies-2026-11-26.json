@@ -1,0 +1,58 @@
+[
+  {
+    "removed": "build/i386-parenwarn-links-v2/public8/working.img",
+    "retained": "build/i386-parenwarn-links-v2/candidate.img",
+    "allocated_bytes": 67112960,
+    "sha256": "461ecd790fec15320a9c1661664415f28e55df4ad4ad99f1642394d6a5962244",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v2/void-public8/working.img",
+    "retained": "build/i386-parenwarn-links-v2/void-production.img",
+    "allocated_bytes": 67112960,
+    "sha256": "4555477efc097a48ceacc5254f8c2357997f62dbcd11a64d606cd21708e2be01",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v2/void-baseline64/working.img",
+    "retained": "build/i386-parenwarn-links-v2/void-production.img",
+    "allocated_bytes": 67112960,
+    "sha256": "4555477efc097a48ceacc5254f8c2357997f62dbcd11a64d606cd21708e2be01",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v2/quiet-public8/working.img",
+    "retained": "build/i386-parenwarn-links-v2/quiet-production.img",
+    "allocated_bytes": 67112960,
+    "sha256": "bfaed2adfa9d29f38033df04635fb0091ef5ccd620f0c144c43231a9f86e7dfb",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v2/quiet-baseline64/working.img",
+    "retained": "build/i386-parenwarn-links-v2/quiet-production.img",
+    "allocated_bytes": 67112960,
+    "sha256": "bfaed2adfa9d29f38033df04635fb0091ef5ccd620f0c144c43231a9f86e7dfb",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v2/production-public8/working.img",
+    "retained": "build/i386-parenwarn-links-v2/full/kernel.img",
+    "allocated_bytes": 67108864,
+    "sha256": "f123f413a00c0b76469801977b40b7f581f819abb544a107a87ad4dc78efd828",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v2/void-native-generations128/gen1-baseline64-live/working.img",
+    "retained": "build/i386-parenwarn-links-v2/void-native-generations128/gen1-selfhost/target.img",
+    "allocated_bytes": 67112960,
+    "sha256": "2acbaabaeefcbd9bb52ed8e718b041b99319bc8990732cac3c821a3bba54ff0c",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v2/void-native-generations128/gen2-baseline64-live/working.img",
+    "retained": "build/i386-parenwarn-links-v2/void-native-generations128/gen2-selfhost/target.img",
+    "allocated_bytes": 67108864,
+    "sha256": "550a4d569e2fafa45d89791239e0a3d640f6ba50c3e558c4aea0ea3979715c99",
+    "bytes": 67108864
+  }
+]
