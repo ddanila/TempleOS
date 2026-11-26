@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 77 (six apps and seventy-one demos) |
+| Qualified | 78 (six apps and seventy-two demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 579 |
+| Qualification gaps | 578 |
 | Linked to tests / with reference workflow and oracle | 236 / 165 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 71 of 224 |
+| Demos qualified | 72 of 224 |
 
-C1 has 579 qualification gaps, including entries that still need a reference
+C1 has 578 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `d5792939`.
@@ -44,7 +44,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 77 workflows and records eighteen shared files
+- The inventory qualifies 78 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -566,6 +566,19 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   arithmetic. The original window manager needed the press to remain on
   the menu bar before the pointer moved. See the
   [VGA comparison](build/i386-demo-pulldown-v1/mouse-latched/qualification.json).
+
+- The i386 port publishes `InSetMs` through its mouse interface. The
+  unchanged InSetIP demo qualifies on both guests. It moves the pointer
+  20 pixels right and down from the task origin read immediately after
+  enabling the border and leaves both buttons released. The original
+  and i386 console layouts yielded different absolute origins. Direct
+  calls agreed on explicit, invalid and omitted coordinates, and the
+  i386 prompt evaluated fresh arithmetic. The image passed the 386
+  instruction audit, the 1,578-file source audit and all nine 64 MiB
+  desktop baseline commands. See the
+  [mouse comparison](build/i386-demo-insetip-v1/calibrated-comparison/result.json),
+  [source audit](build/i386-demo-insetip-v1/delivered-source.json),
+  and [desktop baseline](build/i386-demo-insetip-v1/desktop64-exports/result.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the
