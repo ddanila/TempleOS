@@ -84,3 +84,15 @@ modules retain all 1,850 source and 26 helper pins. Both existing bootstrap
 results still match those inputs; this test/documentation checkpoint needs no
 runtime rebuild. Early original fixture-development failures remain preserved
 separately and do not count as passing application controls.
+
+## Installer on the frozen native rebuilds
+
+Both installed generations from frozen revision `5303f095` passed the
+64 MiB KVM installer check with all eleven Budget sources supplied by
+the image. The guest read the archive through `~/Budget/Accts.DD.Z` and
+expanded it to the original account template. Repeated Install preserved
+the archive bytes, attributes and date. The filesystem audit found changes
+only to the installed archive under `/Home/Budget` and the test's exported
+template. The runner accepts `--native-home /Home` for the host audit.
+[First rebuild installer receipt](../build/i386-demo-insetip-v1/generations128/gen1-budget-install-home64/result.json) ·
+[Second rebuild installer receipt](../build/i386-demo-insetip-v1/generations128/gen2-budget-install-home64/result.json)

@@ -9,7 +9,15 @@ import runpy
 ROOT=Path(__file__).resolve().parents[1]
 
 def main():
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True);ap.add_argument('--load-settings',action='store_true',help='Load the real autocomplete and settings libraries into Adam before the app');ap.add_argument('--require-bundled',action='store_true');ap.add_argument('--accel',choices=('tcg','kvm'),default='tcg');args=ap.parse_args()
+    ap=argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('disk',type=Path)
+    ap.add_argument('--out',type=Path,required=True)
+    ap.add_argument('--load-settings',action='store_true',help='Load the real autocomplete and settings libraries into Adam before the app')
+    ap.add_argument('--require-bundled',action='store_true')
+    ap.add_argument('--accel',choices=('tcg','kvm'),default='tcg')
+    ap.add_argument('--native-home',choices=('/', '/Home'),default='/',
+                    help='Expected native Home location for Budget persistence')
+    args=ap.parse_args()
     out=args.out.resolve();source=args.disk.resolve()
     if out.exists():ap.error('Use a fresh output directory')
     out.mkdir(parents=True);image=out/'working.img'
@@ -17,7 +25,8 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     paths=[ROOT/'tools/i386-budget-source.py',source,Path(__file__).resolve(),helper,packager,inventory,ROOT/'tools/build-i386-kernel.py',ROOT/'Kernel/FontStd.HC']
     pins={str(p):sha(p) for p in paths}
-    report=dict(result='running',input_sha256=pins,scope='Budget with reviewed I64 sort slots: source load, repeated Install, physical archive and guest-expanded template on native 64 MiB; not application workflow qualification')
+    report=dict(result='running',input_sha256=pins,native_home=args.native_home,accel=args.accel,
+                scope='Budget with reviewed I64 sort slots: source load, repeated Install, physical archive and guest-expanded template on native 64 MiB; not application workflow qualification')
     try:
         entries=[e for e in json.loads(inventory.read_text())['entries'] if e['path'].startswith('Apps/Budget/')]
         pack=runpy.run_path(str(packager));initial_files=pack['snapshot'](source.read_bytes())[1]
@@ -45,15 +54,17 @@ def main():
             commands += ['AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);','AdamFile("C:/Adam/TaskSettings.HC",FALSE);']
         commands += ['#include "C:/Apps/Budget/Load.HC"','#include "C:/Apps/Budget/Install.HC"',
                      '#include "C:/Apps/Budget/Install.HC"',
-                     'U0 BudgetTemplateRead(){I64 n;U8 *s=FileRead("C:/Budget/Accts.DD.Z",&n);if(!s)throw(1,TRUE);FileWrite("C:/BudgetTemplate.DATA",s,n);Free(s);}BudgetTemplateRead;',
+                     'U0 BudgetTemplateRead(){I64 n;U8 *s=FileRead("~/Budget/Accts.DD.Z",&n);if(!s)throw(1,TRUE);FileWrite("C:/BudgetTemplate.DATA",s,n);Free(s);}BudgetTemplateRead;',
                      '6*7;']
         report['commands']=commands
         report['packaging']=pack['package'](source,image,additions=additions)
         runpy.run_path(str(helper))['guest'](image,out/'guest',commands,64,True,accel=args.accel)
         snapshot=runpy.run_path(str(packager))['snapshot']
         _,files,dirs=snapshot(image.read_bytes())
-        if '/Budget' not in dirs:raise ValueError('Budget installation directory missing')
-        installed=files.get('/Budget/Accts.DD.Z')
+        budget_dir=args.native_home.rstrip('/')+'/Budget'
+        installed_path=budget_dir+'/Accts.DD.Z'
+        if budget_dir not in dirs:raise ValueError('Budget installation directory missing: '+budget_dir)
+        installed=files.get(installed_path)
         if not installed or installed != initial_files[archive_name]:
             raise ValueError('Installed archive bytes/attributes/date differ from bundled template')
         if files.get('/BudgetTemplate.DATA', (0,0,None))[2] != expected['/Apps/Budget/Accts.DD']:
@@ -61,7 +72,7 @@ def main():
         report['installed_template_sha256']=hashlib.sha256(files['/BudgetTemplate.DATA'][2]).hexdigest()
         for name,data in expected.items():
             if files[name][2]!=data:raise ValueError('Delivered Budget source changed: '+name)
-        allowed=set(additions)|{'/Budget/Accts.DD.Z','/BudgetTemplate.DATA'}
+        allowed=set(additions)|{installed_path,'/BudgetTemplate.DATA'}
         changed={name for name in set(initial_files)|set(files) if initial_files.get(name)!=files.get(name)}
         if changed-allowed:raise ValueError('Unrelated files changed: '+repr(sorted(changed-allowed)))
         report['changed_files']=sorted(changed)

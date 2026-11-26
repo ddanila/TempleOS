@@ -1,0 +1,64 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/i386-budget-source.py": "3b0c62f74a6ddcc3d6a7ec0fc61b59139e056fe9ab04de8eb7cda15d9069665a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-insetip-v1/generations128/gen1-selfhost/target.img": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-budget-native-load.py": "f9c91f7920e1a1f6753ca4db59bc849a80224ef14ea2ecd835a258522ecb1f64",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "fb10215fb905a7dfe6ebeded060ba63bc79f8c6bb47d248ba4684bc2f5cacf30",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "4912a06939338450c4b119da9d43c51088dbdea74165bd93029c84067e3231be",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+  },
+  "native_home": "/Home",
+  "accel": "kvm",
+  "scope": "Budget with reviewed I64 sort slots: source load, repeated Install, physical archive and guest-expanded template on native 64 MiB; not application workflow qualification",
+  "source_ports": [
+    "Apps/Budget/BgtStrs.HC: explicit I64 sort slots"
+  ],
+  "template_archive_sha256": "a628ab030d06a92dbee90108d8bc7152a94fd9b8f321f6fbe2c7f87a6e7c4874",
+  "added_app_files": [],
+  "bundled_app_files": 11,
+  "commands": [
+    "#include \"C:/Apps/Budget/Load.HC\"",
+    "#include \"C:/Apps/Budget/Install.HC\"",
+    "#include \"C:/Apps/Budget/Install.HC\"",
+    "U0 BudgetTemplateRead(){I64 n;U8 *s=FileRead(\"~/Budget/Accts.DD.Z\",&n);if(!s)throw(1,TRUE);FileWrite(\"C:/BudgetTemplate.DATA\",s,n);Free(s);}BudgetTemplateRead;",
+    "6*7;"
+  ],
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+    "image_sha256": "4d37f79a5cb98fbabcd9623688e0929665fab844b3753737c602341ce53dde1d",
+    "boot_area_sha256": "6b8dded2998bfbb5c05a2847f55a5633ccfc2f45d063a53fdff204469292db40",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1950,
+      "owned_sectors": 98187,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1950,
+      "owned_sectors": 98186,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {},
+    "added_attributes": {},
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "installed_template_sha256": "326a9a7bbe6eacda718c2a97303d0ae72dec52fcd30f68486de59bb358fcf0b4",
+  "changed_files": [
+    "/BudgetTemplate.DATA",
+    "/Home/Budget/Accts.DD.Z"
+  ],
+  "preserved_source_files": 1950,
+  "filesystem": {
+    "directories": 64,
+    "files": 1952,
+    "owned_sectors": 98189,
+    "bitmap": "matches reachable extents"
+  },
+  "inputs_unchanged": true
+}
