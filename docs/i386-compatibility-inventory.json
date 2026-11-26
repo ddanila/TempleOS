@@ -19389,10 +19389,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Load the unchanged Lex1 template from each guest prompt and invoke MyRead on the unchanged NullCase source. Capture the whole DolDoc and verify native prompt recovery.",
+      "oracle": "Derive the token IDs and payloads from the fixture independently. Compare all 67 tokens and the complete DolDoc on both guests.",
+      "tests": [
+        {
+          "target": "native-original-lex-template",
+          "result": "pass",
+          "evidence": "build/i386-demo-lex-template-v1/fixed/result.json",
+          "scope": "Both guests match all 67 derived tokens and all 634 DolDoc bytes, including identifier and literal values, increment and punctuation."
+        }
+      ]
     },
     {
       "path": "Demo/Templates/MultiCore1.HC",

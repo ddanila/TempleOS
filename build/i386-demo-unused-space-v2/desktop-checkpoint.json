@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "source_revision": "9dbf172d6e4914c974a04ba026d9015ebd59f2d9",
+  "image_sha256": "9cfdf8dfe66f476c0277225221ca1e72d719028307395180d4f80047a0b1c280",
+  "delivered_source_files": 1566,
+  "ram_mib": 64,
+  "accel": "kvm",
+  "commands": 9,
+  "evidence_sha256": {
+    "committed-source.json": "0862a902a24ce20bda5d405524800e690877407602c0edaea46ed7c4caf8b1c7",
+    "baseline64/result.json": "1468bff54d41b3a8f93032e5ea6b76889134ababf49d01de626d410f2ce9b23f"
+  }
+}
