@@ -334,3 +334,17 @@ matched between guests for every count, from 500 to 2,480 ms. Each
 run ended with the speaker disabled.
 [Original maximum count](../build/i386-asm-and-c1-port-v2/reference-count5/result.json) ·
 [Native maximum count](../build/i386-asm-and-c1-port-v2/native-count5/result.json)
+
+AsmAndC2 passed all five counts on the original and 386 guests. The
+recordings matched the note order, and the hexadecimal elapsed-jiffies
+results differed by at most three ticks. Both guests disabled the
+speaker. The 386 port holds each descending note for the nominal
+125 ms using the guest timer.
+
+The full image matched 1,578 delivered source and documentation files
+to `bf090610`, passed the 686-file inventory and guest read checks,
+and matched all nine VGA checkpoints in the 8 MiB KVM diagnostic boot.
+[Native AsmAndC2 maximum count](../build/i386-asm-and-c2-port-v1/native-count5/result.json) ·
+[Delivered-source audit](../build/i386-asm-and-c2-port-v1/committed-source-audit.json) ·
+[Full content](../build/i386-asm-and-c2-port-v1/full-content64/result.json) ·
+[8 MiB diagnostics](../build/i386-asm-and-c2-port-v1/diagnostic8-kvm/result.json)
