@@ -392,9 +392,6 @@ public class CATARep
 
 //See $LK,"ST_DRV_TYPES",A="MN:ST_DRV_TYPES"$
 #include "/Kernel/BlkDev/FileSystemTypes.HH"
-#define FSG_TYPE_MASK	0x7FFF
-//File system type flags
-#define FStf_DISABLE	15
 
 
 #include "/Kernel/BlkDev/FreeListTypes.HH"

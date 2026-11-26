@@ -54,6 +54,7 @@ public _extern _REP_OUT_U8 U0 RepOutU8(U8 *buf,I64 cnt,I64 port);
 public _extern _REP_OUT_U16 U0 RepOutU16(U8 *buf,I64 cnt,I64 port);
 public _extern _REP_OUT_U32 U0 RepOutU32(U8 *buf,I64 cnt,I64 port);
 public _extern _ENDIAN_U16 U16 EndianU16(U16 d);
+public _extern _D U0 D(U8 *addr,I64 cnt=0x80,Bool show_offset=TRUE);
 public _extern _ENDIAN_U32 U32 EndianU32(U32 d);
 public _extern _ENDIAN_I64 I64 EndianI64(I64 d);
 public _extern _CALL I64 Call(U8 *machine_code);

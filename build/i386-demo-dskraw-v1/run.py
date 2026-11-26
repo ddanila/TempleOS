@@ -105,7 +105,8 @@ def main():
             except (RuntimeError, TimeoutError, ValueError) as error:
                 runs[side] = dict(result='fail', error=str(error))
     unchanged = all(sha(Path(path)) == digest for path, digest in pins.items())
-    report = dict(input_sha256=pins, inputs_unchanged=unchanged, runs=runs)
+    report = dict(input_sha256=pins, inputs_unchanged=unchanged,
+                  working_disk_sha256=sha(disk), runs=runs)
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
 
 

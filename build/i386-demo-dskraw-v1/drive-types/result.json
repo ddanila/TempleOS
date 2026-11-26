@@ -1,0 +1,40 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-dskraw-v1/cross-drive-types/kernel.img": "49a5db5a95db18764f64e1d67e3b54a34f8a6e98c9c2e853f243bc227c99a343",
+    "/home/ddanila/fun/TempleOS/Demo/Dsk/DskRaw.HC": "b41863beceb974f8e777a0c6bcd4a56cd221fa724373715fbb8cc00fe28f2c4e"
+  },
+  "inputs_unchanged": true,
+  "working_disk_sha256": "49a5db5a95db18764f64e1d67e3b54a34f8a6e98c9c2e853f243bc227c99a343",
+  "runs": {
+    "original": {
+      "result": "captured",
+      "screenshots_sha256": {
+        "drive-summary": "626f6ac1b931e7494f4c3dd685e515106876e927f9d7a22739e0060326dbb116",
+        "drive-class": "30bdba54f7b93edc8bf3743f805aee2f2367c32deb2ffcb7254e1b95dc806e2c",
+        "device-class": "a3d97bf1ed43ea5e3ae0f30ec2095e597287e0d9bf16cfd0e8da1b0ce560f17d",
+        "sector-prompt": "a541c4992cc037ab9a062dc3ae4b54109b1a574ba346b9b84690b113cb8e823c",
+        "sector-dump": "a8d2964e066e3f090a7e868ee16b90e360c0ec2d569178bb161270b285746195"
+      }
+    },
+    "native": {
+      "result": "captured",
+      "screenshots_sha256": {
+        "drive-summary": "88648589812fbcc917f89fb9cd1c0ea62aba9fb4ccffc633a103f37f5802dd83",
+        "drive-class": "16f28d83f31ab0deb2ffa90784ba37c1f0c154c2fa53724798ac836ba1418770",
+        "device-class": "55c0ca55c1b50710ca243dd44ea6f93eb50bd2b8d4d8ed2c3541e83e965b12ac",
+        "sector-prompt": "bc88cf7b478937d5619f32925d76c7f99138d4626d0faf34e7ddd997f158db50",
+        "sector-dump": "0a6dd03f241f8929a38d858f41869e61aae8678a499d22288bb28ced79eac04d"
+      },
+      "fresh_result": {
+        "column": 0,
+        "row": 58,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

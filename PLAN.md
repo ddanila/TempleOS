@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 75 (six apps and sixty-nine demos) |
+| Qualified | 76 (six apps and seventy demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 581 |
+| Qualification gaps | 580 |
 | Linked to tests / with reference workflow and oracle | 234 / 163 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 69 of 224 |
+| Demos qualified | 70 of 224 |
 
-C1 has 581 qualification gaps, including entries that still need a reference
+C1 has 580 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -41,7 +41,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 75 workflows and records eighteen shared files
+- The inventory qualifies 76 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -374,6 +374,15 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   the numbers makes all 32 hexadecimal rows visible. The
   [pixel-decoded reference](build/i386-demo-dskraw-v1/original-exact/result.json)
   recovers the complete 512-byte zero-filled RAM-disk sector.
+  The rebuilt i386 image publishes the shared drive report and memory
+  dump. The unchanged demo shows its drive and class reports, then
+  renders every byte of sector zero from the ATA disk. The read leaves
+  the entire disk unchanged and the prompt evaluates fresh arithmetic.
+  The image passed the active 64 MiB desktop baseline and exact
+  1,577-file source audit. See the
+  [full sector comparison](build/i386-demo-dskraw-v1/drive-types/qualification.json),
+  [desktop baseline](build/i386-demo-dskraw-v1/desktop64/result.json),
+  and [source audit](build/i386-demo-dskraw-v1/drive-types-source-audit.json).
 
 - Lines qualifies. Both guests accumulated multicolor line drawings from
   seed 1, changed the drawings across three asynchronous samples, and

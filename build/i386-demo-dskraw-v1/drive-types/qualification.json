@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "bytes_per_sector": 512,
+  "sectors_sha256": {
+    "original": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560",
+    "native": "7afdfa5c305cc93773bdbff53f647e61a5354d5c757cc7ae4eb773c97b4473ca"
+  },
+  "native_disk_sha256": "49a5db5a95db18764f64e1d67e3b54a34f8a6e98c9c2e853f243bc227c99a343",
+  "font_sha256": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+  "fresh_result": {
+    "column": 0,
+    "row": 58,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

@@ -7,4 +7,6 @@
 #define FSt_NTFS	4 //Not Supported
 #define FSt_UNKNOWN	5
 #define FSt_TYPES_NUM	6
+#define FSG_TYPE_MASK	0x7FFF
+#define FStf_DISABLE	15
 #endif

@@ -49,8 +49,11 @@ def main():
     disk = args.image.read_bytes()
     if not receipt['inputs_unchanged'] or sha(disk) != receipt['input_sha256'][str(args.image.resolve())]:
         raise ValueError('Input changed')
-    if sha((args.run/'working.img').read_bytes()) != sha(disk):
+    if receipt['working_disk_sha256'] != sha(disk):
         raise ValueError('Native raw read changed the disk')
+    working = args.run/'working.img'
+    if working.is_file() and sha(working.read_bytes()) != receipt['working_disk_sha256']:
+        raise ValueError('Native working disk changed after capture')
     vision = runpy.run_path('build/i386-demo-define-v1/qualify.py')
     font_path = Path('Kernel/FontStd.HC')
     font = vision['glyphs'](font_path)

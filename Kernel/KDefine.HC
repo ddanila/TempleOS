@@ -29,10 +29,7 @@ U0 SysDefinesLoad()
 #include "/Kernel/DateDefinesCore.HC"
   DefineLstLoad("ST_FILE_ATTRS","R\0H\0S\0V\0D\0A\0 \0 \0X\0T\0Z\0C\0F\0");
 #include "/Kernel/FileUtilFlagsDefineCore.HC"
-  DefineLstLoad("ST_BLKDEV_TYPES",
-	"NULL\0RAM\0ATA\0FILE_READ\0FILE_WRITE\0ATAPI\0");
-  DefineLstLoad("ST_DRV_TYPES",
-	"NULL\0REDSEA\0FAT32\0ISO9660\0NTFS\0UNKNOWN\0");
+#include "/Kernel/BlkDev/DriveTypeDefinesCore.HC"
   DefineLstLoad("ST_COLORS",COLOR_NAMES_LIST);
   DefineLstLoad("ST_INT_NAMES","Divide Error\0SingleStep\0NMI\0Breakpoint\0"
 	"Overflow\0BOUND Range Exceeded\0Invalid Opcode\0No Math Coprocessor\0"
