@@ -17060,7 +17060,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [
+        {
+          "target": "original-glblvars-boot-fixture",
+          "result": "fail",
+          "evidence": "build/i386-demo-glblvars-v1/comparison/result.json",
+          "scope": "The pinned original enters its compiler debugger on the first aggregate initializer at line 11. The boot fixture never completes, so this run provides no native comparison."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/3DPoly.HC",

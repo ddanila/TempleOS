@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 624 |
-| Linked to tests / with reference workflow and oracle | 189 / 119 |
+| Linked to tests / with reference workflow and oracle | 190 / 119 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 26 of 224 |
 
@@ -145,9 +145,14 @@ is complete and provides the foundation, but not desktop or application parity.
   and [native run](build/i386-demo-optimization-v1/comparison/result.json).
 - The corrected ParenWarn image at `2c2cb4b1` rebuilt and audited all nine
   retained providers at 128 MiB. The retained disk passed the 1,561-file
-  committed-source audit. The follow-on generation-one installer was running
-  at this checkpoint. See the
-  [retained build receipt](build/i386-parenwarn-links-v2/void-retained128/checkpoint.json).
+  committed-source audit. Generation one installed those nine providers and
+  started rebuilding its flat kernel. See the
+  [retained build receipt](build/i386-parenwarn-links-v2/void-retained128/checkpoint.json)
+  and [generation-one install](build/i386-parenwarn-links-v2/void-native-generations128/gen1-install/result.json).
+- GlblVars entered the pinned original compiler debugger on the first
+  aggregate initializer at line 11 when the batch ran from Once.HC.
+  See the [run receipt](build/i386-demo-glblvars-v1/comparison/result.json)
+  and [debugger screenshot](build/i386-demo-glblvars-v1/comparison/original/final.png).
 
 ### Plan decisions (2026-11-24)
 

@@ -1,0 +1,14 @@
+{
+  "result": "fail",
+  "input_sha256": "c2f2b2084341a20531c6b889ad415b39b440315e35ce0c89b628c24c7d49d0ac",
+  "entries": {
+    "Demo/GlblVars.HC": {
+      "source_sha256": "70d2ef4e34378455ddf42dcf62a77093e3f415f8e73623cca0b3dd68ba8f2d21",
+      "output_file": "demo-0.DD"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "error": "Missing guest marker: DEMO BATCH DONE\n",
+  "inputs_unchanged": true
+}
