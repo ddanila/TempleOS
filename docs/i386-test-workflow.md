@@ -6462,3 +6462,9 @@ under KVM. All four typed records survived cold reboot byte for byte
 after emulated PS/2 input exercised multiline, cancelled, and empty
 descriptions. The final input hash check passed.
 [Second-generation TimeClock keyboard check](../build/i386-code-alloc-known-v1/native-generations128/gen2-timeclock-keyboard64-stable/result.json)
+
+GrModels Ball and Man produced the same document mesh bytes on both
+native generations. Each mesh also matched the pinned original hash,
+and both workflows returned to fresh arithmetic.
+[Second-generation Ball](../build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-ball/result.json) ·
+[Second-generation Man](../build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-man/result.json)
