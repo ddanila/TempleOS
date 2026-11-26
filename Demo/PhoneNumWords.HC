@@ -53,6 +53,15 @@ U0 PhoneNumWords(U8 *num)
 U0 PNWDemo()
 {
   U8 *st;
+  if (!acd.num_words) {
+    if (!HashFind("ACInit",adam_task->hash_table,HTT_FUN))
+      AdamFile("/Adam/AutoComplete/MakeAC.HC",FALSE);
+    Adam("ACInit;");
+  }
+  if (!acd.num_words) {
+    "Dictionary word list not present.\n";
+    return;
+  }
   while ((st=GetStr("Phone Num:")) && *st) {
     PhoneNumWords(st);
     Free(st);

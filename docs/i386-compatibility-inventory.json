@@ -18398,10 +18398,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": "Enter a number containing punctuation, compare the dictionary matches and display order, then submit an empty reply to exit.",
+      "compatibility": "qualified",
+      "reference_workflow": "On a cold native guest, enter a number containing punctuation, compare the dictionary matches and display order, then submit an empty reply to exit.",
       "oracle": "435-56 yields Elk, Ell, Hell and Hello with the same DolDoc formatting as on the original. The empty reply returns to usable input.",
       "tests": [
+        {
+          "target": "native-original-phone-words-cold-dictionary",
+          "command": "python3 build/i386-demo-phone-words-cold-v1/run.py IMAGE --out OUT --demo Demo/PhoneNumWords.HC",
+          "result": "pass",
+          "evidence": "build/i386-demo-phone-words-cold-v1/comparison/result.json",
+          "scope": "The bundled native demo loads the dictionary on first launch, matches all 126 original DolDoc bytes for 435-56 and the empty exit reply, and returns to fresh arithmetic."
+        },
         {
           "target": "native-original-phone-words",
           "result": "fail",
