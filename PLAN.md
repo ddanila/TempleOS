@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 622 |
-| Linked to tests / with reference workflow and oracle | 192 / 121 |
+| Linked to tests / with reference workflow and oracle | 193 / 122 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 28 of 224 |
 
@@ -169,6 +169,12 @@ is complete and provides the foundation, but not desktop or application parity.
   published the matching subtotal and grand total of 4,950. Both guests
   produced the same 35 DolDoc bytes. See the
   [single-CPU template comparison](build/i386-demo-multicore-template-v1/comparison/result.json).
+
+- SerializeTree recovered all 26 directory records and reproduced all
+  1,708 serialized bytes after compression and expansion on the pinned
+  original. The native compiler rejects the first call to LineRep1.
+  See the [original round-trip receipt](build/i386-demo-serialize-tree-v1/original-receipt.json)
+  and [native comparison](build/i386-demo-serialize-tree-v1/comparison/result.json).
 
 ### Plan decisions (2026-11-24)
 
