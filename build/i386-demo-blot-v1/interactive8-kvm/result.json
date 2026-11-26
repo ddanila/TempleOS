@@ -1,0 +1,76 @@
+{
+  "result": "fail",
+  "accel": "kvm",
+  "ram_mib": 8,
+  "cpu": "486,-fpu",
+  "disk_sha256": "c6c81e943614d6fd5428f0b7773222ab4dc718fe3786bcfdc632b3375506eda0",
+  "input_harness_sha256": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463",
+  "commands": [
+    [
+      "I64 SPNext(){static I64 n=40;return ++n;}",
+      []
+    ],
+    [
+      "SPNext();",
+      [
+        "41"
+      ]
+    ],
+    [
+      "SPNext();",
+      [
+        "42"
+      ]
+    ],
+    [
+      "U8 *SPText(){return \"VGA\";}",
+      []
+    ],
+    [
+      "StrCmp(SPText(),\"VGA\")==0;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ],
+    [
+      "NativeGraphicsStart;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "I64 gp_ok=NativeTextBasePresent;NativeTextBaseRestore;gp_ok;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "I64 gp_frame=NativeGraphicsPresent;NativeTextBaseRestore;gp_frame;",
+      [
+        "1"
+      ]
+    ]
+  ],
+  "scope": "Frozen interactive VGA and retained-state baseline with 60-second startup gate on KVM",
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 8,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 64.32621361903148,
+    "commands": 9,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "startup_budget_pass": false,
+  "source_unchanged": true
+}

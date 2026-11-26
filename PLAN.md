@@ -621,6 +621,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   but did not signal startup completion within the harness's 180-second
   wait. The 60-second release target remains unmet on that run. See the
   [8 MiB interactive receipt](build/i386-demo-blot-v1/interactive8/result.json).
+  On KVM the same 8 MiB image reached the prompt in 64.326 seconds
+  and passed all nine input and VGA checks with the window manager
+  active. It missed the 60-second target by 4.326 seconds. See the
+  [KVM interactive receipt](build/i386-demo-blot-v1/interactive8-kvm/result.json).
   The frozen diagnostic image completed the initial program compiler
   probes. It then failed before spawning the console when allocating
   the temporary diagnostic worker. The request was 1,070,343 bytes
