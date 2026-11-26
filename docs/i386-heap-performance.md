@@ -927,3 +927,9 @@ memory probe and loaded the compiler provider. The private arena then ran out
 of space on a 72-byte request after the phase-one native packer probe. This
 locates the next failure inside the compiler workload after provider load.
 See `build/i386-diagnostic-worker-compact-v1/failure.json`.
+
+The 224 KiB trial also loaded the provider in place. It exhausted the worker
+on the same 72-byte request after the native packer marker, with only 48
+contiguous bytes free. The next probe compiles the native bundle, and the
+extra 32 KiB did not carry the worker through that step. The patch and
+terminal receipt are in `build/i386-diagnostic-worker-compact224-v1/`.
