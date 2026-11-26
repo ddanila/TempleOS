@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "iterations": 16,
+  "data_heap_delta": {
+    "original": 0,
+    "native": 0
+  },
+  "code_heap_delta": {
+    "original": 0,
+    "native": 0
+  },
+  "saved_bytes_unchanged": true,
+  "input_sha256": {
+    "build/i386-timeclock-resource-v1/Contract.HC": "3d7dd5e1ada567868dbb7907044ca93012a9e9b9264285aa59f2b277a731f909",
+    "build/i386-timeclock-resource-v1/run.py": "fc12b0636282af325ee176437b79df2a7f4a48d185d53666fcb78e479aa4362f",
+    "build/i386-timeclock-resource-v1/original/reference.iso": "f455519ee443233d7421ffbf7108147cc9d55f613de09e25969b4b6855f44fd3",
+    "build/i386-redsea-named-self-v1/full/kernel.img": "0bd316b141ef55f34cfdd24595bf81c3876a09c0c1988b3011099d461b8274a7"
+  },
+  "scope": "Warmed closed TimeRep and duplicate PunchOut with DocClear between iterations; prompt arithmetic on native."
+}

@@ -244,3 +244,10 @@ and kept every timestamp within the measured `Now` bounds. The four
 records reopened byte for byte after a cold boot, and fresh arithmetic
 rendered on both boots. See the
 [managed punch receipt](../build/i386-redsea-named-self-v1/punch-managed/result.json).
+
+An original and native comparison ran sixteen closed reports and
+duplicate punch-outs after warm-up, clearing the output document
+between iterations. Both guests returned their task data and code
+heaps to the measured baseline and preserved the exact saved record.
+Native also returned to the prompt and rendered fresh arithmetic.
+See the [resource comparison](../build/i386-timeclock-resource-v1/comparison.json).
