@@ -6432,3 +6432,15 @@ verified both boot payloads independently.
 [Artifact audit](../build/i386-code-alloc-known-v1/native-generations128/gen2-audit/result.json) ·
 [Source audit](../build/i386-code-alloc-known-v1/native-generations128/gen2-source-audit/result.json) ·
 [Generation comparison](../build/i386-code-alloc-known-v1/native-generations128/generation-identity/result.json)
+
+The second guest-built kernel passed the same 64 MiB desktop baseline
+and persistent-window VGA checks as generation one. At 8 MiB it
+completed 20 document cycles with the same peaks of 37,840 live and
+55,808 reserved bytes. The frozen 686-file content and guest read
+checks also passed, along with the exact TimeClock report and cold
+reboot workflow.
+[Desktop baseline](../build/i386-code-alloc-known-v1/native-generations128/gen2-desktop64/result.json) ·
+[Persistent window](../build/i386-code-alloc-known-v1/native-generations128/gen2-persistent-window64/result.json) ·
+[Document resource profile](../build/i386-code-alloc-known-v1/native-generations128/gen2-resource8/resource-result.json) ·
+[Full content](../build/i386-code-alloc-known-v1/native-generations128/gen2-full-content/result.json) ·
+[TimeClock report](../build/i386-code-alloc-known-v1/native-generations128/gen2-timeclock-report64/result.json)
