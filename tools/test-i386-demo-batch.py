@@ -71,13 +71,17 @@ def calendar_matches(doc, started, finished):
     return False
 
 
-def run(image, out, native, outputs):
+def run(image, out, native, outputs, reference_at_prompt=False):
     Guest = runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest']
     guest = Guest(image, out, native, reference_cpus=1)
     try:
         if native:
             guest.wait('DONE native kernel startup\n')
             guest.command('#include "C:/Probe/DemoBatch.HC"')
+        elif reference_at_prompt:
+            guest.wait('DEMO BATCH READY\n')
+            guest.type('ExeFile("T:/Probe/DemoBatch.HC");')
+            guest.press('ret')
         guest.wait('DEMO BATCH DONE\n')
         observed = [(out/name).read_bytes() for name in outputs]
         guest.screenshot('after-batch')
@@ -95,6 +99,8 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--demo', type=demo_path, action='append', required=True)
     parser.add_argument('--seed', type=int, help='Reset the task RNG to this seed before each demo')
+    parser.add_argument('--reference-at-prompt', action='store_true',
+                        help='Launch the original fixture through the keyboard after Once.HC')
     args = parser.parse_args()
     if len(set(args.demo)) != len(args.demo):
         parser.error('Each demo may be selected once')
@@ -123,14 +129,27 @@ def main():
             report['entries'][path] = {'source_sha256': sha(original), 'output_file': name}
         body = (FIXTURE+'\n'.join(calls)+'\nDemoBatchLog("DEMO BATCH DONE\\n");\n').encode()
         (out/'fixture.HC').write_bytes(body)
-        (overlay/'Once.HC').write_bytes(body)
+        if args.reference_at_prompt:
+            report['reference_at_prompt'] = True
+            (overlay/'Probe').mkdir(exist_ok=True)
+            (overlay/'Probe/DemoBatch.HC').write_bytes(body)
+            (overlay/'Once.HC').write_text(
+                'U0 DemoBatchReferenceReady()\n'
+                '{\n'
+                '  U8 *s="DEMO BATCH READY\\n";\n'
+                '  while(*s)OutU8(0xE9,*s++);\n'
+                '}\n'
+                'DemoBatchReferenceReady;\n')
+        else:
+            (overlay/'Once.HC').write_bytes(body)
         original_image = out/'original.iso'
         subprocess.run(['python3', str(ROOT/'tools/build-iso.py'), '--overlay', str(overlay),
                         '--output', str(original_image)], cwd=ROOT, check=True)
         native_image = out/'native.img'
         pack['package'](disk, native_image, additions={'/Probe/DemoBatch.HC': body})
         original_start = int(time.time())
-        original_outputs = run(original_image, out/'original', False, outputs)
+        original_outputs = run(original_image, out/'original', False, outputs,
+                               args.reference_at_prompt)
         original_end = int(time.time())
         native_start = int(time.time())
         native_outputs = run(native_image, out/'native', True, outputs)

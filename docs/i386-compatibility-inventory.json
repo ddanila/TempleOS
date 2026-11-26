@@ -16303,9 +16303,16 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Launch the unchanged demo from the pinned original command prompt and capture the generated navigable drive tree.",
+      "oracle": "Validate the collapsed root, indentation, directory macros, parent ordering, unique file links and all 224 pinned demo paths.",
+      "tests": [
+        {
+          "target": "original-treedemo-prompt",
+          "result": "pass",
+          "evidence": "build/i386-demo-treedoc-v2/original-receipt.json",
+          "scope": "The original CD presents 62 directories and 1,906 file links, including all 224 pinned Demo paths."
+        }
+      ]
     },
     {
       "path": "Demo/DolDoc/UnusedDefine.HC",

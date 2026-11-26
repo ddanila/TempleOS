@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 624 |
-| Linked to tests / with reference workflow and oracle | 190 / 119 |
+| Linked to tests / with reference workflow and oracle | 191 / 120 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 26 of 224 |
 
@@ -150,9 +150,15 @@ is complete and provides the foundation, but not desktop or application parity.
   [retained build receipt](build/i386-parenwarn-links-v2/void-retained128/checkpoint.json)
   and [generation-one install](build/i386-parenwarn-links-v2/void-native-generations128/gen1-install/result.json).
 - GlblVars entered the pinned original compiler debugger on the first
-  aggregate initializer at line 11 when the batch ran from Once.HC.
-  See the [run receipt](build/i386-demo-glblvars-v1/comparison/result.json)
-  and [debugger screenshot](build/i386-demo-glblvars-v1/comparison/original/final.png).
+  aggregate initializer at line 11 from both Once.HC and the standard guest
+  prompt. See the [boot run receipt](build/i386-demo-glblvars-v1/comparison/result.json)
+  and [prompt debugger screenshot](build/i386-demo-glblvars-direct-v1/original/after-execute.png).
+- The batch runner can launch from the original prompt through the keyboard.
+  NullCase matched all 31 DolDoc bytes through this launch path. TreeDemo
+  produced 62 directory macros and 1,906 file links on the pinned original,
+  including all 224 Demo paths. See the
+  [NullCase control](build/i386-demo-prompt-control-v2/comparison/result.json)
+  and [TreeDemo reference](build/i386-demo-treedoc-v2/original-receipt.json).
 
 ### Plan decisions (2026-11-24)
 
