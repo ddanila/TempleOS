@@ -1,3 +1,46 @@
+#ifdef I386_PUBLIC_USER_INCLUDED
+U0 Beeps(I64 count)
+{
+  U8 *beep=(&Beep)(U8 *);
+  if (count<=0)
+    return;
+
+  asm {
+    MOV ECX,U32 &count[EBP]
+@@05:
+    PUSH ECX
+    XOR EDX,EDX
+    MOV EAX,62
+    PUSH EDX //High half of busy.
+    PUSH EDX //Busy is FALSE.
+    PUSH EDX //High half of the note.
+    PUSH EAX //Low half of the note.
+    CALL U32 &beep[EBP]
+    POP ECX
+    LOOP @@05
+  }
+}
+
+I64 AsmAndC1()
+{
+  I64 i=GetI64("Num of beeps 1-5 (%d):",3,1,5),note;
+  U32 delay=cnts.time_stamp_freq>>3;
+  Beeps(i);
+
+  for (note=i;note>0;note--) {
+    Snd(note*10+40);
+    if (delay)
+      asm {
+        MOV ECX,U32 &delay[EBP]
+@@10:   LOOP @@10
+      }
+  }
+  Snd;
+  return i;
+}
+
+"Beeps:%d\n",AsmAndC1;
+#else
 /*Asm labels can only be defined once
 in a task.  <F5> will spawn a new task
 each time, so you don't get redefine
@@ -73,3 +116,4 @@ I64 AsmAndC1()
 }
 
 "Beeps:%d\n",AsmAndC1;
+#endif

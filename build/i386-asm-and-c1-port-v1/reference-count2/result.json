@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "count": 2,
+  "native": false,
+  "fixture_sha256": "416047d20e1c48e81acd14da109875e8924740db8e056bcb019bd65f88ad8019",
+  "demo_sha256": "8956514483014dfa90edc9ef962383bbf5f8eae852f36180b5b52c712771ebe3",
+  "prompt": [
+    1,
+    13
+  ],
+  "result_pixels": [
+    1,
+    14
+  ],
+  "speaker_disabled": true,
+  "audio_frames": 74000
+}

@@ -314,3 +314,14 @@ matched the original DolDoc byte for byte. Optimization matched the
 expected sum in all four loops and reported positive elapsed times on
 both guests. The batch returned to native command input.
 [Assembly regression batch](../build/i386-asm-and-c3-port-v2/assembly-regression64/result.json)
+
+### Interactive assembly sound demo
+
+The AsmAndC1 386 path uses an indirect assembly call to the HolyC
+`Beep` routine and keeps the counted `LOOP` delays between notes.
+Entering `2` through the keyboard produced `Beeps:2` on the original
+and 386 guests. Both emitted PC speaker samples and cleared the
+speaker gate; the native guest returned to fresh arithmetic. Note
+order and duration still need a paired audio check.
+[Original run](../build/i386-asm-and-c1-port-v1/reference-count2/result.json) ·
+[386 run](../build/i386-asm-and-c1-port-v1/native-count2/result.json)
