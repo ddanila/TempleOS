@@ -88,8 +88,8 @@ def capture(Guest, shared, image, out, native):
         guest.close()
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+def main(demo=DEMO, capture_guest=capture, description=__doc__):
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument('original', type=Path)
     parser.add_argument('native', type=Path)
     parser.add_argument('out', type=Path)
@@ -98,12 +98,12 @@ def main():
     out.mkdir()
     shared = runpy.run_path('build/i386-demo-pulldown-v1/run.py')
     sha = shared['sha']
-    pins = {str(path):sha(path) for path in (original, native, Path(DEMO).resolve())}
+    pins = {str(path):sha(path) for path in (original, native, Path(demo).resolve())}
     working = out / 'working.img'
     shutil.copyfile(native, working)
     Guest = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Guest']
     with ThreadPoolExecutor(max_workers=2) as pool:
-        jobs = {side:pool.submit(capture, Guest, shared, image, out / side, side == 'native')
+        jobs = {side:pool.submit(capture_guest, Guest, shared, image, out / side, side == 'native')
                 for side, image in [('original', original), ('native', working)]}
         runs = {side: job.result() for side, job in jobs.items()}
     unchanged = all(sha(Path(path)) == expected for path, expected in pins.items())

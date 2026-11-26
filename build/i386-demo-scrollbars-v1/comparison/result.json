@@ -1,0 +1,75 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-insetip-v1/cross-exports/kernel.img": "7c73ab428b78811f224b1aeacf5b76cd94cc0954441b71bf839c524a76790828",
+    "/home/ddanila/fun/TempleOS/Demo/Graphics/ScrollBars.HC": "c9ffa36ef9bd5f518f1ecddda197369e710ccd060b747a33e462d8edc463ecad"
+  },
+  "inputs_unchanged": true,
+  "working_disk_sha256": "7c73ab428b78811f224b1aeacf5b76cd94cc0954441b71bf839c524a76790828",
+  "runs": {
+    "original": {
+      "result": "pass",
+      "initial": [
+        0,
+        0,
+        1736,
+        1592
+      ],
+      "geometry": [
+        8,
+        16,
+        312,
+        456
+      ],
+      "after_axis_0": [
+        445,
+        0,
+        1736,
+        1592
+      ],
+      "after_axis_1": [
+        445,
+        409,
+        1736,
+        1592
+      ]
+    },
+    "native": {
+      "result": "pass",
+      "initial": [
+        0,
+        0,
+        1424,
+        1584
+      ],
+      "geometry": [
+        8,
+        8,
+        624,
+        464
+      ],
+      "after_axis_0": [
+        361,
+        0,
+        1424,
+        1584
+      ],
+      "after_axis_1": [
+        361,
+        406,
+        1424,
+        1584
+      ],
+      "fresh_arithmetic": {
+        "column": 0,
+        "row": 2,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

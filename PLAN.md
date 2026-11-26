@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 81 (six apps and seventy-five demos) |
+| Qualified | 82 (six apps and seventy-six demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 575 |
-| Linked to tests / with reference workflow and oracle | 239 / 168 |
+| Qualification gaps | 574 |
+| Linked to tests / with reference workflow and oracle | 240 / 169 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 75 of 224 |
+| Demos qualified | 76 of 224 |
 
-C1 has 575 qualification gaps, including entries that still need a reference
+C1 has 574 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `d5792939`.
@@ -44,7 +44,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 81 workflows and records eighteen shared files
+- The inventory qualifies 82 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -602,6 +602,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   both guests, and VGA captures verified the knob positions and the
   printed `Left: 8  Right: 5` result. The i386 prompt evaluated fresh
   arithmetic. See the [slider comparison](build/i386-demo-slider-v1/comparison/qualification.json).
+
+- ScrollBars qualifies. Both guests rendered the seeded 2,048 by 2,048
+  map and its scroll controls. Physical drags moved each scrollbar
+  about one quarter of its range, preserved both positions on release,
+  and changed the map viewport. The i386 prompt recovered. See the
+  [scrollbar comparison](build/i386-demo-scrollbars-v1/comparison/result.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the

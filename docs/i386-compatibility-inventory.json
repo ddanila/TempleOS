@@ -17971,10 +17971,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged demo with seed 1, drag the horizontal and vertical scrollbars a quarter of each track, then press Space.",
+      "oracle": "Verify initial scroll limits against the 2048-by-2048 map, independent scroll positions held on release, two changed map rasters, and native prompt recovery.",
+      "tests": [
+        {
+          "target": "native-original-physical-map-scrollbars",
+          "result": "pass",
+          "evidence": "build/i386-demo-scrollbars-v1/comparison/result.json",
+          "scope": "Both guests draw the seeded map. Physical drags change the intended axes independently by about one quarter of the range and update the visible map. The i386 prompt evaluates fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Shading.HC",
