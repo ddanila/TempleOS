@@ -211,3 +211,10 @@ retained reader required a literal dot. The unchanged disk stopped in
 kernel startup. Changing only that record's name to a dot in a copy let
 the same kernel boot, read TimeClock's archive, and display 42.
 See the [header control](../build/i386-redsea-named-self-v1/header-control/result.json).
+
+The retained reader now validates a self record by its directory attribute,
+self block, and extent size, and presents its name as `.` in lookup without
+rewriting the sector. The low-level RedSea suite uses an original-style
+named subdirectory and checks both the virtual dot entry and traversal
+through its parent. See the
+[RedSea regression receipt](../build/i386-redsea-named-self-v1/low-level/result.json).

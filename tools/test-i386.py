@@ -829,7 +829,7 @@ def main():
         root[:len(entries)*64] = b''.join(entries)
         sub = bytearray(512)
         source = b'I64 Twice(I64 x) { return x*2; }\n'
-        sub[:192] = b''.join([rs_entry('.', 0x810, 2052, 512),
+        sub[:192] = b''.join([rs_entry('Tools', 0x810, 2052, 512),
                              rs_entry('..', 0x810, 2050, 0),
                              rs_entry('Source.HC', 0x800, 2056, len(source))])
         bad = bytearray(512)

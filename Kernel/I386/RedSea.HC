@@ -48,7 +48,7 @@ Bool I386RedSeaDirectory(CI386RedSea *v,I64 block,U8 *sector,I64 *size)
   CI386RedSeaEntry self;
   if (!I386RedSeaExtent(v,block,512) || !I386RedSeaSectorRead(v,block,sector) ||
       !I386RedSeaDecode(v,sector,&self) || !(self.attr&0x10) ||
-      self.name[0]!='.' || self.name[1] || self.block!=block ||
+      self.block!=block ||
       self.size<512 || (self.size&511)) return FALSE;
   *size=self.size;
   return TRUE;
@@ -89,6 +89,12 @@ public I64 I386RedSeaFind(CI386RedSea *volume,I64 directory,U8 *name,CI386RedSea
     if (!raw[2]) return 0;
     if (!(raw[1]&1)) {
       if (!I386RedSeaDecode(volume,raw,&found)) return -1;
+      //Original RedSea directories store their own name in slot zero.
+      //Expose that record as "." without changing the directory sector.
+      if (!index) {
+        found.name[0]='.';
+        for (i=1;i<38;i++) found.name[i]=0;
+      }
       i=0;
       while (i<length && found.name[i]==name[i]) i++;
       if (i==length && !found.name[i]) {

@@ -40,6 +40,11 @@ I64 Main(I64 a,I64 b)
       I386RedSeaFind(&v,dir.block,"Source.HC",&entry)!=1 ||
       I386RedSeaRead(&v,&entry,0,buffer,1500)!=entry.size) return 12;
   for (i=0;i<entry.size;i++) if (buffer[i]!=source[i]) return 13;
+  if (I386RedSeaFind(&v,dir.block,".",&entry)!=1 ||
+      entry.block!=dir.block || entry.name[0]!='.' || entry.name[1] ||
+      I386RedSeaFind(&v,dir.block,"Tools",&entry)!=0 ||
+      I386RedSeaResolve(&v,v.root,"/Tools/../Tools/Source.HC",&entry)!=1 ||
+      entry.block!=2056) return 27;
   if (I386RedSeaFind(&v,v.root,"Empty",&entry)!=1 ||
       I386RedSeaRead(&v,&entry,0,buffer,1)!=0) return 14;
   p=&entry;
