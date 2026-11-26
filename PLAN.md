@@ -335,6 +335,9 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   `02a6be0d`. An 8 MiB cold boot verified an in-bounds write and rejection
   at both horizontal clipping boundaries, then returned fresh arithmetic.
   See the [plot checkpoint](build/i386-demo-bounce-v1/plot-checkpoint.json).
+  The same image passed all nine 64 MiB desktop baseline commands with
+  the compositor active. See the
+  [desktop baseline receipt](build/i386-demo-bounce-v1/baseline64/result.json).
   The audited `c4064751` i386 image stops at the `GrPlot` call on line 27.
   See the
   [original trail receipt](build/i386-demo-bounce-v1-baseline/original-receipt.json)
