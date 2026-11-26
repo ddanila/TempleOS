@@ -48,7 +48,7 @@ is complete and provides the foundation, but not desktop or application parity.
 - The full desktop publishes the original autocomplete and task settings
   sources at startup. A cold direct include of ScrnCodes matched all
   256 original glyphs, returned on a keypress, and rendered fresh
-  arithmetic. See the [VGA comparison](build/i386-task-settings-startup-v2/comparison.json).
+  arithmetic on the fresh full-content cross-build. See the [VGA comparison](build/i386-settings-startup-production-v1/scrncodes-receipt.json).
 - TimeClock reads its first compressed write and reproduces the original
   5,400-second DolDoc report across cold reboot with the window manager
   active. The RedSea reader now accepts original directory self records.

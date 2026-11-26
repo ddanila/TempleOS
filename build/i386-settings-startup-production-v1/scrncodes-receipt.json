@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "image_sha256": "21659873d758cb2d8c41ef8fd9a52575e345f4d2df00ca3611be74cc067530e1",
+  "source_revision": "8d4da2054d8d331e99bcb18887a4d540d6f8ec9e",
+  "delivered_files_checked": 1561,
+  "glyph_pixels_equal": 16384,
+  "native_frame_sha256": "fd38836174ec5485eff2e25bc35461ef6a489e5bbeee644c7799da26c77034ba",
+  "original_frame_sha256": "2b0036fe10275b9ed878ee710a3e65f4fe5cfe83164afb799688e66f1456853a",
+  "native_arithmetic": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true,
+  "scope": "Fresh full-content cross-build, normal managed startup and direct ScrnCodes include with key dismissal."
+}
