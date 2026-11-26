@@ -15,9 +15,9 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
 | Qualified | 19 (two apps and seventeen demos) |
-| Explicit host-only exclusions | 7 (Linux tools and sources) |
+| Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 9 (six app support sources and three shared data files) |
-| Qualification gaps | 651 |
+| Qualification gaps | 646 |
 | Linked to tests / with reference workflow and oracle | 177 / 106 |
 | Apps qualified | 2 of 12 (all 12 have partial tests) |
 | Demos qualified | 17 of 224 |

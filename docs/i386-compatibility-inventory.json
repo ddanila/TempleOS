@@ -20999,7 +20999,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Downloaded GNU/Linux ELF executable for host-side archive processing."
+      }
     },
     {
       "path": "Downloads/Linux/TOSZ.CPP",
@@ -21016,7 +21020,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Source for the downloaded GNU/Linux archive executable."
+      }
     },
     {
       "path": "Downloads/Linux/gw",
@@ -21033,7 +21041,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Bash script that reads the Linux host dictionary and random source."
+      }
     },
     {
       "path": "Downloads/Linux/make_tosz",
@@ -21050,7 +21062,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Bash build script for the GNU/Linux archive utility."
+      }
     },
     {
       "path": "Downloads/ReadMe.TXT",
@@ -21067,7 +21083,11 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "excluded",
+        "reason": "Download and installation notes for the original 64-bit release and its host setup."
+      }
     },
     {
       "path": "HomeKeyPlugIns.HC",
