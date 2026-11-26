@@ -1038,3 +1038,10 @@ also matched all 686 inventoried files and passed the bounded guest read
 fixture. Generation two passed the same inventory and guest read checks.
 The complete desktop and application workflow suite remains open.
 See `build/i386-demo-insetip-v1/generations128/`.
+
+The configured 64 MiB HomeSys workflow passed on frozen generation one.
+It selected `/Home/Once.HC`, matched all 83 reference window geometry fields,
+retired the bootstrap task, verified that its former address was in a free
+heap block, and evaluated `6*7` in the new desktop. The handoff took 223.128
+seconds in this configured test. Generation two was running at this
+checkpoint. See `build/i386-demo-insetip-v1/generations128/gen1-desktop64/result.json`.
