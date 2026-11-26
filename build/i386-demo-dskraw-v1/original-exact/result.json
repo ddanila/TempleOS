@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "screenshots_sha256": {
+    "drive-summary": "dca4e2c3072da9d10a0bec65cffd59ea03a6112faa3d3fb370cb554093b5c751",
+    "drive-class": "737ed6d256217dd8db060fd1561f05f0b4f99926c205c443b6354904ce85e075",
+    "device-class": "5f48d9f2ea9bee104c9557945e7f20238639c06bb447c655861a89c29e482534",
+    "sector-prompt": "7d0b7a106a2e85502286ce0eec276019178e5bf502ff7b92102406ed83f62add",
+    "sector-dump": "c7f3037df22bdb2526ec7f16918c466b72ba188ba4cccb97b2e5c0a9b11f0e3b"
+  },
+  "sector_sha256": "076a27c79e5ace2a3d47f9dd2e83e4ff6ea8872b3c2218f66c92b89b55f36560",
+  "input_iso_sha256": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+  "source_sha256": "b41863beceb974f8e777a0c6bcd4a56cd221fa724373715fbb8cc00fe28f2c4e"
+}

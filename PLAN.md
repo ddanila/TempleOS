@@ -370,6 +370,10 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   disk. The tested i386 image rejects the opening drive-report
   sequence before input. See the
   [sector read reference and native launch result](build/i386-demo-dskraw-v1/sector-zero/result.json).
+  Maximizing the original window and moving the pointer away from
+  the numbers makes all 32 hexadecimal rows visible. The
+  [pixel-decoded reference](build/i386-demo-dskraw-v1/original-exact/result.json)
+  recovers the complete 512-byte zero-filled RAM-disk sector.
 
 - Lines qualifies. Both guests accumulated multicolor line drawings from
   seed 1, changed the drawings across three asynchronous samples, and

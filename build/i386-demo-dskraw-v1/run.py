@@ -62,7 +62,13 @@ def capture(guest_type, disk, output, native):
         guest.press('ret')
         if native:
             guest.wait('COMMAND OK\n', timeout=25, start=start)
-        time.sleep(2)
+        # Keep the physical pointer clear of the hexadecimal columns.
+        for _ in range(8):
+            guest.call('input-send-event', events=[
+                {'type': 'rel', 'data': {'axis': 'x', 'value': 100}},
+            ])
+            time.sleep(.12)
+        time.sleep(1)
         guest.screenshot('sector-dump')
         frames['sector-dump'] = None
         screenshots = {frame: sha(output / f'{frame}.png') for frame in frames}
