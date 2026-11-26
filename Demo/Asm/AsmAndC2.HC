@@ -1,3 +1,45 @@
+#ifdef I386_PUBLIC_USER_INCLUDED
+#define ASM_AND_C2_NOTE_STEP 10
+I64 glbl_ona=Freq2Ona(400),glbl_ona_step=ASM_AND_C2_NOTE_STEP,
+    glbl_ona_base=Freq2Ona(100);
+
+U0 Beeps2(I64 count)
+{
+  U8 *beep=(&Beep)(U8 *);
+  I64 *note=&glbl_ona;
+  I64 start=cnts.jiffies;
+  if (count>0)
+    asm {
+      MOV ECX,U32 &count[EBP]
+@@05:
+      PUSH ECX
+      MOV EAX,U32 &note[EBP]
+      MOV EAX,U32 [EAX]
+      XOR EDX,EDX
+      PUSH EDX //High half of busy.
+      PUSH EDX //Busy is FALSE.
+      PUSH EDX //High half of the note.
+      PUSH EAX //Low half of the note.
+      CALL U32 &beep[EBP]
+      POP ECX
+      LOOP @@05
+    }
+  "Jiffies:%016X\n",cnts.jiffies-start;
+}
+
+U0 AsmAndC2()
+{
+  I64 i=GetI64("$$PURPLE$$\n\nNum of beeps 1-5 (%d):$$FG$$",3,1,5);
+  Beeps2(i);
+  for (;i>0;i--) {
+    Snd(i*ASM_AND_C2_NOTE_STEP+glbl_ona_base);
+    Sleep(125); //Hold the note for the original nominal eighth of a second.
+  }
+  Snd;
+}
+
+AsmAndC2;
+#else
 /*Asm labels can only be defined once
 in a task.  <F5> will spawn a new task
 each time, so you don't get redefine
@@ -83,3 +125,4 @@ U0 AsmAndC2()
 }
 
 AsmAndC2;
+#endif

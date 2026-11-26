@@ -1,0 +1,86 @@
+{
+  "result": "pass",
+  "count": 5,
+  "native": true,
+  "fixture_sha256": "58026cfd9e6ba2b4a14894d96bd1e6551192b1d0fa506a409cd9d7615bfde9d2",
+  "demo": "Demo/Asm/AsmAndC2.HC",
+  "package": {
+    "result": "pass",
+    "source_sha256": "88fc61aebccfab6dbd2a4fb5c791f9753d613843e2f6565f413e1235d11b57ed",
+    "image_sha256": "156b10f0287972c7f68082180c985cd4d83b4082a1fc14d89cd9ce7be3b3efc4",
+    "boot_area_sha256": "5b237f960313e6c2b7c45906ebdd6ea94f25e40cea9f0430f32cb002f9865c54",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1949,
+      "owned_sectors": 96301,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1950,
+      "owned_sectors": 96302,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/AsmAndC1Probe.HC": "58026cfd9e6ba2b4a14894d96bd1e6551192b1d0fa506a409cd9d7615bfde9d2"
+    },
+    "added_attributes": {
+      "/AsmAndC1Probe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "demo_sha256": "30b094e0ea10b868516ed4865886ecffbaa3760c36ea8f5147a23387a84da267",
+  "prompt": [
+    0,
+    12
+  ],
+  "elapsed_jiffies": 3500,
+  "speaker_disabled": true,
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 15,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "audio": {
+    "frames": 137726,
+    "sequence": [
+      {
+        "note": 58,
+        "classified_ms": 2480
+      },
+      {
+        "note": 84,
+        "classified_ms": 120
+      },
+      {
+        "note": 74,
+        "classified_ms": 140
+      },
+      {
+        "note": 64,
+        "classified_ms": 120
+      },
+      {
+        "note": 54,
+        "classified_ms": 140
+      },
+      {
+        "note": 44,
+        "classified_ms": 100
+      }
+    ],
+    "expected": [
+      58,
+      84,
+      74,
+      64,
+      54,
+      44
+    ]
+  }
+}

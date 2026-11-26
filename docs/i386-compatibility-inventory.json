@@ -15624,11 +15624,72 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "qualified-workflows",
+        "description": "Enter each count from 1 to 5. Verify the hexadecimal elapsed-jiffies report, emitted notes, and speaker shutdown."
+      },
+      "oracle": {
+        "tool": "tools/test-i386-asm-and-c1.py",
+        "checks": [
+          "Read the elapsed-jiffies digits from VGA.",
+          "Classify the expected note sequence from PC speaker samples.",
+          "Verify the speaker gate is clear and return to native command input."
+        ]
+      },
+      "tests": [
+        {
+          "target": "reference-asm-and-c2-count1",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c2-port-v1/reference-count1/result.json"
+        },
+        {
+          "target": "reference-asm-and-c2-count2",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c2-port-v1/reference-count2/result.json"
+        },
+        {
+          "target": "reference-asm-and-c2-count3",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c2-port-v1/reference-count3/result.json"
+        },
+        {
+          "target": "reference-asm-and-c2-count4",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c2-port-v1/reference-count4/result.json"
+        },
+        {
+          "target": "reference-asm-and-c2-count5",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c2-port-v1/reference-count5/result.json"
+        },
+        {
+          "target": "native-asm-and-c2-count1",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c2-port-v1/native-count1/result.json"
+        },
+        {
+          "target": "native-asm-and-c2-count2",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c2-port-v1/native-count2/result.json"
+        },
+        {
+          "target": "native-asm-and-c2-count3",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c2-port-v1/native-count3/result.json"
+        },
+        {
+          "target": "native-asm-and-c2-count4",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c2-port-v1/native-count4/result.json"
+        },
+        {
+          "target": "native-asm-and-c2-count5",
+          "result": "pass",
+          "evidence": "build/i386-asm-and-c2-port-v1/native-count5/result.json"
+        }
+      ]
     },
     {
       "path": "Demo/Asm/AsmAndC3.HC",

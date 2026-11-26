@@ -1,0 +1,31 @@
+{
+  "result": "pass",
+  "count": 1,
+  "native": false,
+  "fixture_sha256": "58026cfd9e6ba2b4a14894d96bd1e6551192b1d0fa506a409cd9d7615bfde9d2",
+  "demo": "Demo/Asm/AsmAndC2.HC",
+  "demo_sha256": "cc172e68d31a836722a1a2e2833da0efd7cfe2c2ef51dacd3da16f0bbed391c5",
+  "prompt": [
+    1,
+    45
+  ],
+  "elapsed_jiffies": 702,
+  "speaker_disabled": true,
+  "audio": {
+    "frames": 42127,
+    "sequence": [
+      {
+        "note": 58,
+        "classified_ms": 500
+      },
+      {
+        "note": 44,
+        "classified_ms": 420
+      }
+    ],
+    "expected": [
+      58,
+      44
+    ]
+  }
+}
