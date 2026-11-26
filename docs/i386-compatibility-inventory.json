@@ -10709,7 +10709,13 @@
           "evidence": "build/logic-lazy-load-v1/native64/result.json",
           "scope": "Cold 64 MiB native launch from bundled Load.HC, no setup library commands. Physical AND synthesis and caller recovery pass."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Logic/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Logic/Logic.HC",
@@ -10774,7 +10780,13 @@
           "evidence": "build/i386-logic-gates-production-v1/native/result.json",
           "scope": "All ten original truth-table synthesis cases pass. The audited bundled loader uses the libraries from normal startup and the native prompt renders 42 afterward."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Logic/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Logic/Run.HC",
@@ -10790,10 +10802,29 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Use the bundled launcher to enter a gate design, check the drawing, exit to the caller, and cancel an empty table. Verify all ten gate families against the original synthesis oracle.",
+      "oracle": "Match the original AND circuit pixels, ten truth-table outputs, abort diagnostic and task settings restored on return.",
+      "tests": [
+        {
+          "target": "original-native-logic-cold-launch",
+          "result": "pass",
+          "evidence": "build/i386-logic-cold-v1/comparison.json",
+          "scope": "Physical keyboard input through Run.HC, exact 3,795-pixel circuit and prompt recovery."
+        },
+        {
+          "target": "native-logic-all-gates",
+          "result": "pass",
+          "evidence": "build/i386-logic-gates-production-v1/native/result.json",
+          "scope": "Ten original gates and input links produce oracle mask 1023."
+        },
+        {
+          "target": "original-native-logic-cancellation",
+          "result": "pass",
+          "evidence": "build/i386-logic-cancel-v2/comparison.json",
+          "scope": "Empty-table abort message, drawing callback and task-settings restoration."
+        }
+      ]
     },
     {
       "path": "Apps/Psalmody/Examples/childish.HC",

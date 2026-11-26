@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "runs": {
+    "original": {
+      "result": "pass",
+      "input_sha256": "1e09e6b68bf2c7307ae700bafe06a4b4d24881e0db4f003fc66f2eba3c6e8b2e",
+      "matching_circuit_pixels": 3795,
+      "circuit_sha256": "ab642e51ed457fbd6fba3b40f5184c185802fda889ea0d81624ce1b5303e7800"
+    },
+    "native": {
+      "result": "pass",
+      "input_sha256": "957f7ef76581ebad716f33ab0d0c232fa55bf10061c7c88c578c011e3338515b",
+      "arithmetic": {
+        "column": 0,
+        "row": 1,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      },
+      "matching_circuit_pixels": 3795,
+      "circuit_sha256": "ab642e51ed457fbd6fba3b40f5184c185802fda889ea0d81624ce1b5303e7800"
+    }
+  },
+  "scope": "Direct bundled Run.HC from cold boot, physical truth table entry, exact circuit pixels and Escape recovery."
+}

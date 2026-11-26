@@ -14,12 +14,12 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 23 (four apps and nineteen demos) |
+| Qualified | 24 (five apps and nineteen demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
-| Shared files covered by qualified workflows | 14 (ten app support sources and four shared data files) |
-| Qualification gaps | 637 |
-| Linked to tests / with reference workflow and oracle | 181 / 110 |
-| Apps qualified | 4 of 12 (all 12 have partial tests) |
+| Shared files covered by qualified workflows | 16 (twelve app support sources and four shared data files) |
+| Qualification gaps | 634 |
+| Linked to tests / with reference workflow and oracle | 182 / 111 |
+| Apps qualified | 5 of 12 (all 12 have partial tests) |
 | Demos qualified | 19 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 23 workflows and records fourteen shared files
+- The inventory qualifies 24 workflows and records sixteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB

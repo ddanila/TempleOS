@@ -2811,3 +2811,10 @@ pitch sequence and cold best-score reopen still passed. Rendering
 load is the condition that distinguishes this control from the
 delayed run. See the
 [render control receipt](../build/i386-keepaway-sound-no-draw-v1/comparison.json).
+
+Logic's bundled Run.HC now passes a cold-launch keyboard comparison
+without a setup loader command. Both guests render the same 3,795
+pixels of the AND circuit and return on Escape. The inventory
+qualifies Logic's launcher using this result, the ten-gate synthesis
+oracle, and the empty-table cancellation check.
+See the [cold-launch comparison](../build/i386-logic-cold-v1/comparison.json).
