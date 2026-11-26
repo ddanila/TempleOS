@@ -1043,5 +1043,7 @@ The configured 64 MiB HomeSys workflow passed on frozen generation one.
 It selected `/Home/Once.HC`, matched all 83 reference window geometry fields,
 retired the bootstrap task, verified that its former address was in a free
 heap block, and evaluated `6*7` in the new desktop. The handoff took 223.128
-seconds in this configured test. Generation two was running at this
-checkpoint. See `build/i386-demo-insetip-v1/generations128/gen1-desktop64/result.json`.
+seconds in this configured test. Generation two passed the same handoff
+and reaping checks in 223.827 seconds and produced a byte-identical
+geometry capture. See the `gen1-desktop64` and `gen2-desktop64` receipts in
+`build/i386-demo-insetip-v1/generations128/`.
