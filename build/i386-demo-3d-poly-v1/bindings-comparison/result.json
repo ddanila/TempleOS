@@ -1,0 +1,71 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-3d-poly-v1/cross/kernel.img": "57a9a16a66dfc6306a7ad4bc39fcf8a67a17e87ece27d1fe5407e6d32b093fb6",
+    "/home/ddanila/fun/TempleOS/Demo/Graphics/3DPoly.HC": "7cf5c8a305beaa7603535c259618d44ab9c6b67b8659a4093870b22b7b26197d"
+  },
+  "inputs_unchanged": true,
+  "working_disk_sha256": "57a9a16a66dfc6306a7ad4bc39fcf8a67a17e87ece27d1fe5407e6d32b093fb6",
+  "runs": {
+    "original": {
+      "result": "pass",
+      "face_pixels": [
+        {
+          "red": 114,
+          "green": 207,
+          "blue": 7149
+        },
+        {
+          "red": 206,
+          "green": 291,
+          "blue": 7205
+        }
+      ],
+      "changed_pixels": {
+        "red": 252,
+        "green": 396,
+        "blue": 882
+      },
+      "after_key_new_pixels": {
+        "red": 0,
+        "green": 0,
+        "blue": 0
+      }
+    },
+    "native": {
+      "result": "pass",
+      "face_pixels": [
+        {
+          "red": 91,
+          "green": 191,
+          "blue": 9631
+        },
+        {
+          "red": 140,
+          "green": 123,
+          "blue": 8923
+        }
+      ],
+      "changed_pixels": {
+        "red": 205,
+        "green": 298,
+        "blue": 1258
+      },
+      "after_key_new_pixels": {
+        "red": 0,
+        "green": 0,
+        "blue": 0
+      },
+      "fresh_arithmetic": {
+        "column": 0,
+        "row": 12,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

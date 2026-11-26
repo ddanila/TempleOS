@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 83 (six apps and seventy-seven demos) |
+| Qualified | 84 (six apps and seventy-eight demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 573 |
+| Qualification gaps | 572 |
 | Linked to tests / with reference workflow and oracle | 242 / 171 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 77 of 224 |
+| Demos qualified | 78 of 224 |
 
-C1 has 573 qualification gaps, including entries that still need a reference
+C1 has 572 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `d5792939`.
@@ -44,7 +44,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 83 workflows and records eighteen shared files
+- The inventory qualifies 84 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -621,6 +621,14 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   but did not signal startup completion within the harness's 180-second
   wait. The 60-second release target remains unmet on that run. See the
   [8 MiB interactive receipt](build/i386-demo-blot-v1/interactive8/result.json).
+
+- 3DPoly qualifies. The i386 port publishes the existing symmetry,
+  polygon fill, and three matrix rotation routines. In both guests
+  all three face colors changed between frames, and Space cleared the
+  displayed geometry. The i386 prompt evaluated fresh arithmetic.
+  The image passed the 386 instruction and 1,578-file source audits.
+  See the [polygon comparison](build/i386-demo-3d-poly-v1/bindings-comparison/result.json)
+  and [source audit](build/i386-demo-3d-poly-v1/delivered-source.json).
 
 - Prompt qualifies for four explicit typed answers. Both guests rendered
   `42`, `3.25000000e0`, `Ada`, and `08/15/24`. The verifier checks the

@@ -35,10 +35,12 @@ public _extern _GR_RECT_B I64 GrRectB(CDC *dc=gr.dc,I64 x1,I64 y1,I64 x2,I64 y2)
 public _extern _GR_BORDER U0 GrBorder(CDC *dc=gr.dc,I64 x1,I64 y1,I64 x2,I64 y2,I64 step=1,I64 start=0);
 public _extern _GR_FILL_CIRCLE I64 GrFillCircle(CDC *dc=gr.dc,I64 cx,I64 cy,I64 z=0,I64 diameter);
 public _extern _MAT4X4_SCALE I64 *Mat4x4Scale(I64 *matrix,F64 scale);
+public _extern _DC_SYMMETRY_SET Bool DCSymmetrySet(CDC *dc=gr.dc,I64 x1,I64 y1,I64 x2,I64 y2);
 public _extern _DC_SYMMETRY3_SET Bool DCSymmetry3Set(CDC *dc=gr.dc,I64 x1,I64 y1,I64 z1,
     I64 x2,I64 y2,I64 z2,I64 x3,I64 y3,I64 z3);
 public _extern _GR_PLOT3 Bool GrPlot3(CDC *dc=gr.dc,I64 x,I64 y,I64 z);
 public _extern _GR_LINE3 Bool GrLine3(CDC *dc=gr.dc,I64 x1,I64 y1,I64 z1,I64 x2,I64 y2,I64 z2,
     I64 step=1,I64 start=0);
+public _extern _GR_FILL_POLY3 I64 GrFillPoly3(CDC *dc=gr.dc,I64 n,CD3I32 *poly);
 public _extern _GR_RECT3 I64 GrRect3(CDC *dc=gr.dc,I64 x,I64 y,I64 z,I64 w,I64 h);
 #endif
