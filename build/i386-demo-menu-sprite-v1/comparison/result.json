@@ -1,0 +1,63 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-menu-buttons-v1/cross-linked/kernel.img": "3f9a939a757a5653c9b38b46dd801207c3b951daf5c193a3f17af22360ecc9e5",
+    "/home/ddanila/fun/TempleOS/Demo/DolDoc/MenuSprite.HC": "d3630372963b8c1eec35ef80391579848625573a2f731da1774fd5782453665e"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "silent_bytes": 0,
+      "screenshots_sha256": {
+        "initial-menu": "978c6692201f418243776639b34e9b69723ee43362e72d6feced0a0b34406ca9",
+        "sprite-tone": "fb650dda86ba4ca475c1f40f2c30a1b5a6dec99f69d981c15d3cd0f22e8ffcc9",
+        "middle-tone": "33547195b71dcc68f060542c3ce99da691a53b39c391b9cec4e032f17b92bef4",
+        "high-tone": "533ab5c543edc388618af360d6f2a420b4f2f781691f589094513781ece2b2a1",
+        "after-exit": "7fac5bd11f2cfb345aaeb6fb704e9103041cd25dd9786c1569049a10e6a68b75"
+      },
+      "result": "pass",
+      "audio_sha256": "a059f5fa0a9499b58d6ecef6c109a8d0c382663fe99009f9af239134e47a68b3",
+      "tone_windows": {
+        "40": 3,
+        "50": 18,
+        "90": 6,
+        "100": 15,
+        "110": 1,
+        "200": 9,
+        "190": 12
+      }
+    },
+    "native": {
+      "silent_bytes": 0,
+      "screenshots_sha256": {
+        "initial-menu": "cf00aaf22a719e851f12e7414bb32c1428b2c829145ca0c11bf9a301d9d8bd20",
+        "sprite-tone": "cf00aaf22a719e851f12e7414bb32c1428b2c829145ca0c11bf9a301d9d8bd20",
+        "middle-tone": "cf00aaf22a719e851f12e7414bb32c1428b2c829145ca0c11bf9a301d9d8bd20",
+        "high-tone": "cf00aaf22a719e851f12e7414bb32c1428b2c829145ca0c11bf9a301d9d8bd20",
+        "after-exit": "f1e3ba100e7788fddc7a4ce6b09d17c3374b73144eb177f8ae31de6d492683a0"
+      },
+      "fresh_result": {
+        "column": 0,
+        "row": 3,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      },
+      "result": "pass",
+      "audio_sha256": "120cb6a9e779ca6410b3d733d2e03704eb742a0b8e136e7d7b9f47973149657c",
+      "tone_windows": {
+        "40": 3,
+        "50": 18,
+        "80": 1,
+        "100": 15,
+        "90": 5,
+        "130": 1,
+        "190": 11,
+        "200": 10
+      }
+    }
+  }
+}

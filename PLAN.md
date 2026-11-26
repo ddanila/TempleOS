@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 67 (six apps and sixty-one demos) |
+| Qualified | 68 (six apps and sixty-two demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 589 |
-| Linked to tests / with reference workflow and oracle | 226 / 155 |
+| Qualification gaps | 588 |
+| Linked to tests / with reference workflow and oracle | 227 / 156 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 61 of 224 |
+| Demos qualified | 62 of 224 |
 
-C1 has 589 qualification gaps, including entries that still need a reference
+C1 has 588 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -41,7 +41,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 67 workflows and records eighteen shared files
+- The inventory qualifies 68 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -501,6 +501,13 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   and [source audit](build/i386-demo-menu-buttons-v1/source-audit.json).
   The [X-Caliber loader regression](build/i386-demo-menu-buttons-v1/xcaliber-loader/result.json)
   also passes using the public routine.
+
+- MenuSprite qualifies on the original and i386 guests. Space activates
+  the heart sprite and Tab reaches the text menu entries. Both guests
+  render the same 201-pixel heart mask and produce sustained speaker tones
+  near 50, 100, and 190–200 Hz. Cancel clears the sprite and stops sound.
+  The i386 prompt evaluates fresh arithmetic after exit. See the
+  [sprite and speaker qualification](build/i386-demo-menu-sprite-v1/comparison/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

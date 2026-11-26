@@ -16226,10 +16226,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged MenuSprite. Activate the heart with Space, Tab to the 100 and 200 Hz menu entries and activate each, then select Cancel.",
+      "oracle": "Compare the rendered red heart mask and observe three sustained PC-speaker frequency bands, sound stopping on cancel, and i386 prompt recovery.",
+      "tests": [
+        {
+          "target": "native-original-menu-sprite-and-frequency",
+          "result": "pass",
+          "evidence": "build/i386-demo-menu-sprite-v1/comparison/qualification.json",
+          "scope": "Both guests render the same 201-pixel heart mask and emit tones near 50, 100 and 190–200 Hz. Cancel clears the heart and stops sound on both guests, and the i386 prompt evaluates fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/DolDoc/NumBible.HC",
