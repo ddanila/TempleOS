@@ -1,72 +1,68 @@
-U0 SpriteElem2Code(CDoc *doc,CSprite *tmpg)
+U0 SpriteMeshElem2Code(CDoc *doc,CSprite *tmpg)
 {
-  U8 buf1[STR_LEN],buf2[STR_LEN];
-  I32 *ptr;
-  I64 i,j,k,col,width_internal;
+  U8 buf1[STR_LEN];
+  I64 i,col;
   CD3I32 *p;
   CMeshTri *tri;
-  if (!doc) doc=DocPut;
-  DocPrint(doc,"%Z",tmpg->type&SPG_TYPE_MASK,"ST_SPRITE_ELEM_CODES");
   switch (tmpg->type&SPG_TYPE_MASK) {
-    case SPT_COLOR:
-      DocPrint(doc,"{%s}",
-	    Color2Str(buf1,tmpg->c.color));
+    case SPT_MESH:
+      DocPrint(doc,"{FALSE,");
+      p=&tmpg->mu.u;
+      col=0;
+      for (i=0;i<tmpg->mu.vertex_cnt;i++,p++) {
+	DocPrint(doc,"(%d,%d,%d)",p->x,p->y,p->z);
+	if (i+1<tmpg->mu.vertex_cnt) DocPrint(doc,",");
+	if (++col==4) {
+	  DocPrint(doc,"\t//%d\n",i);
+	  col=0;
+	}
+      }
+      DocPrint(doc,":");
+      tri=p;
+      for (i=0;i<tmpg->mu.tri_cnt;i++,tri++) {
+	DocPrint(doc,"(%s,%d,%d,%d)",Color2Str(buf1,tri->color),
+	      tri->nums[0],tri->nums[1],tri->nums[2]);
+	if (i+1<tmpg->mu.tri_cnt) DocPrint(doc,",");
+	if (++col>=3 && i+1<tmpg->mu.tri_cnt) {
+	  DocPrint(doc,"\n");
+	  col=0;
+	}
+      }
+      DocPrint(doc,"}");
       break;
-    case SPT_DITHER_COLOR:
-      DocPrint(doc,"{%s}",
-	    Color2Str(buf2,ROPF_DITHER|tmpg->d.dither_color.u8[0]|
-	    tmpg->d.dither_color.u8[1]<<COLORROP_BITS));
+    case SPT_SHIFTABLE_MESH:
+      DocPrint(doc,"{TRUE,(%d,%d,%d):",tmpg->pmu.x,tmpg->pmu.y,tmpg->pmu.z);
+      p=&tmpg->pmu.u;
+      col=1;
+      for (i=0;i<tmpg->pmu.vertex_cnt;i++,p++) {
+	DocPrint(doc,"(%d,%d,%d)",p->x,p->y,p->z);
+	if (i+1<tmpg->pmu.vertex_cnt) DocPrint(doc,",");
+	if (++col==4) {
+	  DocPrint(doc,"\t//%d\n",i);
+	  col=0;
+	}
+      }
+      DocPrint(doc,":");
+      tri=p;
+      for (i=0;i<tmpg->pmu.tri_cnt;i++,tri++) {
+	DocPrint(doc,"(%s,%d,%d,%d)",Color2Str(buf1,tri->color),
+	      tri->nums[0],tri->nums[1],tri->nums[2]);
+	if (i+1<tmpg->pmu.tri_cnt) DocPrint(doc,",");
+	if (++col>=3 && i+1<tmpg->pmu.tri_cnt) {
+	  DocPrint(doc,"\n");
+	  col=0;
+	}
+      }
+      DocPrint(doc,"}");
       break;
-    case SPT_TRANSFORM_ON:
-      DocPrint(doc,"{ON}");
-      break;
-    case SPT_TRANSFORM_OFF:
-      DocPrint(doc,"{OFF}");
-      break;
-    case SPT_LINE:
-    case SPT_ARROW:
-    case SPT_PLANAR_SYMMETRY:
-      DocPrint(doc,"{(%d,%d),(%d,%d)}",tmpg->pp.x1,tmpg->pp.y1,
-	    tmpg->pp.x2,tmpg->pp.y2);
-      break;
-    case SPT_RECT:
-      DocPrint(doc,"{(%d,%d):(%d,%d)}",tmpg->pp.x1,tmpg->pp.y1,
-	    tmpg->pp.x2-tmpg->pp.x1,tmpg->pp.y2-tmpg->pp.y1);
-      break;
-    case SPT_ROTATED_RECT:
-      DocPrint(doc,"{(%d,%d):(%d,%d),%0.4f}",tmpg->ppa.x1,tmpg->ppa.y1,
-	    tmpg->ppa.x2-tmpg->ppa.x1,tmpg->ppa.y2-tmpg->ppa.y1,
-	    180/ã*Wrap(tmpg->ppa.angle));
-      break;
-    case SPT_PT:
-    case SPT_FLOOD_FILL:
-    case SPT_SHIFT:
-      DocPrint(doc,"{(%d,%d)}",tmpg->p.x1,tmpg->p.y1);
-      break;
-    case SPT_FLOOD_FILL_NOT:
-      DocPrint(doc,"{(%d,%d),TRUE}",tmpg->p.x1,tmpg->p.y1);
-      break;
-    case SPT_CIRCLE:
-      DocPrint(doc,"{(%d,%d):%d}",tmpg->pr.x1,tmpg->pr.y1,tmpg->pr.radius);
-      break;
-    case SPT_THICK:
-      DocPrint(doc,"{%d}",tmpg->t.thick);
-      break;
-    case SPT_ELLIPSE:
-      DocPrint(doc,"{(%d,%d):(%d,%d),%0.4f}",tmpg->pwha.x1,tmpg->pwha.y1,
-	    tmpg->pwha.width,tmpg->pwha.height,180/ã*Wrap(tmpg->pwha.angle));
-      break;
-    case SPT_POLYGON:
-      DocPrint(doc,"{%d,(%d,%d):(%d,%d),%0.4f}",tmpg->pwhas.sides,
-	    tmpg->pwhas.x1,tmpg->pwhas.y1,
-	    tmpg->pwhas.width,tmpg->pwhas.height,
-	    180/ã*Wrap(tmpg->pwhas.angle));
-      break;
-    case SPT_TEXT:
-    case SPT_TEXT_BOX:
-    case SPT_TEXT_DIAMOND:
-      DocPrint(doc,"{(%d,%d),\"%Q\"}",tmpg->ps.x1,tmpg->ps.y1,tmpg->ps.st);
-      break;
+  }
+}
+
+U0 SpritePolyElem2Code(CDoc *doc,CSprite *tmpg)
+{
+  I32 *ptr;
+  I64 i,j,k,col,width_internal;
+  switch (tmpg->type&SPG_TYPE_MASK) {
     case SPT_POLYLINE:
       ptr=&tmpg->nu.u;
       DocPrint(doc,"{");
@@ -134,58 +130,80 @@ U0 SpriteElem2Code(CDoc *doc,CSprite *tmpg)
 	}
       DocPrint(doc,"}");
       break;
-    case SPT_MESH:
-      DocPrint(doc,"{FALSE,");
-      p=&tmpg->mu.u;
-      col=0;
-      for (i=0;i<tmpg->mu.vertex_cnt;i++,p++) {
-	DocPrint(doc,"(%d,%d,%d)",p->x,p->y,p->z);
-	if (i+1<tmpg->mu.vertex_cnt) DocPrint(doc,",");
-	if (++col==4) {
-	  DocPrint(doc,"\t//%d\n",i);
-	  col=0;
-	}
-      }
-      DocPrint(doc,":");
-      tri=p;
-      for (i=0;i<tmpg->mu.tri_cnt;i++,tri++) {
-	DocPrint(doc,"(%s,%d,%d,%d)",Color2Str(buf1,tri->color),
-	      tri->nums[0],tri->nums[1],tri->nums[2]);
-	if (i+1<tmpg->mu.tri_cnt) DocPrint(doc,",");
-	if (++col>=3 && i+1<tmpg->mu.tri_cnt) {
-	  DocPrint(doc,"\n");
-	  col=0;
-	}
-      }
-      DocPrint(doc,"}");
-      break;
-    case SPT_SHIFTABLE_MESH:
-      DocPrint(doc,"{TRUE,(%d,%d,%d):",tmpg->pmu.x,tmpg->pmu.y,tmpg->pmu.z);
-      p=&tmpg->pmu.u;
-      col=1;
-      for (i=0;i<tmpg->pmu.vertex_cnt;i++,p++) {
-	DocPrint(doc,"(%d,%d,%d)",p->x,p->y,p->z);
-	if (i+1<tmpg->pmu.vertex_cnt) DocPrint(doc,",");
-	if (++col==4) {
-	  DocPrint(doc,"\t//%d\n",i);
-	  col=0;
-	}
-      }
-      DocPrint(doc,":");
-      tri=p;
-      for (i=0;i<tmpg->pmu.tri_cnt;i++,tri++) {
-	DocPrint(doc,"(%s,%d,%d,%d)",Color2Str(buf1,tri->color),
-	      tri->nums[0],tri->nums[1],tri->nums[2]);
-	if (i+1<tmpg->pmu.tri_cnt) DocPrint(doc,",");
-	if (++col>=3 && i+1<tmpg->pmu.tri_cnt) {
-	  DocPrint(doc,"\n");
-	  col=0;
-	}
-      }
-      DocPrint(doc,"}");
-      break;
+    default:
+      SpriteMeshElem2Code(doc,tmpg);
   }
-    DocPrint(doc,";\n");
+}
+
+U0 SpriteElem2Code(CDoc *doc,CSprite *tmpg)
+{
+  U8 buf1[STR_LEN],buf2[STR_LEN];
+  if (!doc) doc=DocPut;
+  DocPrint(doc,"%Z",tmpg->type&SPG_TYPE_MASK,"ST_SPRITE_ELEM_CODES");
+  switch (tmpg->type&SPG_TYPE_MASK) {
+    case SPT_COLOR:
+      DocPrint(doc,"{%s}",
+	    Color2Str(buf1,tmpg->c.color));
+      break;
+    case SPT_DITHER_COLOR:
+      DocPrint(doc,"{%s}",
+	    Color2Str(buf2,ROPF_DITHER|tmpg->d.dither_color.u8[0]|
+	    tmpg->d.dither_color.u8[1]<<COLORROP_BITS));
+      break;
+    case SPT_TRANSFORM_ON:
+      DocPrint(doc,"{ON}");
+      break;
+    case SPT_TRANSFORM_OFF:
+      DocPrint(doc,"{OFF}");
+      break;
+    case SPT_LINE:
+    case SPT_ARROW:
+    case SPT_PLANAR_SYMMETRY:
+      DocPrint(doc,"{(%d,%d),(%d,%d)}",tmpg->pp.x1,tmpg->pp.y1,
+	    tmpg->pp.x2,tmpg->pp.y2);
+      break;
+    case SPT_RECT:
+      DocPrint(doc,"{(%d,%d):(%d,%d)}",tmpg->pp.x1,tmpg->pp.y1,
+	    tmpg->pp.x2-tmpg->pp.x1,tmpg->pp.y2-tmpg->pp.y1);
+      break;
+    case SPT_ROTATED_RECT:
+      DocPrint(doc,"{(%d,%d):(%d,%d),%0.4f}",tmpg->ppa.x1,tmpg->ppa.y1,
+	    tmpg->ppa.x2-tmpg->ppa.x1,tmpg->ppa.y2-tmpg->ppa.y1,
+	    180/ã*Wrap(tmpg->ppa.angle));
+      break;
+    case SPT_PT:
+    case SPT_FLOOD_FILL:
+    case SPT_SHIFT:
+      DocPrint(doc,"{(%d,%d)}",tmpg->p.x1,tmpg->p.y1);
+      break;
+    case SPT_FLOOD_FILL_NOT:
+      DocPrint(doc,"{(%d,%d),TRUE}",tmpg->p.x1,tmpg->p.y1);
+      break;
+    case SPT_CIRCLE:
+      DocPrint(doc,"{(%d,%d):%d}",tmpg->pr.x1,tmpg->pr.y1,tmpg->pr.radius);
+      break;
+    case SPT_THICK:
+      DocPrint(doc,"{%d}",tmpg->t.thick);
+      break;
+    case SPT_ELLIPSE:
+      DocPrint(doc,"{(%d,%d):(%d,%d),%0.4f}",tmpg->pwha.x1,tmpg->pwha.y1,
+	    tmpg->pwha.width,tmpg->pwha.height,180/ã*Wrap(tmpg->pwha.angle));
+      break;
+    case SPT_POLYGON:
+      DocPrint(doc,"{%d,(%d,%d):(%d,%d),%0.4f}",tmpg->pwhas.sides,
+	    tmpg->pwhas.x1,tmpg->pwhas.y1,
+	    tmpg->pwhas.width,tmpg->pwhas.height,
+	    180/ã*Wrap(tmpg->pwhas.angle));
+      break;
+    case SPT_TEXT:
+    case SPT_TEXT_BOX:
+    case SPT_TEXT_DIAMOND:
+      DocPrint(doc,"{(%d,%d),\"%Q\"}",tmpg->ps.x1,tmpg->ps.y1,tmpg->ps.st);
+      break;
+    default:
+      SpritePolyElem2Code(doc,tmpg);
+  }
+  DocPrint(doc,";\n");
 }
 
 public U0 Sprite2Code(CDoc *doc=NULL,U8 *elems)

@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "image_sha256": "9c2babe914327c106cf3af14edfd0e338b8675e217058549c10c22dea7b097cb",
+  "delivered_source_files": 1571,
+  "sprite_text_document_sha256": "36bf263b9efef958d0218b1425a866d781bd9672e3d6e146cf51abfd4ba7ac3c",
+  "x86_64_bootstrap_generations": [
+    {
+      "Compiler.BIN": "231f14771f910766eeddfe6542685f4777a72261b4e37ec5b94454fb6aeeb0fa",
+      "Kernel.BIN": "5761b3e3ba2725fdfa773647ab4900236fe283e216cf4fc148ab074d88e02014"
+    },
+    {
+      "Compiler.BIN": "94046d3e0b8b7e9cc6d2ea2ce99d297df046df81525dec3c2b833f1c46285959",
+      "Kernel.BIN": "e38887a00d05758d623b0cbeb86b5dd5a097b434ab612fb2d38e8c050937ca44"
+    }
+  ],
+  "evidence_sha256": {
+    "source-audit.json": "bc44d14d01f108e964625be5425693ac9a3c98b801953a470403d67d7b4233f8",
+    "comparison/result.json": "0d5a7bfc174bf2791a04d30915524272669f3ac5dc05afe114d67d8122fe7eef",
+    "rebuild/result.json": "24ce8c02153ad8c86c1d322efcf4ae128f7a5838f0a4b80b66d61927a1b8458a",
+    "address8-final/result.json": "b6ea9fb5e2bc4258d2a080f8569940c14a0f2d243f05761369fb942072b1fb60"
+  },
+  "scope": "Recovered 8 MiB startup and code-position/arithmetic checks, and preserved exact SpriteText output at 64 MiB."
+}

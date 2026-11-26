@@ -148,9 +148,10 @@ is complete and provides the foundation, but not desktop or application parity.
   committed-source audit. Generation one installed those providers, rebuilt
   its flat kernel at 128 MiB, cold-booted at 8 MiB with exact VGA checkpoints,
   and passed its installed-image and 1,561-file source audits. Generation
-  two was rebuilding the retained providers at this checkpoint. See the
-  [retained build receipt](build/i386-parenwarn-links-v2/void-retained128/checkpoint.json)
-  and [generation-one checkpoint](build/i386-parenwarn-links-v2/void-native-generations128/gen1-checkpoint.json).
+  two rebuilt and audited all nine retained providers at 128 MiB and
+  started installation. See the
+  [generation-one checkpoint](build/i386-parenwarn-links-v2/void-native-generations128/gen1-checkpoint.json)
+  and [generation-two retained build](build/i386-parenwarn-links-v2/void-native-generations128/gen2-retained-build/result.json).
 - GlblVars entered the pinned original compiler debugger on the first
   aggregate initializer at line 11 from both Once.HC and the standard guest
   prompt. The unchanged source now completes on i386, displaying all four
@@ -234,6 +235,13 @@ is complete and provides the foundation, but not desktop or application parity.
   1,315-byte DolDoc. Both x86-64 bootstrap rebuilds passed after extracting
   the shared routines. See the
   [sprite text comparison](build/i386-demo-sprite-text-v4/qualification.json).
+  The initial image passed 64 MiB desktop and 686-file content checks, but
+  ran out of code storage compiling the formatter on the 8 MiB profile.
+  Smaller formatter functions restored the 8 MiB boot, code-position and
+  arithmetic checks and preserved the exact 64 MiB demo output. Both
+  x86-64 bootstrap rebuilds passed again. See the
+  [initial image checkpoint](build/i386-demo-sprite-text-v4/desktop-content-checkpoint.json)
+  and [memory regression checkpoint](build/i386-demo-sprite-text-v5/memory-checkpoint.json).
 
 ### Plan decisions (2026-11-24)
 

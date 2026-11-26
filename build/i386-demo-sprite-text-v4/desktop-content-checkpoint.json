@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "source_revision": "800fd9ef4ddda3e7090ceb61e78e29645c1c3588",
+  "image_sha256": "e90ab362a7b175fbe5a1b4174a4eef0921bf816a161079374985e7e671c97cc7",
+  "inventory_files": 686,
+  "delivered_source_files": 1571,
+  "active_desktop_commands": 9,
+  "minimal_profile_result": "fail",
+  "evidence_sha256": {
+    "committed-source.json": "de5160c58cec53e3876af4185cfdd0e7e37c78d3caa7b5a771d074df68801c3c",
+    "full-content/result.json": "7586b1891db87708ce2adb05e006ebdf05a5338d2a206bf96d7d7a3d5ec69e22",
+    "baseline64/result.json": "e1d4704f7a3bca2098c71df6dc82a27e374646706941466ced70296d75032730",
+    "address8/result.json": "2fe5ad5ef5302612aca1a48e3d300905749980ae7a8ca8edfb5fc373da3d3ca0"
+  }
+}
