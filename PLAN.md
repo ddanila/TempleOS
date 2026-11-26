@@ -42,8 +42,9 @@ is complete and provides the foundation, but not desktop or application parity.
   verified all 686 inventory files. The bounded guest probe read the full
   Bible and returned to arithmetic. At 128 MiB, the guest rebuilt and
   audited all nine retained providers. The two-generation pipeline for
-  `eea98cfa` has begun. The completed two-generation result remains pinned
-  to `592a38b7`. See the [retained-build receipt](build/i386-desktop-eea98cfa/retained128/result.json).
+  `eea98cfa` installed generation one's providers and passed the 8 MiB
+  reboot and document-allocation checks. The first self-hosted kernel build
+  is underway. See the [installation receipt](build/i386-desktop-eea98cfa/generations128/gen1-install/result.json).
 - ScrnCodes matches all 256 original glyph cells after loading the packaged
   settings and autocomplete sources. Both guests return on a keypress and
   native arithmetic still works. A cold direct include still stops at
