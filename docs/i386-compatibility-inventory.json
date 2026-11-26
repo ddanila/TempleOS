@@ -17586,6 +17586,12 @@
           "result": "pass",
           "evidence": "build/i386-demo-glblvars-native-v1/run/result.json",
           "scope": "The unchanged demo displays all four global and static memory dumps and returns to arithmetic on i386. The pinned original reference remains unresolved."
+        },
+        {
+          "target": "native-glblvars-document-records",
+          "result": "pass",
+          "evidence": "build/i386-demo-glblvars-native-document-v1/result.json",
+          "scope": "Decode all four native dumps and check integer values, fixed-width names and padding, and agreement between each printed time and its stored integer."
         }
       ]
     },

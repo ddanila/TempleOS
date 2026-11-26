@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "document_sha256": "458b7418e39d9becd153c8c1d125d5490c1c8fe0a52ebabd4a2b10f1bdb9a638",
+  "cases": [
+    {
+      "prefix": "Name",
+      "time": 350,
+      "bytes": 36
+    },
+    {
+      "prefix": "Static",
+      "time": 371,
+      "bytes": 36
+    },
+    {
+      "prefix": "name",
+      "time": 392,
+      "bytes": 36
+    },
+    {
+      "prefix": "static",
+      "time": 414,
+      "bytes": 36
+    }
+  ]
+}
