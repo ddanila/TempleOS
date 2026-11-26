@@ -1,0 +1,69 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-finish-v3/run.py": "36610e8d3171997821da451acb0329a32d94975e0c508f9dc9d5a2616e1ea111",
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-finish-v3/Probe.HC": "cbbece381f0591f7cc88ce9bd7272230a18d44749a012089782d76811243cd0a",
+    "tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/i386-keepaway-positive-tick-v1/candidate.img": "68e3f6ba815a565a934cd1010a8974792228603e7aab511e0f456748e3297734"
+  },
+  "scope": "KeepAway handoff and pass scoring, staged clock expiration, lower-score restart, registry persistence and prompt recovery",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "68e3f6ba815a565a934cd1010a8974792228603e7aab511e0f456748e3297734",
+    "image_sha256": "73de306ebb8d9d3bfc69b65a0611a3c7da9ba928ab70f9a5192da923a973908c",
+    "boot_area_sha256": "87561de96d46c2fb02fe661bd8c95802dc0b1d4ae34bff6421499173ca9504cb",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96180,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 96184,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/KeepAwayProbe.HC": "cbbece381f0591f7cc88ce9bd7272230a18d44749a012089782d76811243cd0a"
+    },
+    "added_attributes": {
+      "/KeepAwayProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "game_over_origin": [
+    284,
+    240
+  ],
+  "game_over_red_pixels": [
+    171,
+    173
+  ],
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "cold_reopen_result": {
+    "column": 0,
+    "row": 14,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "best_score": [
+    8,
+    0
+  ],
+  "inputs_unchanged": true
+}

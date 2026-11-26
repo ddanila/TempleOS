@@ -1,0 +1,15 @@
+{
+  "result": "pass",
+  "input_sha256": "957f7ef76581ebad716f33ab0d0c232fa55bf10061c7c88c578c011e3338515b",
+  "arithmetic": {
+    "column": 0,
+    "row": 12,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "output_bytes": 4920719,
+  "output_sha256": "741e3e8b00f3b7b7ed98d88986161efc72eea74c92ee5e37b770564bc52ab905"
+}

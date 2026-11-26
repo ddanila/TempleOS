@@ -1,0 +1,71 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/keepaway-shot-animation-v1/run.py": "22cb6951e627f98febfbfea21822cbddd492c61b0b6d92a6d7c9d565881cc0c8",
+    "/home/ddanila/fun/TempleOS/build/keepaway-shot-animation-v1/Probe.HC": "57be8efc9cfdadc43c38e81fc638eb5f6d1dfa0ee09a11c7f8624e11c4be6d5c",
+    "tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/i386-keepaway-positive-tick-v1/candidate.img": "68e3f6ba815a565a934cd1010a8974792228603e7aab511e0f456748e3297734"
+  },
+  "scope": "KeepAway scoring with controlled ball placement, physical shot input, and caller recovery",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "68e3f6ba815a565a934cd1010a8974792228603e7aab511e0f456748e3297734",
+    "image_sha256": "f911f64bf4bbc619e8c2abd0d1fa3364141ea546da1bca8c3b432b6f7fe04fdd",
+    "boot_area_sha256": "87561de96d46c2fb02fe661bd8c95802dc0b1d4ae34bff6421499173ca9504cb",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96180,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 96185,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/KeepAwayProbe.HC": "57be8efc9cfdadc43c38e81fc638eb5f6d1dfa0ee09a11c7f8624e11c4be6d5c"
+    },
+    "added_attributes": {
+      "/KeepAwayProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "animation_trace": [
+    "KEEP animation 0 flag=0 shooting=0 stopped=0 previous=2 next=12 frame_due_ms=-144 changed=0",
+    "KEEP animation 1 flag=0 shooting=0 stopped=0 previous=12 next=9 frame_due_ms=-174 changed=0",
+    "KEEP animation 2 flag=1 shooting=1 stopped=0 previous=9 next=0 frame_due_ms=-144 changed=0",
+    "KEEP animation 3 flag=1 shooting=1 stopped=0 previous=0 next=4 frame_due_ms=-175 changed=0",
+    "KEEP animation 4 flag=1 shooting=1 stopped=0 previous=4 next=5 frame_due_ms=-179 changed=0",
+    "KEEP animation 5 flag=1 shooting=1 stopped=0 previous=5 next=6 frame_due_ms=-100 changed=0",
+    "KEEP animation 6 flag=1 shooting=1 stopped=0 previous=6 next=7 frame_due_ms=-229 changed=0",
+    "KEEP animation 7 flag=1 shooting=1 stopped=0 previous=7 next=8 frame_due_ms=-200 changed=0",
+    "KEEP animation 8 flag=0 shooting=0 stopped=0 previous=8 next=0 frame_due_ms=-169 changed=1",
+    "KEEP animation 9 flag=0 shooting=0 stopped=0 previous=0 next=0 frame_due_ms=-164 changed=1",
+    "KEEP animation 10 flag=0 shooting=0 stopped=0 previous=0 next=0 frame_due_ms=-144 changed=1",
+    "KEEP animation 11 flag=0 shooting=0 stopped=0 previous=0 next=0 frame_due_ms=-164 changed=1",
+    "KEEP animation 12 flag=0 shooting=0 stopped=0 previous=0 next=0 frame_due_ms=-154 changed=1",
+    "KEEP animation 13 flag=0 shooting=0 stopped=0 previous=0 next=0 frame_due_ms=-185 changed=1",
+    "KEEP animation 14 flag=0 shooting=0 stopped=0 previous=0 next=0 frame_due_ms=-185 changed=1",
+    "KEEP animation 15 flag=0 shooting=0 stopped=0 previous=0 next=0 frame_due_ms=-185 changed=1"
+  ],
+  "shot_input": "left button",
+  "observed_scores": [
+    2,
+    8
+  ],
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

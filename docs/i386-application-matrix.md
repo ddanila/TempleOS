@@ -2762,3 +2762,22 @@ The refreshed full image contains the committed KeepAway and NumBible
 sources. Its boot instruction audit and the audit of 1,561 packaged
 source and documentation files passed. See the
 [combined build receipt](../build/i386-keepaway-numbible-production-v1/build-receipt.json).
+
+The elapsed-time fix also passed the full regulation run in 179.893
+seconds and the mouse shot checkpoint. The fresh combined image
+repeated the foul result. Its KeepAway audio capture matched both
+pitches and their order, with longer active tone durations on native
+during the controlled finish and restart. That difference remains
+open. See the
+[regulation receipt](../build/i386-keepaway-positive-tick-v1/clock/result.json)
+and [speaker comparison](../build/i386-keepaway-sound-v1/comparison.json).
+
+The refreshed desktop repeated the keyboard-driven Logic AND
+synthesis and returned to the prompt. Its 3,795-pixel circuit
+region matched the original exactly. See the
+[Logic comparison](../build/i386-logic-production-v1/comparison.json).
+
+The combined 64 MiB KVM image passed the full inventory content
+check and reproduced every byte of the original NumBible save.
+See the [full-content receipt](../build/i386-keepaway-numbible-production-v1/full-content/result.json)
+and [NumBible receipt](../build/i386-keepaway-numbible-production-v1/numbible/result.json).

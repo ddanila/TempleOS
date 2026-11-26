@@ -1,0 +1,55 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-clock-v1/run.py": "d07198e4fb6267b5f046106546e0d3d243fbe5f4eee2aecfda647bea2eca59cf",
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-clock-v1/Probe.HC": "0a4769401d72f27bfe53adfa03b1d855a68d5f8621398ce6b08d4ea958b16562",
+    "tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/i386-keepaway-positive-tick-v1/candidate.img": "68e3f6ba815a565a934cd1010a8974792228603e7aab511e0f456748e3297734"
+  },
+  "scope": "Natural three-minute KeepAway clock, with no fixture manipulation of the match, score, or player positions.",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "68e3f6ba815a565a934cd1010a8974792228603e7aab511e0f456748e3297734",
+    "image_sha256": "41bb7c6c73836ccd079c29ffbc709ea83198cd26b7afe19e58379e4687a98f4d",
+    "boot_area_sha256": "87561de96d46c2fb02fe661bd8c95802dc0b1d4ae34bff6421499173ca9504cb",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96180,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 96182,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/KeepAwayProbe.HC": "0a4769401d72f27bfe53adfa03b1d855a68d5f8621398ce6b08d4ea958b16562"
+    },
+    "added_attributes": {
+      "/KeepAwayProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "markers": [
+    "KEEP popup",
+    "KEEP regulation clock",
+    "KEEP halftime",
+    "KEEP regulation finished 14-26 in 179.893 seconds",
+    "KEEP returned"
+  ],
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

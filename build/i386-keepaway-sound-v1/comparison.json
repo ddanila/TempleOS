@@ -1,0 +1,50 @@
+{
+  "result": "fail",
+  "pitch_and_order_match": true,
+  "active_durations_within_100_ms": false,
+  "scope": "Emulated PC speaker, scored finish and weaker restart. Window-sampled active time; does not identify the timer or scheduler cause.",
+  "recordings": {
+    "original": {
+      "sha256": "7fd5b65a942eb7b404044b7f4ffe5c9770cccef96b997e372f9691babd70cb43",
+      "tones": [
+        {
+          "expected_hz": 493.88,
+          "median_hz": 491.3649025069638,
+          "active_seconds": 0.49
+        },
+        {
+          "expected_hz": 1975.53,
+          "median_hz": 1962.295081967213,
+          "active_seconds": 0.49
+        }
+      ],
+      "tone_order": [
+        1,
+        0,
+        1,
+        0
+      ]
+    },
+    "native": {
+      "sha256": "4675bf1becc5d6fb96641ba0c2f6c9aaafb6c1547c3fc5dfd6e312339b7fcc9c",
+      "tones": [
+        {
+          "expected_hz": 493.88,
+          "median_hz": 490.0,
+          "active_seconds": 1.18
+        },
+        {
+          "expected_hz": 1975.53,
+          "median_hz": 1962.295081967213,
+          "active_seconds": 1.25
+        }
+      ],
+      "tone_order": [
+        1,
+        0,
+        1,
+        0
+      ]
+    }
+  }
+}

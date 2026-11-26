@@ -10657,6 +10657,24 @@
           "result": "fail",
           "evidence": "build/i386-keepaway-foul-v3/comparison.json",
           "scope": "Only the original records the foul under the staged live-pointer collision geometry."
+        },
+        {
+          "target": "native-keepaway-foul-positive-tick",
+          "result": "pass",
+          "evidence": "build/i386-keepaway-numbible-production-v1/foul/result.json",
+          "scope": "Production image scores the original 0–1 foul and recovers the prompt."
+        },
+        {
+          "target": "native-keepaway-regulation-positive-tick",
+          "result": "pass",
+          "evidence": "build/i386-keepaway-positive-tick-v1/clock/result.json",
+          "scope": "Elapsed-time fix preserves the full match clock; regulation completes in 179.893 seconds."
+        },
+        {
+          "target": "original-native-keepaway-speaker-duration",
+          "result": "fail",
+          "evidence": "build/i386-keepaway-sound-v1/comparison.json",
+          "scope": "Pitch and tone order match, with longer active tones on native in the controlled finish and restart."
         }
       ]
     },

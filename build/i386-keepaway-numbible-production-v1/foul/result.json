@@ -1,0 +1,52 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-foul-v3/run.py": "e633a960e2ec2245834c63a4dfb3d756127aeffc8028f61d8b5146dca47ea0fa",
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-foul-v3/Probe.HC": "82f6e38d56480e47de33015b4b6420a5005bdc2606ea102a692321d20ae13a7d",
+    "tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "build/i386-keepaway-numbible-production-v1/full/kernel.img": "957f7ef76581ebad716f33ab0d0c232fa55bf10061c7c88c578c011e3338515b"
+  },
+  "scope": "KeepAway foul rule with controlled player approach, opponent point and prompt recovery",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "957f7ef76581ebad716f33ab0d0c232fa55bf10061c7c88c578c011e3338515b",
+    "image_sha256": "ae730acf27cbace855356d9cc779ff0cf6b69ab0a759cef51750ef9da50b5fb9",
+    "boot_area_sha256": "5070b8a45c093b6b4565c9d7c325ad3ba424a434a7dc93c1f04f21ff35ecbed9",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96182,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 96186,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/KeepAwayProbe.HC": "82f6e38d56480e47de33015b4b6420a5005bdc2606ea102a692321d20ae13a7d"
+    },
+    "added_attributes": {
+      "/KeepAwayProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "score": [
+    0,
+    1
+  ],
+  "inputs_unchanged": true
+}
