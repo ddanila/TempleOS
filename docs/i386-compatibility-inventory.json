@@ -19774,7 +19774,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Run the terminal demo with the original dictionary available, enter xylophone, then submit an empty reply to exit.",
       "oracle": "The original outputs one suggestion, Xylophone, and the second prompt exits on the empty answer. Compare all DolDoc bytes and verify the i386 prompt recovers.",
       "tests": [
@@ -19783,6 +19783,18 @@
           "result": "pass",
           "evidence": "build/i386-demo-suggest-spelling-v1/reference-result.json",
           "scope": "The original guest exports all 71 DolDoc bytes for one query and an empty reply."
+        },
+        {
+          "target": "native-spelling-without-dictionary-startup",
+          "result": "fail",
+          "evidence": "build/i386-demo-suggest-spelling-v1/comparison/result.json",
+          "scope": "Launching from the raw prompt before dictionary initialization returned an empty suggestion list."
+        },
+        {
+          "target": "native-original-suggest-spelling-dictionary",
+          "result": "pass",
+          "evidence": "build/i386-demo-suggest-spelling-v1/dictionary-comparison/result.json",
+          "scope": "With the normal ACInit dependency completed in both guests, all 71 DolDoc bytes match and the native prompt accepts fresh arithmetic."
         }
       ]
     },

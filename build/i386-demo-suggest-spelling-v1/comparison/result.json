@@ -1,0 +1,17 @@
+{
+  "result": "fail",
+  "input_sha256": "7c73ab428b78811f224b1aeacf5b76cd94cc0954441b71bf839c524a76790828",
+  "entries": {
+    "Demo/SuggestSpelling.HC": {
+      "source_sha256": "106f84a73ac5708daf5409875a3f2873060b89ca18b0b080d6a132e85ec51419",
+      "output_file": "demo-0.DD",
+      "result": "fail",
+      "original_sha256": "65883d1163c2147f4a8f3f6396ef386675e4b0d92e572dd9acdb6772886a8c4c",
+      "native_sha256": "4469c4b38274fb5715a11e129ddac6671f12bfbc1a32fef91b6abc81e0933fff",
+      "bytes": 71
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "inputs_unchanged": true
+}

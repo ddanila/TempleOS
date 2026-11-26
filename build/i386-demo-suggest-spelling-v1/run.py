@@ -6,7 +6,9 @@ tool = Path('tools/test-i386-demo-batch.py').resolve()
 source = tool.read_text()
 launch = '  ExeFile(path);'
 assert source.count(launch) == 1
-source = source.replace(launch, r"""  Msg(MSG_KEY_DOWN,'x',0x2D);
+source = source.replace(launch, r"""  if(!acd.num_words)Adam("ACInit;");
+  if(!acd.word_lst || !acd.num_words)throw('Dict',TRUE);
+  Msg(MSG_KEY_DOWN,'x',0x2D);
   Msg(MSG_KEY_DOWN,'y',0x15);
   Msg(MSG_KEY_DOWN,'l',0x26);
   Msg(MSG_KEY_DOWN,'o',0x18);
@@ -20,10 +22,9 @@ source = source.replace(launch, r"""  Msg(MSG_KEY_DOWN,'x',0x2D);
   ExeFile(path);""")
 original_once = "        (overlay/'Once.HC').write_bytes(body)"
 assert source.count(original_once) == 1
-source = source.replace(original_once, """        archive = ROOT/'build/i386-autocomplete-archive-original/guest/ACWords.DATA.Z'
+source = source.replace(original_once, r"""        archive = ROOT/'build/i386-autocomplete-archive-original/guest/ACWords.DATA.Z'
         (overlay/'Adam/AutoComplete/ACWords.DATA.Z').write_bytes(archive.read_bytes())
         (overlay/'Once.HC').write_bytes(
-            b'while(!Bt(&sys_run_level,RLf_ADAM_SERVER))Yield;\nAdam("ACInit;");\n'+body)""".replace(
-                'Yield;\nAdam("ACInit;");\n', 'Yield;\\nAdam("ACInit;");\\n'))
+            b'while(!Bt(&sys_run_level,RLf_ADAM_SERVER))Yield;\n'+body)""")
 sys.argv[0] = str(tool)
 exec(compile(source, str(tool), 'exec'), {'__file__': str(tool), '__name__': '__main__'})
