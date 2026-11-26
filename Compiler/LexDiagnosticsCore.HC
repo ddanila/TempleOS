@@ -62,9 +62,8 @@ U0 LexPutPos(CCmpCtrl *cc)
   LexPutLine(cc,cc->lex_include_stk->line_start);
 }
 
-U0 LexWarn(CCmpCtrl *cc,U8 *str=NULL)
-{//Print warn msg, then, $LK,"LexPutPos",A="MN:LexPutPos"$().
-  if (str) PrintWarn(str);
+U0 LexWarnPosition(CCmpCtrl *cc)
+{//Print the warning location in the active output document.
   if (cc->htc.fun) {
     "in fun '%s'.\n",cc->htc.fun->str;
     if (IsRaw)
@@ -75,6 +74,12 @@ U0 LexWarn(CCmpCtrl *cc,U8 *str=NULL)
     }
   } else
     LexPutPos(cc);
+}
+
+U0 LexWarn(CCmpCtrl *cc,U8 *str=NULL)
+{//Print warn msg, then, $LK,"LexPutPos",A="MN:LexPutPos"$().
+  if (str) PrintWarn(str);
+  LexWarnPosition(cc);
   cc->warning_cnt++;
 }
 

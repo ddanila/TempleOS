@@ -69,3 +69,5 @@ if(FileFind("::/HomeSys.HC")) {
   AdamFile("::/Adam/AutoComplete/MakeAC.HC",FALSE);
   AdamFile("::/Adam/TaskSettings.HC",FALSE);
 }
+
+AdamFile("::/Compiler/PrsOptions.HC",FALSE);

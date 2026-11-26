@@ -1204,6 +1204,7 @@ U0 NativeTerminalInput()
 #include "/Kernel/I386/KeyDevRuntime.HC"
 #include "/Adam/DolDoc/DocGetKeyCore.HC"
 #include "/Kernel/I386/ConsoleNumbers.HC"
+extern U0 LexWarnPosition(CCmpCtrl *cc);
 #include "/Kernel/I386/ConsoleInput.HC"
 #include "/Kernel/I386/Debugger.HC"
 

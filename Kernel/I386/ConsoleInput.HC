@@ -56,6 +56,13 @@ U0 ConsoleDiagnostic(U8 *context,CCmpCtrl *cc,I64 kind,U8 *message)
     console_diagnostic_filename[index]=0;
   }
   try {
+    if(kind==2 && cc && cc->lex_include_stk && cc->lex_include_stk->full_name && DocPut && !IsRaw) {
+      //The host callback has no HolyC parser call chain to print.
+      GetOutOfDollar;
+      ST_WARN_ST "%s",message;
+      LexWarnPosition(cc);
+      return;
+    }
     if(kind)prefix="Warning: ";else prefix="Error: ";
     if(NativeDiagnosticDocument(prefix,message))return;
     if(kind)NativeTerminalDiagnosticRecord("Warning: ");

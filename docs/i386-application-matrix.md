@@ -2879,3 +2879,13 @@ the caller. The native session waited for a complete arena frame
 before sending the jump. The inventory qualifies the bundled launcher
 and records coverage for its loader and shared application source.
 See the [KeepAway qualification receipt](../build/i386-keepaway-render-production-v1/qualification.json).
+
+Native startup now publishes the original compiler-option code. The
+native compiler uses the shared warning-location renderer to emit the
+same five tokens, source snippets, and DolDoc file-line targets as the
+original ParenWarn run. Its host diagnostic callback omits the HolyC
+parser call-chain annotation because those parser frames do not exist
+on that path. Public option toggling, the bundled demo, and fresh
+arithmetic also passed on an 8 MiB KVM boot. See the
+[warning comparison](../build/i386-parenwarn-links-v2/qualification.json)
+and [source checkpoint](../build/i386-parenwarn-links-v2/source-checkpoint.json).
