@@ -967,3 +967,13 @@ The bundle used 400,888 bytes at peak. The subsequent probe exhausted emitter
 space in `ModuleCheck.HC`, so the worker did not reach user header publication
 or the interactive checks. See
 `build/i386-diagnostic-worker-defer-user-v1/failure.json`.
+
+The frozen two-generation rebuild, install, boot, delivered-source, and
+artifact audits passed. The identity audit compared 16 modules and allowed
+only the exported eight-byte kernel build date to differ within its artifact
+scope. It verified each actual boot payload, checksum, and padding before
+comparison. The second self-hosted image passed both 8 MiB VGA smoke
+checkpoints and reached interactive startup in 72.231 seconds. It still logged
+the sprite source allocation rejection. The full desktop and application
+suite and the 60-second startup budget remain open. See
+`build/i386-demo-insetip-v1/generations128/`.

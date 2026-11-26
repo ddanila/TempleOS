@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "module_count": 16,
+  "flat_bytes": 468784,
+  "flat_sha256": "ba6405f034835ce5e875d7ebc3bef032d9288d04247b58f1424dd30d59cddc1d",
+  "boot_area_sha256": "6b8dded2998bfbb5c05a2847f55a5633ccfc2f45d063a53fdff204469292db40",
+  "first_volume": {
+    "directories": 63,
+    "files": 1950,
+    "owned_sectors": 98187,
+    "bitmap": "matches reachable extents"
+  },
+  "second_volume": {
+    "directories": 63,
+    "files": 1950,
+    "owned_sectors": 98187,
+    "bitmap": "matches reachable extents"
+  },
+  "first_disk_sha256": "ec0296515d15f98b7df41d0e1bcbc1b7a19ee55c7d6e22ecb937bd94f07be3e6",
+  "second_disk_sha256": "d9652f593e580f188ae71414722bb1fb82d8c3590215ff177b3ef7f544f753a7",
+  "comparison_scope": "All artifact bytes except exported eight-byte Kernel date; each actual boot payload/checksum/padding verified independently",
+  "kernel_build_dates": [
+    3179610403954627,
+    3179610565413583
+  ],
+  "normalized_flat_sha256": "9c16ee28f9b30b9e629db85a6341b56aa77122eeab7ebcddb7a0bc799420bb00"
+}
