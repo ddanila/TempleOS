@@ -28,7 +28,7 @@ and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
 Both passed the configured 64 MiB desktop handoff and 8 MiB cold boot.
 
-The latest audited cross-build uses `c4064751`. It passed the exact 1,572-file
+The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
 64 MiB desktop commands, and configured HomeSys handoff. Its
 128 MiB retained-provider rebuild and all-provider audit passed.
@@ -292,9 +292,11 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   stopped during CompilerRuntime. An export audit passed on the saved
   ConsoleRuntime. The resumed build completed the other eight providers.
   The saved disk passed an all-provider export audit and a 1,572-file
-  source audit. The two-generation run is installing generation one using
-  the frozen checkout. See the
+  source audit. The two-generation run installed all nine providers into
+  generation one from the frozen checkout and started the flat-kernel build.
+  See the
   [retained-build checkpoint](build/i386-sprite-plot3d-production-v1/retained128-checkpoint.json),
+  [generation-one install](build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-install/result.json),
   [recovered ConsoleRuntime receipt](build/i386-sprite-plot3d-production-v1/retained128-console-recovery.json),
   [production cross-build](build/i386-sprite-plot3d-production-v1/cross-checkpoint.json)
   and [full-content checkpoint](build/i386-sprite-plot3d-production-v1/full-content-checkpoint.json).
