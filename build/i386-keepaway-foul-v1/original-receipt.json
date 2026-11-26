@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "scope": "KeepAway foul rule with controlled player approach, opponent point and prompt recovery",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-foul-v1/run.py": "e633a960e2ec2245834c63a4dfb3d756127aeffc8028f61d8b5146dca47ea0fa",
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-foul-v1/Probe.HC": "5104136c073960c8ac203e7bb43499e7c1c64bcd5df7a3998a498ca6aa66ff74",
+    "tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237"
+  },
+  "score": [
+    0,
+    1
+  ],
+  "inputs_unchanged": true,
+  "markers": [
+    "KEEP popup",
+    "KEEP foul 0-1",
+    "KEEP returned"
+  ]
+}

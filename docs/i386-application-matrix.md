@@ -2678,3 +2678,11 @@ A fresh zero-score match preserved the 8–0 best score, and Escape
 restored the caller. The fixture waits for the game's end-of-match beep
 before inspecting the best score. See the
 [original finish receipt](../build/i386-keepaway-finish-v3/original-receipt.json).
+
+The refreshed desktop ran the bundled KeepAway launcher twice from one
+cold boot. Both launches displayed the instructions and arena, reused
+the settings and autocomplete symbols published at startup, and exited
+to a working prompt. The original foul reference also awarded the
+opposing team exactly one point during a controlled collision.
+See the [cold-launch receipt](../build/i386-keepaway-cold-v1/native/result.json)
+and [original foul receipt](../build/i386-keepaway-foul-v1/original-receipt.json).
