@@ -15889,6 +15889,13 @@
       "oracle": "The complete DolDoc from the pinned original and native guest matches and native input remains usable.",
       "tests": [
         {
+          "target": "native-original-matched-context-doc-fileread",
+          "command": "python3 build/i386-demo-doc-fileread-v1/run-matched-context.py IMAGE --out OUT --demo Demo/DolDoc/FileRead.HC",
+          "result": "pass",
+          "evidence": "build/i386-demo-doc-fileread-v1/matched-context/result.json",
+          "scope": "The unchanged demo's two profile documents match in all 1674 bytes at equal window bounds and the same DD_TEMPLEOS_LOC substitution. The native prompt accepts fresh arithmetic. The independent heap cleanup check remains open."
+        },
+        {
           "target": "native-original-matched-width-doc-fileread",
           "command": "python3 build/i386-demo-doc-fileread-v1/run-matched-width.py IMAGE --out OUT --demo Demo/DolDoc/FileRead.HC",
           "result": "fail",
