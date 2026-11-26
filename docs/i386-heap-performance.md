@@ -1158,3 +1158,9 @@ seconds. The runs were measured separately, and the 60-second TCG gate
 remains open.
 [TCG timing](../build/i386-code-alloc-known-v1/interactive8-tcg/result.json) ·
 [KVM diagnostics](../build/i386-code-alloc-known-v1/diagnostic8-kvm/result.json)
+
+The full image with the code-allocation change matched all 686 inventory
+files against the working tree and passed the bounded guest content
+workflow under KVM at 64 MiB. The volume audit covered 1,949 files and
+matched the allocation bitmap to reachable extents.
+[Full-content receipt](../build/i386-code-alloc-known-v1/full-content64/result.json)

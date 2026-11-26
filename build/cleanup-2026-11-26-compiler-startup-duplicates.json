@@ -1,0 +1,26 @@
+[
+  {
+    "removed": "build/i386-code-alloc-known-v1/interactive8-tcg/working.img",
+    "retained": "build/i386-code-alloc-known-v1/cross/kernel.img",
+    "sha256": "16eb97cc89cd7e740e4609519ab597a50f22a93c6dbedd8067428d4dbc355f2e",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/diagnostic8-kvm/working.img",
+    "retained": "build/i386-code-alloc-known-v1/cross/kernel-diagnostics.img",
+    "sha256": "e75314a5122933ee39ea58ca001e5d1bcc7d6c6c480fcd4bfe0111240947013f",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-ic-release-tcg-v1/interactive8-tcg/working.img",
+    "retained": "build/i386-ic-release-tcg-v1/cross/kernel.img",
+    "sha256": "94f3b7709312573619808df634c6fe7acde8c30d4e8dfa4ba6f1bb612c15984f",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-mul-by-hand-port-v1/interactive8-kvm-repeat/working.img",
+    "retained": "build/i386-mul-by-hand-port-v1/cross-v2/kernel.img",
+    "sha256": "d419394439618d4d24a33a4b7a0dc84d872984bbcf6b77e79b5c28dae0172a6e",
+    "allocated_bytes": 67108864
+  }
+]
