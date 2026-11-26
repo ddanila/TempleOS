@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "image_sha256": "4555477efc097a48ceacc5254f8c2357997f62dbcd11a64d606cd21708e2be01",
+  "source_revision": "2c2cb4b1268baf1cbb6de47802e17530e6e1ba13",
+  "inventory_files": 686,
+  "inventory_sha256": "c26498bf0b6f509928075fdb33446bf8cdaeef45c94e12bc116095d3dc37d77d",
+  "content_result_sha256": "c068fb9262f10aa5e4a4f0054f500aa6677a267957b55f5056720b3ffd06ae68",
+  "accel": "kvm",
+  "filesystems": {
+    "directories": 63,
+    "files": 1932,
+    "owned_sectors": 96185,
+    "bitmap": "matches reachable extents"
+  },
+  "scope": "All inventory bytes against current workspace and bounded guest lookup/read; not application or desktop qualification"
+}

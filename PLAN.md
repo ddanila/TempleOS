@@ -98,9 +98,11 @@ is complete and provides the foundation, but not desktop or application parity.
   Its new startup call exposed an extra numeric answer on the welcome
   screen. Publishing through a void command restored the original frame.
   The corrected image passed the nine-command 64 MiB desktop baseline
-  with the Window Manager active. See the
-  [production build receipt](build/i386-parenwarn-links-v2/production-build-checkpoint.json)
-  and [startup fix receipt](build/i386-parenwarn-links-v2/startup-fix-checkpoint.json).
+  with the Window Manager active, and all 686 inventory files matched
+  the frozen source with the bounded guest read check complete. See the
+  [production build receipt](build/i386-parenwarn-links-v2/production-build-checkpoint.json),
+  [startup fix receipt](build/i386-parenwarn-links-v2/startup-fix-checkpoint.json)
+  and [full-content result](build/i386-parenwarn-links-v2/void-full-content-checkpoint.json).
 
 ### Plan decisions (2026-11-24)
 
