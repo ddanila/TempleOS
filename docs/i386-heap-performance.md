@@ -906,3 +906,11 @@ largest remaining block was 0x81F0 bytes. The worker required 0x85507 bytes
 including its stack and task metadata. A solution must account for the
 existing low-memory users as well as the main-arena peak. The patch and
 terminal receipt are in `build/i386-diagnostic-worker-low-v1/`.
+
+The 640 KiB main-arena trial started the worker and passed its phase-one public
+memory probe, including the allocation that exhausted the 768 KiB trial.
+Compiler provider loading then failed: its 0x7F500-byte request exceeded the
+main arena's largest free block of 0x26FF0 bytes. The loader reclaimed its
+scratch allocations. The patch and terminal receipt are in
+`build/i386-diagnostic-worker-640k-v1/`. This establishes a separate peak at
+provider load while the worker's private heap is still reserved.
