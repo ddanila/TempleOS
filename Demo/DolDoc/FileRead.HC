@@ -59,6 +59,7 @@ public U0 DocProfile(U8 *filename,I64 flags)
 
   Free(cmd_stats);
   Free(flags_stats);
+  Free(type_flags_stats);
   PressAKey;
   '\n';
 }

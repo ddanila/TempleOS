@@ -15884,10 +15884,17 @@
         "DocProfile"
       ],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": "Run both Welcome.DD profiles with the same window geometry, answer each PressAKey prompt, and compare all document type and flag counts.",
-      "oracle": "The complete DolDoc from the pinned original and native guest matches and native input remains usable.",
+      "compatibility": "qualified",
+      "reference_workflow": "Run both Welcome.DD profiles with the same window geometry, answer each PressAKey prompt, and compare all document type and flag counts. Repeat the structured profile with a disposable document and measure task heap cleanup.",
+      "oracle": "The complete DolDoc from the pinned original and native guest matches and native input remains usable. The native profile releases all temporary statistics and document allocations.",
       "tests": [
+        {
+          "target": "native-original-doc-fileread-cleanup",
+          "command": "python3 build/i386-demo-doc-fileread-cleanup-v1/run.py IMAGE --out OUT --demo Demo/DolDoc/FileRead.HC",
+          "result": "pass",
+          "evidence": "build/i386-demo-doc-fileread-cleanup-v1/comparison/result.json",
+          "scope": "Both profile outputs match in all 1674 bytes with the same width and resolved Welcome data. A separate structured call and disposable document cleanup leave zero bytes allocated on native; the unchanged original retains 528 bytes. Native arithmetic succeeds."
+        },
         {
           "target": "native-original-matched-context-doc-fileread",
           "command": "python3 build/i386-demo-doc-fileread-v1/run-matched-context.py IMAGE --out OUT --demo Demo/DolDoc/FileRead.HC",
