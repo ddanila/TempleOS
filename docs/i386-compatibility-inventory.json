@@ -15957,6 +15957,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-directives-v1/comparison/result.json",
           "scope": "The native compiler rejects the bundled command before the demo emits any DolDoc bytes."
+        },
+        {
+          "target": "native-compiler-directives-isolated",
+          "result": "pass",
+          "evidence": "build/i386-demo-directives-v1/isolated-native/result.json",
+          "scope": "Six public metadata directives compile independently. Both expressions using the instruction-position operator reject. Fresh arithmetic displays after the rejects."
         }
       ]
     },

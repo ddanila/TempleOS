@@ -1,0 +1,45 @@
+{
+  "result": "pass",
+  "image_sha256": "a6e192b53c6436cff23c04c0f2cd9ca104355f95bb65401c38b3bb9b6a3cab6e",
+  "commands": {
+    "\"%s\",__DATE__;": {
+      "result": "accept"
+    },
+    "\"%s\",__TIME__;": {
+      "result": "accept"
+    },
+    "\"%s\",__FILE__;": {
+      "result": "accept"
+    },
+    "\"%s\",__DIR__;": {
+      "result": "accept"
+    },
+    "__LINE__;": {
+      "result": "accept"
+    },
+    "__CMD_LINE__;": {
+      "result": "accept"
+    },
+    "I64 ProbePosition(){return $$;}": {
+      "result": "reject",
+      "diagnostic": "INPUT LINE I64 ProbePosition(){return $$;}\nCOMPILER BREAK ready\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    },
+    "U0 ProbePositionFormat(){\"%P:%08X\",$$,$$;}": {
+      "result": "reject",
+      "diagnostic": "INPUT LINE U0 ProbePositionFormat(){\"%P:%08X\",$$,$$;}\nCOMPILER BREAK ready\nTHROW 72656C69706D6F43\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+    },
+    "6*7;": {
+      "result": "accept"
+    }
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 22,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "inputs_unchanged": true
+}

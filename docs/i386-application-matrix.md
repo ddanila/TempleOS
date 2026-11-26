@@ -2964,3 +2964,9 @@ two instruction links into the same compiled function. Native
 rejected the unchanged demo before it wrote any DolDoc output. See
 the [original receipt](../build/i386-demo-directives-v1/original-receipt.json)
 and [native run](../build/i386-demo-directives-v1/comparison/result.json).
+
+Separate native commands accepted all six metadata directives.
+Both commands using the `$$` instruction-position operator were
+rejected, and the prompt recovered. The i386 backend lacks the
+location-counter opcode emitted for those expressions. See the
+[isolated commands](../build/i386-demo-directives-v1/isolated-native/result.json).
