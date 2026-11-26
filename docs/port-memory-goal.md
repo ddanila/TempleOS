@@ -3119,3 +3119,9 @@ passed Home Once, original geometry, bootstrap retirement and fresh
 arithmetic in 209.70 seconds. The matching second-generation desktop
 session is running. The complete compatibility corpus and production
 source after this frozen revision remain separate.
+
+The [second-generation 64 MiB desktop session](../build/i386-scheduler-ode-reap-v1/generations128/gen2-desktop64/result.json)
+passed Home Once, all 83 original geometry values, physical bootstrap
+retirement and fresh arithmetic in 209.86 seconds. Both self-hosted
+generations of frozen revision `592a38b7` now have configured 64 MiB
+desktop handoff receipts.

@@ -24,8 +24,9 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
-end-to-end qualification. C5 has frozen two-generation reproduction, not the
-current source with the full suite. The bounded-memory self-hosting goal below
+end-to-end qualification. C5 has two reproduced native generations with
+passing configured 64 MiB desktop handoff on frozen revision `592a38b7`.
+The full suite and newer production source still need qualification. The bounded-memory self-hosting goal below
 is complete and provides the foundation, but not desktop or application parity.
 
 ### Plan decisions (2026-11-24)
