@@ -1,0 +1,54 @@
+{
+  "result": "pass",
+  "scope": "Original ten-case Logic synthesis oracle on native i386",
+  "input_sha256": {
+    "build/i386-keepaway-numbible-production-v1/full/kernel.img": "957f7ef76581ebad716f33ab0d0c232fa55bf10061c7c88c578c011e3338515b",
+    "tests/guest/i386-logic-reference/Once.HC": "e07bbb2c9bb3b81db155488b3c0de56d8df9729a76b113a62efdbbdc2fafcf00",
+    "tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/i386-logic-gates-production-v1/run.py": "0c2244f76eb3b7e263e04083e22f77b4a7570f1432420d9e3a7b86b0b3a15ff0",
+    "Apps/Logic/Load.HC": "4e1490e31158ef807bdee6837edb7edf93a0e3c277077bc7156e9e3cb6f63964"
+  },
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "957f7ef76581ebad716f33ab0d0c232fa55bf10061c7c88c578c011e3338515b",
+    "image_sha256": "29b0750913886f2a6e48a57cfe6f0039d93c06d29c76faa2f425b2fb61580be2",
+    "boot_area_sha256": "5070b8a45c093b6b4565c9d7c325ad3ba424a434a7dc93c1f04f21ff35ecbed9",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96182,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 96186,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/LogicOracle.HC": "455f50e5ea510afa60bfbc74a7f80c34f66868ff40aeb5b732d294ef18c9a803"
+    },
+    "added_attributes": {
+      "/LogicOracle.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "application_sha256": {
+    "Apps/Logic/Load.HC": "4e1490e31158ef807bdee6837edb7edf93a0e3c277077bc7156e9e3cb6f63964",
+    "Apps/Logic/Logic.HC": "57006674862cef221ea00c72fdcb7e32d0d57584974132466cd27f1dc98a507a",
+    "Apps/Logic/Run.HC": "16ca744d0e5f5f777ab9e8b29c2c297f3e5be649af7c9cdb8eeb1fa56d11da5e"
+  },
+  "fresh_result": {
+    "column": 0,
+    "row": 34,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "mask": 1023,
+  "inputs_unchanged": true
+}

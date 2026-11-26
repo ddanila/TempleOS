@@ -2781,3 +2781,10 @@ The combined 64 MiB KVM image passed the full inventory content
 check and reproduced every byte of the original NumBible save.
 See the [full-content receipt](../build/i386-keepaway-numbible-production-v1/full-content/result.json)
 and [NumBible receipt](../build/i386-keepaway-numbible-production-v1/numbible/result.json).
+
+The combined image passed the original ten-gate Logic synthesis
+oracle with mask 1023. The runner verifies the original synthesis
+source and launcher hashes and checks the current bundled loader
+separately. Normal desktop startup supplied the dependencies, and
+the guest rendered 42 after the test. See the
+[ten-gate receipt](../build/i386-logic-gates-production-v1/native/result.json).

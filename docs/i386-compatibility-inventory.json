@@ -10767,6 +10767,12 @@
           "result": "pass",
           "evidence": "build/logic-interaction-return-v1/raster.json",
           "scope": "Physical keyboard gate and truth-column entry, exact 3,795-pixel AND design region, caller restoration, and native fresh arithmetic. Native libraries are loaded explicitly."
+        },
+        {
+          "target": "native-logic-synthesis-current-startup",
+          "result": "pass",
+          "evidence": "build/i386-logic-gates-production-v1/native/result.json",
+          "scope": "All ten original truth-table synthesis cases pass. The audited bundled loader uses the libraries from normal startup and the native prompt renders 42 afterward."
         }
       ]
     },
