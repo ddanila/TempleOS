@@ -1,0 +1,72 @@
+{
+  "result": "pass",
+  "source_sha256": "43ea2bad24e51886412f762999f4e70bc606d7f1877ef945eb11443c1e027e0a",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-sprite-plot3d-production-v1/cross/kernel.img": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5"
+  },
+  "runs": {
+    "original": {
+      "wireframe_pixels": [
+        1282,
+        3292,
+        2472
+      ],
+      "dimensions": [
+        [
+          221,
+          209
+        ],
+        [
+          312,
+          363
+        ],
+        [
+          247,
+          241
+        ]
+      ],
+      "changed_pixels": [
+        4500,
+        5678
+      ],
+      "screenshots_sha256": {
+        "before-key.png": "a9943052a2f4bff594a00a5946031249a7298705b4b49495f782bc9bb1ad30f0",
+        "before-key-1.png": "ed45c11090fa0fbf3d8e53574c846ff2b2d9f38c1dd5011f3ffe5739bea0b076",
+        "before-key-2.png": "46ef1911c1fd57d45fdf1d461d67c7dfbdc7b8c0db8894cf3a5abc22d8e33a21",
+        "after-key.png": "847884905e0c31d2eb60c536eeca543768d54de3db8e47bfa40f160de193eea2"
+      }
+    },
+    "native": {
+      "wireframe_pixels": [
+        1528,
+        3083,
+        203
+      ],
+      "dimensions": [
+        [
+          157,
+          167
+        ],
+        [
+          255,
+          262
+        ],
+        [
+          317,
+          278
+        ]
+      ],
+      "changed_pixels": [
+        4527,
+        3286
+      ],
+      "screenshots_sha256": {
+        "before-key.png": "0168e6bbb9134a80016adb9a3e6ce33804ac36d3c7cf2c081d1e6293779ae255",
+        "before-key-1.png": "0a202b3db66817e917edc644d1665db2fec91da58bdc00e039358a3e5cd1c897",
+        "before-key-2.png": "0e7b59265086b1295031c53013d5177f5527616f3ea90fc571fa8b17b5e8bccd",
+        "after-key.png": "1fcbf225c4a85a41b1104f610e5b0811271f7ac79d09970e2a084a2d4028b6fe"
+      }
+    }
+  }
+}

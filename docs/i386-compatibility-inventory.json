@@ -17230,10 +17230,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged Box from each guest prompt, capture three wireframe animation samples, send Space, and verify removal and native prompt recovery.",
+      "oracle": "Check a thin red wireframe, changing silhouette dimensions and disappearance after input on both guests. Animation samples are asynchronous.",
+      "tests": [
+        {
+          "target": "native-original-rotating-box",
+          "result": "pass",
+          "evidence": "build/i386-demo-box-v1/qualification.json",
+          "scope": "Both guests animate and resize the red wireframe and remove it on Space. The i386 prompt returns fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Cartesian.HC",

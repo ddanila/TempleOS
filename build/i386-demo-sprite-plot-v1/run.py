@@ -45,13 +45,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('original_iso', type=Path)
     parser.add_argument('native_image', type=Path)
-    parser.add_argument('--demo', choices=('SpritePlot', 'Extents', 'SpritePlot3D', 'Lines'),
+    parser.add_argument('--demo', choices=('SpritePlot', 'Extents', 'SpritePlot3D', 'Lines', 'Box'),
                         default='SpritePlot')
-    parser.add_argument('--samples', choices=(1, 3), default=1, type=int)
+    parser.add_argument('--samples', default=1, type=int)
     parser.add_argument('--seed', type=int)
-    parser.add_argument('--observe-seconds', type=int, default=7, choices=(7, 20))
+    parser.add_argument('--observe-seconds', type=int, default=7)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
+    if args.samples < 1 or args.observe_seconds < 1:
+        parser.error('Use a positive sample count and observation time')
     original, native = (path.resolve() for path in (args.original_iso, args.native_image))
     out = args.out.resolve()
     out.mkdir()

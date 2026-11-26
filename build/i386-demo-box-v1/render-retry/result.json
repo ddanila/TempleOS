@@ -1,0 +1,11 @@
+{
+  "result": "captured",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-sprite-plot3d-production-v1/cross/kernel.img": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5"
+  },
+  "source_sha256": "43ea2bad24e51886412f762999f4e70bc606d7f1877ef945eb11443c1e027e0a",
+  "seed": null,
+  "observe_seconds": 7,
+  "inputs_unchanged": true
+}
