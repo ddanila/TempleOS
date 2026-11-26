@@ -1,4 +1,4 @@
-"""Exercise Grid's physical mouse drawing and settings restoration in both guests."""
+"""Compare physical mouse trails and click-to-exit cleanup in both guests."""
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
@@ -11,8 +11,9 @@ import time
 from PIL import Image
 
 
-SOURCE = '/Demo/Graphics/Grid.HC'
+SOURCES = {'grid': '/Demo/Graphics/Grid.HC', 'mouse': '/Demo/Graphics/MouseDemo.HC'}
 MOVES = ((27, 34), (31, -19), (-18, 37), (39, 13))
+NEIGHBORS = tuple((dx, dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if dx or dy)
 
 
 def sha(path):
@@ -31,7 +32,7 @@ def motion(guest, dx, dy):
                                            for axis, value in (('x', dx), ('y', dy))])
 
 
-def capture(guest_type, disk, out, native):
+def capture(guest_type, disk, out, native, demo):
     guest = guest_type(disk, out, native, reference_cpus=1)
     restored = 'GRID SETTINGS RESTORED\n'
     drive = 'C' if native else 'T'
@@ -50,7 +51,7 @@ def capture(guest_type, disk, out, native):
                 guest.press('ret')
                 time.sleep(1)
         start = len(guest.collect())
-        guest.type(f'ExeFile("{drive}:{SOURCE}"); if(!MemCmp(&ms_grid,&gt_old,sizeof(CGridGlbls)) && gt_draw==gr.fp_draw_ms) GTLog("GRID SETTINGS RESTORED\\n");')
+        guest.type(f'ExeFile("{drive}:{SOURCES[demo]}"); if(!MemCmp(&ms_grid,&gt_old,sizeof(CGridGlbls)) && gt_draw==gr.fp_draw_ms) GTLog("GRID SETTINGS RESTORED\\n");')
         guest.press('ret')
         time.sleep(5)
         guest.screenshot('initial')
@@ -69,15 +70,18 @@ def capture(guest_type, disk, out, native):
         guest.screenshot('after-click')
         frames = {stage: out / f'{stage}.png' for stage in ('initial', 'moved', 'after-click')}
         initial, moved, cleared = (ink(path) for path in frames.values())
-        snapped = sorted((x, y) for x, y in moved - initial if not (x % 5 or y % 5)
+        points = sorted((x, y) for x, y in moved - initial
+                         if (demo == 'mouse' or not (x % 5 or y % 5))
                          and not any((x + dx, y + dy) in moved
-                                     for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1))))
-        if len(snapped) < 3:
-            raise ValueError(f'Fewer than three isolated five-pixel trail points on {out.name}')
-        if cleared.intersection(snapped):
+                                     for dx, dy in NEIGHBORS))
+        if len(points) < 3:
+            raise ValueError(f'Fewer than three isolated trail points on {out.name}')
+        if cleared.intersection(points):
             raise ValueError(f'Trail remained after left click on {out.name}')
-        result = dict(snapped_points=snapped, settings_restored=True,
+        key = 'snapped_points' if demo == 'grid' else 'trail_points'
+        result = dict(settings_restored=True,
                       screenshots_sha256={stage: sha(path) for stage, path in frames.items()})
+        result[key] = points
         guest.press('end')
         guest.screenshot('after-end')
         start = len(guest.collect())
@@ -99,6 +103,7 @@ def main():
     parser.add_argument('original_iso', type=Path)
     parser.add_argument('native_image', type=Path)
     parser.add_argument('--out', required=True, type=Path)
+    parser.add_argument('--demo', choices=SOURCES, default='grid')
     args = parser.parse_args()
     out = args.out.resolve()
     out.mkdir()
@@ -107,9 +112,9 @@ def main():
     disk = out / 'working.img'
     shutil.copyfile(native, disk)
     guest_type = runpy.run_path('tools/test-i386-autocomplete-interaction.py')['Guest']
-    report = dict(input_sha256=inputs, source_sha256=sha(Path(SOURCE[1:])), moves=MOVES, runs={})
+    report = dict(input_sha256=inputs, source_sha256=sha(Path(SOURCES[args.demo][1:])), moves=MOVES, runs={})
     with ThreadPoolExecutor(max_workers=2) as pool:
-        runs = {side: pool.submit(capture, guest_type, image, out / side, side == 'native')
+        runs = {side: pool.submit(capture, guest_type, image, out / side, side == 'native', args.demo)
                 for side, image in (('original', original), ('native', disk))}
         for side, future in runs.items():
             try:
@@ -120,8 +125,9 @@ def main():
     passed = report['inputs_unchanged'] and all(
         run['result'] == 'pass' and run['fresh_result'] == 'pass'
         for run in report['runs'].values())
-    if passed and report['runs']['original']['snapped_points'] != report['runs']['native']['snapped_points']:
-        report['error'] = 'The guests drew different snapped trail points'
+    key = 'snapped_points' if args.demo == 'grid' else 'trail_points'
+    if passed and report['runs']['original'][key] != report['runs']['native'][key]:
+        report['error'] = 'The guests drew different trail points'
         passed = False
     report['result'] = 'pass' if passed else 'fail'
     (out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')

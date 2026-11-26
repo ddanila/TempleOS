@@ -1,0 +1,85 @@
+{
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-low-pass-v1/cross-public/kernel.img": "d891665b3bee1ce7402664e1a8e0a558e4048943dfe657589ae3946bdcd80308"
+  },
+  "source_sha256": "dd68a7bbda570f4f67af14c7ce6654d29dcf35fe2c313ea8eaaa64feb0645d82",
+  "moves": [
+    [
+      27,
+      34
+    ],
+    [
+      31,
+      -19
+    ],
+    [
+      -18,
+      37
+    ],
+    [
+      39,
+      13
+    ]
+  ],
+  "runs": {
+    "original": {
+      "result": "pass",
+      "settings_restored": true,
+      "screenshots_sha256": {
+        "initial": "5719caff01e260a6657a439b1ee3b041869329d391f4c382a014b02fdfaff491",
+        "moved": "aefef166fb5638b4c1176833108cd728592f8546d148af6db62f91f943e30c78",
+        "after-click": "297813ae503bd81f64866a8af2e831d47f05714b90ef57f236e924a439416990"
+      },
+      "trail_points": [
+        [
+          96,
+          248
+        ],
+        [
+          109,
+          265
+        ],
+        [
+          116,
+          274
+        ],
+        [
+          125,
+          255
+        ]
+      ],
+      "fresh_result": "pass"
+    },
+    "native": {
+      "result": "pass",
+      "settings_restored": true,
+      "screenshots_sha256": {
+        "initial": "68a0a242b31d17a86f7093a37bd72595f4580c770adb53587bfd4fd54933f2a6",
+        "moved": "30dd1b8d6dfa23fa995af52b5685da01d7adee981b544a491aee1541ab47836f",
+        "after-click": "226fc76b65ba0b84489fde944d553fdb4b2e7462bff5f23bc8e3b8d8244a573b"
+      },
+      "trail_points": [
+        [
+          96,
+          248
+        ],
+        [
+          109,
+          265
+        ],
+        [
+          116,
+          274
+        ],
+        [
+          125,
+          255
+        ]
+      ],
+      "fresh_result": "pass"
+    }
+  },
+  "inputs_unchanged": true,
+  "result": "pass"
+}

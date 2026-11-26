@@ -17629,10 +17629,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch unchanged MouseDemo, send four physical motion packets, and left-click to exit. Press End to return to the live prompt.",
+      "oracle": "Compare isolated unsnapped trail points apart from the pointer, check trail removal on left-click, and evaluate fresh arithmetic after End.",
+      "tests": [
+        {
+          "target": "native-original-mouse-demo-trail",
+          "result": "pass",
+          "evidence": "build/i386-demo-mouse-v1-pointer-filter/result.json",
+          "scope": "Both guests drew the same four unsnapped pixels, cleared them on left-click, preserved grid and pointer settings, and evaluated fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/NetOfDots.HC",
