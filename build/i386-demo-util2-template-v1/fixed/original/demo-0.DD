@@ -1,0 +1,9 @@
+Make Directory:B:/Util2Check
+Make Directory:B:/Util2Check/Sub
+PrsFun PrsGlblVarLst PrsStmt &LexStmt2Bin $FG,4$$BK,1$WARNING:$FG$$BK,0$ Unused var
+ $LK,"FL:T:/Demo/Templates/Util2.HC,18"$ 'fuf_flags' in 'MyUtilDoc'
+Processing Directory: B:/Util2Check/Sub
+       4:B:/Util2Check/Sub/Beta.DD
+       2:B:/Util2Check/Alpha.DD
+Total:6
+

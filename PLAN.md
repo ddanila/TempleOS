@@ -14,13 +14,13 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 38 (six apps and thirty-two demos) |
+| Qualified | 39 (six apps and thirty-three demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 618 |
-| Linked to tests / with reference workflow and oracle | 196 / 125 |
+| Qualification gaps | 617 |
+| Linked to tests / with reference workflow and oracle | 197 / 126 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 32 of 224 |
+| Demos qualified | 33 of 224 |
 
 C1 inventory exists but most per-item references are missing. C2 has passing
 editor save/reboot, Home handoff, menus and form input on specific images, not
@@ -31,7 +31,7 @@ is complete and provides the foundation, but not desktop or application parity.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 38 workflows and records eighteen shared files
+- The inventory qualifies 39 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -204,6 +204,11 @@ is complete and provides the foundation, but not desktop or application parity.
 - Util1 qualifies against the pinned DolDoc source directory. On both guests
   all 13 ordered link labels and targets match the inventory and the guest
   drive. See the [file utility template comparison](build/i386-demo-util-template-v1/qualification.json).
+
+- Util2 qualifies on writable RedSea documents. Both guests visited a nested
+  directory, counted four and two entries in the two files, and reported a
+  total of six. Both rewritten documents matched their inputs on readback.
+  See the [recursive utility comparison](build/i386-demo-util2-template-v1/qualification.json).
 
 ### Plan decisions (2026-11-24)
 

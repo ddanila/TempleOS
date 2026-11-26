@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "image_sha256": "9cfdf8dfe66f476c0277225221ca1e72d719028307395180d4f80047a0b1c280",
+  "source_sha256": "a677a1f82d63c6ea7790093e2c3fb6c092c502bf8e5ca4c4faf661929a964f27",
+  "batch_receipt_sha256": "b04eda1a930b757b1965db02820650a3d34b0ca17b1601eaef4a33c76249ae8a",
+  "report_sha256": {
+    "original": "1e75e2039b067b05c9b14ca54775eaa8503315f9beb03474758888008b0a4296",
+    "native": "0a726b4376584e90d8a5f4181df06d9d4098d127b8b3d5282ae87f0efdcd2851"
+  },
+  "root_entries": 2,
+  "nested_entries": 4,
+  "total_entries": 6,
+  "documents_verified_after_write": 2
+}

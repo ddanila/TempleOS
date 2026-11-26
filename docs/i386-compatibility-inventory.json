@@ -19495,10 +19495,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Load unchanged Util2, then run MyUtil recursively on two writable DolDoc files in separate directory levels. Reopen both files after the write and verify return to arithmetic.",
+      "oracle": "Check the nested and root document counts of four and two, total six, and byte-for-byte readback of both documents. Match each guest drive and its compiler warning format.",
+      "tests": [
+        {
+          "target": "native-original-util2-template",
+          "result": "pass",
+          "evidence": "build/i386-demo-util2-template-v1/qualification.json",
+          "scope": "Both guests recurse and report the exact per-file counts and total, complete both file readbacks, and return to the prompt."
+        }
+      ]
     },
     {
       "path": "Demo/TimeIns.HC",

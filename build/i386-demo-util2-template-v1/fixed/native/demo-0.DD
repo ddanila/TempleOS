@@ -1,0 +1,8 @@
+Make Directory:C:/Util2Check
+Make Directory:C:/Util2Check/Sub
+Warning: Unused var
+Processing Directory: C:/Util2Check/Sub
+       4:C:/Util2Check/Sub/Beta.DD
+       2:C:/Util2Check/Alpha.DD
+Total:6
+
