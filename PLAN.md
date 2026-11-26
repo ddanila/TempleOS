@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 53 (six apps and forty-seven demos) |
+| Qualified | 54 (six apps and forty-eight demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
-| Qualification gaps | 603 |
+| Qualification gaps | 602 |
 | Linked to tests / with reference workflow and oracle | 213 / 142 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 47 of 224 |
+| Demos qualified | 48 of 224 |
 
-C1 has 603 qualification gaps, including entries that still need a reference
+C1 has 602 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `2c2cb4b1`.
@@ -38,7 +38,7 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
 
 ### Checkpoint (2026-11-26)
 
-- The inventory qualifies 53 workflows and records eighteen shared files
+- The inventory qualifies 54 workflows and records eighteen shared files
   covered by them. Recent passes cover TextDemo's physical Bible navigation,
   ExtChars, WordSearch, both MsgLoop exit paths, MemDemo and PhoneNumWords
   dictionary loading on cold launch. RegistryDemo passed three 64 MiB
@@ -365,14 +365,14 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   and the i386 prompt evaluated fresh arithmetic. See the
   [dotted-line comparison](build/i386-demo-net-of-dots-v1/qualification.json).
 
-- Grid draws the same three five-pixel snapped points on both guests.
-  Left-click clears the trail and restores the saved grid settings and
-  pointer callback. The i386 arithmetic probe after the click and End
-  submitted an empty input line. The original console evaluated the same
-  arithmetic after End. The i386 terminal input loop drops the End scan
-  code before it can reach the DolDoc document-boundary handler. See the
-  [mouse comparison](build/i386-demo-grid-v1/comparison-checkpoint.json)
-  and [caret comparison](build/i386-demo-grid-v1/caret-baseline.json).
+- Grid qualifies. Both guests drew the same three points on the five-pixel
+  grid, cleared the trail on left-click, and restored the saved grid settings
+  and pointer callback. The i386 terminal now sends End to the shared
+  DolDoc boundary handler. Both guests evaluated fresh arithmetic after End.
+  The rebuilt image passed the 386 instruction audit, exact 1,572-file source
+  comparison, 8 MiB graphics probe, and nine 64 MiB desktop baseline commands.
+  See the [Grid qualification](build/i386-demo-grid-v1/qualification.json)
+  and [prior caret comparison](build/i386-demo-grid-v1/caret-baseline.json).
 
 ### Plan decisions (2026-11-24)
 

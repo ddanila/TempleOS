@@ -1152,7 +1152,9 @@ U0 NativeTerminalInput()
       DocPutKey(doc,event.ch,event.scan);ConsolePresent;
     } else if(decoded && event.type==2) {
       ch=event.ch;
-      if(ch==CH_SHIFT_ESC) {
+      if(!ch && event.scan.u8[0]==SC_END && !(event.scan&(SCF_CTRL|SCF_ALT))) {
+        DocPutKey(doc,ch,event.scan);
+      } else if(ch==CH_SHIFT_ESC) {
         (*native_action_exit)();
       } else if(ch==3) {
         length=0; NativeConsoleWrite("^C\n");

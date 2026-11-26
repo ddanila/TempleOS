@@ -1,0 +1,30 @@
+{
+  "result": "pass",
+  "source_sha256": "658b19432e51da6140814d16647da7b66ac08a64786385932f546f466b299f27",
+  "disk_sha256": "54e63626162c292f95b5bef812ac0234578925454bc0c56f006273dedc865bf1",
+  "delivered_source_files": 1572,
+  "delivered_source_identity_sha256": "5aefbf614bbe3eecf2674b98dc5f08ef07ed2b60dc3a1e1c9fb241e1b2780159",
+  "snapped_points": [
+    [
+      105,
+      265
+    ],
+    [
+      115,
+      270
+    ],
+    [
+      125,
+      255
+    ]
+  ],
+  "fresh_arithmetic": true,
+  "active_desktop_commands": 9,
+  "evidence_sha256": {
+    "comparison-fixed/result.json": "afd20297bc17d3e73289c22c3427da701658660c8c7c4ec8ee1bcff7a71769fc",
+    "cross/boot-instruction-audit.json": "3e4ab628657756a49ba9b0ad9b77be0c5df4cd98a0ba8ddf03d569b91679e6a8",
+    "delivered-source.json": "09ec9c99fd8797c33410254285fd4ced8778cf86268e3c694043757606d6557f",
+    "plot8/result.json": "8d179975b36ec08dba73643b58a2a0b660335e8e29e3d13a28bcc731185e83af",
+    "baseline64/result.json": "dc169ca1a4c3092433c8f1287f019c678aad0102f12499a53111d2972ac63f54"
+  }
+}

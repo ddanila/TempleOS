@@ -17446,8 +17446,8 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": "Start unchanged Grid with the mouse in the window, send four physical motion packets, then left-click to exit.",
+      "compatibility": "qualified",
+      "reference_workflow": "Start unchanged Grid with the mouse in the window, send four physical motion packets, then left-click to exit and press End to return to the live prompt.",
       "oracle": "Match isolated points on the five-pixel grid, verify the trail clears, compare saved mouse settings and pointer callback, and check native prompt recovery.",
       "tests": [
         {
@@ -17461,6 +17461,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-grid-v1/comparison-end/result.json",
           "scope": "The same three points, trail cleanup, and settings restoration passed. Typing fresh arithmetic after the exit click and End submitted an empty input line."
+        },
+        {
+          "target": "fixed-native-grid-motion-and-recovery",
+          "result": "pass",
+          "evidence": "build/i386-demo-grid-v1/qualification.json",
+          "scope": "Both guests match the snapped trail, clear it, restore the grid and pointer settings, and evaluate fresh arithmetic after End."
         }
       ]
     },
