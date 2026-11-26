@@ -1,0 +1,267 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-msg-loop/Contract.HC": "a7653abd694414d0e8e7e8d94432901583657f2be6f0c1f1b54bd24f287e9e0c",
+    "/home/ddanila/fun/TempleOS/Demo/MsgLoop.HC": "2016b3f9be84b2ae280c4a41b0b6d86e6d0c42aaa69dba9e4cd6abff0eb6f3bd",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-msg-loop.py": "cec71a2246e7983f4513ed833a2bf163ace7ad8d43bd993ff375d20ddc6b4618",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "9c96e317209ea0dba1ab36e9168b47cf448794cafe33285ee6dfb0bba233e101",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "3e723e125a4941a1be5678c03b4690ea1e1856f7cf841d9b7fbef00384ef3217",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-msg-loop/DefaultFrames.HC": "cc24e9f80ef86f829111545e1837ead44795b8454ffcff9139eaa7f2bf1bff43",
+    "build/msg-loop-default-frames-shift-original-v2/guest/program-final.png": "262c4ad4d1b6e605c3de079f10176683f47144555a636152fbd11eda7b2bbd53",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-doc-fileread-cleanup-v1/full/kernel.img": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+    "build/msg-loop-default-frames-shift-original-v2/result.json": "3e277a93f17a8b52fa92a869aead0d8c09d74494973f5a5bc2666339c098c073",
+    "build/msg-loop-default-frames-shift-original-v2/msg-loop.DD": "f7acd410b3ab03558bc6b31aeb174c36364391ccfd080010e35276ed3e3acaf1",
+    "build/msg-loop-default-frames-shift-original-v2/msg-loop-return.bin": "a02ae51509464de11084e34346a86574191b861de2cb5cf064661b459c9bc9e4",
+    "build/msg-loop-default-frames-shift-original-v2/msg-loop-mask.bin": "aae89fc0f03e2959ae4d701a80cc3915918c950b159f6abb6c92c1433b1a8534",
+    "build/msg-loop-default-frames-shift-original-v2/msg-loop-stream.bin": "58ade9f0678dcf73087497e827fb62180039e5bafa1855a49ac613165a572026"
+  },
+  "fixture_sha256": "a7653abd694414d0e8e7e8d94432901583657f2be6f0c1f1b54bd24f287e9e0c",
+  "program_sha256": "2016b3f9be84b2ae280c4a41b0b6d86e6d0c42aaa69dba9e4cd6abff0eb6f3bd",
+  "shift_exit": true,
+  "frame_barriers": false,
+  "default_frame_barriers": true,
+  "scope": "Unchanged MsgLoop source loaded with CCF_JUST_LOAD, then its top-level MsgLoop call: real keys, motion, single/double/simultaneous buttons, wheel no-message behavior, typing with left held, Escape/Shift-Escape exit, original output and caller restoration. Not every key/desktop/resource or complete C1-C5 qualification.",
+  "frame_fixture_sha256": "cc24e9f80ef86f829111545e1837ead44795b8454ffcff9139eaa7f2bf1bff43",
+  "render_policy": "Default document flags; twenty completed document/WinMgr updates per phase; original double-click batch timing",
+  "harness_sha256": "007db12ca69f89c4c77f4a82c1e429bf49083b4b78e88e78ac6194b63d0e38e0",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "b435c58ddc943918a38b14f09476f41deea4c5ee5a4363ef25ea92ed2cb0c81c",
+    "image_sha256": "543a1c9d912c9460573dbe3c31823bab917a95d58ca0afc60ad53be51c55f0a8",
+    "boot_area_sha256": "82a2d590f407e247f5b381f2caf9a8a65ab5966c3deaf59d9272dea8206ee1d9",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1932,
+      "owned_sectors": 96178,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1933,
+      "owned_sectors": 96188,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/MsgLoopWorkflow.HC": "007db12ca69f89c4c77f4a82c1e429bf49083b4b78e88e78ac6194b63d0e38e0"
+    },
+    "added_attributes": {
+      "/Probe/MsgLoopWorkflow.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "raster_sha256": "851766063f53eccf07088803da029b7a3d377c0ffd34d68789e061d5a08a68e2",
+  "raster_equal": true,
+  "records": [
+    [
+      2,
+      97,
+      128849018910
+    ],
+    [
+      3,
+      97,
+      1228360646942
+    ],
+    [
+      4,
+      322,
+      243
+    ],
+    [
+      5,
+      322,
+      243
+    ],
+    [
+      6,
+      322,
+      243
+    ],
+    [
+      9,
+      322,
+      243
+    ],
+    [
+      10,
+      322,
+      243
+    ],
+    [
+      7,
+      322,
+      243
+    ],
+    [
+      2,
+      28,
+      2203318223361
+    ],
+    [
+      8,
+      322,
+      243
+    ],
+    [
+      2,
+      0,
+      2379411882538
+    ],
+    [
+      5,
+      322,
+      243
+    ],
+    [
+      6,
+      322,
+      243
+    ],
+    [
+      9,
+      322,
+      243
+    ],
+    [
+      3,
+      98,
+      282780646834480
+    ],
+    [
+      6,
+      322,
+      243
+    ],
+    [
+      2,
+      98,
+      281681135206448
+    ],
+    [
+      10,
+      322,
+      243
+    ],
+    [
+      5,
+      322,
+      243
+    ]
+  ],
+  "stream_records": [
+    [
+      2,
+      97,
+      128849018910
+    ],
+    [
+      3,
+      97,
+      1228360646942
+    ],
+    [
+      4,
+      322,
+      243
+    ],
+    [
+      5,
+      322,
+      243
+    ],
+    [
+      6,
+      322,
+      243
+    ],
+    [
+      9,
+      322,
+      243
+    ],
+    [
+      10,
+      322,
+      243
+    ],
+    [
+      7,
+      322,
+      243
+    ],
+    [
+      8,
+      322,
+      243
+    ],
+    [
+      5,
+      322,
+      243
+    ],
+    [
+      9,
+      322,
+      243
+    ],
+    [
+      6,
+      322,
+      243
+    ],
+    [
+      10,
+      322,
+      243
+    ],
+    [
+      5,
+      322,
+      243
+    ],
+    [
+      2,
+      98,
+      281681135206448
+    ],
+    [
+      3,
+      98,
+      282780646834480
+    ],
+    [
+      6,
+      322,
+      243
+    ],
+    [
+      2,
+      0,
+      2379411882538
+    ],
+    [
+      2,
+      28,
+      2203318223361
+    ]
+  ],
+  "pixels": 307200,
+  "fresh_result": {
+    "column": 0,
+    "row": 15,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "files_unchanged": true,
+  "mask": 7,
+  "inputs_unchanged": true
+}

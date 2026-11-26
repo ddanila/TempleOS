@@ -129,3 +129,14 @@ and unconstrained modes remain distinct. This closes the missing default-refresh
 policy subcase for this paced MsgLoop workflow; unconstrained scheduling,
 complete desktop orchestration, other applications/resources and C5 native
 release generations remain open. Whole-item qualification stays2/686.
+
+## Default-refresh qualification on the current desktop
+
+The newer desktop image passed the unchanged program with physical keyboard
+and mouse input, the original double-click timing and twenty completed
+document updates between phases. Escape and Shift-Escape matched all
+18 and 19 chronological records, the saved DolDoc and every framebuffer
+pixel. The caller state and heap were restored, the volume was unchanged,
+and fresh arithmetic displayed 42. See the
+[Escape run](../build/i386-msg-loop-current-v1/result.json) and
+[Shift-Escape run](../build/i386-msg-loop-current-shift-v1/result.json).

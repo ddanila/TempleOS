@@ -18113,10 +18113,22 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Load the byte-identical Demo/MsgLoop.HC with CCF_JUST_LOAD and invoke its MsgLoop function once in an actual user document. Dependencies: GetMsg/full public scan codes, Print/DolDoc insertion, WinMgr physical keyboard and mouse queues, window inhibit/scroll state. Type a; move; single/double/simultaneous buttons; wheel without a public wheel message; type b while left is held; normal and Shift-Escape exits. Capture document/stream/pixels and caller restoration. Keep default scheduling and explicitly full-refresh/frame-barrier cases separate.",
-      "oracle": "Independent stream_expected in tools/test-i386-msg-loop.py requires the full quoted-link header and18/19 chronological records with complete64-bit scans. Original full-refresh references repeat byte-identically in msg-loop-frames-{shift-}original-v3/v4; compare entire saved documents, all307200 pixels per variant, return flags, exact heap/restoration7, fresh42 and unchanged native volume. Default snapshots vary on the original and remain a recorded open qualification gap; no sorting, normalization or pixel exclusions. See docs/i386-msg-loop.md and docs/i386-managed-pointer.md. Default refresh policy is now separately checked without DOCF_DO_FULL_REFRESH: twenty real document/WinMgr updates between consumed phases make both originals repeat exactly; msg-loop-default-frames-{shift-}native-v1/v2 matches entire documents, streams and all pixels, restores7 and zero caller growth, then fresh42/unchanged volume. Arbitrary uncontrolled interleavings remain open; this paced subcase does not qualify the whole item.",
+      "oracle": "Independent stream_expected in tools/test-i386-msg-loop.py requires the full quoted-link header and18/19 chronological records with complete64-bit scans. Original full-refresh references repeat byte-identically in msg-loop-frames-{shift-}original-v3/v4; compare entire saved documents, all307200 pixels per variant, return flags, exact heap/restoration7, fresh42 and unchanged native volume. Default snapshots vary on the original and remain a recorded open qualification gap; no sorting, normalization or pixel exclusions. See docs/i386-msg-loop.md and docs/i386-managed-pointer.md. Default refresh policy is now separately checked without DOCF_DO_FULL_REFRESH: twenty real document/WinMgr updates between consumed phases make both originals repeat exactly; msg-loop-default-frames-{shift-}native-v1/v2 matches entire documents, streams and all pixels, restores7 and zero caller growth, then fresh42/unchanged volume. The current desktop qualifies the full physical gesture sequence for both exits at the original input cadence. Unpaced original snapshots are timing-dependent.",
       "tests": [
+        {
+          "target": "native-current-msg-loop-default-escape",
+          "result": "pass",
+          "evidence": "build/i386-msg-loop-current-v1/result.json",
+          "scope": "Default rendering, paced physical input, 18 chronological records, exact saved DolDoc and 307200 framebuffer pixels, restored caller state, unchanged files and later arithmetic."
+        },
+        {
+          "target": "native-current-msg-loop-default-shift-escape",
+          "result": "pass",
+          "evidence": "build/i386-msg-loop-current-shift-v1/result.json",
+          "scope": "Same input and rendering contract with Shift-Escape, 19 chronological records, exact saved DolDoc and framebuffer, restored caller state and later arithmetic."
+        },
         {
           "target": "unchanged-msg-loop-real-input-stream",
           "command": "python3 tools/test-i386-msg-loop.py --out ORIGINAL; python3 tools/test-i386-msg-loop.py --shift-exit --out SHIFT_ORIGINAL; python3 tools/test-i386-msg-loop.py IMAGE --reference ORIGINAL --out NATIVE; python3 tools/test-i386-msg-loop.py IMAGE --shift-exit --reference SHIFT_ORIGINAL --out SHIFT_NATIVE",
