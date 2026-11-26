@@ -39,8 +39,9 @@ is complete and provides the foundation, but not desktop or application parity.
   where the post-dismissal completion marker was missing. The native guest
   reached the link dispatch marker but did not display Genesis within
   the 90-second observation window.
-- The 64 MiB native second-generation RegistryDemo reboot run stopped
-  at the first console raster wait, before reaching persistence checks.
+- RegistryDemo passed three 64 MiB KVM boots on the frozen second
+  native generation. The harness verified the exact console frames and
+  persisted increments through the configured Home registry.
 - C5 retains the two-generation desktop result on frozen revision
   `592a38b7`. A full Bible lookup profile on that desktop found repeated
   backing-region trims during DolDoc loading. The

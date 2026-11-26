@@ -219,3 +219,11 @@ image saves the score and incremented value to `/Home/Registry.HC.Z`.
 The earlier root-path probe read a separate registry containing the default
 Adam entries. See the
 [first-boot result](../build/i386-registry-demo-gen2-reboot-active-v1/first/result.json).
+
+The second boot displayed the saved score and value 1235, then wrote
+value 1236 and a new score within the measured time bounds. The third
+boot reloaded the saved score and value without altering the saved
+records. The registry and three test files accounted for all changes.
+The filesystem audit passed and preserved 1,932 pre-existing source-image
+files. The original reference exercised a saved-document reload.
+See the [native three-boot result](../build/i386-registry-demo-gen2-reboot-active-v1/result.json).

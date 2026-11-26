@@ -18446,6 +18446,13 @@
       },
       "tests": [
         {
+          "target": "native-gen2-configured-home-registry-reboot",
+          "command": "python3 tools/test-i386-registry-demo-reboot.py IMAGE --reference REFERENCE --out OUT --require-bundled --managed-pointer",
+          "result": "pass",
+          "evidence": "build/i386-registry-demo-gen2-reboot-active-v1/result.json",
+          "scope": "Three boots of the frozen second native generation at 64 MiB KVM. Unchanged bundled demo, exact console pixels, values 1235 and 1236, elapsed score bounds, third-boot reload and filesystem audit. The active Home registry and three measurement files changed; 1932 pre-existing source-image files were preserved."
+        },
+        {
           "target": "native-gen2-configured-home-registry",
           "command": "python3 tools/test-i386-registry-demo.py IMAGE --reference REFERENCE --out OUT --require-bundled --managed-pointer",
           "result": "pass",
