@@ -2668,3 +2668,13 @@ within 1 Hz and their active durations matched at the capture's
 20 ms resolution. The inventory qualifies the cold Vocabulary launcher
 and covers its two support files and dictionary assets.
 See the [speaker comparison](../build/i386-vocabulary-audio-v1/comparison.json).
+
+### KeepAway finish and best-score reference
+
+The original game awarded eight points through its normal handoff and
+passing rules with controlled ball placement. Advancing the match clock
+reached the real finish path and displayed the red Game Over caption.
+A fresh zero-score match preserved the 8–0 best score, and Escape
+restored the caller. The fixture waits for the game's end-of-match beep
+before inspecting the best score. See the
+[original finish receipt](../build/i386-keepaway-finish-v3/original-receipt.json).

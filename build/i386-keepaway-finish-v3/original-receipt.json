@@ -1,0 +1,32 @@
+{
+  "result": "pass",
+  "scope": "KeepAway handoff and pass scoring, staged clock expiration, lower-score restart, registry persistence and prompt recovery",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-finish-v3/run.py": "36610e8d3171997821da451acb0329a32d94975e0c508f9dc9d5a2616e1ea111",
+    "/home/ddanila/fun/TempleOS/build/i386-keepaway-finish-v3/Probe.HC": "cbbece381f0591f7cc88ce9bd7272230a18d44749a012089782d76811243cd0a",
+    "tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237"
+  },
+  "best_score": [
+    8,
+    0
+  ],
+  "game_over_origin": [
+    284,
+    240
+  ],
+  "game_over_red_pixels": [
+    171,
+    173
+  ],
+  "inputs_unchanged": true,
+  "game_over_sha256": "3da1cfe5ab9bc628a4b415f319dfc2665f8b1d4a5e2a2dd049840b312e980494",
+  "markers": [
+    "KEEP popup",
+    "KEEP playing",
+    "KEEP finished 8-0",
+    "KEEP preserved 8-0",
+    "KEEP returned"
+  ]
+}
