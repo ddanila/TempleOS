@@ -17850,10 +17850,23 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the unchanged SpriteRaw demo on the pinned original and i386. Capture the whole DolDoc and render the sprite from each interactive prompt.",
+      "oracle": "Verify the 63-byte packed vector and complete 106-byte DolDoc independently. Compare the entire green sprite mask after aligning the drawings by their position.",
+      "tests": [
+        {
+          "target": "native-sprite-raw-before-public-types",
+          "result": "fail",
+          "evidence": "build/i386-demo-sprite-raw-v1/comparison/result.json",
+          "scope": "The old i386 image rejects CSpriteColor because the public graphics header omits the shared sprite types."
+        },
+        {
+          "target": "native-original-sprite-raw",
+          "result": "pass",
+          "evidence": "build/i386-demo-sprite-raw-v2/qualification.json",
+          "scope": "Both guests match all 106 saved bytes and all 3,925 green drawing pixels in a 101 by 101 sprite."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/SpriteText.HC",

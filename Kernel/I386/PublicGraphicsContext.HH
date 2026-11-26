@@ -3,6 +3,7 @@
 #include "/Kernel/NumericLimits.HH"
 #include "/Kernel/GraphicsTypes.HH"
 #include "/Adam/Gr/GrGlobalsTypes.HH"
+#include "/Adam/Gr/Gr.HH"
 public _extern _D3I32_DIST F64 D3I32Dist(CD3I32 *p1,CD3I32 *p2);
 public _extern _D3I32_DIST_SQR I64 D3I32DistSqr(CD3I32 *p1,CD3I32 *p2);
 public _extern _D3I32_NORM F64 D3I32Norm(CD3I32 *p);

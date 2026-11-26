@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "original_iso_sha256": "8919dc1d1fadb5870e205c4eb6cfabf13fbebce6e666b19c9d77c2a6e63f1751",
+  "native_image_sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+  "widths": {
+    "original": 101,
+    "native": 101
+  },
+  "heights": {
+    "original": 101,
+    "native": 101
+  },
+  "green_pixels": {
+    "original": 3925,
+    "native": 3925
+  },
+  "mask_xor": 0,
+  "screenshots_sha256": {
+    "original": "257b935cdbcae3852a30f5550493a55be6101455036894f0ff64887cd55f0483",
+    "native": "95f1d95eaf29da397b0bcae1c07bf266d02e093dc2cb39f8ace50fc10cfb3cec"
+  }
+}

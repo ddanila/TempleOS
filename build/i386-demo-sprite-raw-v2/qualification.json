@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "image_sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+  "source_sha256": "a7a665e7bfc12a45b2bf9795f342ae26c7ca60d92e9430ff0f3a04414bcbc26c",
+  "document_sha256": "2aae4128db2cff02e683b50ba947c551870e585b7a582b370c640bbe237adea0",
+  "document_bytes": 106,
+  "vector_bytes": 63,
+  "sprite_width": 101,
+  "sprite_height": 101,
+  "green_pixels": 3925,
+  "mask_xor": 0,
+  "delivered_source_files": 1566,
+  "evidence_sha256": {
+    "comparison/result.json": "3c2d2227b95168a6baf25e85cc3f65ddccb6868b0ffeefce97bf55324a98db1a",
+    "render/result.json": "d94f381424e243e5cb388647ac366f71a9d8a5ebad930b0f2281c396dfcbd3b9",
+    "source-audit.json": "39216ce01b80964b4548451abf317213d4d8cbe2b822655a3d718b40a9242cb8",
+    "address8/result.json": "05f4285b72c917b2010172cefbd5acbe674744bbb15f6bac1e7118e55d3f2289"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "result": "fail",
+  "input_sha256": "9cfdf8dfe66f476c0277225221ca1e72d719028307395180d4f80047a0b1c280",
+  "entries": {
+    "Demo/Graphics/SpriteRaw.HC": {
+      "source_sha256": "a7a665e7bfc12a45b2bf9795f342ae26c7ca60d92e9430ff0f3a04414bcbc26c",
+      "output_file": "demo-0.DD"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 0000000001594538 00000000536B7354\nINPUT LINE #include \"C:/Probe/DemoBatch.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Expecting type at  token CSpriteColor file C:/Demo/Graphics/SpriteRaw.HC line 7\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nEXPORT demo-0.DD 972F8 1B\n",
+  "inputs_unchanged": true
+}
