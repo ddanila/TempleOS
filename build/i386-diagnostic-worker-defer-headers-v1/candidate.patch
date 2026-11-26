@@ -1,0 +1,22 @@
+diff --git a/Kernel/I386/Kernel.HC b/Kernel/I386/Kernel.HC
+index dfe1e371..1a11dc1d 100644
+--- a/Kernel/I386/Kernel.HC
++++ b/Kernel/I386/Kernel.HC
+@@ -284 +283,0 @@ I64 Main(CI386BootInfo *info,I64 unused)
+-    if(!kernel_console.root_headers || !kernel_console.root_headers()) KernelStop;
+@@ -305,0 +305 @@ I64 Main(CI386BootInfo *info,I64 unused)
++    I64 private_bytes=448*1024;
+@@ -307 +307 @@ I64 Main(CI386BootInfo *info,I64 unused)
+-      0x18,0x20,1048576);
++      0x18,0x20,private_bytes);
+@@ -310 +309,0 @@ I64 Main(CI386BootInfo *info,I64 unused)
+-    //Combined original compiler sources need 1 MiB of transient task storage.
+@@ -322 +321 @@ I64 Main(CI386BootInfo *info,I64 unused)
+-        pulse_used-kernel_heap.used<1048576+16384) KernelStop;
++        pulse_used-kernel_heap.used<private_bytes+16384) KernelStop;
+@@ -324,0 +324,2 @@ I64 Main(CI386BootInfo *info,I64 unused)
++    //Publish root headers after the temporary compiler and worker are reclaimed.
++    if(!kernel_console.root_headers || !kernel_console.root_headers()) KernelStop;
+@@ -785 +786 @@ U0 KernelCompilerProbeLoad()
+-  if(scratch && scratch!=&kernel_heap) {
++  if(scratch && scratch!=&kernel_heap && source_size<scratch->size) {

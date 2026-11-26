@@ -940,3 +940,11 @@ from the suite's deliberate exhaustion tests. The private arena went from
 the existing allocations. The full diagnostic and all nine VGA checks
 passed. See `build/i386-diagnostic-bundle-peak-v1/` for the measurement and
 test receipt.
+
+Deferring both root header transactions let the 448 KiB worker and its
+in-place provider load coexist at 8 MiB. The worker completed the conditional
+pressure cases and stopped before the resident-header marker. The next check,
+`ProbeResidents`, requires inherited function declarations for `SysTry`,
+`SysUntry`, and `throw`. The trial establishes that deferring both header
+transactions breaks that dependency. See
+`build/i386-diagnostic-worker-defer-headers-v1/`.

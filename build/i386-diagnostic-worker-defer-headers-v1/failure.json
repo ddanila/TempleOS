@@ -1,0 +1,20 @@
+{
+  "status": "fail",
+  "ram_mib": 8,
+  "worker_arena_bytes": 458752,
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-defer-headers-v1/cross/kernel-diagnostics.img": "760dc148c9f54625aa53995fb12cae41477df23abc388ef297800a27d1dfe7e0",
+    "/home/ddanila/fun/TempleOS/build/i386-diagnostic-worker-defer-headers-v1/cross/result.json": "bc1e6e89a27d6658e3c48e176daa5c338b9aaaf1fbe7680135b228a59ea4bf07",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-startup-memory.py": "cc4748a4118d5e498b26d490b719f79c92148a34dcd76d325f30744d859ec0de",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "afbfa59b95c5984329178c742820d8fd1ee25b01f59db98f78cf411af985c463"
+  },
+  "trace_sha256": "21be1f3d3c3318f536bfb752749b685d0345c38dc025915f88510ebe1fa70b09",
+  "provider_loads": [
+    "PROBE LOAD 0000000000312478 000000000007F500 000000000007F510",
+    "PROBE LOAD 0000000000639A10 000000000007F500 000000000007F510"
+  ],
+  "terminal_trace": [
+    "CONDITIONAL PRESSURE CASE 0000000000000001 0000000000000003",
+    "FAIL native kernel"
+  ]
+}
