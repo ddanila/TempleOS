@@ -1,0 +1,6 @@
+&LexWarn ParenWarning PrsExpression2 PrsExpression $FG,4$$BK,1$WARNING:$FG$$BK,0$ Unnecessary parenthesis ";" $LK,"T:/Demo/ParenWarn.HC,0006",A="FL:T:/Demo/ParenWarn.HC,6"$ 
+&LexWarn ParenWarning PrsExpression2 PrsExpression $FG,4$$BK,1$WARNING:$FG$$BK,0$ Unnecessary parenthesis ";" $LK,"T:/Demo/ParenWarn.HC,0008",A="FL:T:/Demo/ParenWarn.HC,8"$ 
+&LexWarn ParenWarning PrsExpression2 PrsExpression $FG,4$$BK,1$WARNING:$FG$$BK,0$ Unnecessary parenthesis "(" $LK,"T:/Demo/ParenWarn.HC,0009",A="FL:T:/Demo/ParenWarn.HC,9"$ d=(d1+d2)+(d1+d2);
+&LexWarn ParenWarning PrsExpression2 PrsExpression $FG,4$$BK,1$WARNING:$FG$$BK,0$ Unnecessary parenthesis ";" $LK,"T:/Demo/ParenWarn.HC,0010",A="FL:T:/Demo/ParenWarn.HC,10"$ 
+&LexWarn ParenWarning PrsExpression2 PrsExpression $FG,4$$BK,1$WARNING:$FG$$BK,0$ Unnecessary parenthesis ";" $LK,"T:/Demo/ParenWarn.HC,0014",A="FL:T:/Demo/ParenWarn.HC,14"$ 
+

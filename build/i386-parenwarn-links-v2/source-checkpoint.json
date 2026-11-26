@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "image_sha256": "461ecd790fec15320a9c1661664415f28e55df4ad4ad99f1642394d6a5962244",
+  "source_revision": "c699cd0ffbef159b9ae7cc9dbae123f08af07a07",
+  "source_sha256": {
+    "Compiler/LexDiagnosticsCore.HC": "d8be98485917a27b7771be4da0b78611c8c588aba2b5f970b391ba4775691568",
+    "Kernel/I386/ConsoleInput.HC": "1beb557498f20dbbc8375f67801691721dbc62d26750e676d8a897389ad9fbf2",
+    "Kernel/I386/ConsoleRuntime.HC": "ee21a2b267ec603fa34428a216f3497ad83b866f6f870c3e685ed341f0b9e444",
+    "Kernel/I386/StartOS.HC": "9a99d0ec9454a4f7574ae203b149d6bdc26eec8ce635f1df7816bac04ef9b099"
+  },
+  "delivered_source_files": 1561,
+  "evidence_sha256": {
+    "qualification.json": "ca43df514ab9863d8178b9fd28ca1910ab3864b1ad3ac0a9db87b1bf770de6ab",
+    "packaging.json": "282f46cc69c67bb4e2898fe387322e9af029f71df0f877eb4baa39b63ee08354",
+    "public8/result.json": "190b65f790342b146464b1130206763dce0a553c1778f1e62789b64d44937a6c",
+    "delivered-committed.json": "becd3097cec960fa118e463ebead371e7cf1875ca9a74d342ea587643249b30c"
+  },
+  "public8_command_sha256": "b430846f8d2367e22a5bd46b059fbfbfe12e911227b42275fbee08280f116102",
+  "cross_log_sha256": "d80fcee30a587403c5f3b415d88e1970878b3d98223e38dbdc1b41c1f64b5832",
+  "bootstrap_manifest_sha256": "9bf8bb88b50b04a707dabbdbf39d76f261c0feff7a93866d114209a7f29ae4d3",
+  "scope": "Native compiler options and five rich warning records, plus 8 MiB option round trip and prompt recovery."
+}

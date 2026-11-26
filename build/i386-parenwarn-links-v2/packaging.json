@@ -1,0 +1,28 @@
+{
+  "result": "pass",
+  "source_sha256": "a9619d06028f31baae17467d4477082804655032520a97a15a4b7c4ebd39cbd3",
+  "image_sha256": "461ecd790fec15320a9c1661664415f28e55df4ad4ad99f1642394d6a5962244",
+  "boot_area_sha256": "5070b8a45c093b6b4565c9d7c325ad3ba424a434a7dc93c1f04f21ff35ecbed9",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1932,
+    "owned_sectors": 96183,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1932,
+    "owned_sectors": 96185,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification",
+  "replacements": {
+    "/Modules/I386/ConsoleRuntime.t32m": "91e24732ed4dc83b8c9bb32efcc212ce0dddb5e23da2c61d6590a3128b3350bf",
+    "/Compiler/LexDiagnosticsCore.HC": "d8be98485917a27b7771be4da0b78611c8c588aba2b5f970b391ba4775691568",
+    "/Kernel/I386/ConsoleInput.HC": "1beb557498f20dbbc8375f67801691721dbc62d26750e676d8a897389ad9fbf2",
+    "/Kernel/I386/ConsoleRuntime.HC": "ee21a2b267ec603fa34428a216f3497ad83b866f6f870c3e685ed341f0b9e444"
+  }
+}

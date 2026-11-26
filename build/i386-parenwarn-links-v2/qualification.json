@@ -1,0 +1,35 @@
+{
+  "result": "pass",
+  "image_sha256": "461ecd790fec15320a9c1661664415f28e55df4ad4ad99f1642394d6a5962244",
+  "original_sha256": "bcb1d000ff5a964c328b4153c5a391739c4e99409617ed22b90c1d2a233a13df",
+  "native_sha256": "356858c4b3d91c0f5613043ea929faf850581534d8a923eb6a5e9d11c1513543",
+  "batch_receipt_sha256": "e5a23fde1a78f7b3da17acc370b888a7aa3ac79e99ec50db50424e5decfe7d72",
+  "scope": "Identical warning colors, tokens, source snippets and navigable file/line targets. Drive letters are guest-specific. The native host callback has no HolyC parser call chain.",
+  "warnings": [
+    {
+      "line": 6,
+      "token": ";",
+      "source": ""
+    },
+    {
+      "line": 8,
+      "token": ";",
+      "source": ""
+    },
+    {
+      "line": 9,
+      "token": "(",
+      "source": "d=(d1+d2)+(d1+d2);"
+    },
+    {
+      "line": 10,
+      "token": ";",
+      "source": ""
+    },
+    {
+      "line": 14,
+      "token": ";",
+      "source": ""
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+$FG,4$$BK,1$WARNING:$FG$$BK,0$ Unnecessary parenthesis ";" $LK,"C:/Demo/ParenWarn.HC,0006",A="FL:C:/Demo/ParenWarn.HC,6"$ 
+$FG,4$$BK,1$WARNING:$FG$$BK,0$ Unnecessary parenthesis ";" $LK,"C:/Demo/ParenWarn.HC,0008",A="FL:C:/Demo/ParenWarn.HC,8"$ 
+$FG,4$$BK,1$WARNING:$FG$$BK,0$ Unnecessary parenthesis "(" $LK,"C:/Demo/ParenWarn.HC,0009",A="FL:C:/Demo/ParenWarn.HC,9"$ d=(d1+d2)+(d1+d2);
+$FG,4$$BK,1$WARNING:$FG$$BK,0$ Unnecessary parenthesis ";" $LK,"C:/Demo/ParenWarn.HC,0010",A="FL:C:/Demo/ParenWarn.HC,10"$ 
+$FG,4$$BK,1$WARNING:$FG$$BK,0$ Unnecessary parenthesis ";" $LK,"C:/Demo/ParenWarn.HC,0014",A="FL:C:/Demo/ParenWarn.HC,14"$ 
+
