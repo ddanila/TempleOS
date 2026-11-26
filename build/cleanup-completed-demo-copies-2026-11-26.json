@@ -1,0 +1,226 @@
+[
+  {
+    "removed": "build/i386-demo-bounce-v1/baseline64/working.img",
+    "retained": "build/i386-demo-bounce-v1/cross-retry/kernel.img",
+    "allocated_bytes": 67112960,
+    "sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-bounce-v1/render/working.img",
+    "retained": "build/i386-demo-bounce-v1/cross-retry/kernel.img",
+    "allocated_bytes": 67108864,
+    "sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-bounce-v1-baseline/working.img",
+    "retained": "build/i386-sprite-plot3d-production-v1/cross/kernel.img",
+    "allocated_bytes": 67108864,
+    "sha256": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-box-v1/render-retry/working.img",
+    "retained": "build/i386-sprite-plot3d-production-v1/cross/kernel.img",
+    "allocated_bytes": 67112960,
+    "sha256": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-cartesian-v1/comparison/working.img",
+    "retained": "build/i386-demo-bounce-v1/cross-retry/kernel.img",
+    "allocated_bytes": 67112960,
+    "sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-cartesian-v1/comparison-retry/working.img",
+    "retained": "build/i386-demo-bounce-v1/cross-retry/kernel.img",
+    "allocated_bytes": 67108864,
+    "sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-cursor-move-v1/table-comparison/working.img",
+    "retained": "build/i386-demo-f64-files-v1/cross-sign/kernel.img",
+    "allocated_bytes": 67112960,
+    "sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-data-widget-v1/edit-fields/working.img",
+    "retained": "build/i386-demo-f64-files-v1/cross-sign/kernel.img",
+    "allocated_bytes": 67112960,
+    "sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-data-widget-v1/editor-key-fields/working.img",
+    "retained": "build/i386-demo-f64-files-v1/cross-sign/kernel.img",
+    "allocated_bytes": 67108864,
+    "sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-data-widget-v1/live-fields/working.img",
+    "retained": "build/i386-demo-f64-files-v1/cross-sign/kernel.img",
+    "allocated_bytes": 67112960,
+    "sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-data-widget-v1/physical-editor-retain-caret/working.img",
+    "retained": "build/i386-demo-f64-files-v1/cross-sign/kernel.img",
+    "allocated_bytes": 67112960,
+    "sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-data-widget-v1/physical-editor-writeback/working.img",
+    "retained": "build/i386-demo-f64-files-v1/cross-sign/kernel.img",
+    "allocated_bytes": 67108864,
+    "sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-extents-v1/render/working.img",
+    "retained": "build/i386-demo-sprite-text-v5/candidate.img",
+    "allocated_bytes": 49664000,
+    "sha256": "9c2babe914327c106cf3af14edfd0e338b8675e217058549c10c22dea7b097cb",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-extents-v2/baseline64/working.img",
+    "retained": "build/i386-demo-extents-v2/candidate.img",
+    "allocated_bytes": 67112960,
+    "sha256": "19f1f3e781ef1f2abb3be18480f24c87f96c4d388342c6156c52145c6bc16c32",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-extents-v2/render/working.img",
+    "retained": "build/i386-demo-extents-v2/candidate.img",
+    "allocated_bytes": 49659904,
+    "sha256": "19f1f3e781ef1f2abb3be18480f24c87f96c4d388342c6156c52145c6bc16c32",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-f64-files-v1/baseline64/working.img",
+    "retained": "build/i386-demo-f64-files-v1/cross-sign/kernel.img",
+    "allocated_bytes": 67112960,
+    "sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-lines-v1/render/working.img",
+    "retained": "build/i386-sprite-plot3d-production-v1/cross/kernel.img",
+    "allocated_bytes": 67112960,
+    "sha256": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-lines-v1/render-long/working.img",
+    "retained": "build/i386-sprite-plot3d-production-v1/cross/kernel.img",
+    "allocated_bytes": 49659904,
+    "sha256": "308300e3bd0ab5461e8965a02cf3647dbbb4aed1ecc41c7fe79110c181c527b5",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-menu-buttons-v1/button-space/working.img",
+    "retained": "build/i386-demo-f64-files-v1/cross-sign/kernel.img",
+    "allocated_bytes": 67112960,
+    "sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-net-of-dots-v1-render/working.img",
+    "retained": "build/i386-demo-bounce-v1/cross-retry/kernel.img",
+    "allocated_bytes": 67108864,
+    "sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-palette-v1/render/working.img",
+    "retained": "build/i386-demo-extents-v2/candidate.img",
+    "allocated_bytes": 49659904,
+    "sha256": "19f1f3e781ef1f2abb3be18480f24c87f96c4d388342c6156c52145c6bc16c32",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-pan-text-v1/render/working.img",
+    "retained": "build/i386-demo-sprite-plot3d-v2/candidate.img",
+    "allocated_bytes": 49659904,
+    "sha256": "97580db17f88cb9bed418be9325753ff39c4d829b3f785f3234a734aed61f8b1",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-pan-text-v1/render-v2/working.img",
+    "retained": "build/i386-demo-sprite-plot3d-v2/candidate.img",
+    "allocated_bytes": 49659904,
+    "sha256": "97580db17f88cb9bed418be9325753ff39c4d829b3f785f3234a734aed61f8b1",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-serialize-tree-v2/baseline64/working.img",
+    "retained": "build/i386-demo-serialize-tree-v2/candidate.img",
+    "allocated_bytes": 67112960,
+    "sha256": "44318f80f55a1c959ab4e22d62747c1c11fb713f5fecc4b1016dfb42d8bb34ba",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-plot-v1/render/working.img",
+    "retained": "build/i386-demo-sprite-text-v4/candidate.img",
+    "allocated_bytes": 67112960,
+    "sha256": "e90ab362a7b175fbe5a1b4174a4eef0921bf816a161079374985e7e671c97cc7",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-plot-v1/render-v3/working.img",
+    "retained": "build/i386-demo-sprite-raw-v2/candidate.img",
+    "allocated_bytes": 67112960,
+    "sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-plot3d-v1/render/working.img",
+    "retained": "build/i386-demo-extents-v2/candidate.img",
+    "allocated_bytes": 49659904,
+    "sha256": "19f1f3e781ef1f2abb3be18480f24c87f96c4d388342c6156c52145c6bc16c32",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-plot3d-v2/render/working.img",
+    "retained": "build/i386-demo-sprite-plot3d-v2/candidate.img",
+    "allocated_bytes": 49659904,
+    "sha256": "97580db17f88cb9bed418be9325753ff39c4d829b3f785f3234a734aed61f8b1",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-plot3d-v2/render-sampled/working.img",
+    "retained": "build/i386-demo-sprite-plot3d-v2/candidate.img",
+    "allocated_bytes": 49659904,
+    "sha256": "97580db17f88cb9bed418be9325753ff39c4d829b3f785f3234a734aed61f8b1",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-raw-v2/baseline64/working.img",
+    "retained": "build/i386-demo-sprite-raw-v2/candidate.img",
+    "allocated_bytes": 67112960,
+    "sha256": "8f5bc199e1cb460c5d47cdbf08fae39bf9fc5bb1d54504ee0d2bfe5f0198e3a8",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-sprite-text-v4/baseline64/working.img",
+    "retained": "build/i386-demo-sprite-text-v4/candidate.img",
+    "allocated_bytes": 67108864,
+    "sha256": "e90ab362a7b175fbe5a1b4174a4eef0921bf816a161079374985e7e671c97cc7",
+    "bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-unused-space-v2/baseline64/working.img",
+    "retained": "build/i386-demo-unused-space-v2/candidate.img",
+    "allocated_bytes": 67112960,
+    "sha256": "9cfdf8dfe66f476c0277225221ca1e72d719028307395180d4f80047a0b1c280",
+    "bytes": 67108864
+  }
+]
