@@ -432,6 +432,9 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   the `Sign` results for positive and negative values, negative zero,
   and NaN. See the
   [cold-boot receipt](build/i386-demo-f64-files-v1/reopen8/result.json).
+  The frozen `d5792939` image passed the 686-file content check and
+  bounded guest Bible read. See the
+  [full-content checkpoint](build/i386-demo-f64-files-v1/full-content-checkpoint.json).
 
 ### Plan decisions (2026-11-24)
 

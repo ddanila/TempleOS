@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "source_revision": "d5792939fa9c990f7745aed50eabf42bf954680f",
+  "disk_sha256": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+  "inventory_files": 686,
+  "delivered_source_files": 1573,
+  "active_desktop_commands": 9,
+  "evidence_sha256": {
+    "committed-source.json": "7b47771e9a1beb5d42781ceb25b9e404b4144e695c46181ce242d28e8729e532",
+    "baseline64/result.json": "32e73c07f1d5dd692bb4e98f51b070356032bc4509bc1b90b7be68aaf1402a9a",
+    "full-content64/result.json": "a94da8b032d7ad3409158f61708c3bd9eba860690a7b4afb11598fc896d311c2"
+  }
+}
