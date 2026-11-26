@@ -1,0 +1,34 @@
+{
+  "result": "fail",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-demo-sprite-put-v1/comparison/original.iso": "25d1c6f0eb1e57877c2f63bd3956a2cbe7a7056f39fb0e27bc543ede2da85e4a",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-f64-files-v1/cross-sign/kernel.img": "e5f905ee8beb888b106d928e1cf8d85fe94c71936193080a18deac510fd3eb3f",
+    "/home/ddanila/fun/TempleOS/Demo/DolDoc/MenuBttn.HC": "8a2ab9ebe1aad81d23c84ca83c57093768cf5600a4bca1b109de186dcb1670a1"
+  },
+  "inputs_unchanged": true,
+  "runs": {
+    "original": {
+      "screenshots_sha256": {
+        "initial-menu": "7c8308728fa3c73980d10e0e03e34f8a5a4c965e1309afc8fcf924d46c681029",
+        "tone-on": "c5bba32389d889760bdc04532ff92ccf6791413ff2127cbc51650ae682f8206b",
+        "frequency": "ed28a41d27c9c942741a427bbd30535137f749a920609f04531848c26577a1ea",
+        "changed-tone": "ff525aee7f9dcda4796f694e428ac55590f2c2c22f0562afeda989a21c2db714",
+        "tone-off": "2055e4f512c40b29ba69bfde6adf1884f03891cba6d45cb4f7fc88dd0f7121ec",
+        "after-exit": "c8e18b3a60546bf8129959563b3de74b53775160b3cdcdcf185226ac0c4716f6"
+      },
+      "result": "pass",
+      "audio_sha256": "765955724bfdc57292c727fe998bf1b1a8e6ef92d8a5f46e7c892fb8d206d725",
+      "tone_windows": {
+        "90": 11,
+        "100": 30,
+        "110": 1,
+        "390": 19,
+        "380": 1
+      }
+    },
+    "native": {
+      "result": "fail",
+      "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 000000000159B8E8 00000000536B7354\nINPUT LINE ExeFile(\"C:/Demo/DolDoc/MenuBttn.HC\");\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Invalid lval at  token Freq2Ona file C:/Demo/DolDoc/MenuBttn.HC line 52\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND OK\n"
+    }
+  }
+}

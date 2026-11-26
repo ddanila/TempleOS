@@ -16191,9 +16191,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Activate Snd On with Space, open Set Freq using Tab and Space, select 400 Hz, turn sound off, and exit.",
+      "oracle": "Observe both sustained PC-speaker tone ranges, verify the frequency popup and sound-off state, and check native prompt recovery.",
+      "tests": [
+        {
+          "target": "original-menu-buttons-and-frequency",
+          "result": "pass",
+          "evidence": "build/i386-demo-menu-buttons-v1/button-space/result.json",
+          "scope": "The original guest activates the buttons and emits tones around 100 Hz and 390 Hz."
+        },
+        {
+          "target": "i386-menu-buttons-before-frequency-binding",
+          "result": "fail",
+          "evidence": "build/i386-demo-menu-buttons-v1/button-space/result.json",
+          "scope": "The Sign image rejects the unresolved Freq2Ona call on line 52."
+        }
+      ]
     },
     {
       "path": "Demo/DolDoc/MenuSprite.HC",

@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 18 (fourteen app support sources and four shared data files) |
 | Qualification gaps | 590 |
-| Linked to tests / with reference workflow and oracle | 225 / 154 |
+| Linked to tests / with reference workflow and oracle | 226 / 155 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 60 of 224 |
 
@@ -490,6 +490,12 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   document did not establish an editing caret. See the
   [live-field comparison](build/i386-demo-data-widget-v1/live-fields/result.json)
   and [physical editor comparison](build/i386-demo-data-widget-v1/physical-editor-writeback/result.json).
+
+- MenuBttn selects the frequency popup with physical Tab and Space on
+  the original guest. Its speaker capture contains sustained tones
+  around 100 Hz and 390 Hz. The i386 Sign image rejects the
+  `Freq2Ona` call. See the
+  [button and speaker comparison](build/i386-demo-menu-buttons-v1/button-space/result.json).
 
 ### Plan decisions (2026-11-24)
 
