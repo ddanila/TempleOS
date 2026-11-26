@@ -891,3 +891,11 @@ provider was loaded. This profile still needs to reduce overlapping backing
 allocations. The experiment preserves the full probe and leaves the production
 reservation at 1 MiB. The patch and terminal receipt are in
 `build/i386-diagnostic-worker-768k-v1/`.
+
+Generation one subsequently rebuilt and installed its flat kernel using the
+guest compiler. Its 8 MiB boot passed both VGA checkpoints in the arithmetic
+and document-allocation smoke test. Startup took 72.179 seconds and again
+logged the sprite source allocation rejection. The artifact audit passed for
+the boot code, 16 modules, and reachable filesystem extents. The delivered
+source audit matched 1,578 files to frozen revision `5303f095`. Generation two
+has begun rebuilding the retained modules from that guest-built image.
