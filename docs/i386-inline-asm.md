@@ -287,3 +287,16 @@ The 8 MiB TCG run on the same benchmark image reached the prompt in
 gate failed. The native retained rebuild was active on the host during
 this measurement.
 [TCG startup receipt](../build/i386-optimization-port-v1/interactive8-tcg/result.json)
+
+### Mixed HolyC and assembly demo
+
+AsmAndC3 uses the 386 assembler for the carry addition and counted
+delay, with HolyC for display. The original and native guests produced
+the same three `Meaning of life:42` lines and identical DolDoc bytes.
+The full image matched 1,578 delivered source and documentation files
+to `de49bbe7`, passed the 686-file inventory and guest read checks,
+and passed the 8 MiB KVM diagnostic boot with nine exact VGA checkpoints.
+[Demo comparison](../build/i386-asm-and-c3-port-v2/compare/result.json) ·
+[Delivered-source audit](../build/i386-asm-and-c3-port-v2/committed-source-audit.json) ·
+[Full content](../build/i386-asm-and-c3-port-v2/full-content64/result.json) ·
+[8 MiB diagnostics](../build/i386-asm-and-c3-port-v2/diagnostic8-kvm/result.json)
