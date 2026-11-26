@@ -1,0 +1,31 @@
+{
+  "result": "pass",
+  "pcm": {
+    "original": {
+      "sha256": "45666b665262b0e114139c2cb46cfb7ca2d711057956a4b2260ddfa58a5375be",
+      "tones": [
+        {
+          "median_hz": 981.2113720642769,
+          "active_seconds": 0.5
+        },
+        {
+          "median_hz": 194.84536082474227,
+          "active_seconds": 0.46
+        }
+      ]
+    },
+    "native": {
+      "sha256": "99c540445854b44828663f94dee6b0cb330f43d806e5d0fcf66cd1a0b1f76237",
+      "tones": [
+        {
+          "median_hz": 981.2113720642769,
+          "active_seconds": 0.5
+        },
+        {
+          "median_hz": 194.55882352941177,
+          "active_seconds": 0.46
+        }
+      ]
+    }
+  }
+}

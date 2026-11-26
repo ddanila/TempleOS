@@ -923,7 +923,13 @@
           "evidence": "build/i386-autocomplete-popup-native-v5/result.json",
           "scope": "Normal 64 MiB KVM 486,-fpu/live WinMgr: actual public View and retained default servant startup, complete independent Apple text, identical canonical docs/geometry/page rows 69->24->69 and caret positions; all 665664 mutually visible static pixels match original, excluding only actual autocomplete occlusion and one blinking caret cell, pointer moved outside. Observer latches actual rendered image/map and verifies VGA publication independently of golden pixels. Real child retirement, parent document roles/focus/input, resumed completion/execution/fresh42; eight exact persisted reports and clean filesystem. Unchanged archived inputs. Other definitions/slots/exit/fault paths, exact heaps, whole desktop and C1-C5 remain unqualified."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Vocabulary/Run.HC"
+        ]
+      }
     },
     {
       "path": "Adam/AutoComplete/ACDictGen.HC",
@@ -1420,7 +1426,8 @@
       "qualification": {
         "mode": "covered",
         "workflows": [
-          "Demo/WordSearch.HC"
+          "Demo/WordSearch.HC",
+          "Apps/Vocabulary/Run.HC"
         ]
       }
     },
@@ -12665,7 +12672,13 @@
           "evidence": "build/vocabulary-titanium-image-v1/native-recheck/result.json",
           "scope": "Definition opens, quiz focus returns after Escape, and keyboard-only exit reaches fresh arithmetic."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Vocabulary/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Vocabulary/Run.HC",
@@ -12681,10 +12694,29 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Cold launch with the bundled dictionary, answer correctly and incorrectly, open and dismiss both definitions, then exit from the third question.",
+      "oracle": "Compare the exact original quiz DolDoc, focus transitions, PC speaker feedback, and a fresh command after exit.",
+      "tests": [
+        {
+          "target": "original-native-vocabulary-cold-launch",
+          "result": "pass",
+          "evidence": "build/i386-vocabulary-cold-v1/comparison.json",
+          "scope": "Unchanged Run.HC with the bundled dictionary, physical key input and popup dismissal."
+        },
+        {
+          "target": "original-native-vocabulary-feedback",
+          "result": "pass",
+          "evidence": "build/i386-vocabulary-feedback-v2/comparison.json",
+          "scope": "Exact 1,270-byte quiz DolDoc, both answer branches, two definition popups and prompt recovery."
+        },
+        {
+          "target": "original-native-vocabulary-speaker",
+          "result": "pass",
+          "evidence": "build/i386-vocabulary-audio-v1/comparison.json",
+          "scope": "Emulated PC speaker captures both feedback tones in order on the original and native guests."
+        }
+      ]
     },
     {
       "path": "Apps/Vocabulary/VocabQuiz.HC",
@@ -12748,7 +12780,13 @@
           "evidence": "build/vocabulary-titanium-image-v1/native-recheck/result.json",
           "scope": "Definition opens, quiz focus returns after Escape, and keyboard-only exit reaches fresh arithmetic."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Vocabulary/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/X-Caliber/Load.HC",

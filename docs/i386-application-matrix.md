@@ -2660,3 +2660,11 @@ definition popups and exited from the third question. The 1,270 bytes
 of serialized quiz questions, answer choices, and colored feedback
 matched exactly. The native prompt rendered fresh arithmetic on
 return. See the [feedback comparison](../build/i386-vocabulary-feedback-v2/comparison.json).
+
+The audio capture also matched the original feedback. Both guests
+emitted the high tone for the correct answer and the low tone for the
+incorrect answer, in that order. Their measured frequencies were
+within 1 Hz and their active durations matched at the capture's
+20 ms resolution. The inventory qualifies the cold Vocabulary launcher
+and covers its two support files and dictionary assets.
+See the [speaker comparison](../build/i386-vocabulary-audio-v1/comparison.json).

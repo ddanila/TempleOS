@@ -66,12 +66,15 @@ def has_result_pixels(path):
     return False
 
 class Guest:
-    def __init__(self,image,out,native,ram_mib=64,reference_cpus=2,native_machine='pc',native_options=(),native_accel='kvm'):
+    def __init__(self,image,out,native,ram_mib=64,reference_cpus=2,native_machine='pc',native_options=(),native_accel='kvm',audio_wav=None):
         if reference_cpus not in (1,2):raise ValueError('Unsupported reference CPU count')
         self.out=out;out.mkdir();self.log=out/'debug.log';self.log.write_text('');self.seen=set()
         common=['-nic','none','-display','none','-no-reboot','-debugcon',f'file:{self.log}','-qmp','stdio']
         if native:cmd=['qemu-system-i386','-machine',native_machine,'-accel',native_accel,'-cpu','486,-fpu','-m',str(ram_mib),'-drive',f'file={image},format=raw,if=ide',*native_options]+common
         else:cmd=['qemu-system-x86_64','-machine','pc','-accel','tcg','-cpu','max','-m','2048','-smp',str(reference_cpus),'-drive',f'file={image},format=raw,media=cdrom,if=ide,index=2','-boot','d']+common
+        if audio_wav is not None:
+            cmd[2] += ',pcspk-audiodev=speaker'
+            cmd += ['-audiodev',f'wav,id=speaker,path={audio_wav},out.frequency=44100,out.channels=1,out.format=s16']
         (out/'command.json').write_text(json.dumps(cmd,indent=2)+'\n')
         self.stderr=(out/'qemu.log').open('w');self.p=subprocess.Popen(cmd,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.stderr,text=True,bufsize=1)
         json.loads(self.p.stdout.readline());self.call('qmp_capabilities');self.delay=.15 if native else .04
