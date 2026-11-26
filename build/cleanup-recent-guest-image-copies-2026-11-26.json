@@ -1,0 +1,91 @@
+{
+  "method": "Each removed image was an unused, byte-identical working copy.",
+  "recovery": "Copy the retained image to the removed path and check its SHA-256.",
+  "entries": [
+    {
+      "removed": "build/i386-demo-grid-v1/comparison/working.img",
+      "retained": "build/i386-demo-bounce-v1/cross-retry/kernel.img",
+      "sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+      "bytes": 67108864,
+      "allocated_bytes": 67108864
+    },
+    {
+      "removed": "build/i386-demo-grid-v1/comparison-caret/working.img",
+      "retained": "build/i386-demo-bounce-v1/cross-retry/kernel.img",
+      "sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+      "bytes": 67108864,
+      "allocated_bytes": 67112960
+    },
+    {
+      "removed": "build/i386-demo-grid-v1/comparison-clear-area/working.img",
+      "retained": "build/i386-demo-bounce-v1/cross-retry/kernel.img",
+      "sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+      "bytes": 67108864,
+      "allocated_bytes": 67112960
+    },
+    {
+      "removed": "build/i386-demo-grid-v1/comparison-end/working.img",
+      "retained": "build/i386-demo-bounce-v1/cross-retry/kernel.img",
+      "sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+      "bytes": 67108864,
+      "allocated_bytes": 67112960
+    },
+    {
+      "removed": "build/i386-demo-grid-v1/comparison-retry/working.img",
+      "retained": "build/i386-demo-bounce-v1/cross-retry/kernel.img",
+      "sha256": "740fda2a6f2f1acd35aa3542aae10a0258d165505197b2375b107e866c1ab398",
+      "bytes": 67108864,
+      "allocated_bytes": 67112960
+    },
+    {
+      "removed": "build/i386-demo-grid-v1/baseline64/working.img",
+      "retained": "build/i386-demo-grid-v1/cross/kernel.img",
+      "sha256": "54e63626162c292f95b5bef812ac0234578925454bc0c56f006273dedc865bf1",
+      "bytes": 67108864,
+      "allocated_bytes": 67112960
+    },
+    {
+      "removed": "build/i386-demo-grid-v1/comparison-fixed/working.img",
+      "retained": "build/i386-demo-grid-v1/cross/kernel.img",
+      "sha256": "54e63626162c292f95b5bef812ac0234578925454bc0c56f006273dedc865bf1",
+      "bytes": 67108864,
+      "allocated_bytes": 67112960
+    },
+    {
+      "removed": "build/i386-demo-grid-v1/plot8/working.img",
+      "retained": "build/i386-demo-grid-v1/cross/kernel.img",
+      "sha256": "54e63626162c292f95b5bef812ac0234578925454bc0c56f006273dedc865bf1",
+      "bytes": 67108864,
+      "allocated_bytes": 67108864
+    },
+    {
+      "removed": "build/i386-demo-low-pass-v1/comparison/working.img",
+      "retained": "build/i386-demo-grid-v1/cross/kernel.img",
+      "sha256": "54e63626162c292f95b5bef812ac0234578925454bc0c56f006273dedc865bf1",
+      "bytes": 67108864,
+      "allocated_bytes": 67108864
+    },
+    {
+      "removed": "build/i386-demo-low-pass-v1/baseline64/working.img",
+      "retained": "build/i386-demo-low-pass-v1/cross-public/kernel.img",
+      "sha256": "d891665b3bee1ce7402664e1a8e0a558e4048943dfe657589ae3946bdcd80308",
+      "bytes": 67108864,
+      "allocated_bytes": 67112960
+    },
+    {
+      "removed": "build/i386-demo-low-pass-v1/comparison-fixed/working.img",
+      "retained": "build/i386-demo-low-pass-v1/cross-public/kernel.img",
+      "sha256": "d891665b3bee1ce7402664e1a8e0a558e4048943dfe657589ae3946bdcd80308",
+      "bytes": 67108864,
+      "allocated_bytes": 67112960
+    },
+    {
+      "removed": "build/i386-demo-low-pass-v1/probe8/working.img",
+      "retained": "build/i386-demo-low-pass-v1/cross-public/kernel.img",
+      "sha256": "d891665b3bee1ce7402664e1a8e0a558e4048943dfe657589ae3946bdcd80308",
+      "bytes": 67108864,
+      "allocated_bytes": 67112960
+    }
+  ],
+  "allocated_bytes": 805343232
+}
