@@ -338,6 +338,9 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   The same image passed all nine 64 MiB desktop baseline commands with
   the compositor active. See the
   [desktop baseline receipt](build/i386-demo-bounce-v1/baseline64/result.json).
+  The full-content check matched all 686 inventory files against the frozen
+  checkout. The guest read the full Bible and returned to arithmetic. See the
+  [full-content checkpoint](build/i386-demo-bounce-v1/full-content-checkpoint.json).
   The audited `c4064751` i386 image stops at the `GrPlot` call on line 27.
   See the
   [original trail receipt](build/i386-demo-bounce-v1-baseline/original-receipt.json)
