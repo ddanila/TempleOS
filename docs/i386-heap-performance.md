@@ -995,3 +995,8 @@ seconds, above the 60-second gate. Its boot trace has no
 The same version-276 image also passed the full 16 MiB TCG diagnostic
 regression on `486,-fpu`, including all nine exact VGA checks. See
 `build/i386-diagnostic-worker-defer-user640-v1/diagnostic16/result.json`.
+
+The normal version-276 image passed the delivered-source audit for all
+1,578 packaged source and documentation files against the committed
+diagnostic fix at `ba76aa5c`. The audit found no source differences.
+See `build/i386-diagnostic-worker-defer-user640-v1/committed-source-audit.json`.
