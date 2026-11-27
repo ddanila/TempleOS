@@ -269,3 +269,14 @@ factor as an exact rational and rounding once to binary64 gives the same
 results. The earlier multiplication by literal 1000 was a diagnostic
 and differs from the scale used inside the original formatter.
 [Trace and model](../build/i386-psalmody-staccato-v4/check.py)
+
+The same trace found 33 tempo values that serialize differently on
+i386 across the 80 positions. The candidate preserves the original
+literal values in fixed point, rounds the exact slider expression to
+binary64, applies the original bias and formatter scale, then prints the
+rounded thousandths as integers. Its output matches both original
+fields at every slider position on both guests. The candidate currently
+runs as a standalone guest probe. App integration and the end-to-end
+save, reopen and filesystem checks remain open.
+[Tempo trace](../build/i386-psalmody-tempo-v1/original.txt) ·
+[Candidate and comparison](../build/i386-psalmody-serialization-candidate-v1/check.py)
