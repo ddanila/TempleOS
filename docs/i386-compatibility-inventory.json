@@ -17842,10 +17842,26 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Run the graphics Collision demo, move the mouse until the sprites overlap and then separate them, and dismiss the demo with a key."
+      },
+      "oracle": {
+        "checks": [
+          "Decode the visible collision counter using the stock glyph bitmaps.",
+          "Require a positive count during overlap and zero after separation.",
+          "Confirm normal return and fresh arithmetic on native i386."
+        ]
+      },
+      "tests": [
+        {
+          "target": "paired-graphics-collision",
+          "result": "pass",
+          "evidence": "build/i386-demo-collision-pair-v3/result.json",
+          "scope": "Both guests show positive and zero collision counts as sprites overlap and separate, then dismiss on a key. The i386 prompt evaluates fresh arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/CommonAncestor.HC",

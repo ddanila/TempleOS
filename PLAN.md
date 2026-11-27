@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 100 (six apps and ninety-four demos) |
+| Qualified | 101 (six apps and ninety-five demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
-| Qualification gaps | 553 |
-| Linked to tests / with reference workflow and oracle | 257 / 187 |
+| Qualification gaps | 552 |
+| Linked to tests / with reference workflow and oracle | 258 / 188 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 94 of 224 |
+| Demos qualified | 95 of 224 |
 
-C1 has 553 qualification gaps, including entries that still need a reference
+C1 has 552 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -31872,3 +31872,12 @@ allocation total and invalid-task handling. See
 [the animation result](build/i386-task-report-v2/result.json) and
 [the 8 MiB KVM resource result](build/i386-task-report-v2/resource8/resource-result.json).
 The 8 MiB TCG startup gate remains open.
+
+
+### C1: verify interactive sprite collision
+
+The bundled graphics Collision demo displayed nonzero collision counts
+during overlap and zero after the sprites separated in both guests.
+A key dismissed the demo, and i386 evaluated fresh prompt arithmetic.
+The paired check decoded the counter directly from the VGA glyphs.
+[Collision comparison](build/i386-demo-collision-pair-v3/result.json)

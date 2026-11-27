@@ -1,0 +1,31 @@
+{
+  "result": "pass",
+  "scope": "Unmodified bundled graphics demo in both guests. Pixel glyphs decoded using the stock 8x8 font. Different window origins and pointer positions produce different positive overlap counts.",
+  "original": {
+    "result": "pass",
+    "initial": 0,
+    "overlapping": 74,
+    "separated": 0,
+    "dismissed": true,
+    "source_sha256": "83bcac7fb5c0031b909b8e3d618e309021a8772162b83fd9b5ed00e298bd97c6",
+    "image_sha256": "7c59d1b3d15c044894b52cfaaf52ce80b79390f27598a34d91411c78b5d2c227",
+    "frame_sha256": {
+      "overlap": "192377c89c1aa6035685d39bacd022ddca42d015797c47a8390bb9dd3059778c",
+      "separated": "d1d22c82502c6a60ad63277edad1f4121867b9757bd789d258589dee1cdc4df6"
+    }
+  },
+  "native": {
+    "result": "pass",
+    "initial": 236,
+    "overlapping": 236,
+    "separated": 0,
+    "dismissed": true,
+    "source_sha256": "83bcac7fb5c0031b909b8e3d618e309021a8772162b83fd9b5ed00e298bd97c6",
+    "image_sha256": "dfc6ec9534b2e41a5d66c458866e1037ac15f68e177add4c7a8d6972f339bc2a",
+    "frame_sha256": {
+      "initial": "017097ee2e41aa8d85cf232183dee1856a593e6825d67692dd314d52d1c1ecc1",
+      "separated": "0978b1259c1a84cd3d0009239340de6f9251d5a6ad33ba3f2d6e131ae80651af"
+    },
+    "fresh_arithmetic": 42
+  }
+}
