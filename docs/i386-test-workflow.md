@@ -6593,3 +6593,11 @@ capture. The bootstrap task retired, its task record disappeared, and
 its former address lay in a free block. Fresh prompt arithmetic passed
 with the managed desktop active.
 [First-generation HomeSys handoff](../build/i386-ode-template-port-v1/native-generations128/gen1-configured-desktop64/result.json)
+
+The second-generation 128 MiB guest rebuilt all nine retained providers
+from the first-generation disk. Every emitted module SHA-256 matched
+the bytes passed to the first-generation installer, including
+ConsoleRuntime, CompilerRuntime, and CompilerProbe. The retained build
+loaded the build provider once.
+[Second-generation retained build](../build/i386-ode-template-port-v1/native-generations128/gen2-retained-build/result.json) ·
+[First-generation module hashes](../build/i386-ode-template-port-v1/native-generations128/gen1-install/result.json)
