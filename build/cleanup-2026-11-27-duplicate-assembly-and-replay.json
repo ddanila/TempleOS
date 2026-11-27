@@ -1,0 +1,14 @@
+[
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-generations128/gen2-audit/kernel-assembly.txt",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen1-audit/kernel-assembly.txt",
+    "sha256": "207806ec3514377a1ec5edf8b00fabcceab51927eceac2233884d87f69d3a753",
+    "allocated_bytes": 110891008
+  },
+  {
+    "removed": "build/i386-task-report-v2/replay/working.img",
+    "retained": "build/i386-task-report-v2/working.img",
+    "sha256": "631e7f47ba17f4d53f14e1b70debd10093bb48d50faf1f643603adb097194dca",
+    "allocated_bytes": 67112960
+  }
+]
