@@ -1,0 +1,8 @@
+[
+  {
+    "removed": "build/i386-task-report-v2/interactive8-tcg/working.img",
+    "retained": "build/i386-task-report-v2/cross/kernel.img",
+    "sha256": "c48ed6f176cee464c79cd86ec7bead22286f6d2bad0d17171eb5e896944123f4",
+    "allocated_bytes": 67112960
+  }
+]
