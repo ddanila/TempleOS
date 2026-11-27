@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-console-single-peek-v1/installed-resource8/working.img",
+  "retained": "build/i386-console-single-peek-v1/install/candidate.img",
+  "sha256": "c32c5227819ee3a803a395fc79bdca2007a16b78f72d4c4f6067603bf8bb3755",
+  "allocated_bytes": 67112960
+}

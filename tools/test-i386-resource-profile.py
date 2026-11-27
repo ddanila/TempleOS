@@ -63,14 +63,26 @@ def main():
             shutil.copyfile(args.disk,disk)
             if hashlib.sha256(disk.read_bytes()).hexdigest()!=identity['disk_sha256']:
                 raise ValueError('Resource disk copy differs from source')
-        run_input(disk, out, accel=args.accel, cpu='486,-fpu', ram_mib=args.ram_mib,
-                  qmp_stdio=args.qmp_stdio,snapshot=not args.writable_copy,
-                  welcome=args.managed_welcome, managed_pointer=args.managed_welcome,
-                  keep_window_manager=args.managed_welcome,
-                  startup_timeout=180, startup_check={
-                      'status': 'ok', 'answers': [], 'command_timeout': 180,
-                      'pause_window_manager': not args.managed_welcome,
-                      'commands': commands})
+        try:
+            run_input(disk, out, accel=args.accel, cpu='486,-fpu', ram_mib=args.ram_mib,
+                      qmp_stdio=args.qmp_stdio,snapshot=not args.writable_copy,
+                      welcome=args.managed_welcome, managed_pointer=args.managed_welcome,
+                      keep_window_manager=args.managed_welcome,
+                      startup_timeout=180, startup_check={
+                          'status': 'ok', 'answers': [], 'command_timeout': 180,
+                          'pause_window_manager': not args.managed_welcome,
+                          # The fixture deliberately throws Test during its recovery cycles.
+                          'rejection_prefixes': ('INPUT REJECT exception 00006D654D74754F',),
+                          'commands': commands})
+        except Exception as exc:
+            failure = dict(identity, result='fail', error=str(exc),
+                           source_disk_unchanged=hashlib.sha256(args.disk.read_bytes()).hexdigest()
+                           == identity['disk_sha256'])
+            checkpoint = out / 'checkpoint.json'
+            if checkpoint.is_file():
+                failure['checkpoint'] = json.loads(checkpoint.read_text())
+            (out / 'resource-result.json').write_text(json.dumps(failure, indent=2) + '\n')
+            raise
     elif json.loads((out / 'result.json').read_text())['result'] != 'pass':
         raise ValueError('No passing QEMU run to parse')
     if hashlib.sha256(args.disk.read_bytes()).hexdigest() != identity['disk_sha256']:

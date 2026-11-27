@@ -1,0 +1,36 @@
+{
+  "result": "fail",
+  "scope": "Native B-spline-era ConsoleRuntime installation, cold boot and document allocation at 8 MiB",
+  "installation_verified": true,
+  "cold_boot": true,
+  "arithmetic": true,
+  "document_allocation": false,
+  "candidate_sha256": "c32c5227819ee3a803a395fc79bdca2007a16b78f72d4c4f6067603bf8bb3755",
+  "source_sha256": "0e928b2cd8f0867090938167b156330934443dc190fd44f64169741218fa1e7b",
+  "log_sha256": "783a34cb326f3635e2962793c47eac33135ccae5962585cd4dd7971ad9786b15",
+  "cross_module": {
+    "sha256": "4d43c99003599f8f1628bf0c842b6fc6cd37421abe443b442cbc43a35e7977f6",
+    "file_bytes": 2476434,
+    "payload_bytes": 2329704,
+    "records": 5563,
+    "string_bytes": 57690
+  },
+  "installed_module": {
+    "sha256": "845cb289465ece4d1125e0877582ed709793969e614477674de08efa9a6b6fe3",
+    "file_bytes": 2745797,
+    "payload_bytes": 2354312,
+    "records": 13780,
+    "string_bytes": 170973
+  },
+  "failed_allocation": {
+    "requested_bytes": 42899,
+    "used_bytes": 6645688,
+    "arena_bytes": 6746112,
+    "largest_free_payload_bytes": 21264,
+    "allocations": 20715,
+    "caller_addresses": [
+      "000000000011DB2F",
+      "000000000011DDAE"
+    ]
+  }
+}

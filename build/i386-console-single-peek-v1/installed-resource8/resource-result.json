@@ -1,0 +1,19 @@
+{
+  "disk": "/home/ddanila/fun/TempleOS/build/i386-console-single-peek-v1/install/candidate.img",
+  "disk_sha256": "c32c5227819ee3a803a395fc79bdca2007a16b78f72d4c4f6067603bf8bb3755",
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "ram_mib": 8,
+  "working_disk": "/home/ddanila/fun/TempleOS/build/i386-console-single-peek-v1/installed-resource8/working.img",
+  "storage_policy": "writable copy",
+  "qmp_stdio": true,
+  "managed_welcome": true,
+  "result": "fail",
+  "error": "Guest command rejected: INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+  "source_disk_unchanged": true,
+  "checkpoint": {
+    "group": null,
+    "name": "startup-command-00",
+    "source": "#include \"/Kernel/I386/DocSessionResourceCheck.HC\""
+  }
+}

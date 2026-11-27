@@ -150,10 +150,15 @@ the build date. An 8 MiB KVM boot on the new image verified one
 foreground read, one background read, all four clipping edges and
 fresh arithmetic. The B-spline-era module then rebuilt natively at
 128 MiB, with all 1,460 function exports matching its cross-built
-contract. The installation check is in progress.
+contract. The installed image boots at 8 MiB and accepts arithmetic,
+then fails to allocate the 42,899-byte document diagnostic with a
+largest free block of 21,264 bytes. A separate 8 MiB document resource
+run also rejects the fixture during compilation.
 [Export comparison](build/i386-console-single-peek-v1/export-comparison.json) ·
 [8 MiB GrPeek check](build/i386-console-single-peek-v1/peek-smoke8/result.json) ·
-[Native rebuild and export audit](build/i386-console-single-peek-v1/native-console128/result.json)
+[Native rebuild and export audit](build/i386-console-single-peek-v1/native-console128/result.json) ·
+[Installed 8 MiB diagnostic](build/i386-console-single-peek-v1/install/qualification-failure.json) ·
+[Installed 8 MiB resource failure](build/i386-console-single-peek-v1/installed-resource8/resource-result.json)
 
 The unchanged B-spline demo now uses the shared 2D spline wrappers on
 i386. Both guests selected all six control points at identical
@@ -260,9 +265,17 @@ holds the installed native console fixed and swaps only the compiler.
 [Full-content cross-build](build/i386-out-chunk-v2/cross/result.json) ·
 [8 MiB diagnostics](build/i386-out-chunk-v2/diagnostic8-kvm/result.json)
 
+The resource runner now stops at an unexpected `OutMem` and records the
+failing command and the source disk identity. The native-console control
+fails while including the document fixture. The compact-output cross
+image completes all 20 sessions at 8 MiB with identical accounting
+before and after the runner change.
+[Immediate OutMem receipt](build/i386-out-chunk-v1/installed-comparison/control/resource8-fast-reject/resource-result.json) ·
+[8 MiB passing resource profile](build/i386-out-chunk-v2/resource8-fast-reject/resource-result.json)
+
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
-now records 156 older test images and 5,065,138,176 bytes reclaimed across its
+now records 173 older test images and 5,614,915,584 bytes reclaimed across its
 batches. Each ISO was fully decompressed and checked by SHA-256 before
 its raw copy was removed. The color-picker timing disk was separately
 verified byte-for-byte against the retained cross-built image before

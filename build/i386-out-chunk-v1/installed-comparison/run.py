@@ -56,7 +56,7 @@ def main():
                   reached_prompt='DONE native kernel startup\n' in log,
                   emitter_chunk_space_rejected='EMITTER CHUNK SPACE REJECT' in log,
                   log_sha256=sha(resource / 'debug.log'))
-    if receipt.is_file():
+    if run.returncode == 0:
         report['completed_document_sessions'] = json.loads(receipt.read_text())['document_development_cycles']
     else:
         report['tail'] = log.splitlines()[-12:]
