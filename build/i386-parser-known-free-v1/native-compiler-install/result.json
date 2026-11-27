@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "installed": [
+    "CompilerRuntime"
+  ],
+  "source_disk_sha256": "8acca26f9e8916669a75039c01f0819b788a7ffbe15d91ddf760431c9b9d019e",
+  "disk_sha256": "8004d4736b5fba35b1605289f3468583f55db2673999711855cd370b4431281e",
+  "module_source_paths": {
+    "CompilerRuntime": "/Probe/RetainedCompilerRuntime.t32m"
+  },
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "welcome": true,
+  "managed_pointer": true,
+  "keyboard_harness": true,
+  "diagnostic_growth_recovery": null,
+  "module_sha256": {
+    "CompilerRuntime": "d9ab31d3e78da3127a21374f34d6813beeb852a6d3a12ccb5f98c54fe15f6dab"
+  },
+  "module_bytes": {
+    "CompilerRuntime": 1371043
+  }
+}

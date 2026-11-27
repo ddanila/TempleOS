@@ -1,0 +1,22 @@
+[
+  "qemu-system-i386",
+  "-machine",
+  "pc",
+  "-accel",
+  "kvm",
+  "-cpu",
+  "486,-fpu",
+  "-m",
+  "8",
+  "-drive",
+  "file=/home/ddanila/fun/TempleOS/build/i386-parser-known-free-v1/native-compiler-install/boot.img,format=raw,if=ide",
+  "-nic",
+  "none",
+  "-display",
+  "none",
+  "-no-reboot",
+  "-debugcon",
+  "file:/home/ddanila/fun/TempleOS/build/i386-parser-known-free-v1/native-compiler-install/boot/debug.log",
+  "-qmp",
+  "stdio"
+]

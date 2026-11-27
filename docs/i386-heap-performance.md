@@ -1528,3 +1528,11 @@ The parser-free image rebuilt CompilerRuntime in a 128 MiB KVM guest.
 The persisted module passed the export audit with 553 exports and
 4,765 records. The build session returned to fresh arithmetic.
 [Native CompilerRuntime rebuild](../build/i386-parser-known-free-v1/native-compiler128/result.json)
+
+The installed guest-built CompilerRuntime passed an 8 MiB KVM boot and
+all 20 document sessions. The installer recorded the same module hash
+as the native export audit. The resource test preserved that installed
+disk, recovered the document heap after every session, and matched all
+eleven VGA checkpoints.
+[8 MiB installation boot](../build/i386-parser-known-free-v1/native-compiler-install/result.json) ·
+[Installed compiler resource test](../build/i386-parser-known-free-v1/native-compiler-resource8/resource-result.json)
