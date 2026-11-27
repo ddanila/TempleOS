@@ -6499,3 +6499,14 @@ matched all 904 original output bytes.
 [Normal startup](../build/i386-txtgen-startup-defines-v3/interactive8-kvm/result.json) ·
 [Diagnostics](../build/i386-txtgen-startup-defines-v3/diagnostic8-kvm/result.json) ·
 [TXTGen](../build/i386-txtgen-startup-defines-v3/txtgen/result.json)
+
+The HtmlGen image exposes the existing `DocFileEd` and `DocHighlight`
+routines to native HolyC. Both bundled converters matched their pinned
+original output on this image, with 2,560 HTML bytes and 904 text bytes.
+The delivered-source audit matched 1,578 files to `c928039c`. The full
+content check verified all 686 inventory entries and the guest read
+workflow.
+[HtmlGen](../build/i386-htmlgen-doc-file-ed-v3/htmlgen/result.json) ·
+[TXTGen regression](../build/i386-htmlgen-doc-file-ed-v3/txtgen/result.json) ·
+[Source audit](../build/i386-htmlgen-doc-file-ed-v3/committed-source-audit.json) ·
+[Full content](../build/i386-htmlgen-doc-file-ed-v3/full-content64/result.json)
