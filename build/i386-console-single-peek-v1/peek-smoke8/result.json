@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "scope": "GrPeek in-bounds foreground and background, four clipped reads and fresh arithmetic",
+  "ram_mib": 8,
+  "accel": "kvm",
+  "disk_sha256": "d15a189e69570c264eb23a73247df32035f1f584f1f6775356a637e2ce773394",
+  "fixture_sha256": "7848b10eb10f54bd7f37a80be80877ba371a732096e167ec68dd4724f03ae345",
+  "changed_modules_from_heap_tail": [
+    "Kernel",
+    "ConsoleRuntime"
+  ],
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 11,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

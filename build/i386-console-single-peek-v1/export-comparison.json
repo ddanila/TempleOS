@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "function_export_names_preserved": true,
+  "before": {
+    "path": "build/i386-heap-tail-v1/cross/exports/ConsoleRuntime.t32m",
+    "sha256": "8050566b7664c0399c30209150bcbf326023aceca4b23e4c94e865943d75696f",
+    "bytes": 2478538,
+    "unique_function_exports": 1460,
+    "duplicate_function_exports": {}
+  },
+  "after": {
+    "path": "build/i386-console-single-peek-v1/cross/exports/ConsoleRuntime.t32m",
+    "sha256": "4d43c99003599f8f1628bf0c842b6fc6cd37421abe443b442cbc43a35e7977f6",
+    "bytes": 2476434,
+    "unique_function_exports": 1460,
+    "duplicate_function_exports": {}
+  },
+  "kernel_module_and_flat_image_match_after_normalizing_build_date": true
+}

@@ -536,7 +536,6 @@ extern U0 NativeKeyMapSwapI64(I64 *a,I64 *b);
 //Mutually dependent point and bitmap cores share the actual implementation below.
 extern I64 GrBlot3(CDC *dc,I64 x1,I64 y1,I64 z1,CDC *img);
 #include "/Adam/Gr/GrPointClipCore.HC"
-#include "/Adam/Gr/GrPeekCore.HC"
 #include "/Adam/Gr/GrBlot3Core.HC"
 #include "/Adam/Gr/GrRasterSpanCore.HC"
 #include "/Adam/Gr/GrFillCircleCore.HC"
