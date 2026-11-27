@@ -6534,6 +6534,12 @@ preserved the expected text and cursor across cold reboot.
 [HomeSys handoff](../build/i386-ode-template-port-v1/configured-desktop64/result.json) ·
 [Editor save and reopen](../build/i386-ode-template-port-v1/editor-save64/result.json)
 
+The ODE template image also matched all 686 inventory files, passed
+the bounded guest read workflow, and passed the 8 MiB diagnostic boot
+under KVM with nine exact VGA checkpoints.
+[Full content](../build/i386-ode-template-port-v1/full-content64/result.json) ·
+[8 MiB diagnostics](../build/i386-ode-template-port-v1/diagnostic8-kvm/result.json)
+
 The public `DocFileEd` binding matched the original read-only search
 workflow. Both guests found the marker on line two, rejected an absent
 marker, and restored the caller's border and silent settings. The
