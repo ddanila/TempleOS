@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "scope": "Stock physical launcher and play. Staged eight-survivor score equals the pinned original and persists across a cold boot.",
+  "score": 1915,
+  "changed_files": [
+    "/Apps/Titanium/ScoreLoad.HC",
+    "/Apps/Titanium/ScoreProbe.HC",
+    "/Apps/Titanium/ScoreRun.HC",
+    "/Home/Registry.HC.Z"
+  ],
+  "receipts": {
+    "build/titanium-finish-v1/original-eight/result.json": "bee182e57ddddd3e8e02511e8ad724e6cc801a670accd17284793c2365de0bbe",
+    "build/i386-titanium-current-v1/play/result.json": "e5f3dbd2c41b3851ec2d61b44a7a001333d87a9e898761ec67b846ca41e686b8",
+    "build/i386-titanium-current-v1/finish/result.json": "a53d39e519325bde163a606de976da4f8de0a7feffcb04ad785ecc2f098ce81c",
+    "build/i386-titanium-current-v1/reopen/result.json": "42c8956f8dfdd8ca1462eee75d21e57596f2b9836c58266d328c33a5f710ae6b"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "scope": "Persisted native FileRuntime and MemoryRuntime module layout and exact export sets.",
+  "source_disk_revision": "035fee7d54b492fe613b5f8f72bc0a0e4d268483",
+  "modules": {
+    "FileRuntime": {
+      "path": "/Probe/RetainedFileRuntime.t32m",
+      "bytes": 295879,
+      "records": 998,
+      "exports": 148,
+      "sha256": "9a903af7102706f7885c67b8adc67bb4f4c13765b73b9202ab2c5cb4e14c0a5c",
+      "host_sha256": "acc866e7b5fcc23a8186d083969f612b4706929fa7add59c8ff78f7acd2f3c31"
+    },
+    "MemoryRuntime": {
+      "path": "/Probe/RetainedMemoryRuntime.t32m",
+      "bytes": 251008,
+      "records": 1178,
+      "exports": 177,
+      "sha256": "798a02ce1e9ddc4dcd016ff46b02d286d47630ddf608127bfb59db7c4e101fd1",
+      "host_sha256": "bef7b2e7c79b38c0e2ca5118f0197c0dc224a965493874dd86ae3e882eb9b8f7"
+    }
+  }
+}

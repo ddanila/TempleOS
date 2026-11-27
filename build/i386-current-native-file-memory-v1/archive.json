@@ -1,0 +1,16 @@
+[
+  {
+    "archive": "FileRuntime.t32m.zst",
+    "archive_sha256": "1701596e8ff68169715e3b3da73db32174abbd3005e421601004c9c53dba4738",
+    "raw_sha256": "9a903af7102706f7885c67b8adc67bb4f4c13765b73b9202ab2c5cb4e14c0a5c",
+    "raw_bytes": 295879,
+    "verified_byte_for_byte": true
+  },
+  {
+    "archive": "MemoryRuntime.t32m.zst",
+    "archive_sha256": "37af0ca7c5a418fbaeb85e71e75428d068d8430dbd7409a1049b119cec219def",
+    "raw_sha256": "798a02ce1e9ddc4dcd016ff46b02d286d47630ddf608127bfb59db7c4e101fd1",
+    "raw_bytes": 251008,
+    "verified_byte_for_byte": true
+  }
+]

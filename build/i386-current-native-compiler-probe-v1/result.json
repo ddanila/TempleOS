@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "scope": "Native persisted CompilerProbe module layout and exact export set.",
+  "source_disk_revision": "035fee7d54b492fe613b5f8f72bc0a0e4d268483",
+  "module_path": "/Probe/RetainedCompilerProbe.t32m",
+  "module_bytes": 590060,
+  "records": 2355,
+  "exports": 142,
+  "module_sha256": "8003567ff52e4481170977f58c11772e6ec9e036ff929251d5965af042924fe3",
+  "host_module_sha256": "bafcddad46e2b2bdd9ecc41ea406e06a14a07826a98045451613aea74c3ca3cc"
+}

@@ -12500,7 +12500,7 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Launch the bundled Titanium instructions, enter play, hold Right and Space, then exit with Escape. Finish a controlled eight-survivor match and reopen the saved high score on a fresh boot.",
       "oracle": "Instruction title, two rendered play frames with the dithered terrain and return to the caller after Escape. The staged finish scores 1915 and the cold native boot reopens that score.",
       "tests": [
@@ -12538,6 +12538,12 @@
           "result": "pass",
           "evidence": "build/titanium-finish-v1/native-eight-reopen/result.json",
           "scope": "Separate cold boot reopens 1915 through RegExe after the native eight-survivor fixture."
+        },
+        {
+          "target": "native-current-titanium-launch-and-reopen",
+          "result": "pass",
+          "evidence": "build/i386-titanium-current-v1/comparison.json",
+          "scope": "Current stock play, staged finish matching the pinned original at 1915, registry write and cold score reopen. The only file changes are the registry and three fixture additions."
         }
       ]
     },

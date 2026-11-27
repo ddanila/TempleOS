@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "completed_disk_sha256": "4776613ceb2aa89f48fd86c414286cc5fb58c1b5ead6da6bf47021718aee8433",
+  "source_disk_sha256": "c43e583e212de1f7a1e0d443bc40df968227d6018a86f371beac2673f2842672",
+  "changed_files": [
+    "/Apps/Titanium/ScoreLoad.HC",
+    "/Apps/Titanium/ScoreProbe.HC",
+    "/Apps/Titanium/ScoreRun.HC",
+    "/Home/Registry.HC.Z"
+  ],
+  "score": 1915,
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "input_unchanged": true
+}

@@ -321,6 +321,13 @@ retry passed with one second of settling and a 250 ms key hold. The
 inventory now qualifies Strut's verified launcher workflow.
 [Strut comparison](build/i386-strut-current-v1/comparison.json)
 
+Titanium passes the stock launcher and physical play on the fresh full
+image. The staged eight-survivor finish scores and saves 1915, matching
+the pinned original, and a new boot reopens that exact score. The
+filesystem delta is the Home registry plus the three fixture files.
+The inventory qualifies the verified Titanium launcher workflow.
+[Titanium comparison](build/i386-titanium-current-v1/comparison.json)
+
 The current nine-provider native build has written ConsoleRuntime to
 the guest volume. Its 1,462 exports match the fresh cross-build and its
 document allocation wrapper audit passes. CompilerRuntime is the next
@@ -331,6 +338,12 @@ The same native build has written CompilerRuntime. All 554 expected
 native exports are present. The two permitted host-only division audit
 markers are absent. CompilerProbe is now building.
 [CompilerRuntime audit](build/i386-current-native-compiler-v1/result.json)
+
+CompilerProbe, FileRuntime and MemoryRuntime are also written on the
+native build disk. Their export sets exactly match the corresponding
+cross-built modules at 142, 148 and 177 names respectively.
+[CompilerProbe audit](build/i386-current-native-compiler-probe-v1/result.json) ·
+[File and memory runtime audit](build/i386-current-native-file-memory-v1/result.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
