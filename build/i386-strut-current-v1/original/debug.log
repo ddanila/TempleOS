@@ -1,0 +1,12 @@
+STRUT instructions
+STRUT editor 6CAA6C28
+STRUT first mass
+STRUT second mass
+STRUT input mode=0 button=1 at 245,180
+STRUT input mode=0 button=0 at 245,180
+STRUT input mode=1 button=0 at 245,180
+STRUT input mode=1 button=1 at 320,244
+STRUT input mode=1 button=0 at 245,180
+STRUT spring
+STRUT play
+STRUT simulation advanced

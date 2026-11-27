@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "command": "#include \"C:/Apps/Strut/Run.HC\"",
+  "input_sha256": "c43e583e212de1f7a1e0d443bc40df968227d6018a86f371beac2673f2842672",
+  "reference_instruction_crop_sha256": "cabe8f095a343976508794464b91044525c6442cfb0c8bad880fed30a1d5dc2b",
+  "instruction_crop_sha256": "cabe8f095a343976508794464b91044525c6442cfb0c8bad880fed30a1d5dc2b",
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "input_unchanged": true
+}

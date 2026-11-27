@@ -1,0 +1,36 @@
+{
+  "result": "pass",
+  "scope": "Exact instruction crop for the current native launcher. Paired physical edit and play compare event sequence and projected spring endpoints.",
+  "endpoints": [
+    [
+      320,
+      244
+    ],
+    [
+      245,
+      180
+    ]
+  ],
+  "trace": [
+    "STRUT instructions",
+    "STRUT editor",
+    "STRUT first mass",
+    "STRUT second mass",
+    "STRUT input mode=0 button=1 at 245,180",
+    "STRUT input mode=0 button=0 at 245,180",
+    "STRUT input mode=1 button=0 at 245,180",
+    "STRUT input mode=1 button=1 at 320,244",
+    "STRUT input mode=1 button=0 at 245,180",
+    "STRUT spring",
+    "STRUT play",
+    "STRUT simulation advanced",
+    "STRUT returned"
+  ],
+  "receipts": {
+    "launch": "db8edae37f0e75c0e92c28736048acbcb30d3b18bad6f7497e9412193effadbc",
+    "simulation": "0c1335d57bf38fea1745c9c058f2db975e2bc231b7cfd9174abe0556fdfe5ca4",
+    "original-retry": "d32be5886e29654058ddaf75bf1381826f3f889e7ecd9eda7984088fe4ea3cd0"
+  },
+  "original_escape_hold_seconds": 0.25,
+  "original_settle_before_escape_seconds": 1.0
+}

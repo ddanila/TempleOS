@@ -1,0 +1,14 @@
+--- a/build/native-strut-entry-v1/run.py
++++ b/build/native-strut-entry-v1/run.py
+@@ -109,7 +109,10 @@
+     guest.press('spc')
+     guest.wait('STRUT play\n',20)
+     guest.wait('STRUT simulation advanced\n',20)
+-    guest.press('esc')
++    time.sleep(1)
++    guest.key('esc',True)
++    time.sleep(.25)
++    guest.key('esc',False)
+     guest.wait('STRUT returned\n',20)
+     if args.disk:
+         guest.command('6*7;')

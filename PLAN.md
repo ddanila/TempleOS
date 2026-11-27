@@ -297,6 +297,15 @@ notes and speaker cleanup.
 [Stock launcher](build/i386-span-current-v1/cold/result.json) ·
 [Editor and simulation](build/i386-span-current-v1/interactive/result.json)
 
+The current Strut stock launcher displays the exact original instruction
+crop, enters the editor and returns to working arithmetic. The paired
+physical edit-and-play fixture creates two masses and a spring, matches
+both projected endpoints and the event sequence, advances simulation
+and exits. The first original run timed out at Escape. The original
+retry passed with one second of settling and a 250 ms key hold. The
+inventory now qualifies Strut's verified launcher workflow.
+[Strut comparison](build/i386-strut-current-v1/comparison.json)
+
 The current nine-provider native build has written ConsoleRuntime to
 the guest volume. Its 1,462 exports match the fresh cross-build and its
 document allocation wrapper audit passes. CompilerRuntime is the next

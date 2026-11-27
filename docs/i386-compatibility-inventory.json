@@ -11852,7 +11852,7 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Run the bundled entry point, dismiss the instructions, enter the ship editor, and exit with Escape. The Load.HC entry records the paired physical edit and play workflow.",
       "oracle": {
         "tool": "build/native-strut-run-entry-v1/run.py",
@@ -11866,6 +11866,12 @@
           "target": "native-strut-production-run-entry",
           "result": "pass",
           "evidence": "build/native-ode-production-v1/strut-run64/result.json"
+        },
+        {
+          "target": "native-current-strut-launch-and-simulation",
+          "result": "pass",
+          "evidence": "build/i386-strut-current-v1/comparison.json",
+          "scope": "The current full image matches the original instruction crop and returns to a working prompt. Paired physical editor and simulation workflows match projected endpoints and event sequence."
         }
       ]
     },
