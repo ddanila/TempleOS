@@ -1,0 +1,62 @@
+[
+  {
+    "removed": "build/i386-txtgen-startup-defines-v1/interactive8-kvm/working.img",
+    "retained": "build/i386-txtgen-startup-defines-v1/cross/kernel.img",
+    "sha256": "e359fc8ba081f340239052158da3976fe6eb8669375d4e9a427e5464e532193f",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-txtgen-startup-defines-v1/diagnostic8-kvm/working.img",
+    "retained": "build/i386-txtgen-startup-defines-v1/cross/kernel-diagnostics.img",
+    "sha256": "9344efd6fb8b62b146d0388010b28373bf30f04b30e7bfa8d949cf8c69bdaf89",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-txtgen-startup-defines-v3/interactive8-kvm/working.img",
+    "retained": "build/i386-txtgen-startup-defines-v3/cross/kernel.img",
+    "sha256": "98a40cf9aab0011ebf91d80f838947e37707dcab05d6ca8221fbc022daacccf2",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-txtgen-startup-defines-v3/diagnostic8-kvm/working.img",
+    "retained": "build/i386-txtgen-startup-defines-v3/cross/kernel-diagnostics.img",
+    "sha256": "bf2c1c0865af989be99c7b2c78237a9a7beb3a6d4a7be90c9b852b4481f122c0",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-asm-and-c3-port-v2/interactive8-kvm/working.img",
+    "retained": "build/i386-asm-and-c3-port-v2/cross/kernel.img",
+    "sha256": "c2e097a0df0c59524664c90272ab507b6085e3f779094ac5abc6e2d0de15742d",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-asm-and-c3-port-v2/interactive8-tcg/working.img",
+    "retained": "build/i386-asm-and-c3-port-v2/cross/kernel.img",
+    "sha256": "c2e097a0df0c59524664c90272ab507b6085e3f779094ac5abc6e2d0de15742d",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-asm-and-c3-port-v2/diagnostic8-kvm/working.img",
+    "retained": "build/i386-asm-and-c3-port-v2/cross/kernel-diagnostics.img",
+    "sha256": "7e5dbe4f42d058213d9c6904b7ea574df781daa12131bbf3731409739084d81e",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-asm-and-c2-port-v1/diagnostic8-kvm/working.img",
+    "retained": "build/i386-asm-and-c2-port-v1/cross/kernel-diagnostics.img",
+    "sha256": "7fd2e16971034caf273bb6cd758fe5390c91cd519b24d5dfd82f3a76bf6d4681",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-parser-take-known-v1/interactive8-tcg/working.img",
+    "retained": "build/i386-parser-take-known-v1/cross/kernel.img",
+    "sha256": "e5aad911e279ca6b48f796273575773ad4ebd2cca516dcbc5898e16b16dd48d3",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-parser-take-known-v1/diagnostic8-kvm/working.img",
+    "retained": "build/i386-parser-take-known-v1/cross/kernel-diagnostics.img",
+    "sha256": "2c2f8156ef1dfc3003b0fd76b242b0429d012484097bdf64602ea47f08a2cf58",
+    "allocated_bytes": 67112960
+  }
+]
