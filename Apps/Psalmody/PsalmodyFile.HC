@@ -315,6 +315,35 @@ U8 *PsmCvtSong()
   return st;
 }
 
+I64 PsmSliderMilli(I64 setting,U64 slope,U64 offset,I64 fraction_bits)
+{
+  //Slope and offset are the original literal values in unsigned fixed point.
+  //Round the exact affine expression once to a 53-bit significand.
+  U64 numerator=slope*setting+offset*TEMPO_RANGE;
+  I64 shift=Bsr(numerator/TEMPO_RANGE)-52;
+  U64 denominator=TEMPO_RANGE(U64)<<shift;
+  U64 significand=numerator/denominator,remainder=numerator%denominator;
+  if (remainder*2>denominator ||
+      remainder*2==denominator && significand&1)
+    significand++;
+  F64 factor=ToF64(significand)/ToF64(1(U64)<<(fraction_bits-shift));
+  //Original song bias and the original Pow10I64(3) used by %6.3f.
+  F64 biased=factor+0x3F40624DD2F1A9FE(F64);
+  F64 scaled=biased*0x408F3FFFFFFFFFFF(F64);
+  return ToI64(Round(scaled));
+}
+
+U0 PsmPrintSlider(CDoc *doc,U8 *field,I64 setting,F64 value,
+                     U64 slope,U64 offset,I64 fraction_bits)
+{//A hand-written song can load a setting outside the slider's range.
+  I64 milli;
+  if (0<=setting<TEMPO_RANGE) {
+    milli=PsmSliderMilli(setting,slope,offset,fraction_bits);
+    DocPrint(doc,"  music.%s= %d.%03d;\n",field,milli/1000,milli%1000);
+  } else
+    DocPrint(doc,"  music.%s=%6.3f;\n",field,value+0.0005);
+}
+
 U8 *PsmSaveSong(U8 *dirname,U8 *full_filename)
 {
   CDoc *doc=DocNew(full_filename);
@@ -346,12 +375,15 @@ U8 *PsmSaveSong(U8 *dirname,U8 *full_filename)
 	"U0 Song()\n"
 	"{\n"
 	"  Fs->task_end_cb=&SndTaskEndCB;\n"
-	"  MusicSettingsRst;\n"
-	"  music.tempo=%6.3f;\n"
-	"  music.stacatto_factor=%6.3f;\n"
-	"  try {\n"
+	"  MusicSettingsRst;\n");
+  //Original 4.4 and 0.5 in Q53, then original 0.88 and 0.12 in Q56.
+  PsmPrintSlider(doc,"tempo",tempo_state.tempo,music.tempo,
+	0x8CCCCCCCCCCCD0,0x10000000000000,53);
+  PsmPrintSlider(doc,"stacatto_factor",tempo_state.stacatto,music.stacatto_factor,
+	0xE147AE147AE150,0x1EB851EB851EBA,56);
+  DocPrint(doc,"  try {\n"
 	"    while (!ScanKey) {\n"
-	"\tPlay(\"",music.tempo+0.0005,music.stacatto_factor+0.0005);
+	"\tPlay(\"");
 
   tmpn=psm.head.next;
   tmpn1=tmpn;

@@ -1,0 +1,9 @@
+{
+  "base": "build/i386-demo-document-bounded-v1/cross/kernel.img",
+  "base_sha256": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+  "image_sha256": "951b49330ae68baf60d0c6c44dd04aa0f2a210eff96839e982e846b89d304388",
+  "changed_files": [
+    "/Apps/Psalmody/PsalmodyFile.HC"
+  ],
+  "source_sha256": "1b8f7babdfe87eab5e474474bb099b10b5c95c0812f03f96ed026c312823f612"
+}

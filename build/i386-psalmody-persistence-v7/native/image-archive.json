@@ -1,0 +1,7 @@
+{
+  "archive": "working.img.zst",
+  "raw_bytes": 67108864,
+  "raw_sha256": "54828e5db389c00353ebb4cef606bf03f0b6062dd78fbe1c8a91860cb6168d51",
+  "archive_sha256": "522b9b6daf09eeaf5311946064ec527dd117c1e46a3ced1f4e95bd54f253a794",
+  "verified_byte_for_byte": true
+}

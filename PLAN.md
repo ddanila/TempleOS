@@ -159,13 +159,13 @@ prompt rendered fresh arithmetic.
 
 Both guests saved the two surviving notes to `Tmp.HC.Z`, cleared the
 editor, then reopened the song by selecting it directly in JukeBox.
-The reopened note records match byte for byte. The native persistence
-check fails on one saved digit. The original writes a staccato factor of
-`0.902` and i386 writes `0.901`. Exiting JukeBox after preview also remains
-open on i386. The fixture stages the app providers, so cold launch remains
-unverified.
+With the slider serialization fix, the saved song source and reopened
+note records match byte for byte. The native caller resumed and rendered
+fresh arithmetic. The filesystem audit preserved all 1,957 existing files.
+The fixture stages app providers. Cold launch and exiting JukeBox after
+preview remain open on i386.
 [Original save and reopen](build/i386-psalmody-persistence-v6/original/result.json) ·
-[Native save and reopen](build/i386-psalmody-persistence-v6/native/result.json)
+[Native save and reopen](build/i386-psalmody-persistence-v7/native/result.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched

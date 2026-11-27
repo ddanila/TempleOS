@@ -11268,6 +11268,12 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-persistence-v6/native/result.json",
           "scope": "With providers staged by the fixture, save and direct reopen restore both original note records. The saved source differs in the staccato factor, 0.901 on i386 and 0.902 on the original."
+        },
+        {
+          "target": "native-psalmody-persistence-serialization",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-persistence-v7/native/result.json",
+          "scope": "Repackaged verified native boot and provider image with only PsalmodyFile.HC changed. With staged app providers, save and direct JukeBox reopen match original song bytes and both note records. Caller recovery and filesystem checks pass. Cold launch and preview exit remain open."
         }
       ]
     },

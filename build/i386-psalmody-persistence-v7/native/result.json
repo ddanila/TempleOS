@@ -1,0 +1,93 @@
+{
+  "result": "pass",
+  "fixture_sha256": "08e1c5fb52e2a58b7143aca25720e86b2765f9bf10c2ac949b7eea60d3b7a737",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-psalmody-keyboard.py": "b46ad8e26e2b258e678552fbed4251201121f7509578997640b64fa1fafc8ba4",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-psalmody-keyboard/Contract.HC": "08e1c5fb52e2a58b7143aca25720e86b2765f9bf10c2ac949b7eea60d3b7a737",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "955408d2a8992b6ee7bad0a2b693d080fd36ddb6859e57ccd609d0be3c202ce4",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "4368e9c34087a9fce139c109be6afe6cbaad1d62dd489a0d975979540ecd7aa9",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-psalmody-keyboard/Persistence.HC": "d557a460aa8b462d03cb9d840b16ae191faffcc000e0ef18802d11b27bc82e63",
+    "/home/ddanila/fun/TempleOS/build/grmodels-menu-workflows-v1/run.py": "57327bd9166cd1bcb9e4d8d0fd9917338237fc54462df3662731fcb79c0be0e2",
+    "/home/ddanila/fun/TempleOS/tools/check-i386-autocomplete-numeric-pixels.py": "158d83ad3e0ae2db17c11d24dab6a7813e0dfa47d6f9f33ba8a80da34af270fd",
+    "/dev/shm/templeos-psalmody-integration/patched.img": "951b49330ae68baf60d0c6c44dd04aa0f2a210eff96839e982e846b89d304388",
+    "/home/ddanila/fun/TempleOS/build/i386-psalmody-persistence-v6/original/result.json": "03bf5eb9ac7387bff5222714a587e4b77f936b8efc7ad9555e80d5f9ced8a6e6",
+    "/home/ddanila/fun/TempleOS/build/i386-psalmody-persistence-v6/original/notes.bin": "07beef2364b543c1466bb44577a4ef488fccf1926a75b426339aeede7244451f",
+    "/home/ddanila/fun/TempleOS/build/i386-psalmody-persistence-v6/original/deleted.bin": "4de301e23f8c4017400ed8b44d6623d68754d8f7d72dcfc3ce9fda8749953d0e",
+    "/home/ddanila/fun/TempleOS/build/i386-psalmody-persistence-v6/original/mask.bin": "8250ab532e40d24a67c08f58e0cd1d76cef63a045599ae5dc9279472cada42dd",
+    "/home/ddanila/fun/TempleOS/build/i386-psalmody-persistence-v6/original/song.HC": "8dc954b3d163fd785603b62f51ae9303252dd035867b2058e3ec5db4e45fcb4e",
+    "/home/ddanila/fun/TempleOS/build/i386-psalmody-persistence-v6/original/reopened.bin": "4de301e23f8c4017400ed8b44d6623d68754d8f7d72dcfc3ce9fda8749953d0e"
+  },
+  "scope": "Psalmody keyboard recording, note deletion, caller restoration and optional playback PCM or save and reopen.",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "951b49330ae68baf60d0c6c44dd04aa0f2a210eff96839e982e846b89d304388",
+    "image_sha256": "854395cb7daf5b96fa9a569c7ac15b8a7c5a04f7ecb7545e77eff20279c497d6",
+    "boot_area_sha256": "9e56ec6aa2b3ca4bfdfa4bb521ec491f5359f7a94204dd9dcf0ce10e74e8a8d7",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1957,
+      "owned_sectors": 96345,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1958,
+      "owned_sectors": 96351,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/PsalmodyKeyboard.HC": "7e847697e2860b9637f6b73bad676fe9f64867177ac85c36655239dcc9184104"
+    },
+    "added_attributes": {
+      "/Probe/PsalmodyKeyboard.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "native_provider_commands": [
+    "AdamFile(\"C:/Adam/AutoComplete/MakeAC.HC\",FALSE);",
+    "AdamFile(\"C:/Adam/TaskSettings.HC\",FALSE);",
+    "#include \"C:/Adam/Opt/Utils/Find.HC\"",
+    "#include \"C:/Adam/God/GodExt.HC\"",
+    "#include \"C:/Adam/God/GodBible.HC\"",
+    "#include \"C:/Adam/God/HolySpirit.HC\"",
+    "#include \"C:/Adam/God/GodSong.HC\"",
+    "#include \"C:/Apps/Psalmody/Load.HC\"",
+    "#include \"C:/Probe/PsalmodyKeyboard.HC\""
+  ],
+  "persistence": {
+    "song_sha256": "8dc954b3d163fd785603b62f51ae9303252dd035867b2058e3ec5db4e45fcb4e",
+    "reopened_notes": 2,
+    "saved_path": "/Home/Psalmody/Tmp.HC.Z"
+  },
+  "preserved_files": 1957,
+  "filesystem": {
+    "directories": 64,
+    "files": 1959,
+    "owned_sectors": 96353,
+    "bitmap": "matches reachable extents"
+  },
+  "mask": 63,
+  "notes": [
+    3,
+    1,
+    63,
+    8,
+    0,
+    1,
+    65,
+    8,
+    0,
+    1,
+    67,
+    8,
+    0
+  ],
+  "inputs_unchanged": true
+}

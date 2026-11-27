@@ -280,3 +280,17 @@ runs as a standalone guest probe. App integration and the end-to-end
 save, reopen and filesystem checks remain open.
 [Tempo trace](../build/i386-psalmody-tempo-v1/original.txt) ·
 [Candidate and comparison](../build/i386-psalmody-serialization-candidate-v1/check.py)
+
+The native app now uses the verified calculation for slider settings
+when writing songs. It retains the existing float formatting path for
+out-of-range values loaded from hand-written songs. The strict native
+workflow matches the pinned original song source and both reopened
+note records byte for byte. It verifies caller mask 63, fresh arithmetic
+and preservation of all 1,957 existing files. The live volume audit
+finds the expected fixture and saved song and a consistent allocation
+bitmap. This test uses the retained native boot area and providers with a
+verified single-file app delta because the available cross-build
+bootstrap has stale compiler inputs. Cold launch and preview exit still
+need separate verification.
+[Native workflow](../build/i386-psalmody-persistence-v7/native/result.json) ·
+[Image delta](../build/i386-psalmody-persistence-v7/repackage.json)

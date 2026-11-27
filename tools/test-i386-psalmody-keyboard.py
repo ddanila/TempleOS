@@ -65,7 +65,7 @@ def main():
             paths += [gold/'song.HC',gold/'reopened.bin']
     out.mkdir();pins={str(p):sha(p) for p in paths};g=None
     report=dict(result='running',fixture_sha256=sha(fixture),input_sha256=pins,
-                scope='Psalmody keyboard recording, note deletion, caller restoration and optional playback PCM.')
+                scope='Psalmody keyboard recording, note deletion, caller restoration and optional playback PCM or save and reopen.')
     (out/'fixture.HC').write_bytes(script);(out/'runner-source.py').write_bytes(Path(__file__).read_bytes())
     try:
         if args.disk:
@@ -78,6 +78,9 @@ def main():
                 if name=='Apps/Psalmody/PsalmodyMain.HC':
                     # Also accept the reviewed keyboard-arrival timing port.
                     allowed.add('c0d0d1367005783450788fe39b29e8e9f0becec872341bad61948ea1b098c13e')
+                if name=='Apps/Psalmody/PsalmodyFile.HC':
+                    # Also accept the reviewed song serialization port.
+                    allowed.add('1b8f7babdfe87eab5e474474bb099b10b5c95c0812f03f96ed026c312823f612')
                 if hashlib.sha256(before['/'+name][2]).hexdigest() not in allowed:
                     raise ValueError('Psalmody source differs: '+name)
             image=out/'working.img';report['packaging']=pack['package'](args.disk.resolve(),image,additions={'/Probe/PsalmodyKeyboard.HC':script})
