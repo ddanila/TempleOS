@@ -6627,3 +6627,9 @@ full-content check matched all 686 inventory files to the frozen tree,
 verified the RedSea extents, and passed the guest lookup and read contract.
 [Second-generation desktop baseline](../build/i386-ode-template-port-v1/native-generations128/gen2-desktop64/result.json) ·
 [Second-generation full-content check](../build/i386-ode-template-port-v1/native-generations128/gen2-full-content64/result.json)
+
+The i386 console now publishes the original ten-color rainbow as a
+data export. The original and native fixtures matched the ten palette
+bytes, and the integrated image passed all nine 8 MiB KVM startup checks.
+[Palette fixture](../build/i386-rainbow-public-v1/PaletteProbe.HC) ·
+[8 MiB startup](../build/i386-rainbow-public-v1/interactive8-kvm/result.json)
