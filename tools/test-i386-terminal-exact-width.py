@@ -6,7 +6,7 @@ import json
 import math
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 from PIL import Image
 
@@ -35,7 +35,7 @@ def main():
                   scope='Three identical exact-width commands after console scrolling; not full terminal qualification')
     try:
         working = out/'working.img'
-        shutil.copyfile(disk, working)
+        subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', disk, working], check=True)
         commands = ['I64 wrap_i;for(wrap_i=0;wrap_i<70;wrap_i++)"\\n";']+[SOURCE]*3
         runpy.run_path(str(helper))['guest'](working, out/'guest', commands, 64, True,
                                           key_delay=args.key_delay, accel=args.accel)

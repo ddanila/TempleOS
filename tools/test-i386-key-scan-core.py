@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = [0,0,0, 1,97,0x1E,0, 1,0,0x4B,1,
@@ -55,7 +55,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, reference, builder, Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Shared ScanKey body on real native message queues: empty/filtered/zero-character/null-output cases, echo arguments and descriptor filtering; test-only echo callback, not public bindings, KeyDev dispatch or GetKey waiting',
                   input_sha256=pins, commands=commands)
     report['mode'] = 'public-bindings' if args.public_bindings else 'shared-core-alias'

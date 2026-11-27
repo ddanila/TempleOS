@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [('#include "/Kernel/I386/PublicUser.HH"', []),
@@ -84,7 +84,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Two queued focus requests behind a yielding frame: suspend older request, present newer terminal first, resume stale request last; latest terminal full pixels, live/retired old terminal, task retirement and exact parent heap; not automatic refresh',
                   input_sha256=pins, commands=commands)
     try:

@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 import struct
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,7 +62,7 @@ def main():
         pins[str(legacy)] = sha(legacy)
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Original task document update under native target scope: independent owner retirement and border callback Exit/scroll recovery; not scheduled refresh',
                   input_sha256=pins, commands=commands, legacy_module=str(legacy) if legacy else None)
     try:

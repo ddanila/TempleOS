@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
@@ -50,7 +50,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Automatic displayed-document A/B full-frame changes and dynamic tag progress with no DocRecalc/presentation call during either phase; cleanup restores legacy console; not full window-manager qualification',
                   input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:

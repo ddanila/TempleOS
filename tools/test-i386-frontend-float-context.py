@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
@@ -54,7 +54,7 @@ def main():
     pins = {str(p): sha(p) for p in (disk, manifest_path, runner, Path(__file__))}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(disk, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', disk, working], check=True)
     report = dict(status='running', cpu='486,-fpu', ram_mib=args.ram_mib,
                   scope='Runtime integer/F64 conversion, add/subtract/multiply/divide/modulus, sqrt/abs, comparison and retained static state; not exhaustive IEEE or whole OS acceptance',
                   input_sha256=pins, commands=COMMANDS)

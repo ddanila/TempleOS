@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -20,7 +20,7 @@ def main():
     sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     files=[source,Path(__file__).resolve(),ROOT/'tools/i386-kernel-input.py',ROOT/'Kernel/FontStd.HC']
     pins={str(p):sha(p) for p in files};out.mkdir(parents=True)
-    disk=out/'working.img';shutil.copyfile(source,disk)
+    disk=out/'working.img';subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, disk], check=True)
     cursor=bytes([0xDB]).decode('cp437')
     commands=[('CDoc *vert_doc=DocNew("C:/NativeVertical.DD",Fs);',[]),
       ('DocEd(vert_doc);',['1'],{

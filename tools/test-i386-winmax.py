@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"tests/guest/i386-winmax-reference/WinMax.HC"
@@ -55,7 +55,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, FIXTURE, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='WinMax prerequisite followed by identical original geometry fixture; border and borderless current-task bounds, restoration and continuation; plus IF preservation and invalid-task no-op; not different-task selection, exception or form behavior',
                   input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:

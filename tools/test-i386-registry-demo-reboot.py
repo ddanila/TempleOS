@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 import re
 import runpy
-import shutil
 import struct
 import subprocess
 
@@ -51,7 +50,7 @@ def main():
         old=re.search(rb'F64 best_score= *([0-9]+\.[0-9]{5});\n',initial)
         if not old:raise ValueError('Missing first-launch persisted score')
         expected_score=old[1].decode()
-        working=out/'working.img';shutil.copyfile(out/'first/working.img',working)
+        working=out/'working.img';subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', out / 'first/working.img', working], check=True)
         run=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
         commands=runpy.run_path(str(first_tool))['COMMANDS']
         second=[]

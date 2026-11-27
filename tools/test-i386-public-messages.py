@@ -5,7 +5,6 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
 import subprocess
 import sys
 
@@ -147,7 +146,7 @@ Report("DONE original public messages\\n");
             disk=out/'working.img'
             if disk.exists():
                 raise ValueError('Use a fresh writable-copy output directory')
-            shutil.copyfile(args.disk,disk)
+            subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, disk], check=True)
         styles={}
         if args.include_definitions:
             paced=[]

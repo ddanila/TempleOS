@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 import runpy
 import subprocess
-import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -48,7 +47,7 @@ def main():
     subprocess.run(command, cwd=ROOT, check=True)
     audit = runpy.run_path(str(ROOT/'tools/audit-i386-boot.py'))['audit'](image.read_bytes(), listing.read_text())
     working = out/'working.img'
-    shutil.copyfile(disk, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', disk, working], check=True)
     data = bytearray(working.read_bytes())
     data[:4608] = image.read_bytes()[:4608]
     if data[4608:4608+flat.stat().st_size] != flat.read_bytes():

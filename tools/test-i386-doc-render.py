@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
@@ -38,7 +38,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, reference, builder, Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='10-field original DocRecalc text-cell foreground/reset, tab/newline layout, extents, unlock and null-document oracle; not presentation, sprites, cursor or whole renderer parity',
                   input_sha256=pins, commands=commands)
     try:

@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 ROOT=Path(__file__).resolve().parents[1]
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
@@ -33,7 +33,7 @@ def main():
         commands.append((f'U0 RVTimer(){{Btr(&Fs->task_flags,TASKf_NONTIMER_RAND);Fs->rand_seed=1;RandU16;}}RVTimer;',[]))
         commands.append((f'Fs->rand_seed!=0x{expected:X};',['1']))
         commands += [('U0 RVRestore(){Fs->task_flags=rv_flags;Fs->rand_seed=rv_seed;}RVRestore;',[]),('Fs->rand_seed==rv_seed&&Fs->task_flags==rv_flags;',['1']),('6*7;',['42'])]
-        disk=out/'working.img';shutil.copyfile(args.disk,disk)
+        disk=out/'working.img';subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, disk], check=True)
         report['behavior']=runpy.run_path(str(helper))['run_input'](disk,out/'behavior',cpu='486,-fpu',qmp_stdio=True,snapshot=False,startup_check={'status':'ok','answers':[],'commands':commands})
         report['result']='pass'
     except Exception as error:

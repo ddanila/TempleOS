@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -48,7 +48,7 @@ def main():
         disk=out/'working.img'
         if disk.exists():
             raise ValueError('Use a fresh writable-copy output directory')
-        shutil.copyfile(args.disk,disk)
+        subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, disk], check=True)
     report['disk_policy']='writable copy' if args.writable_copy else 'QEMU snapshot'
     try:
         runner = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']

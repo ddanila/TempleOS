@@ -5,7 +5,6 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
 import subprocess
 import sys
 
@@ -52,7 +51,7 @@ def main():
                 raise ValueError('Original execution contract did not pass all seven checks')
         else:
             disk = out / 'working.img'
-            shutil.copyfile(args.disk, disk)
+            subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, disk], check=True)
             commands = [('HashFind("ExePutS",Fs->hash_table,~0)!=NULL;', ['1'])]
             source = fixture.read_text()
             commands += [(f'U8 *dp_source=CAlloc({len(source)+1});', []),

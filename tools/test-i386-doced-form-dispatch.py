@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [('I64 DFForm(){CDoc*d=DocNew("Form.DD");Bool r;d->flags|=DOCF_FORM;Msg(MSG_KEY_DOWN,CH_ESC,0);r=DocEd(d);DocDel(d);FlushMsgs;return r;}', []), ('DFForm;', ['1']), ('I64 DFList(U8*n){return HashFind(n,sys_winmgr_task->hash_table,HTT_DEFINE_STR)!=NULL;}', []), ('DFList("ST_DOC_CMDS");', ['1']), ('DFList("ST_DOC_FLAGS");', ['1']), ('DFList("ST_LINK_TYPES");', ['1']), ('DFList("ST_COLORS");', ['1']), ('6*7;', ['42'])]
@@ -39,7 +39,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Zero-flag DOCF_FORM dispatch to complete original DocEd/View with real queued Escape, normal manager synchronization and continuation; not bound editing, menu actions, mouse or visual parity',
                   input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:

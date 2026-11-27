@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import runpy
 import re
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
@@ -57,7 +57,7 @@ def main():
         raise ValueError('Input harness differs from the cross-build manifest')
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(disk, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', disk, working], check=True)
     inputs = (disk, manifest_path, Path(__file__).resolve(), runner, ROOT/'Kernel/FontStd.HC')
     pins = {str(path): sha(path) for path in inputs}
     if sha(working) != expected or pins[str(disk)] != expected:

@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 from PIL import Image
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -27,7 +27,7 @@ def main():
         text=(ROOT/'Doc/Start.DD').read_text()
         for fragment in ('TempleOS V5.03','Public Domain Operating System','Help & Index','Quick Start: Cmd line'):
             if fragment not in text:raise ValueError('Welcome source changed: '+fragment)
-        image=out/'working.img';shutil.copyfile(source,image)
+        image=out/'working.img';subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, image], check=True)
         commands=['U0 P(){if(sys_winmgr_task!=adam_task)Suspend(sys_winmgr_task,TRUE);}P;',
                   '6*7;','DocClear;','6*7;'] if args.suspended_clear else []
         runpy.run_path(str(ROOT/'tools/test-i386-timeclock-welcome.py'))['guest'](image,out/'guest',commands,args.ram_mib,args.suspended_clear)

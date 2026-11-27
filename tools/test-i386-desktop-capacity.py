@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -24,7 +24,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     # Separate commands retain the allocation across prompt compilations.
     # Touch every 4 KiB and both endpoints, then read back before release.
     size = (32 if args.ram_mib == 64 else 80)*1024*1024

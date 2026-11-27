@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
@@ -46,7 +46,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Child and terminal tasks exit from single/nested TO_SCRN tag callbacks: parent-owned tags, released doc locks/aliases, exact parent heap, retry/deletion; not owner exit or all frame-worker lifecycle',
                   input_sha256=pins, commands=commands)
     try:

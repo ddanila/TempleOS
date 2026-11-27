@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 import time
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -19,7 +19,7 @@ def main():
     out.mkdir()
     for path,name in [(Path(__file__).resolve(),'runner-source.py'),(helper,'helper-source.py')]:
         copy=out/name;copy.write_bytes(path.read_bytes());paths.append(copy)
-    pins={str(path):sha(path) for path in paths};working=out/'working.img';shutil.copyfile(image,working)
+    pins={str(path):sha(path) for path in paths};working=out/'working.img';subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', image, working], check=True)
     report=dict(result='running',cpu='486,-fpu',ram_mib=64,input_sha256=pins,scope='Normal boot with library absence asserted: real Ctrl+F1 and Ctrl+1 leave 6*7 unchanged, which executes with visible 42. Not the complete key map or a full autocomplete workflow.')
     guest=None
     try:

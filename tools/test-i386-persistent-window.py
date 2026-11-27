@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
@@ -99,7 +99,7 @@ def main():
         if staged_files.pop(fixture)[2] != declarations or staged_files != {**source_files, path: (attr, date, b'')}:
             raise ValueError('Plain startup fixture changed unrelated files')
     else:
-        shutil.copyfile(source, working)
+        subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Persistent direct-body pixel admitted with plain existing put/display document; final hook overlays and removal reveals retained pixel, clearing returns plain document, then continued command input; not all graphics/input roles',
                   input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib,
                   accel=args.accel, plain_start=args.plain_start)

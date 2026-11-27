@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -29,7 +29,7 @@ def main():
     (args.out / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     try:
         disk = args.out / 'working.img'
-        shutil.copyfile(args.disk, disk)
+        subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, disk], check=True)
         report['behavior'] = runpy.run_path(str(helper))['run_input'](
             disk, args.out / 'behavior', cpu='486,-fpu', qmp_stdio=True, snapshot=False,
             startup_check={'status': 'ok', 'answers': [], 'commands': commands()})

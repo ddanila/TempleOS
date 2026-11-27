@@ -5,7 +5,6 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
 import subprocess
 import sys
 
@@ -66,7 +65,7 @@ def main():
                 raise ValueError(f'Original string-scan contract did not return mask {expected}')
         else:
             disk = out / 'working.img'
-            shutil.copyfile(args.disk, disk)
+            subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, disk], check=True)
             commands = [('HashFind("StrScan",Fs->hash_table,~0)!=NULL;', ['1'])]
             source = fixture.read_text()
             commands += [(f'U8 *ss_source=CAlloc({len(source)+1});', []),

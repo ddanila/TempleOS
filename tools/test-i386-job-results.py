@@ -5,7 +5,6 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
 import subprocess
 import sys
 
@@ -54,7 +53,7 @@ def main():
                 raise ValueError('Original parser contract did not pass all six checks')
         else:
             disk = out / 'working.img'
-            shutil.copyfile(args.disk, disk)
+            subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, disk], check=True)
             commands = [('HashFind("JobResScan",Fs->hash_table,~0)!=NULL;', ['1'])]
             if args.execution:
                 commands.insert(0, ('HashFind(\"TaskExe\",Fs->hash_table,~0)!=NULL;', ['1']))

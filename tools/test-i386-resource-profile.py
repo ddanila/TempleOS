@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import re
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parent.parent
 FIELDS = ('doc_session_data_used', 'doc_session_code_used',
@@ -60,7 +60,7 @@ def main():
         run_input = runpy.run_path(str(ROOT / 'tools/i386-kernel-input.py'))['run_input']
         if args.writable_copy:
             if disk.exists():raise ValueError('Use a fresh writable-copy resource output')
-            shutil.copyfile(args.disk,disk)
+            subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, disk], check=True)
             if hashlib.sha256(disk.read_bytes()).hexdigest()!=identity['disk_sha256']:
                 raise ValueError('Resource disk copy differs from source')
         try:

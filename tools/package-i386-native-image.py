@@ -142,7 +142,10 @@ def package(source, output, additions=None, addition_attributes=None):
             bitmap[index // 8] |= 1 << (index % 8)
     image[(start + 1) * 512:first * 512] = bitmap
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_bytes(image)
+    # The allocator packs live extents below cursor. Leave the zero tail sparse.
+    with output.open('xb') as disk:
+        disk.write(memoryview(image)[:cursor * 512])
+        disk.truncate(len(image))
     after = helper['verify_mutated_volume'](output)
     _, packed_files, packed_directories = snapshot(output.read_bytes())
     if packed_files != files or packed_directories != directories:

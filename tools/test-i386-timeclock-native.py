@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [('FileFind("C:/Apps/TimeClock/Load.HC");', ['1']),
@@ -27,7 +27,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Original TimeClock source availability and Load/Install compilation; not storage/report or interactive application qualification',
                   input_sha256=pins, commands=COMMANDS)
     try:

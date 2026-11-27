@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT=Path(__file__).resolve().parents[1]
 REGISTRY='/Registry.HC.Z'
@@ -28,7 +28,7 @@ def main():
     run=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input']
     report=dict(result='fail',input_sha256=pins,scope='Three persisted 8 MiB KVM boots: seeded defaults, public deletion, actual missing-file initialization, then byte-identical reboot',boots=[])
     try:
-        shutil.copyfile(source,working)
+        subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
         _,baseline,directories=snapshot(working.read_bytes())
         if baseline.get(REGISTRY,(0,0,None))[0]!=0xC00 or baseline[REGISTRY][2]!=expected:
             raise ValueError('Seeded registry differs from original defaults')

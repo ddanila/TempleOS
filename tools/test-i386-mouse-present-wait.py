@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [('#include "/Kernel/I386/PublicUser.HH"', []),
@@ -117,7 +117,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, ROOT/"Kernel/FontStd.HC", Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Real PS/2 movement during yielding graphics: deferred terminal overlays, killed waiting terminal, stale backing invalidation, blue full-frame oracle, exact parent recovery and automatic whole-console restoration; not full desktop refresh',
                   input_sha256=pins, commands=commands)
     try:

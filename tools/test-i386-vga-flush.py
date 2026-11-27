@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 ROOT=Path(__file__).resolve().parents[1]
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
@@ -21,7 +21,7 @@ def main():
     report=dict(result='running',input_sha256=pins,scope='Three real VGAFlush calls on a visible terminal each cause exactly one full 60-row upload; VGA checkpoints and final console result; not invisible-terminal retention, raw pixel appearance or physical hardware')
     (out/'result.json').write_text(json.dumps(report,indent=2)+'\n')
     try:
-        disk=out/'working.img';shutil.copyfile(args.disk,disk)
+        disk=out/'working.img';subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, disk], check=True)
         commands=[('HashFind("VGAFlush",Fs->hash_table,~0)!=NULL;',['1']),('U0 RF(){U8 *s="RAW FLUSH MARK\\n";while(*s)OutU8(0xE9,*s++);VGAFlush;}',[])]
         commands += [('RF;',[]) for _ in range(3)]
         commands += [('6*7;',['42'])]

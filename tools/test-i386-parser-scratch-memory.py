@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [('6*7;', ['42'])] * 3 + [
@@ -30,7 +30,7 @@ def main():
     pins = {str(p): sha(p) for p in (disk, runner, Path(__file__).resolve())}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(disk, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', disk, working], check=True)
     report = dict(result='running', ram_mib=8, cpu='486,-fpu',
                   scope='Installed-image parser scratch, repeated expressions, nested/recursive functions and DolDoc allocation; not exhaustive ownership or OS acceptance',
                   input_sha256=pins, commands=COMMANDS)

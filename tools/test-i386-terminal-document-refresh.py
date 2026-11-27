@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
@@ -53,7 +53,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Original terminal document identity retained: reset fixture transcript, dynamic A/B callbacks and glyphs through Refresh, then a fresh document heading and continued command input; cursor hidden for deterministic pixels; not all input/error/editor roles',
                   input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:

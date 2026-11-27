@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER = ROOT / 'tools/i386-kernel-input.py'
@@ -34,7 +34,7 @@ def main():
     pins = {str(p): sha(p) for p in paths}
     out.mkdir(parents=True)
     working = out / 'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = {'result': 'running', 'scope': 'Native registry branch after cold reboot', 'input_sha256': pins}
     try:
         run_input = runpy.run_path(str(RUNNER))['run_input']

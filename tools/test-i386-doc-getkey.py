@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
@@ -40,7 +40,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, reference, builder, Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='14-field original DocGetKey descriptor echo/discard, inhibition restore, queued/zero-character/null-output and filter-exit oracle; default document echo, physical input and GetStr remain open',
                   input_sha256=pins, commands=commands)
     try:

@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -23,7 +23,7 @@ def main():
         expected={('/'+e['path']):e['reference_sha256'] for e in json.loads(inventory.read_text())['entries'] if e['path'].startswith('Adam/AutoComplete/') and e['path'].endswith('.HC')}
         read=runpy.run_path(str(build))['mutated_file_contents'];files=read(source,set(expected))
         if {name:hashlib.sha256(data).hexdigest() for name,data in files.items()}!=expected:raise ValueError('AutoComplete source differs from original')
-        shutil.copyfile(source,image)
+        subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, image], check=True)
         runpy.run_path(str(helper))['guest'](image,out/'guest',['#include "C:/Adam/AutoComplete/MakeAC.HC"','6*7;'],64,True)
         report['result']='pass'
     except Exception as exc:

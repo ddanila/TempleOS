@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
@@ -114,7 +114,7 @@ def main():
     if args.source_fixture:
         return run_source_fixture(source,out,args.ram_mib,pins)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Explicit derived-control update: worker context, IRQ and task lock, return/throw/Exit/kill and owner Exit/kill, exact parent heap and frame reuse; not automatic prepass qualification',
                   input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:

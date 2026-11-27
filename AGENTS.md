@@ -22,3 +22,8 @@ listing is convenient. For completed, inactive runs, pass the exact
 The tool verifies decompression before removing the plain listing and prints
 the recovery manifest path. Restore any entry with
 `zstd -d ARCHIVE -o SOURCE` using the paths in that manifest.
+
+Keep raw VM working disks sparse. When a test needs an independent writable
+copy of a base disk, use `cp --sparse=always --no-preserve=mode -- SOURCE DEST`
+with a fresh destination. The native image packager already leaves the unused
+tail sparse. Both forms can be passed directly to QEMU.

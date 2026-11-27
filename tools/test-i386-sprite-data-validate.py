@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
@@ -39,7 +39,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='18 sprite storage boundary cases: null/empty/end/trailing, original packed rectangle, string termination, signed/oversized counts, bitmap dimension and mesh indices; not geometry validity or all renderer behavior',
                   input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:

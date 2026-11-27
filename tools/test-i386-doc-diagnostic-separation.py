@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 import struct
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -38,7 +38,7 @@ def main():
         diagnostic=image.parent/'exports/DocDiagnosticRuntime.t32m'
         if not CHECKS<=exports(diagnostic):raise ValueError('Diagnostic module omitted checks')
         pins[str(diagnostic)]=sha(diagnostic)
-        work=out/'working.img';shutil.copyfile(image,work)
+        work=out/'working.img';subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', image, work], check=True)
         report['behavior']=runpy.run_path(str(ROOT/'tools/i386-kernel-input.py'))['run_input'](
             work,out/'qemu',snapshot=False,ram_mib=64,cpu='486,-fpu',qmp_stdio=True,welcome=True,
             startup_check={'status':'ok','answers':[],

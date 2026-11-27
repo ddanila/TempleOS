@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT/'tools/test-i386-task-document-update.py'
@@ -42,7 +42,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, Path(__file__).resolve(), BASE, OWNER_BASE]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Persistent managed renderer recovers cancellation using original task-end callback semantics, retires old document and renders replacement on the same task; not scheduled refresh',
                   input_sha256=pins, commands=commands)
     try:

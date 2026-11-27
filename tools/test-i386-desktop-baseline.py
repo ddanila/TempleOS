@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -35,7 +35,7 @@ def main():
     pins = {str(p):sha(p) for p in (source, runner, Path(__file__).resolve())}
     out.mkdir(parents=True)
     disk = out/'working.img'
-    shutil.copyfile(source, disk)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, disk], check=True)
     report = dict(result='running', input_sha256=pins, ram_mib=args.ram_mib, accel=args.accel,
                   welcome=args.welcome, managed_pointer=args.managed_pointer,
                   keep_window_manager=args.keep_window_manager,

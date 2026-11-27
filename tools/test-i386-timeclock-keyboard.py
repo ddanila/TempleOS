@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT=Path(__file__).resolve().parents[1]
 SAVE='U0 PhysicalSave(){I64 n;U8 *p=FileRead(TIME_FILENAME,&n);if(p){FileWrite("C:/physical.DATA",p,n);Free(p);}}'
@@ -29,7 +29,7 @@ def main():
         expected={('/'+e['path']):e['reference_sha256'] for e in json.loads(inventory.read_text())['entries'] if e['path'].startswith('Apps/TimeClock/')}
         files=read(source,set(expected))
         if {n:hashlib.sha256(v).hexdigest() for n,v in files.items()}!=expected:raise ValueError('TimeClock source differs from original')
-        shutil.copyfile(source,image)
+        subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, image], check=True)
         guest=runpy.run_path(str(helper))['guest']
         guest(image,out/'first',['#include "C:/Apps/TimeClock/Load.HC"',('PunchIn;','alpha\nbeta\n\x1b'),('PunchOut;','finish\n\x1b'),('PunchIn;','discard\x1c'),('PunchOut;','\x1b'),SAVE,'PhysicalSave;'],64,True,accel=args.accel)
         first=read(image,{'/physical.DATA'})['/physical.DATA'];records=decode(first)

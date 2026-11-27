@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = [
@@ -56,7 +56,7 @@ def main():
     pins = {str(p):sha(p) for p in [source, runner, ROOT/'Kernel/FontStd.HC', Path(__file__).resolve()]}
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     report = dict(result='running', scope='Automatic hidden-control callback on actual manager: owner retirement cancels a held derived pass, same worker resumes; actual worker Exit creates a new identity and next callback; exact parent and manager heap and presentation reuse; not full desktop or control-list mutation',
                   input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
     try:

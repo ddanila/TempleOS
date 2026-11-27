@@ -5,7 +5,6 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
 import subprocess
 import sys
 
@@ -60,7 +59,7 @@ def main():
             disk = out / 'working.img'
             if args.preload_fixture:
                 report['packaging']=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](args.disk,disk,additions={'/DollarContract.HC':fixture.read_bytes()})
-            else:shutil.copyfile(args.disk, disk)
+            else:subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, disk], check=True)
             commands = [('HashFind("SrvCmdLine",Fs->hash_table,~0)!=NULL;', ['1']), ('HashFind("JobResScan",Fs->hash_table,~0)!=NULL;', ['1'])]
             commands.insert(1, ('HashFind(\"TaskExe\",Fs->hash_table,~0)!=NULL;', ['1']))
             if not args.preload_fixture:

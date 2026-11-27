@@ -5,7 +5,6 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
 import subprocess
 import sys
 
@@ -46,7 +45,7 @@ def main():
         packaging=runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
             args.disk.resolve(),working,additions={'/IfAot.HC':SOURCE.encode()})
     else:
-        shutil.copyfile(args.disk,working)
+        subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, working], check=True)
     report=dict(result='fail',disk_sha256=before,checker_sha256=checkers,
                 fixture_sha256=hashlib.sha256(SOURCE.encode()).hexdigest(),
                 welcome=args.welcome,packaged=args.packaged,

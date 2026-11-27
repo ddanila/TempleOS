@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import re
 import runpy
-import shutil
+import subprocess
 import struct
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -24,7 +24,7 @@ def blocks(data,base):
 def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path);ap.add_argument('--out',type=Path,required=True);args=ap.parse_args();out=args.out.resolve()
     if out.exists():ap.error('Use a fresh output directory')
-    out.mkdir();image=out/'working.img';shutil.copyfile(args.disk,image)
+    out.mkdir();image=out/'working.img';subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, image], check=True)
     helper=ROOT/'tools/test-i386-autocomplete-interaction.py';paths=[Path(__file__).resolve(),helper,args.disk.resolve(),ROOT/'Kernel/I386/Heap.HH',ROOT/'Kernel/SymbolTypes.HH']
     for path,name in [(Path(__file__).resolve(),'runner-source.py'),(helper,'helper-source.py')]:copy=out/name;copy.write_bytes(path.read_bytes());paths.append(copy)
     sha=lambda path:hashlib.sha256(path.read_bytes()).hexdigest();pins={str(p):sha(p) for p in paths}

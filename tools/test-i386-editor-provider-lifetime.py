@@ -5,7 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
+import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -19,7 +19,7 @@ def main():
     if out.exists(): parser.error('Use a fresh output directory')
     out.mkdir(parents=True)
     working = out/'working.img'
-    shutil.copyfile(source, working)
+    subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', source, working], check=True)
     runner = ROOT/'tools/i386-kernel-input.py'
     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
     pins = {str(p): sha(p) for p in (source, runner, Path(__file__).resolve())}

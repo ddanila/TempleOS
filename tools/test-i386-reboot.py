@@ -5,7 +5,6 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
 import subprocess
 import sys
 import time
@@ -66,7 +65,7 @@ def main():
     report=dict(result='running',input_sha256={str(p):sha(p) for p in inputs},scope='Guest invokes Reboot in a disposable QEMU PC with no-reboot; not physical hardware or SMP qualification')
     try:
         if args.disk:
-            image=out/'working.img';shutil.copyfile(args.disk,image);report['qemu_exit'],report['qmp_events']=native_reboot(image,out)
+            image=out/'working.img';subprocess.run(['cp', '--sparse=always', '--no-preserve=mode', '--', args.disk, image], check=True);report['qemu_exit'],report['qmp_events']=native_reboot(image,out)
         else:
             ref=runpy.run_path(str(ROOT/'tools/test-i386-timeclock-reference.py'));overlay=out/'overlay';overlay.mkdir()
             report['reference_sha256']=ref['restore_reference'](overlay);(overlay/'Once.HC').write_bytes(fixture.read_bytes())
