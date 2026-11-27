@@ -1253,3 +1253,14 @@ third boot. The only file changes were the configured Home registry
 and the three capture files. Both tests preserved their source image.
 [Public assembly](../build/i386-code-alloc-known-v1/native-compiler-public-assembly64/result.json) ·
 [RegistryDemo three-boot receipt](../build/i386-code-alloc-known-v1/native-compiler-registry64/result.json)
+
+## 8 MiB profile with the task report available
+
+The full task-report image collected 2,748 paused TCG samples. The three
+whole-arena heap walks accounted for 700 of 960 root-header samples and
+1,033 of 1,491 startup-source samples. In the startup-source phase, 369
+samples in `I386HeapScan` traced through `I386CmpCodeOwner` and 105
+through `I386ICSlabFind` during code release. These paths account for
+distinct work. The PC counts attribute time spent in sampled code without
+measuring the 60-second startup gate.
+[Verified sample summary](../build/i386-task-report-v2/startup-profile8-tcg/summary.json)
