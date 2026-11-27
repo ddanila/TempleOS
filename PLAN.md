@@ -58,11 +58,22 @@ run exceeded the 60-second limit.
 [Budget check](build/i386-sprite-early-integrated-v1/interactive8-tcg/startup-budget.json)
 
 Both native generations from frozen revision `5e9064e5` finished building,
-installing, and cold-booting. The comparison reproduced 16 modules with
-the exported kernel build date normalized. This frozen image predates the
+installing, and cold-booting. Both passed the 64 MiB desktop baseline and
+full-content verification against the 686-file inventory. The comparison
+reproduced 16 modules with the eight-byte exported kernel build date
+normalized. This frozen image predates the
 sprite load-order fix, and the second-generation smoke log reports the
 sprite allocation rejection.
 [ODE image generation comparison](build/i386-ode-template-port-v1/native-generations128/generation-identity/result.json)
+
+The latest compatibility passes include the complete Hanoi animation and
+Pick's nearest-sprite drag. On the GrPeek image, the 8 MiB document
+resource test stopped during fixture compilation when a 128-byte request
+found a largest free block of 120 bytes. The same image at 16 MiB compiled
+the fixture and completed all 20 document sessions with eleven exact VGA
+checks.
+[Pick workflow](build/i386-pick-paired-v2/result.json) ·
+[Document resource investigation](docs/i386-heap-performance.md)
 
 The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
