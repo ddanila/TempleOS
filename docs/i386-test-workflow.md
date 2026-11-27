@@ -6510,3 +6510,11 @@ workflow.
 [TXTGen regression](../build/i386-htmlgen-doc-file-ed-v3/txtgen/result.json) ·
 [Source audit](../build/i386-htmlgen-doc-file-ed-v3/committed-source-audit.json) ·
 [Full content](../build/i386-htmlgen-doc-file-ed-v3/full-content64/result.json)
+
+The subsequent ToHtml callback fix preserved the 8 MiB interactive
+KVM boot and all nine VGA checkpoints. The delivered-source audit
+matched 1,578 files to `19664a81`, and the content check verified all
+686 inventory files and the bounded guest read workflow.
+[8 MiB startup](../build/i386-tohtml-custom-link-port-v1/interactive8-kvm/result.json) ·
+[Source audit](../build/i386-tohtml-custom-link-port-v1/committed-source-audit.json) ·
+[Full content](../build/i386-tohtml-custom-link-port-v1/full-content64/result.json)
