@@ -1331,3 +1331,11 @@ pointer and corrupted-metadata checks. The original bootstrap, 386 boot
 audit, and full 8 MiB KVM diagnostics also passed.
 [Ownership corpus](../build/i386-parser-known-request-v2/task-symbols/result.json) ·
 [8 MiB diagnostics](../build/i386-parser-known-request-v2/diagnostic8-kvm/result.json)
+
+The exact-size parser lookup candidate reached the 8 MiB prompt under TCG
+in 290.367 seconds and passed all nine VGA checkpoints without an allocation
+rejection. The preceding integrated image took 293.352 seconds in a separate
+run. The timing observations were made with other guest activity on the host,
+and the 60-second gate remains open.
+[Parser lookup timing](../build/i386-parser-known-request-v2/interactive8-tcg/result.json) ·
+[Startup budget result](../build/i386-parser-known-request-v2/interactive8-tcg/startup-budget.json)
