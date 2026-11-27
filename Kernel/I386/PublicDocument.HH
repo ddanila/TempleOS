@@ -106,6 +106,7 @@ public _extern _DOC_MENU I64 DocMenu(CDoc *doc,I64 flags=0);
 #include "/Adam/DolDoc/TermRightMenuTypes.HH"
 public _extern _POP_UP_TERM_RIGHT I64 PopUpTermRight(U8 *header);
 public _extern _POP_UP_MENU I64 PopUpMenu(CDoc *doc,I64 flags=0);
+public _extern _POP_UP_COLOR I64 PopUpColor(U8 *header=NULL,Bool allow_transparent=TRUE,Bool allow_dft=TRUE);
 public _extern _POP_UP_1 I64 PopUp1(U8 *b1,I64 n1,U8 *header=NULL,U8 *footer=NULL);
 public _extern _POP_UP_2 I64 PopUp2(U8 *b1,I64 n1,U8 *b2,I64 n2,U8 *header=NULL,U8 *footer=NULL);
 public _extern _POP_UP_OK Bool PopUpOk(U8 *header=NULL,U8 *footer=NULL);

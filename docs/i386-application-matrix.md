@@ -3012,3 +3012,13 @@ pitch region returned to its pre-pitch pixels after restart. The native
 session exited with Escape and accepted fresh arithmetic. This workflow
 also covers the bundled StadiumBG.GR image.
 [Paired Stadium play](../build/i386-stadium-game-v1/comparison.json)
+
+Native now publishes the original `PopUpColor` document chooser. The
+paired physical-input test selected red, transparent and default, then
+cancelled a fourth popup. Both guests returned 4, 255, −2147483648 and
+−1 in order. The native guest accepted fresh arithmetic. The build also
+passed 8 MiB diagnostics and all 20 document sessions. Doodle's previous
+native launch stopped at the missing picker. Its drawing workflow
+remains unqualified.
+[Paired picker](../build/i386-color-picker-mouse-v1/comparison.json) ·
+[8 MiB document resources](../build/i386-color-picker-production-v1/resource8/resource-result.json)

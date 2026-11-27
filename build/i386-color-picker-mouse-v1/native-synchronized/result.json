@@ -1,0 +1,38 @@
+{
+  "result": "pass",
+  "scope": "Color picker choices through physical mouse and keyboard",
+  "input_sha256": "dbc9afc7574751a8edc8ec2edd15a62bb95eb4d3abb511536e1bc027d366d01d",
+  "selections": {
+    "BASIC": 4,
+    "TRANSPARENT": 255,
+    "DEFAULT": -2147483648,
+    "CANCEL": -1
+  },
+  "positions": {
+    "BASIC": [
+      38,
+      155
+    ],
+    "TRANSPARENT": [
+      38,
+      123
+    ],
+    "DEFAULT": [
+      38,
+      251
+    ],
+    "CANCEL": [
+      38,
+      163
+    ]
+  },
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

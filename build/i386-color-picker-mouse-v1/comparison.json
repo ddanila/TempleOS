@@ -1,0 +1,59 @@
+{
+  "result": "pass",
+  "scope": "Original and native color popup selected through physical input",
+  "selections": {
+    "BASIC": 4,
+    "TRANSPARENT": 255,
+    "DEFAULT": -2147483648,
+    "CANCEL": -1
+  },
+  "original_positions": {
+    "BASIC": [
+      38,
+      155
+    ],
+    "TRANSPARENT": [
+      38,
+      123
+    ],
+    "DEFAULT": [
+      38,
+      250
+    ],
+    "CANCEL": [
+      38,
+      163
+    ]
+  },
+  "native_positions": {
+    "BASIC": [
+      38,
+      155
+    ],
+    "TRANSPARENT": [
+      38,
+      123
+    ],
+    "DEFAULT": [
+      38,
+      251
+    ],
+    "CANCEL": [
+      38,
+      163
+    ]
+  },
+  "original_image_sha256": "16ee80e575d1a667c213f4253383b284e46b4fb4060482695edc9cbc7fb19bc0",
+  "native_fixture_image_sha256": "dbc9afc7574751a8edc8ec2edd15a62bb95eb4d3abb511536e1bc027d366d01d",
+  "native_disk_sha256": "8bcd5c9fa6c908277ffa756dc4deb396a6635285b1c26275a1185aadfeb47752",
+  "fixture_sha256": "d711b59b1f9a67ed750e3467c005ab3225a7dd02ca9d6dcc369f3cd56246d6a0",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 13,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
