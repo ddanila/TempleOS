@@ -1,0 +1,55 @@
+{
+  "image_sha256": "12f45cfdf8b2a5680a271a2bf515add71f785df80fbf967e299931d3a8f6b3c5",
+  "ram_mib": 8,
+  "cpu": "486,-fpu",
+  "startup_rejections": [
+    "PARSER CODE STORAGE REJECT C:/Adam/Opt/Utils/Find.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+    "PARSER CODE STORAGE REJECT C:/Adam/God/GodBible.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+    "PARSER CODE STORAGE REJECT C:/Adam/God/HolySpirit.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+    "PARSER CODE STORAGE REJECT C:/Adam/God/GodSong.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000"
+  ],
+  "prompt": {
+    "capacity": 6746112,
+    "used": 6675608,
+    "largest_free": 32544,
+    "allocations": 21180,
+    "failure_callers": [],
+    "sha256": "7d4f66c3630c15b5fb71d76600be8ba399f0cd777de85b0f9cf4d1a1dfb5da6f"
+  },
+  "returned": -1,
+  "after": {
+    "capacity": 6746112,
+    "used": 6676720,
+    "largest_free": 32544,
+    "allocations": 21191,
+    "failure_callers": [
+      [
+        {
+          "return_address": 1170223,
+          "symbols": [
+            "Kernel:I386RedSeaLoadBoundCapacity"
+          ]
+        },
+        {
+          "return_address": 1170862,
+          "symbols": [
+            "Kernel:I386RedSeaLoadBound"
+          ]
+        }
+      ]
+    ],
+    "sha256": "ad60d87fee926b59ccb905d2b2bf9e709126884547f3364d0428659a7f14bf60"
+  },
+  "result": "fail",
+  "load_recovery_unload": [
+    0,
+    0,
+    0
+  ],
+  "caller_arithmetic": 42,
+  "inputs_unchanged": true
+}

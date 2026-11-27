@@ -1,0 +1,92 @@
+[
+  {
+    "path": "build/i386-code-alloc-known-v1/native-generations128/gen1-selfhost/source.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen1-install/candidate.img",
+    "sha256": "2d7ab99c8d94776e7fabc63358ba68d8a9780c468711a0ca98a7570d68665807",
+    "bytes": 67108864,
+    "allocated_bytes": 67108864,
+    "mode": 436,
+    "mtime_ns": 1795731315879977413
+  },
+  {
+    "path": "build/i386-demo-insetip-v1/generations128/gen2-selfhost/source.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen2-install/candidate.img",
+    "sha256": "6200a5143c52b64b2dac9caef87f4adb28e5956608bc834b489500e80e378915",
+    "bytes": 67108864,
+    "allocated_bytes": 67112960,
+    "mode": 436,
+    "mtime_ns": 1795718039869928874
+  },
+  {
+    "path": "build/i386-code-alloc-known-v1/native-generations128/gen2-selfhost/source.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen2-install/candidate.img",
+    "sha256": "ea774088e880bd27da03f261bdf4417d4fb532205a4995e8036f4b86acfb90d5",
+    "bytes": 67108864,
+    "allocated_bytes": 67112960,
+    "mode": 436,
+    "mtime_ns": 1795734045510079989
+  },
+  {
+    "path": "build/i386-demo-insetip-v1/generations128/gen1-selfhost/source.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen1-install/candidate.img",
+    "sha256": "3c968965317d24bef0c89a68ff16e27cf0b1682afc8863a9b84e33721e8d0a27",
+    "bytes": 67108864,
+    "allocated_bytes": 67112960,
+    "mode": 436,
+    "mtime_ns": 1795714791869412768
+  },
+  {
+    "path": "build/i386-parenwarn-links-v2/quiet-retained128/source.img",
+    "retained": "build/i386-parenwarn-links-v2/quiet-production.img",
+    "sha256": "bfaed2adfa9d29f38033df04635fb0091ef5ccd620f0c144c43231a9f86e7dfb",
+    "bytes": 67108864,
+    "allocated_bytes": 67112960,
+    "mode": 436,
+    "mtime_ns": 1795689953149643277
+  },
+  {
+    "path": "build/i386-parenwarn-links-v2/retained128/source.img",
+    "retained": "build/i386-parenwarn-links-v2/full/kernel.img",
+    "sha256": "f123f413a00c0b76469801977b40b7f581f819abb544a107a87ad4dc78efd828",
+    "bytes": 67108864,
+    "allocated_bytes": 67108864,
+    "mode": 436,
+    "mtime_ns": 1795689824816105782
+  },
+  {
+    "path": "build/i386-parenwarn-links-v2/void-native-generations128/gen1-selfhost/source.img",
+    "retained": "build/i386-parenwarn-links-v2/void-native-generations128/gen1-install/candidate.img",
+    "sha256": "71264012381b3ae27735383e096290b7c9ce8860e0db75fab206e7bd7e57b393",
+    "bytes": 67108864,
+    "allocated_bytes": 67112960,
+    "mode": 436,
+    "mtime_ns": 1795692688299343451
+  },
+  {
+    "path": "build/i386-parenwarn-links-v2/void-native-generations128/gen2-selfhost/source.img",
+    "retained": "build/i386-parenwarn-links-v2/void-native-generations128/gen2-install/candidate.img",
+    "sha256": "c6805c4f6a55fd667c95d3d259865ba9c46ff8befd06ee7331d234044a39e9f0",
+    "bytes": 67108864,
+    "allocated_bytes": 67112960,
+    "mode": 436,
+    "mtime_ns": 1795695763865404424
+  },
+  {
+    "path": "build/i386-ode-template-port-v1/native-generations128/gen1-selfhost/source.img",
+    "retained": "build/i386-ode-template-port-v1/native-generations128/gen1-install/candidate.img",
+    "sha256": "a354dd871888522ce2c090ff01dbb6bb13e316fe2b3fd6d7909ab9e9ba84c000",
+    "bytes": 67108864,
+    "allocated_bytes": 67112960,
+    "mode": 436,
+    "mtime_ns": 1795742044040264274
+  },
+  {
+    "path": "build/i386-ode-template-port-v1/native-generations128/gen2-selfhost/source.img",
+    "retained": "build/i386-ode-template-port-v1/native-generations128/gen2-install/candidate.img",
+    "sha256": "1481a31f3676305ba5305153cc3e437f847cc410dbc2a061e1122759b54ef063",
+    "bytes": 67108864,
+    "allocated_bytes": 67112960,
+    "mode": 436,
+    "mtime_ns": 1795744809657464232
+  }
+]

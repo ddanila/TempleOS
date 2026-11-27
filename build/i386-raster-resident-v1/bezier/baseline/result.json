@@ -1,0 +1,38 @@
+{
+  "disk_sha256": "a91f4aa8d2da3df57fc134cea815ca327263bab478bba755b590e569b3155af9",
+  "inputs_unchanged": true,
+  "traces": {
+    "Trace20.BIN": {
+      "sha256": "9b7faf94f7137d370cd303628768f2583414856cdfdb1c3cf3641690d5ba8e28",
+      "sample_count": 67
+    },
+    "Trace21.BIN": {
+      "sha256": "99595d0d8c0e972bb854589198c46411ec780f976cfcb7b47ce2dc07befa5237",
+      "sample_count": 66
+    },
+    "Trace22.BIN": {
+      "sha256": "aa624d979d10094a6139bf491c2343520e8ee13f67e11e3523d1aad335411c6b",
+      "sample_count": 3
+    },
+    "Trace23.BIN": {
+      "sha256": "b5cc30e1a4596f83277f46e802d9bdb7ce1c05717fdb4c506ee7cf480d6faa86",
+      "sample_count": 67
+    },
+    "Trace30.BIN": {
+      "sha256": "ab2a11123243a73d12e6119491c8a1407959dbc7eabec17cda829f2d8455ca1b",
+      "sample_count": 78
+    },
+    "Trace31.BIN": {
+      "sha256": "5ee1e7cd1ab745877d34a3b6fdd416d55201107d4b920217fae471b0010fa93b",
+      "sample_count": 77
+    },
+    "Trace32.BIN": {
+      "sha256": "aa624d979d10094a6139bf491c2343520e8ee13f67e11e3523d1aad335411c6b",
+      "sample_count": 3
+    },
+    "Trace33.BIN": {
+      "sha256": "d581b13d7e7b4efa7764d3584b117a96142bc0ff74be350dc3732c63054c5459",
+      "sample_count": 78
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "disk_sha256": "a91f4aa8d2da3df57fc134cea815ca327263bab478bba755b590e569b3155af9",
+  "frames_sha256": "a6fa73a07ca36e9b6f9e2ea6f2b7342c37f97d36c062d92dcace4dbaa9514fb6",
+  "cases": 96,
+  "filled": 78,
+  "fresh_arithmetic": 42,
+  "inputs_unchanged": true
+}

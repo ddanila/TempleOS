@@ -6,6 +6,28 @@ U0 GrTriangleSwapPoint(CD3I32 **a,CD3I32 **b)
   *a=*b; *b=tmp;
 }
 
+I64 GrTriangleScan(CDC *dc,Bool vertical,I64 count,I64 step,
+  I64 *position,I64 *edge1,I64 *edge2,I64 *depth1,I64 *depth2,
+  I64 edge_step1,I64 edge_step2,I64 depth_step1,I64 depth_step2,I64 limit)
+{//Clip only the scan cases that previously tested their position per span.
+  I64 result=0,at=*position,a=*edge1,b=*edge2,z1=*depth1,z2=*depth2;
+  while (count-->0) {
+    if (at<limit) {
+      if (vertical)
+	result+=GrVLine(dc,at,a.i32[1],b.i32[1],z1.i32[1],z2.i32[1]);
+      else
+	result+=GrHLine(dc,a.i32[1],b.i32[1],at,z1.i32[1],z2.i32[1]);
+    }
+    at+=step;
+    a+=edge_step1;
+    b+=edge_step2;
+    z1+=depth_step1;
+    z2+=depth_step2;
+  }
+  *position=at; *edge1=a; *edge2=b; *depth1=z1; *depth2=z2;
+  return result;
+}
+
 public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *p4)
 {//3D. Returns cnt of pixs changed
   GRAPHICS_RESOLVE_DEFAULT_DC
@@ -58,14 +80,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	z1+=dz1*i;
 	z2+=dz2*i;
       }
-      while (dy2++) {
-	res+=GrHLine(dc,x1.i32[1],x2.i32[1],y1,z1.i32[1],z2.i32[1]);
-	y1--;
-	x1+=dx1;
-	x2+=dx2;
-	z1+=dz1;
-	z2+=dz2;
-      }
+      res+=GrTriangleScan(dc,FALSE,-dy2,-1,
+          &y1,&x1,&x2,&z1,&z2,dx1,dx2,dz1,dz2,I64_MAX);
       if (dy2=p2->y-p4->y) {
 	dx2=(p4->x-p2->x)<<32/dy2;
 	dz2=(p4->z-p2->z)<<32/dy2;
@@ -85,14 +101,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	  z2+=dz2*i;
 	}
       }
-      while (dy2++<=0) {
-	res+=GrHLine(dc,x1.i32[1],x2.i32[1],y1,z1.i32[1],z2.i32[1]);
-	y1--;
-	x1+=dx1;
-	x2+=dx2;
-	z1+=dz1;
-	z2+=dz2;
-      }
+      res+=GrTriangleScan(dc,FALSE,1-dy2,-1,
+          &y1,&x1,&x2,&z1,&z2,dx1,dx2,dz1,dz2,I64_MAX);
     } else if ((dy2=p2->y-p1->y)>0) {
       dy1=p4->y-p1->y;
       dx1=(p4->x-p1->x)<<32/dy1;
@@ -117,14 +127,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	z1+=dz1*i;
 	z2+=dz2*i;
       }
-      while (dy2--) {
-	res+=GrHLine(dc,x1.i32[1],x2.i32[1],y1,z1.i32[1],z2.i32[1]);
-	y1++;
-	x1+=dx1;
-	x2+=dx2;
-	z1+=dz1;
-	z2+=dz2;
-      }
+      res+=GrTriangleScan(dc,FALSE,dy2,1,
+          &y1,&x1,&x2,&z1,&z2,dx1,dx2,dz1,dz2,I64_MAX);
       if (dy2=p4->y-p2->y) {
 	dx2=(p4->x-p2->x)<<32/dy2;
 	dz2=(p4->z-p2->z)<<32/dy2;
@@ -144,14 +148,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	  z2+=dz2*i;
 	}
       }
-      while (dy2-->=0) {
-	res+=GrHLine(dc,x1.i32[1],x2.i32[1],y1,z1.i32[1],z2.i32[1]);
-	y1++;
-	x1+=dx1;
-	x2+=dx2;
-	z1+=dz1;
-	z2+=dz2;
-      }
+      res+=GrTriangleScan(dc,FALSE,1+dy2,1,
+          &y1,&x1,&x2,&z1,&z2,dx1,dx2,dz1,dz2,I64_MAX);
     } else {
       if (dy1=p2->y-p1->y) {
 	dx1=(p2->x-p1->x)<<32/dy1;
@@ -175,15 +173,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	  z1+=dz1*i;
 	  z2+=dz2*i;
 	}
-	while (dy1++<=0) {
-	  if (y1<max)
-	    res+=GrHLine(dc,x1.i32[1],x2.i32[1],y1,z1.i32[1],z2.i32[1]);
-	  y1++;
-	  x1+=dx1;
-	  x2+=dx2;
-	  z1+=dz1;
-	  z2+=dz2;
-	}
+	res+=GrTriangleScan(dc,FALSE,1-dy1,1,
+	    &y1,&x1,&x2,&z1,&z2,dx1,dx2,dz1,dz2,max);
       }
       if (dy1=p4->y-p1->y) {
 	dx1=(p1->x-p4->x)<<32/dy1;
@@ -211,14 +202,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	  z1+=dz1*i;
 	  z2+=dz2*i;
 	}
-	while (dy1-->=0) {
-	  res+=GrHLine(dc,x1.i32[1],x2.i32[1],y1,z1.i32[1],z2.i32[1]);
-	  y1--;
-	  x1+=dx1;
-	  x2+=dx2;
-	  z1+=dz1;
-	  z2+=dz2;
-	}
+	res+=GrTriangleScan(dc,FALSE,1+dy1,-1,
+	    &y1,&x1,&x2,&z1,&z2,dx1,dx2,dz1,dz2,I64_MAX);
       }
     }
   } else {
@@ -266,14 +251,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	z1+=dz1*i;
 	z2+=dz2*i;
       }
-      while (dx2++) {
-	res+=GrVLine(dc,x1,y1.i32[1],y2.i32[1],z1.i32[1],z2.i32[1]);
-	x1--;
-	y1+=dy1;
-	y2+=dy2;
-	z1+=dz1;
-	z2+=dz2;
-      }
+      res+=GrTriangleScan(dc,TRUE,-dx2,-1,
+          &x1,&y1,&y2,&z1,&z2,dy1,dy2,dz1,dz2,I64_MAX);
       if (dx2=p2->x-p4->x) {
 	dy2=(p4->y-p2->y)<<32/dx2;
 	dz2=(p4->z-p2->z)<<32/dx2;
@@ -293,14 +272,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	  z2+=dz2*i;
 	}
       }
-      while (dx2++<=0) {
-	res+=GrVLine(dc,x1,y1.i32[1],y2.i32[1],z1.i32[1],z2.i32[1]);
-	x1--;
-	y1+=dy1;
-	y2+=dy2;
-	z1+=dz1;
-	z2+=dz2;
-      }
+      res+=GrTriangleScan(dc,TRUE,1-dx2,-1,
+          &x1,&y1,&y2,&z1,&z2,dy1,dy2,dz1,dz2,I64_MAX);
     } else if ((dx2=p2->x-p1->x)>0) {
       dx1=p4->x-p1->x;
       dy1=(p4->y-p1->y)<<32/dx1;
@@ -325,14 +298,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	z1+=dz1*i;
 	z2+=dz2*i;
       }
-      while (dx2--) {
-	res+=GrVLine(dc,x1,y1.i32[1],y2.i32[1],z1.i32[1],z2.i32[1]);
-	x1++;
-	y1+=dy1;
-	y2+=dy2;
-	z1+=dz1;
-	z2+=dz2;
-      }
+      res+=GrTriangleScan(dc,TRUE,dx2,1,
+          &x1,&y1,&y2,&z1,&z2,dy1,dy2,dz1,dz2,I64_MAX);
       if (dx2=p4->x-p2->x) {
 	dy2=(p4->y-p2->y)<<32/dx2;
 	dz2=(p4->z-p2->z)<<32/dx2;
@@ -352,14 +319,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	  z2+=dz2*i;
 	}
       }
-      while (dx2-->=0) {
-	res+=GrVLine(dc,x1,y1.i32[1],y2.i32[1],z1.i32[1],z2.i32[1]);
-	x1++;
-	y1+=dy1;
-	y2+=dy2;
-	z1+=dz1;
-	z2+=dz2;
-      }
+      res+=GrTriangleScan(dc,TRUE,1+dx2,1,
+          &x1,&y1,&y2,&z1,&z2,dy1,dy2,dz1,dz2,I64_MAX);
     } else {
       if (dx1=p2->x-p1->x) {
 	dy1=(p2->y-p1->y)<<32/dx1;
@@ -383,15 +344,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	  z1+=dz1*i;
 	  z2+=dz2*i;
 	}
-	while (dx1++<=0) {
-	  if (x1<max)
-	    res+=GrVLine(dc,x1,y1.i32[1],y2.i32[1],z1.i32[1],z2.i32[1]);
-	  x1++;
-	  y1+=dy1;
-	  y2+=dy2;
-	  z1+=dz1;
-	  z2+=dz2;
-	}
+	res+=GrTriangleScan(dc,TRUE,1-dx1,1,
+	    &x1,&y1,&y2,&z1,&z2,dy1,dy2,dz1,dz2,max);
       }
       if (dx1=p4->x-p1->x) {
 	dy1=(p1->y-p4->y)<<32/dx1;
@@ -419,14 +373,8 @@ public I64 GrFillTri0(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *p1,CD3I32 *p2,CD3I32 *
 	  z1+=dz1*i;
 	  z2+=dz2*i;
 	}
-	while (dx1-->=0) {
-	  res+=GrVLine(dc,x1,y1.i32[1],y2.i32[1],z1.i32[1],z2.i32[1]);
-	  x1--;
-	  y1+=dy1;
-	  y2+=dy2;
-	  z1+=dz1;
-	  z2+=dz2;
-	}
+	res+=GrTriangleScan(dc,TRUE,1+dx1,-1,
+	    &x1,&y1,&y2,&z1,&z2,dy1,dy2,dz1,dz2,I64_MAX);
       }
     }
   }

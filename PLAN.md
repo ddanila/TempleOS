@@ -397,6 +397,14 @@ largest free payload from 7,824 to 32,544 bytes. The 34,588-byte
 document-module load and the strict startup gate still fail.
 [Shared spline evidence](build/i386-spline-storage-v1/README.md)
 
+Shared triangle span iteration reduced the resident ConsoleRuntime by
+a further 1,648 bytes. Both native builds and the 64-bit reference
+matched pixel counts, raster bytes and depth bytes across 96 cases.
+A separate Bézier code-sharing control grew the resident module and
+was reverted. The 8 MiB cross diagnostic and strict startup gate still
+fail with a 32,544-byte maximum free payload at the prompt.
+[Raster code footprint controls](build/i386-raster-resident-v1/README.md)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

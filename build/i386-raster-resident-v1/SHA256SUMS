@@ -1,0 +1,15 @@
+7e893bbf975d3189a00d29b5e1a64d8d93aa693768b0c993a3b12152237c0c7d  ./bezier/baseline/working.patch.zst
+6fa1368305006d1b74c8dc5c4d3737255fd8137edbe85deab62d3bc4ebcb18b5  ./bezier/bezier-trial.diff.zst
+8903fb3ea758d16f9caab7fdc7ed430dfd68699e44a1ab1c0f83a2d7f178cbe3  ./bezier/candidate/working.patch.zst
+3bec711a89c29ca8615a55cc041a6efa32f91cdb7a50612f74899f12ee043d96  ./bezier/diagnostics.patch.zst
+8293cf69cbbfed97a1bd732512b176b8530f28a65e6f9ca2f0eab0b7a637a2f7  ./bezier/evidence.tar.zst
+a95e0f897c317af93eccbaed8f04a18156d9a48d90bb79d19bdb09f5fa0e0840  ./bezier/kernel.patch.zst
+48536d07707a1779a5b5bdd2b51c933683d6de70bf402c85dde871aa9c196a05  ./bezier/reference-candidate.patch.zst
+a5a57928c60f96521e2357bab6e20fe9534bbd82597461d146513f83d9ede351  ./bezier/reference.iso.zst
+40b9dff77f64c311200c8c9cbfb2b6d54b5b9961282da8f9e556c7210f6dc006  ./triangle/baseline/working.patch.zst
+3e12c843f25d2027224ee4fefb71fb8ef0f097af4cf0c8b13924173467702f69  ./triangle/build-and-heap-evidence.tar.zst
+51255d8df6f08bdb787346f70767ebe3569de6347541c883a01a77b800028b3e  ./triangle/candidate/working.patch.zst
+25423ac98e701fcc9adb77d9127eabe14e4adc35410ec1b2fc28548b97e3f952  ./triangle/diagnostics.patch.zst
+8ea1c146019e6bfe57352b426197036346555d1cadf7e03ce69a8adfa8311071  ./triangle/guest-evidence.tar.zst
+fe46b9b25f0dbc7001c52145657e9e384afe2dcbc6b531807494bb9a3a401011  ./triangle/kernel.patch.zst
+902e037f65c7c4254260d3bd569b0f338f04ba22649d5d6ffb4a3cb5456de910  ./triangle/reference.patch.zst

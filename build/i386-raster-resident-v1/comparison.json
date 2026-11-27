@@ -1,0 +1,42 @@
+{
+  "baseline": {
+    "console_runtime": {
+      "sha256": "5f57b6ad20c401245c2fd8b99becc014b15397ff7bc2808ac2fc8134cdc73315",
+      "serialized_bytes": 2446116,
+      "resident_payload_bytes": 2304040
+    },
+    "images": {
+      "normal": "a91f4aa8d2da3df57fc134cea815ca327263bab478bba755b590e569b3155af9",
+      "diagnostics": "42e6debf84c4c450b97d911f5eeba7e741c4a45b128c6e5ef51bfef4a6de9ab7"
+    }
+  },
+  "bezier": {
+    "console_runtime": {
+      "sha256": "3d1a9e2f11536b0b07372b7f478846f21661e38a0c240b654f7736d2cf2cf392",
+      "serialized_bytes": 2445198,
+      "resident_payload_bytes": 2304936
+    },
+    "images": {
+      "normal": "12f45cfdf8b2a5680a271a2bf515add71f785df80fbf967e299931d3a8f6b3c5",
+      "diagnostics": "e62f91439153e985654ec7fe8315281dd878a0902cc4015a686f1b422e206e92"
+    },
+    "reference_isos": {
+      "reference.iso": "121cb17870890b5b27c491ddacb9c56bb81a2ee930bc259ce449394763269f54",
+      "reference-candidate.iso": "11bf5e58b8f147bc288aa90014498e3ce53eec997675262766a12157694344ad"
+    }
+  },
+  "triangle": {
+    "console_runtime": {
+      "sha256": "5a9600f07b9f42c806e66fce8c2a1680da6626e319a8bf4d2640fe7daebd6693",
+      "serialized_bytes": 2444499,
+      "resident_payload_bytes": 2302392
+    },
+    "images": {
+      "normal": "b974c7439aac9978698258b493c021c6d8b9227867f0db9c8d2e82eaa2228177",
+      "diagnostics": "0bbbec5a5cfd0739f71a866eba833fd185469271e8a7a0161eb37238361c3e8d"
+    },
+    "reference_isos": {
+      "reference-probe.iso": "f3cf5cac7a4f05f37fc7455dcd89687888e6ce161614a73a7da84ef2e4f96dcb"
+    }
+  }
+}

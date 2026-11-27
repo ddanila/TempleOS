@@ -1,0 +1,15 @@
+Built /dev/shm/templeos-triangle-scan/bootstrap/generation-1.iso (45,422,592 bytes)
+START rebuild
+STAGE compiler
+EXPORT Compiler.BIN 6D893A28 42370
+STAGE kernel
+EXPORT Kernel.BIN 6DCCDE28 305E0
+DONE rebuild
+Built /dev/shm/templeos-triangle-scan/bootstrap/generation-2.iso (45,508,608 bytes)
+START rebuild
+STAGE compiler
+EXPORT Compiler.BIN 6D847428 42370
+STAGE kernel
+EXPORT Kernel.BIN 6DC85628 305E0
+DONE rebuild
+PASS: rebuilt compiler/kernel booted and rebuilt themselves. See result.json for binary differences.
