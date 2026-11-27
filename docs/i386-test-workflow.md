@@ -6609,3 +6609,14 @@ the sprite converter allocation rejection before the prompt. This run
 uses frozen revision `5e9064e5`, which predates the sprite load-order fix.
 [Second-generation install](../build/i386-ode-template-port-v1/native-generations128/gen2-install/result.json) ·
 [Cold-boot trace](../build/i386-ode-template-port-v1/native-generations128/gen2-install/boot/debug.log)
+
+The second generation rebuilt and installed the 469,000-byte flat kernel
+and compiler program probe, then passed its 8 MiB cold-boot smoke check.
+Its delivered-source audit matched all 1,578 files to the frozen source
+tree. The two-generation comparison reproduced all 16 modules after
+normalizing the exported eight-byte kernel build date. It independently
+verified each actual boot payload and both RedSea allocation bitmaps.
+The second cold-boot trace also records the older sprite allocation error.
+[Second-generation self-host](../build/i386-ode-template-port-v1/native-generations128/gen2-selfhost/result.json) ·
+[Delivered-source audit](../build/i386-ode-template-port-v1/native-generations128/gen2-source-audit/result.json) ·
+[Generation comparison](../build/i386-ode-template-port-v1/native-generations128/generation-identity/result.json)

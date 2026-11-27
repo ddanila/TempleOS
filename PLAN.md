@@ -57,6 +57,13 @@ run exceeded the 60-second limit.
 [Integrated TCG timing](build/i386-sprite-early-integrated-v1/interactive8-tcg/result.json) ·
 [Budget check](build/i386-sprite-early-integrated-v1/interactive8-tcg/startup-budget.json)
 
+Both native generations from frozen revision `5e9064e5` finished building,
+installing, and cold-booting. The comparison reproduced 16 modules with
+the exported kernel build date normalized. This frozen image predates the
+sprite load-order fix, and the second-generation smoke log reports the
+sprite allocation rejection.
+[ODE image generation comparison](build/i386-ode-template-port-v1/native-generations128/generation-identity/result.json)
+
 The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
 64 MiB desktop commands, and configured HomeSys handoff. Its
