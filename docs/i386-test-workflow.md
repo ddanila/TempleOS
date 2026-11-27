@@ -6581,3 +6581,8 @@ The first-generation disk also passed all nine exact VGA checkpoints at
 64 MiB with the Window Manager and managed pointer active. The baseline
 finished without loading the build-only provider.
 [First-generation desktop baseline](../build/i386-ode-template-port-v1/native-generations128/gen1-desktop64/result.json)
+
+The first-generation full-content check matched all 686 inventory files
+against the frozen source tree, verified the RedSea extents, and passed
+the guest lookup and read contract at 64 MiB.
+[First-generation full-content check](../build/i386-ode-template-port-v1/native-generations128/gen1-full-content64/result.json)
