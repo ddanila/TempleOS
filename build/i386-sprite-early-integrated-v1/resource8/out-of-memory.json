@@ -1,0 +1,21 @@
+{
+  "result": "fail",
+  "ram_mib": 8,
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "disk_sha256": "dfc6ec9534b2e41a5d66c458866e1037ac15f68e177add4c7a8d6972f339bc2a",
+  "fixture_sha256": "58a871b4895449f84729b1693ea44953a414faaba28a9069a10c134e048b8456",
+  "reached_prompt": true,
+  "document_cycles_completed": 0,
+  "rejection": "OutMem",
+  "trace_sha256": "1fb5e951ee71283248cbdc32a8d792f39d1eaea729e0d157c950c55d50536688",
+  "trace_excerpt": [
+    "DONE native kernel startup",
+    "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 0000000000717160 00000000536B7354",
+    "INPUT LINE #include \"/Kernel/I386/DocSessionResourceCheck.HC\"",
+    "COMPILER BREAK ready",
+    "EMITTER CHUNK SPACE REJECT C:/Home/Console.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+    "COMMAND ERROR"
+  ]
+}

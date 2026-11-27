@@ -1339,3 +1339,11 @@ run. The timing observations were made with other guest activity on the host,
 and the 60-second gate remains open.
 [Parser lookup timing](../build/i386-parser-known-request-v2/interactive8-tcg/result.json) ·
 [Startup budget result](../build/i386-parser-known-request-v2/interactive8-tcg/startup-budget.json)
+
+The normal 8 MiB KVM boots with the sprite load-order fix and with the
+later GrPeek binding both reached the prompt, then reported `OutMem` on
+the initial include of `DocSessionResourceCheck.HC`. Neither ran the
+20 document sessions. The GrPeek trace shows a 128-byte allocation
+request with a largest free payload of 120 bytes.
+[Integrated resource failure](../build/i386-sprite-early-integrated-v1/resource8/out-of-memory.json) ·
+[GrPeek resource failure](../build/i386-gr-peek-public-v1/resource8/out-of-memory.json)

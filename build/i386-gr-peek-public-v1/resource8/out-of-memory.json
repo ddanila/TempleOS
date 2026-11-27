@@ -1,0 +1,22 @@
+{
+  "result": "fail",
+  "ram_mib": 8,
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "disk_sha256": "afb9d0cd79331862600995dd8d7915d7e550c1203d710e256e96ac079b7539ee",
+  "fixture_sha256": "58a871b4895449f84729b1693ea44953a414faaba28a9069a10c134e048b8456",
+  "reached_prompt": true,
+  "document_cycles_completed": 0,
+  "rejection": "OutMem",
+  "trace_sha256": "e9f1122c0d26dd76df4492d31612611be215d08ef5525ac2f3ae70ef25f94e01",
+  "trace_excerpt": [
+    "DONE native kernel startup",
+    "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 0000000000717B60 00000000536B7354",
+    "INPUT LINE #include \"/Kernel/I386/DocSessionResourceCheck.HC\"",
+    "COMPILER BREAK ready",
+    "HEAP EXHAUSTED 0000000000000080 000000000066D650 000000000066F400 0000000000000078 000000000000512F",
+    "HEAP FAILURE CALLERS 00000000001A6B3E 00000000001A763C",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+    "COMMAND ERROR"
+  ]
+}
