@@ -1,0 +1,5 @@
+{
+  "result": "fail",
+  "error": "FRONTEND ERROR Invalid lval at  token DocFileEd file C:/Demo/ToHtmlToTXTDemo/ToHtml.HC.Z line 146",
+  "fixture_sha256": "6bc2aedf1daf93f4eacd5e353cfe80e214eb9b4310963f9eef06810cc2d1bdcd"
+}

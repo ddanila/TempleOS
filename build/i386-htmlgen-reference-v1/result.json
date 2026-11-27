@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "bytes": 2560,
+  "output_sha256": "fef7e5f13efefbbefbb366d0eae22e43e0476c34b0ab7950014c23dd65505bac",
+  "source_sha256": {
+    "Demo/ToHtmlToTXTDemo/HtmlGen.HC": "382b45d753d9acd33affabb2bb34d630082081b0403ef236b9aa991cfabd9263",
+    "Demo/ToHtmlToTXTDemo/ToHtml.HC": "b6833d2d1eb3b8cc53f8f3ad4fedb7e7dc63284f63581f2752c5450c612d8818",
+    "Demo/ToHtmlToTXTDemo/DemoInPage.DD": "24e3b0dae5ee8dc0bd833af486b564615983dd1d5eefead5a8c28c1f9ca8cd21"
+  },
+  "fixture_sha256": "1212af9c4b788eccd65a5df2ccc757a5c2928ef2218b2871683d6519ecbcce38"
+}

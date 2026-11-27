@@ -20396,9 +20396,28 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "reference-captured",
+        "description": "Run bundled HtmlGen on the included sample with a writable home, then read the saved HTML."
+      },
+      "oracle": {
+        "dataset": "build/i386-htmlgen-reference-v1/DemoOutPage.html.b64",
+        "checks": [
+          "Compare the exact saved HTML, including markup, links, and style declarations."
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-htmlgen-writable-home",
+          "result": "pass",
+          "evidence": "build/i386-htmlgen-reference-v1/result.json"
+        },
+        {
+          "target": "native-htmlgen-cold",
+          "result": "fail",
+          "evidence": "build/i386-htmlgen-native-v1/result.json"
+        }
+      ]
     },
     {
       "path": "Demo/ToHtmlToTXTDemo/TXTGen.HC",
