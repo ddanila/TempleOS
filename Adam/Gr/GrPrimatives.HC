@@ -22,16 +22,6 @@ public Bool Gr3Bezier(CDC *dc=gr.dc,CD3I32 *ctrl)
   return Bezier3(dc,ctrl,&GrLinePlot);
 }
 
-public Bool Gr2BSpline(CDC *dc=gr.dc,CD3I32 *ctrl,I64 cnt,Bool closed=FALSE)
-{//2nd order. Clipping but no transform or thick.
-  return BSpline2(dc,ctrl,cnt,&GrLinePlot,closed);
-}
-
-public Bool Gr3BSpline(CDC *dc=gr.dc,CD3I32 *ctrl,I64 cnt,Bool closed=FALSE)
-{//3rd order. Clipping but no transform or thick.
-  return BSpline3(dc,ctrl,cnt,&GrLinePlot,closed);
-}
-
 #include "/Adam/Gr/GrLine3Core.HC"
 
 #help_index "Graphics/Char;Char/Graphics"

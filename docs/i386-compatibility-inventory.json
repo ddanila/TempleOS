@@ -17705,10 +17705,26 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Set six control points with the left mouse button, finish with the right button, then dismiss the drawing with Space."
+      },
+      "oracle": {
+        "checks": [
+          "Verify that each click draws a green control circle.",
+          "Compare the closed red quadratic and blue cubic spline rasters at the recorded pointer positions.",
+          "Verify that Space clears the canvas and the i386 prompt accepts arithmetic."
+        ]
+      },
+      "tests": [
+        {
+          "target": "bspline-paired-drawing",
+          "result": "pass",
+          "evidence": "build/i386-bspline-v1/comparison.json",
+          "scope": "Six identical pointer positions produce 354 green, 621 red and 654 blue pixels with exact masks. Both guests clear the canvas and the i386 prompt accepts arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Balloon.HC",

@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 110 (six apps and one hundred four demos) |
+| Qualified | 111 (six apps and one hundred five demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 23 (fifteen support sources and eight shared data or document files) |
-| Qualification gaps | 541 |
-| Linked to tests / with reference workflow and oracle | 268 / 198 |
+| Qualification gaps | 540 |
+| Linked to tests / with reference workflow and oracle | 269 / 199 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 104 of 224 |
+| Demos qualified | 105 of 224 |
 
-C1 has 541 qualification gaps, including entries that still need a reference
+C1 has 540 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -127,10 +127,16 @@ function. The runtime includes `GrPeekCore.HC` directly and through
 checks depend on a successful rebuild.
 [Native pack failure](build/i386-stadium-capture-v2/native-console128/result.json)
 
-The unchanged B-spline demo on the color-picker image fails to
-compile at its first `Gr2BSpline` call. The native runtime already has
-the spline algorithms for 3D drawing but lacks the public 2D wrappers.
-[B-spline baseline](build/i386-bspline-v1/baseline/result.json)
+The unchanged B-spline demo now uses the shared 2D spline wrappers on
+i386. Both guests selected all six control points at identical
+coordinates and drew matching green, red and blue pixel masks. Space
+cleared both canvases and the native prompt accepted arithmetic. The
+image also passed the 8 MiB KVM diagnostics and 20 document resource
+sessions. The normal 8 MiB TCG timing run is in progress.
+[B-spline baseline](build/i386-bspline-v1/baseline/result.json) ·
+[Paired raster verification](build/i386-bspline-v1/comparison.json) ·
+[8 MiB diagnostics](build/i386-bspline-v1/diagnostic8-kvm/result.json) ·
+[8 MiB resource profile](build/i386-bspline-v1/resource8/resource-result.json)
 
 The separate 8 MiB TCG profile of the color-picker image reached the
 prompt with 1,243 instruction-address samples. Heap scan, scan selection

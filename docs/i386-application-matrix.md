@@ -3034,3 +3034,9 @@ the original drew a 9-pixel center and the native guest drew a 10-pixel
 center with the same overlapping pixels. All strokes cleared on Escape,
 and the native guest accepted fresh arithmetic.
 [Paired Speedline drawing](../build/i386-speedline-v1/comparison.json)
+
+The unchanged B-spline demo qualifies. At six identical mouse positions,
+the guests drew exactly the same 354 green control-circle pixels, 621 red
+quadratic spline pixels and 654 blue cubic spline pixels. Space cleared
+the drawing in both guests, and the native prompt accepted arithmetic.
+[Paired B-spline drawing](../build/i386-bspline-v1/comparison.json)

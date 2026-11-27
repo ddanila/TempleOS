@@ -46,3 +46,15 @@ public Bool GrRegPoly(CDC *dc=GRAPHICS_DEFAULT_DC,
   dc->depth_buf=db;
   return res;
 }
+
+public Bool Gr2BSpline(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *ctrl,I64 cnt,Bool closed=FALSE)
+{//2nd order. Clipping but no transform or thick.
+  GRAPHICS_RESOLVE_DEFAULT_DC
+  return BSpline2(dc,ctrl,cnt,&GrLinePlot,closed);
+}
+
+public Bool Gr3BSpline(CDC *dc=GRAPHICS_DEFAULT_DC,CD3I32 *ctrl,I64 cnt,Bool closed=FALSE)
+{//3rd order. Clipping but no transform or thick.
+  GRAPHICS_RESOLVE_DEFAULT_DC
+  return BSpline3(dc,ctrl,cnt,&GrLinePlot,closed);
+}

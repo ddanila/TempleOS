@@ -1,0 +1,45 @@
+{
+  "result": "pass",
+  "demo_sha256": "27f82b6c82dc66e7d5d75c8828690bb0541a5c41ba8c9655bf45979134a15e83",
+  "input_sha256": "db4c48b43917e46cad34d6ab8686874ee3edd96ca72461ba8a7e122af4fb8305",
+  "mode": "native",
+  "scope": "Unmodified BSpline demo with six physical control-point clicks, two closed curves, and key exit",
+  "points": [
+    [
+      71,
+      167
+    ],
+    [
+      163,
+      116
+    ],
+    [
+      264,
+      169
+    ],
+    [
+      263,
+      308
+    ],
+    [
+      166,
+      354
+    ],
+    [
+      67,
+      306
+    ]
+  ],
+  "green_pixels": 354,
+  "red_pixels": 621,
+  "blue_pixels": 654,
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 6,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
