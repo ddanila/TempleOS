@@ -1,0 +1,260 @@
+[
+  {
+    "removed": "build/native-speaker-clock-v1/kvm64/working.img",
+    "retained": "build/native-speaker-clock-v1/kvm-userspace64/working.img",
+    "sha256": "cab9b7ad08bb4a053c4334382ce61c8b153e57edaec9dc519982795c12c8c9e1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/module-zero-user-heap-comparison-v1/cross/working.img",
+    "retained": "build/module-zero-user-8m-v1/working.img",
+    "sha256": "9e6c7eb0559c3f23aa2fb5890697c0a522340defc6e1d67068cb12718714eeb1",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/system-build-date-native-kernel-v2/working.img",
+    "retained": "build/system-build-date-native-kernel-v1/working.img",
+    "sha256": "e8418d862c661386ec8610a3295fe2d13ffd4ec8069f1a6baf08a7da9a37efab",
+    "allocated_bytes": 49541120
+  },
+  {
+    "removed": "build/system-build-date-native-v3/working.img",
+    "retained": "build/system-build-date-native-kernel-v1/working.img",
+    "sha256": "e8418d862c661386ec8610a3295fe2d13ffd4ec8069f1a6baf08a7da9a37efab",
+    "allocated_bytes": 49541120
+  },
+  {
+    "removed": "build/msg-loop-dc-scope-shift-native-v1/working.img",
+    "retained": "build/msg-loop-dc-scope-native-v1/working.img",
+    "sha256": "d8e34990411a4677c4827847a07d54cb51b5523c362ee93bdd50589b7ad019e1",
+    "allocated_bytes": 49545216
+  },
+  {
+    "removed": "build/pen-init-exit-recovery-v2/working.img",
+    "retained": "build/pen-init-exit-recovery-v1/working.img",
+    "sha256": "53ae4882ecd086c61d633b324ccedb5b35b014df4cf7c89eb9eb33748e9a255b",
+    "allocated_bytes": 49545216
+  },
+  {
+    "removed": "build/pen-init-recovery-fixed-v2/working.img",
+    "retained": "build/pen-init-recovery-fixed-v1/working.img",
+    "sha256": "871691e36c92ce8c53ab0c5944e380d5f80d29f4581981a9e5b8590d1c7f3eb1",
+    "allocated_bytes": 49545216
+  },
+  {
+    "removed": "build/pen-waiter-kill-v1/working.img",
+    "retained": "build/pen-waiter-exit-v1/working.img",
+    "sha256": "e69d493fcea82a37211b4bedf4df2a1f5ae6f4b9d5cdce4cfc04bbd19b274b56",
+    "allocated_bytes": 49549312
+  },
+  {
+    "removed": "build/pen-waiter-kill-v2/working.img",
+    "retained": "build/pen-waiter-exit-v2/working.img",
+    "sha256": "9d8f1382656c85e1d377732321c31f03f2aaee1698266329b6906146f75c00ae",
+    "allocated_bytes": 49549312
+  },
+  {
+    "removed": "build/pen-waiter-kill-v3/working.img",
+    "retained": "build/pen-waiter-exit-v3/working.img",
+    "sha256": "e875b282075a58fa37bfa3d6693664fdf0b55223f85d5a313e7837cb6e80ecc7",
+    "allocated_bytes": 49549312
+  },
+  {
+    "removed": "build/desktop-home-once-before-v2/working.img",
+    "retained": "build/desktop-home-once-before-v1/working.img",
+    "sha256": "c63b2995e6db3a0ecbd04bd869e5f756874c132b52d3c8f86ef1b3619dab60d9",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/msg-loop-scroll-shift-native-v1/working.img",
+    "retained": "build/msg-loop-scroll-native-v1/working.img",
+    "sha256": "6c5f72573168770274f73dbd53ee1fc51f5a883ff0ffcf2f3b85ec0a1cd4bdc6",
+    "allocated_bytes": 49512448
+  },
+  {
+    "removed": "build/dir-output-native-v4/working.img",
+    "retained": "build/dir-output-native-v3/working.img",
+    "sha256": "6698597087a768b08923942e63a5c24d43d74ee324c2b8036c28da1d04661314",
+    "allocated_bytes": 49532928
+  },
+  {
+    "removed": "build/managed-pointer-user-8m-v3/working.img",
+    "retained": "build/managed-pointer-user-8m-v2/working.img",
+    "sha256": "3a99b772af75853472f872294f1e99c5bf24254ee426c00119d368fd91389a02",
+    "allocated_bytes": 49528832
+  },
+  {
+    "removed": "build/live-user-prompt-native-v1/working.img",
+    "retained": "build/live-prompt-prototype-v4/native-v4/working.img",
+    "sha256": "5f0f4ee88f439a90c039fba52837383e71bcd991c8220fd51d831d7eca098fd9",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/module-zero-fallback-prototype-user-8m-v1/working.img",
+    "retained": "build/module-zero-fallback-prototype-heaps-v1/prototype/working.img",
+    "sha256": "7935ac7d90e8931f58657214a74ed218b7b66fc0908e912777ac5871b4c08a50",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/module-zero-user-heap-comparison-v1/native/working.img",
+    "retained": "build/module-zero-gen1-user-8m-v1/working.img",
+    "sha256": "19881f66b1dfa3f45d43c2bdeee9d3eece091dac9b5bc69c3fe2526ea37c154a",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/grmodels-bundled-loader-v1/grmodels-menu/working.img",
+    "retained": "build/grmodels-bundled-loader-v1/grmodels-final/working.img",
+    "sha256": "7dd08fa09e430eeb4e53045989ead68e229daef0a164278853c18fa71a5853a7",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/grmodels-bundled-loader-v1/grmodels/working.img",
+    "retained": "build/grmodels-bundled-loader-v1/grmodels-final/working.img",
+    "sha256": "7dd08fa09e430eeb4e53045989ead68e229daef0a164278853c18fa71a5853a7",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/home-path-native-before-v1/working.img",
+    "retained": "build/home-path-native-before-tool-v1/working.img",
+    "sha256": "0829b47ade4be6672620f9adf5a1008fe1b01fbca51cd7cde23e513f873a7825",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-keyboard-placement-v1/user8/working.img",
+    "retained": "build/i386-keyboard-placement-v1/user8-profile/working.img",
+    "sha256": "308b0e399abc036491d47c4b79bc7f18dbfc21d6e3ba3979224a03307c7b6a38",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/terminal-scroll-native-before-v3/working.img",
+    "retained": "build/terminal-scroll-native-before-v2/working.img",
+    "sha256": "dfa4ab61b5b9eb9360fd3188c1d136ed79240129e65ef45c63e681340950dabc",
+    "allocated_bytes": 49512448
+  },
+  {
+    "removed": "build/titanium-bundled-loader-v1/user8/working.img",
+    "retained": "build/i386-native-cache-footprint-v2/previous-user8-profile/working.img",
+    "sha256": "197617af573a5332faa55581629386ffa24b3f725599b7cefc9e4a9e19434be1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/vocabulary-titanium-image-v1/native/working.img",
+    "retained": "build/vocabulary-titanium-image-v1/native-recheck/working.img",
+    "sha256": "93158b94023806b06a6a59006bcf7f78029b51bc8db1bcaeb39edf8df4e7f3b3",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-prompt-placement-v1/user8/working.img",
+    "retained": "build/i386-prompt-placement-v1/profile/working.img",
+    "sha256": "a2018071643870f4d4dc1ac5bdbce08485bb9bc419d64bd2daffa1b76c5adcd1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-wide-pi-production-v3/retained128-user8/working.img",
+    "retained": "build/i386-wide-pi-production-v3/retained128-user8-profile/working.img",
+    "sha256": "28706177ac111ac3bd161a232c66b93056f8d88ce45d6b06bc67f7ef389be395",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-wide-pi-production-v3/man/working.img",
+    "retained": "build/i386-wide-pi-production-v3/ball/working.img",
+    "sha256": "5a08753bf935680008a55767255c1f24a71219796a503117d113645dbcab3265",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/keepaway-shot-trajectory-v1/native-mouse64/working.img",
+    "retained": "build/keepaway-shot-trajectory-v1/native-key64/working.img",
+    "sha256": "536e93e8ee443a210144081c04fc92f7f5dd57646eef415fb1271687ed38fc45",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/lexer-provider-source-regression-v2/working.img",
+    "retained": "build/lexer-provider-source-regression-v1/working.img",
+    "sha256": "4bd133171d4c294dd89112b43f8464c2b747533175261dd758e5dfc7c86707b8",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/live-user-pressure-unbatched-v1/working.img",
+    "retained": "build/live-user-input-pressure-v1/native/working.img",
+    "sha256": "30ff631d64f68606236c6643621df717ef6a4ee59f1f44eaf8b1c1f04c716f54",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/live-user-recovery-prototype-v1/native/working.img",
+    "retained": "build/live-user-recovery-native-v1/working.img",
+    "sha256": "68de9d2274cab451765c57d1fa433b2e8171dc6b210a825a8467152aa5aa47fe",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/live-user-pressure-batched-v1/working.img",
+    "retained": "build/live-user-input-pressure-v1/native-batched/working.img",
+    "sha256": "a226e3ca8eba0d0794ee08b5379bd2730630a8ed8e4ef0dd7c9c7b4932eb04b1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/original-user-loop-retirement-v2/native/working.img",
+    "retained": "build/live-user-retirement-native-v1/working.img",
+    "sha256": "0f39326b6a200cdf56cd4f4bffe5eaa54431c319db3cce015f2aea9beb474cc6",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/logic-interaction-v1/native64/working.img",
+    "retained": "build/logic-interaction-return-v1/native64/working.img",
+    "sha256": "5303a06f56919562c1fb70114f1307c12fa40365288fc04d91fb37bc87b761fa",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/native-strut-entry-v1/user8/working.img",
+    "retained": "build/native-strut-entry-v1/user8-kvm/working.img",
+    "sha256": "dc11d60230bc9f8e410d0645a7f072f94ddadc96891556c68b8b6375fde50318",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/on-demand-lexer-v9/public-lexer64/working.img",
+    "retained": "build/on-demand-lexer-v9/public-lexer64-profiled-v1/working.img",
+    "sha256": "deef55b52118b0f5e4068c1818f6ecf6c33cb07415de8b0911fe031886abbcf1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/on-demand-lexer-v9/public-lexer8-profiled-v1/working.img",
+    "retained": "build/on-demand-lexer-v9/public-lexer64-profiled-v1/working.img",
+    "sha256": "deef55b52118b0f5e4068c1818f6ecf6c33cb07415de8b0911fe031886abbcf1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/on-demand-lexer-v9/public-lexer8/working.img",
+    "retained": "build/on-demand-lexer-v9/public-lexer64-profiled-v1/working.img",
+    "sha256": "deef55b52118b0f5e4068c1818f6ecf6c33cb07415de8b0911fe031886abbcf1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/private-guarded-transitive-production-v1/optimizer16/working.img",
+    "retained": "build/optimizer-storage-source-regression-v1/working.img",
+    "sha256": "096496c025c3421ecf9276772c11de3de6140a787933a4ce1250978d2936932c",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/original-user-loop-prototype-v7/public-lexer/working.img",
+    "retained": "build/original-user-loop-prototype-v7/public-lexer-resident-v1/working.img",
+    "sha256": "3380f88bca59346b973570bc487cc62b912e1d01df70709c54f757e5bbbbc798",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/resident-opt-public-v4/optimizer16/working.img",
+    "retained": "build/resident-opt-public-v4/default16-final/working.img",
+    "sha256": "da4ed84674814144b3b4ceb92229918d8358f71b93718ce4f039d9bafd7a8927",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/resident-opt-public-v4/source16/working.img",
+    "retained": "build/resident-opt-public-v4/source16-final/working.img",
+    "sha256": "b3b80de41dc77e5c667a1effd746321e5fa58626e2ce49348cf37fffa1ebe923",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/titanium-bundled-loader-v1/retained128-user8/working.img",
+    "retained": "build/titanium-bundled-loader-v1/retained128-user8-profile/working.img",
+    "sha256": "b59cb04c7b9051c19e264c3b4dc7e1452ab260041b9b5e423c66b2a43a376317",
+    "allocated_bytes": 67108864
+  }
+]
