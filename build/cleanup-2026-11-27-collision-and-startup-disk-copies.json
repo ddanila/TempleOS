@@ -1,0 +1,32 @@
+[
+  {
+    "removed": "build/i386-demo-collision-v1/working.img",
+    "retained": "build/i386-sprite-early-integrated-v1/cross/kernel.img",
+    "sha256": "dfc6ec9534b2e41a5d66c458866e1037ac15f68e177add4c7a8d6972f339bc2a",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-collision-pair-v1/working.img",
+    "retained": "build/i386-sprite-early-integrated-v1/cross/kernel.img",
+    "sha256": "dfc6ec9534b2e41a5d66c458866e1037ac15f68e177add4c7a8d6972f339bc2a",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-collision-pair-v2/working.img",
+    "retained": "build/i386-sprite-early-integrated-v1/cross/kernel.img",
+    "sha256": "dfc6ec9534b2e41a5d66c458866e1037ac15f68e177add4c7a8d6972f339bc2a",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-sprite-early-integrated-v1/interactive8-kvm/working.img",
+    "retained": "build/i386-sprite-early-integrated-v1/cross/kernel.img",
+    "sha256": "dfc6ec9534b2e41a5d66c458866e1037ac15f68e177add4c7a8d6972f339bc2a",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-sprite-early-integrated-v1/interactive8-tcg/working.img",
+    "retained": "build/i386-sprite-early-integrated-v1/cross/kernel.img",
+    "sha256": "dfc6ec9534b2e41a5d66c458866e1037ac15f68e177add4c7a8d6972f339bc2a",
+    "allocated_bytes": 67108864
+  }
+]
