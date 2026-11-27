@@ -1,0 +1,14 @@
+[
+  {
+    "removed": "build/i386-known-boundary-v2/diagnostic8-kvm/working.img",
+    "retained": "build/i386-known-boundary-v2/cross/kernel-diagnostics.img",
+    "sha256": "bd1975b23f53efa37a8929bad6fd1d18dfd658e6e522ba941298799dbc3f2f6a",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-packed-uasm-v1/interactive8-tcg/working.img",
+    "retained": "build/i386-packed-uasm-v1/cross/kernel.img",
+    "sha256": "a38c395445b15cb8d9165a5c130380291521261e43c3408cad15d0597d12ca8c",
+    "allocated_bytes": 67112960
+  }
+]
