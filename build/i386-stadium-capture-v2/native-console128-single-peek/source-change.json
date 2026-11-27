@@ -1,0 +1,7 @@
+{
+  "base_image_sha256": "74616f2eb9510e2011fc6d6fc2a0f315b7da576832eeea67a3b091dbacbee7ec",
+  "candidate_image_sha256": "a2e3c72808c495f37ca37f2bc6c057940e2ebba78b9fe6e589c9d932fa2acf50",
+  "changed_file": "/Kernel/I386/ConsoleRuntime.HC",
+  "removed_directive": "#include \"/Adam/Gr/GrPeekCore.HC\"",
+  "other_files_verified_unchanged": 1954
+}

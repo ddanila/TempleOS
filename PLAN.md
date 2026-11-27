@@ -132,9 +132,16 @@ compile at its first `Gr2BSpline` call. The native runtime already has
 the spline algorithms for 3D drawing but lacks the public 2D wrappers.
 [B-spline baseline](build/i386-bspline-v1/baseline/result.json)
 
-The color-picker image has a separate 8 MiB TCG run that pauses the
-guest to sample instruction addresses. The uninterrupted timing above
-remains the measurement for the startup gate.
+The separate 8 MiB TCG profile of the color-picker image reached the
+prompt with 1,243 instruction-address samples. Heap scan, scan selection
+and free accounted for 770 samples, compared with 854 of 1,246 in the
+packed opcode image. The leading heap-scan stack in both profiles was
+`I386HeapSize` called from `I386CmpControlValid` via `I386CmpCodeOwner`
+(247 samples on the color-picker image, 236 on the packed image).
+The uninterrupted timing above remains the measurement for the startup
+gate.
+[Color-picker profile](build/i386-color-picker-production-v1/profile8-tcg/summary.json) ·
+[Packed opcode profile](build/i386-packed-uasm-v1/profile8-tcg/summary.json)
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem after cleanup. The ISO archive ledger
