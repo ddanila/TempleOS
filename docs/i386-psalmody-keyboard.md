@@ -237,3 +237,23 @@ the archived original. The full production image passes the immediate
 400 ms input sequence with exact original note, deletion and caller-state
 records. See
 `build/native-focus-menu-psalmody-production-v1/psalmody64/result.json`.
+
+## Staccato serialization
+
+The save mismatch is reproducible without loading Psalmody. At slider
+position 71, the original compiles `0.88`, `0.12` and `0.0005` to
+`3FEC28F5C28F5C2A`, `3FBEB851EB851EBA` and `3F40624DD2F1A9FE`. The
+i386 compiler uses `3FEC28F5C28F5C29`, `3FBEB851EB851EB8` and
+`3F40624DD2F1A9FC`. After applying the bias and scaling by 1000, the
+original is one binary64 step above 901.5 and i386 is one step below.
+[Original probe](../build/i386-psalmody-staccato-v2/original.txt) ·
+[i386 probe](../build/i386-psalmody-staccato-v2/native.txt)
+
+Across the 80 slider positions admitted by Psalmody, 22 formatted values
+differ. Substituting the original literal bits matches the default
+position but produces 26 mismatches over the same range. The sweep
+captures position 80 as an extra endpoint and excludes it from both
+counts. This experiment leaves the app source and strict persistence
+oracle intact.
+[Original sweep](../build/i386-psalmody-staccato-v3/original.txt) ·
+[i386 sweep](../build/i386-psalmody-staccato-v3/native.txt)
