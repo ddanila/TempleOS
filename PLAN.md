@@ -239,6 +239,16 @@ profile and full release qualification remain open.
 [8 MiB failure](build/i386-psalmody-fresh-v1/user8/result.json) ·
 [Allocation trace](build/i386-psalmody-fresh-v1/user8/task-allocation.json)
 
+A physical heap census reproduces the 8 MiB failure. At the initial
+prompt the main arena has 420,360 free bytes across 225 spans. Before
+`USCheck`, it has 407,064 free bytes across 200 spans. The largest usable
+block is 173,336 bytes in both snapshots. Two fully used 8 KiB public
+page backing regions separate the two largest free spans. Their
+placement prevents combining the space into a single task allocation.
+The failure leaves the largest free block unchanged.
+[Heap census](build/i386-user8-fragmentation-v1/result.json) ·
+[Snapshot archive manifest](build/i386-user8-fragmentation-v1/snapshots.json)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

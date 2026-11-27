@@ -1,0 +1,29 @@
+[
+  {
+    "snapshot": "prompt",
+    "archive": "prompt.bin.zst",
+    "raw_sha256": "f2f27ebf2a1369477aacd5f39393ca512545ca7614aef531c55a5b09bbb5fe92",
+    "archive_sha256": "7de8c7c8fa350530f4fbe275c672534f780a55ca28f481e84f53e1cd7df0a255",
+    "raw_bytes": 8388608,
+    "verified_byte_for_byte": true,
+    "base_snapshot": null
+  },
+  {
+    "snapshot": "before-user",
+    "archive": "before-user.patch.zst",
+    "raw_sha256": "4d5188d86e0f605294711ee0c7347efaf273c407e467851bd6dea566f94d662b",
+    "archive_sha256": "ac63d6ca684514aef0da54ab31a106d4c8fa5446d2d7f48fe22edaf2093356ae",
+    "raw_bytes": 8388608,
+    "verified_byte_for_byte": true,
+    "base_snapshot": "prompt"
+  },
+  {
+    "snapshot": "failed-user",
+    "archive": "failed-user.patch.zst",
+    "raw_sha256": "071382cba6d505e6a4e596ae698e517c5063f6b5b96905c8aaa4c4c7c889e9cc",
+    "archive_sha256": "f996f727821afd51d076192a24e988b6ed95a374bcab2b49cc149a2ccdc7833b",
+    "raw_bytes": 8388608,
+    "verified_byte_for_byte": true,
+    "base_snapshot": "prompt"
+  }
+]

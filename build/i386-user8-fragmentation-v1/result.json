@@ -1,0 +1,280 @@
+{
+  "prompt": {
+    "capacity": 6746112,
+    "used": 6325752,
+    "free_span_bytes": 420360,
+    "largest_free_payload_bytes": 173336,
+    "free_blocks": 225,
+    "largest_free_spans": [
+      {
+        "address": 7827096,
+        "span": 173352,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 8017920,
+        "span": 149272,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7764496,
+        "span": 58728,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 8219648,
+        "span": 6120,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 8237056,
+        "span": 2304,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7670416,
+        "span": 2256,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7824392,
+        "span": 2128,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7676992,
+        "span": 1984,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7528464,
+        "span": 1696,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7679200,
+        "span": 1680,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7655536,
+        "span": 1480,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7664976,
+        "span": 1120,
+        "requested": 0,
+        "live": false
+      }
+    ]
+  },
+  "before-user": {
+    "capacity": 6746112,
+    "used": 6339048,
+    "free_span_bytes": 407064,
+    "largest_free_payload_bytes": 173336,
+    "free_blocks": 200,
+    "largest_free_spans": [
+      {
+        "address": 7827096,
+        "span": 173352,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 8017920,
+        "span": 140496,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7764496,
+        "span": 58728,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 8219648,
+        "span": 6120,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 8237056,
+        "span": 2304,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7824392,
+        "span": 2128,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7676992,
+        "span": 1984,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7670728,
+        "span": 1944,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7528464,
+        "span": 1696,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7679200,
+        "span": 1680,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7664976,
+        "span": 1120,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 8256512,
+        "span": 1024,
+        "requested": 0,
+        "live": false
+      }
+    ],
+    "backing_regions_between_two_largest_spans": [
+      {
+        "block_address": 8000448,
+        "span": 8776,
+        "page_base": 8001024,
+        "page_bytes": 8192,
+        "used_bytes": 8192,
+        "pool": 2757080
+      },
+      {
+        "block_address": 8009224,
+        "span": 8696,
+        "page_base": 8009728,
+        "page_bytes": 8192,
+        "used_bytes": 8192,
+        "pool": 2757080
+      }
+    ]
+  },
+  "failed-user": {
+    "capacity": 6746112,
+    "used": 6338920,
+    "free_span_bytes": 407192,
+    "largest_free_payload_bytes": 173336,
+    "free_blocks": 200,
+    "largest_free_spans": [
+      {
+        "address": 7827096,
+        "span": 173352,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 8017920,
+        "span": 140496,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7764496,
+        "span": 58728,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 8219648,
+        "span": 6120,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 8237056,
+        "span": 2304,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7824392,
+        "span": 2128,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7676992,
+        "span": 1984,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7670728,
+        "span": 1944,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7528464,
+        "span": 1696,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7679200,
+        "span": 1680,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 7664976,
+        "span": 1120,
+        "requested": 0,
+        "live": false
+      },
+      {
+        "address": 8256512,
+        "span": 1024,
+        "requested": 0,
+        "live": false
+      }
+    ],
+    "failure_callers": [
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2934675,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ]
+    ]
+  },
+  "fixture_image_sha256": "0454ec27da7c7f888cf0018ca035c546779316be753458c17d9ec10ac9bdec83"
+}
