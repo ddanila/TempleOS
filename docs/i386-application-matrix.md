@@ -3047,3 +3047,10 @@ right drag, both drew exact 72-pixel strokes and their reflections
 about x=392. Escape cleared the drawing and the native prompt accepted
 fresh arithmetic.
 [Paired Symmetry drawing](../build/i386-symmetry-v1/comparison.json)
+
+The unchanged WinZBuf demo qualifies. At both positions each guest
+displayed all 4,800 window-depth cells with the exact palette colors
+of its live buffer. A higher-depth window covered nine cells in the
+original guest's moved view. Space removed both maps, and the native
+prompt accepted arithmetic.
+[Paired WinZBuf display](../build/i386-winzbuf-v1/comparison.json)

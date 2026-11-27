@@ -1,0 +1,58 @@
+{
+  "result": "pass",
+  "demo_sha256": "6fa76b8b5b493a8a8806f4664573f8665477ff709aa114f492ca652a2f975f1b",
+  "original": [
+    {
+      "origin": [
+        40,
+        48
+      ],
+      "matched_pixels": 4800,
+      "window_depth": 4,
+      "window_cells": 1248,
+      "higher_depth_cells": 0
+    },
+    {
+      "origin": [
+        160,
+        96
+      ],
+      "matched_pixels": 4800,
+      "window_depth": 4,
+      "window_cells": 1239,
+      "higher_depth_cells": 9
+    }
+  ],
+  "native": [
+    {
+      "origin": [
+        40,
+        48
+      ],
+      "matched_pixels": 4800,
+      "window_depth": 2,
+      "window_cells": 1248,
+      "higher_depth_cells": 0
+    },
+    {
+      "origin": [
+        160,
+        96
+      ],
+      "matched_pixels": 4800,
+      "window_depth": 2,
+      "window_cells": 1248,
+      "higher_depth_cells": 0
+    }
+  ],
+  "map_removed_on_exit": true,
+  "fresh_arithmetic": {
+    "column": 5,
+    "row": 8,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

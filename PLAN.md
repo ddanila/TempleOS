@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 112 (six apps and one hundred six demos) |
+| Qualified | 113 (six apps and one hundred seven demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 23 (fifteen support sources and eight shared data or document files) |
-| Qualification gaps | 539 |
-| Linked to tests / with reference workflow and oracle | 270 / 200 |
+| Qualification gaps | 538 |
+| Linked to tests / with reference workflow and oracle | 271 / 201 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 106 of 224 |
+| Demos qualified | 107 of 224 |
 
-C1 has 539 qualification gaps, including entries that still need a reference
+C1 has 538 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -171,6 +171,12 @@ around a new axis set with the right mouse button. Escape clears the
 canvas and the native prompt accepts fresh arithmetic.
 [Paired Symmetry drawing](build/i386-symmetry-v1/comparison.json)
 
+At both window positions, the unchanged WinZBuf demo displays all
+4,800 cells of each guest's live window-depth buffer using the exact
+palette colors. The move updates the expected cells. Space removes
+the map and the native prompt accepts arithmetic.
+[Paired WinZBuf display](build/i386-winzbuf-v1/comparison.json)
+
 The separate 8 MiB TCG profile of the color-picker image reached the
 prompt with 1,243 instruction-address samples. Heap scan, scan selection
 and free accounted for 770 samples, compared with 854 of 1,246 in the
@@ -231,8 +237,11 @@ with 1,174 samples. Heap scan, fit selection and free accounted for
 Token ownership (51 samples) and intermediate-code insertion (31)
 were still the most frequent callers of the compiler-control heap
 scan. These samples measure where the guest was observed executing.
-An uninterrupted timing run on the same image is in progress.
-[Parser fallback profile](build/i386-parser-fallback-audit-v1/profile8-tcg/summary.json)
+The uninterrupted run on the same image passed all nine VGA checks
+at 8 MiB, with startup taking 254.852 seconds against the 60-second
+target.
+[Parser fallback profile](build/i386-parser-fallback-audit-v1/profile8-tcg/summary.json) ·
+[Parser fallback startup budget](build/i386-parser-fallback-audit-v1/interactive8-tcg/startup-budget.json)
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger

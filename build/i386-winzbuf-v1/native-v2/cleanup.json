@@ -1,0 +1,12 @@
+{
+  "removed": "build/i386-winzbuf-v1/native-v2/working.img",
+  "sha256": "1df8159aa1f09558bc3c4461a74d2ebdb791a16e762cefcbbc3cc8f584c7a13a",
+  "allocated_bytes": 67112960,
+  "retained_image": "build/i386-console-single-peek-v1/cross/kernel.img",
+  "disk_sha256": "d15a189e69570c264eb23a73247df32035f1f584f1f6775356a637e2ce773394",
+  "packaging_tool": "tools/package-i386-native-image.py",
+  "additions": {
+    "/Probe/WinZBuf.HC": "build/i386-winzbuf-v1/Probe.HC"
+  },
+  "fixture_sha256": "ef1ee37287a0a3f4ccd48e504e3424e08cec06ea14222186a55f686f3a00354f"
+}

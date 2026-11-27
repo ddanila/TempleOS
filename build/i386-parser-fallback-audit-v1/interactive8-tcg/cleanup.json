@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-parser-fallback-audit-v1/interactive8-tcg/working.img",
+  "retained": "build/i386-parser-fallback-audit-v1/cross/kernel.img",
+  "sha256": "d7233fd978aca6aeb97a88becb5670b2b644e2ae62f268a89410092521fe86b7",
+  "allocated_bytes": 67112960
+}

@@ -18944,10 +18944,26 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Display the window depth map, move the demo window, and dismiss the view with Space."
+      },
+      "oracle": {
+        "checks": [
+          "Match all 4,800 displayed palette colors to the live depth buffer at each position.",
+          "Verify that the moved window changes the expected depth-map cells.",
+          "Verify that Space removes the map and the i386 prompt accepts arithmetic."
+        ]
+      },
+      "tests": [
+        {
+          "target": "window-depth-paired-display",
+          "result": "pass",
+          "evidence": "build/i386-winzbuf-v1/comparison.json",
+          "scope": "At both positions each guest displays its complete 80 by 60 live depth map. Window depths and occlusion depend on the windows present in each guest."
+        }
+      ]
     },
     {
       "path": "Demo/InFile/InDir.IN",
