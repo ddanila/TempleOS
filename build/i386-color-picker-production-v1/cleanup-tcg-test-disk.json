@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-color-picker-production-v1/interactive8-tcg/working.img",
+  "retained": "build/i386-color-picker-production-v1/cross/kernel.img",
+  "sha256": "8bcd5c9fa6c908277ffa756dc4deb396a6635285b1c26275a1185aadfeb47752",
+  "allocated_bytes": 67112960
+}
