@@ -66,10 +66,10 @@ if(!native_command_prompt || !native_command_prompt->exe_addr)throw('CmdPmt',TRU
 
 //Publish the original Adam libraries for the full desktop's bundled programs.
 if(FileFind("::/HomeSys.HC")) {
+  AdamFile("::/Kernel/I386/MakeSpriteText.HC",FALSE);
   AdamFile("::/Adam/AutoComplete/MakeAC.HC",FALSE);
   AdamFile("::/Adam/TaskSettings.HC",FALSE);
   AdamFile("::/Kernel/I386/MakeDirectoryDiagnostics.HC",FALSE);
-  AdamFile("::/Kernel/I386/MakeSpriteText.HC",FALSE);
 }
 
 U0 NativePublishCompilerOptions()

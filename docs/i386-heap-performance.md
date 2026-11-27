@@ -1280,3 +1280,11 @@ full arena validation. The original two-generation bootstrap, 386 boot audit,
 task-symbol and compiler ownership corpus, and full 8 MiB KVM diagnostics passed.
 [Ownership corpus](../build/i386-ic-lifetime-known-v4/task-symbols/result.json) ·
 [8 MiB diagnostics](../build/i386-ic-lifetime-known-v4/diagnostic8-kvm/result.json)
+
+Moving the sprite helper load ahead of autocomplete, task settings, and
+directory diagnostics avoided the 8 MiB startup rejection on the task-report
+image. The source-only disk trial reached the managed prompt in 32.388 seconds
+under KVM, passed the nine normal VGA checkpoints, and confirmed that
+`Sprite2Code` was published. A trial that split the sprite converter into a
+second Adam compilation still exhausted the heap.
+[Strict KVM trial](../build/i386-sprite-startup-early-v1/result.json)
