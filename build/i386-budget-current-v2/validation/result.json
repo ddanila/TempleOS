@@ -1,0 +1,101 @@
+{
+  "result": "pass",
+  "fixture_sha256": "4bc00d66f2a6fcaa4bdfd1e10f0a344ebc0381c15284c364fadc071910b33e10",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-budget-validation.py": "72d9b3ddceabb971bb22bd0f5a96a7f61a804d2b5bfc588bf659e52b9c4a36b3",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-budget-validation/Contract.HC": "4bc00d66f2a6fcaa4bdfd1e10f0a344ebc0381c15284c364fadc071910b33e10",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "497c9bcd345640ddb4f7447dc42f165ea6e7c313bf2e419f6229225a66c1f92f",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-budget-recurrence.py": "7d72d84b02ee71e96793275fef50b63cf55b5d1e8052bd9dca8fd0b6bb3ca87a",
+    "/home/ddanila/fun/TempleOS/tools/i386-budget-source.py": "543c3a5585ad53b7f3dcafbed4c4160bd01f883cd55f854dd329b3886bdac6da",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/guest-run.py": "58e0b848613303f2680594edb6eec7c43823bc2554983d2af4451f11d7d24cd3",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "4368e9c34087a9fce139c109be6afe6cbaad1d62dd489a0d975979540ecd7aa9",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-document-bounded-v1/cross/kernel.img": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/result.json": "5676b3c009950affd2dc5131813802201fbd168c0cc94bc5c3a2bd1e97b0c340",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/zero.DD": "2571cb58a04da4426524b7f46ebdf17ad61842c6568f88bbb1d183228b152b4a",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/zero.fields": "1cebe7e02cbc10decc00956de8bf993b4b4ac21d3ca4deba49ce5b5d65713c28",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/zero.state": "caa72c5ed2d8646aad81c6ff02eab9de0476bfd024a42c25ba687df8d08fbd12",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/negative.DD": "2571cb58a04da4426524b7f46ebdf17ad61842c6568f88bbb1d183228b152b4a",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/negative.fields": "a0cf4dcf1f4a20ddc449f6006f83f31a83e32895b0b0ef53eb8afc34d1964183",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/negative.state": "caa72c5ed2d8646aad81c6ff02eab9de0476bfd024a42c25ba687df8d08fbd12",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/null.DD": "1c5a72aec7c895a035a79203c7b032eefb5effdc8a2cad9baab7b5873e08cddb",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/null.fields": "a6e3f12d518299fe0a753bd290f1b26d35d50b5514c2c539e8ea56036b2f97ff",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/null.state": "6a163aae28dda76ed6ce8b4278e1748471c6dbfbc55bfd1b90de1d812e475f58",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/valid.DD": "2571cb58a04da4426524b7f46ebdf17ad61842c6568f88bbb1d183228b152b4a",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/valid.fields": "d45f6f13a0ed464a1ad1510c367218449e8a0a9c0950658d0a7c8755bdaf98d2",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/valid.state": "caa72c5ed2d8646aad81c6ff02eab9de0476bfd024a42c25ba687df8d08fbd12",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/entry-cancel.DD": "85a793be1f24e2972bf14faade84426a14a9c698b6979eb09061e16f9fa6302b",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/entry-cancel.fields": "03a50f764f20c445dab374402bf1ffaa81ab664ee6b2394deaa3abf72fb7ac38",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/entry-cancel.state": "6537308c1267c4fea33d8c35fef86da410ca4be8555ce91a4d03d878ef07c265",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/retained.DD": "6fc90a100ca377fbacac0b7473004bee140e561919deac5882c3e7f900e1bde7",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/retained.fields": "d45f6f13a0ed464a1ad1510c367218449e8a0a9c0950658d0a7c8755bdaf98d2",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/retained.state": "2e5c1b6ecddf5bb3c01a753f3f2744bc937709215998ee8d8c017c1f4fb4bd0f",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/invalidated.DD": "2571cb58a04da4426524b7f46ebdf17ad61842c6568f88bbb1d183228b152b4a",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/invalidated.fields": "1cebe7e02cbc10decc00956de8bf993b4b4ac21d3ca4deba49ce5b5d65713c28",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/invalidated.state": "2e5c1b6ecddf5bb3c01a753f3f2744bc937709215998ee8d8c017c1f4fb4bd0f",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/zero-report.DD": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/negative-report.DD": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/null-report.DD": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/invalidated-report.DD": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/null-menu.DD": "534b99e4be67fe887daf71900f18b1acd4af4bae5d462fa76833402b32a0d4a4",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/mask.bin": "5ce0fabd6443e12efeb4a11a2be63dafeafcb069702562729672c1ef7449a55a",
+    "/home/ddanila/fun/TempleOS/build/budget-validation-original-v2/accounts.DD": "326a9a7bbe6eacda718c2a97303d0ae72dec52fcd30f68486de59bb358fcf0b4"
+  },
+  "scope": "Real keyboard zero/negative interval and Null-type rejection; valid schedule followed by typed transaction cancellation, retained accepted schedule then zero-period rejection. No seeded entries or direct handler calls. Exact visible/backing/raw forms, empty reports, absent data/strings, caller restoration, whole native filesystem unchanged after Install. Not full application or resources qualification.",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+    "image_sha256": "03153f3e471113d5cb58cd318aeb6201f010811d270efc8d564e3621130bcdc3",
+    "boot_area_sha256": "9e56ec6aa2b3ca4bfdfa4bb521ec491f5359f7a94204dd9dcf0ce10e74e8a8d7",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1957,
+      "owned_sectors": 96343,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1958,
+      "owned_sectors": 96356,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/BudgetValidation.HC": "4bc00d66f2a6fcaa4bdfd1e10f0a344ebc0381c15284c364fadc071910b33e10"
+    },
+    "added_attributes": {
+      "/Probe/BudgetValidation.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "commands": [
+    "AdamFile(\"C:/Adam/AutoComplete/MakeAC.HC\",FALSE);",
+    "AdamFile(\"C:/Adam/TaskSettings.HC\",FALSE);",
+    "#include \"C:/Apps/Budget/Load.HC\"",
+    "#include \"C:/Apps/Budget/Install.HC\"",
+    "#include \"C:/Probe/BudgetValidation.HC\""
+  ],
+  "budget_directory": "/Home/Budget",
+  "fresh_result": {
+    "column": 0,
+    "row": 22,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "files_unchanged_after_install": true,
+  "changed_files": [
+    "/Home/Budget/Accts.DD.Z",
+    "/Probe/BudgetValidation.HC"
+  ],
+  "preserved_files": 1957,
+  "mask": 1023,
+  "inputs_unchanged": true
+}

@@ -1,0 +1,50 @@
+{
+  "result": "pass",
+  "disk_sha256": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+  "application_sha256": {
+    "Apps/Budget/Accts.DD": "326a9a7bbe6eacda718c2a97303d0ae72dec52fcd30f68486de59bb358fcf0b4",
+    "Apps/Budget/BgtAccts.HC": "2d8f69be87ac37707f633354c6021e221c66733eacd4a7df0fdf057522a2b82e",
+    "Apps/Budget/BgtEntry.HC": "0f02165b001caad7394c4c0da8b254138fe062fb09c203f6547f5bcc22e1f558",
+    "Apps/Budget/BgtFile.HC": "aeea3ba5d696b5665b062c4fcbca8bcf0576284abfce0835e3232f557d1321f6",
+    "Apps/Budget/BgtMain.HC": "2e39da36ad985329ef499a091cacd2215c20c73c4a1dcabe24be558cb4d16553",
+    "Apps/Budget/BgtStrs.HC": "9a41322e7250aab43624e8944723ef495c3827b767643903ae7571d2544d06c4",
+    "Apps/Budget/BgtTemplate.HC": "81c2af6ca4e1f489c969770272efa1531b22b333d05cc72fdd1f316f5fda8733",
+    "Apps/Budget/Budget.HC": "a5c7bf2d08e86ff523b1e54a134aca9f7a7373a10c9f266b4f7a69e8fe1bdb63",
+    "Apps/Budget/Install.HC": "98dc6400349ba84b84f827f2b6a5f9d35ed9fc089dbca5a8596084b7ad8f69c9",
+    "Apps/Budget/Load.HC": "f19a3e3887317f77ec841385d147bd7fd28c59b0be84b808da7f31152a5f0911",
+    "Apps/Budget/Run.HC": "60bd9e5b69525ef0e94c197a86725760a261865ef7c2bdf3e401f9b101de2a1b"
+  },
+  "cases": {
+    "launch": {
+      "receipt": "build/i386-budget-current-v2/launch/result.json",
+      "sha256": "f5f2ff1ad4aad09d636d84a24a44db46f0264aa0cf0e475273e94c8b15183265"
+    },
+    "mouse": {
+      "receipt": "build/i386-budget-current-v2/mouse/result.json",
+      "sha256": "7f1de466f7581a53788da9d6dd14d0c5ba5fac4062160ff1fbf5a201926f986a",
+      "mask": 1023,
+      "reopen_mask": 63,
+      "cold_reopen_files_unchanged": true
+    },
+    "validation": {
+      "receipt": "build/i386-budget-current-v2/validation/result.json",
+      "sha256": "227d1bb0524e5fd2f0da8be23bdeffd4fb13c00053585937ea19149459a67507",
+      "mask": 1023,
+      "files_unchanged_after_install": true
+    },
+    "templates": {
+      "receipt": "build/i386-budget-current-v2/templates/result.json",
+      "sha256": "cd0e946aabce84f38796c34f454371a26d63e3e7adc250aa71b145419b66e003",
+      "mask": 262143,
+      "reopen_mask": 63,
+      "cold_reopen_files_unchanged": true
+    },
+    "boundaries": {
+      "receipt": "build/i386-budget-current-v1/boundaries/result.json",
+      "sha256": "0ffc29e0697294ef5b26ef727b3affcb3fd5f7e303cae3bbeb35954a32618dfd",
+      "cases_checked": 18,
+      "record_bytes": 2872,
+      "files_unchanged": true
+    }
+  }
+}

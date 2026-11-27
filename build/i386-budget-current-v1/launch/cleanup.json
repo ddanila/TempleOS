@@ -1,0 +1,9 @@
+{
+  "removed": "build/i386-budget-current-v1/launch/native.img",
+  "retained_source": "build/i386-demo-document-bounded-v1/cross/kernel.img",
+  "retained_source_sha256": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+  "reconstructed_sha256": "49c72e313f66fac3b2534ed4834be170826cba6787428a7350628d48054b617d",
+  "fixture": "build/i386-budget-current-v1/launch/native-fixture.HC",
+  "fixture_guest_path": "/Probe/BudgetLaunch.HC",
+  "allocated_bytes": 67112960
+}

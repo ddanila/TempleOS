@@ -94,6 +94,10 @@ def main():
   if a.disk:
    guest.wait('DONE native kernel startup\n')
    for c in commands:guest.command(c)
+   installed=pack['snapshot'](image.read_bytes())[1]
+   budget_dir=runpy.run_path(str(ROOT/'tools/i386-budget-source.py'))['installed_budget_directory'](
+       before,installed,'/Probe/BudgetMouse.HC')
+   report['budget_directory']=budget_dir
    guest.type('BudgetMouse;');guest.press('ret')
   events=[];phase=0
   def state():
@@ -129,7 +133,7 @@ def main():
   if a.disk:
    files=pack['snapshot'](image.read_bytes())[1]
    if files!=persisted:raise ValueError('Cold mouse abort changed file bytes or metadata')
-   changed={n for n in set(before)|set(files) if before.get(n)!=files.get(n)};allowed={'/Probe/BudgetMouse.HC','/Budget/Accts.DD.Z','/Budget/Strs.DD.Z','/Budget/Bgt.DATA.Z'}
+   changed={n for n in set(before)|set(files) if before.get(n)!=files.get(n)};allowed={'/Probe/BudgetMouse.HC'}|{budget_dir+'/'+n for n in ('Accts.DD.Z','Strs.DD.Z','Bgt.DATA.Z')}
    if changed-allowed:raise ValueError('Unrelated file changed: '+repr(changed-allowed))
    report.update(cold_reopen_files_unchanged=True,changed_files=sorted(changed),preserved_files=len(set(before)-allowed))
   normalized=verify(out)

@@ -57,6 +57,9 @@ def main():
             guest.wait('DONE native kernel startup\n');commands=['AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);','AdamFile("C:/Adam/TaskSettings.HC",FALSE);','#include "C:/Apps/Budget/Load.HC"','#include "C:/Apps/Budget/Install.HC"','#include "C:/Probe/BudgetValidation.HC"'];report['commands']=commands
             for c in commands:guest.command(c)
             installed=pack['snapshot'](image.read_bytes())[1]
+            budget_dir=runpy.run_path(str(ROOT/'tools/i386-budget-source.py'))['installed_budget_directory'](
+                before,installed,'/Probe/BudgetValidation.HC')
+            report['budget_directory']=budget_dir
             guest.type('BudgetValidation;');guest.press('ret')
         guest.wait('BV ready\n');time.sleep(1)
         def escape(cancel=False):
@@ -88,7 +91,7 @@ def main():
                 if n.endswith('.state'):continue
                 if (out/n).read_bytes()!=(gold/n).read_bytes():raise ValueError('Original validation differs: '+n)
             changed={n for n in set(before)|set(files) if before.get(n)!=files.get(n)}
-            if changed-{'/Probe/BudgetValidation.HC','/Budget/Accts.DD.Z'}:raise ValueError('Unrelated installed file changed: '+repr(changed))
+            if changed-{'/Probe/BudgetValidation.HC',budget_dir+'/Accts.DD.Z'}:raise ValueError('Unrelated installed file changed: '+repr(changed))
             report['changed_files']=sorted(changed);report['preserved_files']=len(set(before)-changed)
         report.update(result='pass',mask=1023)
     except Exception as exc:

@@ -7,6 +7,19 @@ ROOT=Path(__file__).resolve().parents[1]
 REPAIRS='ce055f205fc38536443289fb1cfc73632f6624f4'
 
 
+def installed_budget_directory(before, installed, fixture_path):
+    """Locate the guest's configured Budget directory from its cold install."""
+    changed = {name for name in before.keys() | installed.keys()
+               if before.get(name) != installed.get(name)}
+    if fixture_path not in changed or len(changed) != 2:
+        raise ValueError(f'Unexpected files changed during Budget install: {sorted(changed)}')
+    accounts = (changed - {fixture_path}).pop()
+    if (not accounts.endswith('/Budget/Accts.DD.Z') or accounts in before
+            or installed[accounts][2] != before['/Apps/Budget/Accts.DD.Z'][2]):
+        raise ValueError(f'Budget install did not copy the bundled accounts: {accounts}')
+    return accounts.removesuffix('/Accts.DD.Z')
+
+
 def budget_source(entry):
     name=entry['path']
     original=subprocess.check_output(['git','show',REPAIRS+':'+name],cwd=ROOT)

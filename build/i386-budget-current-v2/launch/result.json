@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "disk_sha256": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+  "archive_sha256": "a628ab030d06a92dbee90108d8bc7152a94fd9b8f321f6fbe2c7f87a6e7c4874",
+  "budget_directory": "/Home/Budget",
+  "installed_accounts_sha256": "a628ab030d06a92dbee90108d8bc7152a94fd9b8f321f6fbe2c7f87a6e7c4874",
+  "preserved_files": 1957,
+  "inputs_unchanged": true
+}

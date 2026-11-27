@@ -7751,7 +7751,13 @@
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Budget/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Budget/BgtAccts.HC",
@@ -8067,7 +8073,13 @@
           "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
           "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Budget/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Budget/BgtEntry.HC",
@@ -8393,7 +8405,13 @@
           "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
           "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Budget/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Budget/BgtFile.HC",
@@ -8677,7 +8695,13 @@
           "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
           "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Budget/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Budget/BgtMain.HC",
@@ -9026,7 +9050,13 @@
           "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
           "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Budget/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Budget/BgtStrs.HC",
@@ -9310,7 +9340,13 @@
           "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
           "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Budget/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Budget/BgtTemplate.HC",
@@ -9425,7 +9461,13 @@
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Budget/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Budget/Budget.HC",
@@ -9754,7 +9796,13 @@
           "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
           "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Budget/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Budget/Install.HC",
@@ -9905,7 +9953,13 @@
           "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
           "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Budget/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Budget/Load.HC",
@@ -10237,7 +10291,13 @@
           "evidence": "build/budget-mouse-production-home-v1/native64/result.json",
           "scope": "Production 64 MiB image. Original report comparison for PS/2 row selection, edit cancellation, account picker, double-left-click save, and cold double-right-click abort. Only the fixture and three Home Budget files changed. Cold read-only abort and fresh arithmetic pass."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/Budget/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/Budget/Run.HC",
@@ -10254,9 +10314,9 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
+      "compatibility": "qualified",
+      "reference_workflow": "Start Budget from its bundled launcher. Exercise keyboard form validation, mouse row and account selection, save and cold reopen, and interval templates and periodic copies.",
+      "oracle": "Check the installed account bytes, exact report and form state, absence of files after rejected entries, exact persisted records after reboot, and 18 recurrence boundary cases. Require restored caller state and fresh prompt arithmetic.",
       "tests": [
         {
           "target": "native-managed-document-mouse-dispatch",
@@ -10292,6 +10352,12 @@
           "result": "pass",
           "evidence": "build/mouse-wheel-audit-v1/result.json",
           "scope": "10240 exhaustive original/native source-decoder rows (raw buttons and preserved fourth-byte arithmetic, not extra-button APIs); strict eight-phase physical wheel comparison with six exact focused callbacks, deferred inhibition and mask15. Independent model rejects172 corruptions. Five255 wheel and five255 click lifetime modes, queue1023, 62-step gain, raw MouseGet15, 8MiB Help/picker/state pixels and Budget save/cold1023/63 pass;1886 prior files preserved. ABI265 versions stream semantics. Mouse-state driver checks the two existing unused-var diagnostics; held-click console and unflagged DocEd failures remain open. Not malformed streams/hardware failures/all extra-button or wheel consumers/legacy views/timing/bursts/desktop/resources or whole-file/C1-C5 qualification. See docs/i386-mouse-wheel.md."
+        },
+        {
+          "target": "native-current-budget-suite",
+          "result": "pass",
+          "evidence": "build/i386-budget-current-v2/suite-result.json",
+          "scope": "Current full-content image. Original and native launcher, physical mouse with cold reopen, invalid schedules, interval templates and periodic copies, and 18 direct expansion boundary cases."
         }
       ]
     },

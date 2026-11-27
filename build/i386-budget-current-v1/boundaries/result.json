@@ -1,0 +1,233 @@
+{
+  "result": "pass",
+  "fixture_sha256": "4e00f7bf3ef532371739b856fa40d87ed730e26ce475c22c66d7e665343015d9",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-budget-boundaries.py": "51e2e31aaba4471c62907553d747a50f0ed25de5edcaa8b2316fbd3e45fe45ed",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-budget-boundaries/Contract.HC": "4e00f7bf3ef532371739b856fa40d87ed730e26ce475c22c66d7e665343015d9",
+    "/home/ddanila/fun/TempleOS/docs/i386-compatibility-inventory.json": "497c9bcd345640ddb4f7447dc42f165ea6e7c313bf2e419f6229225a66c1f92f",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/guest-run.py": "58e0b848613303f2680594edb6eec7c43823bc2554983d2af4451f11d7d24cd3",
+    "/home/ddanila/fun/TempleOS/tools/i386-budget-source.py": "3b0c62f74a6ddcc3d6a7ec0fc61b59139e056fe9ab04de8eb7cda15d9069665a",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "4368e9c34087a9fce139c109be6afe6cbaad1d62dd489a0d975979540ecd7aa9",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/build/i386-demo-document-bounded-v1/cross/kernel.img": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+    "/home/ddanila/fun/TempleOS/build/budget-boundaries-original-v2/result.json": "f818b145d72f765c0ab31e64ce196a4915bb93f5142a190ab7a9449da9b92ce3",
+    "/home/ddanila/fun/TempleOS/build/budget-boundaries-original-v2/boundaries.bin": "157c744b406c1ed7a5dde3588665d9f8faa0b31080a2f4e94f67614b943b4678"
+  },
+  "scope": "Direct original Budget expansion API, nine boundary schedules in template and periodic-copy modes: overflow day-of-month, leap day, reversed/equal ranges, Null, half-day interval and >2050 year mapping. Exact portable dates/type/flags/amount/string ownership/content/queue links; cleanup leaves entry queue empty. Constructed inputs, not real UI, persistent storage or heap profile.",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+    "image_sha256": "c816e7f6191e2488fae88a8126869d4173775f6de97e4cee7709cf7c7cb5af69",
+    "boot_area_sha256": "9e56ec6aa2b3ca4bfdfa4bb521ec491f5359f7a94204dd9dcf0ce10e74e8a8d7",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1957,
+      "owned_sectors": 96343,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1958,
+      "owned_sectors": 96347,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/BudgetBoundaries.HC": "4e00f7bf3ef532371739b856fa40d87ed730e26ce475c22c66d7e665343015d9"
+    },
+    "added_attributes": {
+      "/Probe/BudgetBoundaries.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "commands": [
+    "AdamFile(\"C:/Adam/AutoComplete/MakeAC.HC\",FALSE);",
+    "AdamFile(\"C:/Adam/TaskSettings.HC\",FALSE);",
+    "#include \"C:/Apps/Budget/Load.HC\"",
+    "#include \"C:/Probe/BudgetBoundaries.HC\"",
+    "BoundaryContract;",
+    "6*7;"
+  ],
+  "fresh_result": {
+    "column": 0,
+    "row": 18,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "files_unchanged": true,
+  "cases": [
+    {
+      "id": 0,
+      "kind": 2,
+      "periodic": false,
+      "dates": [
+        "0xb242500000004",
+        "0xb244400000004",
+        "0xb246000000004",
+        "0xb247f00000004",
+        "0xb249d00000004"
+      ]
+    },
+    {
+      "id": 1,
+      "kind": 3,
+      "periodic": false,
+      "dates": [
+        "0xb257300000004",
+        "0xb25b100000004",
+        "0xb25ed00000004"
+      ]
+    },
+    {
+      "id": 2,
+      "kind": 4,
+      "periodic": false,
+      "dates": [
+        "0xb24f900000004",
+        "0xb25b100000004",
+        "0xb266700000004"
+      ]
+    },
+    {
+      "id": 3,
+      "kind": 5,
+      "periodic": false,
+      "dates": [
+        "0xb25af00000004",
+        "0xb271d00000004",
+        "0xb288a00000004",
+        "0xb29f700000004"
+      ]
+    },
+    {
+      "id": 4,
+      "kind": 2,
+      "periodic": false,
+      "dates": []
+    },
+    {
+      "id": 5,
+      "kind": 2,
+      "periodic": false,
+      "dates": [
+        "0xb259200000004"
+      ]
+    },
+    {
+      "id": 6,
+      "kind": 0,
+      "periodic": false,
+      "dates": []
+    },
+    {
+      "id": 7,
+      "kind": 1,
+      "periodic": false,
+      "dates": [
+        "0xb257400000004",
+        "0xb257480000004",
+        "0xb257500000004",
+        "0xb257580000004",
+        "0xb257600000004"
+      ]
+    },
+    {
+      "id": 8,
+      "kind": 5,
+      "periodic": false,
+      "dates": [
+        "0xadf8b00000004",
+        "0xae0f800000004",
+        "0xae26600000004"
+      ]
+    },
+    {
+      "id": 0,
+      "kind": 2,
+      "periodic": true,
+      "dates": [
+        "0xb244400000004",
+        "0xb246000000004",
+        "0xb247f00000004",
+        "0xb249d00000004"
+      ]
+    },
+    {
+      "id": 1,
+      "kind": 3,
+      "periodic": true,
+      "dates": [
+        "0xb25b100000004",
+        "0xb25ed00000004"
+      ]
+    },
+    {
+      "id": 2,
+      "kind": 4,
+      "periodic": true,
+      "dates": [
+        "0xb25b100000004",
+        "0xb266700000004"
+      ]
+    },
+    {
+      "id": 3,
+      "kind": 5,
+      "periodic": true,
+      "dates": [
+        "0xb271d00000004",
+        "0xb288a00000004",
+        "0xb29f700000004"
+      ]
+    },
+    {
+      "id": 4,
+      "kind": 2,
+      "periodic": true,
+      "dates": []
+    },
+    {
+      "id": 5,
+      "kind": 2,
+      "periodic": true,
+      "dates": []
+    },
+    {
+      "id": 6,
+      "kind": 0,
+      "periodic": true,
+      "dates": []
+    },
+    {
+      "id": 7,
+      "kind": 1,
+      "periodic": true,
+      "dates": [
+        "0xb257480000004",
+        "0xb257500000004",
+        "0xb257580000004",
+        "0xb257600000004"
+      ]
+    },
+    {
+      "id": 8,
+      "kind": 5,
+      "periodic": true,
+      "dates": [
+        "0xae0f800000004",
+        "0xae26600000004"
+      ]
+    }
+  ],
+  "cases_checked": 18,
+  "record_bytes": 2872,
+  "inputs_unchanged": true
+}

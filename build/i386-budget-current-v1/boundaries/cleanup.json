@@ -1,0 +1,8 @@
+{
+  "removed": "build/i386-budget-current-v1/boundaries/working.img",
+  "retained_source": "build/i386-demo-document-bounded-v1/cross/kernel.img",
+  "reconstructed_sha256": "c816e7f6191e2488fae88a8126869d4173775f6de97e4cee7709cf7c7cb5af69",
+  "fixture": "build/i386-budget-current-v1/boundaries/fixture.HC",
+  "fixture_guest_path": "/Probe/BudgetBoundaries.HC",
+  "allocated_bytes": 67112960
+}
