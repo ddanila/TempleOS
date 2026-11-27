@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-doc-diagnostic-compact-v1/diagnostic8-kvm/working.img",
+  "retained": "build/i386-doc-diagnostic-compact-v1/cross/kernel-diagnostics.img",
+  "sha256": "fcd95462198430816231df50b90e04c87d619b23102fda982cc85e1b7ebda5ca",
+  "allocated_bytes": 67108864
+}

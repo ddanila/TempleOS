@@ -50,81 +50,64 @@ U0 NativeDocAllocationNewLine(CDoc *doc) { DocPutKey(doc,'\n',0); }
 
 U0 NativeDocAllocationSave(CDoc *doc) { U8 *text=DocSave(doc); Free(text); }
 
+U0 NativeDocDiagnosticPutText(CDoc *doc,U8 *text)
+{
+  while(*text)DocPutKey(doc,*text++);
+}
+
+U0 NativeDocDiagnosticFormat(CDoc *doc,I64 type,I64 attr)
+{
+  CDocEntry *entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
+  entry->type=type; entry->de_flags=doc_diag_context->globals->dft_de_flags[type];
+  entry->attr=attr; DocInsEntry(doc,entry);
+}
+
+U8 doc_record_dollar_offsets[20]={
+  0,5,9,12,19,24,29,32,37,42,47,52,
+  53,58,65,70,76,81,88,93};
+U8 doc_record_byte_offsets[42]={
+  1,2,3,4,6,7,8,10,11,20,21,22,
+  23,25,26,27,28,30,31,38,39,41,48,49,
+  51,54,55,57,66,67,69,77,78,80,89,90,
+  92,71,72,82,83,87};
+U8 doc_record_expected_bytes[42]={
+  'F','G',',','2','r','e','d','F','G','B','G',',',
+  '1','b','l','u','e','B','G','I','V','1','I','V',
+  '0','U','L','1','U','L','0','B','K','1','B','K',
+  '0',' ','d',' ','f','h'};
+
 I64 NativeDocRecordSaveCheck()
 {
   CDoc *doc,*loaded;
-  CDocEntry *entry;
   U8 *saved,*round_trip;
   I64 before=Fs->data_heap->used_u8s,size,round_trip_size,result=4,index;
   doc=DocNew("C:/Record.DD",Fs);
-  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
-  entry->type=DOCT_FOREGROUND; entry->de_flags=doc_diag_context->globals->dft_de_flags[DOCT_FOREGROUND];
-  entry->attr=2; DocInsEntry(doc,entry);
-  DocPutKey(doc,'r'); DocPutKey(doc,'e'); DocPutKey(doc,'d');
-  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
-  entry->type=DOCT_FOREGROUND; entry->de_flags=doc_diag_context->globals->dft_de_flags[DOCT_FOREGROUND];
-  entry->attr=DOC_DFT; DocInsEntry(doc,entry);
-  DocPutKey(doc,' '); DocPutKey(doc,'p'); DocPutKey(doc,'l');
-  DocPutKey(doc,'a'); DocPutKey(doc,'i'); DocPutKey(doc,'n');
-  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
-  entry->type=DOCT_BACKGROUND; entry->de_flags=doc_diag_context->globals->dft_de_flags[DOCT_BACKGROUND];
-  entry->attr=1; DocInsEntry(doc,entry);
-  DocPutKey(doc,'b'); DocPutKey(doc,'l'); DocPutKey(doc,'u'); DocPutKey(doc,'e');
-  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
-  entry->type=DOCT_BACKGROUND; entry->de_flags=doc_diag_context->globals->dft_de_flags[DOCT_BACKGROUND];
-  entry->attr=DOC_DFT; DocInsEntry(doc,entry);
-  DocPutKey(doc,' '); DocPutKey(doc,'e'); DocPutKey(doc,'n'); DocPutKey(doc,'d');
-  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
-  entry->type=DOCT_INVERT; entry->de_flags=doc_diag_context->globals->dft_de_flags[DOCT_INVERT];
-  entry->attr=1; DocInsEntry(doc,entry);
-  DocPutKey(doc,' '); DocPutKey(doc,'i'); DocPutKey(doc,'n'); DocPutKey(doc,'v');
-  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
-  entry->type=DOCT_INVERT; entry->de_flags=doc_diag_context->globals->dft_de_flags[DOCT_INVERT];
-  entry->attr=0; DocInsEntry(doc,entry);
-  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
-  entry->type=DOCT_UNDERLINE; entry->de_flags=doc_diag_context->globals->dft_de_flags[DOCT_UNDERLINE];
-  entry->attr=1; DocInsEntry(doc,entry);
-  DocPutKey(doc,' '); DocPutKey(doc,'u'); DocPutKey(doc,'n'); DocPutKey(doc,'d');
-  DocPutKey(doc,'e'); DocPutKey(doc,'r');
-  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
-  entry->type=DOCT_UNDERLINE; entry->de_flags=doc_diag_context->globals->dft_de_flags[DOCT_UNDERLINE];
-  entry->attr=0; DocInsEntry(doc,entry);
-  DocPutKey(doc,' '); DocPutKey(doc,'d'); DocPutKey(doc,'o'); DocPutKey(doc,'n');
-  DocPutKey(doc,'e');
-  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
-  entry->type=DOCT_BLINK; entry->de_flags=doc_diag_context->globals->dft_de_flags[DOCT_BLINK];
-  entry->attr=1; DocInsEntry(doc,entry);
-  DocPutKey(doc,' '); DocPutKey(doc,'f'); DocPutKey(doc,'l'); DocPutKey(doc,'a');
-  DocPutKey(doc,'s'); DocPutKey(doc,'h');
-  entry=CAlloc(sizeof(CDocEntry),doc->mem_task);
-  entry->type=DOCT_BLINK; entry->de_flags=doc_diag_context->globals->dft_de_flags[DOCT_BLINK];
-  entry->attr=0; DocInsEntry(doc,entry);
+  NativeDocDiagnosticFormat(doc,DOCT_FOREGROUND,2);
+  NativeDocDiagnosticPutText(doc,"red");
+  NativeDocDiagnosticFormat(doc,DOCT_FOREGROUND,DOC_DFT);
+  NativeDocDiagnosticPutText(doc," plain");
+  NativeDocDiagnosticFormat(doc,DOCT_BACKGROUND,1);
+  NativeDocDiagnosticPutText(doc,"blue");
+  NativeDocDiagnosticFormat(doc,DOCT_BACKGROUND,DOC_DFT);
+  NativeDocDiagnosticPutText(doc," end");
+  NativeDocDiagnosticFormat(doc,DOCT_INVERT,1);
+  NativeDocDiagnosticPutText(doc," inv");
+  NativeDocDiagnosticFormat(doc,DOCT_INVERT,0);
+  NativeDocDiagnosticFormat(doc,DOCT_UNDERLINE,1);
+  NativeDocDiagnosticPutText(doc," under");
+  NativeDocDiagnosticFormat(doc,DOCT_UNDERLINE,0);
+  NativeDocDiagnosticPutText(doc," done");
+  NativeDocDiagnosticFormat(doc,DOCT_BLINK,1);
+  NativeDocDiagnosticPutText(doc," flash");
+  NativeDocDiagnosticFormat(doc,DOCT_BLINK,0);
   doc->flags|=DOCF_NO_CURSOR;
   saved=NativeDocRecordSaveCore(doc,&size);
   if(!saved || size!=94) result=-20;
   else {
-    for(index=0;index<94;index++) {
-      if(index==0 || index==5 || index==9 || index==12 || index==19 ||
-          index==24 || index==29 || index==32 || index==37 || index==42 ||
-          index==47 || index==52 || index==53 || index==58 || index==65 ||
-          index==70 || index==76 || index==81 || index==88 || index==93) {
-        if(saved[index]!=36) result=-21-index;
-      }
-    }
-    if(saved[1]!='F' || saved[2]!='G' || saved[3]!=',' || saved[4]!='2' ||
-        saved[6]!='r' || saved[7]!='e' || saved[8]!='d' ||
-        saved[10]!='F' || saved[11]!='G' ||
-        saved[20]!='B' || saved[21]!='G' || saved[22]!=',' || saved[23]!='1' ||
-        saved[25]!='b' || saved[26]!='l' || saved[27]!='u' || saved[28]!='e' ||
-        saved[30]!='B' || saved[31]!='G' ||
-        saved[38]!='I' || saved[39]!='V' || saved[41]!='1' ||
-        saved[48]!='I' || saved[49]!='V' || saved[51]!='0' ||
-        saved[54]!='U' || saved[55]!='L' || saved[57]!='1' ||
-        saved[66]!='U' || saved[67]!='L' || saved[69]!='0' ||
-        saved[77]!='B' || saved[78]!='K' || saved[80]!='1' ||
-        saved[89]!='B' || saved[90]!='K' || saved[92]!='0' ||
-        saved[71]!=' ' || saved[72]!='d' || saved[82]!=' ' ||
-        saved[83]!='f' || saved[87]!='h') result=-40;
+    for(index=0;index<sizeof(doc_record_dollar_offsets);index++)
+      if(saved[doc_record_dollar_offsets[index]]!=36) result=-21-doc_record_dollar_offsets[index];
+    for(index=0;index<sizeof(doc_record_byte_offsets);index++)
+      if(saved[doc_record_byte_offsets[index]]!=doc_record_expected_bytes[index]) result=-40;
   }
   loaded=DocNew("C:/RecordRead.DD",Fs); loaded->flags|=DOCF_NO_CURSOR;
   if(result==4 && !NativeDocRecordLoadCore(loaded,saved,size)) result=-41;
@@ -220,7 +203,7 @@ I64 NativeDocAllocationCoreCheck()
   DocPutKey(doc,'a',0);
   doc->cur_entry=doc->head.next; doc->cur_col=1;
   //Fill the owned four-byte tag capacity so the fault probe needs growth.
-  DocPutKey(doc,'b'); DocPutKey(doc,'c');
+  NativeDocDiagnosticPutText(doc,"bc");
   base=Fs->data_heap->used_u8s;
   NativeDocAllocArm(1);
   if(!NativeDocAllocationCaught(&NativeDocAllocationPut,doc) ||
@@ -287,12 +270,12 @@ I64 NativeDocClipPasteAtomicCheck()
   I64 size,after_size,index,fail,allocations=0,used,result=-1;
   native_clip_doc=NULL;
   source=DocNew("C:/PasteSource.DD",Fs);
-  DocPutKey(source,'a'); DocPutKey(source,'b');
+  NativeDocDiagnosticPutText(source,"ab");
   for(entry=source->head.next;entry!=source;entry=entry->next)
     entry->type|=DOCET_SEL;
   if(!NativeDocClipCopy(source,FALSE)) goto paste_check_done;
   target=DocNew("C:/PasteProbe.DD",Fs);
-  DocPutKey(target,'x'); DocPutKey(target,'y'); DocPutKey(target,'z');
+  NativeDocDiagnosticPutText(target,"xyz");
   target->cur_entry=target->head.next; target->cur_col=1;
   NativeDocAllocArm(I64_MAX);
   if(!NativeDocClipPaste(target)) { NativeDocAllocArm(0); goto paste_check_done; }
@@ -301,7 +284,7 @@ I64 NativeDocClipPasteAtomicCheck()
     //DocSave can change clipboard layout; repeat the baseline input each time.
     if(!NativeDocClipCopy(source,FALSE)) goto paste_check_done;
     target=DocNew("C:/PasteFail.DD",Fs);
-    DocPutKey(target,'x'); DocPutKey(target,'y'); DocPutKey(target,'z');
+    NativeDocDiagnosticPutText(target,"xyz");
     target->cur_entry=target->head.next; target->cur_col=1;
     before=DocSave(target,&size); used=Fs->data_heap->used_u8s;
     NativeDocAllocArm(fail);
@@ -350,7 +333,7 @@ public I64 DocAllocationCheck()
   result=NativeDocClipPasteAtomicCheck;
   if(result<=0) return result;
   doc=DocNew("C:/AllocRead.DD",Fs);
-  DocPutKey(doc,'r',0); DocPutKey(doc,'e',0); DocPutKey(doc,'a',0); DocPutKey(doc,'d',0);
+  NativeDocDiagnosticPutText(doc,"read");
   if(!DocWrite(doc)) { DocDel(doc); return -11; }
   DocDel(doc); before=Fs->data_heap->used_u8s;
   //Three DocNew allocations precede the text base and its tag.

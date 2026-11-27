@@ -307,13 +307,31 @@ public backend keep their existing lifetime. At 8 MiB, the fresh
 cross-built image passes diagnostics and all 20 document sessions.
 Replacing only the compiler on the previously failing installed Stadium
 image also completes all 20 sessions and matches all 11 VGA checkpoints.
-The separate installed `DocAllocationCheck` still fails: the largest
-free block grew from 28,824 to 38,392 bytes, short of the 42,899-byte
-module load.
+With that compiler replacement, the separate installed
+`DocAllocationCheck` failed to load the 42,899-byte module. The largest
+free block had grown from 28,824 to 38,392 bytes.
 [8 MiB diagnostics](build/i386-backend-fold-lifetime-v1/diagnostic8-kvm/result.json) ·
 [Controlled installed comparison](build/i386-backend-fold-lifetime-v1/installed-console-comparison.json) ·
 [Installed 8 MiB document sessions](build/i386-backend-fold-lifetime-v1/installed-console8/resource8/resource-result.json) ·
 [Separate installed diagnostic failure](build/i386-backend-fold-lifetime-v1/installed-console8/doc-allocation8/result.json)
+
+The document diagnostic now shares text and formatting helpers and checks
+the same serialized bytes using tables. The fresh cross build produces a
+34,588-byte module, down 8,311 bytes from 42,899. That places it 3,804 bytes
+below the largest free block measured on the previously failing installed
+image. Both original bootstrap generations and the cross-build boot
+instruction audit pass. The fresh 8 MiB diagnostic image passes startup
+and matches every VGA checkpoint. On the previously failing installed
+image, replacing only the diagnostic module restores `DocAllocationCheck`
+at 8 MiB. The keyboard test verifies return value 13 and observes one
+module load, dollar growth recovery, and unload. All 1,954 other file
+payloads match the baseline.
+[Diagnostic module size and SHA-256](build/i386-doc-diagnostic-compact-v1/module-size.json) ·
+[Two-generation bootstrap](build/i386-doc-diagnostic-compact-v1/bootstrap/result.json) ·
+[Cross-build boot instruction audit](build/i386-doc-diagnostic-compact-v1/cross/boot-instruction-audit.json) ·
+[Fresh 8 MiB diagnostics](build/i386-doc-diagnostic-compact-v1/diagnostic8-kvm/result.json) ·
+[Controlled installed comparison](build/i386-doc-diagnostic-compact-v1/installed-comparison.json) ·
+[Installed 8 MiB diagnostic](build/i386-doc-diagnostic-compact-v1/installed8/result.json)
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger

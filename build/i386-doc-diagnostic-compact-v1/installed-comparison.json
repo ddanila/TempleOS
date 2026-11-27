@@ -1,0 +1,8 @@
+{
+  "baseline_sha256": "6652f0c724b59f664f7511a4cce63facff8138a10a2748f32589766e7fe919a7",
+  "candidate_sha256": "a8c0f3faa71e53bef4c9f3983b26544a5225e5c9cdb28821e5717a84f232f716",
+  "file_count": 1955,
+  "changed_file_contents": [
+    "/Modules/I386/DocDiagnosticRuntime.t32m"
+  ]
+}

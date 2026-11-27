@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "installed": [
+    "DocDiagnosticRuntime"
+  ],
+  "source_disk_sha256": "c519f65d2430f6f847351818c4dbea32fd2a8f1a711feb2203f108e34744522e",
+  "disk_sha256": "a8c0f3faa71e53bef4c9f3983b26544a5225e5c9cdb28821e5717a84f232f716",
+  "module_source_paths": {
+    "DocDiagnosticRuntime": "/Probe/CompactDoc.t32m"
+  },
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "welcome": true,
+  "managed_pointer": true,
+  "keyboard_harness": true,
+  "diagnostic_growth_recovery": true,
+  "module_sha256": {
+    "DocDiagnosticRuntime": "6c52415f53cb402840264f3f0e4294611e85367e89a15643ecbea5efda23e1d7"
+  },
+  "module_bytes": {
+    "DocDiagnosticRuntime": 34588
+  }
+}
