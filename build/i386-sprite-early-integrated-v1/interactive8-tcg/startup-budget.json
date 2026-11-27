@@ -1,0 +1,9 @@
+{
+  "result": "fail",
+  "startup_seconds": 293.3523839469999,
+  "budget_seconds": 60,
+  "over_budget_seconds": 233.3523839469999,
+  "evidence": "/home/ddanila/fun/TempleOS/build/i386-sprite-early-integrated-v1/interactive8-tcg/timing-evidence.json",
+  "evidence_sha256": "b8cedc4c4b0d87d31d0f7ef78ecf0ef9d52ba189205ee90809d51a6c8f747144",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}

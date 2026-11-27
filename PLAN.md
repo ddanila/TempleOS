@@ -50,6 +50,13 @@ parser-adoption image reached the 8 MiB TCG prompt in 275.026 seconds.
 [Generation comparison](build/i386-code-alloc-known-v1/native-generations128/generation-identity/result.json) ·
 [Verification history](docs/i386-test-workflow.md)
 
+The full image at `5786a5ce` reached the 8 MiB prompt in 32.346 seconds
+under KVM and 293.352 seconds under TCG. Both normal boots passed the nine
+VGA checkpoints without the sprite converter allocation error. The TCG
+run exceeded the 60-second limit.
+[Integrated TCG timing](build/i386-sprite-early-integrated-v1/interactive8-tcg/result.json) ·
+[Budget check](build/i386-sprite-early-integrated-v1/interactive8-tcg/startup-budget.json)
+
 The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
 64 MiB desktop commands, and configured HomeSys handoff. Its
