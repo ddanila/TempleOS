@@ -1,0 +1,26 @@
+[
+  {
+    "removed": "build/i386-gr-peek-public-v1/interactive8-kvm/working.img",
+    "retained": "build/i386-gr-peek-public-v1/cross/kernel.img",
+    "sha256": "afb9d0cd79331862600995dd8d7915d7e550c1203d710e256e96ac079b7539ee",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-parser-known-request-v1/diagnostic8-kvm/working.img",
+    "retained": "build/i386-parser-known-request-v1/cross/kernel-diagnostics.img",
+    "sha256": "18e312e0d715d93c65007498a44179e68e9120ed369ca55e4a034700c3d3c379",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-parser-known-request-v2/diagnostic8-kvm/working.img",
+    "retained": "build/i386-parser-known-request-v2/cross/kernel-diagnostics.img",
+    "sha256": "416ca016729fefd8f72d14e5e0507ea851c09608036e7dd5c4f2af2fadf7f134",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-sprite-early-integrated-v1/diagnostic8-kvm/working.img",
+    "retained": "build/i386-sprite-early-integrated-v1/cross/kernel-diagnostics.img",
+    "sha256": "a6a7871c74386a2954f14b97cc621a7057008a8d842d61e3566240fd89fa70e1",
+    "allocated_bytes": 67112960
+  }
+]
