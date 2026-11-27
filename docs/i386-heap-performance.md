@@ -1310,3 +1310,8 @@ matched all 1,581 packaged source and documentation files to revision
 `5786a5ce`.
 [Integrated diagnostics](../build/i386-sprite-early-integrated-v1/diagnostic8-kvm/result.json) ·
 [Delivered-source audit](../build/i386-sprite-early-integrated-v1/committed-source-audit.json)
+
+The integrated image also passed the 64 MiB full-content check. It
+matched all 686 inventory files, verified the RedSea extents, and passed
+the bounded guest lookup and read contract.
+[Integrated full-content check](../build/i386-sprite-early-integrated-v1/full-content64/result.json)
