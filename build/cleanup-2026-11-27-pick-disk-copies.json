@@ -1,0 +1,14 @@
+[
+  {
+    "removed": "build/i386-pick-paired-v1/working.img",
+    "retained": "build/i386-rainbow-public-v1/cross-dynamic/kernel.img",
+    "sha256": "9c0fdeab8323801182153cc7c109c40bb2bd26e79a624afddcff32271ec2fa28",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-pick-paired-v2/working.img",
+    "retained": "build/i386-rainbow-public-v1/cross-dynamic/kernel.img",
+    "sha256": "9c0fdeab8323801182153cc7c109c40bb2bd26e79a624afddcff32271ec2fa28",
+    "allocated_bytes": 67108864
+  }
+]
