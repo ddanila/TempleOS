@@ -369,7 +369,7 @@ payloads match the baseline.
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
-now records 283 test images and 9,206,239,232 bytes reclaimed across its
+now records 305 test images and 9,920,212,992 bytes reclaimed across its
 batches. Each ISO was fully decompressed and checked by SHA-256 before
 its raw copy was removed. The color-picker timing disk was separately
 verified byte-for-byte against the retained cross-built image before
