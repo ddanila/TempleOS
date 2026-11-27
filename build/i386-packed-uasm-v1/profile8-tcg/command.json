@@ -1,0 +1,23 @@
+[
+  "qemu-system-i386",
+  "-machine",
+  "pc",
+  "-accel",
+  "tcg",
+  "-cpu",
+  "486,-fpu",
+  "-m",
+  "8",
+  "-nic",
+  "none",
+  "-snapshot",
+  "-drive",
+  "file=/home/ddanila/fun/TempleOS/build/i386-packed-uasm-v1/cross/kernel.img,format=raw,if=ide",
+  "-display",
+  "none",
+  "-no-reboot",
+  "-debugcon",
+  "file:/home/ddanila/fun/TempleOS/build/i386-packed-uasm-v1/profile8-tcg/debug.log",
+  "-qmp",
+  "stdio"
+]

@@ -1434,3 +1434,14 @@ checkpoints and recovered to the same heap baseline.
 [Ownership corpus](../build/i386-known-boundary-v2/task-symbols/result.json) ·
 [8 MiB diagnostics](../build/i386-known-boundary-v2/diagnostic8-kvm/result.json) ·
 [Document resource test](../build/i386-known-boundary-v2/resource8/resource-result.json)
+
+A paused PC profile of the packed-catalog image collected 1,246 samples
+through a successful 8 MiB TCG boot. The three whole-arena heap scans
+accounted for 306 of 420 root-user-header samples and 508 of 692
+startup-source samples. In startup source, compiler ownership validation
+accounted for 160 samples in the size scan. Instruction release through
+`I386CodeFreeIC` accounted for 55 more through a separate slab size scan.
+The packed-catalog build's bounded teardown optimization did not cover
+that release callback. The profile used QMP pauses. The unpaused timing
+receipt above supplies the startup measurement.
+[Verified profile summary](../build/i386-packed-uasm-v1/profile8-tcg/summary.json)

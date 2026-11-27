@@ -1,0 +1,138 @@
+{
+  "scope": "Verified statistical sample attribution; not timing, call counts, or acceptance.",
+  "profiles": [
+    {
+      "directory": "/home/ddanila/fun/TempleOS/build/i386-packed-uasm-v1/profile8-tcg",
+      "evidence_sha256": {
+        "result.json": "bbbb2bd599ec17c972296a197e84515701a7260f6b413b2138661c4448f71015",
+        "samples.json": "668fcd513619be05f8ac5e3fdbc13ff2d41ba15cf7effc7958d5ca66b4e54bf0",
+        "debug.log": "4d22c84d356003ccb2625b05aad9b28a2c1f99fcabbf6f69cecb627340ee1741"
+      },
+      "disk_sha256": "a38c395445b15cb8d9165a5c130380291521261e43c3408cad15d0597d12ca8c",
+      "samples": 1246,
+      "phases": {
+        "foundation": {
+          "samples": 75,
+          "top_symbols": {
+            "Kernel:I386FindSymbol": 35,
+            "Kernel:I386ModuleValidParts": 22,
+            "Kernel:I386AtaTransfer": 4,
+            "Kernel:I386AtaWait": 3,
+            "Kernel:I386NameEqual": 3,
+            "unmapped": 2,
+            "Kernel:I386RedSeaRead": 2,
+            "Kernel:I386ModuleCompactPayload": 2,
+            "CompilerRuntime:I386ParserStackReserve": 1,
+            "ConsoleRuntime:DocDefaultsInit": 1
+          },
+          "heap_scan_callers": {}
+        },
+        "root_kernel_headers": {
+          "samples": 56,
+          "top_symbols": {
+            "Kernel:I386HeapScan": 16,
+            "Kernel:I386HeapScanSelect": 14,
+            "Kernel:I386HeapFree": 7,
+            "CompilerRuntime:I386ClassTransferVisit": 3,
+            "CompilerRuntime:I386ParserHeapSelectKnown": 2,
+            "CompilerRuntime:I386ParserToken": 2,
+            "CompilerRuntime:I386LexNextWithIncludes": 1,
+            "CompilerRuntime:I386FrontendOptPass012": 1,
+            "Kernel:I386HashLookup": 1,
+            "Kernel:I386AtaWait": 1
+          },
+          "heap_scan_callers": {
+            "Kernel:I386HeapSize <- CompilerRuntime:I386CmpControlValid <- CompilerRuntime:I386CmpCodeOwner": 12,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386ICSlabFind <- CompilerRuntime:I386CodeFreeSlot": 1,
+            "Kernel:I386HeapSize <- Kernel:I386LexSnapshotValid <- CompilerRuntime:I386LexPop": 1,
+            "Kernel:I386HeapSize <- MemoryRuntime:I386TaskHeapsValid <- MemoryRuntime:I386TaskCodeAllocate": 1,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386FrontendTransferGraph <- CompilerRuntime:I386FrontendPublishCore": 1
+          }
+        },
+        "root_headers": {
+          "samples": 420,
+          "top_symbols": {
+            "Kernel:I386HeapScanSelect": 116,
+            "Kernel:I386HeapScan": 109,
+            "Kernel:I386HeapFree": 81,
+            "CompilerRuntime:I386ParserRecord": 21,
+            "CompilerRuntime:I386ClassTransferVisit": 12,
+            "CompilerRuntime:I386ParserToken": 10,
+            "Kernel:StrCmp": 8,
+            "CompilerRuntime:I386HeapKnownRequested": 8,
+            "CompilerRuntime:I386ParserHeapSelectKnown": 6,
+            "CompilerRuntime:I386CmpReleaseAllocation": 5
+          },
+          "heap_scan_callers": {
+            "Kernel:I386HeapSize <- CompilerRuntime:I386CmpControlValid <- CompilerRuntime:I386CmpCodeOwner": 64,
+            "Kernel:I386HeapSize <- Kernel:I386LexFileOwned <- CompilerRuntime:I386LexPop": 8,
+            "Kernel:I386HeapSize <- MemoryRuntime:I386TaskHeapsValid <- MemoryRuntime:I386TaskCodeCapacity": 6,
+            "Kernel:I386HeapSize <- Kernel:I386LexSnapshotValid <- CompilerRuntime:I386LexPop": 6,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386ICSlabFind <- CompilerRuntime:I386CodeFreeSlot": 5,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386CmpControlValid <- CompilerRuntime:I386ParserSize": 3,
+            "Kernel:I386HeapSize <- FileRuntime:I386TaskFilesState <- FileRuntime:I386TaskFilesValid": 3,
+            "Kernel:I386HeapSize <- Kernel:I386LexIncludeTake <- FileRuntime:I386LexTaskFileInclude": 2,
+            "Kernel:I386HeapValid <- MemoryRuntime:I386MemBackingValid <- MemoryRuntime:I386MemBackingTrim": 2,
+            "Kernel:I386HeapSize <- MemoryRuntime:I386TaskHeapsValid <- MemoryRuntime:I386TaskCodeAllocate": 2,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386FrontendPublishCore <- CompilerRuntime:I386FrontendPublish": 2,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386FrontendTransferGraph <- CompilerRuntime:I386FrontendPublishCore": 2,
+            "Kernel:I386HeapSize <- Kernel:I386ExceptPop <- Kernel:SysUntry": 1,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386LexStringToken <- CompilerRuntime:I386LexNextWithIncludes": 1,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386LexDefinePublish <- CompilerRuntime:I386LexNextWithIncludes": 1,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386CmpControlValid <- CompilerRuntime:I386CompletionReleaseMetadata": 1
+          }
+        },
+        "after_root_headers": {
+          "samples": 2,
+          "top_symbols": {
+            "Kernel:I386HeapFree": 2
+          },
+          "heap_scan_callers": {}
+        },
+        "public_headers": {
+          "samples": 1,
+          "top_symbols": {
+            "Kernel:I386HeapScanSelect": 1
+          },
+          "heap_scan_callers": {}
+        },
+        "startup_source": {
+          "samples": 692,
+          "top_symbols": {
+            "Kernel:I386HeapScan": 287,
+            "Kernel:I386HeapScanSelect": 132,
+            "Kernel:I386HeapFree": 89,
+            "Kernel:I386IrqRestore": 34,
+            "MemoryRuntime:I386MemBackingFits": 24,
+            "Kernel:I386IrqSave": 18,
+            "CompilerRuntime:I386ParserHeapSelectKnown": 13,
+            "CompilerRuntime:I386HeapKnownRequested": 13,
+            "Kernel:I386HashLookup": 10,
+            "CompilerRuntime:I386SegmentedOutReserve": 9
+          },
+          "heap_scan_callers": {
+            "Kernel:I386HeapSize <- CompilerRuntime:I386CmpControlValid <- CompilerRuntime:I386CmpCodeOwner": 160,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386ICSlabFind <- CompilerRuntime:I386CodeFreeSlot": 56,
+            "Kernel:I386HeapSize <- MemoryRuntime:I386TaskHeapsValid <- MemoryRuntime:I386TaskCodeCapacity": 13,
+            "Kernel:I386HeapSize <- MemoryRuntime:I386TaskHeapsValid <- MemoryRuntime:I386TaskCodeAllocate": 13,
+            "Kernel:I386HeapValid <- MemoryRuntime:I386MemBackingValid <- MemoryRuntime:I386MemBackingTrim": 11,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386CmpControlValid <- CompilerRuntime:I386ParserSize": 6,
+            "Kernel:I386HeapSize <- Kernel:I386ExceptPop <- Kernel:SysUntry": 4,
+            "Kernel:I386HeapSize <- Kernel:I386HeapShrink <- MemoryRuntime:I386MemBackingGrow": 4,
+            "Kernel:I386HeapSize <- Kernel:I386LexFileOwned <- CompilerRuntime:I386LexPop": 3,
+            "Kernel:I386HeapSize <- Kernel:I386LexFileOwned <- Kernel:I386LexFileAdvance": 3,
+            "Kernel:I386HeapSize <- FileRuntime:I386TaskFilesState <- FileRuntime:I386TaskFilesValid": 3,
+            "Kernel:I386HeapSize <- Kernel:I386LexSnapshotValid <- CompilerRuntime:I386LexPop": 2,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386OutChunksRelease <- CompilerRuntime:I386OutDel": 2,
+            "Kernel:I386HeapValid <- MemoryRuntime:I386MemBackingValid <- MemoryRuntime:I386MemBackingGrow": 2,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386CmpControlValid <- CompilerRuntime:I386CmpCtrlUnwind": 1,
+            "Kernel:I386HeapSize <- Kernel:I386HashOwnedValid <- Kernel:I386HashTableValid": 1,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386FrontendTableValid <- CompilerRuntime:I386FrontendPublishCore": 1,
+            "Kernel:I386HeapSize <- Kernel:I386LexFilePop <- Kernel:I386LexFileAdvance": 1,
+            "Kernel:I386HeapSize <- CompilerRuntime:I386LexStringToken <- CompilerRuntime:I386LexNextWithIncludes": 1
+          }
+        }
+      }
+    }
+  ]
+}
