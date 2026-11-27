@@ -104,7 +104,7 @@ I64 I386ParserSize(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
   if(!I386CmpControlValid(heap,cc)) goto done;
   for(record=owned->parser_next;record!=&owned->parser_next;record=record->next)
     if(record->allocation==allocation) {
-      if(!record->owner) size=I386HeapSize(heap,allocation);
+      if(!record->owner) size=I386HeapKnownRequested(heap,allocation);
       else if(record->owner->code_capacity && record->requested &&
           (*record->owner->code_capacity)(record->owner,allocation)>=record->requested)
         size=record->requested;

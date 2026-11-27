@@ -1321,3 +1321,13 @@ An 8 MiB normal KVM boot of the integrated image also executed
 `Transform{ON};` line followed by the DolDoc terminator, and the prompt
 displayed fresh arithmetic after the fixture allocations were released.
 [Sprite conversion check](../build/i386-sprite-early-integrated-v1/sprite-conversion8-capture/result.json)
+
+Parser allocation size queries now reuse the whole-arena audit performed
+by control validation under IRQ exclusion. The lookup walks physical block
+boundaries and returns the live block's requested byte count. The exact-size
+and minimum-size predicates reject a missing block before comparing against
+their unsigned size arguments. The task-symbol corpus passed its interior
+pointer and corrupted-metadata checks. The original bootstrap, 386 boot
+audit, and full 8 MiB KVM diagnostics also passed.
+[Ownership corpus](../build/i386-parser-known-request-v2/task-symbols/result.json) ·
+[8 MiB diagnostics](../build/i386-parser-known-request-v2/diagnostic8-kvm/result.json)
