@@ -6526,3 +6526,10 @@ peaked at 38,080 live bytes and 55,808 reserved bytes.
 [Source audit](../build/i386-ode-template-port-v1/committed-source-audit.json) ·
 [Desktop baseline](../build/i386-ode-template-port-v1/desktop64/result.json) ·
 [Document resource profile](../build/i386-ode-template-port-v1/resource8/resource-result.json)
+
+The same image passed configured HomeSys startup and the keyboard
+editor save test. HomeSys selected `/Home/Once.HC`, matched the
+original geometry, and reclaimed the bootstrap block. The editor
+preserved the expected text and cursor across cold reboot.
+[HomeSys handoff](../build/i386-ode-template-port-v1/configured-desktop64/result.json) ·
+[Editor save and reopen](../build/i386-ode-template-port-v1/editor-save64/result.json)
