@@ -20295,11 +20295,26 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "qualified-workflows",
+        "description": "Load the template, initialize its ODE with the supplied derivative and settings, and clean up the task queue."
+      },
+      "oracle": {
+        "tool": "build/i386-ode-template-v1/Probe.HC",
+        "checks": [
+          "Verify the installed derivative callback and drag and acceleration values.",
+          "Require the original task ODE list after cleanup and return to native arithmetic."
+        ]
+      },
+      "tests": [
+        {
+          "target": "original-native-ode-template",
+          "result": "pass",
+          "evidence": "build/i386-ode-template-port-v1/result.json"
+        }
+      ]
     },
     {
       "path": "Demo/Templates/Registry1.HC",

@@ -1,3 +1,8 @@
+#ifdef I386_PUBLIC_USER_INCLUDED
+if(!HashFind("ODEsUpdate",adam_task->hash_table,HTT_FUN))
+  AdamFile("/Kernel/I386/NativeODE.HC",FALSE);;
+#endif
+
 class MyMass:CMass
 {
   F64 radius;

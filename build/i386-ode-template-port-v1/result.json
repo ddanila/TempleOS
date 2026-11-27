@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "disk_sha256": "a185bfdd164052e0821890a370066bc1c5f99562a26947c54758c3b677912004",
+  "source_sha256": "c7e6c935db976c604c288cff4e11844beb7a70644423c9c6f84f0c2427d3c3e7",
+  "fixture_sha256": "5c6a7335772e4623d9573d4461b954038fb8679f20285f1862ef1b60746314e9",
+  "original_result": "pass",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 11,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "scope": "Original and native template initialization, derivative binding, drag and limit settings, and original task ODE list restored after cleanup"
+}
