@@ -1347,3 +1347,14 @@ the initial include of `DocSessionResourceCheck.HC`. Neither ran the
 request with a largest free payload of 120 bytes.
 [Integrated resource failure](../build/i386-sprite-early-integrated-v1/resource8/out-of-memory.json) ·
 [GrPeek resource failure](../build/i386-gr-peek-public-v1/resource8/out-of-memory.json)
+
+A stopped KVM heap capture on the GrPeek image found 93,016 bytes of
+free payload across 221 blocks before the document-session include. The
+largest was 18,440 bytes. At failure, the 128-byte request came from
+`I386ICAddBytes` through `I386ParserHeapAllocKnown`, and the heap had
+only 120 bytes in its largest block. After the rejected input returned,
+the largest block recovered to 18,440 bytes. The arena retained 5,760
+additional live bytes and 65 allocations compared with the earlier
+capture. The snapshots do not establish whether those allocations
+are still needed.
+[Main-arena snapshots](../build/i386-resource-oom-heap-v1/result.json)
