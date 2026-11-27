@@ -20522,6 +20522,12 @@
           "target": "paired-tohtml-options",
           "result": "pass",
           "evidence": "build/i386-tohtml-options-v1/result.json"
+        },
+        {
+          "target": "paired-tohtml-custom-link",
+          "result": "fail",
+          "evidence": "build/i386-tohtml-custom-link-v2/result.json",
+          "scope": "The original writes the caller-supplied link destination. The native kernel reports BAD PUBLIC MEMORY while converting the same document."
         }
       ]
     },

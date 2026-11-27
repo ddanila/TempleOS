@@ -1,0 +1,8 @@
+{
+  "result": "fail",
+  "original_result": "pass",
+  "original_bytes": 1160,
+  "original_output_sha256": "ad7d7f9164c4869f67126e56aec9c057f689ae1b76380a1ce02fce625680d4e7",
+  "native_error": "BAD PUBLIC MEMORY followed by FAIL native kernel",
+  "fixture_sha256": "ad20538db33ddf478b9858dec96c5cb19e994c1fc1f0ece36471be18d9a44768"
+}
