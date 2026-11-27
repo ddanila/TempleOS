@@ -13,6 +13,7 @@ import CI386BuildServices *I386BuildRuntimeAcquire();
 import Bool (*I386TaskFileBirthHook)(CI386Task *source,CI386Task *target,CI386Heap *heap);
 extern U8 *I386FileExpandBuf(CI386Heap *heap,CArcCompress *arc,I64 archive_size,I64 *size=0);
 extern CI386TaskFiles *I386TaskFilesValid(CI386Task *task);
+extern CI386TaskFiles *I386TaskFilesState(CI386Task *task,Bool require_directory);
 extern Bool I386TaskFilesAccess(CI386Task *task);
 extern CDrv *I386TaskFilesDrive(CI386FileVolumes *volumes,U8 drive);
 extern Bool I386TaskModulePublish(CI386ModuleStage *unit,U8 *target);
@@ -117,10 +118,10 @@ Bool I386FileRuntimeInit(CI386Task *task,CI386Heap *heap,CFilePathContext *paths
   return TRUE;
 }
 U8 I386FileRuntimeDriveAlias(U8 alias)
-{//Boot/home aliases are valid even after the current drive record is cleared.
+{//Drive aliases use the bound file environment independently of the current directory.
   U32 flags=I386IrqSave;
   CI386Task *task=I386TaskSelf;
-  CI386TaskFiles *state=I386TaskFilesValid(task);
+  CI386TaskFiles *state=I386TaskFilesState(task,FALSE);
   U8 result=0;
   if(state) {
     if(!alias) {
@@ -135,9 +136,9 @@ U8 I386FileRuntimeDriveAlias(U8 alias)
   return result;
 }
 CDrv *I386FileRuntimeDriveLookup(U8 letter)
-{//An explicit lookup does not depend on the caller's current drive signature.
+{//An explicit lookup uses the bound drive map without borrowing a current directory.
   U32 flags=I386IrqSave;
-  CI386TaskFiles *state=I386TaskFilesValid(I386TaskSelf);
+  CI386TaskFiles *state=I386TaskFilesState(I386TaskSelf,FALSE);
   CDrv *result=0;
   if(state)result=I386TaskFilesDrive(state->volumes,letter);
   I386IrqRestore(flags);return result;

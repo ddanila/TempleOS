@@ -1,0 +1,122 @@
+{
+  "result": "pass",
+  "scope": "Original public Spawn home initialization across selected parents, dormant tasks, mapped home records and invalid parent drive/directory state",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "f86d1ce0299c0b4ebc5c288e2f59e21e87370fda0030b0399d881d98e2d58a24",
+    "image_sha256": "d5f91039622e51e059508bf0ef2d1195baf2f0cab1a076436d4b1c633a289a4a",
+    "boot_area_sha256": "6681ac0fe662d9c3398fe2ab8bad9ceef6ee3130c9b5ee221913749d17a8fd36",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1956,
+      "owned_sectors": 96360,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1958,
+      "owned_sectors": 96368,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Contract.HC": "3caa3a87fb65af7e99667791b900ee76cab79a588960e8f1a5ba5e46e57adaea",
+      "/Native.HC": "55eba45bc8f22db3dceda80f5e6789be32190b703c12d2ecf3440256ff9a9dff"
+    },
+    "added_attributes": {
+      "/Contract.HC": 2048,
+      "/Native.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-spawn-home-null-dir-v1/cross/kernel.img": "f86d1ce0299c0b4ebc5c288e2f59e21e87370fda0030b0399d881d98e2d58a24",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "8b97bca4bd59d0ca074338b68c4102504a376f41f972b1e6acb8cd281614290a",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-spawn-home-reference/Contract.HC": "3caa3a87fb65af7e99667791b900ee76cab79a588960e8f1a5ba5e46e57adaea",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-spawn-home-reference/Native.HC": "55eba45bc8f22db3dceda80f5e6789be32190b703c12d2ecf3440256ff9a9dff",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "4368e9c34087a9fce139c109be6afe6cbaad1d62dd489a0d975979540ecd7aa9",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-spawn-home.py": "bb034c9bf8679c01c7bb2c0320d10f1c7dd4648519d8e260fc8b22550b7455a1"
+  },
+  "commands": [
+    [
+      "#include \"C:/Native.HC\"",
+      []
+    ],
+    [
+      "SPSetup;",
+      [
+        "Make Directory:SpawnAway",
+        "Make Directory:Selected",
+        "1"
+      ]
+    ],
+    [
+      "SPCheck(0);",
+      [
+        "63"
+      ]
+    ],
+    [
+      "SPCheck(1);",
+      [
+        "63"
+      ]
+    ],
+    [
+      "SPCheck(2);",
+      [
+        "63"
+      ]
+    ],
+    [
+      "SPCheck(3);",
+      [
+        "63"
+      ]
+    ],
+    [
+      "SPCheck(4);",
+      [
+        "63"
+      ]
+    ],
+    [
+      "SPCheck(5);",
+      [
+        "63"
+      ]
+    ],
+    [
+      "SPCheck(6);",
+      [
+        "63"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "ram_mib": 64,
+  "accel": "kvm",
+  "managed_welcome": true,
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 64,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 33.257618677045684,
+    "commands": 10,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "guest_fixture_sha256": "3caa3a87fb65af7e99667791b900ee76cab79a588960e8f1a5ba5e46e57adaea",
+  "inputs_unchanged": true
+}

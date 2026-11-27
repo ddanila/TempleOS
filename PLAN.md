@@ -171,9 +171,14 @@ The refreshed public Spawn home fixture passes all seven cases on
 the pinned original. The installed native console at 64 MiB passes
 the first six cases, then throws `Drv` while setting child window
 defaults with a null parent current directory. The defaults query
-the boot drive for its text attributes.
+the boot drive for its text attributes. Drive aliases and explicit
+drive lookup now validate the bound file state without requiring a
+current directory. The corrected full cross-build passes all seven
+Spawn cases and the final arithmetic command at 64 MiB. The installed
+image rerun is in progress.
 [Original Spawn reference](build/i386-console-single-peek-v1/home-original-v2/result.json) ·
-[Native Spawn failure](build/i386-console-single-peek-v1/installed-home64-managed-v3/result.json)
+[Native Spawn failure](build/i386-console-single-peek-v1/installed-home64-managed-v3/result.json) ·
+[Corrected Spawn cross-build pass](build/i386-spawn-home-null-dir-v1/cross-home64/result.json)
 
 The unchanged B-spline demo now uses the shared 2D spline wrappers on
 i386. Both guests selected all six control points at identical
