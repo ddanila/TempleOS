@@ -1,0 +1,4 @@
+{
+  "result": "pass",
+  "scope": "Standalone JukeBox opens an empty chooser, cancels with physical Shift-Escape, then renders 42 in the caller"
+}
