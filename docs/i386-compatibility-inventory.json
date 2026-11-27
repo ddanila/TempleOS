@@ -18042,10 +18042,26 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Run the bundled Hanoi animation through completion, inspect the right tower, and dismiss it with a key."
+      },
+      "oracle": {
+        "checks": [
+          "Verify all ten rainbow palette bytes.",
+          "Observe the right tower and confirm all six disks finish on it.",
+          "Confirm return to native prompt arithmetic."
+        ]
+      },
+      "tests": [
+        {
+          "target": "paired-hanoi-full-animation",
+          "result": "pass",
+          "evidence": "build/i386-rainbow-public-v1/result.json",
+          "scope": "The unmodified animation completes in both guests, and all six disk records identify the right pole."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Lattice.HC",

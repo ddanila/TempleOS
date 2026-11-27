@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 103 (six apps and ninety-seven demos) |
+| Qualified | 104 (six apps and ninety-eight demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
-| Qualification gaps | 550 |
-| Linked to tests / with reference workflow and oracle | 260 / 190 |
+| Qualification gaps | 549 |
+| Linked to tests / with reference workflow and oracle | 261 / 191 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 97 of 224 |
+| Demos qualified | 98 of 224 |
 
-C1 has 550 qualification gaps, including entries that still need a reference
+C1 has 549 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -31908,3 +31908,12 @@ displayed painted cells, evolved the cells, and exited on a key. Native
 prompt arithmetic and all nine 8 MiB KVM startup checks passed.
 [Life comparison](build/i386-gr-peek-public-v1/result.json) ·
 [8 MiB startup](build/i386-gr-peek-public-v1/interactive8-kvm/result.json)
+
+
+### C1: verify the complete Hanoi animation
+
+The original ten-color palette matched byte for byte on both guests.
+The bundled Hanoi animation finished with all six disk records on the
+right pole in both guests. Native i386 dismissed the animation and
+evaluated fresh prompt arithmetic.
+[Hanoi comparison](build/i386-rainbow-public-v1/result.json)
