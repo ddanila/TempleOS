@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-out-chunk-v2/diagnostic8-kvm/working.img",
+  "retained": "build/i386-out-chunk-v2/cross/kernel-diagnostics.img",
+  "sha256": "168b783af51f8766bec188d090ef6d8cf9eaea19b45ec9849bd7fccbd7f62279",
+  "allocated_bytes": 67112960
+}

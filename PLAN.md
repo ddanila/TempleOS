@@ -252,11 +252,13 @@ exclusion and checks each chunk's allocation boundary before freeing it.
 The task-symbol fixture produced and read back all 1,030 bytes across three
 chunks, verified the 1,128-byte allocation footprint, and recovered the
 initial heap with both interrupt states. The full-content cross-build
-passed the 386 boot instruction audit. A controlled 8 MiB comparison
+passed the 386 boot instruction audit and 8 MiB KVM diagnostics,
+including all 28 program-publication cases. A controlled 8 MiB comparison
 holds the installed native console fixed and swaps only the compiler.
 [Segmented output fixture](build/i386-out-chunk-v2/task-symbols/result.json) ·
 [Lexer and compiler-control fixture](build/i386-out-chunk-v2/lex-control/result.json) ·
-[Full-content cross-build](build/i386-out-chunk-v2/cross/result.json)
+[Full-content cross-build](build/i386-out-chunk-v2/cross/result.json) ·
+[8 MiB diagnostics](build/i386-out-chunk-v2/diagnostic8-kvm/result.json)
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
