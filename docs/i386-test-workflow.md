@@ -6487,3 +6487,15 @@ native guests before any lighting choice. Neither added a document
 mesh, and the native guest evaluated fresh arithmetic.
 [Original Man form cancellation](../build/i386-code-alloc-known-v1/native-generations128/grmodels-man-form-cancel-original/result.json) ·
 [Native Man form cancellation](../build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-man-form-cancel/result.json)
+
+### TXTGen startup definitions
+
+Native startup publishes the inherited line-count and age definitions
+after the larger library compiles. Publishing them earlier caused
+sprite compilation to exhaust memory at 8 MiB. The corrected full
+image passed normal and diagnostic 8 MiB KVM boots with nine exact
+VGA checkpoints each. The unchanged TXTGen workflow on that image
+matched all 904 original output bytes.
+[Normal startup](../build/i386-txtgen-startup-defines-v3/interactive8-kvm/result.json) ·
+[Diagnostics](../build/i386-txtgen-startup-defines-v3/diagnostic8-kvm/result.json) ·
+[TXTGen](../build/i386-txtgen-startup-defines-v3/txtgen/result.json)
