@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-symbol-walk-audit-v1/interactive8-tcg/working.img",
+  "retained": "build/i386-symbol-walk-audit-v1/cross/kernel.img",
+  "sha256": "8e43f7143f51cfd0d2e9415b494f8ab53dea8dad03e088192275860ae1b75c09",
+  "allocated_bytes": 67112960
+}
