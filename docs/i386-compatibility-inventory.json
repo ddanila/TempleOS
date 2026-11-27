@@ -6833,7 +6833,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Demo/ToHtmlToTXTDemo/TXTGen.HC"
+        ]
+      }
     },
     {
       "path": "Adam/Snd/MakeSnd.HC",
@@ -20379,7 +20385,14 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Demo/ToHtmlToTXTDemo/HtmlGen.HC",
+          "Demo/ToHtmlToTXTDemo/TXTGen.HC"
+        ]
+      }
     },
     {
       "path": "Demo/ToHtmlToTXTDemo/HtmlGen.HC",
