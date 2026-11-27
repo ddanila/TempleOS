@@ -1,0 +1,30 @@
+{
+  "image_sha256": "85abf2097159f911d67c6e84335a251d1e42aee086fb2f7376b3c6fca0a1f322",
+  "ram_mib": 8,
+  "cpu": "486,-fpu",
+  "prompt": {
+    "capacity": 6746112,
+    "used": 6349952,
+    "largest_free": 149256,
+    "allocations": 19190,
+    "failure_callers": [],
+    "sha256": "898f95e3633e602a081d36952761af39f0c2bd6680ad746510044757d53fedee"
+  },
+  "returned": 13,
+  "after": {
+    "capacity": 6746112,
+    "used": 6351096,
+    "largest_free": 149256,
+    "allocations": 19201,
+    "failure_callers": [],
+    "sha256": "65d07be57cde894129faf890884fc3373b03e97dd14cb2578da72518e6d2e03c"
+  },
+  "result": "pass",
+  "load_recovery_unload": [
+    1,
+    1,
+    1
+  ],
+  "caller_arithmetic": 42,
+  "inputs_unchanged": true
+}

@@ -1,0 +1,69 @@
+{
+  "result": "fail",
+  "scope": "User child startup document, border/menu, flags, callback, welcome bytes and queued execution",
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "85abf2097159f911d67c6e84335a251d1e42aee086fb2f7376b3c6fca0a1f322",
+    "image_sha256": "1dffcc9ec2ce2ce2dc44dc0f797e3255e564b33a0d43a1dd23c76480a15c404f",
+    "boot_area_sha256": "f59aabc2ec39766204e238f81a2971e871c958da25414c288a4f396ae08edbc8",
+    "source_filesystem": {
+      "directories": 24,
+      "files": 1613,
+      "owned_sectors": 23283,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 24,
+      "files": 1614,
+      "owned_sectors": 23286,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/UserStartup.HC": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2"
+    },
+    "added_attributes": {
+      "/UserStartup.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "input_sha256": {
+    "/dev/shm/templeos-docdiag-memory/native-minimal.img": "85abf2097159f911d67c6e84335a251d1e42aee086fb2f7376b3c6fca0a1f322",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "8b97bca4bd59d0ca074338b68c4102504a376f41f972b1e6acb8cd281614290a",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-user-startup-reference/UserStartup.HC": "75b2cedec13fd99f84265614f0a8384273d8ff8cc980823f31d818432f4465b2",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "f9d9216f614e786812ea694ef9462827d69dcfcd0b04d21df48b57969a05e4e0",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-user-startup.py": "9e4b58f3cc64847a7b65868ed63bfa88e0b408e91b8d01325b7081c591222837"
+  },
+  "commands": [
+    [
+      "#include \"/Kernel/I386/PublicUser.HH\"",
+      []
+    ],
+    [
+      "U0 Report(U8*s){while(*s)OutU8(0xE9,*s++);}",
+      []
+    ],
+    [
+      "#include \"C:/UserStartup.HC\"",
+      []
+    ],
+    [
+      "USCheck;",
+      [
+        "255"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ]
+  ],
+  "ram_mib": 8,
+  "managed_pointer": true,
+  "error": "Guest command rejected: INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+  "inputs_unchanged": true
+}

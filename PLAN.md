@@ -365,6 +365,12 @@ stops at the required 8 MiB check, before the flat native rebuild.
 [8 MiB installation result](build/i386-current-nine-native-v1/gen1-install/result.json) ·
 [16 MiB control](build/i386-current-nine-native-v1/gen1-install/boot16-result.json)
 
+The 8 MiB heap comparison reproduced the document diagnostic failure
+on both full images. Both minimal-profile controls passed the document
+diagnostic, including the one carrying the exact nine native modules.
+The installed minimal control still exhausted the heap in `USCheck`.
+[Heap comparison and archived evidence](build/i386-docdiag-memory-v1/README.md)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

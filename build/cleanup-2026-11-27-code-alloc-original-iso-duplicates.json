@@ -1,0 +1,56 @@
+[
+  {
+    "path": "build/i386-code-alloc-known-v1/registry-template64/original.iso",
+    "retained": "build/i386-code-alloc-known-v1/all-retained-registry-template64/original.iso",
+    "sha256": "3692c5c4a532160d6da0091cc2095bb96a48e18b4e8caa11db2bdb5ca52957b2",
+    "bytes": 46225408,
+    "allocated_bytes": 46227456,
+    "mode": 436,
+    "mtime_ns": 1795731298001553719
+  },
+  {
+    "path": "build/i386-code-alloc-known-v1/native-compiler-demos64/original.iso",
+    "retained": "build/i386-code-alloc-known-v1/assembly-demos64/original.iso",
+    "sha256": "ef68506d4b55367ca1ebfa95b252b3cdf62597f0eb4078d87001d61ba6e1a04a",
+    "bytes": 46229504,
+    "allocated_bytes": 46231552,
+    "mode": 436,
+    "mtime_ns": 1795730217484891778
+  },
+  {
+    "path": "build/i386-code-alloc-known-v1/native-generations128/gen2-assembly-demos64/original.iso",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen1-assembly-demos64/original.iso",
+    "sha256": "34eb96a0b593fc789d8f970e317dd8e12eccd705f2872627aa9f7d73072aa9f3",
+    "bytes": 46227456,
+    "allocated_bytes": 46231552,
+    "mode": 436,
+    "mtime_ns": 1795734782734405573
+  },
+  {
+    "path": "build/i386-code-alloc-known-v1/native-generations128/grmodels-cancel-original/original.iso",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/grmodels-ball-lighting-cancel-original/original.iso",
+    "sha256": "4b597c209e76721e70f0efe5eebb990fb17a863d57cbc3886853b021791ade8d",
+    "bytes": 46227456,
+    "allocated_bytes": 46231552,
+    "mode": 436,
+    "mtime_ns": 1795735178209980400
+  },
+  {
+    "path": "build/i386-code-alloc-known-v1/native-generations128/grmodels-cancel-original-shift/original.iso",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/grmodels-ball-lighting-cancel-original/original.iso",
+    "sha256": "4b597c209e76721e70f0efe5eebb990fb17a863d57cbc3886853b021791ade8d",
+    "bytes": 46227456,
+    "allocated_bytes": 46231552,
+    "mode": 436,
+    "mtime_ns": 1795735280486648241
+  },
+  {
+    "path": "build/i386-code-alloc-known-v1/native-generations128/grmodels-man-form-cancel-original/original.iso",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/grmodels-ball-lighting-cancel-original/original.iso",
+    "sha256": "4b597c209e76721e70f0efe5eebb990fb17a863d57cbc3886853b021791ade8d",
+    "bytes": 46227456,
+    "allocated_bytes": 46231552,
+    "mode": 436,
+    "mtime_ns": 1795735639336339647
+  }
+]
