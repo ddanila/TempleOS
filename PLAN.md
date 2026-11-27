@@ -128,11 +128,19 @@ checks depend on a successful rebuild. The retry changed only the
 redundant directive in the frozen image source and verified the other
 1,954 files were unchanged before booting it. Native packing passed at
 128 MiB on KVM, with all 1,457 function exports matching the
-cross-built contract. Installation and the 8 MiB resource check are
-in progress on that frozen image.
+cross-built contract. The installed module boots at 8 MiB and accepts
+arithmetic. Its document diagnostic loader requests 42,899 bytes
+with a largest free block of 28,824 bytes, and a separate 8 MiB run
+runs out of emitter space compiling the document resource fixture.
+At 16 MiB the same disk completes all 20 document sessions with all
+11 VGA checkpoints matched. The installed payload is 22,456 bytes
+larger than the cross-built payload after loading.
 [Native pack failure](build/i386-stadium-capture-v2/native-console128/result.json) ·
 [Isolated rebuild input](build/i386-stadium-capture-v2/native-console128-single-peek/source-change.json) ·
-[Native packing and export audit](build/i386-stadium-capture-v2/native-console128-single-peek/rebuild/result.json)
+[Native packing and export audit](build/i386-stadium-capture-v2/native-console128-single-peek/rebuild/result.json) ·
+[8 MiB installation check](build/i386-stadium-capture-v2/native-console128-single-peek/install/qualification-failure.json) ·
+[8 MiB resource failure](build/i386-stadium-capture-v2/native-console128-single-peek/resource8/qualification-failure.json) ·
+[16 MiB resource pass](build/i386-stadium-capture-v2/native-console128-single-peek/resource16/resource-result.json)
 
 The current `ConsoleRuntime` source includes `GrPeek` once through the
 shared clipping core. The full cross-build preserves all 1,460 function
@@ -228,7 +236,7 @@ An uninterrupted timing run on the same image is in progress.
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
-now records 120 older test images and 3,899,994,112 bytes reclaimed across its
+now records 140 older test images and 4,547,416,064 bytes reclaimed across its
 batches. Each ISO was fully decompressed and checked by SHA-256 before
 its raw copy was removed. The color-picker timing disk was separately
 verified byte-for-byte against the retained cross-built image before

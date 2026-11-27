@@ -1,0 +1,11 @@
+{
+  "result": "fail",
+  "ram_mib": 8,
+  "disk_sha256": "4a62e5a287c80e3830336d47a27a8c9c3a87e191bdbd75552820175f25159f7e",
+  "accel": "kvm",
+  "cold_boot": true,
+  "stage": "Compile document session fixture",
+  "exception": "OutMem",
+  "log_sha256": "23419850945142fc62a72e8b19c7eda7af4ca70198486113c4ac44e2594193a2",
+  "emitter_rejection": "EMITTER CHUNK SPACE REJECT C:/Home/Console.HC"
+}

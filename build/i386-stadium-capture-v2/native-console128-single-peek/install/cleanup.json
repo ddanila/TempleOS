@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-stadium-capture-v2/native-console128-single-peek/install/boot.img",
+  "retained": "build/i386-stadium-capture-v2/native-console128-single-peek/install/candidate.img",
+  "sha256": "4a62e5a287c80e3830336d47a27a8c9c3a87e191bdbd75552820175f25159f7e",
+  "allocated_bytes": 67112960
+}

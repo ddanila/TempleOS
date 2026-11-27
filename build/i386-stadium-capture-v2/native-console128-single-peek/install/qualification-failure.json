@@ -1,0 +1,53 @@
+{
+  "result": "fail",
+  "scope": "Native module installation, cold boot and document allocation at 8 MiB",
+  "installation_verified": true,
+  "cold_boot": true,
+  "arithmetic": true,
+  "document_allocation": false,
+  "candidate_sha256": "4a62e5a287c80e3830336d47a27a8c9c3a87e191bdbd75552820175f25159f7e",
+  "source_disk_sha256": "a6453bb17e765213d52e639cc84b9696b9089d75da10d37134af3e10be03aa17",
+  "boot_debug_sha256": "a6c51d2918719f40a919d3b93307b8102147a81f3e1741e943bd4c3ed60fc1dd",
+  "cross_module": {
+    "module_sha256": "b56cd29cb04614acbd47a6b2905b48a14004f4c072d4cf79c0bbb84dcb89b20c",
+    "file_bytes": 2476769,
+    "payload_bytes": 2330184,
+    "record_count": 5557,
+    "string_bytes": 57641,
+    "records_by_kind": {
+      "1": 1457,
+      "2": 3310,
+      "3": 212,
+      "4": 539,
+      "5": 29,
+      "6": 10
+    }
+  },
+  "installed_module": {
+    "module_sha256": "cebd800ff744d556a30d698904acf5e6d69dccabbd82ecaf45df89a748862a9e",
+    "file_bytes": 2743562,
+    "payload_bytes": 2352640,
+    "record_count": 13757,
+    "string_bytes": 170778,
+    "records_by_kind": {
+      "1": 1457,
+      "2": 8596,
+      "3": 212,
+      "4": 539,
+      "5": 2271,
+      "6": 10,
+      "7": 672
+    }
+  },
+  "first_failed_allocation": {
+    "requested_bytes": 42899,
+    "used_bytes": 6637072,
+    "arena_bytes": 6746112,
+    "largest_free_payload_bytes": 28824,
+    "allocations": 20661,
+    "caller_addresses": [
+      "000000000011DB47",
+      "000000000011DDC6"
+    ]
+  }
+}
