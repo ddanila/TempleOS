@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
 | Qualification gaps | 548 |
-| Linked to tests / with reference workflow and oracle | 263 / 193 |
+| Linked to tests / with reference workflow and oracle | 264 / 194 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 99 of 224 |
 
@@ -80,6 +80,12 @@ instructions and three timing pairs. Native compilation of the unchanged
 demo stops at the first `PassTrace` call on line 22.
 [Original trace and timing receipt](build/i386-demo-timeins-v1/original-receipt.json) ·
 [Native rejection](build/i386-demo-timeins-v1/result.json)
+
+The original `ScrnCapture` demo saved and reopened its 640×480 screen
+image. Its VGA replay matched 307,183 of 307,200 saved pixels. Native
+compilation stops at the undefined `GRScrnCaptureWrite` call on line 7.
+[Original replay check](build/i386-demo-scrn-capture-v1/replay-verification.json) ·
+[Native rejection](build/i386-demo-scrn-capture-v1/native-result.json)
 
 The packed opcode catalog and compiler teardown update passed the
 8 MiB KVM document resource test. All 20 sessions completed with exact

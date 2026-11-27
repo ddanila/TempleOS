@@ -1,0 +1,7 @@
+{
+  "scope": "Physical keyboard launch of unmodified screen capture demo",
+  "source_sha256": "3c2ecf75bdbbbaa151f6928814ba0e30bfa502e37903d3ae2a8a5f31a0350eab",
+  "input_sha256": "8002830b60d30d6a9572943b5a3daa53d7d3fd86c541d96452f5435caa407902",
+  "result": "fail",
+  "native_diagnostic": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 00000000015A8960 00000000536B7354\nINPUT LINE #include \"C:/Demo/Graphics/ScrnCapture.HC\"\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Demo/Graphics/ScrnCapture.HC line 7\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND ERROR\n"
+}

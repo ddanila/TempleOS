@@ -1,0 +1,29 @@
+{
+  "scope": "Physical keyboard launch of unmodified screen capture demo",
+  "source_sha256": "3c2ecf75bdbbbaa151f6928814ba0e30bfa502e37903d3ae2a8a5f31a0350eab",
+  "input_sha256": "b206bbbb0e57ec7b1ab01c3de347167823251d0beb90faa2d253399b88a68843",
+  "result": "pass",
+  "shape": [
+    640,
+    480
+  ],
+  "palette_indices": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    7,
+    9,
+    14,
+    15
+  ],
+  "file_sha256": "b12f4ea55272f59efdcc11b7f55e01112c86dddb82f6a6147c3ac57e65164dad",
+  "framebuffer_sha256": "8087e1f57da27fdff0136d2aba9d0e7fbab1bcc64675fb1bd4065db27c593d44",
+  "frames": {
+    "capture": "8ea549263d899549d3e22f9b420f861bc84dc34c538c7689041743af5dce7f8a",
+    "view": "17aff100c40aeffd695c070f9a9cc1bc04f60c0643662dc34673d3f5f68615bd",
+    "replayed": "b2fe915ca26ae7a62784b1fa6f16e3d1e600da2e6e28d10b812265879c4a00a0"
+  }
+}
