@@ -11520,9 +11520,16 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Open Psalmody through the stock launcher and return with Shift-Escape.",
+      "oracle": "Both staves render and the caller accepts fresh arithmetic after closing Psalmody.",
+      "tests": [
+        {
+          "target": "native-current-psalmody-stock-launch",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-fresh-v1/launch/result.json",
+          "scope": "Stock PersonalMenu include command on the fresh full image, both staves and caller recovery."
+        }
+      ]
     },
     {
       "path": "Apps/Span/Install.HC",
@@ -11625,9 +11632,22 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": "Open Span through Run.HC, dismiss instructions and return through Shift-Escape. Exercise editor and simulation separately.",
+      "oracle": "Observe the stock instructions, editor and fresh caller arithmetic. Check mass placement, simulation advance and pause, and the six original speaker notes.",
+      "tests": [
+        {
+          "target": "native-current-span-stock-launch",
+          "result": "pass",
+          "evidence": "build/i386-span-current-v1/cold/result.json",
+          "scope": "Stock launcher on the fresh full image, physical dismissal and caller recovery."
+        },
+        {
+          "target": "native-current-span-editor",
+          "result": "pass",
+          "evidence": "build/i386-span-current-v1/interactive/result.json",
+          "scope": "Fixture runs the original editor and simulation with one added mass, pause, six ordered notes, speaker cleanup and caller recovery."
+        }
+      ]
     },
     {
       "path": "Apps/Span/Span.HH",

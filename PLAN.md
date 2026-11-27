@@ -289,6 +289,20 @@ experimental policy remains outside the production sources.
 [Heap comparison](build/i386-user8-backing-fit-current-v1/comparison.json) ·
 [8 MiB acceptance result](build/i386-user8-backing-fit-current-v1/user8.json)
 
+On the current full image, the stock Span launcher opens its instructions
+and editor. A mouse click dismisses the instructions, and Shift-Escape
+returns to fresh caller arithmetic. The separate editor fixture places one
+mass, advances and pauses the simulation, and checks six soundtrack
+notes and speaker cleanup.
+[Stock launcher](build/i386-span-current-v1/cold/result.json) ·
+[Editor and simulation](build/i386-span-current-v1/interactive/result.json)
+
+The current nine-provider native build has written ConsoleRuntime to
+the guest volume. Its 1,462 exports match the fresh cross-build and its
+document allocation wrapper audit passes. CompilerRuntime is the next
+module. Native installation and both generation boot checks remain open.
+[ConsoleRuntime audit](build/i386-current-native-console-v1/result.json)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

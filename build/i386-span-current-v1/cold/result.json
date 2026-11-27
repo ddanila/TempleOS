@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "launcher": "#include \"::/Apps/Span/Run\"",
+  "disk_sha256": "c43e583e212de1f7a1e0d443bc40df968227d6018a86f371beac2673f2842672",
+  "instructions_dismissed": true,
+  "fresh_result": {
+    "column": 0,
+    "row": 1,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "input_unchanged": true
+}

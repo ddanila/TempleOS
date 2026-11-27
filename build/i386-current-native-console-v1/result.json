@@ -1,0 +1,12 @@
+{
+  "result": "pass",
+  "scope": "Persisted native ConsoleRuntime, exact cross-build export set and document allocation wrapper audit.",
+  "image_source_revision": "035fee7d54b492fe613b5f8f72bc0a0e4d268483",
+  "path": "/Probe/RetainedConsoleRuntime.t32m",
+  "module_bytes": 2747346,
+  "records": 13793,
+  "exports": 1462,
+  "module_sha256": "cbdfe8d8f95be545e95e6720b7223c3e6e5d8641006f2eff99bfad38ca607c08",
+  "host_reference_sha256": "5018f73b61685fb4076154055c846a27b64687b2f8f094d9c063ca6ac29dda95",
+  "next_module": "CompilerRuntime"
+}
