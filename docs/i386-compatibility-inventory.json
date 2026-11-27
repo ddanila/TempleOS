@@ -11274,6 +11274,18 @@
           "result": "pass",
           "evidence": "build/i386-psalmody-persistence-v7/native/result.json",
           "scope": "Repackaged verified native boot and provider image with only PsalmodyFile.HC changed. With staged app providers, save and direct JukeBox reopen match original song bytes and both note records. Caller recovery and filesystem checks pass. Cold launch and preview exit remain open."
+        },
+        {
+          "target": "native-psalmody-persistence-fresh-cross-build",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-current-build-v1/persistence/result.json",
+          "scope": "Fresh full i386 cross-build with staged providers matches original song bytes and restored records. Caller recovery and filesystem checks pass."
+        },
+        {
+          "target": "native-psalmody-cold-launch",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-current-build-v1/cold/result.json",
+          "scope": "Cold prompt executes the stock PersonalMenu include command without staged providers. JukeBox compilation rejects GodWordStr at line 91."
         }
       ]
     },

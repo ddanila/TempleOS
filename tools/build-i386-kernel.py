@@ -66,7 +66,8 @@ def diagnostic_disk(disk, exports):
         raise ValueError('Diagnostic disk changed more than its boot flag')
     refresh_extended_checksum(changed)
     path=disk.with_name('kernel-diagnostics.img'); path.write_bytes(changed)
-    return path,dict(path=str(path.relative_to(ROOT)),flag_disk_offset=disk_offset,
+    receipt_path = path.relative_to(ROOT) if path.is_relative_to(ROOT) else path
+    return path,dict(path=str(receipt_path),flag_disk_offset=disk_offset,
                      disk_sha256=hashlib.sha256(changed).hexdigest())
 
 

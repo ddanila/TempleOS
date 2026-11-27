@@ -167,6 +167,16 @@ preview remain open on i386.
 [Original save and reopen](build/i386-psalmody-persistence-v6/original/result.json) ·
 [Native save and reopen](build/i386-psalmody-persistence-v7/native/result.json)
 
+The refreshed x86-64 bootstrap rebuilt itself twice. Two subsequent
+i386 cross-builds match across all 1,957 packaged files and the flat
+kernel after normalizing the exported kernel build date. The fresh
+i386 image repeats the byte-exact save and reopen pass with staged
+providers. The stock cold launcher rejects `GodWordStr` in JukeBox.
+[Bootstrap](build/rebuild-psalmody-current-v1/result.json) ·
+[Cross-build comparison](build/i386-psalmody-current-build-v1/cross-comparison.json) ·
+[Fresh save and reopen](build/i386-psalmody-current-build-v1/persistence/result.json) ·
+[Cold launch failure](build/i386-psalmody-current-build-v1/cold/result.json)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

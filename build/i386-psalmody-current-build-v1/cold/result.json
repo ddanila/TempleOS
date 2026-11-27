@@ -1,0 +1,8 @@
+{
+  "result": "fail",
+  "scope": "Stock PersonalMenu Psalmody include command from a cold prompt on the freshly built i386 image, with no manually staged providers.",
+  "command": "#include \"::/Apps/Psalmody/Run\"",
+  "disk_sha256": "01aa3d1606e8567c58639c26a8a44798ab6da76419982d1afba30fe1fe8c639e",
+  "error": "GodWordStr is unavailable in JukeBox.HC line 91",
+  "trace_sha256": "0c7a36a999156277a987ac068e641673f95b7e02338d56b5d00370270647e601"
+}
