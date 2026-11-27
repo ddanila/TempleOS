@@ -297,6 +297,12 @@ notes and speaker cleanup.
 [Stock launcher](build/i386-span-current-v1/cold/result.json) ·
 [Editor and simulation](build/i386-span-current-v1/interactive/result.json)
 
+The paired Span run on the pinned original matches all 302,080 editor
+pixels below the system bar, the mass placement and simulation events,
+and the six ordered soundtrack notes. The inventory now qualifies
+the verified Span launcher and editor workflow.
+[Span comparison](build/i386-span-current-v1/comparison.json)
+
 The current Strut stock launcher displays the exact original instruction
 crop, enters the editor and returns to working arithmetic. The paired
 physical edit-and-play fixture creates two masses and a spring, matches
@@ -311,6 +317,11 @@ the guest volume. Its 1,462 exports match the fresh cross-build and its
 document allocation wrapper audit passes. CompilerRuntime is the next
 module. Native installation and both generation boot checks remain open.
 [ConsoleRuntime audit](build/i386-current-native-console-v1/result.json)
+
+The same native build has written CompilerRuntime. All 554 expected
+native exports are present. The two permitted host-only division audit
+markers are absent. CompilerProbe is now building.
+[CompilerRuntime audit](build/i386-current-native-compiler-v1/result.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched

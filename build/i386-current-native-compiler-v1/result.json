@@ -1,0 +1,16 @@
+{
+  "result": "pass",
+  "scope": "Native persisted CompilerRuntime module export and layout audit.",
+  "source_disk_revision": "035fee7d54b492fe613b5f8f72bc0a0e4d268483",
+  "module_path": "/Probe/RetainedCompilerRuntime.t32m",
+  "module_bytes": 1374580,
+  "records": 4777,
+  "exports": 554,
+  "host_exports": 556,
+  "missing_permitted_audit_markers": [
+    "_I386_DIV_BEGIN",
+    "_I386_DIV_END"
+  ],
+  "module_sha256": "4b2d1fca53ae207aa87c7f36d051273882f7dd6af3906711e02163ce60d7dbb3",
+  "host_module_sha256": "50a496d9b02c1e7483b2d5ff8e5cac3889cbecab8464300aac23af7ba69a5399"
+}

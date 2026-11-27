@@ -1,0 +1,32 @@
+{
+  "result": "pass",
+  "scope": "Stock native launcher and paired original/native editor, simulation and speaker trace. Exact editor pixels below the system bar.",
+  "equal_editor_pixels": 302080,
+  "editor_crop": [
+    0,
+    8,
+    640,
+    480
+  ],
+  "editor_sha256": "54a328ebd2f3256d6526540a774cc6250c454ec31ede51480cfef9e218b31993",
+  "trace": [
+    "SPAN instructions",
+    "SPAN editor initial masses 15",
+    "SPAN placed mass",
+    "SPAN simulation advanced",
+    "SPAN stopped",
+    "SPAN note 0 = 67",
+    "SPAN note 1 = 65",
+    "SPAN note 2 = 67",
+    "SPAN note 3 = 65",
+    "SPAN note 4 = 58",
+    "SPAN note 5 = 65",
+    "SPAN speaker off",
+    "SPAN returned"
+  ],
+  "receipts": {
+    "cold": "39d90b4a3ce9bc32f8bebe0c4fd8b67e76c84cf10270066ec53f3b10a7a169e2",
+    "interactive": "0fc85fb9b88851407f4e36a45b339ae59df56b1b264e8351b9ebaab3af82b812",
+    "original": "c7bfc71997a4316b0037dfb2c88a557ec8c3dc5e1d6e3ea2a87690300a2d8248"
+  }
+}

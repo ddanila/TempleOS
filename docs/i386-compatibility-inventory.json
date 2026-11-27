@@ -11631,7 +11631,7 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Open Span through Run.HC, dismiss instructions and return through Shift-Escape. Exercise editor and simulation separately.",
       "oracle": "Observe the stock instructions, editor and fresh caller arithmetic. Check mass placement, simulation advance and pause, and the six original speaker notes.",
       "tests": [
@@ -11646,6 +11646,12 @@
           "result": "pass",
           "evidence": "build/i386-span-current-v1/interactive/result.json",
           "scope": "Fixture runs the original editor and simulation with one added mass, pause, six ordered notes, speaker cleanup and caller recovery."
+        },
+        {
+          "target": "original-native-span-current-simulation",
+          "result": "pass",
+          "evidence": "build/i386-span-current-v1/comparison.json",
+          "scope": "Exact editor crop below the system bar and matching ordered simulation and speaker events. Stock launcher and caller recovery verified separately."
         }
       ]
     },
