@@ -6586,3 +6586,10 @@ The first-generation full-content check matched all 686 inventory files
 against the frozen source tree, verified the RedSea extents, and passed
 the guest lookup and read contract at 64 MiB.
 [First-generation full-content check](../build/i386-ode-template-port-v1/native-generations128/gen1-full-content64/result.json)
+
+Configured HomeSys startup on the first-generation disk selected the
+Home Once file and matched all 83 values in the original desktop geometry
+capture. The bootstrap task retired, its task record disappeared, and
+its former address lay in a free block. Fresh prompt arithmetic passed
+with the managed desktop active.
+[First-generation HomeSys handoff](../build/i386-ode-template-port-v1/native-generations128/gen1-configured-desktop64/result.json)
