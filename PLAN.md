@@ -150,8 +150,8 @@ gate.
 [Packed opcode profile](build/i386-packed-uasm-v1/profile8-tcg/summary.json)
 
 The `build/` directory accounted for 336 GiB of allocated space, with
-1.7 GiB available on the filesystem after cleanup. The ISO archive ledger
-records 66 older test images and 2,151,407,616 bytes reclaimed across its
+1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
+now records 84 older test images and 2,734,211,072 bytes reclaimed across its
 batches. Each ISO was fully decompressed and checked by SHA-256 before
 its raw copy was removed. The color-picker timing disk was separately
 verified byte-for-byte against the retained cross-built image before
