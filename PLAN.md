@@ -195,8 +195,12 @@ The parser's executable-storage fallback now reuses the arena and
 control audit already performed by `I386ParserCodeAlloc`. The
 taskless-control fixture verifies invalid-size rejection, exact size
 and ownership, complete heap recovery, and preservation of both
-interrupt states. The fresh full-image resource checks are pending.
-[Task-symbol and control fixture](build/i386-parser-fallback-audit-v1/task-symbols/result.json)
+interrupt states. The full-content cross-build passed the 386 boot
+instruction audit. The compiler runtime grows by 146 bytes, and all
+other modules match after normalizing the kernel build date. The
+fresh full-image resource checks are pending.
+[Task-symbol and control fixture](build/i386-parser-fallback-audit-v1/task-symbols/result.json) ·
+[Parser fallback cross-build](build/i386-parser-fallback-audit-v1/cross/result.json)
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger

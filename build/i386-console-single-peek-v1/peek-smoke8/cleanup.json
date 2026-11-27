@@ -1,0 +1,13 @@
+{
+  "removed": "build/i386-console-single-peek-v1/peek-smoke8/working.img",
+  "sha256": "a273fe0f7d2965b19992149cb91ba67da0607f44e2c17fd623701682fd1b2da9",
+  "allocated_bytes": 67112960,
+  "verifier": "Repack the pinned image with the pinned probe and compare the entire image",
+  "packaging_tool": "tools/package-i386-native-image.py",
+  "retained_image": "build/i386-console-single-peek-v1/cross/kernel.img",
+  "disk_sha256": "d15a189e69570c264eb23a73247df32035f1f584f1f6775356a637e2ce773394",
+  "additions": {
+    "/Probe/Peek.HC": "build/i386-gr-peek-public-v1/PeekProbe.HC"
+  },
+  "fixture_sha256": "7848b10eb10f54bd7f37a80be80877ba371a732096e167ec68dd4724f03ae345"
+}
