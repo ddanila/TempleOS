@@ -2,6 +2,9 @@
 
 //The guest source compiler uses the portable validator until it can rebuild
 //the 386 assembly block. Both paths validate and locate in one full scan.
+//The arena and all accepted spans are eight-byte aligned, so a nonempty
+//remainder always holds the span field. Check the span before reading any
+//other fields. Requiring 24 <= span <= remaining also rejects a short tail.
 #ifdef I386_HEAP_SOURCE_BUILD
 I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected,Bool first=FALSE)
 {//Check the whole physical block chain before trusting metadata for mutation.
@@ -18,7 +21,6 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected,
       hc->peak>hc->size || hc->used>hc->peak) return -1;
   cursor=hc->base; remaining=hc->size;
   while(remaining) {
-    if(remaining<24) return -1;
     block=cursor; span=block->span;
     if(span<24 || span&7 || span>remaining || block->reserved) return -1;
     if(block->tag==I386_HEAP_FREE) {
@@ -60,8 +62,6 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected,
     XOR EDX,EDX
     XOR EBX,EBX //Previous block was free; keep it off the stack in the hot loop.
 @@10:
-    CMP ECX,24
-    JB I32 @@90
     MOV EAX,U32 CI386HeapBlock.span[ESI]
     CMP EAX,24
     JB I32 @@90
@@ -147,8 +147,6 @@ I64 I386HeapScan(CI386Heap *hc,U8 *ptr)
     XOR EDX,EDX
     XOR EBX,EBX
 @@10:
-    CMP ECX,24
-    JB I32 @@90
     MOV EAX,U32 CI386HeapBlock.span[ESI]
     CMP EAX,24
     JB I32 @@90
@@ -340,7 +338,6 @@ public Bool I386HeapFree(CI386Heap *hc,U8 *ptr)
 #ifdef I386_HEAP_SOURCE_BUILD
   cursor=hc->base;remaining=hc->size;
   while(remaining) {
-    if(remaining<24)return FALSE;
     span=cursor->span;
     if(span<24 || span&7 || span>remaining || cursor->reserved)return FALSE;
     if(cursor->tag==I386_HEAP_USED) {
@@ -365,8 +362,6 @@ public Bool I386HeapFree(CI386Heap *hc,U8 *ptr)
     XOR EDX,EDX
     XOR EBX,EBX
 @@10:
-    CMP ECX,24
-    JB I32 @@90
     MOV EAX,U32 CI386HeapBlock.span[ESI]
     CMP EAX,24
     JB I32 @@90

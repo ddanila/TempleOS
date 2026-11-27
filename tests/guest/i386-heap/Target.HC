@@ -12,10 +12,10 @@ extern I64 HeapFreeParityTest();
 I64 Main(I64 a,I64 b)
 {
   CI386Heap hc,other;
-  CI386HeapBlock *block;
+  CI386HeapBlock *block,*tail;
   U8 *arena=0x40000,*p,*q,*r,*slots[32],tags[32],*guard,*control=&hc;
   I64 sizes[32],i,j,round,slot;
-  U64 before;
+  U64 before, control_before;
   for (i=0;i<sizeof(hc);i++) control[i]=0x5A;
   before=Hash(control,sizeof(hc));
   guard=arena-8;
@@ -98,6 +98,24 @@ I64 Main(I64 a,I64 b)
   if (I386HeapValid(&hc)) return 23;
   hc.allocations--;
   if (!I386HeapFree(&hc,p) || !I386HeapValid(&hc)) return 24;
+  //A trailing span must fit even when a valid allocation was already found.
+  p=I386HeapAlloc(&hc,8);
+  if (!p) return 210;
+  block=arena+24;
+  for (i=8;i<=16;i+=8) {
+    block->span=8192-24-i;
+    tail=arena+8192-i;
+    tail->span=24;
+    before=Hash(guard,8216);
+    control_before=Hash(control,sizeof(hc));
+    if (I386HeapValid(&hc) || I386HeapSize(&hc,p)!=-1 ||
+        I386HeapAlloc(&hc,1) || I386HeapAllocHigh(&hc,1) ||
+        I386HeapFree(&hc,p) || Hash(guard,8216)!=before ||
+        Hash(control,sizeof(hc))!=control_before) return 211;
+  }
+  //Restore the free span so both poisoned values are inside its payload.
+  block->span=8192-24;
+  if (!I386HeapFree(&hc,p) || !I386HeapValid(&hc)) return 212;
   for (i=0;i<8;i++) if (guard[i]!=0xA5) return 25;
   for (i=8200;i<8216;i++) if (guard[i]!=0xA5) return 26;
   i=HeapValidationTest(&hc,arena);

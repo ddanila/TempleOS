@@ -149,6 +149,17 @@ gate.
 [Color-picker profile](build/i386-color-picker-production-v1/profile8-tcg/summary.json) ·
 [Packed opcode profile](build/i386-packed-uasm-v1/profile8-tcg/summary.json)
 
+The heap scan, fit selection and free loops now read the leading span
+from the aligned remainder and reject it unless it fits and holds a
+full block. This removes one branch per block while preserving the
+full arena audit. Both the i386 assembly and the portable heap-core
+fixtures pass, including rejection of malformed 8- and 16-byte tails
+after a valid allocation and byte-for-byte preservation of the arena
+and allocator control record. A normal full-image TCG measurement is
+needed to quantify the change.
+[Assembly arena test](build/i386-heap-tail-v1/core386-v2/result.json) ·
+[Portable arena test](build/i386-heap-tail-v1/core-source-v2/result.json)
+
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
 now records 84 older test images and 2,734,211,072 bytes reclaimed across its
