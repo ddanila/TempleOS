@@ -8,7 +8,9 @@ import runpy
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE=ROOT/"tests/guest/i386-spawn-home-reference/Contract.HC"
-COMMANDS = [('#include "C:/Native.HC"',[]),('SPSetup;',['1'])]+[(f'SPCheck({i});',['63']) for i in range(7)]+[('6*7;',['42'])]
+COMMANDS = [('#include "C:/Native.HC"',[]),
+            ('SPSetup;',['Make Directory:SpawnAway','Make Directory:Selected','1'])]
+COMMANDS += [(f'SPCheck({i});',['63']) for i in range(7)] + [('6*7;',['42'])]
 
 
 if any(len(c[0])>255 for c in COMMANDS):
@@ -30,6 +32,9 @@ def main():
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--ram-mib',type=int,choices=(8,64),default=64)
+    parser.add_argument('--accel', choices=('kvm','tcg'), default='tcg')
+    parser.add_argument('--managed-welcome', action='store_true',
+                        help='Expect the original welcome document and managed pointer')
     args = parser.parse_args()
     source, out = args.disk.resolve(), args.out.resolve()
     commands = list(COMMANDS)
@@ -43,11 +48,13 @@ def main():
     packaging = runpy.run_path(str(ROOT/'tools/package-i386-native-image.py'))['package'](
         source, working, additions={'/Contract.HC':FIXTURE.read_bytes(),'/Native.HC':FIXTURE.with_name('Native.HC').read_bytes()})
     report = dict(result='running', scope='Original public Spawn home initialization across selected parents, dormant tasks, mapped home records and invalid parent drive/directory state',
-                  packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib)
+                  packaging=packaging, input_sha256=pins, commands=serializable(commands), ram_mib=args.ram_mib,
+                  accel=args.accel, managed_welcome=args.managed_welcome)
     try:
         report['behavior'] = runpy.run_path(str(runner))['run_input'](
             working, out/'qemu', snapshot=False, ram_mib=args.ram_mib,
-            cpu='486,-fpu', accel='tcg', qmp_stdio=True,
+            cpu='486,-fpu', accel=args.accel, qmp_stdio=True,
+            welcome=args.managed_welcome, managed_pointer=args.managed_welcome,
             startup_check={'status':'ok', 'answers':[], 'commands':commands,
                            'pause_window_manager':False,
                            'rejected_answers':['0'],

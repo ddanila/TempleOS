@@ -1,0 +1,14 @@
+[
+  {
+    "removed": "build/i386-console-single-peek-v1/installed-home64/working.img",
+    "retained": "build/i386-console-single-peek-v1/installed-home64-managed/working.img",
+    "sha256": "d01b67d828c5caf11ac393ca56a59d0a6eb33316b37092eb3f68e1eb0f8a9ad8",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-console-single-peek-v1/installed-home64-kvm/working.img",
+    "retained": "build/i386-console-single-peek-v1/installed-home64-managed/working.img",
+    "sha256": "d01b67d828c5caf11ac393ca56a59d0a6eb33316b37092eb3f68e1eb0f8a9ad8",
+    "allocated_bytes": 67112960
+  }
+]

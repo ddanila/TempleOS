@@ -21,9 +21,11 @@ Bool SPSetup()
  if(FileWrite("SpawnSeed.TXT","else",4)<=0)return FALSE;
  return Cd(SPAway);
 }
-U0 SPChild(U8 *unused)
+U0 SPChild(U8 *argument)
 {
- U8 *name=FileNameAbs("SpawnSeed.TXT"),*data;I64 size;
+ U8 *name,*data;I64 size;
+ if(argument)return;
+ name=FileNameAbs("SpawnSeed.TXT");
  SPResult=0;StrCpy(SPActualDir,Fs->cur_dir);if(name)StrCpy(SPActualName,name);
  if(Fs->cur_dv==SPExpectedDrive&&StrCmp(Fs->cur_dir,SPHome+2)==0)SPResult|=1;
  if(Fs->parent_task==SPExpectedParent)SPResult|=2;
@@ -31,8 +33,9 @@ U0 SPChild(U8 *unused)
  data=FileRead("SpawnSeed.TXT",&size);if(SPBytes(data,size))SPResult|=8;
  Free(name);Free(data);SPDone=1;
 }
-U0 SPParent(U8 *unused)
+U0 SPParent(U8 *argument)
 {
+ if(argument)return;
  SPParentReady=Cd(SPOther);
  while(!SPParentRelease)Yield;
 }

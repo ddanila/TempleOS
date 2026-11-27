@@ -167,6 +167,14 @@ restores the document, and the prompt accepts arithmetic.
 [Installed 16 MiB resource pass](build/i386-console-single-peek-v1/installed-resource16/resource-result.json) ·
 [Installed 64 MiB persistent-window pass](build/i386-console-single-peek-v1/installed-persistent64-plain/result.json)
 
+The refreshed public Spawn home fixture passes all seven cases on
+the pinned original. The installed native console at 64 MiB passes
+the first six cases, then throws `Drv` while setting child window
+defaults with a null parent current directory. The defaults query
+the boot drive for its text attributes.
+[Original Spawn reference](build/i386-console-single-peek-v1/home-original-v2/result.json) ·
+[Native Spawn failure](build/i386-console-single-peek-v1/installed-home64-managed-v3/result.json)
+
 The unchanged B-spline demo now uses the shared 2D spline wrappers on
 i386. Both guests selected all six control points at identical
 coordinates and drew matching green, red and blue pixel masks. Space
