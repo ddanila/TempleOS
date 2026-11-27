@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "ram_mib": 64,
+  "accel": "kvm",
+  "cpu": "486,-fpu",
+  "counts": {
+    "DOC CHECK RET 13": 2,
+    "DOC DIAGNOSTIC loaded": 2,
+    "DOC DOLLAR GROWTH recovery": 2,
+    "DOC DIAGNOSTIC unloaded": 2
+  },
+  "input_sha256": {
+    "/dev/shm/templeos-docdiag-compact/cross/kernel.img": "b14539a7b5bf0ebb6eec1c735398d50d56ebc1ea750ec47c363b907a33aa8eea",
+    "/dev/shm/templeos-docdiag-compact/cross/exports/ConsoleRuntime.t32m": "5a9600f07b9f42c806e66fce8c2a1680da6626e319a8bf4d2640fe7daebd6693",
+    "/dev/shm/templeos-docdiag-compact/cross/exports/DocDiagnosticRuntime.t32m": "a08b67200403c5fb94edc8b3808e47a8e56dee83b183fb0a6b93573b86f28c9e"
+  },
+  "inputs_unchanged": true,
+  "arithmetic": 42
+}

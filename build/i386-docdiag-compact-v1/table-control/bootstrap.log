@@ -1,0 +1,15 @@
+Built /dev/shm/templeos-docdiag-tables/bootstrap/generation-1.iso (45,422,592 bytes)
+START rebuild
+STAGE compiler
+EXPORT Compiler.BIN 6D895628 42370
+STAGE kernel
+EXPORT Kernel.BIN 6DCCDA28 305E0
+DONE rebuild
+Built /dev/shm/templeos-docdiag-tables/bootstrap/generation-2.iso (45,508,608 bytes)
+START rebuild
+STAGE compiler
+EXPORT Compiler.BIN 6D847428 42370
+STAGE kernel
+EXPORT Kernel.BIN 6DC85628 305E0
+DONE rebuild
+PASS: rebuilt compiler/kernel booted and rebuilt themselves. See result.json for binary differences.

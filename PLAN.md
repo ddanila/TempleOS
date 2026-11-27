@@ -405,6 +405,16 @@ was reverted. The 8 MiB cross diagnostic and strict startup gate still
 fail with a 32,544-byte maximum free payload at the prompt.
 [Raster code footprint controls](build/i386-raster-resident-v1/README.md)
 
+The compact document diagnostic retains all assertions and reduces
+the cross-built module from 34,588 to 32,390 bytes. The full 8 MiB
+cross image loaded it, recovered from the dollar-growth fault,
+unloaded and returned 13. The strict startup gate still encounters
+allocation failures in Find and the God libraries. Two diagnostic
+cycles passed at 64 MiB. The selected native build passed its export
+audit and produced a 37,785-byte module. Its native installation
+and 8 MiB boot are pending.
+[Document diagnostic footprint and results](build/i386-docdiag-compact-v1/README.md)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

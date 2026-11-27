@@ -1,0 +1,23 @@
+{
+  "baseline": {
+    "image_sha256": "b974c7439aac9978698258b493c021c6d8b9227867f0db9c8d2e82eaa2228177",
+    "diagnostics_image_sha256": "0bbbec5a5cfd0739f71a866eba833fd185469271e8a7a0161eb37238361c3e8d",
+    "module_sha256": "6c52415f53cb402840264f3f0e4294611e85367e89a15643ecbea5efda23e1d7",
+    "module_serialized_bytes": 34588,
+    "module_payload_bytes": 33024
+  },
+  "table_control": {
+    "image_sha256": "6e6574fcaf9a602ff859338bd0e748c491bfee75a57abc3b99ec9be5ec391e1c",
+    "diagnostics_image_sha256": "343b46209e29bf49f2b7d0df288aadd5d1d689cd381805de92b235c0083899ab",
+    "module_sha256": "6d3878276e3426de22c4fca4007b8ebd30c02253eb8d8691cd99ef5757280d7d",
+    "module_serialized_bytes": 33962,
+    "module_payload_bytes": 31808
+  },
+  "compact": {
+    "image_sha256": "b14539a7b5bf0ebb6eec1c735398d50d56ebc1ea750ec47c363b907a33aa8eea",
+    "diagnostics_image_sha256": "955ed31fa2bc4f67e16870daf576818ea33b5b6ae3ae0a21359db50bd26490ca",
+    "module_sha256": "a08b67200403c5fb94edc8b3808e47a8e56dee83b183fb0a6b93573b86f28c9e",
+    "module_serialized_bytes": 32390,
+    "module_payload_bytes": 30480
+  }
+}

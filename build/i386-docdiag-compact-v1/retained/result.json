@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "welcome": false,
+  "source_disk_sha256": "6b31689e16814ec2c388615acd973d235ca8d4fab9740090de976607cbbd21e0",
+  "module_order": [
+    "DocDiagnosticRuntime"
+  ],
+  "modules": {
+    "DocDiagnosticRuntime": {
+      "bytes": 37785,
+      "records": 235,
+      "exports": 32,
+      "sha256": "483762a9b89b689938a3bfaf17ae3fbe3a2f401a941381bf4e769119a84ad838",
+      "reference_sha256": "a08b67200403c5fb94edc8b3808e47a8e56dee83b183fb0a6b93573b86f28c9e"
+    }
+  },
+  "cpu": "486,-fpu",
+  "ram_mib": 128,
+  "keyboard_harness": true,
+  "managed_pointer": false,
+  "build_provider_loads": 1
+}

@@ -76,30 +76,24 @@ U8 doc_record_expected_bytes[42]={
   '0','U','L','1','U','L','0','B','K','1','B','K',
   '0',' ','d',' ','f','h'};
 
+U8 doc_record_format_types[10]={
+  DOCT_FOREGROUND,DOCT_FOREGROUND,DOCT_BACKGROUND,DOCT_BACKGROUND,
+  DOCT_INVERT,DOCT_INVERT,DOCT_UNDERLINE,DOCT_UNDERLINE,DOCT_BLINK,DOCT_BLINK};
+I64 doc_record_format_attrs[10]={2,DOC_DFT,1,DOC_DFT,1,0,1,0,1,0};
+//One NUL-terminated fragment follows each formatting operation.
+U8 *doc_record_format_text="red\0 plain\0blue\0 end\0 inv\0\0 under\0 done\0 flash\0";
+
 I64 NativeDocRecordSaveCheck()
 {
   CDoc *doc,*loaded;
-  U8 *saved,*round_trip;
+  U8 *saved,*round_trip,*text=doc_record_format_text;
   I64 before=Fs->data_heap->used_u8s,size,round_trip_size,result=4,index;
   doc=DocNew("C:/Record.DD",Fs);
-  NativeDocDiagnosticFormat(doc,DOCT_FOREGROUND,2);
-  NativeDocDiagnosticPutText(doc,"red");
-  NativeDocDiagnosticFormat(doc,DOCT_FOREGROUND,DOC_DFT);
-  NativeDocDiagnosticPutText(doc," plain");
-  NativeDocDiagnosticFormat(doc,DOCT_BACKGROUND,1);
-  NativeDocDiagnosticPutText(doc,"blue");
-  NativeDocDiagnosticFormat(doc,DOCT_BACKGROUND,DOC_DFT);
-  NativeDocDiagnosticPutText(doc," end");
-  NativeDocDiagnosticFormat(doc,DOCT_INVERT,1);
-  NativeDocDiagnosticPutText(doc," inv");
-  NativeDocDiagnosticFormat(doc,DOCT_INVERT,0);
-  NativeDocDiagnosticFormat(doc,DOCT_UNDERLINE,1);
-  NativeDocDiagnosticPutText(doc," under");
-  NativeDocDiagnosticFormat(doc,DOCT_UNDERLINE,0);
-  NativeDocDiagnosticPutText(doc," done");
-  NativeDocDiagnosticFormat(doc,DOCT_BLINK,1);
-  NativeDocDiagnosticPutText(doc," flash");
-  NativeDocDiagnosticFormat(doc,DOCT_BLINK,0);
+  for(index=0;index<sizeof(doc_record_format_types);index++) {
+    NativeDocDiagnosticFormat(doc,doc_record_format_types[index],doc_record_format_attrs[index]);
+    NativeDocDiagnosticPutText(doc,text);
+    while(*text++);
+  }
   doc->flags|=DOCF_NO_CURSOR;
   saved=NativeDocRecordSaveCore(doc,&size);
   if(!saved || size!=94) result=-20;
@@ -119,6 +113,9 @@ I64 NativeDocRecordSaveCheck()
   if(Fs->data_heap->used_u8s!=before) result=-44;
   return result;
 }
+
+U8 doc_binary_offsets[18]={0,1,2,5,7,13,14,15,16,20,21,24,28,32,33,34,35,36};
+U8 doc_binary_expected[18]={36,'S','P','d','t','1',36,0,1,0x34,0x12,5,1,1,2,0,0xFF,42};
 
 I64 NativeDocBinarySaveCheck()
 {
@@ -141,11 +138,9 @@ I64 NativeDocBinarySaveCheck()
   entry->tag=StrNew("dot",doc->mem_task); entry->bin_num=7; entry->bin_data=bin;
   DocInsEntry(doc,entry);
   first=DocSave(doc,&first_size);
-  if(!first || first_size!=37 || first[0]!=36 || first[1]!='S' || first[2]!='P' ||
-      first[5]!='d' || first[7]!='t' || first[13]!='1' || first[14]!=36 ||
-      first[15] || first[16]!=1 || first[20]!=0x34 || first[21]!=0x12 ||
-      first[24]!=5 || first[28]!=1 || first[32]!=1 || first[33]!=2 ||
-      first[34]!=0 || first[35]!=0xFF || first[36]!=42) result=-1;
+  if(!first || first_size!=37) result=-1;
+  else for(index=0;index<sizeof(doc_binary_offsets);index++)
+    if(first[doc_binary_offsets[index]]!=doc_binary_expected[index]) result=-1;
   loaded=DocNew("C:/BinaryRecordRead.DD",Fs); loaded->flags|=DOCF_NO_CURSOR;
   if(result==5 && !NativeDocRecordLoadCore(loaded,first,first_size)) result=-2;
   entry=loaded->head.next; bin=loaded->bin_head.next;
@@ -175,6 +170,12 @@ I64 NativeDocBinarySaveCheck()
   return result;
 }
 
+Bool NativeDocAllocationRestored(CDoc *doc,I64 used)
+{
+  return !doc->owning_task && !Bt(&doc->locked_flags,DOClf_LOCKED) &&
+    Fs->data_heap->used_u8s==used;
+}
+
 I64 NativeDocAllocationCoreCheck()
 {
   CDoc *doc=NULL;
@@ -192,14 +193,11 @@ I64 NativeDocAllocationCoreCheck()
   }
   doc=DocNew("C:/AllocFail.DD",Fs);
   base=Fs->data_heap->used_u8s;
-  NativeDocAllocArm(1);
-  if(!NativeDocAllocationCaught(&NativeDocAllocationPut,doc) ||
-      doc->owning_task || Bt(&doc->locked_flags,DOClf_LOCKED) ||
-      Fs->data_heap->used_u8s!=base || doc->head.next!=doc) return -4;
-  NativeDocAllocArm(2);
-  if(!NativeDocAllocationCaught(&NativeDocAllocationPut,doc) ||
-      doc->owning_task || Bt(&doc->locked_flags,DOClf_LOCKED) ||
-      Fs->data_heap->used_u8s!=base || doc->head.next!=doc) return -5;
+  for(i=1;i<=2;i++) {
+    NativeDocAllocArm(i);
+    if(!NativeDocAllocationCaught(&NativeDocAllocationPut,doc) ||
+        !NativeDocAllocationRestored(doc,base) || doc->head.next!=doc) return -3-i;
+  }
   DocPutKey(doc,'a',0);
   doc->cur_entry=doc->head.next; doc->cur_col=1;
   //Fill the owned four-byte tag capacity so the fault probe needs growth.
@@ -207,16 +205,13 @@ I64 NativeDocAllocationCoreCheck()
   base=Fs->data_heap->used_u8s;
   NativeDocAllocArm(1);
   if(!NativeDocAllocationCaught(&NativeDocAllocationPut,doc) ||
-      doc->owning_task || Bt(&doc->locked_flags,DOClf_LOCKED) ||
-      Fs->data_heap->used_u8s!=base || StrCmp(doc->head.next->tag,"abc")) return -6;
+      !NativeDocAllocationRestored(doc,base) || StrCmp(doc->head.next->tag,"abc")) return -6;
   NativeDocAllocArm(1);
   if(!NativeDocAllocationCaught(&NativeDocAllocationNewLine,doc) ||
-      doc->owning_task || Bt(&doc->locked_flags,DOClf_LOCKED) ||
-      Fs->data_heap->used_u8s!=base || doc->head.next->next!=doc) return -7;
+      !NativeDocAllocationRestored(doc,base) || doc->head.next->next!=doc) return -7;
   NativeDocAllocArm(1);
   if(!NativeDocAllocationCaught(&NativeDocAllocationSave,doc) ||
-      doc->owning_task || Bt(&doc->locked_flags,DOClf_LOCKED) ||
-      Fs->data_heap->used_u8s!=base) return -8;
+      !NativeDocAllocationRestored(doc,base)) return -8;
   DocPutKey(doc,'Z',0); text=DocSave(doc,&size);
   if(!text || size!=5 || text[0]!='a' || text[1]!='b' || text[2]!='c' ||
       text[3]!='Z' || text[4]!=CH_CURSOR) {
@@ -241,8 +236,7 @@ I64 NativeDocDollarGrowthCheck()
   result=-502;
   if(doc->dollar_buf!=buffer || doc->dollar_buf_size!=size ||
       doc->dollar_buf_ptr!=position || !(doc->flags&DOCF_IN_DOLLAR) ||
-      doc->head.next!=doc || doc->owning_task ||
-      Bt(&doc->locked_flags,DOClf_LOCKED) || Fs->data_heap->used_u8s!=base)
+      doc->head.next!=doc || !NativeDocAllocationRestored(doc,base))
     goto dollar_done;
   result=-503;
   if(buffer[0]!=36) goto dollar_done;
