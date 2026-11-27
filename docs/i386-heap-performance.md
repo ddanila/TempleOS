@@ -1288,3 +1288,11 @@ under KVM, passed the nine normal VGA checkpoints, and confirmed that
 `Sprite2Code` was published. A trial that split the sprite converter into a
 second Adam compilation still exhausted the heap.
 [Strict KVM trial](../build/i386-sprite-startup-early-v1/result.json)
+
+The integrated full image cross-built from clean revision `5786a5ce` with
+both the compiler retirement change and the sprite load order. Its strict
+8 MiB KVM run reached the managed prompt in 32.346 seconds and passed all
+nine exact VGA checkpoints. The startup trace had no allocation rejection
+or build-provider load.
+[Integrated KVM startup](../build/i386-sprite-early-integrated-v1/interactive8-kvm/result.json) ·
+[386 boot audit](../build/i386-sprite-early-integrated-v1/cross/boot-instruction-audit.json)
