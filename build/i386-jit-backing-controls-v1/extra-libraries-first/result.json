@@ -1,0 +1,8 @@
+{
+  "image_sha256": "e6e64a0e42d811d9830ca11d92012fb48b8d01eb0cbfa543f493e2b56bf35c22",
+  "ram_mib": 8,
+  "cpu": "486,-fpu",
+  "result": "fail",
+  "error": "Missing completed startup marker",
+  "inputs_unchanged": true
+}

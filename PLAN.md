@@ -380,6 +380,15 @@ reproduced its passing document check with 77,768 contiguous main-heap
 bytes available at the prompt.
 [Startup heap isolation](build/i386-startup-heap-isolation-v1/README.md)
 
+Exact-page task code storage did not recover the full-profile errors
+in a fresh cross-build. An installed argument control returned 13
+only after command-prompt setup failed. Prioritizing the newer
+providers or delaying the window manager also failed. The installed
+full image has no empty public backing regions and only 6,656 unused
+page bytes in the live main-arena backings, so trimming those regions
+cannot provide the required contiguous allocation.
+[Exact-page and startup order controls](build/i386-jit-backing-controls-v1/README.md)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

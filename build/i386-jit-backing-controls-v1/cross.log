@@ -1,0 +1,67 @@
+PASS: 41 explicit FileRuntime bindings and consistent loader counts
+PASS: 35 explicit CompilerRuntime bindings cover declared imports
+Checked 73 compiler keyword descriptors
+PASS: 3 complete compiler interfaces; guarded dependency reads
+PASS: complete optimizer helpers; resident core; one support document
+Verified retained public math vectors
+Verified date vectors
+Built /dev/shm/templeos-exact-jit/cross/compiler.iso (45,551,616 bytes)
+START kernel cross-build
+PASS original StrCpy
+PASS original bit assignment
+PASS original queues
+PASS original public tables
+PASS original define list
+PASS original definition lookup
+PASS original document initialization
+PASS original document entries
+PASS original document entry lifetime
+PASS original document lifecycle
+PASS original/shared basic editing
+PASS original/shared multiline editing
+PASS original/shared document navigation
+PASS original/shared document vertical
+PASS original/shared document boundaries
+PASS original/shared basic save
+PASS shared document round trip
+PASS original text base
+PASS original text rendering
+PASS original graphics frame
+PASS original window services
+PASS original window text
+PASS original graphics context
+DATE RESULTS 1333 146
+PASS date conversion
+PASS original document records
+PASS original document selection
+PASS original document defaults
+ORIGINAL HELP SOURCE FL:C:/Probe/PublicHeaders.HC,5 Second
+PASS original help metadata
+EXPORT OriginalCompat.DD 6DC72890 30
+PASS original document compatibility fixture
+EXPORT StartupRegistry.HC 6DC79028 84
+EXPORT StartupRegistry.HC.Z 6DC70C98 72
+PASS original startup registry
+EXPORT Kernel.t32m 6D755028 74D9F
+EXPORT SysTry.t32m 6DB85228 D4
+EXPORT TaskContext.t32m 6DAD6530 BB
+EXPORT ExceptContext.t32m 6C4D4490 16C
+EXPORT IrqEntry.t32m 6C5C7690 25E
+EXPORT ExceptionEntry.t32m 6C5C8388 3BB
+EXPORT Startup.t32m 6DC87980 187
+EXPORT CompilerRuntime.t32m 6BD77628 136F79
+EXPORT CompilerProbe.t32m 6FD7E428 8C58A
+EXPORT FileRuntime.t32m 6C7FC828 44C1E
+EXPORT ConsoleRuntime.t32m 6B081828 25CEC5
+EXPORT MemoryRuntime.t32m 6EBDFC28 385C8
+EXPORT BuildRuntime.t32m 6B050428 1707F
+EXPORT DocDiagnosticRuntime.t32m 6B047C28 871C
+EXPORT EditorRuntime.t32m 6B02CA28 B91D
+EXPORT CompilerProgramRuntimeProbe.t32m 6AF86228 6004F
+EXPORT Kernel32.BIN 6C87EC28 70E08
+EXPORT IncludeInner.HC.Z 6DAAE6E0 18A
+EXPORT BudgetAccts.DD.Z 6B080420 5F
+EXPORT BudgetAccts.DD 6DC74628 61
+DONE kernel cross-build
+PASS: 386 boot audit, 96 BIOS and 332 protected-mode instructions
+Built /dev/shm/templeos-exact-jit/cross/kernel.img and /dev/shm/templeos-exact-jit/cross/kernel-diagnostics.img (462344 native kernel bytes); boot test: False

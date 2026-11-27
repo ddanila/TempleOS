@@ -1,0 +1,102 @@
+{
+  "qualified-older": {
+    "main": {
+      "heap_free_bytes": 145424,
+      "largest_free": 77768,
+      "backing_regions": 26,
+      "backing_pages_bytes": 647168,
+      "backing_unused_bytes": 15872,
+      "backing_overhead_bytes": 7416,
+      "empty_regions": 0
+    },
+    "fallback": {
+      "heap_free_bytes": 1616,
+      "largest_free": 496,
+      "backing_regions": 9,
+      "backing_pages_bytes": 546816,
+      "backing_unused_bytes": 1024,
+      "backing_overhead_bytes": 3504,
+      "empty_regions": 0
+    }
+  },
+  "before-extra-libraries": {
+    "main": {
+      "heap_free_bytes": 119240,
+      "largest_free": 22608,
+      "backing_regions": 29,
+      "backing_pages_bytes": 622592,
+      "backing_unused_bytes": 8192,
+      "backing_overhead_bytes": 8752,
+      "empty_regions": 0
+    },
+    "fallback": {
+      "heap_free_bytes": 2128,
+      "largest_free": 792,
+      "backing_regions": 8,
+      "backing_pages_bytes": 546816,
+      "backing_unused_bytes": 1536,
+      "backing_overhead_bytes": 2992,
+      "empty_regions": 0
+    }
+  },
+  "installed-full": {
+    "main": {
+      "heap_free_bytes": 44104,
+      "largest_free": 9136,
+      "backing_regions": 33,
+      "backing_pages_bytes": 664064,
+      "backing_unused_bytes": 6656,
+      "backing_overhead_bytes": 10064,
+      "empty_regions": 0
+    },
+    "fallback": {
+      "heap_free_bytes": 2128,
+      "largest_free": 792,
+      "backing_regions": 8,
+      "backing_pages_bytes": 546816,
+      "backing_unused_bytes": 1536,
+      "backing_overhead_bytes": 2992,
+      "empty_regions": 0
+    }
+  },
+  "installed-patched": {
+    "main": {
+      "heap_free_bytes": 530032,
+      "largest_free": 169040,
+      "backing_regions": 10,
+      "backing_pages_bytes": 382976,
+      "backing_unused_bytes": 0,
+      "backing_overhead_bytes": 3312,
+      "empty_regions": 0
+    },
+    "fallback": {
+      "heap_free_bytes": 4176,
+      "largest_free": 2840,
+      "backing_regions": 8,
+      "backing_pages_bytes": 544768,
+      "backing_unused_bytes": 5120,
+      "backing_overhead_bytes": 2992,
+      "empty_regions": 0
+    }
+  },
+  "source-cross": {
+    "main": {
+      "heap_free_bytes": 42096,
+      "largest_free": 7824,
+      "backing_regions": 34,
+      "backing_pages_bytes": 680960,
+      "backing_unused_bytes": 10752,
+      "backing_overhead_bytes": 10368,
+      "empty_regions": 0
+    },
+    "fallback": {
+      "heap_free_bytes": 1616,
+      "largest_free": 496,
+      "backing_regions": 9,
+      "backing_pages_bytes": 546816,
+      "backing_unused_bytes": 0,
+      "backing_overhead_bytes": 3504,
+      "empty_regions": 0
+    }
+  }
+}

@@ -1,0 +1,15 @@
+Built /dev/shm/templeos-exact-jit/bootstrap/generation-1.iso (45,424,640 bytes)
+START rebuild
+STAGE compiler
+EXPORT Compiler.BIN 6D896A28 42370
+STAGE kernel
+EXPORT Kernel.BIN 6DCD3E28 305E0
+DONE rebuild
+Built /dev/shm/templeos-exact-jit/bootstrap/generation-2.iso (45,510,656 bytes)
+START rebuild
+STAGE compiler
+EXPORT Compiler.BIN 6D847A28 42370
+STAGE kernel
+EXPORT Kernel.BIN 6DC8AE28 305E0
+DONE rebuild
+PASS: rebuilt compiler/kernel booted and rebuilt themselves. See result.json for binary differences.

@@ -1,0 +1,28 @@
+{
+  "bootstrap_result": "pass",
+  "bootstrap_binaries_equal_to_baseline_by_generation": [
+    false,
+    false
+  ],
+  "task_heaps_source_sha256": "9510500efd8f67bd0a53b5465702ae66a5909ecbe64a95abe64ebb06aa70aa16",
+  "disk_sha256": "0d17f82657d57e9d4b7dc05c3e9dd0f6b329523a49a57702adff1c227e272b09",
+  "diagnostics_disk_sha256": "10b12f2bb1cfd189018078a006a12c6356377e53f9d6fd7a6ab85dbd1bdc41de",
+  "modules": {
+    "Kernel": "95e4207d7c8e4b11650b59d9c2fc4a1909e52c9dc0f43e94a4c461779c808141",
+    "SysTry": "c8bd2409a609c65a52fe58d41c53c2031febb8cf13f79f45ded626f673f00d2e",
+    "TaskContext": "1731c954810c266d8e860dcfadc5004e855bfb2e8a50bdb7fbd2c626ef56ded6",
+    "ExceptContext": "3457441a64b9e9f02b053b215b338ceb380fa62294e342880b619dc044ec460d",
+    "IrqEntry": "4271e0762b789e13a42ecff399a69b11cf9b08f52e88a6857a41e530b8594695",
+    "ExceptionEntry": "f44b36d59e4a11800d23edac1afa2c3c33edf1e762dd7990b5efc5f80881ac7b",
+    "Startup": "5d523c257fcfa26ed6882a4bcae163946426ece652daf72664de20291409423b",
+    "CompilerRuntime": "50a496d9b02c1e7483b2d5ff8e5cac3889cbecab8464300aac23af7ba69a5399",
+    "CompilerProbe": "bafcddad46e2b2bdd9ecc41ea406e06a14a07826a98045451613aea74c3ca3cc",
+    "FileRuntime": "acc866e7b5fcc23a8186d083969f612b4706929fa7add59c8ff78f7acd2f3c31",
+    "ConsoleRuntime": "5018f73b61685fb4076154055c846a27b64687b2f8f094d9c063ca6ac29dda95",
+    "MemoryRuntime": "1a995dbe963ae15b43b26d4739ae32803d26533c49d987a5c5595449055d180d",
+    "BuildRuntime": "3134f883c0c637fea96a49bf7270dc660dbfc239457a10564a4bc64acf9977a0",
+    "DocDiagnosticRuntime": "6c52415f53cb402840264f3f0e4294611e85367e89a15643ecbea5efda23e1d7",
+    "EditorRuntime": "9c82338f318a3d0290e79bcb8bcc807c15826c980b3d78cd06d687cf13d26230",
+    "CompilerProgramRuntimeProbe": "a8336170d0a1c49360909bd6442b8949bd6bfd81f66165e8a26850bc9c37f2ae"
+  }
+}

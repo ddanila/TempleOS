@@ -1,0 +1,449 @@
+{
+  "image_sha256": "76f7197fcd2f5e9ab9893bc606fdddce868bed3a77f25ccbfdd0e5bf418b971b",
+  "ram_mib": 8,
+  "cpu": "486,-fpu",
+  "startup_rejections": [
+    "PARSER CODE STORAGE REJECT C:/Adam/Opt/Utils/Find.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+    "PARSER CODE STORAGE REJECT C:/Adam/God/GodBible.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+    "PARSER CODE STORAGE REJECT C:/Adam/God/HolySpirit.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+    "PARSER CODE STORAGE REJECT C:/Adam/God/GodSong.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+    "INPUT REJECT exception 000072674D6E6957 errors 0000000000000000 warnings 0000000000000000"
+  ],
+  "prompt": {
+    "capacity": 6746112,
+    "used": 6697872,
+    "largest_free": 8944,
+    "allocations": 21174,
+    "failure_callers": [
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ]
+    ],
+    "sha256": "a289d41d3636c9e48b1c685cb2add7027a4fb3db33aeb8dbb1e5c3cdb4674c93"
+  },
+  "returned": -1,
+  "after": {
+    "capacity": 6746112,
+    "used": 6698856,
+    "largest_free": 8944,
+    "allocations": 21183,
+    "failure_callers": [
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1170223,
+          "symbols": [
+            "Kernel:I386RedSeaLoadBoundCapacity"
+          ]
+        },
+        {
+          "return_address": 1170862,
+          "symbols": [
+            "Kernel:I386RedSeaLoadBound"
+          ]
+        }
+      ],
+      [
+        {
+          "return_address": 1216632,
+          "symbols": [
+            "Kernel:I386TaskCreateWithFilesPlacement"
+          ]
+        },
+        {
+          "return_address": 2928341,
+          "symbols": [
+            "MemoryRuntime:MemorySpawn"
+          ]
+        }
+      ]
+    ],
+    "sha256": "a7c1bc1d4ea44db9cac89c185eba5e1c6198f37d57703f4cc97a7d008e94f10f"
+  },
+  "result": "fail",
+  "load_recovery_unload": [
+    0,
+    0,
+    0
+  ],
+  "caller_arithmetic": 42,
+  "inputs_unchanged": true
+}
