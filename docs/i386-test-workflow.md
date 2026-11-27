@@ -6545,3 +6545,9 @@ workflow. Both guests found the marker on line two, rejected an absent
 marker, and restored the caller's border and silent settings. The
 native guest then evaluated fresh arithmetic.
 [DocFileEd search comparison](../build/i386-doc-file-ed-bail-v1/result.json)
+
+The direct `DocHighlight` comparison returned identical 32-bit
+character and style words on both guests for a line comment, including
+the terminating zero. The native guest freed the result and returned to
+fresh arithmetic.
+[DocHighlight comparison](../build/i386-doc-highlight-v1/result.json)

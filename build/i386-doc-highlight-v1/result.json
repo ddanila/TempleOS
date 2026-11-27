@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "fixture_sha256": "83a73deadf97d675426d2436a6a32231cdc9b059e962b13e013b933daf096b6a",
+  "original_sha256": "fe97bc3a6a74faf8f1c4baaa4a9adc186b4d61b1a458ba89a977f2d9a966a995",
+  "native_sha256": "fe97bc3a6a74faf8f1c4baaa4a9adc186b4d61b1a458ba89a977f2d9a966a995",
+  "words": [
+    559,
+    559,
+    544,
+    616,
+    617,
+    615,
+    616,
+    620,
+    617,
+    615,
+    616,
+    628,
+    544,
+    621,
+    613,
+    0
+  ],
+  "fresh_arithmetic": true
+}
