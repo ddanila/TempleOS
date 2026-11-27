@@ -1,0 +1,14 @@
+[
+  {
+    "removed": "build/i386-heap-fallthrough-v1/baseline/working.img",
+    "retained": "build/i386-and-not-mod-port-v1/cross/kernel.img",
+    "sha256": "d16a1cd2151ac5037a485e9d141a372795d7fe2e58b2e488a5b89487b450d14f",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-heap-fallthrough-v1/candidate/working.img",
+    "retained": "build/i386-heap-fallthrough-v1/cross/kernel.img",
+    "sha256": "96495b583fa577ff343f8e51e846bc87999918478370790087cb8843bd5f161f",
+    "allocated_bytes": 67112960
+  }
+]

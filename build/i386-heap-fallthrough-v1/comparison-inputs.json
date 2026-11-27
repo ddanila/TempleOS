@@ -1,0 +1,12 @@
+{
+  "delivered_file_changes": [
+    "/Kernel/I386/Heap.HC",
+    "/Modules/I386/Kernel.t32m"
+  ],
+  "exported_module_changes": [
+    "Kernel.t32m"
+  ],
+  "module_count": 16,
+  "baseline_disk_sha256": "d16a1cd2151ac5037a485e9d141a372795d7fe2e58b2e488a5b89487b450d14f",
+  "candidate_disk_sha256": "96495b583fa577ff343f8e51e846bc87999918478370790087cb8843bd5f161f"
+}

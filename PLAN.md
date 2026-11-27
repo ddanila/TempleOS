@@ -245,6 +245,19 @@ remains open.
 [8 MiB resource profile](build/i386-heap-tail-v1/resource8/resource-result.json) ·
 [8 MiB TCG startup budget](build/i386-heap-tail-v1/interactive8-tcg/startup-budget.json)
 
+Moving free-block and match handling off the allocator's common assembly
+path passed the core and 1,024-record fragmentation checks. In a sequential
+8 MiB TCG comparison, the baseline reached the prompt in 244.373 seconds
+and the candidate in 241.902 seconds. Both passed all nine VGA checkpoints.
+Only the heap source and kernel module differed in the delivered file
+payloads. One pair shows a 2.471-second difference and leaves the 60-second
+gate open. The experiment is archived pending a change with a larger
+startup impact.
+[Comparison inputs](build/i386-heap-fallthrough-v1/comparison-inputs.json) ·
+[Baseline budget](build/i386-heap-fallthrough-v1/baseline/startup-budget.json) ·
+[Candidate budget](build/i386-heap-fallthrough-v1/candidate/startup-budget.json) ·
+[Candidate diff](build/i386-heap-fallthrough-v1/candidate.diff)
+
 The parser's executable-storage fallback now reuses the arena and
 control audit already performed by `I386ParserCodeAlloc`. The
 taskless-control fixture verifies invalid-size rejection, exact size

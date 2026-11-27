@@ -1,0 +1,79 @@
+diff --git a/Kernel/I386/Heap.HC b/Kernel/I386/Heap.HC
+index fb0792e2..07bdc67a 100644
+--- a/Kernel/I386/Heap.HC
++++ b/Kernel/I386/Heap.HC
+@@ -84 +84,13 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected,
+-    JNE @@40
++    JE @@25
++@@40:
++    ADD ESI,EAX
++    SUB ECX,EAX
++    JNZ I32 @@10
++    MOV EBX,U32 &hc[EBP]
++    CMP EDI,U32 CI386Heap.used[EBX]
++    JNE I32 @@90
++    CMP EDX,U32 CI386Heap.allocations[EBX]
++    JNE I32 @@90
++    MOV U8 &valid[EBP],1
++    JMP @@90
++@@25:
+@@ -108,10 +120 @@ I64 I386HeapScanSelect(CI386Heap *hc,U8 *ptr,U32 need,CI386HeapBlock **selected,
+-@@40:
+-    ADD ESI,EAX
+-    SUB ECX,EAX
+-    JNZ I32 @@10
+-    MOV EBX,U32 &hc[EBP]
+-    CMP EDI,U32 CI386Heap.used[EBX]
+-    JNE I32 @@90
+-    CMP EDX,U32 CI386Heap.allocations[EBX]
+-    JNE I32 @@90
+-    MOV U8 &valid[EBP],1
++    JMP @@40
+@@ -168 +171,13 @@ I64 I386HeapScan(CI386Heap *hc,U8 *ptr)
+-    JNE @@40
++    JE @@25
++@@40:
++    ADD ESI,EAX
++    SUB ECX,EAX
++    JNZ I32 @@10
++    MOV EBX,U32 &hc[EBP]
++    CMP EDI,U32 CI386Heap.used[EBX]
++    JNE I32 @@90
++    CMP EDX,U32 CI386Heap.allocations[EBX]
++    JNE I32 @@90
++    MOV U8 &valid[EBP],1
++    JMP @@90
++@@25:
+@@ -182,10 +197 @@ I64 I386HeapScan(CI386Heap *hc,U8 *ptr)
+-@@40:
+-    ADD ESI,EAX
+-    SUB ECX,EAX
+-    JNZ I32 @@10
+-    MOV EBX,U32 &hc[EBP]
+-    CMP EDI,U32 CI386Heap.used[EBX]
+-    JNE I32 @@90
+-    CMP EDX,U32 CI386Heap.allocations[EBX]
+-    JNE I32 @@90
+-    MOV U8 &valid[EBP],1
++    JMP @@40
+@@ -388,9 +393,0 @@ public Bool I386HeapFree(CI386Heap *hc,U8 *ptr)
+-    JMP @@40
+-@@30:
+-    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_FREE
+-    JNE I32 @@90
+-    TEST EBX,EBX
+-    JNZ I32 @@90
+-    CMP U32 CI386HeapBlock.requested[ESI],0
+-    JNZ I32 @@90
+-    MOV EBX,ESI
+@@ -406,0 +404,10 @@ public Bool I386HeapFree(CI386Heap *hc,U8 *ptr)
++    JMP @@90
++@@30:
++    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_FREE
++    JNE I32 @@90
++    TEST EBX,EBX
++    JNZ I32 @@90
++    CMP U32 CI386HeapBlock.requested[ESI],0
++    JNZ I32 @@90
++    MOV EBX,ESI
++    JMP @@40
