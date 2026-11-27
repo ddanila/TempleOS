@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "fixture_sha256": "131d403bd38e85f796e39f72131e68ccf697b0cf3b5e0692e704f694d10f0b8a",
+  "document_sha256": "5929c2da4df2c88a5f0771f94fdad2c60a4435e63af68342edfaf31798e68f4b",
+  "original_log_sha256": "0a0d4a5a828d02acba6936860891ede5e28845fb326b4277d6eb30acb577186a",
+  "native_log_sha256": "b66761833c3c846f3f37bafdc47dd8eb0b499497bc4cb12254fcd70e6f6f9a58",
+  "checks": [
+    "marker found on line two",
+    "missing marker returns false",
+    "caller border and silent state restored",
+    "native prompt evaluates fresh arithmetic"
+  ]
+}

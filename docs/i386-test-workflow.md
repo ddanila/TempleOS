@@ -6533,3 +6533,9 @@ original geometry, and reclaimed the bootstrap block. The editor
 preserved the expected text and cursor across cold reboot.
 [HomeSys handoff](../build/i386-ode-template-port-v1/configured-desktop64/result.json) ·
 [Editor save and reopen](../build/i386-ode-template-port-v1/editor-save64/result.json)
+
+The public `DocFileEd` binding matched the original read-only search
+workflow. Both guests found the marker on line two, rejected an absent
+marker, and restored the caller's border and silent settings. The
+native guest then evaluated fresh arithmetic.
+[DocFileEd search comparison](../build/i386-doc-file-ed-bail-v1/result.json)
