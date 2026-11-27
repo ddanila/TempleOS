@@ -6570,3 +6570,9 @@ fresh arithmetic at the prompt.
 [Console install and boot](../build/i386-ode-template-port-v1/native-console-install/result.json) ·
 [HTML generator](../build/i386-ode-template-port-v1/native-console-htmlgen/result.json) ·
 [Custom link conversion](../build/i386-ode-template-port-v1/native-console-custom-link/result.json)
+
+The first-generation guest used the installed providers to build its
+469,000-byte flat kernel and the compiler program probe at 128 MiB. The
+produced disk then cold-booted at 8 MiB, accepted fresh prompt arithmetic,
+and passed document allocation and recovery.
+[First-generation self-host and cold boot](../build/i386-ode-template-port-v1/native-generations128/gen1-selfhost/result.json)
