@@ -1,0 +1,20 @@
+[
+  {
+    "removed": "build/i386-common-ancestor-reference-v1/working.img",
+    "retained": "build/i386-sprite-early-integrated-v1/cross/kernel.img",
+    "sha256": "dfc6ec9534b2e41a5d66c458866e1037ac15f68e177add4c7a8d6972f339bc2a",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-gr-arrow-public-v1/interactive8-kvm/working.img",
+    "retained": "build/i386-gr-arrow-public-v1/cross/kernel.img",
+    "sha256": "e300a29931418d67825c7d4429505423d7505cb62b5fd683fd18af320619946a",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-parser-known-request-v2/interactive8-tcg/working.img",
+    "retained": "build/i386-parser-known-request-v2/cross/kernel.img",
+    "sha256": "a22e53181bb90d9a968d27c17a4ebaeb704b0b6e35298e5f0fd26bf6a4e9b8ff",
+    "allocated_bytes": 67112960
+  }
+]
