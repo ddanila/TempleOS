@@ -87,10 +87,12 @@ heap recovery and eleven matching VGA checkpoints. The same build
 passed 8 MiB diagnostics and disassembly. Its normal 8 MiB TCG startup
 took 273.143 seconds and passed all nine VGA checks. The 60-second
 requirement remains open. The subsequent bounded heap lookup passed
-the 8 MiB KVM diagnostics and document resource tests.
+the 8 MiB KVM diagnostics and document resource tests. Its TCG boot
+took 270.838 seconds with all nine VGA checks passing.
 [8 MiB resource receipt](build/i386-packed-uasm-v1/resource8/resource-result.json) ·
 [TCG startup budget check](build/i386-packed-uasm-v1/interactive8-tcg/startup-budget.json) ·
-[Bounded lookup resource receipt](build/i386-known-boundary-v2/resource8/resource-result.json)
+[Bounded lookup resource receipt](build/i386-known-boundary-v2/resource8/resource-result.json) ·
+[Bounded lookup TCG budget check](build/i386-known-boundary-v2/interactive8-tcg/startup-budget.json)
 
 The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active

@@ -1445,3 +1445,16 @@ The packed-catalog build's bounded teardown optimization did not cover
 that release callback. The profile used QMP pauses. The unpaused timing
 receipt above supplies the startup measurement.
 [Verified profile summary](../build/i386-packed-uasm-v1/profile8-tcg/summary.json)
+
+The bounded heap lookup completed normal 8 MiB TCG startup in 270.838
+seconds. All nine VGA checkpoints passed and there were zero build-provider
+loads. The preceding packed-catalog image took 273.143 seconds in a
+separate run. The measurements leave the 60-second budget open.
+[Bounded lookup startup](../build/i386-known-boundary-v2/interactive8-tcg/result.json) ·
+[Budget verdict](../build/i386-known-boundary-v2/interactive8-tcg/startup-budget.json)
+
+Within the packed-catalog profile's 160 startup-source samples attributed
+to compiler ownership validation, 51 came through IR allocation and 30
+through parser token reads. Both use the validating compiler control
+entry point. These counts separate the allocation and token paths from
+the instruction release callback.
