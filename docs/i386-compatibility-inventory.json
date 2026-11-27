@@ -19186,11 +19186,18 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
+      "reference_workflow": "Launch the lecture from the original command prompt and run the overhead, remainder and bitmask loops to completion.",
+      "oracle": "Validate the complete DolDoc with both signed timing measurements and the architecture-specific counter units. Verify fresh native prompt arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-remainder-benchmark",
+          "result": "pass",
+          "evidence": "build/i386-and-not-mod-port-v1/comparison/result.json",
+          "scope": "The original reports CPU cycles and the i386 port reports 1,193,182 Hz PIT ticks. Both finish both measurements."
+        }
+      ]
     },
     {
       "path": "Demo/Lectures/FixedPoint.HC",

@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 113 (six apps and one hundred seven demos) |
+| Qualified | 114 (six apps and one hundred eight demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 23 (fifteen support sources and eight shared data or document files) |
-| Qualification gaps | 538 |
-| Linked to tests / with reference workflow and oracle | 271 / 201 |
+| Qualification gaps | 537 |
+| Linked to tests / with reference workflow and oracle | 272 / 202 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 107 of 224 |
+| Demos qualified | 108 of 224 |
 
-C1 has 538 qualification gaps, including entries that still need a reference
+C1 has 537 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -335,7 +335,7 @@ payloads match the baseline.
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
-now records 240 test images and 7,800,221,696 bytes reclaimed across its
+now records 243 test images and 7,899,480,064 bytes reclaimed across its
 batches. Each ISO was fully decompressed and checked by SHA-256 before
 its raw copy was removed. The color-picker timing disk was separately
 verified byte-for-byte against the retained cross-built image before
@@ -527,6 +527,14 @@ on a fresh cross-build that publishes the shared `GrPlot` routine.
   leaves the comparison open. See the
   [original debugger](build/i386-demo-glblvars-direct-v1/original/after-execute.png)
   and [native output](build/i386-demo-glblvars-native-v1/run/guest/demo-output.png).
+- The pinned original completes the `AndNotMod` remainder benchmark.
+  The unchanged demo stopped at `CPURep` on i386. The port retains the
+  100-million-iteration loops and overhead subtraction and labels the
+  i386 measurements in PIT ticks. The original reports CPU cycles.
+  Both paired guests produced the complete two-measurement output, and
+  the i386 prompt rendered fresh arithmetic.
+  [Unchanged-source comparison](build/i386-and-not-mod-v1/result.json) ·
+  [Port comparison](build/i386-and-not-mod-port-v1/comparison/result.json).
 - The batch runner can launch from the original prompt through the keyboard.
   NullCase matched all 31 DolDoc bytes through this launch path. TreeDemo
   produced 62 directory macros and 1,906 file links on the pinned original,

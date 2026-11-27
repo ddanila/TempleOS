@@ -7,7 +7,11 @@ U0 TimeIns()
   I64 start1,end1,start2,end2,overhead_time,test_time;
   I64 reg i,reg tmp;
 
+#ifdef I386_PUBLIC_USER_INCLUDED
+  "%03X Cores %d Hz PIT counter\n",mp_cnt,cnts.time_stamp_freq;
+#else
   CPURep;
+#endif
 
   //Measure Loop Overhead
   start1=GetTSC;
@@ -22,7 +26,11 @@ U0 TimeIns()
     tmp=i%0x400;
   end2=GetTSC;
   test_time=end2-start2;
+#ifdef I386_PUBLIC_USER_INCLUDED
+  "Remainder Version #1 PIT ticks\t: %10.5f\n",
+#else
   "Remainder Version #1 Cycles\t: %10.5f\n",
+#endif
 	ToF64(test_time-overhead_time)/SAMPLE_SIZE;
 
   //Measure remainder...
@@ -31,7 +39,11 @@ U0 TimeIns()
     tmp=i&0x3FF;
   end2=GetTSC;
   test_time=end2-start2;
+#ifdef I386_PUBLIC_USER_INCLUDED
+  "Remainder Version #2 PIT ticks\t: %10.5f\n",
+#else
   "Remainder Version #2 Cycles\t: %10.5f\n",
+#endif
 	ToF64(test_time-overhead_time)/SAMPLE_SIZE;
 }
 

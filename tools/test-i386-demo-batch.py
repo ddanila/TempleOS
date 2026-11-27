@@ -108,6 +108,17 @@ def original_timeins(doc):
                        for overhead, measured in zip(values[::2], values[1::2])]}
 
 
+def remainder_measurements(doc, native):
+    """Require both complete timing lines, allowing for loop-overhead noise."""
+    header = (rb'001 Cores 1193182 Hz PIT counter\n' if native
+              else rb'001 Cores +[0-9]+\.[0-9]+[kMGT]Hz\n')
+    unit = b'PIT ticks' if native else b'Cycles'
+    measurement = rb' *(-?[0-9]+\.[0-9]{5})\n'
+    match = re.fullmatch(header + rb'Remainder Version #1 ' + unit + rb'\t:' + measurement
+                         + rb'Remainder Version #2 ' + unit + rb'\t:' + measurement + rb'\x05', doc)
+    return list(map(float, match.groups())) if match else []
+
+
 def run(image, out, native, outputs, reference_at_prompt=False):
     Guest = runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest']
     guest = Guest(image, out, native, reference_cpus=1)
@@ -215,6 +226,11 @@ def main():
                          'native': optimization_times(native, True)}
                 entry['elapsed_seconds'] = times
                 matches = all(times.values())
+            elif path == 'Demo/Lectures/AndNotMod.HC':
+                measurements = {'original_cycles': remainder_measurements(original, False),
+                                'native_pit_ticks': remainder_measurements(native, True)}
+                entry['measurements_per_iteration'] = measurements
+                matches = all(measurements.values())
             else:
                 matches = original == native
             result = 'pass' if matches else 'fail'

@@ -1,0 +1,29 @@
+{
+  "result": "pass",
+  "input_sha256": "d16a1cd2151ac5037a485e9d141a372795d7fe2e58b2e488a5b89487b450d14f",
+  "entries": {
+    "Demo/Lectures/AndNotMod.HC": {
+      "source_sha256": "2682b50e551a2fdad18688e9594557210899ff245c1a31f18270b64cc71f74d7",
+      "output_file": "demo-0.DD",
+      "native_source_sha256": "056fe613b159031e0542740790d6a9714585a007d72b0dcd38d418fd4350c103",
+      "original_sha256": "e4d02aa222129b22b404d41992704e292ec9867fede7520eef22e990e3bb9280",
+      "bytes": 102,
+      "measurements_per_iteration": {
+        "original_cycles": [
+          8.26601,
+          -1.01945
+        ],
+        "native_pit_ticks": [
+          0.21324,
+          0.00192
+        ]
+      },
+      "result": "pass",
+      "native_sha256": "c6ea9de1cd9f4a41c506adde814a7ba75514da065657a5e734092f287840f4df"
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "inputs_unchanged": true
+}

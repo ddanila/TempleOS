@@ -1,0 +1,17 @@
+{
+  "result": "fail",
+  "input_sha256": "e7c26176a1ce7b9db3217a6d59327df16409d86b183dabd3598cf8bac8642d12",
+  "entries": {
+    "Demo/Lectures/AndNotMod.HC": {
+      "source_sha256": "2682b50e551a2fdad18688e9594557210899ff245c1a31f18270b64cc71f74d7",
+      "output_file": "demo-0.DD",
+      "original_sha256": "e8bb86d15d61e9d3ea0de409c53ca5950128fc4b9adfa499c74da2861a63b785",
+      "bytes": 102
+    }
+  },
+  "seed": null,
+  "scope": "Complete DolDoc validation, document cleanup and return to native command input for a batch of noninteractive demos",
+  "reference_at_prompt": true,
+  "error": "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 00000000015AA780 00000000536B7354\nINPUT LINE #include \"C:/Probe/DemoBatch.HC\"\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Demo/Lectures/AndNotMod.HC line 11\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nEXPORT demo-0.DD 11E60 21\n",
+  "inputs_unchanged": true
+}
