@@ -1,0 +1,32 @@
+[
+  {
+    "removed": "build/i386-parenwarn-links-v2/guarded-baseline64/working.img",
+    "retained": "build/i386-parenwarn-links-v2/guarded-production.img",
+    "sha256": "660937a97541fac96833baed4d7acc70dc7738e4b7d65c44ef23a29fe18679b3",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v2/guarded-public8/working.img",
+    "retained": "build/i386-parenwarn-links-v2/guarded-production.img",
+    "sha256": "660937a97541fac96833baed4d7acc70dc7738e4b7d65c44ef23a29fe18679b3",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v2/void-full-content/working.img",
+    "retained": "build/i386-parenwarn-links-v2/void-full-content-frozen/working.img",
+    "sha256": "60db026ad126df18ee7af098e7b7072f4dbe792fce68336c4b36dcf476e54f50",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v2/void-native-generations128/gen2-full-content/working.img",
+    "retained": "build/i386-parenwarn-links-v2/void-native-generations128/gen2-full-content-retry/working.img",
+    "sha256": "fb05fdbfe42b1f18bb8d7e416f1c2dc51b0d8feef86d6931566b9e959ad023f2",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-demo-f64-files-v1/reopen8/working.img",
+    "retained": "build/i386-demo-f64-files-v1/comparison-fixed/working.img",
+    "sha256": "5a7efb842b933e02f5963c6d3bc5f707292684086dd603a574826ee13e13ec9c",
+    "allocated_bytes": 67112960
+  }
+]
