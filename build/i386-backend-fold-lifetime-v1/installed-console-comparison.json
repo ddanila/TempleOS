@@ -1,0 +1,10 @@
+{
+  "result": "pass",
+  "only_changed_file": "/Modules/I386/CompilerRuntime.t32m",
+  "other_file_contents_equal": 1954,
+  "console_sha256": "cebd800ff744d556a30d698904acf5e6d69dccabbd82ecaf45df89a748862a9e",
+  "baseline": "build/i386-out-chunk-v1/installed-comparison/candidate/result.json",
+  "candidate": "build/i386-backend-fold-lifetime-v1/installed-console8/result.json",
+  "baseline_emitter_exhausted": true,
+  "candidate_document_sessions": 20
+}

@@ -860,8 +860,8 @@ CI386FrontendCode *I386FrontendOutputBound(CI386Frontend *state,CCmpCtrl *cc,CHa
   }
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND START\n");
   if(cc->flags&CCF_BOOT_MODULE) {
-    if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,0,debug_info)) I386FrontendUnavailable(state);
-  } else if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,&I386ExecutionBreakPoll,debug_info))
+    if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,0,debug_info,TRUE)) I386FrontendUnavailable(state);
+  } else if(!I386BackendCompileWithBreak(state->heap,cc,state->expression.types,out,&bound->status,&I386ExecutionBreakPoll,debug_info,TRUE))
     I386FrontendUnavailable(state);
   if(cc->flags&CCF_MODULE_SOURCE) KernelLog("MODULE OUTPUT BACKEND DONE\n");
   for(metadata=bound->aot.next_ie;metadata!=&bound->aot.next_ie;metadata=metadata->next)
@@ -901,7 +901,7 @@ CI386FrontendCode *I386FrontendOutputBound(CI386Frontend *state,CCmpCtrl *cc,CHa
   }
   cc->aot=old_aot; cc->aotc=old_aotc; cc->htc.hash_table_lst=old_hash;
   cc->flags=cc->flags&~mask|old_flags&mask; cc->pass=old_pass;
-  //Backend folding may create a stack. Its IR/result no longer borrows it.
+  //A failed fold can leave private scratch attached to the control.
   //Preserve a caller's existing stack and the exception unwind contract.
   if(!old_ps && cc->ps) {
     if(!I386ParserFree(state->heap,cc,cc->ps)) I386FrontendUnavailable(state);

@@ -1,0 +1,11 @@
+{
+  "result": "pass",
+  "base_disk_sha256": "4a62e5a287c80e3830336d47a27a8c9c3a87e191bdbd75552820175f25159f7e",
+  "installed_disk_sha256": "6652f0c724b59f664f7511a4cce63facff8138a10a2748f32589766e7fe919a7",
+  "compiler_sha256": "50a496d9b02c1e7483b2d5ff8e5cac3889cbecab8464300aac23af7ba69a5399",
+  "console_sha256": "cebd800ff744d556a30d698904acf5e6d69dccabbd82ecaf45df89a748862a9e",
+  "reached_prompt": true,
+  "emitter_chunk_space_rejected": false,
+  "log_sha256": "62c9469acc5e4e3eb2617a75e09c0a6d98dcea3024ff823f52b805d2afe7fc67",
+  "completed_document_sessions": 20
+}

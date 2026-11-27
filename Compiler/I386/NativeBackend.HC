@@ -15,6 +15,7 @@ extern U0 I386ParserFailure(U8 *label,CCmpCtrl *cc);
 class CI386NativeBackend {
   CI386Backend backend;
   CI386Heap *heap;
+  Bool private_fold_stack,folded;
 };
 U8 *I386NativeBackendAlloc(U8 *context,I64 bytes)
 {
@@ -62,7 +63,21 @@ U0 I386NativeBackendFree(U8 *context,U8 *allocation)
 U0 I386NativeBackendFold(U8 *context,CCmpCtrl *cc)
 {
   CI386NativeBackend *state=context;
-  I386OptPass012(state->heap,cc,state->backend.types);
+  U32 irq;
+  if(!state->private_fold_stack) {
+    I386OptPass012(state->heap,cc,state->backend.types);
+    return;
+  }
+  //Both backend folds use the first stack only. Once the second fold has
+  //built the operand links, emission needs the IR, not its scratch stack.
+  I386OptPass012Sized(state->heap,cc,state->backend.types,offset(CPrsStk.stk2),0);
+  if(state->folded && cc->ps) {
+    irq=I386IrqSave;
+    if(!I386ParserFree(state->heap,cc,cc->ps)) {I386IrqRestore(irq);throw('Compiler',TRUE);}
+    cc->ps=0;
+    I386IrqRestore(irq);
+  }
+  state->folded=TRUE;
 }
 U0 I386NativeBackendAsm(U8 *context,CCmpCtrl *cc,CI386Out *out,CAOT *aot,I64 pass)
 {
@@ -80,7 +95,8 @@ U0 I386NativeBackendListFree(CI386NativeBackend *state,U8 *head)
   U8 *next;
   while(head) { next=head(U8 **)[0]; I386NativeBackendFree(state,head); head=next; }
 }
-Bool I386BackendCompileWithBreak(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,CI386Out *out,CI386BackendStatus *status,U0 (*poll)(),CDbgInfo *debug=0)
+Bool I386BackendCompileWithBreak(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types,
+  CI386Out *out,CI386BackendStatus *status,U0 (*poll)(),CDbgInfo *debug=0,Bool frontend=FALSE)
 {
   CI386NativeBackend state;
   CI386Backend *backend=&state.backend;
@@ -93,6 +109,7 @@ Bool I386BackendCompileWithBreak(CI386Heap *heap,CCmpCtrl *cc,CHashClass **types
       types[RT_F64]->raw_type!=RT_F64) return FALSE;
   for(i=0;i<sizeof(state);i++) bytes[i]=0;
   state.heap=heap;
+  state.private_fold_stack=frontend && !cc->ps;
   if(status) { status->node=0; status->depth=0; status->pass=-2; status->reason=0; }
   backend->status=status; backend->break_poll=poll;
   backend->debug=debug;

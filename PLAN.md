@@ -286,6 +286,17 @@ before and after the runner change.
 [Immediate OutMem receipt](build/i386-out-chunk-v1/installed-comparison/control/resource8-fast-reject/resource-result.json) ·
 [8 MiB passing resource profile](build/i386-out-chunk-v2/resource8-fast-reject/resource-result.json)
 
+The frontend backend now uses a 2,056-byte optimizer stack for its two
+folds and releases it before emission. Caller-provided stacks and the
+public backend keep their existing lifetime. At 8 MiB, the fresh
+cross-built image passes diagnostics and all 20 document sessions.
+Replacing only the compiler on the previously failing installed Stadium
+image also completes all 20 sessions and matches all 11 VGA checkpoints.
+The separate installed `DocAllocationCheck` gate is being checked.
+[8 MiB diagnostics](build/i386-backend-fold-lifetime-v1/diagnostic8-kvm/result.json) ·
+[Controlled installed comparison](build/i386-backend-fold-lifetime-v1/installed-console-comparison.json) ·
+[Installed 8 MiB document sessions](build/i386-backend-fold-lifetime-v1/installed-console8/resource8/resource-result.json)
+
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
 now records 189 older test images and 6,132,994,048 bytes reclaimed across its

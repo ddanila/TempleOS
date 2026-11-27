@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-backend-fold-lifetime-v1/diagnostic8-kvm/working.img",
+  "retained": "build/i386-backend-fold-lifetime-v1/cross/kernel-diagnostics.img",
+  "sha256": "09a07383d5b3d1ec34257e8a7a3b7a771fc9c630021e4f04954340df45c6f316",
+  "allocated_bytes": 67112960
+}
