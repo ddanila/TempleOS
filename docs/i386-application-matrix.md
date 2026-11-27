@@ -2977,3 +2977,9 @@ emitted all six metadata fields and both instruction links, and
 the prompt accepted fresh input. The 8 MiB test read the opcode at
 the returned address. The same image passed the 64 MiB desktop
 baseline. See the [Directives receipt](../build/i386-directive-position-v2/qualification.json).
+
+The unchanged `ScrnCapture` demo completed in a disposable i386 image
+with temporary capture wrappers. It saved and reopened a 640×480 screen,
+and the installed compositor replay matched 307,183 of 307,200 saved
+pixels. The guest then accepted fresh arithmetic.
+[Temporary capture test](../build/i386-demo-scrn-capture-preview/result.json)

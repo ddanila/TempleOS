@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "scope": "Native experiment with temporary capture wrappers in a disposable image",
+  "source_sha256": "3c2ecf75bdbbbaa151f6928814ba0e30bfa502e37903d3ae2a8a5f31a0350eab",
+  "disk_sha256": "8e43f7143f51cfd0d2e9415b494f8ab53dea8dad03e088192275860ae1b75c09",
+  "overlay_sha256": "78c039d844c97391b0bc89934a61552a9015568b01ddf10e39a5713b0e22ce8f",
+  "matches": 307183,
+  "size": 307200,
+  "bitmap_sha256": "e6922617644ed6a46f2591451b310a03e5fc9d20bb01b9cb7321ece3f3b039a8",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 18,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

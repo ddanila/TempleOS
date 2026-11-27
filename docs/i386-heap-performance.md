@@ -1554,3 +1554,10 @@ The two-stage bootstrap, 386 instruction audit, compiler ownership tests,
 [Compiler ownership](../build/i386-symbol-walk-audit-v1/task-symbols/result.json) ·
 [8 MiB diagnostics](../build/i386-symbol-walk-audit-v1/diagnostic8-kvm/result.json) ·
 [Document resources](../build/i386-symbol-walk-audit-v1/resource8/resource-result.json)
+
+The publication symbol-walk image reached the 8 MiB TCG prompt in
+266.722 seconds, passed all nine VGA checkpoints, and loaded zero build
+providers. The preceding image took 300.907 seconds in a separate run.
+The 60-second requirement remains open.
+[Symbol walk TCG receipt](../build/i386-symbol-walk-audit-v1/interactive8-tcg/result.json) ·
+[Startup budget verdict](../build/i386-symbol-walk-audit-v1/interactive8-tcg/startup-budget.json)

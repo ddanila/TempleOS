@@ -109,11 +109,13 @@ all nine VGA checks. The publication record release change also passed
 the 8 MiB KVM diagnostics and document resource tests. Its TCG startup
 took 300.907 seconds with all nine VGA checks passing. A subsequent
 publication symbol walk now reuses one heap audit and passed the 8 MiB
-KVM diagnostics and document test.
+KVM diagnostics and document test. Its TCG startup took 266.722 seconds
+with all nine VGA checks passing.
 [Instruction release TCG behavior](build/i386-emission-slot-run-v2/interactive8-tcg/result.json) ·
 [Parser free TCG budget check](build/i386-parser-known-free-v1/interactive8-tcg/startup-budget.json) ·
 [Publication TCG budget check](build/i386-publication-known-free-v1/interactive8-tcg/startup-budget.json) ·
-[Symbol walk resource receipt](build/i386-symbol-walk-audit-v1/resource8/resource-result.json)
+[Symbol walk resource receipt](build/i386-symbol-walk-audit-v1/resource8/resource-result.json) ·
+[Symbol walk TCG budget check](build/i386-symbol-walk-audit-v1/interactive8-tcg/startup-budget.json)
 
 The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
