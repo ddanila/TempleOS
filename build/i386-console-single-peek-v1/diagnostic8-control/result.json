@@ -1,0 +1,20 @@
+{
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 8,
+    "startup_status": "ok",
+    "boot_mode": "diagnostic",
+    "startup_seconds": 52.16482405801071,
+    "commands": 9,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "program_publication_cases": [
+    14,
+    14
+  ],
+  "input_sha256": "da172ebe3341db33770f7c70947b19b70a920bf6dd9b02664ac3d73695c8c0dc"
+}

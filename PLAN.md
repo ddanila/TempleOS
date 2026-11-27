@@ -197,10 +197,15 @@ taskless-control fixture verifies invalid-size rejection, exact size
 and ownership, complete heap recovery, and preservation of both
 interrupt states. The full-content cross-build passed the 386 boot
 instruction audit. The compiler runtime grows by 146 bytes, and all
-other modules match after normalizing the kernel build date. The
-fresh full-image resource checks are pending.
+other modules match after normalizing the kernel build date. At
+8 MiB under KVM, all 20 document sessions and 11 VGA checks passed.
+The first diagnostics log omitted all 14 phase-zero program markers
+and jumped mid-line. The repeat and prior-image control each recorded
+all 28 program cases, and the repeat passed the full diagnostics check.
 [Task-symbol and control fixture](build/i386-parser-fallback-audit-v1/task-symbols/result.json) ·
-[Parser fallback cross-build](build/i386-parser-fallback-audit-v1/cross/result.json)
+[Parser fallback cross-build](build/i386-parser-fallback-audit-v1/cross/result.json) ·
+[Diagnostic comparison](build/i386-parser-fallback-audit-v1/diagnostic-comparison.json) ·
+[8 MiB resource profile](build/i386-parser-fallback-audit-v1/resource8/resource-result.json)
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger

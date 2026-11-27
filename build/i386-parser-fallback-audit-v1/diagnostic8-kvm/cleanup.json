@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-parser-fallback-audit-v1/diagnostic8-kvm/working.img",
+  "retained": "build/i386-parser-fallback-audit-v1/cross/kernel-diagnostics.img",
+  "sha256": "fd51921fb23b7c5d4a914215574fe7ec783fd07115f114bfdea0ec61231f1895",
+  "allocated_bytes": 67112960
+}

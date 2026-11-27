@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-console-single-peek-v1/diagnostic8-control/working.img",
+  "retained": "build/i386-console-single-peek-v1/cross/kernel-diagnostics.img",
+  "sha256": "da172ebe3341db33770f7c70947b19b70a920bf6dd9b02664ac3d73695c8c0dc",
+  "allocated_bytes": 67112960
+}

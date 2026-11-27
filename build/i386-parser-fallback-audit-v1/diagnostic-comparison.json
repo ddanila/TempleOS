@@ -1,0 +1,37 @@
+{
+  "original_run": "missing markers",
+  "reproduction": "did not recur",
+  "runs": [
+    {
+      "run": "build/i386-parser-fallback-audit-v1/diagnostic8-kvm",
+      "log_sha256": "45ac3397fbdd8cacfe43110467a3b5e1889f9d882c6aa30eaf2d8e70e9b3d073",
+      "result_sha256": "079575bc83acef0f89073c35e2353722fd9249ccb6032e7778862985de6e7cdc",
+      "program_cases_by_phase": [
+        0,
+        14
+      ],
+      "interrupted_log_line": "PUBLIC DOC LAYOUT 0000000000000000 0000FRONTEND SYMBOL WARNING unused extern I386LoadBoundAt",
+      "lossless_log_archive": "build/i386-parser-fallback-audit-v1/diagnostic8-kvm/debug.log.zst"
+    },
+    {
+      "run": "build/i386-parser-fallback-audit-v1/diagnostic8-repeat",
+      "log_sha256": "f8fdd14c5da26f59193b07d720b4159665dc9024d7ce09102f6da88f04c1704b",
+      "result_sha256": "479cd1add541be56f87d62db248723af6a66d0b589611bc0a63fb6fc0dd3dde3",
+      "program_cases_by_phase": [
+        14,
+        14
+      ],
+      "lossless_log_archive": "build/i386-parser-fallback-audit-v1/diagnostic8-repeat/debug.log.zst"
+    },
+    {
+      "run": "build/i386-console-single-peek-v1/diagnostic8-control",
+      "log_sha256": "7d5f3ff055a7ac71b3786bc33be38ca667fcbff664099d22003b4538f1fe1211",
+      "result_sha256": "182b1189e53532cf25aba3b26a07f282bdf8f364959ab8eea25fe8ffe9e2862d",
+      "program_cases_by_phase": [
+        14,
+        14
+      ],
+      "lossless_log_archive": "build/i386-console-single-peek-v1/diagnostic8-control/debug.log.zst"
+    }
+  ]
+}
