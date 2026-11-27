@@ -177,14 +177,19 @@ and allocator control record. The fragmented-arena fixture also passes
 with 1,024 transient records. The cross-build changes only the kernel
 module and shrinks the flat kernel by 24 bytes. The full-image 8 MiB KVM
 diagnostics and all 20 document resource sessions passed, with exact
-heap recovery and all 11 resource VGA checkpoints matching. The normal
-TCG timing run is in progress.
+heap recovery and all 11 resource VGA checkpoints matching. Normal
+8 MiB TCG startup took 238.963 seconds and passed all nine exact VGA
+checks. This run was 33.507 seconds faster than the B-spline baseline.
+The two runs overlapped different host workloads, so the difference
+does not isolate the effect of the heap change. The 60-second gate
+remains open.
 [Assembly arena test](build/i386-heap-tail-v1/core386-v2/result.json) ·
 [Portable arena test](build/i386-heap-tail-v1/core-source-v2/result.json) ·
 [Fragmented high allocation](build/i386-heap-tail-v1/high386/result.json) ·
 [Cross-build manifest](build/i386-heap-tail-v1/cross/result.json) ·
 [8 MiB diagnostics](build/i386-heap-tail-v1/diagnostic8-kvm/result.json) ·
-[8 MiB resource profile](build/i386-heap-tail-v1/resource8/resource-result.json)
+[8 MiB resource profile](build/i386-heap-tail-v1/resource8/resource-result.json) ·
+[8 MiB TCG startup budget](build/i386-heap-tail-v1/interactive8-tcg/startup-budget.json)
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger

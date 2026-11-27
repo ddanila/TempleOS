@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-heap-tail-v1/interactive8-tcg/working.img",
+  "retained": "build/i386-heap-tail-v1/cross/kernel.img",
+  "sha256": "09dcd94f2edf57d1e0ff140bbd6a873491444ffb7954c4e3e1b57e9dd54bf767",
+  "allocated_bytes": 67108864
+}
