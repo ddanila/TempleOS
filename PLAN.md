@@ -268,12 +268,15 @@ passed the 386 boot instruction audit and 8 MiB KVM diagnostics,
 including all 28 program-publication cases. In the 8 MiB comparison, only
 the compiler module differed across the 1,955 files. Both arms booted with
 the same native console and ran out of emitter space compiling the
-document resource fixture.
+document resource fixture. The full cross-built image passed all nine
+normal 8 MiB TCG VGA checks and reached the prompt in 236.774 seconds.
+The 60-second startup gate remains open.
 [Segmented output fixture](build/i386-out-chunk-v2/task-symbols/result.json) ·
 [Lexer and compiler-control fixture](build/i386-out-chunk-v2/lex-control/result.json) ·
 [Full-content cross-build](build/i386-out-chunk-v2/cross/result.json) ·
 [8 MiB diagnostics](build/i386-out-chunk-v2/diagnostic8-kvm/result.json) ·
-[Installed console comparison](build/i386-out-chunk-v1/installed-comparison/comparison.json)
+[Installed console comparison](build/i386-out-chunk-v1/installed-comparison/comparison.json) ·
+[Compact output startup budget](build/i386-out-chunk-v2/interactive8-tcg/startup-budget.json)
 
 The resource runner now stops at an unexpected `OutMem` and records the
 failing command and the source disk identity. The native-console control

@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-out-chunk-v2/interactive8-tcg/working.img",
+  "retained": "build/i386-out-chunk-v2/cross/kernel.img",
+  "sha256": "4281e7c19d1b901cc41002cd0ac21cc0418db29a365c224381b6eb7265b6ad2d",
+  "allocated_bytes": 67112960
+}
