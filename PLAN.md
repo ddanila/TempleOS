@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 119 (six apps and one hundred thirteen demo entries) |
+| Qualified | 120 (seven apps and one hundred thirteen demo entries) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
-| Shared files covered by qualified workflows | 23 (fifteen support sources and eight shared data or document files) |
-| Qualification gaps | 532 |
+| Shared files covered by qualified workflows | 27 (nineteen support sources and eight shared data or document files) |
+| Qualification gaps | 527 |
 | Linked to tests / with reference workflow and oracle | 277 / 207 |
-| Apps qualified | 6 of 12 (all 12 have test evidence) |
+| Apps qualified | 7 of 12 (all 12 have test evidence) |
 | Demos qualified | 113 of 224 |
 
-C1 has 532 qualification gaps, including entries that still need a reference
+C1 has 527 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -131,6 +131,14 @@ it. Size-delimited text loads without a trailing NUL, and the complete
 all 20 document sessions and matched 11 VGA checkpoints.
 [Bounded document load](build/i386-demo-document-bounded-v1/verified/result.json) ·
 [8 MiB resource profile](build/i386-demo-document-bounded-v1/resource8/resource-result.json)
+
+The current full-content image passes the GrModels launcher workflows.
+The default Ball has 59 vertices and 128 triangles. The default Man
+has 112 vertices and 168 triangles across four selected colors. Both
+meshes match the pinned original byte for byte. Shift-Escape cancels
+the menu, Ball lighting chooser and Man form without leaving a mesh,
+and the prompt renders fresh arithmetic after each of the five runs.
+[GrModels workflow audit](build/i386-grmodels-current-v1/suite-result.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched

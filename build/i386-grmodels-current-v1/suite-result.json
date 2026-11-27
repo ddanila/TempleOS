@@ -1,0 +1,52 @@
+{
+  "result": "pass",
+  "disk_sha256": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+  "application_sha256": {
+    "/Apps/GrModels/BallGen.HC": "7eacc3f1f70487f8e19223073f99c4976e787e45cffcb385802b9464ae214d74",
+    "/Apps/GrModels/Load.HC": "4801f5bf4382e595a7c61d349d492be72c4cc2f8dccf95fba84e68d48c6935f5",
+    "/Apps/GrModels/ManGen.HC": "47b6f81eb5fe5f72b3fa628ae12f4fbbb40c0be057c43fb658fc71d9e83609e6",
+    "/Apps/GrModels/Models.HC": "d7ed0860c8a1d8908614fded2e2ec67dc7ccfc2aad6d677bc14fd6df9d1b04ab",
+    "/Apps/GrModels/Run.HC": "91ef5355257508c01a78f6bd030c06be138c2a1cb28eb202def2005e600bc70b"
+  },
+  "cases": {
+    "ball": {
+      "native_receipt_sha256": "8b005a65c06fbb0b79305476f94ab4f33a737382a485f81586943298464f1abe",
+      "reference_receipt_sha256": "47c8d54a3ca2c07e656fda466ceeef4ec3916d3a7c4931f7549ad4d8583f09a4",
+      "mesh": {
+        "vertices": 59,
+        "triangles": 128,
+        "colors": [
+          4
+        ],
+        "sha256": "967ad44894167ae85c198f0a3929c01391a217494638a4bd2c95d63db1a6967b"
+      }
+    },
+    "man": {
+      "native_receipt_sha256": "74fd0c0e2167c2f42dbd5d1842a4d55e8341cee36e2857d93cbd5bb77c16b914",
+      "reference_receipt_sha256": "2a413d8f001a0951fbe3a9e7f9ad10f10250984c39533920949e458e5b97c136",
+      "mesh": {
+        "vertices": 112,
+        "triangles": 168,
+        "colors": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "sha256": "4f87974453492199cc40f1d50fad9c18f45ebb0acece354f9d39dfef5381e8a0"
+      }
+    },
+    "cancel": {
+      "native_receipt_sha256": "b9ccdc527c8a5b055359d71f4330b30b439a7d656615c0da94803a9502958abb",
+      "reference_receipt_sha256": "77212ae4e6de2b0c6c9e0406944d81c065a761cbff622108b64256f0a52166a8"
+    },
+    "ball-lighting-cancel": {
+      "native_receipt_sha256": "cc81fa1400a884b44ae9dc55f03714d04d448cb2f078d8447d324af5041cd6b8",
+      "reference_receipt_sha256": "58da399d30973dd1cab2671099dc8be6cd9be8f247cd4255539751a0af9d5d0d"
+    },
+    "man-form-cancel": {
+      "native_receipt_sha256": "e17dd677ff6883e6870a42881f36a589ba285bf23615814b607d19c4097edda2",
+      "reference_receipt_sha256": "024c84cd905e51ec7cdd63367ef12cd75048f45acebea0d48c4f823689e9861c"
+    }
+  }
+}

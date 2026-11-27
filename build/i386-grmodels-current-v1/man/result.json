@@ -1,0 +1,51 @@
+{
+  "model": "man",
+  "workflow_sha256": "5905bf26f351650b03441c3dc2c752366d1cdf598cee7dd153d7db5ae08300de",
+  "package": {
+    "result": "pass",
+    "source_sha256": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+    "image_sha256": "60ee8a80ffc4f29a98e44b6b72a2a408779a1ba3653a1f40a21e91f2876c96b6",
+    "boot_area_sha256": "9e56ec6aa2b3ca4bfdfa4bb521ec491f5359f7a94204dd9dcf0ce10e74e8a8d7",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1957,
+      "owned_sectors": 96343,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1958,
+      "owned_sectors": 96346,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/ModelsProbe.HC": "5905bf26f351650b03441c3dc2c752366d1cdf598cee7dd153d7db5ae08300de"
+    },
+    "added_attributes": {
+      "/ModelsProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "mesh": {
+    "vertices": 112,
+    "triangles": 168,
+    "colors": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "sha256": "4f87974453492199cc40f1d50fad9c18f45ebb0acece354f9d39dfef5381e8a0"
+  },
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 26,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "result": "pass"
+}

@@ -10330,7 +10330,13 @@
           "evidence": "build/grmodels-menu-workflows-v1/comparison.json",
           "scope": "Physical menu selection produces the original document mesh exactly."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/GrModels/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/GrModels/Load.HC",
@@ -10375,7 +10381,13 @@
           "evidence": "build/grmodels-bundled-loader-v1/grmodels-final/result.json",
           "scope": "Cold packaged Run.HC renders the Models menu, cancels and returns to the prompt. The Man workflow remains open."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/GrModels/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/GrModels/ManGen.HC",
@@ -10412,7 +10424,13 @@
           "evidence": "build/i386-wide-pi-production-v3/qualification.json",
           "scope": "Bundled Run.HC physical menu, default Man form, four lighting choices and byte-exact original document mesh."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/GrModels/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/GrModels/Models.HC",
@@ -10454,7 +10472,13 @@
           "evidence": "build/i386-wide-pi-production-v3/qualification.json",
           "scope": "Bundled Run.HC physical menu, default Man form, four lighting choices and byte-exact original document mesh."
         }
-      ]
+      ],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Apps/GrModels/Run.HC"
+        ]
+      }
     },
     {
       "path": "Apps/GrModels/Run.HC",
@@ -10470,20 +10494,9 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": {
-        "status": "partial",
-        "description": "Open the bundled Models menu, select Ball and Man in separate sessions, submit the default forms, and return to the prompt. For Man, exercise all four lighting choices. In separate sessions, cancel the menu, the Ball lighting chooser, and the Man form with Shift+Escape."
-      },
-      "oracle": {
-        "tool": "build/grmodels-menu-workflows-v1/run.py",
-        "dataset": "build/i386-wide-pi-production-v3/qualification.json",
-        "checks": [
-          "Match the original Ball and Man document mesh bytes.",
-          "Require the menu, chooser, and form cancellation workflows to return without a mesh after Shift+Escape.",
-          "Return to the prompt and evaluate fresh arithmetic."
-        ]
-      },
+      "compatibility": "qualified",
+      "reference_workflow": "Open GrModels from its bundled launcher, generate Ball and Man with their default forms and lighting choices, then cancel the menu, Ball lighting chooser and Man form in separate sessions.",
+      "oracle": "Compare the exact pinned-original Ball and Man mesh bytes. Require all three Shift-Escape paths to return without a mesh and all five sessions to restore native prompt arithmetic.",
       "tests": [
         {
           "target": "generation-one-grmodels-ball",
@@ -10568,6 +10581,12 @@
           "result": "pass",
           "evidence": "build/i386-wide-pi-production-v3/qualification.json",
           "scope": "Bundled Run.HC physical menu, default Man form, four lighting choices and byte-exact original document mesh."
+        },
+        {
+          "target": "native-current-grmodels-suite",
+          "result": "pass",
+          "evidence": "build/i386-grmodels-current-v1/suite-result.json",
+          "scope": "Current full-content image. Both physical generation workflows produce the original mesh bytes and all three cancellation workflows return without a mesh."
         }
       ]
     },

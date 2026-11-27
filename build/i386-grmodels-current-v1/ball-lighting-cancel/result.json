@@ -1,0 +1,41 @@
+{
+  "model": "ball-lighting-cancel",
+  "workflow_sha256": "45bc49bb48d331c32bddeefc90f89ddd9978ea089eda76473f05966fd7e5cacc",
+  "package": {
+    "result": "pass",
+    "source_sha256": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+    "image_sha256": "7e277602af323bbd10cad4ae7f86e548f91165d42b0931f6d6d51b4097cd5474",
+    "boot_area_sha256": "9e56ec6aa2b3ca4bfdfa4bb521ec491f5359f7a94204dd9dcf0ce10e74e8a8d7",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1957,
+      "owned_sectors": 96343,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1958,
+      "owned_sectors": 96346,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/ModelsProbe.HC": "45bc49bb48d331c32bddeefc90f89ddd9978ea089eda76473f05966fd7e5cacc"
+    },
+    "added_attributes": {
+      "/ModelsProbe.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "mesh": null,
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 11,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "result": "pass"
+}
