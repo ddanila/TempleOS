@@ -120,6 +120,23 @@ startup took 293.325 seconds while other guest work ran. The 60-second
 requirement remains open.
 [Color-picker TCG budget check](build/i386-color-picker-production-v1/interactive8-tcg/startup-budget.json)
 
+The November 27 checkpoint leaves two runs in progress. The 128 MiB
+KVM native `ConsoleRuntime` rebuild uses the frozen Stadium capture
+image. Its retained-module install and 8 MiB resource checks depend on
+the rebuild passing. The color-picker image also has a separate 8 MiB
+TCG run that pauses the guest to sample instruction addresses. The
+uninterrupted timing above remains the measurement for the startup gate.
+
+The `build/` directory accounted for 336 GiB of allocated space, with
+1.7 GiB available on the filesystem after cleanup. The ISO archive ledger
+records 66 older test images and 2,151,407,616 bytes reclaimed across its
+batches. Each ISO was fully decompressed and checked by SHA-256 before
+its raw copy was removed. The color-picker timing disk was separately
+verified byte-for-byte against the retained cross-built image before
+removal.
+[ISO recovery ledger](build/cleanup-iso-headroom-2026-11-27/iso-manifest.jsonl) ·
+[Timing disk cleanup receipt](build/i386-color-picker-production-v1/cleanup-tcg-test-disk.json)
+
 The full-window capture image reached the 8 MiB TCG prompt in 269.231
 seconds and matched all nine VGA checkpoints. The 60-second requirement
 remains open.
