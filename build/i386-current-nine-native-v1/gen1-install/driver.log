@@ -1,0 +1,36 @@
+Traceback (most recent call last):
+  File "/home/ddanila/fun/TempleOS/tools/test-i386-retained-install.py", line 140, in <module>
+    main()
+    ~~~~^^
+  File "/home/ddanila/fun/TempleOS/tools/test-i386-retained-install.py", line 108, in main
+    run_input(boot_disk, out / 'boot', snapshot=False, ram_mib=8,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              accel=args.accel, cpu=args.cpu, qmp_stdio=args.qmp_stdio, welcome=args.welcome, managed_pointer=args.managed_pointer,
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+                  'commands': [('6*7;', ['42']),
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                               ('DocAllocationCheck;', ['13'])]})
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py", line 686, in run_input
+    submit(source,answers,f'startup-command-{index:02}',
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           timeout=startup_check.get('command_timeout',30),interaction=interaction,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           typing_colors=style.get('typing_colors'),return_colors=style.get('return_colors'),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           return_rows=style.get('return_rows'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py", line 675, in submit
+    screen(rows,name,timeout=timeout,rejected_rows=rejected_rows,colors=return_colors,
+    ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           pointer=interaction.get('return_pointer') if interaction is not None else None,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           rejection_message=rejection_message)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py", line 413, in screen
+    wait_for(matches,timeout=timeout)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py", line 358, in wait_for
+    raise TimeoutError(f'Console check timed out; inspect {out}')
+TimeoutError: Console check timed out; inspect /dev/shm/templeos-release-psalmody/generations/gen1-install/boot

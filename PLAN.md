@@ -328,6 +328,13 @@ filesystem delta is the Home registry plus the three fixture files.
 The inventory qualifies the verified Titanium launcher workflow.
 [Titanium comparison](build/i386-titanium-current-v1/comparison.json)
 
+ToTheFront passes the stock launcher on the current image. The pinned
+original's six phases and start of turn two match, as do the staged
+game-over and restart. The 640×464 map raster, terrain, rivers and roads
+match byte for byte. The inventory qualifies the verified launcher
+workflow.
+[ToTheFront comparison](build/i386-tothefront-current-v1/comparison.json)
+
 The current nine-provider native build has written ConsoleRuntime to
 the guest volume. Its 1,462 exports match the fresh cross-build and its
 document allocation wrapper audit passes. CompilerRuntime is the next
@@ -344,6 +351,19 @@ native build disk. Their export sets exactly match the corresponding
 cross-built modules at 142, 148 and 177 names respectively.
 [CompilerProbe audit](build/i386-current-native-compiler-probe-v1/result.json) ·
 [File and memory runtime audit](build/i386-current-native-file-memory-v1/result.json)
+
+All nine modules finished native compilation and passed the retained
+export audit. The generation-one installer wrote all nine exact native
+payloads. At 8 MiB the installed image reaches the prompt and renders
+42, then `DocAllocationCheck` cannot allocate 40,359 contiguous bytes
+to load the diagnostic module. The largest available heap payload is
+9,136 bytes, and the trace identifies `I386RedSeaLoadBoundCapacity`.
+The same installed image passes both commands and the document
+diagnostic load, recovery and unload at 16 MiB. The generation gate
+stops at the required 8 MiB check, before the flat native rebuild.
+[Nine-module audit](build/i386-current-nine-native-v1/result.json) ·
+[8 MiB installation result](build/i386-current-nine-native-v1/gen1-install/result.json) ·
+[16 MiB control](build/i386-current-nine-native-v1/gen1-install/boot16-result.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched

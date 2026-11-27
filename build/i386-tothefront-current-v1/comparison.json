@@ -1,0 +1,10 @@
+{
+  "result": "pass",
+  "scope": "Current stock launcher, fixed-seed phase cycle, exact map raster, and staged game-over and restart compared to the pinned original.",
+  "receipts": {
+    "launch": "694463171867824a0e0712954a97c4410954034b9cce1a676cc9b68df0b2a893",
+    "phases": "ec31bacd64baebd37bbe22bdab2685bad705997cbbcf81ee8676d1863fcb0987",
+    "map": "1856c2c0897cf9bf28d2c86a18976496560bb9ca7361dc07b47c455eb879f411",
+    "game-over": "fdf91e5e5aecb867afa8a23bc864c788ecee7b2f5e069fb354ab877c0f91329d"
+  }
+}

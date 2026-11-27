@@ -1,0 +1,86 @@
+{
+  "result": "pass",
+  "welcome": false,
+  "source_disk_sha256": "020fedf5d80571590b80ba39a1e4c84a74a8bd30346de7ff925ce93af01e8dcd",
+  "module_order": [
+    "ConsoleRuntime",
+    "CompilerRuntime",
+    "CompilerProbe",
+    "FileRuntime",
+    "MemoryRuntime",
+    "BuildRuntime",
+    "EditorRuntime",
+    "DocDiagnosticRuntime",
+    "Startup"
+  ],
+  "modules": {
+    "ConsoleRuntime": {
+      "bytes": 2747346,
+      "records": 13793,
+      "exports": 1462,
+      "sha256": "cbdfe8d8f95be545e95e6720b7223c3e6e5d8641006f2eff99bfad38ca607c08",
+      "reference_sha256": "5018f73b61685fb4076154055c846a27b64687b2f8f094d9c063ca6ac29dda95"
+    },
+    "CompilerRuntime": {
+      "bytes": 1374580,
+      "records": 4777,
+      "exports": 554,
+      "sha256": "4b2d1fca53ae207aa87c7f36d051273882f7dd6af3906711e02163ce60d7dbb3",
+      "reference_sha256": "50a496d9b02c1e7483b2d5ff8e5cac3889cbecab8464300aac23af7ba69a5399"
+    },
+    "CompilerProbe": {
+      "bytes": 590060,
+      "records": 2355,
+      "exports": 142,
+      "sha256": "8003567ff52e4481170977f58c11772e6ec9e036ff929251d5965af042924fe3",
+      "reference_sha256": "bafcddad46e2b2bdd9ecc41ea406e06a14a07826a98045451613aea74c3ca3cc"
+    },
+    "FileRuntime": {
+      "bytes": 295879,
+      "records": 998,
+      "exports": 148,
+      "sha256": "9a903af7102706f7885c67b8adc67bb4f4c13765b73b9202ab2c5cb4e14c0a5c",
+      "reference_sha256": "acc866e7b5fcc23a8186d083969f612b4706929fa7add59c8ff78f7acd2f3c31"
+    },
+    "MemoryRuntime": {
+      "bytes": 251008,
+      "records": 1178,
+      "exports": 177,
+      "sha256": "798a02ce1e9ddc4dcd016ff46b02d286d47630ddf608127bfb59db7c4e101fd1",
+      "reference_sha256": "bef7b2e7c79b38c0e2ca5118f0197c0dc224a965493874dd86ae3e882eb9b8f7"
+    },
+    "BuildRuntime": {
+      "bytes": 97307,
+      "records": 300,
+      "exports": 45,
+      "sha256": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d",
+      "reference_sha256": "3134f883c0c637fea96a49bf7270dc660dbfc239457a10564a4bc64acf9977a0"
+    },
+    "EditorRuntime": {
+      "bytes": 53736,
+      "records": 259,
+      "exports": 49,
+      "sha256": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e",
+      "reference_sha256": "9c82338f318a3d0290e79bcb8bcc807c15826c980b3d78cd06d687cf13d26230"
+    },
+    "DocDiagnosticRuntime": {
+      "bytes": 40359,
+      "records": 231,
+      "exports": 31,
+      "sha256": "f7d31ccbdde2e0127f89a0bdc0f1ed3a867d711934de04ad7487b8e2b9a37028",
+      "reference_sha256": "6c52415f53cb402840264f3f0e4294611e85367e89a15643ecbea5efda23e1d7"
+    },
+    "Startup": {
+      "bytes": 391,
+      "records": 6,
+      "exports": 1,
+      "sha256": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7",
+      "reference_sha256": "5d523c257fcfa26ed6882a4bcae163946426ece652daf72664de20291409423b"
+    }
+  },
+  "cpu": "486,-fpu",
+  "ram_mib": 64,
+  "keyboard_harness": true,
+  "managed_pointer": false,
+  "build_provider_loads": 1
+}

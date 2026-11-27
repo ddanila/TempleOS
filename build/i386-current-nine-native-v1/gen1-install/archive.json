@@ -1,0 +1,9 @@
+{
+  "archive": "installed.patch.zst",
+  "archive_sha256": "5654bfbe461e4741bd695d4322d656aac5897a6a686eca890c897f488b65817d",
+  "base_manifest": "build/i386-current-nine-native-v1/image-archive.json",
+  "base_sha256": "020fedf5d80571590b80ba39a1e4c84a74a8bd30346de7ff925ce93af01e8dcd",
+  "raw_sha256": "68569bb955ccfe8b4b867865d973a6c34af66fcc113b25059c66e1ddb0748ef2",
+  "raw_bytes": 67108864,
+  "verified_byte_for_byte": true
+}

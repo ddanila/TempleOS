@@ -1,0 +1,35 @@
+{
+  "result": "fail",
+  "scope": "All nine module payloads installed and matched. The 8 MiB boot reaches the prompt, then the document allocation check runs out of contiguous heap.",
+  "source_disk_sha256": "020fedf5d80571590b80ba39a1e4c84a74a8bd30346de7ff925ce93af01e8dcd",
+  "installed_disk_sha256": "68569bb955ccfe8b4b867865d973a6c34af66fcc113b25059c66e1ddb0748ef2",
+  "installed_module_sha256": {
+    "ConsoleRuntime": "cbdfe8d8f95be545e95e6720b7223c3e6e5d8641006f2eff99bfad38ca607c08",
+    "CompilerRuntime": "4b2d1fca53ae207aa87c7f36d051273882f7dd6af3906711e02163ce60d7dbb3",
+    "CompilerProbe": "8003567ff52e4481170977f58c11772e6ec9e036ff929251d5965af042924fe3",
+    "FileRuntime": "9a903af7102706f7885c67b8adc67bb4f4c13765b73b9202ab2c5cb4e14c0a5c",
+    "MemoryRuntime": "798a02ce1e9ddc4dcd016ff46b02d286d47630ddf608127bfb59db7c4e101fd1",
+    "BuildRuntime": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d",
+    "EditorRuntime": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e",
+    "DocDiagnosticRuntime": "f7d31ccbdde2e0127f89a0bdc0f1ed3a867d711934de04ad7487b8e2b9a37028",
+    "Startup": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7"
+  },
+  "heap_bytes": 6746112,
+  "used_bytes": 6705608,
+  "request_bytes": 40359,
+  "largest_free_payload_bytes": 9136,
+  "callers": [
+    {
+      "address": 1170223,
+      "symbols": [
+        "I386RedSeaLoadBoundCapacity"
+      ]
+    },
+    {
+      "address": 1170862,
+      "symbols": [
+        "I386RedSeaLoadBound"
+      ]
+    }
+  ]
+}

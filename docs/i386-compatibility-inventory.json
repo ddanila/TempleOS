@@ -12718,7 +12718,7 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Start a match with seed 12345678 and two Human players. Dismiss instructions, advance to the other artillery phase with Space, and exit with Escape.",
       "oracle": {
         "tool": "build/tothefront-original-v1/run.py",
@@ -12853,6 +12853,12 @@
           "result": "pass",
           "evidence": "build/sound-delay-production-v1/game-over64/result.json",
           "scope": "A physical shot kills the staged last defender. Game Over reports 32 and zero live units. Enter and the same seed restart turn one with both 32-unit forces."
+        },
+        {
+          "target": "native-current-tothefront-launch-map-and-restart",
+          "result": "pass",
+          "evidence": "build/i386-tothefront-current-v1/comparison.json",
+          "scope": "Current stock launcher, fixed-seed turn cycle and byte-exact map raster. Staged game-over and restart match the pinned original."
         }
       ]
     },
