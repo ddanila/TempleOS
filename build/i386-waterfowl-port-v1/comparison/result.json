@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "disk_sha256": "36267da78710a95325e24693813fc30e0fad7fedced7762aa476cf0c9f56e703",
+  "original_source_sha256": "36c8706b77f0835c861ffa5c7544edf997debff994500ac97cb0971974145d51",
+  "native_source_sha256": "1a1eded8474e41c9211eede1094626f67a539fcd48816177a01fcf79e5be19bb",
+  "original": {
+    "changed_pixels": 726,
+    "matched_pitch_changes": 36,
+    "stable_pitch_runs": 75,
+    "pcm_seconds": 10.382018140589569
+  },
+  "native": {
+    "changed_pixels": 1331,
+    "matched_pitch_changes": 36,
+    "stable_pitch_runs": 81,
+    "pcm_seconds": 10.767256235827665
+  },
+  "inputs_unchanged": true,
+  "scenery_different_pixels": [
+    19,
+    33
+  ]
+}
