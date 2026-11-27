@@ -1,0 +1,24 @@
+{
+  "result": "fail",
+  "base_disk_sha256": "4a62e5a287c80e3830336d47a27a8c9c3a87e191bdbd75552820175f25159f7e",
+  "installed_disk_sha256": "911b3845933c95a9b89dd14cb8b00e2a8e650ac18ef22b661d953394d7bae5cf",
+  "compiler_sha256": "545fa26f470933b24408c390121b95b3c042f71ef5f31ebc0ce3d21d3426258f",
+  "console_sha256": "cebd800ff744d556a30d698904acf5e6d69dccabbd82ecaf45df89a748862a9e",
+  "reached_prompt": true,
+  "emitter_chunk_space_rejected": true,
+  "log_sha256": "b14039f6609cf900efb4184ad000e59da83e7d07872260ba1d5bbb6e9ed83a86",
+  "tail": [
+    "COMPILER BREAK ready",
+    "STARTUP source ok",
+    "COMPILER BREAK ready",
+    "KEYBOARD MESSAGE start 0000000000101F78 00000000007A0028",
+    "KEYBOARD MESSAGE worker",
+    "DONE native kernel startup",
+    "KEYBOARD MESSAGE first 0000000000000002 0000000000000000 00000000007208E8 00000000536B7354",
+    "INPUT LINE #include \"/Kernel/I386/DocSessionResourceCheck.HC\"",
+    "COMPILER BREAK ready",
+    "EMITTER CHUNK SPACE REJECT C:/Home/Console.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+    "COMMAND ERROR"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "disk": "/home/ddanila/fun/TempleOS/build/i386-out-chunk-v1/installed-comparison/candidate/installed.img",
+  "disk_sha256": "911b3845933c95a9b89dd14cb8b00e2a8e650ac18ef22b661d953394d7bae5cf",
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "ram_mib": 8,
+  "working_disk": "/home/ddanila/fun/TempleOS/build/i386-out-chunk-v1/installed-comparison/candidate/resource8-fast-reject/working.img",
+  "storage_policy": "writable copy",
+  "qmp_stdio": true,
+  "managed_welcome": true,
+  "result": "fail",
+  "error": "Guest command rejected: INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+  "source_disk_unchanged": true,
+  "checkpoint": {
+    "group": null,
+    "name": "startup-command-00",
+    "source": "#include \"/Kernel/I386/DocSessionResourceCheck.HC\""
+  }
+}

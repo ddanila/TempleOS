@@ -1,0 +1,21 @@
+{
+  "result": "fail",
+  "only_changed_file": "/Modules/I386/CompilerRuntime.t32m",
+  "other_file_contents_equal": 1954,
+  "arms": {
+    "control": {
+      "original_run": "build/i386-out-chunk-v1/installed-comparison/control/result.json",
+      "fast_rejection": "build/i386-out-chunk-v1/installed-comparison/control/resource8-fast-reject/resource-result.json",
+      "compiler_sha256": "6d5a82daca3dbf92252a44f18479536e0ffe8a8f2745fe002a293179ecf06985",
+      "installed_disk_sha256": "e2ea9d5982c93d145cc9c634592a024797f8593cb375902d12c4af7ecd2a9b55",
+      "console_sha256": "cebd800ff744d556a30d698904acf5e6d69dccabbd82ecaf45df89a748862a9e"
+    },
+    "candidate": {
+      "original_run": "build/i386-out-chunk-v1/installed-comparison/candidate/result.json",
+      "fast_rejection": "build/i386-out-chunk-v1/installed-comparison/candidate/resource8-fast-reject/resource-result.json",
+      "compiler_sha256": "545fa26f470933b24408c390121b95b3c042f71ef5f31ebc0ce3d21d3426258f",
+      "installed_disk_sha256": "911b3845933c95a9b89dd14cb8b00e2a8e650ac18ef22b661d953394d7bae5cf",
+      "console_sha256": "cebd800ff744d556a30d698904acf5e6d69dccabbd82ecaf45df89a748862a9e"
+    }
+  }
+}

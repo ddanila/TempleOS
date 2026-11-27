@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-out-chunk-v1/installed-comparison/candidate/resource8/working.img",
+  "retained": "build/i386-out-chunk-v1/installed-comparison/candidate/installed.img",
+  "sha256": "911b3845933c95a9b89dd14cb8b00e2a8e650ac18ef22b661d953394d7bae5cf",
+  "allocated_bytes": 67112960
+}

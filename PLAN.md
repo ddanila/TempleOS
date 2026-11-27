@@ -153,12 +153,15 @@ fresh arithmetic. The B-spline-era module then rebuilt natively at
 contract. The installed image boots at 8 MiB and accepts arithmetic,
 then fails to allocate the 42,899-byte document diagnostic with a
 largest free block of 21,264 bytes. A separate 8 MiB document resource
-run also rejects the fixture during compilation.
+run also rejects the fixture during compilation. At 16 MiB the
+same installed disk completes all 20 document sessions and matches
+all 11 VGA checkpoints.
 [Export comparison](build/i386-console-single-peek-v1/export-comparison.json) ·
 [8 MiB GrPeek check](build/i386-console-single-peek-v1/peek-smoke8/result.json) ·
 [Native rebuild and export audit](build/i386-console-single-peek-v1/native-console128/result.json) ·
 [Installed 8 MiB diagnostic](build/i386-console-single-peek-v1/install/qualification-failure.json) ·
-[Installed 8 MiB resource failure](build/i386-console-single-peek-v1/installed-resource8/resource-result.json)
+[Installed 8 MiB resource failure](build/i386-console-single-peek-v1/installed-resource8/resource-result.json) ·
+[Installed 16 MiB resource pass](build/i386-console-single-peek-v1/installed-resource16/resource-result.json)
 
 The unchanged B-spline demo now uses the shared 2D spline wrappers on
 i386. Both guests selected all six control points at identical
@@ -258,12 +261,15 @@ The task-symbol fixture produced and read back all 1,030 bytes across three
 chunks, verified the 1,128-byte allocation footprint, and recovered the
 initial heap with both interrupt states. The full-content cross-build
 passed the 386 boot instruction audit and 8 MiB KVM diagnostics,
-including all 28 program-publication cases. A controlled 8 MiB comparison
-holds the installed native console fixed and swaps only the compiler.
+including all 28 program-publication cases. In the 8 MiB comparison, only
+the compiler module differed across the 1,955 files. Both arms booted with
+the same native console and ran out of emitter space compiling the
+document resource fixture.
 [Segmented output fixture](build/i386-out-chunk-v2/task-symbols/result.json) ·
 [Lexer and compiler-control fixture](build/i386-out-chunk-v2/lex-control/result.json) ·
 [Full-content cross-build](build/i386-out-chunk-v2/cross/result.json) ·
-[8 MiB diagnostics](build/i386-out-chunk-v2/diagnostic8-kvm/result.json)
+[8 MiB diagnostics](build/i386-out-chunk-v2/diagnostic8-kvm/result.json) ·
+[Installed console comparison](build/i386-out-chunk-v1/installed-comparison/comparison.json)
 
 The resource runner now stops at an unexpected `OutMem` and records the
 failing command and the source disk identity. The native-console control
