@@ -155,13 +155,17 @@ then fails to allocate the 42,899-byte document diagnostic with a
 largest free block of 21,264 bytes. A separate 8 MiB document resource
 run also rejects the fixture during compilation. At 16 MiB the
 same installed disk completes all 20 document sessions and matches
-all 11 VGA checkpoints.
+all 11 VGA checkpoints. At 64 MiB under KVM, the installed disk also
+passes the plain-terminal persistent-window fixture: a final hook
+overlays the retained pixel, removing the hook reveals it, clearing
+restores the document, and the prompt accepts arithmetic.
 [Export comparison](build/i386-console-single-peek-v1/export-comparison.json) ·
 [8 MiB GrPeek check](build/i386-console-single-peek-v1/peek-smoke8/result.json) ·
 [Native rebuild and export audit](build/i386-console-single-peek-v1/native-console128/result.json) ·
 [Installed 8 MiB diagnostic](build/i386-console-single-peek-v1/install/qualification-failure.json) ·
 [Installed 8 MiB resource failure](build/i386-console-single-peek-v1/installed-resource8/resource-result.json) ·
-[Installed 16 MiB resource pass](build/i386-console-single-peek-v1/installed-resource16/resource-result.json)
+[Installed 16 MiB resource pass](build/i386-console-single-peek-v1/installed-resource16/resource-result.json) ·
+[Installed 64 MiB persistent-window pass](build/i386-console-single-peek-v1/installed-persistent64-plain/result.json)
 
 The unchanged B-spline demo now uses the shared 2D spline wrappers on
 i386. Both guests selected all six control points at identical
