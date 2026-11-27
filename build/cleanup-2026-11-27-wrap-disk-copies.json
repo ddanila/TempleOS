@@ -1,0 +1,14 @@
+[
+  {
+    "removed": "build/i386-ic-lifetime-known-v4/diagnostic8-kvm/working.img",
+    "retained": "build/i386-ic-lifetime-known-v4/cross/kernel-diagnostics.img",
+    "sha256": "d4e261ead7ee9e69b1cd2cbdb9a180b5a412b91bfdd3c662cfae70a0012e4c0d",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-tohtml-custom-link-port-v1/interactive8-kvm/working.img",
+    "retained": "build/i386-tohtml-custom-link-port-v1/cross/kernel.img",
+    "sha256": "951abdb0e5d9a32b1e524aa3dba81f0632117e6f4f6163e34958755346934bf2",
+    "allocated_bytes": 67112960
+  }
+]
