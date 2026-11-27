@@ -138,6 +138,8 @@ public _extern _POP_UP_FORM Bool PopUpForm(U8 *data,U8 *class_name=lastclass,I64
 public _extern _DOC_FIND Bool DocFind(CDoc *doc,I64 start=I64_MIN,U8 *needle=NULL,I64 occurrence=1);
 public _extern _DOC_ANCHOR_FIND Bool DocAnchorFind(CDoc *doc,U8 *needle);
 public _extern _DOC_GO_TO_LINE Bool DocGoToLine(CDoc *doc,I64 line_num);
+public _extern _DOC_FILE_ED Bool DocFileEd(I64 type,U8 *filename,U8 *needle,I64 *line,I64 flags);
+public _extern _DOC_HIGHLIGHT U32 *DocHighlight(CDocEntry *entry,U8 *source,I64 len,I64 attr);
 public _extern _ED_FIND_REPLACE I64 EdFindReplace(CDoc *doc);
 public _extern _ED_GO_TO_LINE U0 EdGoToLine(CDoc *doc);
 public _extern _ED_REPLACE I64 EdReplace(CDoc *doc,U8 *find,U8 *replace,

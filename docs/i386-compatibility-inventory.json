@@ -20395,12 +20395,13 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": {
-        "status": "reference-captured",
+        "status": "qualified-workflows",
         "description": "Run bundled HtmlGen on the included sample with a writable home, then read the saved HTML."
       },
       "oracle": {
+        "tool": "tools/test-i386-txtgen.py",
         "dataset": "build/i386-htmlgen-reference-v1/DemoOutPage.html.b64",
         "checks": [
           "Compare the exact saved HTML, including markup, links, and style declarations."
@@ -20416,6 +20417,13 @@
           "target": "native-htmlgen-cold",
           "result": "fail",
           "evidence": "build/i386-htmlgen-native-v1/result.json"
+        },
+        {
+          "target": "native-htmlgen-exact-output",
+          "command": "python3 tools/test-i386-txtgen.py IMAGE --html --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-htmlgen-doc-file-ed-v3/htmlgen/result.json",
+          "scope": "The unchanged converter reproduced the original HTML byte for byte and returned to fresh arithmetic."
         }
       ]
     },
