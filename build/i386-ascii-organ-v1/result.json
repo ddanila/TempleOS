@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "disk_sha256": "e4cd924ded65d96946c1881f76e6169e72a3eae27ddd1a21c0a2e4031a414b73",
+  "source_sha256": "b2853979013fd500d1807604920acf586e975cdbb78b9954e7c1f83a4359ae53",
+  "original": {
+    "g5_windows": 12,
+    "c6_windows": 10,
+    "wav_sha256": "44cb812267bf982f132d6a620c6ebf877b6d32694e64dfb2c0ef85cecba023b4"
+  },
+  "native": {
+    "g5_windows": 6,
+    "c6_windows": 11,
+    "wav_sha256": "a2449e61e1ef66761c69223f40eaf8e49e14ab37730879a6cbbfd1d1f3dbc862"
+  },
+  "document_sha256": "3461068e589291e10512a9f2473ec26a87c859defb6773e2a1daa1df98b22fe9",
+  "document_bytes": 5280,
+  "inputs_unchanged": true
+}

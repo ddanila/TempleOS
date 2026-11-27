@@ -20241,10 +20241,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged ASCII Organ, play a and f on the physical keyboard, and exit with Shift-Escape.",
+      "oracle": "Check the ordered G5 and C6 tones in captured speaker PCM, silence after exit, and the exact DolDoc with the ASCII table, embedded sprite and Psalmody launch link. Verify fresh native arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-ascii-organ",
+          "result": "pass",
+          "evidence": "build/i386-ascii-organ-v1/result.json",
+          "scope": "Two physical note keys and Shift-Escape on both guests, byte-identical 5,280-byte DolDoc including the embedded sprite, and fresh i386 arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Snd/MorseCode.HC",

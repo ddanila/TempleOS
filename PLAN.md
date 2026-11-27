@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 116 (six apps and one hundred ten demos) |
+| Qualified | 117 (six apps and one hundred eleven demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 23 (fifteen support sources and eight shared data or document files) |
-| Qualification gaps | 535 |
-| Linked to tests / with reference workflow and oracle | 274 / 204 |
+| Qualification gaps | 534 |
+| Linked to tests / with reference workflow and oracle | 275 / 205 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 110 of 224 |
+| Demos qualified | 111 of 224 |
 
-C1 has 535 qualification gaps, including entries that still need a reference
+C1 has 534 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -95,6 +95,12 @@ match after verifying the live timing field and normalizing its values.
 Both guests emit B5 with longer dash captures and stop the speaker on
 Escape. The i386 prompt renders fresh arithmetic.
 [Paired Morse checks](build/i386-morse-code-v1/result.json)
+
+The unchanged `ASCIIOrgan` demo plays G5 and C6 in order from physical
+keyboard input on both guests. Shift-Escape stops the speaker and leaves
+the native prompt responsive. All 5,280 DolDoc bytes match, including
+the ASCII table, sprite and Psalmody launch link.
+[Paired ASCII Organ checks](build/i386-ascii-organ-v1/result.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
