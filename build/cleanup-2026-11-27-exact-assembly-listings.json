@@ -1,0 +1,170 @@
+[
+  {
+    "removed": "build/i386-demo-f64-files-v1/generations128/gen2-audit/kernel-assembly.txt",
+    "retained": "build/i386-demo-f64-files-v1/generations128/gen1-audit/kernel-assembly.txt",
+    "sha256": "76cb65c64cace4f651d05f8cc5f854c86bfde05ed11117c57d9e76e695752fa6",
+    "allocated_bytes": 110428160
+  },
+  {
+    "removed": "build/i386-htmlgen-doc-file-ed-v3/cross/kernel-assembly.txt",
+    "retained": "build/i386-ode-template-port-v1/cross/kernel-assembly.txt",
+    "sha256": "d04f52e6fe5178c7c261d4d618865f723996ddc617471d527c9e7f42d5521380",
+    "allocated_bytes": 110108672
+  },
+  {
+    "removed": "build/i386-tohtml-custom-link-port-v1/cross/kernel-assembly.txt",
+    "retained": "build/i386-ode-template-port-v1/cross/kernel-assembly.txt",
+    "sha256": "d04f52e6fe5178c7c261d4d618865f723996ddc617471d527c9e7f42d5521380",
+    "allocated_bytes": 110108672
+  },
+  {
+    "removed": "build/i386-asm-and-c1-port-v2/cross/kernel-assembly.txt",
+    "retained": "build/i386-asm-and-c1-port-v1/cross/kernel-assembly.txt",
+    "sha256": "3d24f28340599a0aaa4f6fb82248fe3648db358d86cb985bb19a4e90f3553b20",
+    "allocated_bytes": 110108672
+  },
+  {
+    "removed": "build/i386-asm-and-c2-port-v1/cross/kernel-assembly.txt",
+    "retained": "build/i386-asm-and-c1-port-v1/cross/kernel-assembly.txt",
+    "sha256": "3d24f28340599a0aaa4f6fb82248fe3648db358d86cb985bb19a4e90f3553b20",
+    "allocated_bytes": 110108672
+  },
+  {
+    "removed": "build/i386-asm-and-c3-port-v2/cross/kernel-assembly.txt",
+    "retained": "build/i386-asm-and-c1-port-v1/cross/kernel-assembly.txt",
+    "sha256": "3d24f28340599a0aaa4f6fb82248fe3648db358d86cb985bb19a4e90f3553b20",
+    "allocated_bytes": 110108672
+  },
+  {
+    "removed": "build/i386-parser-take-known-v1/cross/kernel-assembly.txt",
+    "retained": "build/i386-asm-and-c1-port-v1/cross/kernel-assembly.txt",
+    "sha256": "3d24f28340599a0aaa4f6fb82248fe3648db358d86cb985bb19a4e90f3553b20",
+    "allocated_bytes": 110108672
+  },
+  {
+    "removed": "build/i386-txtgen-startup-defines-v1/cross/kernel-assembly.txt",
+    "retained": "build/i386-asm-and-c1-port-v1/cross/kernel-assembly.txt",
+    "sha256": "3d24f28340599a0aaa4f6fb82248fe3648db358d86cb985bb19a4e90f3553b20",
+    "allocated_bytes": 110108672
+  },
+  {
+    "removed": "build/i386-txtgen-startup-defines-v3/cross/kernel-assembly.txt",
+    "retained": "build/i386-asm-and-c1-port-v1/cross/kernel-assembly.txt",
+    "sha256": "3d24f28340599a0aaa4f6fb82248fe3648db358d86cb985bb19a4e90f3553b20",
+    "allocated_bytes": 110104576
+  },
+  {
+    "removed": "build/i386-asm-hello-world-port-v2/cross/kernel-assembly.txt",
+    "retained": "build/i386-asm-hello-world-port-v1/cross/kernel-assembly.txt",
+    "sha256": "030f38d1c2d957ddb6a3eafd31ce775f4e33a8e8862580121de3f85975c2663f",
+    "allocated_bytes": 110026752
+  },
+  {
+    "removed": "build/i386-buzz-fizz-port-v1/cross/kernel-assembly.txt",
+    "retained": "build/i386-asm-hello-world-port-v1/cross/kernel-assembly.txt",
+    "sha256": "030f38d1c2d957ddb6a3eafd31ce775f4e33a8e8862580121de3f85975c2663f",
+    "allocated_bytes": 110026752
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-defer-user640-v1/cross-version276/kernel-assembly.txt",
+    "retained": "build/i386-asm-hello-world-port-v1/cross/kernel-assembly.txt",
+    "sha256": "030f38d1c2d957ddb6a3eafd31ce775f4e33a8e8862580121de3f85975c2663f",
+    "allocated_bytes": 110022656
+  },
+  {
+    "removed": "build/i386-diagnostic-worker-defer-user640-v1/cross/kernel-assembly.txt",
+    "retained": "build/i386-asm-hello-world-port-v1/cross/kernel-assembly.txt",
+    "sha256": "030f38d1c2d957ddb6a3eafd31ce775f4e33a8e8862580121de3f85975c2663f",
+    "allocated_bytes": 110022656
+  },
+  {
+    "removed": "build/i386-div-by-hand-port-v1/cross/kernel-assembly.txt",
+    "retained": "build/i386-asm-hello-world-port-v1/cross/kernel-assembly.txt",
+    "sha256": "030f38d1c2d957ddb6a3eafd31ce775f4e33a8e8862580121de3f85975c2663f",
+    "allocated_bytes": 110026752
+  },
+  {
+    "removed": "build/i386-demo-mem-native-layout-v1/full/kernel-assembly.txt",
+    "retained": "build/i386-demo-doc-fileread-cleanup-v1/full/kernel-assembly.txt",
+    "sha256": "b4c1ca73ecbbeeafe694c4e6df83b5e1b0ecbdad7f265caf9341e4614f5598ea",
+    "allocated_bytes": 109518848
+  },
+  {
+    "removed": "build/i386-demo-phone-words-cold-v1/full/kernel-assembly.txt",
+    "retained": "build/i386-demo-doc-fileread-cleanup-v1/full/kernel-assembly.txt",
+    "sha256": "b4c1ca73ecbbeeafe694c4e6df83b5e1b0ecbdad7f265caf9341e4614f5598ea",
+    "allocated_bytes": 109518848
+  },
+  {
+    "removed": "build/i386-heap-pool-remove-v1/full/kernel-assembly.txt",
+    "retained": "build/i386-demo-doc-fileread-cleanup-v1/full/kernel-assembly.txt",
+    "sha256": "b4c1ca73ecbbeeafe694c4e6df83b5e1b0ecbdad7f265caf9341e4614f5598ea",
+    "allocated_bytes": 109518848
+  },
+  {
+    "removed": "build/i386-ic-lifetime-known-v4/cross/kernel-assembly.txt",
+    "retained": "build/i386-sprite-early-integrated-v1/cross/kernel-assembly.txt",
+    "sha256": "a62db460b49cc214cb7be19b0062d2670011889e3cf483225d8618a812657d79",
+    "allocated_bytes": 110149632
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen2-audit/kernel-assembly.txt",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen1-audit/kernel-assembly.txt",
+    "sha256": "9c928c63b716406153ec4cc4296b0b6b8ea9d0e8fb910c3e2098aae1ac1b4ef2",
+    "allocated_bytes": 110833664
+  },
+  {
+    "removed": "build/i386-desktop-eea98cfa/generations128/gen2-audit/kernel-assembly.txt",
+    "retained": "build/i386-desktop-eea98cfa/generations128/gen1-audit/kernel-assembly.txt",
+    "sha256": "e920fad6b371d0253d1cc47decb574ac804bfb1d88ad335d8941097f47b09916",
+    "allocated_bytes": 110346240
+  },
+  {
+    "removed": "build/i386-redsea-named-self-v1/full/kernel-assembly.txt",
+    "retained": "build/i386-keepaway-numbible-production-v1/full/kernel-assembly.txt",
+    "sha256": "a42c30032ecabe2d36c463e75da96ae1c85ef4348b4c54ba0f79914df16e5899",
+    "allocated_bytes": 109518848
+  },
+  {
+    "removed": "build/i386-settings-startup-production-v1/full/kernel-assembly.txt",
+    "retained": "build/i386-keepaway-numbible-production-v1/full/kernel-assembly.txt",
+    "sha256": "a42c30032ecabe2d36c463e75da96ae1c85ef4348b4c54ba0f79914df16e5899",
+    "allocated_bytes": 109518848
+  },
+  {
+    "removed": "build/i386-demo-menu-buttons-v1/cross-public/kernel-assembly.txt",
+    "retained": "build/i386-demo-menu-buttons-v1/cross-linked/kernel-assembly.txt",
+    "sha256": "6604d0a1d4aebae43658296575018cdc09d23bb07a9a32beda1eb48b6c67ae30",
+    "allocated_bytes": 109608960
+  },
+  {
+    "removed": "build/xcaliber-native-loader-v1/full/kernel-assembly.txt",
+    "retained": "build/i386-power-table-v6/full/kernel-assembly.txt",
+    "sha256": "69d9882dd7f3ff309606da3261727a22a3cb7df6713644e580a4fb5339988859",
+    "allocated_bytes": 109719552
+  },
+  {
+    "removed": "build/i386-sprite-plot3d-production-v1/cross/kernel-assembly.txt",
+    "retained": "build/i386-bootstrap-cli-v1/cross/kernel-assembly.txt",
+    "sha256": "8664b75ea100f8009e6b90c6b43b6893580c12c157fa35ac880b6d1f5e82c9bb",
+    "allocated_bytes": 109584384
+  },
+  {
+    "removed": "build/i386-sprite-plot3d-production-v1/generations128-frozen/gen2-audit/kernel-assembly.txt",
+    "retained": "build/i386-sprite-plot3d-production-v1/generations128-frozen/gen1-audit/kernel-assembly.txt",
+    "sha256": "02726e292bce0de459a1479c937216c8a8b30ab507b4c435e257fb6af374edd5",
+    "allocated_bytes": 110415872
+  },
+  {
+    "removed": "build/i386-wide-product-production-v3/full/kernel-assembly.txt",
+    "retained": "build/i386-wide-product-production-v2/full/kernel-assembly.txt",
+    "sha256": "73fa79c10fc6d81154151123af0772ae2802150e57f5e8feaf966c5ffa5b9616",
+    "allocated_bytes": 109289472
+  },
+  {
+    "removed": "build/i386-parenwarn-links-v2/void-native-generations128/gen2-audit/kernel-assembly.txt",
+    "retained": "build/i386-parenwarn-links-v2/void-native-generations128/gen1-audit/kernel-assembly.txt",
+    "sha256": "7b7604f108cc952d0a0c099f60bfd33e7c0fefa561e06c72a38fee7973625b12",
+    "allocated_bytes": 110362624
+  }
+]
