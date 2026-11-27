@@ -192,6 +192,20 @@ frame. Both the baseline and provider image produce identical actual
 frames and time out at that same check.
 [User startup comparison](build/i386-psalmody-cold-integrated-v1/user-startup/comparison.json)
 
+JukeBox preview starts a separate task. Before the music library was
+published in Adam, that task rejected the saved song at
+`SndTaskEndCB`. The desktop now publishes the original music playback
+body and native cleanup callback. The preview task advances past that
+error and the speaker captures the start of the saved song. The
+original preview yields both expected pitches and Shift-Escape reloads
+the notes. The i386 preview still fails to reopen the editor after
+Shift-Escape. The audio run records a compiler rejection without the
+previous unresolved-symbol diagnostic, and the run without audio
+times out. Preview exit and complete audio parity remain open.
+[Missing callback](build/i386-psalmody-preview-v1/native/result.json) ·
+[Original preview](build/i386-psalmody-preview-v2/original-audio/result.json) ·
+[Native preview](build/i386-psalmody-preview-v2/player-audio/result.json)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

@@ -40,13 +40,15 @@ def main():
     ap.add_argument('--playback',action='store_true',help='Play the two surviving notes and check speaker PCM')
     ap.add_argument('--save-reopen',action='store_true',help='Save a song and reopen it through the JukeBox')
     ap.add_argument('--startup-providers',action='store_true',help='Use the native desktop providers without fixture staging')
+    ap.add_argument('--preview',action='store_true',help='Preview the saved song before reopening it')
     args=ap.parse_args();out=args.out.resolve()
+    if args.preview and not args.save_reopen:ap.error('Preview requires --save-reopen')
     if out.exists():ap.error('Use a fresh output directory')
     if args.disk and not args.reference:ap.error('Native requires original reference')
     if args.startup_providers and not args.disk:ap.error('Startup providers require a native disk')
     fixture=ROOT/'tests/guest/i386-psalmody-keyboard/Contract.HC'
     paths=[Path(__file__).resolve(),fixture,ROOT/'docs/i386-compatibility-inventory.json',ROOT/'Kernel/FontStd.HC']+[ROOT/('tools/'+n) for n in ['test-i386-timeclock-reference.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','build-iso.py','package-i386-native-image.py','build-i386-kernel.py']]
-    if args.playback:
+    if args.playback or args.preview:
         paths.append(ROOT/'tools/test-i386-oh-great.py')
     script=fixture.read_bytes()
     if args.save_reopen:
@@ -62,6 +64,8 @@ def main():
             raise ValueError('A passing original playback control is required')
         if args.save_reopen and not info.get('persistence'):
             raise ValueError('A passing original persistence control is required')
+        if args.preview and not info.get('preview'):
+            raise ValueError('A passing original speaker preview control is required')
         paths += [args.disk.resolve(),gold/'result.json']+[gold/n for n in NAMES]
         if args.save_reopen:
             paths += [gold/'song.HC',gold/'reopened.bin']
@@ -94,7 +98,7 @@ def main():
             (overlay/'Once.HC').write_bytes(setup+b'#include "T:/Apps/Psalmody/Load.HC"\n'+script+b'\n' + entry_command.encode() +b'\n')
             image=out/'original.iso';subprocess.run(['python3','tools/build-iso.py','--overlay',str(overlay),'--output',str(image)],cwd=ROOT,check=True)
         Guest=runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest']
-        wav=out/'speaker.wav' if args.playback else None
+        wav=out/'speaker.wav' if args.playback or args.preview else None
         g=Guest(image,out/'guest',bool(args.disk),audio_wav=wav)
         if args.disk:
             g.wait('DONE native kernel startup\n')
@@ -119,7 +123,7 @@ def main():
         for i,key in enumerate(['h','j','k'],1):
             g.key(key,True);time.sleep(.4);g.key(key,False);g.wait(f'PS note {i}\n',30)
         g.screenshot('recorded');g.press('backspace');g.wait('PS deleted\n',30);g.screenshot('deleted')
-        if wav:
+        if args.playback:
             time.sleep(.5)
             offset=wav.stat().st_size
             if offset<=44:
@@ -161,8 +165,25 @@ def main():
             col,row=wait_text(g,probe,font,b'OKAY','open-confirm')
             menu['click'](g,pointer,(col*8+12,row*8+3))
             _,header=wait_text(g,probe,font,b'to get your reward','open-chooser')
-            wait_text(g,probe,font,b'Tmp','open-menu',first_row=header+1)
-            g.press('esc')
+            col,row=wait_text(g,probe,font,b'Tmp','open-menu',first_row=header+1)
+            if args.preview:
+                preview_offset=wav.stat().st_size
+                report['preview_start_byte']=preview_offset
+                menu['click'](g,pointer,(col*8+12,row*8+3))
+                wait_text(g,probe,font,b'to get your reward','preview-chooser')
+                deadline=time.monotonic()+35
+                while wav.stat().st_size-preview_offset<96000:
+                    if time.monotonic()>=deadline or g.p.poll() is not None:
+                        raise ValueError('Missing speaker output from the song preview')
+                    time.sleep(.05)
+                g.screenshot('preview')
+                g.key('shift',True)
+                try:
+                    g.press('esc')
+                finally:
+                    g.key('shift',False)
+            else:
+                g.press('esc')
             g.wait('PS reopened\n',30)
         g.key('shift',True);g.press('esc');g.key('shift',False);g.wait('PS done\n',30)
         records=[(g.out/n).read_bytes() for n in NAMES]
@@ -181,7 +202,9 @@ def main():
             if records!=[(gold/n).read_bytes() for n in NAMES]:raise ValueError('Original vectors differ')
             g.wait('COMMAND OK\n',start=g.collect().index('INPUT LINE '+entry_command));g.command('6*7;');g.result_pixels()
         g.close();g=None
-        if wav:
+        if args.preview:
+            report['preview']=verify_playback(wav,preview_offset,out/'preview.wav')
+        if args.playback:
             report['playback']=verify_playback(wav,offset,out/'playback.wav')
         if args.disk:
             after=pack['snapshot'](image.read_bytes())[1];changed={n for n in set(before)|set(after) if before.get(n)!=after.get(n)}

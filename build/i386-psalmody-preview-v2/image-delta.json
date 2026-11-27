@@ -1,0 +1,8 @@
+{
+  "source_sha256": "351d6eaa7db88fa7ec7f1e33ed2c0ba2be140b4171a8a4e40ce9b2d36090de79",
+  "image_sha256": "dccbd2df7d06ee9ddab6affca9bb510a026c77c725f96056add688914015be98",
+  "changed_files": [
+    "/Kernel/I386/StartOS.HC"
+  ],
+  "startup_source_sha256": "2398ee198bfe85660e910c376adb47859c247cc5e8429e3c2def81af2872a90b"
+}
