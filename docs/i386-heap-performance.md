@@ -1382,3 +1382,12 @@ matched all eleven VGA checkpoints. Live document heap use peaked at
 38,080 bytes, 7,824 above baseline. This isolates the 8 MiB failure from
 the document session behavior that follows successful compilation.
 [16 MiB comparison](../build/i386-resource-oom-reference16-v2/resource-result.json)
+
+At 16 MiB, snapshots before and after compiling the same document fixture
+on the GrPeek disk show the main arena high-water mark rising from
+6,706,136 to 6,759,408 bytes. This was 108,632 bytes above the precompile
+live use and 12,272 bytes beyond the 8 MiB arena's entire capacity.
+Allocation placement can differ across profiles. This establishes the
+observed successful footprint, while the 8 MiB breakpoint independently
+shows fragmentation and exhaustion.
+[Successful compile heap comparison](../build/i386-resource-oom-reference16-v1/compile-heap-comparison.json)

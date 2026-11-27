@@ -1,0 +1,26 @@
+{
+  "result": "captured",
+  "ram_mib": 16,
+  "cpu": "486,-fpu",
+  "accel": "kvm",
+  "disk_sha256": "afb9d0cd79331862600995dd8d7915d7e550c1203d710e256e96ac079b7539ee",
+  "scope": "Physical main arena before and after successful document-session fixture compilation.",
+  "before": {
+    "used": 6650776,
+    "peak": 6706136,
+    "capacity": 14218240,
+    "allocations": 20597,
+    "largest_free": 7483872,
+    "physical_sha256": "5b8d9aefd31fa635f9f4711cedca609bb7bfedba4d16c81a2d851db3f3d0d82c"
+  },
+  "compiled": {
+    "used": 6665328,
+    "peak": 6759408,
+    "capacity": 14218240,
+    "allocations": 20662,
+    "largest_free": 7483872,
+    "physical_sha256": "832504a69f94158cdfea9a069001bf8e649e480b018842042d4bce451d9a4541"
+  },
+  "compile_peak_above_startup_use": 108632,
+  "peak_minus_8_mib_arena_capacity": 12272
+}
