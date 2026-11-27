@@ -692,6 +692,9 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
   Bool found,unresolved;
   visit.transfer=transfer; visit.completion=0;
   visitor.context=&visit; visitor.release=&I386CompletionVisit;
+  //The caller holds IRQ exclusion. This symbol walk only reads heap payloads
+  //and updates the journal; the later code-capacity queries can call a provider.
+  if(I386HeapSize(heap,cc)!=sizeof(CI386CmpCtrl))goto done;
   for(i=0;i<=source->mask;i++)
     for(entry=source->body[i];entry;entry=entry->next) {
       binding=I386FrontendResidentFind(frontend,entry);
@@ -718,7 +721,7 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
         if(unresolved && (!frontend->command_publication || cc->flags&CCF_MODULE_SOURCE || !declaration ||
             (!terminal && (!declaration->complete || !declaration->header)) ||
             fun->exe_addr!=&I386FrontendUndefined))goto done;
-        if(I386HeapSize(heap,fun)!=sizeof(CHashFun)*(PTR_STARS_NUM+1) ||
+        if(!I386HeapKnownSize(heap,fun,sizeof(CHashFun)*(PTR_STARS_NUM+1)) ||
             fun->ext_lst || fun->type&HTF_IMPORT ||
             !I386ProgramTypeReady(fun->return_class) ||
             !I386FunctionDebugValid(frontend,fun)) goto done;
@@ -728,24 +731,24 @@ Bool I386FrontendTransferGraph(CI386Frontend *frontend,CI386Frontend *parent,
           if(found || binding || !I386IntrinsicValid(fun)) goto done;
         } else if(!found && !binding && !unresolved) goto done;
       } else if(entry->type&HTT_CLASS) {
-        if(I386HeapSize(heap,entry)!=sizeof(CHashClass)*(PTR_STARS_NUM+1) ||
+        if(!I386HeapKnownSize(heap,entry,sizeof(CHashClass)*(PTR_STARS_NUM+1)) ||
             !I386ProgramClassReady(entry)) goto done;
       } else if(entry->type&HTT_GLBL_VAR) {
         global=entry;
-        if(I386HeapSize(heap,global)!=sizeof(CHashGlblVar) || global->type&HTF_IMPORT ||
+        if(!I386HeapKnownSize(heap,global,sizeof(CHashGlblVar)) || global->type&HTF_IMPORT ||
             global->type&HTF_UNRESOLVED && !I386FrontendResolvedGlobalAlias(frontend,global) ||
             !I386ProgramTypeReady(global->var_class) ||
             global->size<0 || !(global->flags&GVF_ALIAS) &&
-            (!global->data_addr || I386HeapSize(heap,global->data_addr)<global->size)) goto done;
+            (!global->data_addr || I386HeapKnownRequested(heap,global->data_addr)<global->size)) goto done;
       } else if(entry->type&HTT_HELP_FILE) {
-        if(I386HeapSize(heap,entry)!=sizeof(CHashSrcSym) || !(entry->type&HTF_PUBLIC) ||
+        if(!I386HeapKnownSize(heap,entry,sizeof(CHashSrcSym)) || !(entry->type&HTF_PUBLIC) ||
             entry->type&(HTF_IMPORT|HTF_UNRESOLVED) || !entry->src_link) goto done;
       } else if(!(entry->type&HTT_DEFINE_STR)) goto done;
       SymbolHashVisit(&visitor,entry);
       if(parent && frontend->command_publication && entry->type&(HTT_CLASS|HTT_FUN|HTT_GLBL_VAR)) {
         declaration=I386FrontendDeclarationFind(frontend,entry);
         if(!declaration || !terminal && !declaration->complete ||
-            I386HeapSize(heap,declaration)!=sizeof(CI386FrontendDeclaration))goto done;
+            !I386HeapKnownSize(heap,declaration,sizeof(CI386FrontendDeclaration)))goto done;
         I386ClassTransferVisit(transfer,declaration);
       }
       if(!transfer->ok) goto done;

@@ -1,0 +1,9 @@
+{
+  "result": "fail",
+  "startup_seconds": 300.90742802998284,
+  "budget_seconds": 60,
+  "over_budget_seconds": 240.90742802998284,
+  "evidence": "/home/ddanila/fun/TempleOS/build/i386-publication-known-free-v1/interactive8-tcg/timing-evidence.json",
+  "evidence_sha256": "103095cd1b8c9382f8648e9c6269ec07ffba6b511ac09cf73b3393deffc7cd6a",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}

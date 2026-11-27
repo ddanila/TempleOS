@@ -1536,3 +1536,21 @@ disk, recovered the document heap after every session, and matched all
 eleven VGA checkpoints.
 [8 MiB installation boot](../build/i386-parser-known-free-v1/native-compiler-install/result.json) ·
 [Installed compiler resource test](../build/i386-parser-known-free-v1/native-compiler-resource8/resource-result.json)
+
+The publication record release image reached the 8 MiB TCG prompt in
+300.907 seconds. All nine VGA checkpoints matched with zero build-provider
+loads. Other guest builds and the screen-capture comparison ran during
+this test. The preceding 264.426-second measurement and this run do not
+isolate the cost of the publication change. The 60-second gate remains open.
+[Publication TCG behavior](../build/i386-publication-known-free-v1/interactive8-tcg/result.json) ·
+[Startup budget verdict](../build/i386-publication-known-free-v1/interactive8-tcg/startup-budget.json)
+
+The publication graph audits the arena once before its symbol walk.
+Class, function, global, help, and declaration size checks then identify
+exact live block boundaries under continued IRQ exclusion. Code capacity
+queries can call a provider, so they retain their full validation.
+The two-stage bootstrap, 386 instruction audit, compiler ownership tests,
+8 MiB KVM diagnostics, and all 20 document resource sessions passed.
+[Compiler ownership](../build/i386-symbol-walk-audit-v1/task-symbols/result.json) ·
+[8 MiB diagnostics](../build/i386-symbol-walk-audit-v1/diagnostic8-kvm/result.json) ·
+[Document resources](../build/i386-symbol-walk-audit-v1/resource8/resource-result.json)
