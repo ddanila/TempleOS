@@ -1,0 +1,20 @@
+[
+  {
+    "removed": "build/i386-demo-scrn-capture-v1/working.img",
+    "retained": "build/i386-publication-known-free-v1/cross/kernel.img",
+    "sha256": "8002830b60d30d6a9572943b5a3daa53d7d3fd86c541d96452f5435caa407902",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-publication-known-free-v1/interactive8-tcg/working.img",
+    "retained": "build/i386-publication-known-free-v1/cross/kernel.img",
+    "sha256": "8002830b60d30d6a9572943b5a3daa53d7d3fd86c541d96452f5435caa407902",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-symbol-walk-audit-v1/diagnostic8-kvm/working.img",
+    "retained": "build/i386-symbol-walk-audit-v1/cross/kernel-diagnostics.img",
+    "sha256": "01b6425ea016150692b622f4731437c0ea5c6b2d477c47178938bffc420de71f",
+    "allocated_bytes": 67112960
+  }
+]
