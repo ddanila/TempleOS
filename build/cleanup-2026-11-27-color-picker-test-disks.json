@@ -1,0 +1,26 @@
+[
+  {
+    "removed": "build/i386-color-picker-mouse-v1/native-row/working.img",
+    "retained": "build/i386-color-picker-mouse-v1/native-final/working.img",
+    "sha256": "dbc9afc7574751a8edc8ec2edd15a62bb95eb4d3abb511536e1bc027d366d01d",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-color-picker-mouse-v1/native-swatches/working.img",
+    "retained": "build/i386-color-picker-mouse-v1/native-final/working.img",
+    "sha256": "dbc9afc7574751a8edc8ec2edd15a62bb95eb4d3abb511536e1bc027d366d01d",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-color-picker-production-v1/interaction/working.img",
+    "retained": "build/i386-color-picker-mouse-v1/native-final/working.img",
+    "sha256": "dbc9afc7574751a8edc8ec2edd15a62bb95eb4d3abb511536e1bc027d366d01d",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-color-picker-production-v1/diagnostic8-kvm/working.img",
+    "retained": "build/i386-color-picker-production-v1/cross/kernel-diagnostics.img",
+    "sha256": "806f766d039bed7053c09a161308950c2697245e7be9b37b00f04a052378788c",
+    "allocated_bytes": 67112960
+  }
+]
