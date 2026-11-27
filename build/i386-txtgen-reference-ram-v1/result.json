@@ -1,0 +1,12 @@
+{
+  "result": "pass",
+  "bytes": 904,
+  "output_sha256": "5780a5d9c2ebe9e44ed601ac66d13500fe9ea5e3cc2438bce60209a07b037d89",
+  "source_sha256": {
+    "Demo/ToHtmlToTXTDemo/TXTGen.HC": "aa2e1f691ffc2e763d2e036447f1ddcd85ba6fd9a3fb6bf0b1619c59af32e9a9",
+    "Demo/ToHtmlToTXTDemo/DemoInPage.DD": "24e3b0dae5ee8dc0bd833af486b564615983dd1d5eefead5a8c28c1f9ca8cd21",
+    "Adam/Opt/Utils/ToTXT.HC": "ef50656c673ded0d4f9d65a06bbd7120b30feaf05547268ec1cddf2c32d1d673"
+  },
+  "fixture_sha256": "f2b3234d5be29e8654eca14dcd2d6be9a6c2a12d9d6635c72e0c9dcd65d1f95b",
+  "scope": "Pinned original bundled TXTGen with ToTXT loaded and a disposable RedSea RAM home."
+}
