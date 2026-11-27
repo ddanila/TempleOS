@@ -1,0 +1,8 @@
+{
+  "source_sha256": "dccbd2df7d06ee9ddab6affca9bb510a026c77c725f96056add688914015be98",
+  "image_sha256": "8e162b66263f0c5e3b85d0498cf24dc767bb0a6c0a9144aab995454025d07dd6",
+  "changed_files": [
+    "/Apps/Psalmody/JukeBox.HC"
+  ],
+  "jukebox_source_sha256": "eb10cd26d31d582d92d2ed81da9435008ebbda84a17aa512938224779fb127ca"
+}

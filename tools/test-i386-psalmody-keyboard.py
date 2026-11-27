@@ -84,6 +84,9 @@ def main():
                 if name=='Apps/Psalmody/PsalmodyMain.HC':
                     # Also accept the reviewed keyboard-arrival timing port.
                     allowed.add('c0d0d1367005783450788fe39b29e8e9f0becec872341bad61948ea1b098c13e')
+                if name=='Apps/Psalmody/JukeBox.HC':
+                    # Cancellation remains an I64 until an entry is selected.
+                    allowed.add('eb10cd26d31d582d92d2ed81da9435008ebbda84a17aa512938224779fb127ca')
                 if name=='Apps/Psalmody/PsalmodyFile.HC':
                     # Also accept the reviewed song serialization port.
                     allowed.add('1b8f7babdfe87eab5e474474bb099b10b5c95c0812f03f96ed026c312823f612')
@@ -169,10 +172,12 @@ def main():
             if args.preview:
                 preview_offset=wav.stat().st_size
                 report['preview_start_byte']=preview_offset
+                chooser_start=len(g.collect())
                 menu['click'](g,pointer,(col*8+12,row*8+3))
                 wait_text(g,probe,font,b'to get your reward','preview-chooser')
+                g.wait('PS popup focused\n',45,chooser_start)
                 deadline=time.monotonic()+35
-                while wav.stat().st_size-preview_offset<96000:
+                while wav.stat().st_size-preview_offset<180000:
                     if time.monotonic()>=deadline or g.p.poll() is not None:
                         raise ValueError('Missing speaker output from the song preview')
                     time.sleep(.05)

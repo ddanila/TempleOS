@@ -11107,7 +11107,7 @@
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
       "reference_workflow": "tools/test-i386-psalmody-keyboard.py",
-      "oracle": "Exact typed note vectors and caller restoration from original Psalmody; see docs/i386-psalmody-keyboard.md. Audio and persistence remain open.",
+      "oracle": "Compare the saved song source and reopened note records byte for byte. Check the preview pitch order and caller recovery after Shift-Escape.",
       "tests": [
         {
           "target": "original-psalmody-keyboard",
@@ -11126,6 +11126,18 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-find-probe-v2/result.json",
           "scope": "Original Find and four God providers load; JukeBox rejects MusicSettingsRst before SingleSong call. Exact prefix/SingleSong publication separately passes; see docs/i386-music-reset.md. Full application remains open."
+        },
+        {
+          "target": "native-psalmody-preview-focus",
+          "result": "fail",
+          "evidence": "build/i386-psalmody-preview-focus-v1/native/result.json",
+          "scope": "Both expected pitches play. With focus confirmed in the reopened chooser, Shift-Escape still fails to restore the notes."
+        },
+        {
+          "target": "native-psalmody-preview-cancel",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-preview-fixed-v1/fixed/result.json",
+          "scope": "Signed chooser cancellation after preview. Both expected pitches play in order, Shift-Escape restores two exact note records, and the saved source, caller recovery and filesystem checks pass."
         }
       ]
     },

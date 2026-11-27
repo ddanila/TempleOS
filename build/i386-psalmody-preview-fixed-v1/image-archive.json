@@ -1,0 +1,9 @@
+{
+  "archive": "kernel.patch.zst",
+  "archive_sha256": "e3aecc57205c7844ca00193cba20c906af9cf707b42c98bf33248b0737d06cf2",
+  "base_manifest": "build/i386-psalmody-preview-v2/image-archive.json",
+  "base_sha256": "dccbd2df7d06ee9ddab6affca9bb510a026c77c725f96056add688914015be98",
+  "raw_sha256": "8e162b66263f0c5e3b85d0498cf24dc767bb0a6c0a9144aab995454025d07dd6",
+  "raw_bytes": 67108864,
+  "verified_byte_for_byte": true
+}

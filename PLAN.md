@@ -182,7 +182,7 @@ launcher draws both Psalmody staves and Shift-Escape returns to fresh
 arithmetic. Save and direct reopen also pass with the normal startup
 providers, matching the original song and reopened notes byte for byte.
 The verified image replaces only `StartOS.HC` on the fresh cross-build.
-JukeBox preview exit remains open.
+This run exercised direct selection in JukeBox.
 [Cold launch](build/i386-psalmody-cold-integrated-v1/launch/result.json) ·
 [Save and reopen with startup providers](build/i386-psalmody-cold-integrated-v1/persistence/result.json)
 
@@ -198,13 +198,25 @@ published in Adam, that task rejected the saved song at
 body and native cleanup callback. The preview task advances past that
 error and the speaker captures the start of the saved song. The
 original preview yields both expected pitches and Shift-Escape reloads
-the notes. The i386 preview still fails to reopen the editor after
+the notes. In the first i386 preview run, the editor failed to reopen after
 Shift-Escape. The audio run records a compiler rejection without the
 previous unresolved-symbol diagnostic, and the run without audio
-times out. Preview exit and complete audio parity remain open.
+timed out.
 [Missing callback](build/i386-psalmody-preview-v1/native/result.json) ·
 [Original preview](build/i386-psalmody-preview-v2/original-audio/result.json) ·
 [Native preview](build/i386-psalmody-preview-v2/player-audio/result.json)
+
+The focus trace showed an early i386 Shift-Escape was sent before the
+second chooser received focus. After synchronizing the test with that
+handoff, the speaker played both expected pitches, but reopening still
+failed. JukeBox now checks the signed menu result before converting a
+selected entry to a pointer. After preview, physical Shift-Escape reloads
+both original note records, the saved song remains byte-identical, and
+the caller renders fresh arithmetic. Direct selection and the filesystem
+audit also pass on the same i386 image.
+[Focus trace](build/i386-psalmody-preview-focus-v1/native/result.json) ·
+[Fixed preview](build/i386-psalmody-preview-fixed-v1/fixed/result.json) ·
+[Direct selection](build/i386-psalmody-preview-fixed-v1/direct/result.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched

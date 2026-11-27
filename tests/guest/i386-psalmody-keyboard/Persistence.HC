@@ -3,7 +3,8 @@ I64 pk_pointer[2];
 
 U0 PKPersistenceWatch(U8 *)
 {
-  U8 *song=NULL;
+  U8 *song=NULL,*line;
+  CTask *focus,*popup,*old_focus=NULL,*old_popup=NULL;
   while (!pk_stage) Sleep(5);
   while (!(song=FileRead("~/Psalmody/Tmp.HC.Z"))) Sleep(20);
   Free(song);
@@ -15,6 +16,16 @@ U0 PKPersistenceWatch(U8 *)
   while (PKCount!=2) {
     pk_pointer[0]=ms.pos.x;
     pk_pointer[1]=ms.pos.y;
+    focus=sys_focus_task;
+    popup=pk_parent->popup_task;
+    if (focus!=old_focus || popup!=old_popup) {
+      line=MStrPrint("PS focus %X popup %X parent %X\n",focus,popup,pk_parent);
+      PKLog(line);
+      Free(line);
+      if (popup && focus==popup) PKLog("PS popup focused\n");
+      old_focus=focus;
+      old_popup=popup;
+    }
     Sleep(5);
   }
   PKCapture(pk_reopened);

@@ -106,7 +106,7 @@ Bool JBPutKey(CDoc *doc,U8 *,I64 ch,I64 sc)
 
 public U0 JukeBox(U8 *dirname="~/Psalmody",U8 **_filename=NULL)
 {//_filename is for using this as a song-chooser program.
-  I64 i=0,rating;
+  I64 i=0,rating,choice;
   U8 *st,*st2;
   CDirEntry *tmpde,*tmpde1;
   CDoc *doc=DocNew,*s;
@@ -172,12 +172,13 @@ public U0 JukeBox(U8 *dirname="~/Psalmody",U8 **_filename=NULL)
     DocPrint(doc,"\n$$CYAN$$$$MU-UL,\"DONE\",LE=%d$$\n",DOCM_CANCEL);
     while (TRUE) {
       if (_filename)
-	tmpde=PopUpMenu(doc,DOF_INTERCEPT_TASK_END);
+	choice=PopUpMenu(doc,DOF_INTERCEPT_TASK_END);
       else
-	tmpde=PopUpMenu(doc);
+	choice=PopUpMenu(doc);
       if (task)
 	Kill(task);
-      if (tmpde<=0) break;
+      if (choice<=0) break;
+      tmpde=choice;
       st2=StrNew(tmpde->name);
       if (_filename) {
 	Free(*_filename);
