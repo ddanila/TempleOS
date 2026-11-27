@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "scope": "Stock launcher geometry and caller return against original, plus separate editor playback and preview/persistence on the same native image.",
+  "equal_pixels": 302080,
+  "screen_crop": [
+    0,
+    8,
+    640,
+    480
+  ],
+  "screen_sha256": "53372290073459e03fdf000a80406a120a5984e8fd0f5f5f1e9d89451da294aa",
+  "receipts": {
+    "original-launch": "37c3ce660192e7616ab023de9854abf8b223db9d025ab4ccef4fbbdf9afeb960",
+    "launch": "8954b6f05d534ae77bc56c7534a6fb06c7895f95615646b41db54521d0030848",
+    "playback": "377e07bc910a426b327fd1bd35f58f0bb8249b00dc4f6815393cb2f8607493bb",
+    "preview": "b304400e4e999c457a8bc547bfa55c108f7d03d5c7b606b7e043914840e7ebe6"
+  }
+}

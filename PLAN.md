@@ -230,6 +230,15 @@ timeouts used the oracle without the managed pointer.
 [Preview and reopen](build/i386-psalmody-fresh-v1/preview/result.json) ·
 [64 MiB User startup](build/i386-psalmody-fresh-v1/user64/result.json)
 
+The stock Psalmody launcher also passes a paired run with the pinned
+original. All 302,080 pixels below the system bar match, and
+Shift-Escape returns to successful arithmetic. The separate editor
+playback check records and deletes notes, matches the original
+binary records, and plays C5 and D5 in order using the normal startup
+providers. The inventory qualifies the stock launcher workflow.
+[Psalmody comparison](build/i386-psalmody-fresh-v1/comparison.json) ·
+[Editor playback](build/i386-psalmody-fresh-v1/playback/result.json)
+
 The 8 MiB minimal image with the same current kernel and providers
 reaches its managed prompt but rejects the User child request with
 `OutMem`. The allocator requests 267,527 bytes through

@@ -1,0 +1,33 @@
+{
+  "result": "pass",
+  "source_sha256": {
+    "Apps/Psalmody/Examples/childish.HC": "f380eba1db1f37115340a8d6da251b80ce781719122b832c446b40c993a98db0",
+    "Apps/Psalmody/Examples/night.HC": "d2b33285449bba2a303a47feae4a2ea8c87c1d006a1f3fd6dce4975df6ba03db",
+    "Apps/Psalmody/Examples/prosper.HC": "303c1229c518364e1a625364d0e9abd88c0d9e8c86c11b9bfa22a4c79eb814d7",
+    "Apps/Psalmody/Help.DD": "a53fa9822de8fb684263b0482ceb692fa7a65fdcaa27854ecc33df72e254115b",
+    "Apps/Psalmody/Install.HC": "3d55f92a6b0cd1c28fe9ecec3d28b844accee83d85b82e1fec09bcfaaebb769c",
+    "Apps/Psalmody/JukeBox.HC": "4de11717493a6ed2c69f2d7b8f7315e3d5c23878ab06a0d72f8313a05b156e54",
+    "Apps/Psalmody/JukePuppet.HC": "3768dd9bd5a267dc0453d4292543eddaeae0fc5197794a1efd723c4910e45837",
+    "Apps/Psalmody/Load.HC": "cb274743297487a0471421af11a0f5db3151d801cfd1d9f9fbfd6ab1708b3431",
+    "Apps/Psalmody/Psalmody.HC": "185934d2dca93a05cb76ab4cceeb2900141559adf2270c6e510185982ec00b67",
+    "Apps/Psalmody/PsalmodyCtrls.HC": "9e20581b0b9cdc9cf07a9cce83e54c12c91f65a4108634d3cf99f66888475552",
+    "Apps/Psalmody/PsalmodyDraw.HC": "61768e19003bf1b0f6b8f8065e84dcf48c202ca2ae4b415509c80312c855057f",
+    "Apps/Psalmody/PsalmodyFile.HC": "87467c14f1b0718d91dc43e61521a40001cc944751397cfc8832bdb34b2d0c63",
+    "Apps/Psalmody/PsalmodyMain.HC": "89d6dc42bf9a0ad1112563f55883845dadd6b791aab63139d25589623dae2d0b",
+    "Apps/Psalmody/Run.HC": "4e0fc73f3980d9c23222d18423637cf902cc681a01d8796c41fa5fa0438aa588"
+  },
+  "command": "#include \"T:/Apps/Psalmody/Run\"",
+  "staff_rows": [
+    16,
+    24,
+    32,
+    40,
+    48,
+    64,
+    72,
+    80,
+    88,
+    96
+  ],
+  "caller_arithmetic": 42
+}

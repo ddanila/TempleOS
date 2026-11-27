@@ -11519,7 +11519,7 @@
       ],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": "Open Psalmody through the stock launcher and return with Shift-Escape.",
       "oracle": "Both staves render and the caller accepts fresh arithmetic after closing Psalmody.",
       "tests": [
@@ -11528,6 +11528,12 @@
           "result": "pass",
           "evidence": "build/i386-psalmody-fresh-v1/launch/result.json",
           "scope": "Stock PersonalMenu include command on the fresh full image, both staves and caller recovery."
+        },
+        {
+          "target": "original-native-psalmody-current-launch",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-fresh-v1/comparison.json",
+          "scope": "Exact launcher pixels below the system bar against the pinned original and successful return. Separate editor playback and persistence regressions pass on the same image."
         }
       ]
     },
