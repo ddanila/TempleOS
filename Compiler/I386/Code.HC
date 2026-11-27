@@ -62,14 +62,10 @@ CI386CodeAllocation *I386ICLifetime(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCo
       return record;
     return 0;
   }
-  if(arena_valid) {
-    if(I386HeapKnownSize(heap,node,sizeof(CI386OwnedIC))) return &node(CI386OwnedIC *)->lifetime;
-    if(!I386HeapKnownSize(heap,node,I386_FRONTEND_IC_BYTES+sizeof(CI386CodeAllocation))) return 0;
-  } else {
-    bytes=I386HeapSize(heap,node);
-    if(bytes==sizeof(CI386OwnedIC)) return &node(CI386OwnedIC *)->lifetime;
-    if(bytes!=I386_FRONTEND_IC_BYTES+sizeof(CI386CodeAllocation)) return 0;
-  }
+  if(arena_valid) bytes=I386HeapKnownRequested(heap,node);
+  else bytes=I386HeapSize(heap,node);
+  if(bytes==sizeof(CI386OwnedIC)) return &node(CI386OwnedIC *)->lifetime;
+  if(bytes!=I386_FRONTEND_IC_BYTES+sizeof(CI386CodeAllocation)) return 0;
   return node(U8 *)+I386_FRONTEND_IC_BYTES;
 }
 

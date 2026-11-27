@@ -4,6 +4,7 @@
 I64 I386HeapKnownRequested(CI386Heap *heap,U8 *ptr)
 {//Caller holds IRQ exclusion and has just validated this unchanged heap.
   //Walk physical block boundaries before interpreting any candidate header.
+  //Once the walk passes the target, it cannot be a block boundary.
   U8 *target=ptr-16;
   U32 requested=0xFFFFFFFF;
   asm {
@@ -13,15 +14,18 @@ I64 I386HeapKnownRequested(CI386Heap *heap,U8 *ptr)
     MOV ESI,U32 &heap[EBP]
     MOV ECX,U32 CI386Heap.size[ESI]
     MOV ESI,U32 CI386Heap.base[ESI]
+    ADD ECX,ESI //The validated arena does not wrap.
+    MOV EAX,U32 &target[EBP]
+    CMP EAX,ECX
+    JAE @@30
+    CMP ESI,EAX
+    JAE @@20
 @@10:
-    CMP ESI,U32 &target[EBP]
-    JE @@20
-    MOV EAX,U32 CI386HeapBlock.span[ESI]
-    ADD ESI,EAX
-    SUB ECX,EAX
-    JNZ @@10
-    JMP @@30
+    ADD ESI,U32 CI386HeapBlock.span[ESI]
+    CMP ESI,EAX
+    JB @@10
 @@20:
+    JNE @@30
     CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_USED
     JNE @@30
     MOV EAX,U32 CI386HeapBlock.requested[ESI]

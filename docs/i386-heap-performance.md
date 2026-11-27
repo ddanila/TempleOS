@@ -1412,3 +1412,25 @@ at 38,080 live bytes, 7,824 above baseline. The interactive boot took
 [8 MiB disassembly](../build/i386-packed-uasm-v1/disassembly8/result.json) ·
 [Document allocation receipt](../build/i386-packed-uasm-v1/resource8/resource-result.json) ·
 [Document VGA receipt](../build/i386-packed-uasm-v1/resource8/result.json)
+
+The packed-catalog image reached the 8 MiB managed prompt under TCG in
+273.143 seconds with all nine exact VGA checkpoints and zero build-provider
+loads. The preceding parser lookup run measured 290.367 seconds. Other
+guest activity varied between runs, so the difference does not isolate
+the effect of either catalog packing or compiler teardown. The 60-second
+requirement remains open.
+[TCG behavior receipt](../build/i386-packed-uasm-v1/interactive8-tcg/result.json) ·
+[Startup budget verdict](../build/i386-packed-uasm-v1/interactive8-tcg/startup-budget.json)
+
+The validated heap lookup now rejects addresses beyond the arena before
+walking and stops at the first boundary at or above the requested address.
+An exact match still has to identify a live block. The compiler uses one
+requested-size lookup to distinguish its two standalone intermediate-code
+layouts. The ownership corpus exercises both out-of-arena bounds, exact
+size lookup, a forged interior header and corrupted metadata. The original
+bootstrap, 386 boot instruction audit, 8 MiB KVM diagnostics and all 20
+document sessions passed. The document test matched all eleven VGA
+checkpoints and recovered to the same heap baseline.
+[Ownership corpus](../build/i386-known-boundary-v2/task-symbols/result.json) ·
+[8 MiB diagnostics](../build/i386-known-boundary-v2/diagnostic8-kvm/result.json) ·
+[Document resource test](../build/i386-known-boundary-v2/resource8/resource-result.json)

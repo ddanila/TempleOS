@@ -93,6 +93,9 @@ I64 CodeTest()
     if(I386CmpCodeOwner(&heap,cc) || (GetRFlags&0x200)!=(enabled*0x200)) return 70;
     block->reserved=0;
     if(!I386CmpCodeOwner(&heap,cc) ||
+        I386HeapKnownRequested(&heap,heap.base)!=-1 ||
+        I386HeapKnownRequested(&heap,heap.base+heap.size+16)!=-1 ||
+        I386HeapKnownRequested(&heap,fill)!=sizeof(CI386TaskSymbols)+16 ||
         I386HeapKnownAtLeast(&heap,fill+16,1) ||
         !I386HeapKnownAtLeast(&heap,fill,1) ||
         I386HeapKnownAtLeast(&heap,fill,sizeof(CI386TaskSymbols)+17) ||

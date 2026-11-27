@@ -78,10 +78,13 @@ checks.
 The packed opcode catalog and compiler teardown update passed the
 8 MiB KVM document resource test. All 20 sessions completed with exact
 heap recovery and eleven matching VGA checkpoints. The same build
-passed 8 MiB diagnostics and disassembly. The latest recorded TCG
-startup is 290.367 seconds on the preceding parser lookup image.
+passed 8 MiB diagnostics and disassembly. Its normal 8 MiB TCG startup
+took 273.143 seconds and passed all nine VGA checks. The 60-second
+requirement remains open. The subsequent bounded heap lookup passed
+the 8 MiB KVM diagnostics and document resource tests.
 [8 MiB resource receipt](build/i386-packed-uasm-v1/resource8/resource-result.json) ·
-[TCG startup budget check](build/i386-parser-known-request-v2/interactive8-tcg/startup-budget.json)
+[TCG startup budget check](build/i386-packed-uasm-v1/interactive8-tcg/startup-budget.json) ·
+[Bounded lookup resource receipt](build/i386-known-boundary-v2/resource8/resource-result.json)
 
 The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
