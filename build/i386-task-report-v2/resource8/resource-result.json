@@ -1,0 +1,23 @@
+{
+  "result": "pass",
+  "cpu": "486,-fpu",
+  "ram_mib": 8,
+  "disk_sha256": "c48ed6f176cee464c79cd86ec7bead22286f6d2bad0d17171eb5e896944123f4",
+  "accel": "kvm",
+  "source_disk_unchanged": true,
+  "disk_policy": "writable copy",
+  "arena_start": 1510400,
+  "arena_bytes": 6747136,
+  "document_development_cycles": 20,
+  "bytes": {
+    "doc_session_data_used": 30256,
+    "doc_session_code_used": 30256,
+    "doc_session_data_reserved": 55808,
+    "doc_session_code_reserved": 55808,
+    "doc_session_heap_base": 30256,
+    "doc_session_heap_peak": 38080,
+    "doc_session_heap_reserved_peak": 55808
+  },
+  "temporary_live_growth": 7824,
+  "managed_welcome": true
+}

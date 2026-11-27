@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 99 (six apps and ninety-three demos) |
+| Qualified | 100 (six apps and ninety-four demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
-| Qualification gaps | 554 |
+| Qualification gaps | 553 |
 | Linked to tests / with reference workflow and oracle | 257 / 187 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 93 of 224 |
+| Demos qualified | 94 of 224 |
 
-C1 has 554 qualification gaps, including entries that still need a reference
+C1 has 553 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -31850,3 +31850,18 @@ USCheck fails the same 267,527-byte task request, with a 2,840-byte maximum
 fallback payload. The terminal result is pinned under build/compiler-high-headers-v2.
 A physical startup heap census compares the main arena with the previous preload.
 Full C1–C5 remain open.
+
+
+### C1: run the bundled character animation with the native task report
+
+The console now exports `TaskRep` and `TaskMemAlloced`. The original and i386
+providers share the task-tree formatting and heap accounting. The native report
+starts at the resident CPU's task root.
+
+The unchanged demo cycles through the four original space glyphs. The native
+console document contains `CPU00` and the `Animate` child, and retiring the child
+restores the original font. The native probe also checks the default-task
+allocation total and invalid-task handling. See
+[the animation result](build/i386-task-report-v2/result.json) and
+[the 8 MiB KVM resource result](build/i386-task-report-v2/resource8/resource-result.json).
+The 8 MiB TCG startup gate remains open.

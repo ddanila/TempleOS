@@ -16585,7 +16585,7 @@
           "target": "native-original-menu-sprite-and-frequency",
           "result": "pass",
           "evidence": "build/i386-demo-menu-sprite-v1/comparison/qualification.json",
-          "scope": "Both guests render the same 201-pixel heart mask and emit tones near 50, 100 and 190–200 Hz. Cancel clears the heart and stops sound on both guests, and the i386 prompt evaluates fresh arithmetic."
+          "scope": "Both guests render the same 201-pixel heart mask and emit tones near 50, 100 and 190\u2013200 Hz. Cancel clears the heart and stops sound on both guests, and the i386 prompt evaluates fresh arithmetic."
         }
       ]
     },
@@ -17803,15 +17803,16 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": {
-        "status": "partial",
+        "status": "verified",
         "description": "Run the bundled demo and observe the background task cycle through all four space glyphs."
       },
       "oracle": {
         "tool": "build/i386-char-animation-reference-v1/Probe.HC",
         "checks": [
-          "Observe the four declared space glyph bitmaps in the active font."
+          "Observe the four declared space glyph bitmaps in the active font.",
+          "On native i386, verify the report contains CPU00 and the Animate child, then retire the child and verify the original font pointer is restored."
         ]
       },
       "tests": [
@@ -17820,6 +17821,12 @@
           "result": "fail",
           "evidence": "build/i386-char-animation-reference-v1/result.json",
           "scope": "All four original glyphs observed. The native compiler rejects the final TaskRep call."
+        },
+        {
+          "target": "native-character-animation-and-task-report",
+          "result": "pass",
+          "evidence": "build/i386-task-report-v2/result.json",
+          "scope": "The unmodified demo completes on native i386 and shows the same four glyphs as the original. The console document contains the CPU and child report, task memory accounting handles the default and invalid task arguments, and retiring Animate restores the font."
         }
       ]
     },

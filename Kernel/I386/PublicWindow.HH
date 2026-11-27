@@ -9,6 +9,8 @@ public _extern _WINMGR_STATE CWinMgrGlbls winmgr;
 #define TEXT_COLS 80
 #define TEXT_ROWS 60
 public _extern _TASK_VALIDATE Bool TaskValidate(CTask *task);
+public _extern _TASK_REP U0 TaskRep();
+public _extern _TASK_MEM_ALLOCED I64 TaskMemAlloced(CTask *task=NULL,Bool override_validate=FALSE);
 public _extern _TASK_DERIVED_VALS_UPDATE U0 TaskDerivedValsUpdate(CTask *task=NULL,Bool update_z_buf=TRUE);
 public _extern _WIN_HORZ Bool WinHorz(I64 left,I64 right,CTask *task=NULL);
 public _extern _WIN_BORDER Bool WinBorder(Bool val=OFF,CTask *task=NULL);

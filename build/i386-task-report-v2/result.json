@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "animation_space_patterns": 4,
+  "task_memory_default_and_invalid_checked": true,
+  "report_cpu_and_child_checked": true,
+  "original_font_restored": true,
+  "fixture_sha256": "6e66d7e9e515c04c5edab6bb54703e8754b74e64639e67d8c81cf7bedf7e9e52",
+  "disk_sha256": "c48ed6f176cee464c79cd86ec7bead22286f6d2bad0d17171eb5e896944123f4"
+}
