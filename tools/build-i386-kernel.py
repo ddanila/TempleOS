@@ -2499,12 +2499,17 @@ def main():
                         help='Use QMP stdio for the original cross-compiler guest only')
     parser.add_argument('--compiler-timeout',type=int,default=90,
                         help='Cross-compiler guest observation timeout in seconds (default: 90)')
+    parser.add_argument('--archive-listing', action='store_true',
+                        help='After success, losslessly compress the generated kernel listing'
+                             ' and record recovery under build/')
     args=parser.parse_args()
     if not 1 <= args.compiler_timeout <= 3600:
         parser.error('--compiler-timeout must be between 1 and 3600 seconds')
     if args.content_profile == 'full' and args.disk_mib < 64:
         parser.error('--content-profile full requires --disk-mib 64')
     out=args.out.resolve()
+    if args.archive_listing and not out.is_relative_to(ROOT/'build'):
+        parser.error('--archive-listing requires an output directory under build/')
     out.mkdir(parents=True,exist_ok=True)
     (out/'result.json').unlink(missing_ok=True)
     run(sys.executable,'tools/check-i386-file-bindings.py')
@@ -3682,6 +3687,8 @@ def main():
             hashlib.sha256(diagnostic_image.read_bytes()).hexdigest()!=diagnostics['disk_sha256']:
         raise ValueError('Boot images changed during verification')
     (out/'result.json').write_text(json.dumps(result,indent=2)+'\n')
+    if args.archive_listing:
+        run(sys.executable, 'tools/archive-kernel-listings.py', str(out/'kernel-assembly.txt'))
     print(f'Built {normal_disk} and {diagnostic_image} ({len(image)} native kernel bytes); boot test: {bool(args.test)}')
 
 

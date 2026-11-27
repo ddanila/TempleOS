@@ -13,3 +13,12 @@ changes out of those commits.
 Preserve unique build/test evidence during disk cleanup. Redundant generated
 artifacts may be removed after verifying the retained copy or a lossless recovery
 path. Keep cleanup manifests under `build/`.
+
+For archived or one-off kernel builds under `build/`, pass `--archive-listing`
+to `tools/build-i386-kernel.py` to compress the assembly listing after a
+successful build. Omit the flag for interactive development when the plain
+listing is convenient. For completed, inactive runs, pass the exact
+`kernel-assembly.txt` paths to `python3 tools/archive-kernel-listings.py`.
+The tool verifies decompression before removing the plain listing and prints
+the recovery manifest path. Restore any entry with
+`zstd -d ARCHIVE -o SOURCE` using the paths in that manifest.
