@@ -218,6 +218,27 @@ audit also pass on the same i386 image.
 [Fixed preview](build/i386-psalmody-preview-fixed-v1/fixed/result.json) ·
 [Direct selection](build/i386-psalmody-preview-fixed-v1/direct/result.json)
 
+A fresh full i386 cross-build from clean `035fee7d` packages 1,957
+verified files and passes the 386 boot-instruction audit. It repeats cold
+Psalmody launch, both preview pitches in order, Shift-Escape reopen,
+byte-exact persistence, caller recovery and the filesystem audit. The
+64 MiB User startup check passes with the managed-pointer oracle and
+records initial startup at 39.77 seconds. The earlier paired initial-frame
+timeouts used the oracle without the managed pointer.
+[Cross-build](build/i386-psalmody-fresh-v1/cross/result.json) ·
+[Cold launch](build/i386-psalmody-fresh-v1/launch/result.json) ·
+[Preview and reopen](build/i386-psalmody-fresh-v1/preview/result.json) ·
+[64 MiB User startup](build/i386-psalmody-fresh-v1/user64/result.json)
+
+The 8 MiB minimal image with the same current kernel and providers
+reaches its managed prompt but rejects the User child request with
+`OutMem`. The allocator requests 267,527 bytes through
+`I386TaskCreateWithFilesPlacement` and `MemorySpawn`. The reported
+fallback heap has a largest free payload of 792 bytes. The minimal
+profile and full release qualification remain open.
+[8 MiB failure](build/i386-psalmody-fresh-v1/user8/result.json) ·
+[Allocation trace](build/i386-psalmody-fresh-v1/user8/task-allocation.json)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

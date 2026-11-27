@@ -1,0 +1,29 @@
+{
+  "requested_bytes": 267527,
+  "used_bytes": 549808,
+  "capacity_bytes": 551936,
+  "largest_free_payload_bytes": 792,
+  "live_allocations": 8,
+  "callers": [
+    {
+      "return_address": 1216632,
+      "matches": [
+        {
+          "module": "Kernel",
+          "symbol": "I386TaskCreateWithFilesPlacement",
+          "return_offset": 3128
+        }
+      ]
+    },
+    {
+      "return_address": 2934675,
+      "matches": [
+        {
+          "module": "MemoryRuntime",
+          "symbol": "MemorySpawn",
+          "return_offset": 1627
+        }
+      ]
+    }
+  ]
+}

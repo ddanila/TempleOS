@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "command": "#include \"::/Apps/Psalmody/Run\"",
+  "disk_sha256": "c43e583e212de1f7a1e0d443bc40df968227d6018a86f371beac2673f2842672",
+  "startup_seconds": 39.76,
+  "staff_rows": [
+    16,
+    24,
+    32,
+    40,
+    48,
+    64,
+    72,
+    80,
+    88,
+    96
+  ],
+  "caller_arithmetic": 42,
+  "input_unchanged": true
+}
