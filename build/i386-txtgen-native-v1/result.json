@@ -1,0 +1,20 @@
+{
+  "result": "fail",
+  "source_sha256": {
+    "Adam/Opt/Utils/ToTXT.HC": "ef50656c673ded0d4f9d65a06bbd7120b30feaf05547268ec1cddf2c32d1d673",
+    "Demo/ToHtmlToTXTDemo/TXTGen.HC": "aa2e1f691ffc2e763d2e036447f1ddcd85ba6fd9a3fb6bf0b1619c59af32e9a9",
+    "Demo/ToHtmlToTXTDemo/DemoInPage.DD": "24e3b0dae5ee8dc0bd833af486b564615983dd1d5eefead5a8c28c1f9ca8cd21"
+  },
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 11,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "bytes": 893,
+  "expected_bytes": 904,
+  "exact": false
+}

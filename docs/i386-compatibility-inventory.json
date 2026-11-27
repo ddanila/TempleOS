@@ -20428,6 +20428,18 @@
           "target": "original-txtgen-writable-home",
           "result": "pass",
           "evidence": "build/i386-txtgen-reference-ram-v1/result.json"
+        },
+        {
+          "target": "native-txtgen-default-defines",
+          "result": "fail",
+          "evidence": "build/i386-txtgen-native-v1/result.json",
+          "scope": "The output omits the line count and age supplied by original Adam's DD_TEMPLEOS_LOC and DD_TEMPLEOS_AGE definitions."
+        },
+        {
+          "target": "native-txtgen-pinned-defines",
+          "result": "pass",
+          "evidence": "build/i386-txtgen-native-pinned-defines-v1/result.json",
+          "scope": "With both original document definitions supplied by the fixture, the unchanged conversion writes all 904 expected bytes and returns to native command input."
         }
       ]
     },

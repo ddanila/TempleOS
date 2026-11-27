@@ -1,0 +1,18 @@
+{
+  "result": "pass",
+  "bytes": 904,
+  "expected_bytes": 904,
+  "output_sha256": "5780a5d9c2ebe9e44ed601ac66d13500fe9ea5e3cc2438bce60209a07b037d89",
+  "expected_sha256": "5780a5d9c2ebe9e44ed601ac66d13500fe9ea5e3cc2438bce60209a07b037d89",
+  "disk_sha256": "88fc61aebccfab6dbd2a4fb5c791f9753d613843e2f6565f413e1235d11b57ed",
+  "fixture_sha256": "82e9b2557ea26f449346a51bbd75139ac26799ae261b3a58043db4cdca625461",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 11,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
