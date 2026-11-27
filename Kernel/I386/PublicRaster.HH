@@ -24,6 +24,7 @@ public _extern _GR_FLOOD_FILL I64 GrFloodFill(CDC *dc=gr.dc,I64 x,I64 y,Bool not
 public _extern _GR_PLOT Bool GrPlot(CDC *dc=gr.dc,I64 x,I64 y);
 public _extern _GR_PLOT0 Bool GrPlot0(CDC *dc=gr.dc,I64 x,I64 y);
 public _extern _GR_PEEK0 I64 GrPeek0(CDC *dc=gr.dc,I64 x,I64 y);
+public _extern _GR_PEEK I64 GrPeek(CDC *dc=gr.dc,I64 x,I64 y);
 public _extern _SPRITE_INTERPOLATE U8 *SpriteInterpolate(F64 t,U8 *elems0,U8 *elems1);
 public _extern _SPRITE_3B U0 Sprite3B(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elems);
 public _extern _SPRITE_3_MAT4X4B U0 Sprite3Mat4x4B(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elems,I64 *m);

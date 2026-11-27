@@ -18078,10 +18078,26 @@
         "Life"
       ],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Run the bundled Life demo, paint cells with a left-button drag, watch the simulation change those cells, then dismiss the demo with a key."
+      },
+      "oracle": {
+        "checks": [
+          "Compare painted and evolved frame pixels on both guests.",
+          "Verify offscreen GrPeek returns in-bounds color and rejects all four out-of-bounds edges.",
+          "Observe native dismissal and successful fresh arithmetic."
+        ]
+      },
+      "tests": [
+        {
+          "target": "paired-life-mouse-and-clipped-pixel-read",
+          "result": "pass",
+          "evidence": "build/i386-gr-peek-public-v1/result.json",
+          "scope": "Both unmodified demos accept mouse painting, evolve the painted cells, and dismiss on a key."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/LightTable.HC",

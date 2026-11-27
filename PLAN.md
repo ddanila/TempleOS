@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 102 (six apps and ninety-six demos) |
+| Qualified | 103 (six apps and ninety-seven demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
-| Qualification gaps | 551 |
-| Linked to tests / with reference workflow and oracle | 259 / 189 |
+| Qualification gaps | 550 |
+| Linked to tests / with reference workflow and oracle | 260 / 190 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 96 of 224 |
+| Demos qualified | 97 of 224 |
 
-C1 has 551 qualification gaps, including entries that still need a reference
+C1 has 550 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -31890,3 +31890,14 @@ CommonAncestor demo renders a tree with highlighted nodes in both guests,
 dismisses on a key, and returns to fresh arithmetic on i386. A fixed
 offscreen arrow matched all 768 pixels in the original and native guests.
 [Arrow and demo comparison](build/i386-gr-arrow-public-v1/result.json)
+
+
+### C1: expose clipped pixel reads and verify Life
+
+The console now publishes the original `GrPeek` implementation. An
+offscreen probe matched in-bounds color and four out-of-bounds edge
+results on both guests. The unmodified Life demo accepted a mouse drag,
+displayed painted cells, evolved the cells, and exited on a key. Native
+prompt arithmetic and all nine 8 MiB KVM startup checks passed.
+[Life comparison](build/i386-gr-peek-public-v1/result.json) ·
+[8 MiB startup](build/i386-gr-peek-public-v1/interactive8-kvm/result.json)
