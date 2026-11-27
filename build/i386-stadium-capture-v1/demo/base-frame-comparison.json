@@ -1,0 +1,27 @@
+{
+  "result": "fail",
+  "scope": "Image comparison with public capture before the compositor fix",
+  "source_sha256": "b09a62297160727c2909ce205bebbea3606264f8322998bfeb74fe134c2d78b6",
+  "width": 641,
+  "height": 473,
+  "stride": 648,
+  "original_sha256": "ecb35852e4048f4018c8aa70d10f93c6416f51a7f4e511de56d306cce9477224",
+  "native_sha256": "0852f525e4d0b2e7af19d038a787e90ce6511c4174a2cf2fa13e1cf347fcf39e",
+  "original_palette_counts": {
+    "0": 92,
+    "1": 34440,
+    "2": 118946,
+    "9": 31257,
+    "11": 17770,
+    "14": 41234,
+    "15": 58341,
+    "255": 4424
+  },
+  "native_palette_counts": {
+    "15": 302080,
+    "255": 4424
+  },
+  "matching_bytes": 62765,
+  "pixels": 306504,
+  "explanation": "Native saved only the white base and transparent padding."
+}

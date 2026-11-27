@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
 | Qualification gaps | 547 |
-| Linked to tests / with reference workflow and oracle | 264 / 194 |
+| Linked to tests / with reference workflow and oracle | 265 / 195 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 100 of 224 |
 
@@ -87,6 +87,17 @@ screen image on i386. The original and native replays each matched
 arithmetic after dismissal.
 [Original replay check](build/i386-demo-scrn-capture-v1/replay-verification.json) ·
 [Native replay check](build/i386-scrn-capture-production-v1/demo/result.json)
+
+The screen-capture image also passed all nine 8 MiB TCG VGA checks.
+Startup took 280.601 seconds, above the 60-second requirement.
+[Screen-capture image budget check](build/i386-scrn-capture-production-v1/interactive8-tcg/startup-budget.json)
+
+The original Stadium background generator saved a 641×473 image in a
+writable copy of its source directory. The first native capture trial
+saved the white base and transparent padding, with the document artwork
+absent.
+[Original generated bitmap](build/i386-stadium-capture-v1/demo/original-result.json) ·
+[Base-frame comparison](build/i386-stadium-capture-v1/demo/base-frame-comparison.json)
 
 The packed opcode catalog and compiler teardown update passed the
 8 MiB KVM document resource test. All 20 sessions completed with exact

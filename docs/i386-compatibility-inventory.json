@@ -17402,9 +17402,31 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Run the unchanged background generator from a writable copy of its source and DolDoc, then reopen the generated StadiumBG.GR.Z."
+      },
+      "oracle": {
+        "checks": [
+          "Verify that the saved image has dimensions 641\u00d7473 and a 648-byte row stride.",
+          "Compare the visible stadium artwork and palette indices with the original bitmap.",
+          "Confirm fresh command input after generating and reading the image."
+        ]
+      },
+      "tests": [
+        {
+          "target": "stadium-generator-original-readback",
+          "result": "pass",
+          "evidence": "build/i386-stadium-capture-v1/demo/original-result.json",
+          "scope": "The original guest saves and reopens a 641\u00d7473 image with the expected stadium colors."
+        },
+        {
+          "target": "stadium-generator-native-base-frame",
+          "result": "fail",
+          "evidence": "build/i386-stadium-capture-v1/demo/base-frame-comparison.json",
+          "scope": "The first native capture binding saves a white base and transparent padding, omitting the document artwork."
+        }
+      ]
     },
     {
       "path": "Demo/Games/Talons.HC",
