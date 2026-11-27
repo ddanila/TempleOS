@@ -1315,3 +1315,9 @@ The integrated image also passed the 64 MiB full-content check. It
 matched all 686 inventory files, verified the RedSea extents, and passed
 the bounded guest lookup and read contract.
 [Integrated full-content check](../build/i386-sprite-early-integrated-v1/full-content64/result.json)
+
+An 8 MiB normal KVM boot of the integrated image also executed
+`Sprite2Code`. It serialized a transform-on element as the exact
+`Transform{ON};` line followed by the DolDoc terminator, and the prompt
+displayed fresh arithmetic after the fixture allocations were released.
+[Sprite conversion check](../build/i386-sprite-early-integrated-v1/sprite-conversion8-capture/result.json)

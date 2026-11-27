@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "accel": "kvm",
+  "ram_mib": 8,
+  "disk_sha256": "dfc6ec9534b2e41a5d66c458866e1037ac15f68e177add4c7a8d6972f339bc2a",
+  "source_disk_unchanged": true,
+  "sprite_code": "Transform{ON};\n\u0005",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 17,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "sprite_code_sha256": "828886e1ff419cf3df2b7878e3633ac861191660246cae45be87c5ab2bada4d9",
+  "byte_exact": true
+}
