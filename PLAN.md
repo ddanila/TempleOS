@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 107 (six apps and one hundred one demos) |
+| Qualified | 108 (six apps and one hundred two demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
-| Shared files covered by qualified workflows | 22 (fifteen support sources and seven shared data or document files) |
-| Qualification gaps | 545 |
-| Linked to tests / with reference workflow and oracle | 265 / 195 |
+| Shared files covered by qualified workflows | 23 (fifteen support sources and eight shared data or document files) |
+| Qualification gaps | 543 |
+| Linked to tests / with reference workflow and oracle | 266 / 196 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 101 of 224 |
+| Demos qualified | 102 of 224 |
 
-C1 has 545 qualification gaps, including entries that still need a reference
+C1 has 543 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -97,6 +97,12 @@ The unchanged Stadium background generator now produces a byte-identical
 copying the unscaled frame. The generator verification also covers its
 bundled DolDoc background source.
 [Stadium generator comparison](build/i386-stadium-capture-v2/demo/comparison.json)
+
+The unchanged Stadium game displays the same 230,400 lower background
+pixels on both targets. The paired sessions observed fan animation,
+a mouse-triggered pitch, and the Enter restart. Escape returned to
+command input and the native session accepted fresh arithmetic.
+[Stadium game comparison](build/i386-stadium-game-v1/comparison.json)
 
 The packed opcode catalog and compiler teardown update passed the
 8 MiB KVM document resource test. All 20 sessions completed with exact

@@ -3004,3 +3004,11 @@ unchanged ScrnCapture replay, 8 MiB diagnostics and all 20 document sessions.
 [Stadium generator](../build/i386-stadium-capture-v2/demo/comparison.json) ·
 [ScrnCapture replay](../build/i386-stadium-capture-v2/capture/result.json) ·
 [8 MiB document resources](../build/i386-stadium-capture-v2/resource8/resource-result.json)
+
+The unchanged Stadium game now qualifies for its paired play workflow.
+The original and i386 sessions rendered identical lower backgrounds and
+showed fan movement, a mouse-triggered pitch, and Enter restart. The
+pitch region returned to its pre-pitch pixels after restart. The native
+session exited with Escape and accepted fresh arithmetic. This workflow
+also covers the bundled StadiumBG.GR image.
+[Paired Stadium play](../build/i386-stadium-game-v1/comparison.json)

@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "source_sha256": "3cea1de07fe3596e600267abac74416713e6b1378e1295c249767ee48c4ec1f2",
+  "background_sha256": "18bd27ad4817b661e0e05064fca0fcb455bccaeedd770fcc8871d799a6081130",
+  "input_sha256": "42a649af0c301ca419e67235217acca2ff6949a22980486d7604ba4bde283e8b",
+  "scope": "Unmodified Stadium game with physical mouse, restart, and Escape input",
+  "title": [
+    8,
+    16
+  ],
+  "fan_region_pixels_changed": 1316,
+  "pitch_region_pixels_changed": [
+    0,
+    0,
+    17,
+    397,
+    266,
+    192,
+    79
+  ],
+  "restart_fan_region_pixels_changed": 1566
+}

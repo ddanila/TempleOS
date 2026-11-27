@@ -1,0 +1,29 @@
+{
+  "result": "pass",
+  "source_sha256": "3cea1de07fe3596e600267abac74416713e6b1378e1295c249767ee48c4ec1f2",
+  "background_sha256": "18bd27ad4817b661e0e05064fca0fcb455bccaeedd770fcc8871d799a6081130",
+  "matching_background_pixels": 230400,
+  "sessions": {
+    "original": {
+      "animated_pixels": 1316,
+      "pitch_pixels": 397,
+      "restart_pixels": 1566,
+      "peak_frame": "pitch-3"
+    },
+    "native": {
+      "animated_pixels": 1326,
+      "pitch_pixels": 407,
+      "restart_pixels": 1703,
+      "peak_frame": "pitch-4",
+      "fresh_arithmetic": {
+        "column": 0,
+        "row": 2,
+        "foreground": [
+          0,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

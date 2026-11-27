@@ -17350,10 +17350,26 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Launch the bundled game, observe the crowd, pitch with the mouse, restart with Enter, and exit with Escape."
+      },
+      "oracle": {
+        "checks": [
+          "Verify the red title position and exact lower stadium background.",
+          "Observe fan animation, a click-triggered pitch and changed crowd pixels after restart.",
+          "Confirm the pitch clears and Escape returns to command input."
+        ]
+      },
+      "tests": [
+        {
+          "target": "stadium-paired-play",
+          "result": "pass",
+          "evidence": "build/i386-stadium-game-v1/comparison.json",
+          "scope": "Both unmodified games show the same 230,400 lower background pixels, fan movement, a pitch and a restart. The native prompt accepts fresh arithmetic after Escape."
+        }
+      ]
     },
     {
       "path": "Demo/Games/Stadium/StadiumBG.DD",
@@ -17393,7 +17409,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Demo/Games/Stadium/Stadium.HC"
+        ]
+      }
     },
     {
       "path": "Demo/Games/Stadium/StadiumGen.HC",
