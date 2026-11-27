@@ -13,8 +13,8 @@ public CDoc *DocRead(U8 *name=NULL,I64 flags=0)
   name2=FileNameAbs(name);
   StrCpy(doc->filename.name,name2);
   if (src=FileRead(name2,&size,&doc->file_attr)) {
-    if (dirc=DirContextNew(name2)) {
-      DocLoad(doc,src,size);
+    if (DocLoadTextSize(src,size)>=0 && (dirc=DirContextNew(name2))) {
+      DocLoadTerminated(doc,src,size);
       DirContextDel(dirc);
     }
     Free(src);

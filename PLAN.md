@@ -123,6 +123,15 @@ and matched all 11 VGA checkpoints.
 [8 MiB resource profile](build/i386-demo-document-save-v1/resource8/resource-result.json) ·
 [VGA checks](build/i386-demo-document-save-v1/resource8/result.json)
 
+`DocLoad` now verifies every declared binary record before changing a
+document. The saved legacy copy with a six-byte shortfall leaves an
+existing document untouched, and the native file reader still rejects
+it. Size-delimited text loads without a trailing NUL, and the complete
+4,848-byte document still round-trips. The fresh 8 MiB image completed
+all 20 document sessions and matched 11 VGA checkpoints.
+[Bounded document load](build/i386-demo-document-bounded-v1/verified/result.json) ·
+[8 MiB resource profile](build/i386-demo-document-bounded-v1/resource8/resource-result.json)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh
@@ -390,7 +399,7 @@ payloads match the baseline.
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
-now records 347 test images and 11,288,064,000 bytes reclaimed across its
+now records 354 test images and 11,518,382,080 bytes reclaimed across its
 batches. Each ISO was fully decompressed and checked by SHA-256 before
 its raw copy was removed. The color-picker timing disk was separately
 verified byte-for-byte against the retained cross-built image before

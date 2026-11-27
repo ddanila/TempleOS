@@ -1,4 +1,21 @@
-public U0 DocLoad(CDoc *doc,U8 *src2,I64 size)
+I64 DocLoadTextSize(U8 *source,I64 size)
+{//Return the bounded text length after checking every binary record.
+  I64 index=0,text_size,header=offset(CDocBin.end)-offset(CDocBin.start),payload;
+  if (!source || size<0) return -1;
+  while (index<size && source[index]) index++;
+  text_size=index;
+  if (index<size) index++;
+  while (index<size) {
+    if (size-index<header) return -1;
+    payload=*(source+index+offset(CDocBin.size)-offset(CDocBin.start))(U32 *);
+    index+=header;
+    if (payload>size-index) return -1;
+    index+=payload;
+  }
+  return text_size;
+}
+
+U0 DocLoadTerminated(CDoc *doc,U8 *src2,I64 size)
 {//Fetch doc from raw mem buf.
   I64 i;
   U8 *src;
@@ -30,3 +47,30 @@ public U0 DocLoad(CDoc *doc,U8 *src2,I64 size)
     DocUnlock(doc);
 }
 
+
+public U0 DocLoad(CDoc *doc,U8 *source,I64 size)
+{//A size-delimited text buffer need not include a terminator.
+  I64 text_size;
+  U8 *copy;
+  if (!source) {
+    DocLoadTerminated(doc,NULL,0);
+    return;
+  }
+  text_size=DocLoadTextSize(source,size);
+  if (text_size<0) return;
+  if (!size) source=NULL;
+  if (text_size<size || !size) {
+    DocLoadTerminated(doc,source,size);
+    return;
+  }
+  copy=MAlloc(size+1);
+  try {
+    MemCpy(copy,source,size);
+    copy[size]=0;
+    DocLoadTerminated(doc,copy,size);
+  } catch {
+    Free(copy);
+    copy=NULL;
+  }
+  Free(copy);
+}

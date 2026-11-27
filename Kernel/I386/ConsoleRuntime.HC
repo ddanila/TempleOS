@@ -982,7 +982,7 @@ CDoc *NativeIncludeDocumentCreate(U8 *name,U8 *source,I64 size)
     if(doc) {
       //LexDocRead preserves escaped dollars for the compiler's lexer.
       doc->flags|=DOCF_DBL_DOLLARS;
-      DocLoad(doc,source,size);
+      DocLoadTerminated(doc,source,size);
     }
   } catch {
     if(doc)DocDel(doc);

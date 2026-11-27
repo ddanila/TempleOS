@@ -720,23 +720,11 @@ public Bool EdDir(U8 *directory=NULL)
 {//Browse directories and edit a selected file; Escape returns to prompt.
   return NativeDirPicker(directory,NULL,FALSE);
 }
-extern U0 DocLoad(CDoc *doc,U8 *source,I64 bytes);
+extern I64 DocLoadTextSize(U8 *source,I64 size);
+extern U0 DocLoadTerminated(CDoc *doc,U8 *source,I64 size);
 Bool NativeDocReadRecordsValid(U8 *source,I64 size)
-{//The file provider supplies a trailing zero outside size. Bound binary records
- //before the original loader, which intentionally trusts their lengths.
-  I64 index=0,header=offset(CDocBin.end)-offset(CDocBin.start),payload;
-  if(!source || size<0)return FALSE;
-  while(index<size && source[index])index++;
-  if(index==size)return TRUE;
-  index++;
-  while(index<size) {
-    if(size-index<header)return FALSE;
-    payload=*(source+index+offset(CDocBin.size)-offset(CDocBin.start))(U32 *);
-    index+=header;
-    if(payload>size-index)return FALSE;
-    index+=payload;
-  }
-  return TRUE;
+{
+  return DocLoadTextSize(source,size)>=0;
 }
 extern U8 *NativeFileNameAbsConstruct(U8 *filename);
 public CDoc *DocRead(U8 *name=NULL,I64 flags=0)
@@ -755,7 +743,7 @@ public CDoc *DocRead(U8 *name=NULL,I64 flags=0)
         I386HeapFree(console_config->heap,buffer);buffer=NULL;
         DocDel(doc);doc=NULL;
       } else {
-        DocLoad(doc,buffer,size);
+        DocLoadTerminated(doc,buffer,size);
         doc->file_attr=attr;I386HeapFree(console_config->heap,buffer);buffer=NULL;
       }
     }

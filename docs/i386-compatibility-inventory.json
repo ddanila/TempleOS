@@ -2587,7 +2587,7 @@
         "StreamDoc",
         "Type"
       ],
-      "source_at_discovery": "identical",
+      "source_at_discovery": "modified",
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
@@ -16462,6 +16462,12 @@
           "result": "pass",
           "evidence": "build/i386-demo-document-save-v1/comparison/result.json",
           "scope": "Record counts and anchor behavior on both guests. Native i386 preserves the complete 237-byte sprite and returns to the prompt after saving and reopening."
+        },
+        {
+          "target": "native-bounded-demo-document-load",
+          "result": "pass",
+          "evidence": "build/i386-demo-document-bounded-v1/verified/result.json",
+          "scope": "The legacy short save leaves the existing document unchanged. The file reader rejects it, plain text without a trailing NUL loads, and the full sprite round trip still matches."
         }
       ]
     },

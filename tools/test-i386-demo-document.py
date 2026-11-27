@@ -10,12 +10,37 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCUMENT = 'Demo/DolDoc/DemoDoc.DD'
+LEGACY_SAVE = ROOT/'build/i386-demo-document-save-v1/comparison/original/roundtrip.DD'
 EXPECTED = 'DEMO DOC records 2 5 2 1 1 1 1 1 1'
 FIXTURE = r'''
 U0 DemoDocLog(U8 *s)
 {
   while (*s) OutU8(0xE9,*s++);
 }
+#ifdef I386_PUBLIC_USER_INCLUDED
+U0 DemoDocCheckBoundedLoad()
+{
+  U8 bounded[3],*legacy,*saved;
+  I64 size;
+  CDoc *doc=DocNew,*invalid;
+  if (!doc) throw('DemoDoc',TRUE);
+  doc->flags|=DOCF_NO_CURSOR;
+  bounded[0]='A';bounded[1]='B';bounded[2]='C';
+  DocLoad(doc,bounded,3);
+  legacy=FileRead("C:/Probe/LegacyDemoDoc.DD",&size);
+  if (!legacy || size!=4842) throw('DemoDoc',TRUE);
+  DocLoad(doc,legacy,size);
+  Free(legacy);
+  invalid=DocRead("C:/Probe/LegacyDemoDoc.DD");
+  saved=DocSave(doc,&size);
+  if (invalid || size!=3 || MemCmp(saved,bounded,3) || doc->bin_head.next!=&doc->bin_head)
+    DemoDocLog("FAIL DemoDoc bounded load\n");
+  else
+    DemoDocLog("DEMO DOC bounded load ok\n");
+  if (invalid) DocDel(invalid);
+  Free(saved);DocDel(doc);
+}
+#endif
 U0 DemoDocContract()
 {
   CDoc *doc=DocRead("::/Demo/DolDoc/DemoDoc.DD"),*copy=DocNew;
@@ -43,6 +68,7 @@ U0 DemoDocContract()
   copy->flags|=DOCF_NO_CURSOR;
   first=DocSave(doc,&size);
 #ifdef I386_PUBLIC_USER_INCLUDED
+  DemoDocCheckBoundedLoad;
   DocLoad(copy,first,size);
   second=DocSave(copy,&size2);
   if (size!=size2 || MemCmp(first,second,size))
@@ -73,6 +99,8 @@ def run(image, out, native):
         if EXPECTED not in log.splitlines() or 'FAIL DemoDoc' in log:
             raise ValueError(log[-1600:])
         if native:
+            if 'DEMO DOC bounded load ok\n' not in log:
+                raise ValueError('Native bounded-load check did not finish')
             guest.wait('COMMAND OK\n')
             guest.command('6*7;')
             guest.result_pixels()
@@ -116,12 +144,15 @@ def main():
         subprocess.run(['python3', str(ROOT/'tools/build-iso.py'), '--overlay', str(original),
                         '--output', str(iso)], cwd=ROOT, check=True)
         image = out/'native.img'
-        pack['package'](disk, image, additions={'/Probe/DemoDoc.HC': FIXTURE.encode()})
+        legacy = LEGACY_SAVE.read_bytes()
+        report['legacy_save_sha256'] = sha(legacy)
+        pack['package'](disk, image, additions={'/Probe/DemoDoc.HC': FIXTURE.encode(),
+                                                '/Probe/LegacyDemoDoc.DD': legacy})
         a = run(iso, out/'original', False)
         report['original_sha256'] = sha(a)
         b = run(image, out/'native', True)
         report['native_sha256'] = sha(b)
-        report.update(verify_sprite_roundtrip(source, a, b), result='pass',
+        report.update(verify_sprite_roundtrip(source, a, b), result='pass', bounded_load=True,
                       serialized_bytes=len(b), records=EXPECTED)
     except Exception as exc:
         report.update(result='fail', error=str(exc))
