@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "source_sha256": "6b31689e16814ec2c388615acd973d235ca8d4fab9740090de976607cbbd21e0",
+  "image_sha256": "617423de389a23f0b67c4ca79d2efa94b061941644c645ffac7cc325d29a4442",
+  "module_sha256": "483762a9b89b689938a3bfaf17ae3fbe3a2f401a941381bf4e769119a84ad838",
+  "module_bytes": 37785,
+  "verified_volume": {
+    "directories": 63,
+    "files": 1957,
+    "owned_sectors": 96283,
+    "bitmap": "matches reachable extents"
+  },
+  "arithmetic": 42
+}

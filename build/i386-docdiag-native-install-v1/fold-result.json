@@ -1,0 +1,30 @@
+{
+  "result": "pass",
+  "source_sha256": "617423de389a23f0b67c4ca79d2efa94b061941644c645ffac7cc325d29a4442",
+  "image_sha256": "e4656c1726ad3405dfce54dcc76b864d89d24719cf5782d8508f98a24705897c",
+  "boot_area_sha256": "72941b62551aea5589484bbd3e694764ea15ae3ce7e7919f019c080789c8c510",
+  "source_filesystem": {
+    "directories": 63,
+    "files": 1957,
+    "owned_sectors": 96283,
+    "bitmap": "matches reachable extents"
+  },
+  "packaged_filesystem": {
+    "directories": 63,
+    "files": 1957,
+    "owned_sectors": 96273,
+    "bitmap": "matches reachable extents"
+  },
+  "source_unchanged": true,
+  "added_files": {},
+  "added_attributes": {},
+  "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification",
+  "original_module_bytes": 37785,
+  "folded_module_bytes": 32542,
+  "folded": {
+    "5": 40,
+    "2": 129
+  },
+  "original_module_sha256": "483762a9b89b689938a3bfaf17ae3fbe3a2f401a941381bf4e769119a84ad838",
+  "folded_module_sha256": "a6be64990cd53af8ef097e587456a60d28af90cfcedcd7455e4cfa374fb84901"
+}

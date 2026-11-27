@@ -411,8 +411,11 @@ cross image loaded it, recovered from the dollar-growth fault,
 unloaded and returned 13. The strict startup gate still encounters
 allocation failures in Find and the God libraries. Two diagnostic
 cycles passed at 64 MiB. The selected native build passed its export
-audit and produced a 37,785-byte module. Its native installation
-and 8 MiB boot are pending.
+audit and produced a 37,785-byte module. The guest installed that exact module. It passed at 16 MiB and failed
+to load at 8 MiB, where the largest free payload was 32,544 bytes. A host
+control folded 169 local references to reach 32,542 bytes and passed the
+8 MiB diagnostic.
+[Native installation and boot results](build/i386-docdiag-native-install-v1/README.md)
 [Document diagnostic footprint and results](build/i386-docdiag-compact-v1/README.md)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
