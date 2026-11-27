@@ -21,30 +21,38 @@ U0 I386ParserFailure(U8 *label,CCmpCtrl *cc)
   KernelLog("\n");
 }
 #endif
-U8 *I386ParserAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes,Bool zeroed=TRUE)
-{
+U8 *I386ParserAllocKnown(CI386Heap *heap,CCmpCtrl *cc,I64 bytes,Bool zeroed)
+{//Caller validated both the control and byte count and still excludes IRQs.
   CI386CmpCtrl *owned=cc;
   CI386ParserAllocation *record;
   U8 *allocation;
-  U32 irq=I386IrqSave;
-  if(!I386CmpCodeOwner(heap,cc) || bytes<1 || bytes>0x7FFFFFFF) {
-    I386IrqRestore(irq); return 0;
-  }
   allocation=I386ParserHeapAllocKnown(heap,bytes,zeroed,FALSE);
   if(!allocation) {
 #ifdef I386_PARSER_FAILURE_TRACE
     I386ParserFailure("PARSER PAYLOAD ALLOCATION REJECT ",cc);
 #endif
-    I386IrqRestore(irq); throw('OutMem',TRUE);
+    return 0;
   }
   record=I386ParserHeapAllocKnown(heap,offset(CI386ParserAllocation.requested),TRUE,TRUE);
   if(!record) {
-    I386HeapFree(heap,allocation);
-    I386IrqRestore(irq); throw('OutMem',TRUE);
+    I386HeapKnownFree(heap,allocation);
+    return 0;
   }
   record->allocation=allocation; record->next=&owned->parser_next;
   record->last=owned->parser_last; record->last->next=record; owned->parser_last=record;
-  I386IrqRestore(irq); return allocation;
+  return allocation;
+}
+U8 *I386ParserAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes,Bool zeroed=TRUE)
+{
+  U32 irq=I386IrqSave;
+  U8 *allocation;
+  if(!I386CmpCodeOwner(heap,cc) || bytes<1 || bytes>0x7FFFFFFF) {
+    I386IrqRestore(irq); return 0;
+  }
+  allocation=I386ParserAllocKnown(heap,cc,bytes,zeroed);
+  I386IrqRestore(irq);
+  if(!allocation) throw('OutMem',TRUE);
+  return allocation;
 }
 Bool I386ParserFree(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
 {
@@ -80,7 +88,10 @@ U8 *I386ParserCodeAlloc(CI386Heap *heap,CCmpCtrl *cc,I64 bytes)
   U32 irq=I386IrqSave;
   if(!I386CmpCodeOwner(heap,cc) || bytes<1 || bytes>0x7FFFFFFF) goto done;
   if(!owned->task || !owned->task->heap_state) {
-    I386IrqRestore(irq); return I386ParserAlloc(heap,cc,bytes,FALSE);
+    allocation=I386ParserAllocKnown(heap,cc,bytes,FALSE);
+    I386IrqRestore(irq);
+    if(!allocation) throw('OutMem',TRUE);
+    return allocation;
   }
   owner=owned->task->heap_state;
   if(owner->task!=owned->task || owner->signature!=I386_TASK_HEAPS_MAGIC ||

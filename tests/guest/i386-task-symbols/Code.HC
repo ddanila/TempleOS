@@ -1,4 +1,5 @@
 //Native temporary IR graphs use shared initialization and legacy payload ownership.
+#include "/Compiler/I386/ParserMemory.HH"
 I64 code_warnings,code_undefined;
 U0 CodeLabel(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)
 {
@@ -124,6 +125,15 @@ I64 CodeTest()
         !CodePopulate(cc) || !I386CmpCtrlEnter(&heap,cc) || !I386CmpCtrlDrain(&root) ||
         root.lifetime_refs || root.active_controls || heap.used!=used || heap.allocations!=allocations ||
         !I386HeapValid(&heap) || (GetRFlags&0x200)!=(enabled*0x200)) return 66;
+    cc=I386CmpCtrlNew(&heap,"",CCF_DONT_FREE_BUF,"ParserFallback",
+        symbols,char_bmp_alpha_numeric);
+    if(!cc || I386ParserCodeAlloc(&heap,cc,0)) return 72;
+    fill=I386ParserCodeAlloc(&heap,cc,37);
+    if(!fill || I386ParserSize(&heap,cc,fill)!=37 ||
+        I386HeapSize(&heap,fill)!=37 || !I386ParserFree(&heap,cc,fill) ||
+        !I386CmpCtrlDel(&heap,cc) || heap.used!=used ||
+        heap.allocations!=allocations || !I386HeapValid(&heap) ||
+        (GetRFlags&0x200)!=(enabled*0x200)) return 73;
     SetRFlags(flags);
   }
   return 0;

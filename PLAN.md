@@ -191,6 +191,13 @@ remains open.
 [8 MiB resource profile](build/i386-heap-tail-v1/resource8/resource-result.json) ·
 [8 MiB TCG startup budget](build/i386-heap-tail-v1/interactive8-tcg/startup-budget.json)
 
+The parser's executable-storage fallback now reuses the arena and
+control audit already performed by `I386ParserCodeAlloc`. The
+taskless-control fixture verifies invalid-size rejection, exact size
+and ownership, complete heap recovery, and preservation of both
+interrupt states. The fresh full-image resource checks are pending.
+[Task-symbol and control fixture](build/i386-parser-fallback-audit-v1/task-symbols/result.json)
+
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
 now records 120 older test images and 3,899,994,112 bytes reclaimed across its
