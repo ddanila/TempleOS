@@ -213,6 +213,15 @@ all 28 program cases, and the repeat passed the full diagnostics check.
 [Diagnostic comparison](build/i386-parser-fallback-audit-v1/diagnostic-comparison.json) ·
 [8 MiB resource profile](build/i386-parser-fallback-audit-v1/resource8/resource-result.json)
 
+The parser fallback image's paused TCG profile reached the prompt
+with 1,174 samples. Heap scan, fit selection and free accounted for
+629, compared with 770 of 1,243 on the earlier color-picker image.
+Token ownership (51 samples) and intermediate-code insertion (31)
+were still the most frequent callers of the compiler-control heap
+scan. These samples measure where the guest was observed executing.
+An uninterrupted timing run on the same image is in progress.
+[Parser fallback profile](build/i386-parser-fallback-audit-v1/profile8-tcg/summary.json)
+
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
 now records 120 older test images and 3,899,994,112 bytes reclaimed across its
