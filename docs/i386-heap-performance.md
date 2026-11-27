@@ -1373,3 +1373,12 @@ pool had 14,336 bytes free across 40 regions. Every region contained live
 allocations, so whole-region trimming could return no region to the main
 arena at the breakpoint.
 [Fallback heap and backing-pool census](../build/i386-resource-oom-at-failure-v3/backing-census.json)
+
+The resource runner now accepts a 16 MiB comparison profile while
+retaining its default 8 MiB release profile and checking the selected RAM
+in both the QEMU invocation and receipt. At 16 MiB the same GrPeek disk
+that rejected the 8 MiB include completed every document session and
+matched all eleven VGA checkpoints. Live document heap use peaked at
+38,080 bytes, 7,824 above baseline. This isolates the 8 MiB failure from
+the document session behavior that follows successful compilation.
+[16 MiB comparison](../build/i386-resource-oom-reference16-v2/resource-result.json)

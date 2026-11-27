@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measure live and peak document-session heap use in an 8 MiB QEMU guest."""
+"""Measure live and peak document-session heap use in a small QEMU guest."""
 
 import argparse
 import hashlib
@@ -21,6 +21,8 @@ def main():
     parser.add_argument('--disk', type=Path,
                         default=ROOT / 'build/i386-kernel/selfhost-install-fixed/target.img')
     parser.add_argument('--out', type=Path, default=ROOT / 'build/i386-kernel/resource-profile')
+    parser.add_argument('--ram-mib', type=int, choices=(8, 16), default=8,
+                        help='Guest RAM in MiB. The release profile uses 8 MiB.')
     parser.add_argument('--accel', choices=('kvm', 'tcg'), default='kvm')
     parser.add_argument('--parse-only', action='store_true',
                         help='Parse a completed run without starting QEMU again')
@@ -32,7 +34,7 @@ def main():
     out = args.out.resolve()
     identity = {'disk': str(args.disk.resolve()),
                 'disk_sha256': hashlib.sha256(args.disk.read_bytes()).hexdigest(),
-                'cpu': '486,-fpu', 'accel': args.accel, 'ram_mib': 8}
+                'cpu': '486,-fpu', 'accel': args.accel, 'ram_mib': args.ram_mib}
     disk=args.disk.resolve()
     if args.writable_copy:
         disk=out/'working.img'
@@ -61,7 +63,7 @@ def main():
             shutil.copyfile(args.disk,disk)
             if hashlib.sha256(disk.read_bytes()).hexdigest()!=identity['disk_sha256']:
                 raise ValueError('Resource disk copy differs from source')
-        run_input(disk, out, accel=args.accel, cpu='486,-fpu', ram_mib=8,
+        run_input(disk, out, accel=args.accel, cpu='486,-fpu', ram_mib=args.ram_mib,
                   qmp_stdio=args.qmp_stdio,snapshot=not args.writable_copy,
                   welcome=args.managed_welcome, managed_pointer=args.managed_welcome,
                   keep_window_manager=args.managed_welcome,
@@ -75,7 +77,7 @@ def main():
         raise ValueError('Resource source disk changed')
     command = json.loads((out / 'command.json').read_text())
     for flag, expected in [('-machine', 'pc'), ('-cpu', identity['cpu']),
-                           ('-accel', args.accel), ('-m', '8')]:
+                           ('-accel', args.accel), ('-m', str(args.ram_mib))]:
         if command.count(flag) != 1 or command[command.index(flag)+1] != expected:
             raise ValueError('Resource QEMU profile differs: ' + flag)
     drives = [command[i+1] for i, value in enumerate(command) if value == '-drive']
@@ -87,8 +89,8 @@ def main():
     if len(arena) != 1:
         raise ValueError('Missing or repeated guest heap arena')
     arena_start, arena_bytes = (int(value, 16) for value in arena[0])
-    if not arena_start or not arena_bytes or arena_start + arena_bytes > 8 * 1024 * 1024:
-        raise ValueError('Guest heap arena exceeds installed 8 MiB RAM')
+    if not arena_start or not arena_bytes or arena_start + arena_bytes > args.ram_mib * 1024 * 1024:
+        raise ValueError(f'Guest heap arena exceeds installed {args.ram_mib} MiB RAM')
     values = {}
     for field in FIELDS:
         matches = re.findall(rf'^RESOURCE {field} ([0-9A-Fa-f]{{16}})$', log, re.M)
@@ -100,7 +102,7 @@ def main():
             not values['doc_session_heap_base'] < values['doc_session_heap_peak'] <=
             values['doc_session_heap_reserved_peak']):
         raise ValueError('Guest resource values violate shared-heap accounting')
-    result = {'result': 'pass', 'cpu': '486,-fpu', 'ram_mib': 8,
+    result = {'result': 'pass', 'cpu': '486,-fpu', 'ram_mib': args.ram_mib,
               'disk_sha256': identity['disk_sha256'], 'accel': args.accel,
               'source_disk_unchanged': True,
               'disk_policy':'writable copy' if args.writable_copy else 'QEMU snapshot',
