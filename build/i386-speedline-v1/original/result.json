@@ -1,0 +1,40 @@
+{
+  "result": "pass",
+  "demo_sha256": "1f9e8ab80f9a6b81ef04866f76e0f684b557327791320b38a37163ffb1e89f51",
+  "input_sha256": "99771d2ad264fe6d0ab2380828c22bd089ec0eb850e6ab82f56e7e94ef087816",
+  "mode": "original",
+  "scope": "Unmodified Speedline demo with two physical mouse speeds, color selection and key exit",
+  "slow_drag": [
+    [
+      102,
+      170
+    ],
+    [
+      262,
+      170
+    ]
+  ],
+  "slow_pixels": 160,
+  "fast_drag": [
+    [
+      102,
+      245
+    ],
+    [
+      246,
+      245
+    ]
+  ],
+  "fast_pixels": 1120,
+  "red_drag": [
+    [
+      318,
+      320
+    ],
+    [
+      478,
+      320
+    ]
+  ],
+  "red_pixels": 720
+}

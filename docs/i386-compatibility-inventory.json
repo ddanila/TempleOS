@@ -18619,10 +18619,26 @@
         "SpeedLineDemo"
       ],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Draw slow and fast black strokes, select red with the right-click picker, draw in red, and exit with Escape."
+      },
+      "oracle": {
+        "checks": [
+          "Compare the black stroke centers and verify thicker output at the faster mouse speed.",
+          "Verify the red stroke and its timing-dependent thickness.",
+          "Verify the black strokes remain after the color change and all three clear on Escape."
+        ]
+      },
+      "tests": [
+        {
+          "target": "speedline-paired-drawing",
+          "result": "pass",
+          "evidence": "build/i386-speedline-v1/comparison.json",
+          "scope": "Both guests draw matching 2- and 14-pixel black stroke centers. The red stroke varies by one row. Escape clears all strokes and the native prompt accepts arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/SpritePlot.HC",

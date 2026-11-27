@@ -1,0 +1,55 @@
+{
+  "result": "pass",
+  "demo_sha256": "1f9e8ab80f9a6b81ef04866f76e0f684b557327791320b38a37163ffb1e89f51",
+  "strokes": {
+    "slow": {
+      "original_pixels": 160,
+      "native_pixels": 160,
+      "matching_pixels": 160,
+      "original_thickness": [
+        2,
+        2
+      ],
+      "native_thickness": [
+        2,
+        2
+      ]
+    },
+    "fast": {
+      "original_pixels": 1120,
+      "native_pixels": 1120,
+      "matching_pixels": 1120,
+      "original_thickness": [
+        14,
+        14
+      ],
+      "native_thickness": [
+        14,
+        14
+      ]
+    },
+    "red": {
+      "original_pixels": 720,
+      "native_pixels": 800,
+      "matching_pixels": 720,
+      "original_thickness": [
+        9,
+        9
+      ],
+      "native_thickness": [
+        10,
+        10
+      ]
+    }
+  },
+  "all_strokes_cleared": true,
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 4,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

@@ -3027,3 +3027,10 @@ The first stroke remained after selecting red with the right-click
 picker, and Escape cleared both strokes. The native prompt accepted
 fresh arithmetic.
 [Paired Doodle drawing](../build/i386-doodle-v1/comparison.json)
+
+The unchanged Speedline demo now qualifies. Both guests rendered matching
+2-pixel slow and 14-pixel fast black stroke centers. After red was selected,
+the original drew a 9-pixel center and the native guest drew a 10-pixel
+center with the same overlapping pixels. All strokes cleared on Escape,
+and the native guest accepted fresh arithmetic.
+[Paired Speedline drawing](../build/i386-speedline-v1/comparison.json)

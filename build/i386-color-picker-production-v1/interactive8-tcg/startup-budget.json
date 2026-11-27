@@ -1,0 +1,9 @@
+{
+  "result": "fail",
+  "startup_seconds": 293.32494780397974,
+  "budget_seconds": 60,
+  "over_budget_seconds": 233.32494780397974,
+  "evidence": "/home/ddanila/fun/TempleOS/build/i386-color-picker-production-v1/interactive8-tcg/timing-evidence.json",
+  "evidence_sha256": "ff21e5c5f8651094929a3a713249e2bf38caba29dcc6921dd7b6655818da1674",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}
