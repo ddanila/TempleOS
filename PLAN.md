@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 108 (six apps and one hundred two demos) |
+| Qualified | 109 (six apps and one hundred three demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 23 (fifteen support sources and eight shared data or document files) |
-| Qualification gaps | 543 |
-| Linked to tests / with reference workflow and oracle | 266 / 196 |
+| Qualification gaps | 542 |
+| Linked to tests / with reference workflow and oracle | 267 / 197 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 102 of 224 |
+| Demos qualified | 103 of 224 |
 
-C1 has 543 qualification gaps, including entries that still need a reference
+C1 has 542 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -103,6 +103,11 @@ pixels on both targets. The paired sessions observed fan animation,
 a mouse-triggered pitch, and the Enter restart. Escape returned to
 command input and the native session accepted fresh arithmetic.
 [Stadium game comparison](build/i386-stadium-game-v1/comparison.json)
+
+The unchanged Doodle demo now draws black and red strokes through the
+same physical input on both targets. All 2,589 stroke pixels match,
+and Escape clears both strokes and returns to command input.
+[Doodle comparison](build/i386-doodle-v1/comparison.json)
 
 The full-window capture image reached the 8 MiB TCG prompt in 269.231
 seconds and matched all nine VGA checkpoints. The 60-second requirement

@@ -17964,10 +17964,26 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Draw a black line, select red with the right-click menu, draw a second line, and exit with Escape."
+      },
+      "oracle": {
+        "checks": [
+          "Compare the black and red pixel masks for the same physical drag endpoints.",
+          "Verify the black line remains after selecting and drawing in red.",
+          "Verify Escape clears both strokes and restores command input."
+        ]
+      },
+      "tests": [
+        {
+          "target": "doodle-paired-drawing",
+          "result": "pass",
+          "evidence": "build/i386-doodle-v1/comparison.json",
+          "scope": "Identical black and red stroke masks, exit cleanup and fresh native arithmetic using the unchanged demo."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/EdSprite.HC",

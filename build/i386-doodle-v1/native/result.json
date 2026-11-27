@@ -1,0 +1,38 @@
+{
+  "result": "pass",
+  "demo_sha256": "5ea16eb7fcd9119182a0d57d852bbeea5161e86a0c9d44b48460babebdd7b19d",
+  "input_sha256": "451be2aafc8de70ad2dec39ec4a2de6bdbde713dd1fa0879356f6fc4c44985a2",
+  "mode": "native",
+  "scope": "Unmodified Doodle demo with black and red physical mouse drags and key exit",
+  "black_drag": [
+    [
+      102,
+      170
+    ],
+    [
+      258,
+      230
+    ]
+  ],
+  "black_pixels": 1137,
+  "red_drag": [
+    [
+      318,
+      245
+    ],
+    [
+      519,
+      320
+    ]
+  ],
+  "red_pixels": 1452,
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 4,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

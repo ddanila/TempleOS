@@ -1,0 +1,42 @@
+{
+  "result": "pass",
+  "demo_sha256": "5ea16eb7fcd9119182a0d57d852bbeea5161e86a0c9d44b48460babebdd7b19d",
+  "strokes": {
+    "black": {
+      "endpoints": [
+        [
+          102,
+          170
+        ],
+        [
+          258,
+          230
+        ]
+      ],
+      "matching_pixels": 1137
+    },
+    "red": {
+      "endpoints": [
+        [
+          318,
+          245
+        ],
+        [
+          519,
+          320
+        ]
+      ],
+      "matching_pixels": 1452
+    }
+  },
+  "both_strokes_cleared": true,
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 4,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

@@ -3017,8 +3017,13 @@ Native now publishes the original `PopUpColor` document chooser. The
 paired physical-input test selected red, transparent and default, then
 cancelled a fourth popup. Both guests returned 4, 255, −2147483648 and
 −1 in order. The native guest accepted fresh arithmetic. The build also
-passed 8 MiB diagnostics and all 20 document sessions. Doodle's previous
-native launch stopped at the missing picker. Its drawing workflow
-remains unqualified.
+passed 8 MiB diagnostics and all 20 document sessions.
 [Paired picker](../build/i386-color-picker-mouse-v1/comparison.json) ·
 [8 MiB document resources](../build/i386-color-picker-production-v1/resource8/resource-result.json)
+
+The unchanged Doodle demo now qualifies. Both guests drew identical
+1,137-pixel black and 1,452-pixel red strokes at the same drag endpoints.
+The first stroke remained after selecting red with the right-click
+picker, and Escape cleared both strokes. The native prompt accepted
+fresh arithmetic.
+[Paired Doodle drawing](../build/i386-doodle-v1/comparison.json)
