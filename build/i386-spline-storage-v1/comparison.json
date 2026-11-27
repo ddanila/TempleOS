@@ -1,0 +1,17 @@
+{
+  "baseline": {
+    "image_sha256": "c43e583e212de1f7a1e0d443bc40df968227d6018a86f371beac2673f2842672",
+    "module_sha256": "5018f73b61685fb4076154055c846a27b64687b2f8f094d9c063ca6ac29dda95",
+    "serialized_bytes": 2477765,
+    "resident_payload_bytes": 2330856
+  },
+  "candidate": {
+    "image_sha256": "a91f4aa8d2da3df57fc134cea815ca327263bab478bba755b590e569b3155af9",
+    "module_sha256": "5f57b6ad20c401245c2fd8b99becc014b15397ff7bc2808ac2fc8134cdc73315",
+    "serialized_bytes": 2446116,
+    "resident_payload_bytes": 2304040
+  },
+  "original_reference_iso_sha256": "dfa317ee19976fb743adc160bffabbbeacb1578f6113151dcfd772ffb477cae6",
+  "diagnostics_disk_sha256": "42e6debf84c4c450b97d911f5eeba7e741c4a45b128c6e5ef51bfef4a6de9ab7",
+  "identical_frames": 4
+}

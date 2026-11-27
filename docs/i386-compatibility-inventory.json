@@ -17931,6 +17931,12 @@
           "result": "pass",
           "evidence": "build/i386-bspline-v1/comparison.json",
           "scope": "Six identical pointer positions produce 354 green, 621 red and 654 blue pixels with exact masks. Both guests clear the canvas and the i386 prompt accepts arithmetic."
+        },
+        {
+          "target": "bspline-shared-storage-regression",
+          "result": "pass",
+          "evidence": "build/i386-spline-storage-v1/demo/comparison.json",
+          "scope": "Current cross image repeats the paired six-point demo with exact color masks, canvas clear and fresh prompt arithmetic."
         }
       ]
     },

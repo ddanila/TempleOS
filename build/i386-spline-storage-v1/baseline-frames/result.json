@@ -1,0 +1,25 @@
+{
+  "image_sha256": "c43e583e212de1f7a1e0d443bc40df968227d6018a86f371beac2673f2842672",
+  "fixture_sha256": "87a6b9082e0f34d17554379c5ad147dd1cc58938db30610fa2e5be8603bd32d4",
+  "inputs_unchanged": true,
+  "frames": {
+    "Spline20.BIN": {
+      "sha256": "ece17fcbe3104ea516d9d6cba38a7a95ab741620d46404a15d8dedb2f546a823",
+      "ink": 102
+    },
+    "Spline21.BIN": {
+      "sha256": "9c6dda02972fd8d889ecd02f01e99f42de59897d19062747cff5869e2a4112c8",
+      "ink": 99
+    },
+    "Spline30.BIN": {
+      "sha256": "ec2b460d97c7b9951de931d62424a7fed49a3fb49bf5d404f6abec586654281e",
+      "ink": 124
+    },
+    "Spline31.BIN": {
+      "sha256": "45ee8f2cc5ce6efcbf1f00188e453261713e9ff67725123d2e7ff64f03d917a8",
+      "ink": 147
+    }
+  },
+  "mask": 15,
+  "arithmetic": 42
+}

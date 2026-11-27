@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "demo_sha256": "27f82b6c82dc66e7d5d75c8828690bb0541a5c41ba8c9655bf45979134a15e83",
+  "points_max_axis_delta": 0,
+  "matching_radius": 0,
+  "colors": {
+    "green": {
+      "reference_pixels": 354,
+      "native_pixels": 354,
+      "reference_near_native": 354,
+      "native_near_reference": 354
+    },
+    "red": {
+      "reference_pixels": 621,
+      "native_pixels": 621,
+      "reference_near_native": 621,
+      "native_near_reference": 621
+    },
+    "blue": {
+      "reference_pixels": 654,
+      "native_pixels": 654,
+      "reference_near_native": 654,
+      "native_near_reference": 654
+    }
+  }
+}

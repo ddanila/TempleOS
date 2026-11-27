@@ -314,161 +314,78 @@ public Bool Bezier3(U8 *aux_data,CD3I32 *ctrl,
   return TRUE;
 }
 
+U0 BSplineMidpoint(CD3I32 *out,CD3I32 *left,CD3I32 *right)
+{
+  I64 component;
+  for (component=0;component<3;component++)
+    out(I32 *)[component]=(left(I32 *)[component]+right(I32 *)[component])/2.0;
+}
+
+U0 BSplineThirds(CD3I32 *out,CD3I32 *left,CD3I32 *right)
+{
+  I64 component;
+  F64 start,delta;
+  for (component=0;component<3;component++) {
+    start=left(I32 *)[component];
+    delta=right(I32 *)[component]-start;
+    out(I32 *)[component]=delta/3.0+start;
+    (out+1)(I32 *)[component]=2.0*delta/3.0+start;
+  }
+}
+
+Bool BSplineCore(U8 *aux_data,CD3I32 *ctrl,I64 cnt,
+	Bool (*fp_plot)(U8 *aux,I64 x,I64 y,I64 z),Bool closed,I64 order,
+	Bool (*bezier)(U8 *aux,CD3I32 *points,
+	Bool (*plot)(U8 *aux,I64 x,I64 y,I64 z),Bool first))
+{//Build the same rounded control points before invoking any plot callbacks.
+  I64 i,next,segments,last;
+  CD3I32 *points;
+  Bool result=TRUE;
+  if (cnt<3) return FALSE;
+  segments=cnt-1;
+  if (closed) segments++;
+  last=segments*order;
+  points=MAlloc(sizeof(CD3I32)*(last+1));
+  for (i=0;i<segments;i++) {
+    next=i+1;
+    if (next==cnt) next=0;
+    if (order==2)
+      BSplineMidpoint(&points[i*order+1],&ctrl[i],&ctrl[next]);
+    else
+      BSplineThirds(&points[i*order+1],&ctrl[i],&ctrl[next]);
+  }
+  if (closed) {
+    BSplineMidpoint(points,&points[1],&points[last-1]);
+    MemCpy(&points[last],points,sizeof(CD3I32));
+  } else {
+    MemCpy(points,ctrl,sizeof(CD3I32));
+    MemCpy(&points[last],&ctrl[cnt-1],sizeof(CD3I32));
+  }
+  for (i=order;i<last;i+=order)
+    BSplineMidpoint(&points[i],&points[i-1],&points[i+1]);
+  try {
+    for (i=0;i<last;i+=order)
+      if (!(*bezier)(aux_data,&points[i],fp_plot,!i)) {
+	result=FALSE;
+	break;
+      }
+  } catch {
+    Free(points);
+  }
+  Free(points);
+  return result;
+}
+
 public Bool BSpline2(U8 *aux_data,CD3I32 *ctrl,I64 cnt,
 	Bool (*fp_plot)(U8 *aux,I64 x,I64 y,I64 z),Bool closed=FALSE)
 {//Go in 2nd order spline calling callback.
-  I64 i,j;
-  CD3I32 *c;
-  Bool first;
-  if (cnt<3) return FALSE;
-  first=TRUE;
-  if (closed) {
-    cnt++;
-    c=MAlloc(sizeof(CD3I32)*(cnt*2-1));
-    j=1;
-    for (i=0;i<cnt-2;i++) {
-      c[j].x=(ctrl[i].x+ctrl[i+1].x)/2.0;
-      c[j].y=(ctrl[i].y+ctrl[i+1].y)/2.0;
-      c[j].z=(ctrl[i].z+ctrl[i+1].z)/2.0;
-      j+=2;
-    }
-    c[j].x=(ctrl[0].x+ctrl[cnt-2].x)/2.0;
-    c[j].y=(ctrl[0].y+ctrl[cnt-2].y)/2.0;
-    c[j].z=(ctrl[0].z+ctrl[cnt-2].z)/2.0;
-
-    c[0].x=(c[1].x+c[j].x)/2.0;
-    c[0].y=(c[1].y+c[j].y)/2.0;
-    c[0].z=(c[1].z+c[j].z)/2.0;
-    j=2;
-    for (i=0;i<cnt-2;i++) {
-      c[j].x=(c[j-1].x+c[j+1].x)/2.0;
-      c[j].y=(c[j-1].y+c[j+1].y)/2.0;
-      c[j].z=(c[j-1].z+c[j+1].z)/2.0;
-      j+=2;
-    }
-    c[j].x=c[0].x;
-    c[j].y=c[0].y;
-    c[j].z=c[0].z;
-  } else {
-    c=MAlloc(sizeof(CD3I32)*(cnt*2-1));
-    c[0].x=ctrl[0].x;
-    c[0].y=ctrl[0].y;
-    c[0].z=ctrl[0].z;
-    c[cnt*2-2].x=ctrl[cnt-1].x;
-    c[cnt*2-2].y=ctrl[cnt-1].y;
-    c[cnt*2-2].z=ctrl[cnt-1].z;
-    j=1;
-    for (i=0;i<cnt-1;i++) {
-      c[j].x=(ctrl[i].x+ctrl[i+1].x)/2.0;
-      c[j].y=(ctrl[i].y+ctrl[i+1].y)/2.0;
-      c[j].z=(ctrl[i].z+ctrl[i+1].z)/2.0;
-      j+=2;
-    }
-    j=2;
-    for (i=0;i<cnt-2;i++) {
-      c[j].x=(c[j-1].x+c[j+1].x)/2.0;
-      c[j].y=(c[j-1].y+c[j+1].y)/2.0;
-      c[j].z=(c[j-1].z+c[j+1].z)/2.0;
-      j+=2;
-    }
-  }
-  for (i=0;i<cnt*2-2;i+=2) {
-    if (!Bezier2(aux_data,&c[i],fp_plot,first))
-      return FALSE;
-    first=FALSE;
-  }
-  Free(c);
-  return TRUE;
+  return BSplineCore(aux_data,ctrl,cnt,fp_plot,closed,2,&Bezier2);
 }
 
 public Bool BSpline3(U8 *aux_data,CD3I32 *ctrl,I64 cnt,
 	Bool (*fp_plot)(U8 *aux,I64 x,I64 y,I64 z),Bool closed=FALSE)
 {//Go in 3rd order spline calling callback.
-  I64 i,j;
-  F64 x,y,z;
-  CD3I32 *c;
-  Bool first;
-  if (cnt<3) return FALSE;
-  first=TRUE;
-  if (closed) {
-    cnt++;
-    c=MAlloc(sizeof(CD3I32)*(cnt*3-2));
-    j=1;
-    for (i=0;i<cnt-2;i++) {
-      x=ctrl[i].x;
-      y=ctrl[i].y;
-      z=ctrl[i].z;
-      c[j].x=(ctrl[i+1].x-x)/3.0+x;
-      c[j].y=(ctrl[i+1].y-y)/3.0+y;
-      c[j].z=(ctrl[i+1].z-z)/3.0+z;
-      j++;
-      c[j].x=2.0*(ctrl[i+1].x-x)/3.0+x;
-      c[j].y=2.0*(ctrl[i+1].y-y)/3.0+y;
-      c[j].z=2.0*(ctrl[i+1].z-z)/3.0+z;
-      j+=2;
-    }
-    x=ctrl[cnt-2].x;
-    y=ctrl[cnt-2].y;
-    z=ctrl[cnt-2].z;
-    c[j].x=(ctrl[0].x-x)/3.0+x;
-    c[j].y=(ctrl[0].y-y)/3.0+y;
-    c[j].z=(ctrl[0].z-z)/3.0+z;
-    j++;
-    c[j].x=2.0*(ctrl[0].x-x)/3.0+x;
-    c[j].y=2.0*(ctrl[0].y-y)/3.0+y;
-    c[j].z=2.0*(ctrl[0].z-z)/3.0+z;
-
-    c[0].x=(c[1].x+c[j].x)/2.0;
-    c[0].y=(c[1].y+c[j].y)/2.0;
-    c[0].z=(c[1].z+c[j].z)/2.0;
-
-    j=3;
-    for (i=0;i<cnt-2;i++) {
-      c[j].x=(c[j-1].x+c[j+1].x)/2.0;
-      c[j].y=(c[j-1].y+c[j+1].y)/2.0;
-      c[j].z=(c[j-1].z+c[j+1].z)/2.0;
-      j+=3;
-    }
-    c[j].x=c[0].x;
-    c[j].y=c[0].y;
-    c[j].z=c[0].z;
-  } else {
-    c=MAlloc(sizeof(CD3I32)*(cnt*3-2));
-    c[0].x=ctrl[0].x;
-    c[0].y=ctrl[0].y;
-    c[0].z=ctrl[0].z;
-    c[cnt*3-3].x=ctrl[cnt-1].x;
-    c[cnt*3-3].y=ctrl[cnt-1].y;
-    c[cnt*3-3].z=ctrl[cnt-1].z;
-    j=1;
-    for (i=0;i<cnt-1;i++) {
-      x=ctrl[i].x;
-      y=ctrl[i].y;
-      z=ctrl[i].z;
-      c[j].x=(ctrl[i+1].x-x)/3.0+x;
-      c[j].y=(ctrl[i+1].y-y)/3.0+y;
-      c[j].z=(ctrl[i+1].z-z)/3.0+z;
-      j++;
-      c[j].x=2.0*(ctrl[i+1].x-x)/3.0+x;
-      c[j].y=2.0*(ctrl[i+1].y-y)/3.0+y;
-      c[j].z=2.0*(ctrl[i+1].z-z)/3.0+z;
-      j+=2;
-    }
-    j=3;
-    for (i=0;i<cnt-2;i++) {
-      c[j].x=(c[j-1].x+c[j+1].x)/2.0;
-      c[j].y=(c[j-1].y+c[j+1].y)/2.0;
-      c[j].z=(c[j-1].z+c[j+1].z)/2.0;
-      j+=3;
-    }
-  }
-  for (i=0;i<cnt*3-3;i+=3) {
-    if (!Bezier3(aux_data,&c[i],fp_plot,first))
-      return FALSE;
-    first=FALSE;
-  }
-  Free(c);
-  return TRUE;
+  return BSplineCore(aux_data,ctrl,cnt,fp_plot,closed,3,&Bezier3);
 }
 
 #define CC_LEFT		1

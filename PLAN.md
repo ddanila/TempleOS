@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 121 (eight apps and one hundred thirteen demo entries) |
+| Qualified | 126 (13 app entries and 113 demo entries) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 37 (twenty-eight support sources and nine shared data or document files) |
-| Qualification gaps | 516 |
-| Linked to tests / with reference workflow and oracle | 277 / 208 |
-| Apps qualified | 8 of 12 (all 12 have test evidence) |
+| Qualification gaps | 511 |
+| Linked to tests / with reference workflow and oracle | 279 / 210 |
+| Apps qualified | 11 of 12 (all 12 have test evidence) |
 | Demos qualified | 113 of 224 |
 
-C1 has 516 qualification gaps, including entries that still need a reference
+C1 has 511 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -388,6 +388,14 @@ full image has no empty public backing regions and only 6,656 unused
 page bytes in the live main-arena backings, so trimming those regions
 cannot provide the required contiguous allocation.
 [Exact-page and startup order controls](build/i386-jit-backing-controls-v1/README.md)
+
+Shared quadratic and cubic B-spline control generation reduced the
+cross ConsoleRuntime resident payload by 26,816 bytes. Four open and
+closed raster frames and the bundled pointer-driven demo matched the
+64-bit reference exactly. The full 8 MiB cross image improved its
+largest free payload from 7,824 to 32,544 bytes. The 34,588-byte
+document-module load and the strict startup gate still fail.
+[Shared spline evidence](build/i386-spline-storage-v1/README.md)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
