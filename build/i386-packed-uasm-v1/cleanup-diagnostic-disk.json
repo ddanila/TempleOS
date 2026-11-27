@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-packed-uasm-v1/diagnostic8-kvm/working.img",
+  "retained": "build/i386-packed-uasm-v1/cross/kernel-diagnostics.img",
+  "sha256": "5f86ebf1f1c008fcee5553c022fe8acd4bcc5d7681e0cf0cd6e19ffc65ef3c05",
+  "allocated_bytes": 67112960
+}
