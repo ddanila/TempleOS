@@ -174,11 +174,13 @@ defaults with a null parent current directory. The defaults query
 the boot drive for its text attributes. Drive aliases and explicit
 drive lookup now validate the bound file state without requiring a
 current directory. The corrected full cross-build passes all seven
-Spawn cases and the final arithmetic command at 64 MiB. The installed
-image rerun is in progress.
+Spawn cases and the final arithmetic command at 64 MiB. Replacing
+only FileRuntime on the previously failing installed image also passes
+all seven cases at 64 MiB, with ten exact VGA checkpoints.
 [Original Spawn reference](build/i386-console-single-peek-v1/home-original-v2/result.json) ·
 [Native Spawn failure](build/i386-console-single-peek-v1/installed-home64-managed-v3/result.json) ·
-[Corrected Spawn cross-build pass](build/i386-spawn-home-null-dir-v1/cross-home64/result.json)
+[Corrected Spawn cross-build pass](build/i386-spawn-home-null-dir-v1/cross-home64/result.json) ·
+[Installed Spawn pass](build/i386-spawn-home-null-dir-v1/installed-home64/result.json)
 
 The unchanged B-spline demo now uses the shared 2D spline wrappers on
 i386. Both guests selected all six control points at identical
@@ -315,7 +317,7 @@ module load.
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
-now records 202 test images and 6,556,393,472 bytes reclaimed across its
+now records 208 test images and 6,751,924,224 bytes reclaimed across its
 batches. Each ISO was fully decompressed and checked by SHA-256 before
 its raw copy was removed. The color-picker timing disk was separately
 verified byte-for-byte against the retained cross-built image before

@@ -1,0 +1,7 @@
+{
+  "result": "pass",
+  "only_changed_file": "/Modules/I386/FileRuntime.t32m",
+  "equal_file_contents": 1955,
+  "original_sha256": "c32c5227819ee3a803a395fc79bdca2007a16b78f72d4c4f6067603bf8bb3755",
+  "installed_sha256": "302a4fbc7ec677cc8b5b36267d8508ddce2061147f3fb01d9825355d0d565d4c"
+}
