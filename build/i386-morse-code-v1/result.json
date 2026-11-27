@@ -1,0 +1,28 @@
+{
+  "result": "pass",
+  "disk_sha256": "e4cd924ded65d96946c1881f76e6169e72a3eae27ddd1a21c0a2e4031a414b73",
+  "reference_source_sha256": "b220d10e0419ee47873db7581039a2630466897e3401f118781bba1a26a55caa",
+  "native_source_sha256": "b220d10e0419ee47873db7581039a2630466897e3401f118781bba1a26a55caa",
+  "inputs_unchanged": true,
+  "original": {
+    "element_pcm_bytes": [
+      4096,
+      20480,
+      8192,
+      20480
+    ],
+    "frequency_hz": 975.0,
+    "wav_sha256": "423a425ae18ed8959f8a1ce6058505eecd983b97b64572c49b1e449c69d641a6"
+  },
+  "native": {
+    "element_pcm_bytes": [
+      4096,
+      20480,
+      4096,
+      20480
+    ],
+    "frequency_hz": 975.0,
+    "wav_sha256": "94caa530005e5b53d632eababd3bebd3a08291075bf5f51b8f1a2019e5b87d1a"
+  },
+  "normalized_document_sha256": "d30024e238acdb758aba1a7e8fcce4db1cd7f13822d4efa87db9c2620060aa05"
+}

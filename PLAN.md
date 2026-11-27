@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 115 (six apps and one hundred nine demos) |
+| Qualified | 116 (six apps and one hundred ten demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 23 (fifteen support sources and eight shared data or document files) |
-| Qualification gaps | 536 |
-| Linked to tests / with reference workflow and oracle | 273 / 203 |
+| Qualification gaps | 535 |
+| Linked to tests / with reference workflow and oracle | 274 / 204 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 109 of 224 |
+| Demos qualified | 110 of 224 |
 
-C1 has 536 qualification gaps, including entries that still need a reference
+C1 has 535 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -88,6 +88,13 @@ all 84 expected pitch changes in order, and both guests produced the same
 198-byte DolDoc. Speaker output settled after exit, and the native prompt
 rendered fresh arithmetic.
 [Paired audio and document checks](build/i386-oh-great-port-v1/comparison/result.json)
+
+The unchanged `MorseCode` demo decodes A, E and T from physical short
+and long key holds on both guests. The code table and decoded document
+match after verifying the live timing field and normalizing its values.
+Both guests emit B5 with longer dash captures and stop the speaker on
+Escape. The i386 prompt renders fresh arithmetic.
+[Paired Morse checks](build/i386-morse-code-v1/result.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched

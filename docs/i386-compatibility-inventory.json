@@ -20258,10 +20258,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Run the unchanged Morse demo, key A, E and T with short and long holds and letter gaps, then exit with Escape.",
+      "oracle": "Compare the complete DolDoc including the code table and decoded letters, allowing for bounded live timer readings. Check short and long speaker PCM emission, pitch, silence after exit and fresh native arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-morse-key-timing",
+          "result": "pass",
+          "evidence": "build/i386-morse-code-v1/result.json",
+          "scope": "Both guests decode .-, . and - through physical key events, emit the expected B5 tone, settle the speaker on Escape, and match the complete normalized document."
+        }
+      ]
     },
     {
       "path": "Demo/Snd/OhGreat.HC",
