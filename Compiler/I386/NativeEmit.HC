@@ -7,7 +7,8 @@ extern U0 I386ParserFailure(U8 *label,CCmpCtrl *cc);
 #define I386_OUT_CHUNK_BYTES 512
 class CI386OutChunk {
   CI386OutChunk *next;
-  I64 start,bytes;
+  //I386OutCapacity bounds the stream to the signed 32-bit domain.
+  U32 start,bytes;
   U8 body[I386_OUT_CHUNK_BYTES];
 };
 class CI386OwnedOut {
@@ -139,10 +140,13 @@ Bool I386OutChunksRelease(CI386Heap *heap,CI386Out *out)
   CI386OutChunk *chunk,*next;
   U32 irq=I386IrqSave;
   Bool result=TRUE;
-  while(chunk=owned->chunks) {
-    if(I386HeapSize(heap,chunk)<offset(CI386OutChunk.body)+1) {result=FALSE;break;}
+  //Audit once under IRQ exclusion. Known free preserves the arena chain.
+  if(owned->chunks && I386HeapSize(heap,owned->chunks)<offset(CI386OutChunk.body)+1)
+    result=FALSE;
+  while(result && (chunk=owned->chunks)) {
+    if(!I386HeapKnownAtLeast(heap,chunk,offset(CI386OutChunk.body)+1)) {result=FALSE;break;}
     next=chunk->next;
-    if(!I386HeapFree(heap,chunk)) {result=FALSE;break;}
+    if(!I386HeapKnownFree(heap,chunk)) {result=FALSE;break;}
     owned->chunks=next;
   }
   owned->cached_chunk=0;

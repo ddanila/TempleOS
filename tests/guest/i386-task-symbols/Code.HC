@@ -1,5 +1,8 @@
 //Native temporary IR graphs use shared initialization and legacy payload ownership.
 #include "/Compiler/I386/ParserMemory.HH"
+#include "/Compiler/I386/NativeEmit.HH"
+extern CI386Out *I386OutNewSegmented(CI386Heap *heap,CCmpCtrl *cc);
+extern U0 I386Byte(CI386Out *out,U8 val);
 I64 code_warnings,code_undefined;
 U0 CodeLabel(U8 *context,CCmpCtrl *cc,U8 *name,Bool undefined)
 {
@@ -67,6 +70,7 @@ Bool CodePopulate(CCmpCtrl *cc)
 I64 CodeTest()
 {
   CCmpCtrl *cc;
+  CI386Out *out;
   CCodeCtrl *saved;
   CIntermediateCode *last;
   CCodeMisc *last_misc;
@@ -130,10 +134,20 @@ I64 CodeTest()
     if(!cc || I386ParserCodeAlloc(&heap,cc,0)) return 72;
     fill=I386ParserCodeAlloc(&heap,cc,37);
     if(!fill || I386ParserSize(&heap,cc,fill)!=37 ||
-        I386HeapSize(&heap,fill)!=37 || !I386ParserFree(&heap,cc,fill) ||
-        !I386CmpCtrlDel(&heap,cc) || heap.used!=used ||
+        I386HeapSize(&heap,fill)!=37 || !I386ParserFree(&heap,cc,fill)) return 73;
+    out=I386OutNewSegmented(&heap,cc);
+    if(!out) return 74;
+    base_used=heap.used; base_allocations=heap.allocations;
+    out->planned=1030;
+    for(i=0;i<1030;i++) I386Byte(out,i&255);
+    //Two full 544-byte spans and one 40-byte tail span.
+    if(out->count!=1030 || heap.used-base_used!=1128 ||
+        heap.allocations-base_allocations!=3) return 75;
+    for(i=1029;i>=0;i--)
+      if(*(*out->address)(out,i)!=(i&255)) return 76;
+    if(!I386OutDel(&heap,cc,out) || !I386CmpCtrlDel(&heap,cc) || heap.used!=used ||
         heap.allocations!=allocations || !I386HeapValid(&heap) ||
-        (GetRFlags&0x200)!=(enabled*0x200)) return 73;
+        (GetRFlags&0x200)!=(enabled*0x200)) return 77;
     SetRFlags(flags);
   }
   return 0;

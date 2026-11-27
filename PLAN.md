@@ -243,6 +243,16 @@ target.
 [Parser fallback profile](build/i386-parser-fallback-audit-v1/profile8-tcg/summary.json) ·
 [Parser fallback startup budget](build/i386-parser-fallback-audit-v1/interactive8-tcg/startup-budget.json)
 
+Segmented compiler output stores its offsets and lengths in 32-bit fields,
+saving eight bytes per chunk. Release audits the arena once under interrupt
+exclusion and checks each chunk's allocation boundary before freeing it.
+The task-symbol fixture produced and read back all 1,030 bytes across three
+chunks, verified the 1,128-byte allocation footprint, and recovered the
+initial heap with both interrupt states. The installed-console comparison
+will check the full document workload at 8 MiB.
+[Segmented output fixture](build/i386-out-chunk-v2/task-symbols/result.json) ·
+[Lexer and compiler-control fixture](build/i386-out-chunk-v2/lex-control/result.json)
+
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
 now records 156 older test images and 5,065,138,176 bytes reclaimed across its
