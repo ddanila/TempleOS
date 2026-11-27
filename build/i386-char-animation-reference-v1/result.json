@@ -1,0 +1,7 @@
+{
+  "result": "fail",
+  "original_result": "pass",
+  "original_space_patterns": 4,
+  "native_error": "FRONTEND ERROR Undefined identifier at  file C:/Demo/Graphics/CharAnimation.HC line 31",
+  "fixture_sha256": "6e66d7e9e515c04c5edab6bb54703e8754b74e64639e67d8c81cf7bedf7e9e52"
+}

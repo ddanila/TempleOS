@@ -17804,9 +17804,24 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "partial",
+        "description": "Run the bundled demo and observe the background task cycle through all four space glyphs."
+      },
+      "oracle": {
+        "tool": "build/i386-char-animation-reference-v1/Probe.HC",
+        "checks": [
+          "Observe the four declared space glyph bitmaps in the active font."
+        ]
+      },
+      "tests": [
+        {
+          "target": "paired-character-animation",
+          "result": "fail",
+          "evidence": "build/i386-char-animation-reference-v1/result.json",
+          "scope": "All four original glyphs observed. The native compiler rejects the final TaskRep call."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Collision.HC",
