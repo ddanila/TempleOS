@@ -6601,3 +6601,11 @@ ConsoleRuntime, CompilerRuntime, and CompilerProbe. The retained build
 loaded the build provider once.
 [Second-generation retained build](../build/i386-ode-template-port-v1/native-generations128/gen2-retained-build/result.json) ·
 [First-generation module hashes](../build/i386-ode-template-port-v1/native-generations128/gen1-install/result.json)
+
+The second-generation installer wrote the exact nine rebuilt modules.
+The installed image reached the prompt at 8 MiB, evaluated fresh
+arithmetic, and passed document growth recovery. The boot trace reports
+the sprite converter allocation rejection before the prompt. This run
+uses frozen revision `5e9064e5`, which predates the sprite load-order fix.
+[Second-generation install](../build/i386-ode-template-port-v1/native-generations128/gen2-install/result.json) ·
+[Cold-boot trace](../build/i386-ode-template-port-v1/native-generations128/gen2-install/boot/debug.log)
