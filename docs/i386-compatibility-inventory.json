@@ -20506,10 +20506,24 @@
         "ToHtml"
       ],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "qualified-workflows",
+        "description": "Load the standalone ToHtml library and convert the bundled sample at width 60 with custom header and footer fragments, no line anchors, and line numbering enabled."
+      },
+      "oracle": {
+        "dataset": "build/i386-tohtml-options-v1/DemoOutPage.html.b64",
+        "checks": [
+          "Compare all saved bytes, including the custom fragments, numbering, wrapping, colors, and links."
+        ]
+      },
+      "tests": [
+        {
+          "target": "paired-tohtml-options",
+          "result": "pass",
+          "evidence": "build/i386-tohtml-options-v1/result.json"
+        }
+      ]
     },
     {
       "path": "Demo/WebLogDemo/WebLogRep.HC",

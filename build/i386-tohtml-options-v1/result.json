@@ -1,0 +1,10 @@
+{
+  "result": "pass",
+  "bytes": 2159,
+  "original_sha256": "d46da90f3a7d4a37b6e0bc1ee160f1cfb46c0e09d7394d91c45ce1ccf873bc9d",
+  "native_sha256": "d46da90f3a7d4a37b6e0bc1ee160f1cfb46c0e09d7394d91c45ce1ccf873bc9d",
+  "fixture_sha256": "d5d8d7eeb2d3fcd35a028cd13a8f1997f5504c964f0fe26cd6b2ca6c340d0248",
+  "width": 60,
+  "line_anchors": false,
+  "line_numbers": true
+}
