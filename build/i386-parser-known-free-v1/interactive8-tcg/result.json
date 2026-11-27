@@ -1,0 +1,87 @@
+{
+  "status": "fail",
+  "cpu": "486,-fpu",
+  "ram_mib": 8,
+  "accel": "tcg",
+  "startup_timeout_seconds": 600,
+  "qualification": "interactive",
+  "diagnostics": false,
+  "managed_pointer": true,
+  "scope": "Startup, retained static/function/literal behavior and exact VGA restoration; not complete OS acceptance",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-parser-known-free-v1/cross/kernel.img": "9c7202e2c1e938d726d88ac36338681fe55341040cd476f822cef7d777bf2786",
+    "/home/ddanila/fun/TempleOS/build/i386-parser-known-free-v1/cross/result.json": "eacb57fe89225f69cab01231957f68d736285d42f71adc3f6c304a7b4da0f485",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-startup-memory.py": "8b4d75ffa82b87538d3fd520573463a001609ce8a69bdbc39744f95971bac1cd",
+    "/home/ddanila/fun/TempleOS/tools/i386-kernel-input.py": "8b97bca4bd59d0ca074338b68c4102504a376f41f972b1e6acb8cd281614290a",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729"
+  },
+  "commands": [
+    [
+      "I64 SPNext(){static I64 n=40;return ++n;}",
+      []
+    ],
+    [
+      "SPNext();",
+      [
+        "41"
+      ]
+    ],
+    [
+      "SPNext();",
+      [
+        "42"
+      ]
+    ],
+    [
+      "U8 *SPText(){return \"VGA\";}",
+      []
+    ],
+    [
+      "StrCmp(SPText(),\"VGA\")==0;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "6*7;",
+      [
+        "42"
+      ]
+    ],
+    [
+      "NativeGraphicsStart;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "I64 gp_ok=NativeTextBasePresent;NativeTextBaseRestore;gp_ok;",
+      [
+        "1"
+      ]
+    ],
+    [
+      "I64 gp_frame=NativeGraphicsPresent;NativeTextBaseRestore;gp_frame;",
+      [
+        "1"
+      ]
+    ]
+  ],
+  "behavior": {
+    "result": "pass",
+    "cpu": "486,-fpu",
+    "ram_mib": 8,
+    "startup_status": "ok",
+    "boot_mode": "interactive",
+    "startup_seconds": 264.4264221949852,
+    "commands": 9,
+    "setup_commands": 0,
+    "window_manager_pause_requested": false,
+    "vga": "all pixels matched at each checkpoint",
+    "interaction_latencies_seconds": {}
+  },
+  "build_provider_loads": 0,
+  "interactive_budget_pass": false,
+  "error": "Startup 264.426s exceeds the 60-second target",
+  "inputs_unchanged": true
+}

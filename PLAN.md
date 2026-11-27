@@ -97,9 +97,13 @@ took 270.838 seconds with all nine VGA checks passing.
 The post-emission instruction release build reached the same TCG prompt in
 262.821 seconds with all nine VGA checks passing. Reusing the parser's
 arena audit when freeing its payload and ownership record also passed the
-8 MiB KVM document resource and diagnostic tests.
+8 MiB KVM document resource and diagnostic tests. Its TCG boot took
+264.426 seconds during a concurrent native compiler rebuild and passed
+all nine VGA checks. The publication record release change also passed
+the 8 MiB KVM diagnostics and document resource tests.
 [Instruction release TCG behavior](build/i386-emission-slot-run-v2/interactive8-tcg/result.json) ·
-[Parser free resource receipt](build/i386-parser-known-free-v1/resource8/resource-result.json)
+[Parser free TCG budget check](build/i386-parser-known-free-v1/interactive8-tcg/startup-budget.json) ·
+[Publication resource receipt](build/i386-publication-known-free-v1/resource8/resource-result.json)
 
 The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active

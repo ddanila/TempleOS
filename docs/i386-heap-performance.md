@@ -1505,3 +1505,21 @@ They occupy 403,352 physical bytes and represent 17.3% of the 20,783 live
 main-arena blocks at that breakpoint. This is a census of the failure
 snapshot. Ownership-record counts elsewhere in startup can differ.
 [Metadata census](../build/i386-resource-oom-at-failure-v3/metadata-census.json)
+
+The parser-free image completed normal 8 MiB TCG startup in 264.426 seconds
+with all nine VGA checkpoints matching and zero build-provider loads. A
+native compiler rebuild ran concurrently. The separate instruction-release
+image took 262.821 seconds, and these runs do not isolate the parser-free
+change. The 60-second requirement remains open.
+[Parser-free TCG result](../build/i386-parser-known-free-v1/interactive8-tcg/result.json) ·
+[Startup budget verdict](../build/i386-parser-known-free-v1/interactive8-tcg/startup-budget.json)
+
+Root publication now audits the arena and checks each selected ownership
+record before detaching anything. It frees the records by physical
+boundary under the same IRQ guard. An active parent still receives the
+records in their existing ownership queue. Class-only publication uses
+the same audit before freeing its journaled records. The two-stage
+bootstrap, 386 boot instruction audit, compiler ownership test, 8 MiB KVM
+publication diagnostics, and the 20-session document resource test passed.
+[8 MiB diagnostics](../build/i386-publication-known-free-v1/diagnostic8-kvm/result.json) ·
+[8 MiB document resources](../build/i386-publication-known-free-v1/resource8/resource-result.json)

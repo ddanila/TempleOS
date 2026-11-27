@@ -117,11 +117,17 @@ Bool I386PublishClasses(CI386Heap *heap,CCmpCtrl *cc,CHashTable *source)
       }
     if(state.count!=capacity) goto done;
   }
-  //No allocation or fallible lookup remains. Move payload ownership, then roots.
+  //Audit before moving ownership. The record frees preserve the arena under
+  //the existing IRQ guard, so they only need to verify their block boundaries.
+  if(state.count) {
+    if(I386HeapSize(heap,cc)!=sizeof(CI386CmpCtrl))goto done;
+    for(i=0;i<state.count;i++)
+      if(!I386HeapKnownAtLeast(heap,state.records[i],offset(CI386ParserAllocation.requested)))goto done;
+  }
   for(i=0;i<state.count;i++) {
     record=state.records[i];
     record->last->next=record->next; record->next->last=record->last;
-    I386HeapFree(heap,record);
+    I386HeapKnownFree(heap,record);
   }
   for(i=0;i<=source->mask;i++)
     while(entry=source->body[i]) {

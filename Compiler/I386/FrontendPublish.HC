@@ -918,6 +918,17 @@ Bool I386FrontendPublishCore(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *sy
       i++;
     }
   }
+  if(!parent && transfer.count) {
+    //Verify the selected records before moving any ownership. The IRQ guard
+    //stays in place and record frees preserve the audited physical chain.
+    if(I386HeapSize(heap,cc)!=sizeof(CI386CmpCtrl))goto done;
+    i=0;
+    for(record=owned->parser_next;record!=&owned->parser_next;record=record->next) {
+      j=i++;
+      if(transfer.selected[j>>3]&(1<<(j&7)) &&
+          !I386HeapKnownAtLeast(heap,record,offset(CI386ParserAllocation.requested)))goto done;
+    }
+  }
   //Validation and allocation are finished. No fallible work remains in the move.
   if(frontend->completions)
     for(i=0;i<=source->mask;i++)
@@ -931,7 +942,7 @@ Bool I386FrontendPublishCore(CI386Heap *heap,CCmpCtrl *cc,CPrsSymbolServices *sy
       if(parent) {
         record->next=&parent_owned->parser_next;record->last=parent_owned->parser_last;
         record->last->next=record;parent_owned->parser_last=record;
-      } else I386HeapFree(heap,record);
+      } else I386HeapKnownFree(heap,record);
     }
   }
   if(parent) {
