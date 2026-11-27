@@ -12,7 +12,7 @@ import time
 from PIL import Image, ImageOps
 
 
-def wait_text(guest, probe, font, label, frame_name):
+def wait_text(guest, probe, font, label, frame_name, first_row=0):
     deadline = time.monotonic() + 90
     path = guest.out / (frame_name + '.png')
     while time.monotonic() < deadline:
@@ -21,7 +21,7 @@ def wait_text(guest, probe, font, label, frame_name):
         with Image.open(path) as frame:
             rgb = frame.convert('RGB')
             for pixels in (rgb.load(), ImageOps.invert(rgb).load()):
-                for row in range(60):
+                for row in range(first_row, 60):
                     for column in range(81-len(label)):
                         if probe['text_at'](pixels,font,label,column,row):
                             return column, row

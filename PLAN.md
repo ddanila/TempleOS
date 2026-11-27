@@ -153,9 +153,19 @@ The current image runs Psalmody keyboard recording, deletion and playback
 against the pinned original. Both guests recorded C5, D5 and E5 with the
 same duration records, deleted E5, then played C5 and D5 in order through
 the emulated speaker. Shift-Escape restored the caller and the i386
-prompt rendered fresh arithmetic. Save and reopen remain open.
+prompt rendered fresh arithmetic.
 [Original playback](build/i386-psalmody-playback-v2/original/result.json) ·
 [Native playback](build/i386-psalmody-playback-v2/native/result.json)
+
+Both guests saved the two surviving notes to `Tmp.HC.Z`, cleared the
+editor, then reopened the song by selecting it directly in JukeBox.
+The reopened note records match byte for byte. The native persistence
+check fails on one saved digit. The original writes a staccato factor of
+`0.902` and i386 writes `0.901`. Exiting JukeBox after preview also remains
+open on i386. The fixture stages the app providers, so cold launch remains
+unverified.
+[Original save and reopen](build/i386-psalmody-persistence-v6/original/result.json) ·
+[Native save and reopen](build/i386-psalmody-persistence-v6/native/result.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
