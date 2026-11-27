@@ -1,0 +1,26 @@
+{
+  "result": "verified",
+  "physical_sha256": "53440ec57d6288ff0e986f13f6552d075f0728179e6e684f170343cdb21d031b",
+  "fallback_heap_address": 1058128,
+  "fallback_capacity": 551936,
+  "fallback_free_payload": 1552,
+  "fallback_largest_payload": 496,
+  "public_pool": {
+    "regions": 40,
+    "bytes": 1234944,
+    "free_bytes": 14336,
+    "empty_regions": 0
+  },
+  "public_pool_low": {
+    "regions": 9,
+    "bytes": 546816,
+    "free_bytes": 1024,
+    "empty_regions": 0
+  },
+  "public_pool_main": {
+    "regions": 31,
+    "bytes": 688128,
+    "free_bytes": 13312,
+    "empty_regions": 0
+  }
+}

@@ -1366,3 +1366,10 @@ blocks and a largest free payload of 120 bytes. The failing control's
 record. Changing the preferred slab size alone could not recover
 unissued or freed slots from this capture.
 [Heap at allocation failure](../build/i386-resource-oom-at-failure-v3/result.json)
+
+The same failure capture shows 1,552 free payload bytes in the low-memory
+fallback heap, with a largest free payload of 496 bytes. The public backing
+pool had 14,336 bytes free across 40 regions. Every region contained live
+allocations, so whole-region trimming could return no region to the main
+arena at the breakpoint.
+[Fallback heap and backing-pool census](../build/i386-resource-oom-at-failure-v3/backing-census.json)
