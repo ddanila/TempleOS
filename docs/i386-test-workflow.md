@@ -6620,3 +6620,10 @@ The second cold-boot trace also records the older sprite allocation error.
 [Second-generation self-host](../build/i386-ode-template-port-v1/native-generations128/gen2-selfhost/result.json) ·
 [Delivered-source audit](../build/i386-ode-template-port-v1/native-generations128/gen2-source-audit/result.json) ·
 [Generation comparison](../build/i386-ode-template-port-v1/native-generations128/generation-identity/result.json)
+
+The second-generation disk passed the same nine exact 64 MiB desktop
+baseline checks with the Window Manager and managed pointer active. Its
+full-content check matched all 686 inventory files to the frozen tree,
+verified the RedSea extents, and passed the guest lookup and read contract.
+[Second-generation desktop baseline](../build/i386-ode-template-port-v1/native-generations128/gen2-desktop64/result.json) ·
+[Second-generation full-content check](../build/i386-ode-template-port-v1/native-generations128/gen2-full-content64/result.json)
