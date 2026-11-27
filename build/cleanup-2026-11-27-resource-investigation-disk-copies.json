@@ -1,0 +1,20 @@
+[
+  {
+    "removed": "build/i386-resource-oom-heap-v1/working.img",
+    "retained": "build/i386-gr-peek-public-v1/cross/kernel.img",
+    "sha256": "afb9d0cd79331862600995dd8d7915d7e550c1203d710e256e96ac079b7539ee",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-gr-peek-public-v1/resource8/working.img",
+    "retained": "build/i386-gr-peek-public-v1/cross/kernel.img",
+    "sha256": "afb9d0cd79331862600995dd8d7915d7e550c1203d710e256e96ac079b7539ee",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-sprite-early-integrated-v1/resource8/working.img",
+    "retained": "build/i386-sprite-early-integrated-v1/cross/kernel.img",
+    "sha256": "dfc6ec9534b2e41a5d66c458866e1037ac15f68e177add4c7a8d6972f339bc2a",
+    "allocated_bytes": 67112960
+  }
+]
