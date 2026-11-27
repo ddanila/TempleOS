@@ -1496,3 +1496,12 @@ diagnostics, and the 20-session document resource test passed.
 [Assembly heap test](../build/i386-parser-known-free-v1/heap-core/result.json) ·
 [Portable heap test](../build/i386-parser-known-free-v1/heap-source/result.json) ·
 [8 MiB resource test](../build/i386-parser-known-free-v1/resource8/resource-result.json)
+
+The retained GrPeek 8 MiB failure snapshot contains 42 parser ownership
+records for the failing control, occupying 1,408 physical bytes. Matching
+live class and function member lists against their declared counts and
+tails identifies at least 3,598 individually allocated member records.
+They occupy 403,352 physical bytes and represent 17.3% of the 20,783 live
+main-arena blocks at that breakpoint. This is a census of the failure
+snapshot. Ownership-record counts elsewhere in startup can differ.
+[Metadata census](../build/i386-resource-oom-at-failure-v3/metadata-census.json)

@@ -1,0 +1,24 @@
+{
+  "result": "verified",
+  "physical_sha256": "53440ec57d6288ff0e986f13f6552d075f0728179e6e684f170343cdb21d031b",
+  "scope": "Main-arena allocation and linked metadata counts in the retained GrPeek 8 MiB document compile failure snapshot",
+  "live_blocks": 20783,
+  "compiler_control": 3227656,
+  "parser_records": 42,
+  "ordinary_parser_records": 41,
+  "parser_record_physical_bytes": 1408,
+  "class_and_function_owners_with_matching_lists": {
+    "400": 165,
+    "540": 892
+  },
+  "linked_class_and_function_members_lower_bound": 3598,
+  "linked_member_physical_bytes": 403352,
+  "live_96_byte_requests": 3760,
+  "layout": {
+    "hash_type": 8,
+    "member_count": 52,
+    "member_head": 60,
+    "member_tail": 68,
+    "parser_sentinel_in_control": 384
+  }
+}
