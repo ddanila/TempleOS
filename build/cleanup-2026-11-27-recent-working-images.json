@@ -1,0 +1,140 @@
+[
+  {
+    "removed": "build/i386-optimization-port-v1/interactive8-tcg/working.img",
+    "retained": "build/i386-optimization-port-v1/cross/kernel.img",
+    "sha256": "374d0081c34dca70b107ee0180d67c29deda3d22b88b98efc6019f42fba7dea1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-optimization-port-v1/startup-profile8-tcg/working.img",
+    "retained": "build/i386-optimization-port-v1/cross/kernel.img",
+    "sha256": "374d0081c34dca70b107ee0180d67c29deda3d22b88b98efc6019f42fba7dea1",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-htmlgen-doc-file-ed-v3/diagnostic8-kvm/working.img",
+    "retained": "build/i386-htmlgen-doc-file-ed-v3/cross/kernel-diagnostics.img",
+    "sha256": "97bcf41948dafc885fd74f456bbb8920fe1b6306f251be0828d114ec3330a20c",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-htmlgen-doc-file-ed-v3/interactive8-kvm/working.img",
+    "retained": "build/i386-htmlgen-doc-file-ed-v3/cross/kernel.img",
+    "sha256": "32a9a9de000061975efd7e5266e2e23ddae3cebba1e47cbfcd225bedf84d25ea",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen2-persistent-window64-plain-layering/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen2-persistent-window64-plain-final/working.img",
+    "sha256": "6f9cca3d0bdae5d202b50fb244b591f227875647cb720d0ede7526cbe37aba8f",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-assembly-v276-control-v2/working.img",
+    "retained": "build/i386-assembly-v276-control-v1/working.img",
+    "sha256": "a53d60a1cafd286d62a2f9ee3160c6d06ff26571440e02ed87a48b92a3fd4f5f",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-ball-lighting-cancel/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-cancel-shift/working.img",
+    "sha256": "85ec59ffc2b05f7629c0f6a7eb21a935d556787bd9ad31af2195099aab7659d4",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-man-form-cancel/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen1-grmodels-cancel-shift/working.img",
+    "sha256": "85ec59ffc2b05f7629c0f6a7eb21a935d556787bd9ad31af2195099aab7659d4",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-generations128/gen2-desktop64/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen2-selfhost/target.img",
+    "sha256": "7d4cb10862a1ccfe21613731434f25d24927cdaeb1b29a60e35b413f71aba5cc",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-ball/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-man/working.img",
+    "sha256": "6fcd5960e3a705ebf1d16e86be098fdfe8d33c5056fb5d85a8f7e67d154c5340",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-ball-lighting-cancel/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-cancel/working.img",
+    "sha256": "45ef9357de0227cef596092821bb93cdc45f962bd00ae7d6dcc1839bd27fbd02",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-cancel-shift/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-cancel/working.img",
+    "sha256": "45ef9357de0227cef596092821bb93cdc45f962bd00ae7d6dcc1839bd27fbd02",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-man-form-cancel/working.img",
+    "retained": "build/i386-code-alloc-known-v1/native-generations128/gen2-grmodels-cancel/working.img",
+    "sha256": "45ef9357de0227cef596092821bb93cdc45f962bd00ae7d6dcc1839bd27fbd02",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain-fixture/working.img",
+    "retained": "build/i386-demo-insetip-v1/generations128/gen1-persistent-window64-plain-final/working.img",
+    "sha256": "d86d95424e7a9a55a8ccfd107e4d13c1441e5e74ea4906d2547d07bfa6eb1375",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-asm-and-c1-port-v2/native-count2/working.img",
+    "retained": "build/i386-asm-and-c1-port-v2/native-count1/working.img",
+    "sha256": "2b30eef0bfb9144a425b6a9bbcd5691b39fa2c10dfbde96a35e848fafbbc5064",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-asm-and-c1-port-v2/native-count3/working.img",
+    "retained": "build/i386-asm-and-c1-port-v2/native-count1/working.img",
+    "sha256": "2b30eef0bfb9144a425b6a9bbcd5691b39fa2c10dfbde96a35e848fafbbc5064",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-asm-and-c1-port-v2/native-count4/working.img",
+    "retained": "build/i386-asm-and-c1-port-v2/native-count1/working.img",
+    "sha256": "2b30eef0bfb9144a425b6a9bbcd5691b39fa2c10dfbde96a35e848fafbbc5064",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-asm-and-c1-port-v2/native-count5/working.img",
+    "retained": "build/i386-asm-and-c1-port-v2/native-count1/working.img",
+    "sha256": "2b30eef0bfb9144a425b6a9bbcd5691b39fa2c10dfbde96a35e848fafbbc5064",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-asm-and-c2-port-v1/demo2-native-default/working.img",
+    "retained": "build/i386-asm-and-c2-port-v1/native-count1/working.img",
+    "sha256": "156b10f0287972c7f68082180c985cd4d83b4082a1fc14d89cd9ce7be3b3efc4",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-asm-and-c2-port-v1/native-count2/working.img",
+    "retained": "build/i386-asm-and-c2-port-v1/native-count1/working.img",
+    "sha256": "156b10f0287972c7f68082180c985cd4d83b4082a1fc14d89cd9ce7be3b3efc4",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-asm-and-c2-port-v1/native-count3/working.img",
+    "retained": "build/i386-asm-and-c2-port-v1/native-count1/working.img",
+    "sha256": "156b10f0287972c7f68082180c985cd4d83b4082a1fc14d89cd9ce7be3b3efc4",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-asm-and-c2-port-v1/native-count4/working.img",
+    "retained": "build/i386-asm-and-c2-port-v1/native-count1/working.img",
+    "sha256": "156b10f0287972c7f68082180c985cd4d83b4082a1fc14d89cd9ce7be3b3efc4",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-asm-and-c2-port-v1/native-count5/working.img",
+    "retained": "build/i386-asm-and-c2-port-v1/native-count1/working.img",
+    "sha256": "156b10f0287972c7f68082180c985cd4d83b4082a1fc14d89cd9ce7be3b3efc4",
+    "allocated_bytes": 67112960
+  }
+]
