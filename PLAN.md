@@ -124,11 +124,15 @@ The 128 MiB KVM native `ConsoleRuntime` rebuild of the frozen Stadium
 capture image reached packing and rejected a duplicate `GrPeek`
 function. The runtime includes `GrPeekCore.HC` directly and through
 `GrPointClipCore.HC`. The retained-module install and 8 MiB resource
-checks depend on a successful rebuild. The retry changes only the
-redundant directive in the frozen image source and verifies the other
-1,954 files are unchanged before booting it.
+checks depend on a successful rebuild. The retry changed only the
+redundant directive in the frozen image source and verified the other
+1,954 files were unchanged before booting it. Native packing passed at
+128 MiB on KVM, with all 1,457 function exports matching the
+cross-built contract. Installation and the 8 MiB resource check are
+in progress on that frozen image.
 [Native pack failure](build/i386-stadium-capture-v2/native-console128/result.json) ·
-[Isolated rebuild input](build/i386-stadium-capture-v2/native-console128-single-peek/source-change.json)
+[Isolated rebuild input](build/i386-stadium-capture-v2/native-console128-single-peek/source-change.json) ·
+[Native packing and export audit](build/i386-stadium-capture-v2/native-console128-single-peek/rebuild/result.json)
 
 The current `ConsoleRuntime` source includes `GrPeek` once through the
 shared clipping core. The full cross-build preserves all 1,460 function

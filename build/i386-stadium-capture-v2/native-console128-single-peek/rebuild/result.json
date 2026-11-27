@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "welcome": true,
+  "source_disk_sha256": "a6453bb17e765213d52e639cc84b9696b9089d75da10d37134af3e10be03aa17",
+  "module_order": [
+    "ConsoleRuntime"
+  ],
+  "modules": {
+    "ConsoleRuntime": {
+      "bytes": 2743562,
+      "records": 13757,
+      "exports": 1457,
+      "sha256": "cebd800ff744d556a30d698904acf5e6d69dccabbd82ecaf45df89a748862a9e",
+      "reference_sha256": "b56cd29cb04614acbd47a6b2905b48a14004f4c072d4cf79c0bbb84dcb89b20c"
+    }
+  },
+  "cpu": "486,-fpu",
+  "ram_mib": 128,
+  "keyboard_harness": true,
+  "managed_pointer": true,
+  "build_provider_loads": 1
+}
