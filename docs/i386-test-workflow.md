@@ -6518,3 +6518,11 @@ matched 1,578 files to `19664a81`, and the content check verified all
 [8 MiB startup](../build/i386-tohtml-custom-link-port-v1/interactive8-kvm/result.json) ·
 [Source audit](../build/i386-tohtml-custom-link-port-v1/committed-source-audit.json) ·
 [Full content](../build/i386-tohtml-custom-link-port-v1/full-content64/result.json)
+
+The full image from `5e9064e5` matched all 1,578 delivered source and
+documentation files. It passed the 64 MiB desktop baseline and the
+8 MiB document profile under KVM. Twenty document development cycles
+peaked at 38,080 live bytes and 55,808 reserved bytes.
+[Source audit](../build/i386-ode-template-port-v1/committed-source-audit.json) ·
+[Desktop baseline](../build/i386-ode-template-port-v1/desktop64/result.json) ·
+[Document resource profile](../build/i386-ode-template-port-v1/resource8/resource-result.json)
