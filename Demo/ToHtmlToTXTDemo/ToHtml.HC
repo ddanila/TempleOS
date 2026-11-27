@@ -154,7 +154,7 @@ U8 *TOSLinkCvt1(U8 *link_st)
 
 public CDoc *Doc2Html(CDoc *doc_in,U8 *html_header=NULL,U8 *body_header=NULL,
 	U8 *body_footer=NULL,U8 *html_footer=NULL,Bool line_anchors=TRUE,
-	U8 (*link_cvt)(U8 *link_st)=&TOSLinkCvt1,Bool line_nums=FALSE)
+	U8 *(*link_cvt)(U8 *link_st)=&TOSLinkCvt1,Bool line_nums=FALSE)
 {//Cvt $LK,"DolDoc",A="FI:::/Doc/DolDocOverview.DD"$doc to HTML file.
   CDocEntry *doc_e,*style,*doc_e2;
   I64 i,y,old_y=I64_MIN,col,old_u32_attr=DOCET_UNDEF_COLOR,old_attr,digits;
@@ -359,7 +359,7 @@ public CDoc *Doc2Html(CDoc *doc_in,U8 *html_header=NULL,U8 *body_header=NULL,
 public U0 ToHtml(U8 *_in_name,U8 *_out_name=NULL,U8 *html_header=NULL,
 	U8 *body_header=NULL,U8 *body_footer=NULL,U8 *html_footer=NULL,
 	I64 width=80,Bool line_anchors=TRUE,
-	U8 (*link_cvt)(U8 *link_st)=&TOSLinkCvt1,Bool line_nums=FALSE)
+	U8 *(*link_cvt)(U8 *link_st)=&TOSLinkCvt1,Bool line_nums=FALSE)
 {//Convert $LK,"DolDoc",A="FI:::/Doc/DolDocOverview.DD"$file to HTML.
 //Supply your own link_cvt routine.
   U8 *in_name,*out_name;

@@ -20505,14 +20505,16 @@
         "Doc2Html",
         "ToHtml"
       ],
-      "source_at_discovery": "identical",
+      "source_at_discovery": "modified",
       "compatibility": "qualified",
       "reference_workflow": {
         "status": "qualified-workflows",
-        "description": "Load the standalone ToHtml library and convert the bundled sample at width 60 with custom header and footer fragments, no line anchors, and line numbering enabled."
+        "description": "Load standalone ToHtml and convert the bundled sample with custom fragments, width 60, line numbering, and no anchors. Convert a separate document with a caller-supplied link callback."
       },
       "oracle": {
         "dataset": "build/i386-tohtml-options-v1/DemoOutPage.html.b64",
+        "custom_link_tool": "tools/test-i386-txtgen.py",
+        "custom_link_dataset": "build/i386-tohtml-custom-link-v2/DemoOutPage.html.b64",
         "checks": [
           "Compare all saved bytes, including the custom fragments, numbering, wrapping, colors, and links."
         ]
@@ -20528,6 +20530,13 @@
           "result": "fail",
           "evidence": "build/i386-tohtml-custom-link-v2/result.json",
           "scope": "The original writes the caller-supplied link destination. The native kernel reports BAD PUBLIC MEMORY while converting the same document."
+        },
+        {
+          "target": "native-tohtml-pointer-return-custom-link",
+          "command": "python3 tools/test-i386-txtgen.py IMAGE --custom-link --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-tohtml-custom-link-port-v1/custom-link/result.json",
+          "scope": "The packaged converter calls a string-returning custom link converter, writes all 1160 original bytes, and returns to fresh arithmetic."
         }
       ]
     },

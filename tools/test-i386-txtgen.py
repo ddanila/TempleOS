@@ -19,11 +19,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
-    parser.add_argument('--html', action='store_true', help='Run HtmlGen instead of TXTGen')
+    conversion = parser.add_mutually_exclusive_group()
+    conversion.add_argument('--html', action='store_true', help='Run HtmlGen instead of TXTGen')
+    conversion.add_argument('--custom-link', action='store_true',
+                            help='Run ToHtml with a caller-supplied link converter')
     args = parser.parse_args()
     disk, out = args.disk.resolve(), args.out.resolve()
     out.mkdir()
-    if args.html:
+    if args.html or args.custom_link:
         name = 'DemoOutPage.html'
         reference = ROOT/'build/i386-htmlgen-reference-v1'
         includes = (DEMO_DIR+'HtmlGen.HC',)
@@ -35,6 +38,11 @@ def main():
         sources = includes
     sources = (*sources, DEMO_DIR+'DemoInPage.DD')
     fixture = b''.join(f'#include "/{source}"\n'.encode() for source in includes)
+    expected_output = reference/(name+'.b64')
+    if args.custom_link:
+        custom = ROOT/'build/i386-tohtml-custom-link-v2'
+        fixture = (custom/'Convert.HC').read_bytes()
+        expected_output = custom/(name+'.b64')
     output = '/Home/'+name
     report = dict(result='running', disk_sha256=sha(disk.read_bytes()))
     try:
@@ -42,7 +50,16 @@ def main():
         files = package['snapshot'](disk.read_bytes())[1]
         report['source_sha256'] = {source: sha(files['/'+source][2]) for source in sources}
         provenance = json.loads((reference/'result.json').read_text())
-        if report['source_sha256'] != provenance['source_sha256']:
+        reference_hashes = report['source_sha256'].copy()
+        if args.html or args.custom_link:
+            converter = DEMO_DIR+'ToHtml.HC'
+            shipped = files['/'+converter][2]
+            if shipped != (ROOT/converter).read_bytes():
+                raise ValueError('The packaged HTML converter differs from the workspace')
+            # The 386 build requires an explicit pointer return on both callback parameters.
+            reference_hashes[converter] = sha(shipped.replace(
+                b'U8 *(*link_cvt)(U8 *link_st)', b'U8 (*link_cvt)(U8 *link_st)'))
+        if reference_hashes != provenance['source_sha256']:
             raise ValueError('The packaged converter or sample differs from the pinned original')
         if output in files:
             raise ValueError('Expected a fresh home without a prior conversion')
@@ -61,7 +78,7 @@ def main():
         finally:
             guest.close()
         actual = package['snapshot'](image.read_bytes())[1][output][2]
-        expected = base64.b64decode((reference/(name+'.b64')).read_bytes())
+        expected = base64.b64decode(expected_output.read_bytes())
         report.update(bytes=len(actual), output_sha256=sha(actual), expected_sha256=sha(expected))
         (out/name).write_bytes(actual)
         if actual != expected:
