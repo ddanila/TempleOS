@@ -1,0 +1,113 @@
+{
+  "result": "pass",
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/tools/test-i386-unassemble.py": "251fbee7a876c07d6b50270f2fb1a60955eaff86470d5af7635fe8019b974d2a",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-unassemble/Contract.HC": "b096c2f8c5ea30b73a6fe694de7420ac54e6470db82c887f0b4cd69890037ff3",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-unassemble/Tables.HC": "3f0472933c7b9de30aaad7d052ef41317d71b03c30ac65834d2629ee0239c88a",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-autocomplete-interaction.py": "34b053dcb1b1eaafeb7e2f6c5cf2a144045e78fcd0234ca04c3ae9a4ab7f3f65",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-reference.py": "097713faf09a66f8966f44b6da9a5dcc26007cd91bf9a12a249b8a4258da9c98",
+    "/home/ddanila/fun/TempleOS/tools/test-i386-timeclock-welcome.py": "5d7102c493424a9749d45245e992394a8450af7b8aed0474ede6f96aaa595da2",
+    "/home/ddanila/fun/TempleOS/tools/build-iso.py": "e90a04e4bc1d2e7610ac59e161e3cdfa693f3d0e0f7218066bf8fe8a996ed9bc",
+    "/home/ddanila/fun/TempleOS/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/tools/build-i386-kernel.py": "30c8f46719fed8588844c9a210bb03b69caf2cce6f78dce94d500ee2365b2b25",
+    "/home/ddanila/fun/TempleOS/Kernel/FontStd.HC": "dece99330479ea6283de2bf2bad9d756ab1b1a0a6ab2a2da25e4198e3d388729",
+    "/home/ddanila/fun/TempleOS/Compiler/I386/UAsmTables.DATA": "6949c0939a8eed5376265f0b3dd0c353bc9fa6e7ad69a46d8b44d4311f65b4fc",
+    "/home/ddanila/fun/TempleOS/tests/guest/i386-unassemble/NativeCapacity.HC": "a985eb92fe555659107a788b7a628bd6378f5c7b9178d9e9af7f726be85f3c66",
+    "/home/ddanila/fun/TempleOS/build/i386-packed-uasm-v1/cross/kernel.img": "a38c395445b15cb8d9165a5c130380291521261e43c3408cad15d0597d12ca8c"
+  },
+  "scope": "Twelve explicit 32-bit Ui cases: exact instruction text, consumed lengths and relative destinations; native fixed catalog buffer capacities. Not full opcode, symbol-link or raw-register qualification.",
+  "ram_mib": 8,
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "a38c395445b15cb8d9165a5c130380291521261e43c3408cad15d0597d12ca8c",
+    "image_sha256": "1d86c2fecda79100984889fa62c572c3ae2a6864fa4f4e4a78fdc3e69cc73b53",
+    "boot_area_sha256": "30081a939a5510d126bd1249398acfc41f2d32410304ea6140b0a926b6696c34",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1953,
+      "owned_sectors": 96323,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1955,
+      "owned_sectors": 96329,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/UAsmCapacity.HC": "a985eb92fe555659107a788b7a628bd6378f5c7b9178d9e9af7f726be85f3c66",
+      "/Probe/Unassemble.HC": "b096c2f8c5ea30b73a6fe694de7420ac54e6470db82c887f0b4cd69890037ff3"
+    },
+    "added_attributes": {
+      "/Probe/UAsmCapacity.HC": 2048,
+      "/Probe/Unassemble.HC": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "state": [
+    1,
+    -1,
+    1,
+    -1,
+    1,
+    -1,
+    5,
+    -1,
+    2,
+    -1,
+    4,
+    -1,
+    4,
+    -1,
+    1,
+    -1,
+    1,
+    -1,
+    3,
+    -1,
+    5,
+    5,
+    2,
+    0
+  ],
+  "instructions": [
+    "XCHG\tU32 EAX,U32 EAX\n",
+    "RET\n",
+    "INT3\n",
+    "MOV\tU32 EAX,I32 12345678\n",
+    "MOV\tU32 EAX,U32 EBX\n",
+    "MOV\tU32 EAX,U32 10[EBP+ECX*4]\n",
+    "MOV\tU16 AX,I16 1234\n",
+    "REX2\n",
+    "PUSH\tU32 EAX\n",
+    "ADD\tU32 EAX,I8 07\n",
+    "JMP\tI32 $LK,\"728C0D\",A=\"AD:0x728C0D\"$ \n",
+    "JMP\tI8 $LK,\"728C18\",A=\"AD:0x728C18\"$ \n"
+  ],
+  "native_catalog_capacities": [
+    3696,
+    4060,
+    3636,
+    4060,
+    82589,
+    82908
+  ],
+  "catalog_entries": 1833,
+  "arithmetic_pixels": {
+    "column": 0,
+    "row": 14,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "filesystem": {
+    "directories": 63,
+    "files": 1955,
+    "owned_sectors": 96329,
+    "bitmap": "matches reachable extents"
+  },
+  "inputs_unchanged": true
+}

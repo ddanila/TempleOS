@@ -106,25 +106,32 @@ U0 I386CodeAttach(CCmpCtrl *cc,CI386CodeAllocation *record,U8 *allocation,U32 ki
   record->last->next=record; owned->code_last=record;
   if(kind==3) owned->code_headers++;
 }
+Bool I386CodeRecordLinked(CI386CmpRelease *state,CI386CodeAllocation *record)
+{
+  return record->control==state->control &&
+    record->last->next==record && record->next->last==record;
+}
+Bool I386CodeFreeSlot(CI386CmpRelease *state,CI386CodeAllocation *record,Bool arena_valid=FALSE)
+{//Caller has checked the lifetime links. Slot release does not alter the arena.
+  U8 *allocation=record->allocation;
+  CI386ICSlab *slab=I386ICSlabFind(state->heap,state->control,allocation,arena_valid);
+  if(!slab)return FALSE;
+  if(!slab->live || record!=allocation+I386_FRONTEND_IC_BYTES) {
+    state->ok=FALSE;return TRUE;
+  }
+  record->last->next=record->next; record->next->last=record->last;
+  record->kind=0;slab->live--;
+  allocation(CIntermediateCode *)->next=slab->free_nodes;
+  slab->free_nodes=allocation;
+  return TRUE;
+}
 U0 I386CodeFree(CI386CmpRelease *state,CI386CodeAllocation *record)
 {
   CI386CmpCtrl *owned=state->control;
   U8 *allocation=record->allocation;
   CI386ICSlab *slab,**link;
-  if(record->control!=state->control || record->last->next!=record || record->next->last!=record) {
-    state->ok=FALSE; return;
-  }
-  if(record->kind==1 || record->kind==4) {
-    slab=I386ICSlabFind(state->heap,state->control,allocation);
-    if(slab) {
-      if(!slab->live || record!=allocation+I386_FRONTEND_IC_BYTES) {state->ok=FALSE;return;}
-      record->last->next=record->next;record->next->last=record->last;
-      record->kind=0;slab->live--;
-      allocation(CIntermediateCode *)->next=slab->free_nodes;
-      slab->free_nodes=allocation;
-      return;
-    }
-  }
+  if(!I386CodeRecordLinked(state,record)) {state->ok=FALSE;return;}
+  if((record->kind==1 || record->kind==4) && I386CodeFreeSlot(state,record)) return;
   if(record->kind==I386_CODE_IC_SLAB) {
     slab=allocation;link=&owned->ic_slabs;
     if(slab->live) {state->ok=FALSE;return;}
@@ -408,6 +415,22 @@ Bool I386COCAppend(CI386Heap *heap,CCmpCtrl *cc,CCodeCtrl *header)
 //Implemented by NativeEmit.HC in the same retained module. Control teardown
 //must release raw segmented chunks before retiring their registered header.
 extern Bool I386OutChunksRelease(CI386Heap *heap,CI386Out *out);
+Bool I386CodeReleaseSlotRun(CI386CmpRelease *state,CI386CodeAllocation *record)
+{//Teardown can retire a bounded run without revalidating the unchanged arena.
+  CI386CmpCtrl *owned=state->control;
+  U32 irq=I386IrqSave;
+  I64 count=0;
+  if(I386HeapSize(state->heap,state->control)!=sizeof(CI386CmpCtrl)) {state->ok=FALSE;goto done;}
+  while(count<32 && record!=&owned->code_next && (record->kind==1 || record->kind==4)) {
+    if(!I386CodeRecordLinked(state,record)) {state->ok=FALSE;break;}
+    if(!I386CodeFreeSlot(state,record,TRUE) || !state->ok)break;
+    record=record->next;
+    count++;
+  }
+done:
+  I386IrqRestore(irq);
+  return count!=0;
+}
 U0 I386CmpCodeRelease(CCmpCtrl *cc,CI386CmpRelease *state)
 {//Walk allocation ownership, never potentially aliased or detached queue views.
   CI386CmpCtrl *owned=cc;
@@ -421,6 +444,13 @@ U0 I386CmpCodeRelease(CCmpCtrl *cc,CI386CmpRelease *state)
     //headers can then be released without following invalidated slot records.
     while(record!=&owned->code_next && record->kind==I386_CODE_IC_SLAB)record=record->next;
     if(record==&owned->code_next)record=owned->code_next;
+    if(record->kind==1 || record->kind==4) {
+      if(I386CodeReleaseSlotRun(state,record)) {
+        if(!state->ok)return;
+        goto slot_run_done;
+      }
+      if(!state->ok)return;
+    }
     if(record->kind==2) {
       cm=record->allocation; COCPayloadRelease(cm,&owner);
       (*owner.release)(owner.context,cm->str);
@@ -431,6 +461,7 @@ U0 I386CmpCodeRelease(CCmpCtrl *cc,CI386CmpRelease *state)
     if(record->kind==5) I386CmpReleaseAllocation(state,record->allocation(CI386Out *)->data);
     I386CodeFree(state,record);
     if(!state->ok) return;
+slot_run_done:;
   }
   cc->coc.coc_next=0; COCSeed(&cc->coc);
 }

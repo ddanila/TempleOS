@@ -2,8 +2,8 @@
 //Publish only after every allocation and record validation has succeeded.
 U0 NativeUAsmTablesInit()
 {
-  I64 size,i,n,count32,count64;
-  U8 *bytes=NULL,*storage=NULL,*record;
+  I64 size,i,n,count32,count64,name_length,name_bytes=0;
+  U8 *bytes=NULL,*storage=NULL,*record,*names;
   CInst **table32=NULL,**table64=NULL;
   CHashOpcode *opcode;
   CHashExport *allocator;
@@ -16,6 +16,11 @@ U0 NativeUAsmTablesInit()
     if(count32<=0 || count64<=0 || count32>4096 || count64>4096)throw('UAsmSize');
     n=count32+count64;
     if(size!=40+n*48)throw('UAsmSize');
+    for(i=0;i<n;i++) {
+      record=bytes+40+i*48;
+      if(!*record || record[31])throw('UAsmName');
+      name_bytes+=StrLen(record)+1;
+    }
     //These final sizes are known. Avoid the public pool's optional larger
     //returned block and power-of-two page reserve for this retained catalog.
     allocator=HashFind("I386CAllocExact",Fs->hash_table,HTT_EXPORT_SYS_SYM);
@@ -23,13 +28,15 @@ U0 NativeUAsmTablesInit()
     allocate=allocator->val;
     table32=(*allocate)(count32*sizeof(U8 *),Fs);
     table64=(*allocate)(count64*sizeof(U8 *),Fs);
-    storage=(*allocate)(n*(sizeof(CHashOpcode)+32),Fs);
+    storage=(*allocate)(n*sizeof(CHashOpcode)+name_bytes,Fs);
+    names=storage+n*sizeof(CHashOpcode);
     for(i=0;i<n;i++) {
       record=bytes+40+i*48;
-      if(!*record || record[31])throw('UAsmName');
-      opcode=storage+i*(sizeof(CHashOpcode)+32);
-      opcode->str=opcode(U8 *)+sizeof(CHashOpcode);
-      MemCpy(opcode->str,record,32);opcode->inst_entry_cnt=1;
+      opcode=storage+i*sizeof(CHashOpcode);
+      name_length=StrLen(record)+1;
+      opcode->str=names;
+      MemCpy(names,record,name_length); names+=name_length;
+      opcode->inst_entry_cnt=1;
       MemCpy(&opcode->ins,record+32,16);opcode->ins[0].ins_entry_num=0;
       if(i<count32)table32[i]=&opcode->ins;
       else table64[i-count32]=&opcode->ins;

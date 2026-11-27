@@ -1391,3 +1391,24 @@ Allocation placement can differ across profiles. This establishes the
 observed successful footprint, while the 8 MiB breakpoint independently
 shows fragmentation and exhaustion.
 [Successful compile heap comparison](../build/i386-resource-oom-reference16-v1/compile-heap-comparison.json)
+
+The disassembler's native opcode catalog now stores its 1,833 writable,
+NUL-terminated mnemonic names after the contiguous opcode records in one
+allocation. The name storage decreased from 58,656 to 9,269 bytes, saving
+49,387 requested bytes. Compiler teardown also shares one arena validation
+across up to 32 consecutive intermediate-code slab slots while interrupts
+are disabled. Each slot still gets its own ownership and link checks.
+The original bootstrap, protected-mode boot instruction audit,
+task-symbol ownership corpus, and 8 MiB KVM diagnostics passed.
+[Task-symbol ownership check](../build/i386-packed-uasm-v1/task-symbols/result.json) ·
+[8 MiB diagnostics](../build/i386-packed-uasm-v1/diagnostic8-kvm/result.json)
+
+The 8 MiB disassembly check verified all packed mnemonic positions and
+both table capacities, matched the instruction cases against the original,
+and returned to arithmetic. The 8 MiB KVM document fixture compiled and
+all 20 sessions completed with exact heap recovery. The public heap peaked
+at 38,080 live bytes, 7,824 above baseline. The interactive boot took
+32.078 seconds and all eleven VGA checkpoints matched.
+[8 MiB disassembly](../build/i386-packed-uasm-v1/disassembly8/result.json) ·
+[Document allocation receipt](../build/i386-packed-uasm-v1/resource8/resource-result.json) ·
+[Document VGA receipt](../build/i386-packed-uasm-v1/resource8/result.json)

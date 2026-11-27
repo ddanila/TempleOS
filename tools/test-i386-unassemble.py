@@ -96,8 +96,11 @@ def main():
             g.wait('UNASSEMBLE CAPACITIES DONE\n')
             (out/'unassemble-capacities.bin').write_bytes((g.out/'unassemble-capacities.bin').read_bytes())
             sizes=list(struct.unpack('<6q',(out/'unassemble-capacities.bin').read_bytes()))
-            count32,count64=struct.unpack_from('<2q',catalog.read_bytes())
-            wanted=[count32*4,count64*4,(count32+count64)*72]
+            raw_catalog=catalog.read_bytes()
+            count32,count64=struct.unpack_from('<2q',raw_catalog)
+            name_bytes=sum(raw_catalog[start:start+32].index(0)+1
+                           for start in range(40,len(raw_catalog),48))
+            wanted=[count32*4,count64*4,(count32+count64)*40+name_bytes]
             if sizes[::2]!=wanted:raise ValueError('Native catalog sizes differ from the complete original catalog')
             for requested,capacity in zip(sizes[::2],sizes[1::2]):
                 #A fixed-size catalog buffer may have less than one native

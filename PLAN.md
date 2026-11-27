@@ -75,6 +75,14 @@ checks.
 [Pick workflow](build/i386-pick-paired-v2/result.json) ·
 [Document resource investigation](docs/i386-heap-performance.md)
 
+The packed opcode catalog and compiler teardown update passed the
+8 MiB KVM document resource test. All 20 sessions completed with exact
+heap recovery and eleven matching VGA checkpoints. The same build
+passed 8 MiB diagnostics and disassembly. The latest recorded TCG
+startup is 290.367 seconds on the preceding parser lookup image.
+[8 MiB resource receipt](build/i386-packed-uasm-v1/resource8/resource-result.json) ·
+[TCG startup budget check](build/i386-parser-known-request-v2/interactive8-tcg/startup-budget.json)
+
 The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
 64 MiB desktop commands, and configured HomeSys handoff. Its
