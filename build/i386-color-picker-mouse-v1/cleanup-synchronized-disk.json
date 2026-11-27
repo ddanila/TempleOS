@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-color-picker-mouse-v1/native-synchronized/working.img",
+  "retained": "build/i386-color-picker-mouse-v1/native-final/working.img",
+  "sha256": "dbc9afc7574751a8edc8ec2edd15a62bb95eb4d3abb511536e1bc027d366d01d",
+  "allocated_bytes": 67112960
+}
