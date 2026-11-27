@@ -1,0 +1,7 @@
+{
+  "archive": "before-user.bin.zst",
+  "archive_sha256": "59b06fdef2f58591df6644c4713a860a5690eaeef7b162281c1599ac539e86d7",
+  "raw_sha256": "559ed893788d6ccd339cdc81b0e6576354f1f853122a5cf19da91f38a121dd75",
+  "raw_bytes": 8388608,
+  "verified_byte_for_byte": true
+}

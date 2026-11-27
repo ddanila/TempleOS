@@ -1,0 +1,84 @@
+{
+  "scope": "Allocation-time candidates for the live blocks between the two largest free spans.",
+  "log_sha256": "bd10d22e445284416731d2eb52482b319c5d322f437bac65953f230e3f83c5d0",
+  "snapshot_sha256": "559ed893788d6ccd339cdc81b0e6576354f1f853122a5cf19da91f38a121dd75",
+  "matched_live_regions": 23,
+  "largest_free_spans": [
+    {
+      "address": 7827096,
+      "span": 173352,
+      "requested": 0,
+      "live": false
+    },
+    {
+      "address": 8017920,
+      "span": 140496,
+      "requested": 0,
+      "live": false
+    }
+  ],
+  "intervening_blocks": [
+    {
+      "payload_address": 8000464,
+      "span": 8776,
+      "page_bytes": 8192,
+      "used_bytes": 8192,
+      "allocation": {
+        "line": 1934,
+        "main_arena": true,
+        "request": 8755,
+        "retained": 1082824,
+        "fits": [
+          [
+            7636480,
+            123216
+          ],
+          [
+            7760272,
+            20536
+          ],
+          [
+            7782152,
+            20536
+          ],
+          [
+            7804800,
+            20536
+          ],
+          [
+            7837704,
+            171520
+          ]
+        ],
+        "chosen_span_address": 7837704
+      }
+    },
+    {
+      "payload_address": 8009240,
+      "span": 8696,
+      "page_bytes": 8192,
+      "used_bytes": 8192,
+      "allocation": {
+        "line": 393,
+        "main_arena": true,
+        "request": 8755,
+        "retained": 1064160,
+        "fits": [
+          [
+            7614488,
+            11952
+          ],
+          [
+            7647048,
+            16048
+          ],
+          [
+            7679144,
+            338856
+          ]
+        ],
+        "chosen_span_address": 7679144
+      }
+    }
+  ]
+}

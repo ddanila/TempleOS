@@ -270,6 +270,16 @@ hypothesis still needs an allocation-time test.
 [Fit calculation](build/i386-user8-backing-placement-v1/model.json) ·
 [Reordered framebuffer result](build/i386-user8-backing-placement-v1/user8.json)
 
+The current 8 MiB backing trace matches all 23 live regions against the
+physical ownership chain before `USCheck`. The two regions splitting the
+largest free spans survived from allocations with five and three fitting
+blocks. Each allocation chose the largest available span. The trace
+reproduces the original heap addresses and the same `OutMem` request.
+Alternative placement is possible at both recorded allocation points.
+The effect of changing those choices on later allocations remains open.
+[Allocation history](build/i386-user8-backing-trace-current-v1/result.json) ·
+[Snapshot manifest](build/i386-user8-backing-trace-current-v1/snapshot.json)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh
