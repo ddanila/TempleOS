@@ -257,3 +257,15 @@ counts. This experiment leaves the app source and strict persistence
 oracle intact.
 [Original sweep](../build/i386-psalmody-staccato-v3/original.txt) ·
 [i386 sweep](../build/i386-psalmody-staccato-v3/native.txt)
+
+The next probe captures the actual formatter scale, `Pow10I64(3)`. The
+original uses `408F3FFFFFFFFFFF` and i386 uses `408F400000000000`, exactly
+1000. A rational-arithmetic check reproduces the factor, biased value,
+scaled value, rounded integer and formatted text for both guest traces
+at all 80 slider positions. The original path uses 64-bit significands
+for the factor expression and binary64 for the stored factor and the
+subsequent operations. For this finite slider range, evaluating the
+factor as an exact rational and rounding once to binary64 gives the same
+results. The earlier multiplication by literal 1000 was a diagnostic
+and differs from the scale used inside the original formatter.
+[Trace and model](../build/i386-psalmody-staccato-v4/check.py)
