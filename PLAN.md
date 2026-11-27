@@ -149,6 +149,9 @@ and free accounted for 770 samples, compared with 854 of 1,246 in the
 packed opcode image. The leading heap-scan stack in both profiles was
 `I386HeapSize` called from `I386CmpControlValid` via `I386CmpCodeOwner`
 (247 samples on the color-picker image, 236 on the packed image).
+On the color-picker image, the most frequent callers of that stack
+were token ownership checks (68 samples) and intermediate-code
+insertion (41 samples).
 The uninterrupted timing above remains the measurement for the startup
 gate.
 [Color-picker profile](build/i386-color-picker-production-v1/profile8-tcg/summary.json) ·
@@ -163,12 +166,15 @@ after a valid allocation and byte-for-byte preservation of the arena
 and allocator control record. The fragmented-arena fixture also passes
 with 1,024 transient records. The cross-build changes only the kernel
 module and shrinks the flat kernel by 24 bytes. The full-image 8 MiB KVM
-diagnostics passed. Resource checks and normal TCG timing are pending.
+diagnostics and all 20 document resource sessions passed, with exact
+heap recovery and all 11 resource VGA checkpoints matching. The normal
+TCG timing run is in progress.
 [Assembly arena test](build/i386-heap-tail-v1/core386-v2/result.json) ·
 [Portable arena test](build/i386-heap-tail-v1/core-source-v2/result.json) ·
 [Fragmented high allocation](build/i386-heap-tail-v1/high386/result.json) ·
 [Cross-build manifest](build/i386-heap-tail-v1/cross/result.json) ·
-[8 MiB diagnostics](build/i386-heap-tail-v1/diagnostic8-kvm/result.json)
+[8 MiB diagnostics](build/i386-heap-tail-v1/diagnostic8-kvm/result.json) ·
+[8 MiB resource profile](build/i386-heap-tail-v1/resource8/resource-result.json)
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
