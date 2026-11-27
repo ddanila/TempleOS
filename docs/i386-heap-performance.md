@@ -1302,3 +1302,11 @@ The source-only sprite load-order trial also reached the prompt under
 `Sprite2Code` publication check passed, with no allocation rejection.
 The run exceeded the 60-second startup limit.
 [Strict TCG trial](../build/i386-sprite-startup-early-v1/result-tcg.json)
+
+On the same integrated build, the full 8 MiB KVM diagnostics passed all
+nine exact VGA checkpoints, 128 immediate-push checks, 22 publication
+checks, and 28 program-publication checks. The delivered-source audit
+matched all 1,581 packaged source and documentation files to revision
+`5786a5ce`.
+[Integrated diagnostics](../build/i386-sprite-early-integrated-v1/diagnostic8-kvm/result.json) ·
+[Delivered-source audit](../build/i386-sprite-early-integrated-v1/committed-source-audit.json)
