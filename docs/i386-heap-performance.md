@@ -1523,3 +1523,8 @@ bootstrap, 386 boot instruction audit, compiler ownership test, 8 MiB KVM
 publication diagnostics, and the 20-session document resource test passed.
 [8 MiB diagnostics](../build/i386-publication-known-free-v1/diagnostic8-kvm/result.json) ·
 [8 MiB document resources](../build/i386-publication-known-free-v1/resource8/resource-result.json)
+
+The parser-free image rebuilt CompilerRuntime in a 128 MiB KVM guest.
+The persisted module passed the export audit with 553 exports and
+4,765 records. The build session returned to fresh arithmetic.
+[Native CompilerRuntime rebuild](../build/i386-parser-known-free-v1/native-compiler128/result.json)
