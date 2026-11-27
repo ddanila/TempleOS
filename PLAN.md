@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 104 (six apps and ninety-eight demos) |
+| Qualified | 105 (six apps and ninety-nine demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
-| Qualification gaps | 549 |
-| Linked to tests / with reference workflow and oracle | 261 / 191 |
+| Qualification gaps | 548 |
+| Linked to tests / with reference workflow and oracle | 262 / 192 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 98 of 224 |
+| Demos qualified | 99 of 224 |
 
-C1 has 549 qualification gaps, including entries that still need a reference
+C1 has 548 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -31917,3 +31917,12 @@ The bundled Hanoi animation finished with all six disk records on the
 right pole in both guests. Native i386 dismissed the animation and
 evaluated fresh prompt arithmetic.
 [Hanoi comparison](build/i386-rainbow-public-v1/result.json)
+
+
+### C1: verify the bundled Pick drag workflow
+
+Original TempleOS and native i386 both selected and moved the nearest
+apple under mouse input. The VGA comparison found red sprite pixels
+removed from the old position and added at the new position in both
+guests. Both demos exited on a key, and i386 evaluated fresh arithmetic.
+[Pick comparison](build/i386-pick-paired-v2/result.json)

@@ -18317,10 +18317,26 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Run the bundled Pick demo, drag with the left mouse button to move the nearest apple, and exit with a key."
+      },
+      "oracle": {
+        "checks": [
+          "Verify completion of nearest-sprite selection.",
+          "Compare the before and after raster for removed and added red sprite pixels.",
+          "Dismiss the demo and confirm fresh native arithmetic."
+        ]
+      },
+      "tests": [
+        {
+          "target": "paired-pick-drag",
+          "result": "pass",
+          "evidence": "build/i386-pick-paired-v2/result.json",
+          "scope": "Both unmodified demos selected a sprite, moved it during a drag, and dismissed with a key."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Pick3D.HC",
