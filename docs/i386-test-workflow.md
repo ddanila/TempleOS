@@ -6576,3 +6576,8 @@ The first-generation guest used the installed providers to build its
 produced disk then cold-booted at 8 MiB, accepted fresh prompt arithmetic,
 and passed document allocation and recovery.
 [First-generation self-host and cold boot](../build/i386-ode-template-port-v1/native-generations128/gen1-selfhost/result.json)
+
+The first-generation disk also passed all nine exact VGA checkpoints at
+64 MiB with the Window Manager and managed pointer active. The baseline
+finished without loading the build-only provider.
+[First-generation desktop baseline](../build/i386-ode-template-port-v1/native-generations128/gen1-desktop64/result.json)

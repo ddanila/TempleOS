@@ -1264,3 +1264,10 @@ through `I386ICSlabFind` during code release. These paths account for
 distinct work. The PC counts attribute time spent in sampled code without
 measuring the 60-second startup gate.
 [Verified sample summary](../build/i386-task-report-v2/startup-profile8-tcg/summary.json)
+
+The unpaused TCG gate run for the same image stopped at an `OutMem` rejection
+while compiling `C:/Adam/Gr/SpriteToCodeCore.HC`. The 8 MiB KVM resource
+check and paused TCG profile also logged that rejection and subsequently
+reached the prompt. The strict run returned no valid startup time.
+[Timed run receipt](../build/i386-task-report-v2/interactive8-tcg/result.json) ·
+[Startup trace](../build/i386-task-report-v2/interactive8-tcg/debug.log)

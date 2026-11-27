@@ -1,0 +1,12 @@
+{
+  "result": "invalid",
+  "errors": [
+    "result: expected 'pass', got None",
+    "boot_mode: expected 'interactive', got None",
+    "startup_seconds must be a finite positive measurement"
+  ],
+  "budget_seconds": 60,
+  "evidence": "/home/ddanila/fun/TempleOS/build/i386-task-report-v2/interactive8-tcg/result.json",
+  "evidence_sha256": "e7b0869f60d2586c6c9f2915703c9053325e97a8466c2323eac614a689803db2",
+  "scope": "Normal boot timing only; not complete M7 qualification"
+}
