@@ -1,0 +1,54 @@
+{
+  "result": "pass",
+  "demo_sha256": "4eba37e6e8840e3c9d43dc73fe5bcd07d7ffa619724c9f7361a7db0409b56696",
+  "input_sha256": "271b78eaeed071a54cde3b228e73328bbbd8df0d5cc178c0aa2d9fc30078fbc5",
+  "mode": "native",
+  "scope": "Unmodified Symmetry demo with default and mouse-defined symmetry axes and Escape",
+  "first_drag": [
+    [
+      115,
+      165
+    ],
+    [
+      183,
+      184
+    ]
+  ],
+  "first_ink": [
+    70,
+    70
+  ],
+  "axis_drag": [
+    [
+      392,
+      122
+    ],
+    [
+      392,
+      378
+    ]
+  ],
+  "second_drag": [
+    [
+      228,
+      290
+    ],
+    [
+      298,
+      310
+    ]
+  ],
+  "second_ink": [
+    72,
+    72
+  ],
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 4,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

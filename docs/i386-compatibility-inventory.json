@@ -18860,10 +18860,26 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Draw with the default axis, right-drag a new vertical axis, draw again, and press Escape."
+      },
+      "oracle": {
+        "checks": [
+          "Verify pixel-for-pixel reflections around the default and mouse-defined axes.",
+          "Compare both raster pairs with the original guest at identical pointer positions.",
+          "Verify that Escape clears the drawing and the native prompt accepts arithmetic."
+        ]
+      },
+      "tests": [
+        {
+          "target": "symmetry-paired-drawing",
+          "result": "pass",
+          "evidence": "build/i386-symmetry-v1/comparison.json",
+          "scope": "Both guests draw matching 70-pixel strokes around x=320 and matching 72-pixel strokes around x=392. Escape clears the drawing and the native prompt accepts arithmetic."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Transform.HC",

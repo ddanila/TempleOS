@@ -3040,3 +3040,10 @@ the guests drew exactly the same 354 green control-circle pixels, 621 red
 quadratic spline pixels and 654 blue cubic spline pixels. Space cleared
 the drawing in both guests, and the native prompt accepted arithmetic.
 [Paired B-spline drawing](../build/i386-bspline-v1/comparison.json)
+
+The unchanged Symmetry demo qualifies. Both guests drew exact 70-pixel
+strokes and their reflections about the default axis at x=320. After a
+right drag, both drew exact 72-pixel strokes and their reflections
+about x=392. Escape cleared the drawing and the native prompt accepted
+fresh arithmetic.
+[Paired Symmetry drawing](../build/i386-symmetry-v1/comparison.json)

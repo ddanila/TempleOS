@@ -1,0 +1,26 @@
+{
+  "result": "pass",
+  "demo_sha256": "4eba37e6e8840e3c9d43dc73fe5bcd07d7ffa619724c9f7361a7db0409b56696",
+  "strokes": {
+    "first": {
+      "axis_x": 320,
+      "pixels_per_stroke": 70,
+      "exact_masks": true
+    },
+    "second": {
+      "axis_x": 392,
+      "pixels_per_stroke": 72,
+      "exact_masks": true
+    }
+  },
+  "clear_on_escape": true,
+  "native_arithmetic": {
+    "column": 0,
+    "row": 4,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}

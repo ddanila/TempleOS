@@ -1,0 +1,12 @@
+{
+  "removed": "build/i386-symmetry-v1/native/working.img",
+  "sha256": "271b78eaeed071a54cde3b228e73328bbbd8df0d5cc178c0aa2d9fc30078fbc5",
+  "allocated_bytes": 67112960,
+  "packaging_tool": "tools/package-i386-native-image.py",
+  "retained_image": "build/i386-console-single-peek-v1/cross/kernel.img",
+  "disk_sha256": "d15a189e69570c264eb23a73247df32035f1f584f1f6775356a637e2ce773394",
+  "additions": {
+    "/Probe/Symmetry.HC": "build/i386-symmetry-v1/Probe.HC"
+  },
+  "fixture_sha256": "099a4e3f441a5b4c7b093676629849a78ef18db7e5df6d9a02a65c91dbb7f07c"
+}
