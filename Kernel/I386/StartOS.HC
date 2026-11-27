@@ -51,6 +51,8 @@ if(!NativeWinMgrStart) throw('WinMgr',TRUE);
 #include "/Kernel/I386/PublicExecution.HH"
 //Document defines must be inherited from Adam by every user and servant.
 Adam("DefinePrint(\"DD_OS_NAME_VERSION\",\"TempleOS V%%0.2f\",sys_os_version);");
+Adam("DefinePrint(\"DD_TEMPLEOS_LOC\",\"80,849\");");
+Adam("DefinePrint(\"DD_TEMPLEOS_AGE\",\"%%0.1f\",(Now-Str2Date(\"8/1/2003\"))/ToF64(1<<32)/CDATE_YEAR_DAYS);");
 AdamFile("::/Adam/UserStartUpCore.HC",FALSE);
 CHashFun *native_user_startup=HashFind("UserStartUp",adam_task->hash_table,HTT_FUN);
 if(!native_user_startup || !native_user_startup->exe_addr)throw('UsrStart',TRUE);

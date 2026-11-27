@@ -20412,12 +20412,13 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": {
-        "status": "reference-captured",
+        "status": "qualified-workflows",
         "description": "Load ToTXT and run the bundled TXTGen on the included DolDoc sample with a writable home."
       },
       "oracle": {
+        "tool": "tools/test-i386-txtgen.py",
         "dataset": "build/i386-txtgen-reference-ram-v1/DemoOutPage.TXT.b64",
         "checks": [
           "Compare the exact 904 output bytes against the decoded Base64 fixture."
@@ -20440,6 +20441,13 @@
           "result": "pass",
           "evidence": "build/i386-txtgen-native-pinned-defines-v1/result.json",
           "scope": "With both original document definitions supplied by the fixture, the unchanged conversion writes all 904 expected bytes and returns to native command input."
+        },
+        {
+          "target": "native-txtgen-startup-defines",
+          "command": "python3 tools/test-i386-txtgen.py IMAGE --out OUT",
+          "result": "pass",
+          "evidence": "build/i386-txtgen-startup-defines-v1/txtgen/result.json",
+          "scope": "The unchanged converter inherits the native startup definitions, saves all 904 original bytes, and returns to fresh arithmetic."
         }
       ]
     },

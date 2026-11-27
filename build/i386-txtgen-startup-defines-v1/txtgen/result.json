@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "disk_sha256": "e359fc8ba081f340239052158da3976fe6eb8669375d4e9a427e5464e532193f",
+  "source_sha256": {
+    "Adam/Opt/Utils/ToTXT.HC": "ef50656c673ded0d4f9d65a06bbd7120b30feaf05547268ec1cddf2c32d1d673",
+    "Demo/ToHtmlToTXTDemo/TXTGen.HC": "aa2e1f691ffc2e763d2e036447f1ddcd85ba6fd9a3fb6bf0b1619c59af32e9a9",
+    "Demo/ToHtmlToTXTDemo/DemoInPage.DD": "24e3b0dae5ee8dc0bd833af486b564615983dd1d5eefead5a8c28c1f9ca8cd21"
+  },
+  "rtc_base": "2026-11-27T00:00:00",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 11,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "bytes": 904,
+  "output_sha256": "5780a5d9c2ebe9e44ed601ac66d13500fe9ea5e3cc2438bce60209a07b037d89",
+  "expected_sha256": "5780a5d9c2ebe9e44ed601ac66d13500fe9ea5e3cc2438bce60209a07b037d89"
+}
