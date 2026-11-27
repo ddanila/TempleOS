@@ -148,9 +148,12 @@ export names and reduces `ConsoleRuntime` by 2,104 bytes. The flat
 kernel and kernel module match the prior heap image after normalizing
 the build date. An 8 MiB KVM boot on the new image verified one
 foreground read, one background read, all four clipping edges and
-fresh arithmetic. A native rebuild of the current module is in progress.
+fresh arithmetic. The B-spline-era module then rebuilt natively at
+128 MiB, with all 1,460 function exports matching its cross-built
+contract. The installation check is in progress.
 [Export comparison](build/i386-console-single-peek-v1/export-comparison.json) ·
-[8 MiB GrPeek check](build/i386-console-single-peek-v1/peek-smoke8/result.json)
+[8 MiB GrPeek check](build/i386-console-single-peek-v1/peek-smoke8/result.json) ·
+[Native rebuild and export audit](build/i386-console-single-peek-v1/native-console128/result.json)
 
 The unchanged B-spline demo now uses the shared 2D spline wrappers on
 i386. Both guests selected all six control points at identical
