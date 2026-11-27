@@ -1,0 +1,9 @@
+{
+  "removed": "build/i386-psalmody-current-v1/working.img",
+  "retained_source": "build/i386-demo-document-bounded-v1/cross/kernel.img",
+  "retained_source_sha256": "1ca4fc3d5690f4215552282ef91c4f41994f4b42ea1aa9be40dcc0022042e230",
+  "reconstructed_sha256": "8a669089b467947a915b0d9778bd857d3819c4afa8d4d0349d72899aa1e55ab9",
+  "fixture": "build/i386-psalmody-current-v1/fixture.HC",
+  "fixture_guest_path": "/Probe/PsalmodyKeyboard.HC",
+  "allocated_bytes": 67112960
+}

@@ -11200,8 +11200,8 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": "tools/test-i386-psalmody-keyboard.py",
-      "oracle": "Exact typed note vectors and caller restoration from original Psalmody; see docs/i386-psalmody-keyboard.md. Audio and persistence remain open.",
+      "reference_workflow": "Record C5, D5 and E5 with physical keys, delete E5, then play the two remaining notes and abort.",
+      "oracle": "Match all note and duration records, hear C5 and D5 in speaker PCM in order, and verify caller restoration. Save and reopen remain open.",
       "tests": [
         {
           "target": "original-psalmody-keyboard",
@@ -11250,6 +11250,12 @@
           "result": "pass",
           "evidence": "build/native-graphics-dirty-rows-v2/psalmody-ready64/result.json",
           "scope": "Unchanged original sources on disposable changed-row VGA overlay. Wait for the record menu to finish its redraw before the same 400 ms key holds. Exact original note, surviving note, and caller restoration records match. Immediate-input timing, audio, persistence and full application qualification remain open."
+        },
+        {
+          "target": "native-current-psalmody-playback",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-playback-v2/native/result.json",
+          "scope": "Current image. Original and native note records and deletion match exactly. The two remaining notes play in order, the speaker settles, and the caller is restored."
         }
       ]
     },

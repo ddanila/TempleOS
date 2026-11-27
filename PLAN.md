@@ -149,6 +149,14 @@ match. The storage checks identify the installed Budget directory
 from the exact bundled account copy.
 [Budget workflow audit](build/i386-budget-current-v2/suite-result.json)
 
+The current image runs Psalmody keyboard recording, deletion and playback
+against the pinned original. Both guests recorded C5, D5 and E5 with the
+same duration records, deleted E5, then played C5 and D5 in order through
+the emulated speaker. Shift-Escape restored the caller and the i386
+prompt rendered fresh arithmetic. Save and reopen remain open.
+[Original playback](build/i386-psalmody-playback-v2/original/result.json) ·
+[Native playback](build/i386-psalmody-playback-v2/native/result.json)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh
