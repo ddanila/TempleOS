@@ -1,0 +1,28 @@
+{
+  "result": "pass",
+  "source_sha256": "d2cf28d43cd5aba223a31fe3936136803236af333ac477182656848eb260396a",
+  "document": "original/demo-0.DD.zst",
+  "document_sha256": "9130a57cfbe54af653ff7fa9e809db23d817e3c0e38a4b19b2dc45fc742451c7",
+  "workflow": "Run the unchanged original from the prompt and capture the complete DolDoc output.",
+  "pass": 10,
+  "operations": [
+    "FLD",
+    "FMUL",
+    "FSTP"
+  ],
+  "cycles": [
+    {
+      "overhead": 22.252433,
+      "measured": 233.993811
+    },
+    {
+      "overhead": 22.239387,
+      "measured": 236.525539
+    },
+    {
+      "overhead": 22.274144,
+      "measured": 234.442006
+    }
+  ],
+  "document_sha256_scope": "decompressed bytes"
+}

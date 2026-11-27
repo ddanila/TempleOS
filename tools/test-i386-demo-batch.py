@@ -86,6 +86,28 @@ def optimization_times(doc, native):
     return times if all(value > 0 for value in times) else []
 
 
+def original_timeins(doc):
+    """Verify the original instruction trace and all three timing pairs."""
+    trace, separator, timings = doc.partition(b'\nOverhead Cycles:')
+    if (not separator or trace.count(b'Pass 10:') != 2 or
+            b'&PassTrace+0x0000' not in trace):
+        raise ValueError('Missing original pass-10 setup trace')
+    _, separator, function_trace = trace.partition(b'Fun:TimeIns\n')
+    if not separator or any(op not in function_trace for op in (
+            b'MUL_EQU ', b'FLD\t', b'FMUL\t', b'FSTP\t')):
+        raise ValueError('Missing original traced floating-point multiply')
+    pair = (rb'Overhead Cycles: +([0-9]+\.[0-9]{6})\n'
+            rb'Measured Cycles: +(-?[0-9]+\.[0-9]{6})')
+    match = re.fullmatch(rb'\n\n'.join([pair] * 3) + rb'\n\x05',
+                         b'Overhead Cycles:' + timings)
+    if not match:
+        raise ValueError('Expected three complete original cycle measurements')
+    values = list(map(float, match.groups()))
+    return {'pass': 10, 'operations': ['FLD', 'FMUL', 'FSTP'],
+            'cycles': [{'overhead': overhead, 'measured': measured}
+                       for overhead, measured in zip(values[::2], values[1::2])]}
+
+
 def run(image, out, native, outputs, reference_at_prompt=False):
     Guest = runpy.run_path(str(ROOT/'tools/test-i386-autocomplete-interaction.py'))['Guest']
     guest = Guest(image, out, native, reference_cpus=1)
@@ -176,6 +198,8 @@ def main():
         original_end = int(time.time())
         for path, original in zip(args.demo, original_outputs):
             report['entries'][path].update(original_sha256=sha(original), bytes=len(original))
+            if path == 'Demo/TimeIns.HC':
+                report['entries'][path]['original_oracle'] = original_timeins(original)
         native_start = int(time.time())
         native_outputs = run(native_image, out/'native', True, outputs)
         native_end = int(time.time())

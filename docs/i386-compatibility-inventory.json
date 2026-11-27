@@ -20510,9 +20510,31 @@
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
       "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Run the instruction timing demo unmodified from the prompt and capture the optimizer trace and three cycle reports."
+      },
+      "oracle": {
+        "checks": [
+          "Verify pass 10 shows the traced floating-point multiply and its architecture-specific instruction sequence.",
+          "Verify three complete overhead and measured cycle pairs; values vary across runs.",
+          "Verify the document terminator and return to the prompt."
+        ]
+      },
+      "tests": [
+        {
+          "target": "timeins-original-pass-trace",
+          "result": "pass",
+          "evidence": "build/i386-demo-timeins-v1/original-receipt.json",
+          "scope": "The pinned original displays PassTrace setup, the x87 load/multiply/store, and three complete timing pairs."
+        },
+        {
+          "target": "timeins-native-prompt",
+          "result": "fail",
+          "evidence": "build/i386-demo-timeins-v1/result.json",
+          "scope": "The unchanged source reaches an undefined PassTrace identifier on line 22 and does not complete the timing workflow."
+        }
+      ]
     },
     {
       "path": "Demo/ToHtmlToTXTDemo/DemoInPage.DD",

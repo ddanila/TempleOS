@@ -18,7 +18,7 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
 | Qualification gaps | 548 |
-| Linked to tests / with reference workflow and oracle | 262 / 192 |
+| Linked to tests / with reference workflow and oracle | 263 / 193 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
 | Demos qualified | 99 of 224 |
 
@@ -74,6 +74,12 @@ the fixture and completed all 20 document sessions with eleven exact VGA
 checks.
 [Pick workflow](build/i386-pick-paired-v2/result.json) ·
 [Document resource investigation](docs/i386-heap-performance.md)
+
+The original `TimeIns` demo displays the selected pass-10 floating-point
+instructions and three timing pairs. Native compilation of the unchanged
+demo stops at the first `PassTrace` call on line 22.
+[Original trace and timing receipt](build/i386-demo-timeins-v1/original-receipt.json) ·
+[Native rejection](build/i386-demo-timeins-v1/result.json)
 
 The packed opcode catalog and compiler teardown update passed the
 8 MiB KVM document resource test. All 20 sessions completed with exact
