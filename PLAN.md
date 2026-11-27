@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 97 (six apps and ninety-one demos) |
+| Qualified | 98 (six apps and ninety-two demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
-| Shared files covered by qualified workflows | 20 (fifteen support sources and five shared data or document files) |
-| Qualification gaps | 557 |
-| Linked to tests / with reference workflow and oracle | 254 / 184 |
+| Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
+| Qualification gaps | 555 |
+| Linked to tests / with reference workflow and oracle | 255 / 185 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 91 of 224 |
+| Demos qualified | 92 of 224 |
 
-C1 has 557 qualification gaps, including entries that still need a reference
+C1 has 555 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.

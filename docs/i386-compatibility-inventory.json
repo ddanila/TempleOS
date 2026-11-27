@@ -19874,7 +19874,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Demo/RevFileDemo/Rev.HC"
+        ]
+      }
     },
     {
       "path": "Demo/RevFileDemo/Rev.HC",
@@ -19888,10 +19894,25 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "qualified-workflows",
+        "description": "Run the shipped reverse-file demo against its bundled poem, save the result as a compressed DolDoc, and reopen it."
+      },
+      "oracle": {
+        "dataset": "build/i386-reverse-file-reference-v1/DemoPoemFwd.DD.b64",
+        "checks": [
+          "Compare the exact logical DolDoc bytes after a native cold boot.",
+          "Return to fresh arithmetic."
+        ]
+      },
+      "tests": [
+        {
+          "target": "paired-reverse-file-cold-reopen",
+          "result": "pass",
+          "evidence": "build/i386-reverse-file-native-v1/result.json"
+        }
+      ]
     },
     {
       "path": "Demo/ScrnCodes.HC",

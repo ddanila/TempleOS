@@ -1,0 +1,12 @@
+{
+  "result": "pass",
+  "bytes": 1210,
+  "original_sha256": "91b9922b05d46855a4d38198503d34672356ebb367e0f7ef7dc260824c1145e9",
+  "native_reopen_sha256": "91b9922b05d46855a4d38198503d34672356ebb367e0f7ef7dc260824c1145e9",
+  "stored_bytes": 795,
+  "source_sha256": {
+    "Demo/RevFileDemo/Rev.HC": "743ea4af40b0ebf4051be7ae2618cde85b7a2d8826c8919aa11fce06ab4d86d8",
+    "Demo/RevFileDemo/DemoPoemBwd.DD": "61aa09316778ade5634e7077db4841b107b0492322551868f911585923c67665"
+  },
+  "scope": "Bundled reverse-file demo, persisted archive, cold boot FileRead, exact original DolDoc bytes, and fresh arithmetic"
+}
