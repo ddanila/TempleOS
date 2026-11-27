@@ -1,0 +1,14 @@
+[
+  {
+    "removed": "build/titanium-finish-v1/native/working.img",
+    "retained": "build/titanium-finish-v1/native-reopen/working.img",
+    "sha256": "cc46be71d0df2fb3a841b02701fba01a057aa31c56514778d7b324c9651926d9",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/titanium-finish-v1/native-sprite-trace/working.img",
+    "retained": "build/titanium-finish-v1/native-eight-reopen/working.img",
+    "sha256": "21f95ac454d798138111a79ed1cac188cb731713f29c81578fef9a040d8dd7d9",
+    "allocated_bytes": 67108864
+  }
+]
