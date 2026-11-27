@@ -1,0 +1,38 @@
+[
+  {
+    "removed": "build/i386-console-null-slots-v1/user8/working.img",
+    "retained": "build/i386-console-null-slots-v1/user8-profile-cross/working.img",
+    "sha256": "e69027e552fe48ee32e12c28f91d5232367daa55e2826bbab9dd1ce05c9fcb63",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-console-null-slots-v1/user8-profile-installed/working.img",
+    "retained": "build/i386-console-null-slots-v1/retained128-user8/working.img",
+    "sha256": "71a8fa05d9391573836e16084dd0bbc7c44c85fa85f60bd9db92aa69e05ebf68",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-keyboard-high-v2/assembled-native/user8/working.img",
+    "retained": "build/i386-keyboard-high-v2/assembled-native/profile/working.img",
+    "sha256": "c70ce11935790afc907a3b3f5c208d49ae0e2f9f5f3120db431a8a0345320390",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-keyboard-high-v2/user8/working.img",
+    "retained": "build/i386-keyboard-high-v2/user8-profile/working.img",
+    "sha256": "675adf0d3fdd3b668ae8b22a3813079e5149f60e64f42707b368ca4afd988703",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-ode-template-port-v1/diagnostic8-kvm/working.img",
+    "retained": "build/i386-ode-template-port-v1/cross/kernel-diagnostics.img",
+    "sha256": "b493347ac4305d87c757073b1848de7a9dd3c050db167a498b2fa50bbdd7b4ca",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-ode-template-port-v1/desktop64/working.img",
+    "retained": "build/i386-ode-template-port-v1/cross/kernel.img",
+    "sha256": "a185bfdd164052e0821890a370066bc1c5f99562a26947c54758c3b677912004",
+    "allocated_bytes": 67112960
+  }
+]
