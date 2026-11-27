@@ -120,12 +120,21 @@ startup took 293.325 seconds while other guest work ran. The 60-second
 requirement remains open.
 [Color-picker TCG budget check](build/i386-color-picker-production-v1/interactive8-tcg/startup-budget.json)
 
-The November 27 checkpoint leaves two runs in progress. The 128 MiB
-KVM native `ConsoleRuntime` rebuild uses the frozen Stadium capture
-image. Its retained-module install and 8 MiB resource checks depend on
-the rebuild passing. The color-picker image also has a separate 8 MiB
-TCG run that pauses the guest to sample instruction addresses. The
-uninterrupted timing above remains the measurement for the startup gate.
+The 128 MiB KVM native `ConsoleRuntime` rebuild of the frozen Stadium
+capture image reached packing and rejected a duplicate `GrPeek`
+function. The runtime includes `GrPeekCore.HC` directly and through
+`GrPointClipCore.HC`. The retained-module install and 8 MiB resource
+checks depend on a successful rebuild.
+[Native pack failure](build/i386-stadium-capture-v2/native-console128/result.json)
+
+The unchanged B-spline demo on the color-picker image fails to
+compile at its first `Gr2BSpline` call. The native runtime already has
+the spline algorithms for 3D drawing but lacks the public 2D wrappers.
+[B-spline baseline](build/i386-bspline-v1/baseline/result.json)
+
+The color-picker image has a separate 8 MiB TCG run that pauses the
+guest to sample instruction addresses. The uninterrupted timing above
+remains the measurement for the startup gate.
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem after cleanup. The ISO archive ledger

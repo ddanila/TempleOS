@@ -1,0 +1,8 @@
+{
+  "result": "fail",
+  "demo_sha256": "27f82b6c82dc66e7d5d75c8828690bb0541a5c41ba8c9655bf45979134a15e83",
+  "input_sha256": "47a838efa118215f9db98b289888415633f5b44b244d866ae8c8184e76c42140",
+  "mode": "native",
+  "scope": "Unmodified BSpline demo with six physical control-point clicks, two closed curves, and key exit",
+  "error": "INPUT LINE ExeFile(\"C:/Demo/Graphics/BSpline.HC\");\nCOMPILER BREAK ready\nCOMPILER BREAK ready\nFRONTEND ERROR Undefined identifier at  file C:/Demo/Graphics/BSpline.HC line 25\nINPUT REJECT exception 72656C69706D6F43 errors 0000000000000001 warnings 0000000000000000\nCOMMAND OK\n"
+}
