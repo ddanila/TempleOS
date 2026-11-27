@@ -1,0 +1,74 @@
+[
+  {
+    "removed": "build/i386-task-report-v2/profile-source.img",
+    "retained": "build/i386-task-report-v2/cross/kernel.img",
+    "sha256": "c48ed6f176cee464c79cd86ec7bead22286f6d2bad0d17171eb5e896944123f4",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/grmodels-menu-workflows-v1/ball-native/working.img",
+    "retained": "build/grmodels-menu-workflows-v1/ball-native-mouse/working.img",
+    "sha256": "6e3342a3441c63b8ecd2b3fa9296634f77e3731760e2eac205d73fbb4ed1384f",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/grmodels-menu-workflows-v1/man-native-mouse/working.img",
+    "retained": "build/grmodels-menu-workflows-v1/ball-native-mouse/working.img",
+    "sha256": "6e3342a3441c63b8ecd2b3fa9296634f77e3731760e2eac205d73fbb4ed1384f",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/grmodels-menu-workflows-v1/man-native/working.img",
+    "retained": "build/grmodels-menu-workflows-v1/ball-native-mouse/working.img",
+    "sha256": "6e3342a3441c63b8ecd2b3fa9296634f77e3731760e2eac205d73fbb4ed1384f",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/grmodels-menu-workflows-v1/ball-native-final/working.img",
+    "retained": "build/grmodels-menu-workflows-v1/ball-native-decls/working.img",
+    "sha256": "20621c1cac15d9d6428cffd7502563602bf12d9a5aaee8c74c304cc71976c7a5",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/grmodels-menu-workflows-v1/man-native-decls/working.img",
+    "retained": "build/grmodels-menu-workflows-v1/ball-native-decls/working.img",
+    "sha256": "20621c1cac15d9d6428cffd7502563602bf12d9a5aaee8c74c304cc71976c7a5",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/grmodels-menu-workflows-v1/man-native-final/working.img",
+    "retained": "build/grmodels-menu-workflows-v1/ball-native-decls/working.img",
+    "sha256": "20621c1cac15d9d6428cffd7502563602bf12d9a5aaee8c74c304cc71976c7a5",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-native-cache-footprint-v2/compatible-native-diagnostic/user8/working.img",
+    "retained": "build/i386-native-cache-footprint-v2/compatible-native-diagnostic/profile/working.img",
+    "sha256": "476fddc573ee00dc0dce9f4cbd11671dda3ade772f103815957efc035aa99632",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-native-cache-footprint-v2/retained-all128-user8-profile/working.img",
+    "retained": "build/i386-native-cache-footprint-v2/compatible-native-diagnostic/profile/working.img",
+    "sha256": "476fddc573ee00dc0dce9f4cbd11671dda3ade772f103815957efc035aa99632",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-native-cache-footprint-v2/retained-all128-user8/working.img",
+    "retained": "build/i386-native-cache-footprint-v2/compatible-native-diagnostic/profile/working.img",
+    "sha256": "476fddc573ee00dc0dce9f4cbd11671dda3ade772f103815957efc035aa99632",
+    "allocated_bytes": 67108864
+  },
+  {
+    "removed": "build/i386-native-cache-footprint-v2/retained-console128-user8/working.img",
+    "retained": "build/i386-native-cache-footprint-v2/retained-console128-user8-profile/working.img",
+    "sha256": "c4e56c2324a14479664017df9da941774f5230a0c9c577067621f739db45320e",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-native-cache-footprint-v2/user8/working.img",
+    "retained": "build/i386-native-cache-footprint-v2/user8-profile/working.img",
+    "sha256": "5517ad204b3c0da515a584e3ca6bc7bbbf8628ea9f9c4f2839d5cba9ae7a3046",
+    "allocated_bytes": 67108864
+  }
+]
