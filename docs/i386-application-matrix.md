@@ -2983,3 +2983,13 @@ with temporary capture wrappers. It saved and reopened a 640×480 screen,
 and the installed compositor replay matched 307,183 of 307,200 saved
 pixels. The guest then accepted fresh arithmetic.
 [Temporary capture test](../build/i386-demo-scrn-capture-preview/result.json)
+
+Native startup now publishes `GRScrnCaptureRead` and
+`GRScrnCaptureWrite`. Capture copies the unscaled 8-bit composition
+while holding the presentation lease, then uses the shared GR file
+codec. The unchanged 64 MiB demo saved, reopened and replayed a 640×480
+image with 307,183 matching pixels and returned to fresh arithmetic.
+The same build passed 8 MiB diagnostics and all 20 document sessions.
+[Native demo](../build/i386-scrn-capture-production-v1/demo/result.json) ·
+[8 MiB diagnostics](../build/i386-scrn-capture-production-v1/diagnostic8-kvm/result.json) ·
+[Document resource check](../build/i386-scrn-capture-production-v1/resource8/resource-result.json)

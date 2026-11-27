@@ -18418,7 +18418,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": {
         "status": "verified",
         "description": "Launch the unmodified screen-capture demo, press a key to save the screen, press a key to replay it, and dismiss the replay."
@@ -18442,6 +18442,12 @@
           "result": "fail",
           "evidence": "build/i386-demo-scrn-capture-v1/native-result.json",
           "scope": "The unchanged demo stops at the undefined GRScrnCaptureWrite call on line 7."
+        },
+        {
+          "target": "scrn-capture-native-production-replay",
+          "result": "pass",
+          "evidence": "build/i386-scrn-capture-production-v1/demo/result.json",
+          "scope": "The unmodified demo saves, reloads, and replays a 640\u00d7480 image using the native graphics bindings. The replay matches 307,183 pixels and the prompt accepts fresh arithmetic."
         }
       ]
     },

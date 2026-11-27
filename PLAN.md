@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 105 (six apps and ninety-nine demos) |
+| Qualified | 106 (six apps and one hundred demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
-| Qualification gaps | 548 |
+| Qualification gaps | 547 |
 | Linked to tests / with reference workflow and oracle | 264 / 194 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 99 of 224 |
+| Demos qualified | 100 of 224 |
 
-C1 has 548 qualification gaps, including entries that still need a reference
+C1 has 547 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -81,11 +81,12 @@ demo stops at the first `PassTrace` call on line 22.
 [Original trace and timing receipt](build/i386-demo-timeins-v1/original-receipt.json) ·
 [Native rejection](build/i386-demo-timeins-v1/result.json)
 
-The original `ScrnCapture` demo saved and reopened its 640×480 screen
-image. Its VGA replay matched 307,183 of 307,200 saved pixels. Native
-compilation stops at the undefined `GRScrnCaptureWrite` call on line 7.
+The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
+screen image on i386. The original and native replays each matched
+307,183 of their 307,200 saved pixels. The native guest accepted fresh
+arithmetic after dismissal.
 [Original replay check](build/i386-demo-scrn-capture-v1/replay-verification.json) ·
-[Native rejection](build/i386-demo-scrn-capture-v1/native-result.json)
+[Native replay check](build/i386-scrn-capture-production-v1/demo/result.json)
 
 The packed opcode catalog and compiler teardown update passed the
 8 MiB KVM document resource test. All 20 sessions completed with exact
