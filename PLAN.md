@@ -124,8 +124,11 @@ The 128 MiB KVM native `ConsoleRuntime` rebuild of the frozen Stadium
 capture image reached packing and rejected a duplicate `GrPeek`
 function. The runtime includes `GrPeekCore.HC` directly and through
 `GrPointClipCore.HC`. The retained-module install and 8 MiB resource
-checks depend on a successful rebuild.
-[Native pack failure](build/i386-stadium-capture-v2/native-console128/result.json)
+checks depend on a successful rebuild. The retry changes only the
+redundant directive in the frozen image source and verifies the other
+1,954 files are unchanged before booting it.
+[Native pack failure](build/i386-stadium-capture-v2/native-console128/result.json) ·
+[Isolated rebuild input](build/i386-stadium-capture-v2/native-console128-single-peek/source-change.json)
 
 The unchanged B-spline demo now uses the shared 2D spline wrappers on
 i386. Both guests selected all six control points at identical
@@ -159,16 +162,17 @@ fixtures pass, including rejection of malformed 8- and 16-byte tails
 after a valid allocation and byte-for-byte preservation of the arena
 and allocator control record. The fragmented-arena fixture also passes
 with 1,024 transient records. The cross-build changes only the kernel
-module and shrinks the flat kernel by 24 bytes. Full-image diagnostics,
-resource checks and normal TCG timing are pending on that image.
+module and shrinks the flat kernel by 24 bytes. The full-image 8 MiB KVM
+diagnostics passed. Resource checks and normal TCG timing are pending.
 [Assembly arena test](build/i386-heap-tail-v1/core386-v2/result.json) ·
 [Portable arena test](build/i386-heap-tail-v1/core-source-v2/result.json) ·
 [Fragmented high allocation](build/i386-heap-tail-v1/high386/result.json) ·
-[Cross-build manifest](build/i386-heap-tail-v1/cross/result.json)
+[Cross-build manifest](build/i386-heap-tail-v1/cross/result.json) ·
+[8 MiB diagnostics](build/i386-heap-tail-v1/diagnostic8-kvm/result.json)
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger
-now records 84 older test images and 2,734,211,072 bytes reclaimed across its
+now records 104 older test images and 3,381,915,648 bytes reclaimed across its
 batches. Each ISO was fully decompressed and checked by SHA-256 before
 its raw copy was removed. The color-picker timing disk was separately
 verified byte-for-byte against the retained cross-built image before

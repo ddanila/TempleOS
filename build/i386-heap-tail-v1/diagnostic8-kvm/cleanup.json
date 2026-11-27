@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-heap-tail-v1/diagnostic8-kvm/working.img",
+  "retained": "build/i386-heap-tail-v1/cross/kernel-diagnostics.img",
+  "sha256": "400c5bd39443bd11acf54cce3df8968e2e23ae422c02d4965bb965b10d1af2c6",
+  "allocated_bytes": 67112960
+}
