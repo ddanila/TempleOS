@@ -258,6 +258,18 @@ patch.
 [Physical comparison](build/i386-user8-console-plane-high-v1/comparison.json) ·
 [User startup result](build/i386-user8-console-plane-high-v1/user8.json)
 
+A fit calculation on the original pre-User snapshot finds space for
+both live 8 KiB backing regions in a third free span, allowing for
+maximum page-alignment padding. Moving both at allocation time would
+join a 331,304-byte payload. The modeled span could fit the initial User
+task and its terminal cells with 20,560 bytes left. The snapshot does
+not establish when the third span became available. A second isolated
+ConsoleRuntime image reserves graphics storage before the text
+framebuffer. It boots and fails the same task allocation. The placement
+hypothesis still needs an allocation-time test.
+[Fit calculation](build/i386-user8-backing-placement-v1/model.json) ·
+[Reordered framebuffer result](build/i386-user8-backing-placement-v1/user8.json)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

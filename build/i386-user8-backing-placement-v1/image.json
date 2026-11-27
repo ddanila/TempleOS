@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "base_sha256": "f99c2f9d9ea8286b8699f7fca9867068ea624a7bdf0c959f5ba5547b37336ed4",
+  "image_sha256": "77ac5b92a7de4db9cd7d122832afc27f28997bb083fb7bf80ff5acbdace4f128",
+  "changed_files": {
+    "/Kernel/I386/ConsoleRuntime.HC": "1e269ed713c3474a116a69094817bf48bd41f51ea66a689b386b9887072091c8",
+    "/Modules/I386/ConsoleRuntime.t32m": "13bb05fae9c42b707bfbc3cfc9d83be86674daa3efd9aefb48780562e0ced9e2"
+  }
+}

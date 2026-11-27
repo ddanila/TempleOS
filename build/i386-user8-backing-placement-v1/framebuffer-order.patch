@@ -1,0 +1,15 @@
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -943,11 +943,9 @@
+     HashAdd(&console_doc_exports[i],task->hash_table);
+   }
+   DocDefaultsInit(&doldoc);
++  if(!NativeGraphicsStorageReserve)return FALSE;
+   display_planes=I386HeapAlloc(config->heap,153600,TRUE);
+   if(!display_planes)return FALSE;
+-  if(!NativeGraphicsStorageReserve) {
+-    I386HeapFree(config->heap,display_planes);return FALSE;
+-  }
+   console_planes=display_planes;
+   console_config=config;
+   NativeRunLevelMark(RLf_RAW,"raw");
