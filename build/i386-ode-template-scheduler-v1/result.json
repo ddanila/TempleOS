@@ -1,0 +1,14 @@
+{
+  "result": "pass",
+  "fixture_sha256": "e0f709e00f224db0edffdd78decf475678c2c836767eaa968e475058761a4a12",
+  "log_sha256": {
+    "original": "7e5ee598883d032ca4e1e251fcb0cd12d36bdb1f796fa8f2fbd29656d91978ab",
+    "native": "aa55f457355d99ce2baad2969b78110924f493ab85656bd914faf5e22e1a43a0"
+  },
+  "checks": [
+    "window manager started the template ODE",
+    "simulation time advanced within two seconds",
+    "cleanup restored the task queue",
+    "native prompt evaluated fresh arithmetic"
+  ]
+}

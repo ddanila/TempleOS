@@ -20313,6 +20313,12 @@
           "target": "original-native-ode-template",
           "result": "pass",
           "evidence": "build/i386-ode-template-port-v1/result.json"
+        },
+        {
+          "target": "original-native-ode-template-scheduler",
+          "result": "pass",
+          "evidence": "build/i386-ode-template-scheduler-v1/result.json",
+          "scope": "The window manager starts the template ODE, advances its simulation time, and leaves the original task list after cleanup."
         }
       ]
     },
