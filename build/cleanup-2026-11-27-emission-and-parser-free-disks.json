@@ -1,0 +1,14 @@
+[
+  {
+    "removed": "build/i386-emission-slot-run-v2/interactive8-tcg/working.img",
+    "retained": "build/i386-emission-slot-run-v2/cross/kernel.img",
+    "sha256": "682a4f40f398d04b5faa7dcb4c2b63ca3d0b74efbd773d74a81f6fa57d6aaf4b",
+    "allocated_bytes": 67112960
+  },
+  {
+    "removed": "build/i386-parser-known-free-v1/diagnostic8-kvm/working.img",
+    "retained": "build/i386-parser-known-free-v1/cross/kernel-diagnostics.img",
+    "sha256": "2c3168c1f39bfa464c7e251746d722889a1a2faddaa23f6b10e46c6c73455546",
+    "allocated_bytes": 67112960
+  }
+]
