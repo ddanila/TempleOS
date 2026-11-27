@@ -70,6 +70,12 @@ if(FileFind("::/HomeSys.HC")) {
   AdamFile("::/Adam/AutoComplete/MakeAC.HC",FALSE);
   AdamFile("::/Adam/TaskSettings.HC",FALSE);
   AdamFile("::/Kernel/I386/MakeDirectoryDiagnostics.HC",FALSE);
+  AdamFile("::/Adam/Opt/Utils/Find.HC",FALSE);
+  //Publish the word and song providers in the same shared scope as Adam.
+  AdamFile("::/Adam/God/GodExt.HC",FALSE);
+  AdamFile("::/Adam/God/GodBible.HC",FALSE);
+  AdamFile("::/Adam/God/HolySpirit.HC",FALSE);
+  AdamFile("::/Adam/God/GodSong.HC",FALSE);
 }
 
 U0 NativePublishCompilerOptions()

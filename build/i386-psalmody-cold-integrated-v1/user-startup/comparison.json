@@ -1,0 +1,9 @@
+{
+  "result": "fail",
+  "scope": "Both images reach native startup and time out against the User startup harness initial console expectation.",
+  "initial_framebuffer_identical": true,
+  "frame_size": [
+    640,
+    480
+  ]
+}

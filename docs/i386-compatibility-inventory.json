@@ -11286,6 +11286,18 @@
           "result": "fail",
           "evidence": "build/i386-psalmody-current-build-v1/cold/result.json",
           "scope": "Cold prompt executes the stock PersonalMenu include command without staged providers. JukeBox compilation rejects GodWordStr at line 91."
+        },
+        {
+          "target": "native-psalmody-cold-launch-startup-providers",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-cold-integrated-v1/launch/result.json",
+          "scope": "Normal full-profile startup publishes the libraries through Adam. The stock launcher draws both staves, Shift-Escape restores the caller, and fresh arithmetic renders."
+        },
+        {
+          "target": "native-psalmody-persistence-startup-providers",
+          "result": "pass",
+          "evidence": "build/i386-psalmody-cold-integrated-v1/persistence/result.json",
+          "scope": "The fixture uses normal startup providers. Save, direct JukeBox reopen, caller recovery and filesystem checks pass with exact original song bytes and note records."
         }
       ]
     },

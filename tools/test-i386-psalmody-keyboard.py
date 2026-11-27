@@ -39,9 +39,11 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('disk',type=Path,nargs='?');ap.add_argument('--reference',type=Path);ap.add_argument('--out',type=Path,required=True)
     ap.add_argument('--playback',action='store_true',help='Play the two surviving notes and check speaker PCM')
     ap.add_argument('--save-reopen',action='store_true',help='Save a song and reopen it through the JukeBox')
+    ap.add_argument('--startup-providers',action='store_true',help='Use the native desktop providers without fixture staging')
     args=ap.parse_args();out=args.out.resolve()
     if out.exists():ap.error('Use a fresh output directory')
     if args.disk and not args.reference:ap.error('Native requires original reference')
+    if args.startup_providers and not args.disk:ap.error('Startup providers require a native disk')
     fixture=ROOT/'tests/guest/i386-psalmody-keyboard/Contract.HC'
     paths=[Path(__file__).resolve(),fixture,ROOT/'docs/i386-compatibility-inventory.json',ROOT/'Kernel/FontStd.HC']+[ROOT/('tools/'+n) for n in ['test-i386-timeclock-reference.py','test-i386-autocomplete-interaction.py','test-i386-timeclock-welcome.py','build-iso.py','package-i386-native-image.py','build-i386-kernel.py']]
     if args.playback:
@@ -96,7 +98,7 @@ def main():
         g=Guest(image,out/'guest',bool(args.disk),audio_wav=wav)
         if args.disk:
             g.wait('DONE native kernel startup\n')
-            providers = [
+            providers = [] if args.startup_providers else [
                 'AdamFile("C:/Adam/AutoComplete/MakeAC.HC",FALSE);',
                 'AdamFile("C:/Adam/TaskSettings.HC",FALSE);',
                 '#include "C:/Adam/Opt/Utils/Find.HC"',
@@ -104,9 +106,12 @@ def main():
                 '#include "C:/Adam/God/GodBible.HC"',
                 '#include "C:/Adam/God/HolySpirit.HC"',
                 '#include "C:/Adam/God/GodSong.HC"',
+            ]
+            providers += [
                 '#include "C:/Apps/Psalmody/Load.HC"',
                 '#include "C:/Probe/PsalmodyKeyboard.HC"',
             ]
+            report['startup_providers'] = args.startup_providers
             report['native_provider_commands'] = providers
             for command in providers:g.command(command)
             g.type(entry_command);g.press('ret')

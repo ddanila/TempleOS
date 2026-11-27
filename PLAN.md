@@ -162,8 +162,7 @@ editor, then reopened the song by selecting it directly in JukeBox.
 With the slider serialization fix, the saved song source and reopened
 note records match byte for byte. The native caller resumed and rendered
 fresh arithmetic. The filesystem audit preserved all 1,957 existing files.
-The fixture stages app providers. Cold launch and exiting JukeBox after
-preview remain open on i386.
+This earlier fixture staged the app providers.
 [Original save and reopen](build/i386-psalmody-persistence-v6/original/result.json) ·
 [Native save and reopen](build/i386-psalmody-persistence-v7/native/result.json)
 
@@ -176,6 +175,22 @@ providers. The stock cold launcher rejects `GodWordStr` in JukeBox.
 [Cross-build comparison](build/i386-psalmody-current-build-v1/cross-comparison.json) ·
 [Fresh save and reopen](build/i386-psalmody-current-build-v1/persistence/result.json) ·
 [Cold launch failure](build/i386-psalmody-current-build-v1/cold/result.json)
+
+The full desktop startup now publishes Find and the original God word
+and song providers in Adam. From a cold prompt, the stock PersonalMenu
+launcher draws both Psalmody staves and Shift-Escape returns to fresh
+arithmetic. Save and direct reopen also pass with the normal startup
+providers, matching the original song and reopened notes byte for byte.
+The verified image replaces only `StartOS.HC` on the fresh cross-build.
+JukeBox preview exit remains open.
+[Cold launch](build/i386-psalmody-cold-integrated-v1/launch/result.json) ·
+[Save and reopen with startup providers](build/i386-psalmody-cold-integrated-v1/persistence/result.json)
+
+The separate 64 MiB User startup regression stops before sending the
+User command. Its expected initial console frame differs from the actual
+frame. Both the baseline and provider image produce identical actual
+frames and time out at that same check.
+[User startup comparison](build/i386-psalmody-cold-integrated-v1/user-startup/comparison.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
