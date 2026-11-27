@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-psalmody-persistence-v5/native/working.img",
+  "archive": "build/i386-psalmody-persistence-v5/native/working.img.zst",
+  "sha256": "6e7cde5b6f0bc774c96162d05982ff758f7ec50f83bdd158c7fdec0c9354f75a",
+  "reclaimed_bytes": 53374976
+}
