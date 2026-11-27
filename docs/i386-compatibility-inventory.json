@@ -16453,10 +16453,17 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": "Read the bundled demo document, verify its layout records, find its named anchor and check a missing anchor, then save and reopen it.",
+      "oracle": "Compare two page breaks, five left and two right margins, header, footer, wrap, cursor movement, named anchor and sprite. The native round trip preserves all 4,848 source bytes. The pinned reference reports six fewer bytes.",
+      "tests": [
+        {
+          "target": "native-original-demo-document-roundtrip",
+          "result": "pass",
+          "evidence": "build/i386-demo-document-save-v1/comparison/result.json",
+          "scope": "Record counts and anchor behavior on both guests. Native i386 preserves the complete 237-byte sprite and returns to the prompt after saving and reopening."
+        }
+      ]
     },
     {
       "path": "Demo/DolDoc/FileRead.HC",

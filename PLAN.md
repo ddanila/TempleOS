@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 118 (six apps and one hundred twelve demos) |
+| Qualified | 119 (six apps and one hundred thirteen demo entries) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 23 (fifteen support sources and eight shared data or document files) |
-| Qualification gaps | 533 |
-| Linked to tests / with reference workflow and oracle | 276 / 206 |
+| Qualification gaps | 532 |
+| Linked to tests / with reference workflow and oracle | 277 / 207 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 112 of 224 |
+| Demos qualified | 113 of 224 |
 
-C1 has 533 qualification gaps, including entries that still need a reference
+C1 has 532 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -110,6 +110,18 @@ settings and stopped the speaker. The native prompt rendered fresh
 arithmetic.
 [Unchanged native rejection](build/i386-waterfowl-v2/result.json) ·
 [Paired WaterFowl checks](build/i386-waterfowl-port-v1/comparison/result.json)
+
+`DocSave` now counts page breaks using the same DolDoc record encoder
+that writes them. The pinned original reported 4,842 bytes after saving
+`DemoDoc.DD`, six short of the complete sprite record. Native i386
+saves and reloads all 4,848 bytes, including the full 237-byte sprite.
+Both guests identify the two page breaks, seven margins, and the other
+layout records and find the same named anchor.
+The fresh image also completed all 20 document resource sessions at 8 MiB
+and matched all 11 VGA checkpoints.
+[Original and native document comparison](build/i386-demo-document-save-v1/comparison/result.json) ·
+[8 MiB resource profile](build/i386-demo-document-save-v1/resource8/resource-result.json) ·
+[VGA checks](build/i386-demo-document-save-v1/resource8/result.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched

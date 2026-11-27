@@ -1,0 +1,12 @@
+{
+  "result": "pass",
+  "disk_sha256": "05b1cabb2dbc174d7734bb320414eb15b552a4439a9608e937e0ae4cf49cb0f1",
+  "source_sha256": "dd0d98d4cb4c5709a5682b31f8175155e8b0ce02bc23680fe139bde44bb924d6",
+  "original_sha256": "4d1313ded737ce08c2c4ce920df57d66dd085c6355e77d519c094cdeafba88fd",
+  "native_sha256": "dd0d98d4cb4c5709a5682b31f8175155e8b0ce02bc23680fe139bde44bb924d6",
+  "sprite_payload_bytes": 237,
+  "reference_truncated_bytes": 6,
+  "serialized_bytes": 4848,
+  "records": "DEMO DOC records 2 5 2 1 1 1 1 1 1",
+  "inputs_unchanged": true
+}

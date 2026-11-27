@@ -21,7 +21,6 @@ public U8 *DocSave(CDoc *doc,I64 *_size=NULL)
     if (!Bt(doldoc.type_flags_data,doc_e->type_u8)) {
       switch (doc_e->type_u8) {
 	case DOCT_TAB:
-	case DOCT_PAGE_BREAK:
 	case DOCT_CURSOR:
 	  cnt++;
 	  break;
