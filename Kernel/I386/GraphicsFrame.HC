@@ -213,13 +213,13 @@ graphics_present_done:
 Bool NativeGraphicsPresent(U0 (*draw)(CDC *dc)=NULL,Bool blink=FALSE)
 { return NativeGraphicsPresentChecked(draw,blink,NULL); }
 
-CDC *DCScrnCapture(Bool include_zoom=TRUE)
+public CDC *DCScrnCapture(Bool include_zoom=TRUE,CTask *task=NULL)
 {//Native presentation currently supplies an unscaled eight-bit frame.
   CDC *saved;
   CNativeGraphicsScope scope;
   Bool locked=FALSE;
-  if((include_zoom && gr.scrn_zoom!=1) || !NativeGraphicsPresent)return NULL;
-  saved=DCNew(640,480);
+  if((include_zoom && gr.scrn_zoom!=1) || !NativeWindowPresent(FALSE))return NULL;
+  saved=DCNew(640,480,task);
   if(!saved)return NULL;
   try {
     locked=NativeGraphicsTextLock(&scope);

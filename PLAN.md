@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 106 (six apps and one hundred demos) |
+| Qualified | 107 (six apps and one hundred one demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
-| Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
-| Qualification gaps | 547 |
+| Shared files covered by qualified workflows | 22 (fifteen support sources and seven shared data or document files) |
+| Qualification gaps | 545 |
 | Linked to tests / with reference workflow and oracle | 265 / 195 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 100 of 224 |
+| Demos qualified | 101 of 224 |
 
-C1 has 547 qualification gaps, including entries that still need a reference
+C1 has 545 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -92,12 +92,11 @@ The screen-capture image also passed all nine 8 MiB TCG VGA checks.
 Startup took 280.601 seconds, above the 60-second requirement.
 [Screen-capture image budget check](build/i386-scrn-capture-production-v1/interactive8-tcg/startup-budget.json)
 
-The original Stadium background generator saved a 641×473 image in a
-writable copy of its source directory. The first native capture trial
-saved the white base and transparent padding, with the document artwork
-absent.
-[Original generated bitmap](build/i386-stadium-capture-v1/demo/original-result.json) ·
-[Base-frame comparison](build/i386-stadium-capture-v1/demo/base-frame-comparison.json)
+The unchanged Stadium background generator now produces a byte-identical
+641×473 image on i386. The capture API composites document windows before
+copying the unscaled frame. The generator verification also covers its
+bundled DolDoc background source.
+[Stadium generator comparison](build/i386-stadium-capture-v2/demo/comparison.json)
 
 The packed opcode catalog and compiler teardown update passed the
 8 MiB KVM document resource test. All 20 sessions completed with exact

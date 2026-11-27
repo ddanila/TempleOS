@@ -17370,7 +17370,13 @@
       "compatibility": "unqualified",
       "reference_workflow": null,
       "oracle": null,
-      "tests": []
+      "tests": [],
+      "qualification": {
+        "mode": "covered",
+        "workflows": [
+          "Demo/Games/Stadium/StadiumGen.HC"
+        ]
+      }
     },
     {
       "path": "Demo/Games/Stadium/StadiumBG.GR",
@@ -17401,7 +17407,7 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
+      "compatibility": "qualified",
       "reference_workflow": {
         "status": "verified",
         "description": "Run the unchanged background generator from a writable copy of its source and DolDoc, then reopen the generated StadiumBG.GR.Z."
@@ -17425,6 +17431,12 @@
           "result": "fail",
           "evidence": "build/i386-stadium-capture-v1/demo/base-frame-comparison.json",
           "scope": "The first native capture binding saves a white base and transparent padding, omitting the document artwork."
+        },
+        {
+          "target": "stadium-generator-native-compositor",
+          "result": "pass",
+          "evidence": "build/i386-stadium-capture-v2/demo/comparison.json",
+          "scope": "The unchanged generator saves a byte-identical 641\u00d7473 background on i386, with all 306,504 bytes matching the original, and returns to arithmetic."
         }
       ]
     },

@@ -2993,3 +2993,14 @@ The same build passed 8 MiB diagnostics and all 20 document sessions.
 [Native demo](../build/i386-scrn-capture-production-v1/demo/result.json) ·
 [8 MiB diagnostics](../build/i386-scrn-capture-production-v1/diagnostic8-kvm/result.json) ·
 [Document resource check](../build/i386-scrn-capture-production-v1/resource8/resource-result.json)
+
+Native now publishes `DCScrnCapture` with an explicit task owner.
+Capture composes the full window list before copying the unscaled frame
+under the presentation lease. The unchanged Stadium generator saved a
+641×473 image with all 306,504 bytes matching the original, including
+row padding. The native guest verified the requested capture owner and
+accepted fresh arithmetic. The compositor change also passed the
+unchanged ScrnCapture replay, 8 MiB diagnostics and all 20 document sessions.
+[Stadium generator](../build/i386-stadium-capture-v2/demo/comparison.json) ·
+[ScrnCapture replay](../build/i386-stadium-capture-v2/capture/result.json) ·
+[8 MiB document resources](../build/i386-stadium-capture-v2/resource8/resource-result.json)

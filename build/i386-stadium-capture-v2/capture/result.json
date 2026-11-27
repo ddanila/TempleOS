@@ -1,0 +1,19 @@
+{
+  "result": "pass",
+  "scope": "Unmodified bundled demo using the installed native capture services",
+  "source_sha256": "3c2ecf75bdbbbaa151f6928814ba0e30bfa502e37903d3ae2a8a5f31a0350eab",
+  "disk_sha256": "74616f2eb9510e2011fc6d6fc2a0f315b7da576832eeea67a3b091dbacbee7ec",
+  "overlay_sha256": "1afb5a089bab99f46fc237d8ad4a23a1b5684cc7eb5bbebeee95e0e705248133",
+  "matches": 307183,
+  "size": 307200,
+  "bitmap_sha256": "e6922617644ed6a46f2591451b310a03e5fc9d20bb01b9cb7321ece3f3b039a8",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 18,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  }
+}
