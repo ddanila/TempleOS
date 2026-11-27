@@ -371,6 +371,15 @@ diagnostic, including the one carrying the exact nine native modules.
 The installed minimal control still exhausted the heap in `USCheck`.
 [Heap comparison and archived evidence](build/i386-docdiag-memory-v1/README.md)
 
+On the installed full image, suppressing only the newer Find, music
+and God startup includes removed the observed startup rejections but
+left a maximum free payload of 22,608 bytes. The 8 MiB document check
+still failed. The low fallback arena had just 792 contiguous bytes
+free with or without those includes. The older generation-two control
+reproduced its passing document check with 77,768 contiguous main-heap
+bytes available at the prompt.
+[Startup heap isolation](build/i386-startup-heap-isolation-v1/README.md)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

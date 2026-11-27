@@ -1,0 +1,46 @@
+{
+  "image_sha256": "dfa80a010ac50d245e0172c4dc37cd13743f8b4b9e1bd31f047a66ea4a377af2",
+  "ram_mib": 8,
+  "cpu": "486,-fpu",
+  "startup_rejections": [],
+  "prompt": {
+    "capacity": 6746112,
+    "used": 6626872,
+    "largest_free": 22608,
+    "allocations": 20688,
+    "failure_callers": [],
+    "sha256": "75fef4879f6c8c8390bde0df563c08790432f6f981f9ca77a73ab243569c8078"
+  },
+  "returned": -1,
+  "after": {
+    "capacity": 6746112,
+    "used": 6627992,
+    "largest_free": 22608,
+    "allocations": 20699,
+    "failure_callers": [
+      [
+        {
+          "return_address": 1170223,
+          "symbols": [
+            "Kernel:I386RedSeaLoadBoundCapacity"
+          ]
+        },
+        {
+          "return_address": 1170862,
+          "symbols": [
+            "Kernel:I386RedSeaLoadBound"
+          ]
+        }
+      ]
+    ],
+    "sha256": "22c28fa8504e93b7857c2bb91faf01cdba4110e2f36d4d3115e9ed75ad3bd968"
+  },
+  "result": "fail",
+  "load_recovery_unload": [
+    0,
+    0,
+    0
+  ],
+  "caller_arithmetic": 42,
+  "inputs_unchanged": true
+}

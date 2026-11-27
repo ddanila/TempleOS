@@ -1,0 +1,63 @@
+{
+  "image_sha256": "ea774088e880bd27da03f261bdf4417d4fb532205a4995e8036f4b86acfb90d5",
+  "ram_mib": 8,
+  "cpu": "486,-fpu",
+  "startup_rejections": [
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000"
+  ],
+  "prompt": {
+    "capacity": 6739456,
+    "used": 6594032,
+    "largest_free": 77768,
+    "allocations": 20306,
+    "failure_callers": [
+      [
+        {
+          "return_address": 2239062,
+          "symbols": [
+            "CompilerRuntime:I386ParserHeapAllocKnown"
+          ]
+        },
+        {
+          "return_address": 2131892,
+          "symbols": [
+            "CompilerRuntime:I386ICAddBytes"
+          ]
+        }
+      ]
+    ],
+    "sha256": "63d847ab1a1b358b4ca89c43eae9e41ef321c6fc6c6729f658b95fb7e5a50a0a"
+  },
+  "returned": 13,
+  "after": {
+    "capacity": 6739456,
+    "used": 6595144,
+    "largest_free": 77768,
+    "allocations": 20317,
+    "failure_callers": [
+      [
+        {
+          "return_address": 2239062,
+          "symbols": [
+            "CompilerRuntime:I386ParserHeapAllocKnown"
+          ]
+        },
+        {
+          "return_address": 2131892,
+          "symbols": [
+            "CompilerRuntime:I386ICAddBytes"
+          ]
+        }
+      ]
+    ],
+    "sha256": "120378aecea0d48b77ea3ec276a12cd3d615cc0783be55e06d7b0c4c844f387e"
+  },
+  "result": "pass",
+  "load_recovery_unload": [
+    1,
+    1,
+    1
+  ],
+  "caller_arithmetic": 42,
+  "inputs_unchanged": true
+}

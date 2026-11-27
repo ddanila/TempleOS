@@ -1,0 +1,51 @@
+{
+  "image_sha256": "1b76811a89f36c5da0e4c8904998ff4de908f1bfa9c75be8563ba2b1d33c0e60",
+  "ram_mib": 8,
+  "cpu": "486,-fpu",
+  "startup_rejections": [
+    "PARSER CODE STORAGE REJECT C:/Adam/Opt/Utils/Find.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000",
+    "PARSER CODE STORAGE REJECT C:/Adam/Snd/MusicPlayCore.HC",
+    "INPUT REJECT exception 00006D654D74754F errors 0000000000000000 warnings 0000000000000000"
+  ],
+  "prompt": {
+    "capacity": 6746112,
+    "used": 6647880,
+    "largest_free": 19040,
+    "allocations": 20841,
+    "failure_callers": [],
+    "sha256": "ff19a8ce9027a96cb18d75eb9f87e6363665339a388e6287804dcf66ab57ecea"
+  },
+  "returned": -1,
+  "after": {
+    "capacity": 6746112,
+    "used": 6648864,
+    "largest_free": 19040,
+    "allocations": 20850,
+    "failure_callers": [
+      [
+        {
+          "return_address": 1170223,
+          "symbols": [
+            "Kernel:I386RedSeaLoadBoundCapacity"
+          ]
+        },
+        {
+          "return_address": 1170862,
+          "symbols": [
+            "Kernel:I386RedSeaLoadBound"
+          ]
+        }
+      ]
+    ],
+    "sha256": "79a06802eecb848a1981025302cd34e502453dbfb63daa86157322f5a4479bca"
+  },
+  "result": "fail",
+  "load_recovery_unload": [
+    0,
+    0,
+    0
+  ],
+  "caller_arithmetic": 42,
+  "inputs_unchanged": true
+}

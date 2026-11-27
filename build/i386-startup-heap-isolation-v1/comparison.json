@@ -1,0 +1,90 @@
+{
+  "profiler_sha256": "4ee4208f5591cb863246d4378a94bb820a692866c475832c832455dd54d55729",
+  "cases": {
+    "qualified-older": {
+      "image_sha256": "ea774088e880bd27da03f261bdf4417d4fb532205a4995e8036f4b86acfb90d5",
+      "memory_sha256": "63d847ab1a1b358b4ca89c43eae9e41ef321c6fc6c6729f658b95fb7e5a50a0a",
+      "main": {
+        "capacity": 6739456,
+        "used": 6594032,
+        "largest_free": 77768,
+        "allocations": 20306
+      },
+      "fallback": {
+        "capacity": 551936,
+        "used": 550320,
+        "largest_free": 496,
+        "allocations": 9
+      },
+      "diagnostic_return": 13
+    },
+    "installed-full": {
+      "image_sha256": "68569bb955ccfe8b4b867865d973a6c34af66fcc113b25059c66e1ddb0748ef2",
+      "memory_sha256": "96a6c3f43b4fc6db76684ea81769368db9d85143c227c5a9434ea13f412a6a38",
+      "main": {
+        "capacity": 6746112,
+        "used": 6702008,
+        "largest_free": 9136,
+        "allocations": 21064
+      },
+      "fallback": {
+        "capacity": 551936,
+        "used": 549808,
+        "largest_free": 792,
+        "allocations": 8
+      },
+      "diagnostic_return": -1
+    },
+    "before-extra-libraries": {
+      "image_sha256": "dfa80a010ac50d245e0172c4dc37cd13743f8b4b9e1bd31f047a66ea4a377af2",
+      "memory_sha256": "75fef4879f6c8c8390bde0df563c08790432f6f981f9ca77a73ab243569c8078",
+      "main": {
+        "capacity": 6746112,
+        "used": 6626872,
+        "largest_free": 22608,
+        "allocations": 20688
+      },
+      "fallback": {
+        "capacity": 551936,
+        "used": 549808,
+        "largest_free": 792,
+        "allocations": 8
+      },
+      "diagnostic_return": -1
+    },
+    "before-god-libraries": {
+      "image_sha256": "1b76811a89f36c5da0e4c8904998ff4de908f1bfa9c75be8563ba2b1d33c0e60",
+      "memory_sha256": "ff19a8ce9027a96cb18d75eb9f87e6363665339a388e6287804dcf66ab57ecea",
+      "main": {
+        "capacity": 6746112,
+        "used": 6647880,
+        "largest_free": 19040,
+        "allocations": 20841
+      },
+      "fallback": {
+        "capacity": 551936,
+        "used": 549808,
+        "largest_free": 792,
+        "allocations": 8
+      },
+      "diagnostic_return": -1
+    },
+    "installed-minimal": {
+      "image_sha256": "85abf2097159f911d67c6e84335a251d1e42aee086fb2f7376b3c6fca0a1f322",
+      "memory_sha256": "898f95e3633e602a081d36952761af39f0c2bd6680ad746510044757d53fedee",
+      "main": {
+        "capacity": 6746112,
+        "used": 6349952,
+        "largest_free": 149256,
+        "allocations": 19190
+      },
+      "fallback": {
+        "capacity": 551936,
+        "used": 549808,
+        "largest_free": 792,
+        "allocations": 8
+      },
+      "diagnostic_return": 13
+    }
+  }
+}

@@ -18,6 +18,37 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def analyze_heap(memory, heap_address):
+    arena, capacity, used, peak, allocations, signature = struct.unpack_from('<6I', memory, heap_address)
+    if signature != 0x48323349 or arena+capacity > len(memory):
+        raise ValueError('Invalid captured heap control')
+    blocks, histogram = [], Counter()
+    offset = live_bytes = live_count = 0
+    while offset < capacity:
+        span, requested, tag, reserved = struct.unpack_from('<4I', memory, arena+offset)
+        if span < 24 or span & 7 or offset+span > capacity or tag not in (0x46523349, 0x55523349):
+            raise ValueError('Invalid captured heap block')
+        live = tag == 0x55523349
+        if live:
+            if requested > span-16:
+                raise ValueError('Captured allocation exceeds span')
+            live_bytes += span
+            live_count += 1
+            histogram[requested] += 1
+        blocks.append(dict(address=arena+offset, span=span, requested=requested, live=live))
+        offset += span
+    if (live_bytes, live_count) != (used, allocations):
+        raise ValueError('Captured allocation totals do not match heap control')
+    return dict(heap_address=heap_address, arena=arena, capacity=capacity, used=used,
+                peak=peak, allocations=allocations,
+                largest_free=max((block['span']-16 for block in blocks if not block['live']), default=0),
+                requested_bytes=sum(size*count for size, count in histogram.items()),
+                allocation_sizes=[dict(bytes=size, count=count, requested_total=size*count)
+                                  for size, count in sorted(histogram.items(),
+                                                           key=lambda pair: pair[0]*pair[1], reverse=True)],
+                blocks=blocks)
+
+
 def analyze(disk, log, memory, registers=""):
     read = runpy.run_path(str(ROOT/'tools/build-i386-kernel.py'))['mutated_file_contents']
     names = ('Kernel', 'CompilerRuntime', 'MemoryRuntime', 'FileRuntime', 'ConsoleRuntime')
@@ -45,26 +76,13 @@ def analyze(disk, log, memory, registers=""):
         if kind == 3:
             data_exports[module[name:name+length].decode()] = base+offset
     heap_address = data_exports['kernel_heap']
-    arena, capacity, used, peak, allocations, signature = struct.unpack_from('<6I', memory, heap_address)
-    if signature != 0x48323349 or arena+capacity > len(memory):
-        raise ValueError('Invalid captured heap control')
-    blocks, histogram = [], Counter()
-    offset = live_bytes = live_count = 0
-    while offset < capacity:
-        span, requested, tag, reserved = struct.unpack_from('<4I', memory, arena+offset)
-        if span < 24 or span & 7 or offset+span > capacity or tag not in (0x46523349, 0x55523349):
-            raise ValueError('Invalid captured heap block')
-        live = tag == 0x55523349
-        if live:
-            if requested > span-16:
-                raise ValueError('Captured allocation exceeds span')
-            live_bytes += span
-            live_count += 1
-            histogram[requested] += 1
-        blocks.append(dict(address=arena+offset, span=span, requested=requested, live=live))
-        offset += span
-    if (live_bytes, live_count) != (used, allocations):
-        raise ValueError('Captured allocation totals do not match heap control')
+    primary_heap = analyze_heap(memory, heap_address)
+    fallback_heap = None
+    fallback_address = data_exports.get('kernel_task_fallback_heap')
+    if fallback_address is not None:
+        signature, = struct.unpack_from('<I', memory, fallback_address + 20)
+        if signature:
+            fallback_heap = analyze_heap(memory, fallback_address)
     callers = []
     for match in re.finditer(r'^HEAP FAILURE CALLERS([^\n]+)', log, re.M):
         callers.append([dict(return_address=int(word, 16),
@@ -80,19 +98,17 @@ def analyze(disk, log, memory, registers=""):
             symbols=[dict(name=label,offset=address-1-lo) for lo,hi,label in ranges if lo<=address-1<hi]))
         if parent<=frame:break
         frame=parent
-    return dict(stopped_callers=stopped_callers,heap_address=heap_address, arena=arena, capacity=capacity, used=used, peak=peak,
-                allocations=allocations, largest_free=max((b['span']-16 for b in blocks if not b['live']), default=0),
-                requested_bytes=sum(size*count for size, count in histogram.items()),
-                allocation_sizes=[dict(bytes=size, count=count, requested_total=size*count)
-                                  for size, count in sorted(histogram.items(), key=lambda pair: pair[0]*pair[1], reverse=True)],
-                failure_callers=callers, blocks=blocks,
-                module_sha256={name:hashlib.sha256(data).hexdigest() for name, data in modules.items()})
+    return dict(**primary_heap, fallback_heap=fallback_heap, stopped_callers=stopped_callers,
+                failure_callers=callers, module_sha256={
+                    name: hashlib.sha256(data).hexdigest() for name, data in modules.items()
+                })
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('disk', type=Path)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--accel', choices=('tcg', 'kvm'), default='tcg')
     parser.add_argument('--timeout', type=float, default=180)
     parser.add_argument('--ram-mib',type=int,choices=(8,16,64,128),default=8)
     args = parser.parse_args()
@@ -102,11 +118,11 @@ def main():
     out.mkdir(parents=True)
     pins = {str(p):sha(p) for p in (disk, Path(__file__).resolve(), ROOT/'tools/profile-i386-boot.py', ROOT/'tools/build-i386-kernel.py')}
     log_path = out/'debug.log'
-    cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', 'tcg', '-cpu', '486,-fpu', '-m', str(args.ram_mib),
+    cmd = ['qemu-system-i386', '-machine', 'pc', '-accel', args.accel, '-cpu', '486,-fpu', '-m', str(args.ram_mib),
            '-nic', 'none', '-snapshot', '-drive', f'file={disk},format=raw,if=ide',
            '-display', 'none', '-no-reboot', '-debugcon', f'file:{log_path}', '-qmp', 'stdio']
     (out/'command.json').write_text(json.dumps(cmd, indent=2)+'\n')
-    report = dict(result='running', scope='Stopped startup heap snapshot; not interaction or timing qualification', ram_mib=args.ram_mib, input_sha256=pins)
+    report = dict(result='running', scope='Stopped startup heap snapshot; not interaction or timing qualification', ram_mib=args.ram_mib, accel=args.accel, input_sha256=pins)
     with (out/'qemu.log').open('w') as stderr:
         proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=stderr, bufsize=0)
         try:
