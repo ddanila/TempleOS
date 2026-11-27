@@ -1358,3 +1358,11 @@ additional live bytes and 65 allocations compared with the earlier
 capture. The snapshots do not establish whether those allocations
 are still needed.
 [Main-arena snapshots](../build/i386-resource-oom-heap-v1/result.json)
+
+A hardware breakpoint captured the main arena at the 128-byte request,
+before exception cleanup. It had 5,216 free payload bytes across 149
+blocks and a largest free payload of 120 bytes. The failing control's
+18 IR slabs were linked and full. Every slot had a matching ownership
+record. Changing the preferred slab size alone could not recover
+unissued or freed slots from this capture.
+[Heap at allocation failure](../build/i386-resource-oom-at-failure-v3/result.json)
