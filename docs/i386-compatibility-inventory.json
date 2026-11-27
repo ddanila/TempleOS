@@ -20274,11 +20274,18 @@
       "launch_candidate": true,
       "include_literals": [],
       "public_symbol_candidates": [],
-      "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "source_at_discovery": "modified",
+      "compatibility": "qualified",
+      "reference_workflow": "Run the song from the bundled source, press a physical key during playback, let the current rendition finish, and return to the prompt.",
+      "oracle": "Match all 84 pitch changes from the pinned score in order in QEMU speaker PCM. Require byte-identical full lyric DolDoc, settled speaker output after exit, and fresh native arithmetic.",
+      "tests": [
+        {
+          "target": "native-original-oh-great-pc-speaker",
+          "result": "pass",
+          "evidence": "build/i386-oh-great-port-v1/comparison/result.json",
+          "scope": "One complete rendition per guest. Both captured all 84 pitch changes and the same 198-byte DolDoc. The i386 console renders fresh arithmetic after exit."
+        }
+      ]
     },
     {
       "path": "Demo/Snd/WaterFowl.HC",

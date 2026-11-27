@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 114 (six apps and one hundred eight demos) |
+| Qualified | 115 (six apps and one hundred nine demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 23 (fifteen support sources and eight shared data or document files) |
-| Qualification gaps | 537 |
-| Linked to tests / with reference workflow and oracle | 272 / 202 |
+| Qualification gaps | 536 |
+| Linked to tests / with reference workflow and oracle | 273 / 203 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 108 of 224 |
+| Demos qualified | 109 of 224 |
 
-C1 has 537 qualification gaps, including entries that still need a reference
+C1 has 536 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -80,6 +80,14 @@ instructions and three timing pairs. Native compilation of the unchanged
 demo stops at the first `PassTrace` call on line 22.
 [Original trace and timing receipt](build/i386-demo-timeins-v1/original-receipt.json) ·
 [Native rejection](build/i386-demo-timeins-v1/result.json)
+
+The bundled `OhGreat` song loads the existing music provider on i386
+before compiling its sound callback. Both guests completed a single
+rendition after a physical keypress. The captured speaker waveform contains
+all 84 expected pitch changes in order, and both guests produced the same
+198-byte DolDoc. Speaker output settled after exit, and the native prompt
+rendered fresh arithmetic.
+[Paired audio and document checks](build/i386-oh-great-port-v1/comparison/result.json)
 
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched

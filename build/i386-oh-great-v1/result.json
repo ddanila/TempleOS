@@ -1,0 +1,12 @@
+{
+  "result": "fail",
+  "disk_sha256": "d16a1cd2151ac5037a485e9d141a372795d7fe2e58b2e488a5b89487b450d14f",
+  "source_sha256": "b6b703f97d48ceffe8d4e3e235472bc173cf8b1468ad6e4d7a6ac71d3e88ed56",
+  "inputs_unchanged": true,
+  "original": {
+    "opening_notes": 7,
+    "voiced_windows": 1596,
+    "pcm_seconds": 39.90226757369614
+  },
+  "error": "No speaker output during the opening phrase"
+}

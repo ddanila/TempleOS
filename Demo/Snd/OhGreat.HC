@@ -1,3 +1,8 @@
+#ifdef I386_PUBLIC_USER_INCLUDED
+if (!HashFind("Play",adam_task->hash_table,HTT_FUN))
+  AdamFile("/Kernel/I386/NativeMusicPlay.HC",FALSE);;
+#endif
+
 U0 Song()
 {//Song by Terry A. Davis
   Fs->task_end_cb=&SndTaskEndCB;

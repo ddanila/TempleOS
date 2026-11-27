@@ -1,0 +1,21 @@
+{
+  "result": "pass",
+  "disk_sha256": "e4cd924ded65d96946c1881f76e6169e72a3eae27ddd1a21c0a2e4031a414b73",
+  "source_sha256": "b6b703f97d48ceffe8d4e3e235472bc173cf8b1468ad6e4d7a6ac71d3e88ed56",
+  "native_source_sha256": "2aa95c996a32c418857fc26236c5ee683d7bd5e70c76ffe29483363a70f617a3",
+  "original": {
+    "matched_pitch_changes": 84,
+    "stable_pitch_runs": 176,
+    "pcm_seconds": 39.71172335600907,
+    "wav_sha256": "e5a5a805f858e7b4d2d363cf4be2e66ff0fd535c3f33d656ae3175da0d0d34b2"
+  },
+  "native": {
+    "matched_pitch_changes": 84,
+    "stable_pitch_runs": 176,
+    "pcm_seconds": 39.7343537414966,
+    "wav_sha256": "74d197cf3543f5bd03f1ad78487236a1ba36797ea652d8957825afc3178f7316"
+  },
+  "document_sha256": "6b6f4d01005f533c88cf6402d83e5ce573d0d753c2594401ac472ce6cacdb17f",
+  "document_bytes": 198,
+  "inputs_unchanged": true
+}
