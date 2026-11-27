@@ -1458,3 +1458,21 @@ to compiler ownership validation, 51 came through IR allocation and 30
 through parser token reads. Both use the validating compiler control
 entry point. These counts separate the allocation and token paths from
 the instruction release callback.
+
+Post-emission instruction release now audits the arena once per run of up
+to 32 slab slots under IRQ exclusion. It still finds each instruction
+in the control's ownership list and checks its links and slot boundary.
+A standalone allocation ends the run and uses the existing free path.
+The ownership corpus exercises multiple runs, both initial IRQ states,
+a standalone instruction, and a saved outer tree with a retired operand.
+The two-stage bootstrap, 386 instruction audit, 8 MiB diagnostics, and
+20-cycle document resource contract passed. The same image passed the
+64 MiB desktop baseline with the compositor active.
+[Ownership corpus](../build/i386-emission-slot-run-v2/task-symbols/result.json) ·
+[8 MiB diagnostics](../build/i386-emission-slot-run-v2/diagnostic8-kvm/result.json) ·
+[Document resources](../build/i386-emission-slot-run-v2/resource8/resource-result.json) ·
+[64 MiB desktop baseline](../build/i386-emission-slot-run-v2/desktop64/result.json)
+
+The same image also passed the full-content check against all 686
+inventory files at 64 MiB, including the bounded guest file reads.
+[64 MiB full-content result](../build/i386-emission-slot-run-v2/full-content64/result.json)

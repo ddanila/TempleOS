@@ -54,8 +54,10 @@ I64 CodeSlabTest()
     if(!first || !second)return 315;
     second->t.arg1_tree=first;
     if(!I386ICRetire(&heap,cc,first) ||
-        !I386COCPush(&heap,cc) || !I386COCInit(&heap,cc) ||
-        !SlabNode(cc,97) || !I386COCInstructionsRelease(&heap,cc) ||
+        !I386COCPush(&heap,cc) || !I386COCInit(&heap,cc))return 315;
+    for(i=0;i<70;i++)if(!SlabNode(cc,i+97))return 329;
+    if(!I386COCInstructionsRelease(&heap,cc) ||
+        (GetRFlags&0x200)!=(enabled*0x200) ||
         first->ic_data!=71 || second->t.arg1_tree!=first ||
         !I386ICLifetime(&heap,cc,first) ||
         !(saved=I386COCPopNoFree(&heap,cc)) || !I386COCHeaderFree(&heap,cc,saved) ||
@@ -81,7 +83,7 @@ I64 CodeSlabTest()
       while(block=I386HeapAlloc(&heap,size,FALSE)) {block(U8 **)[0]=fill;fill=block;}
     if(!I386HeapFree(&heap,reserve) || !(first=SlabNode(cc,137)) || owned->ic_slabs ||
         I386HeapSize(&heap,first)!=I386_FRONTEND_IC_BYTES+sizeof(CI386CodeAllocation) ||
-        !I386COCDiscard(&heap,cc))return 322;
+        !I386COCInstructionsRelease(&heap,cc))return 322;
     while(fill) {next=fill(U8 **)[0];if(!I386HeapFree(&heap,fill))return 323;fill=next;}
     //Ownership teardown drains live/retired slots without trusting graph links.
     first=SlabNode(cc,139);second=SlabNode(cc,149);

@@ -107,6 +107,14 @@ Bool I386CodeRecordLinked(CI386CmpRelease *state,CI386CodeAllocation *record)
   return record->control==state->control &&
     record->last->next==record && record->next->last==record;
 }
+U0 I386CodeUnlinkSlot(CI386CodeAllocation *record,CI386ICSlab *slab)
+{//The caller has checked the lifetime record and slot ownership.
+  U8 *allocation=record->allocation;
+  record->last->next=record->next; record->next->last=record->last;
+  record->kind=0;slab->live--;
+  allocation(CIntermediateCode *)->next=slab->free_nodes;
+  slab->free_nodes=allocation;
+}
 Bool I386CodeFreeSlot(CI386CmpRelease *state,CI386CodeAllocation *record,Bool arena_valid=FALSE)
 {//Caller has checked the lifetime links. Slot release does not alter the arena.
   U8 *allocation=record->allocation;
@@ -115,10 +123,7 @@ Bool I386CodeFreeSlot(CI386CmpRelease *state,CI386CodeAllocation *record,Bool ar
   if(!slab->live || record!=allocation+I386_FRONTEND_IC_BYTES) {
     state->ok=FALSE;return TRUE;
   }
-  record->last->next=record->next; record->next->last=record->last;
-  record->kind=0;slab->live--;
-  allocation(CIntermediateCode *)->next=slab->free_nodes;
-  slab->free_nodes=allocation;
+  I386CodeUnlinkSlot(record,slab);
   return TRUE;
 }
 U0 I386CodeFree(CI386CmpRelease *state,CI386CodeAllocation *record)
@@ -150,19 +155,22 @@ U0 I386ICSlabsCollect(CI386CmpRelease *state)
     slab=next;
   }
 }
-U0 I386CodeFreeIC(U8 *context,CIntermediateCode *node)
+CI386CodeAllocation *I386CodeFindInstruction(CI386CmpCtrl *owned,CIntermediateCode *node)
 {
-  CI386CmpRelease *state=context;
-  CI386CmpCtrl *owned=state->control;
   CI386CodeAllocation *record;
   //Discard already owns the graph. Locate its registered lifetime instead of
   //adding a whole-arena size scan for each node; release still validates the
   //record links/control and the heap allocation before freeing it.
   for(record=owned->code_next;record!=&owned->code_next;record=record->next)
-    if(record->allocation==node && (record->kind==1 || record->kind==4)) {
-      I386CodeFree(context,record); return;
-    }
-  state->ok=FALSE;
+    if(record->allocation==node && (record->kind==1 || record->kind==4))return record;
+  return 0;
+}
+U0 I386CodeFreeIC(U8 *context,CIntermediateCode *node)
+{
+  CI386CmpRelease *state=context;
+  CI386CodeAllocation *record=I386CodeFindInstruction(state->control,node);
+  if(record)I386CodeFree(state,record);
+  else state->ok=FALSE;
 }
 U0 I386CodeFreeMisc(U8 *context,CCodeMisc *node)
 {
@@ -289,20 +297,46 @@ U0 I386CodeRetiredCollect(CI386CmpRelease *state)
   }
   I386ICSlabsCollect(state);
 }
+U0 I386COCReleaseInstructionRun(CI386CmpRelease *state)
+{//Caller holds IRQ exclusion. Standalone frees end the validated run.
+  CCmpCtrl *cc=state->control;
+  CIntermediateCode *node;
+  CI386ICSlab *slab;
+  CI386CodeAllocation *record;
+  I64 count;
+  if(I386HeapSize(state->heap,cc)!=sizeof(CI386CmpCtrl)) {
+    state->ok=FALSE;return;
+  }
+  for(count=0;count<32;count++) {
+    node=cc->coc.coc_head.next;
+    if(node==&cc->coc.coc_head.next)return;
+    record=I386CodeFindInstruction(state->control,node);
+    if(!record || !I386CodeRecordLinked(state,record)) {
+      state->ok=FALSE;return;
+    }
+    slab=I386ICSlabFind(state->heap,cc,node,TRUE);
+    if(!slab) {
+      ICDetach(node);I386CodeFree(state,record);return;
+    }
+    if(!slab->live || record!=node(U8 *)+I386_FRONTEND_IC_BYTES) {
+      state->ok=FALSE;return;
+    }
+    ICDetach(node);I386CodeUnlinkSlot(record,slab);
+  }
+}
 Bool I386COCInstructionsRelease(CI386Heap *heap,CCmpCtrl *cc)
 {//Emission is complete. Linking still borrows misc payloads and import metadata.
   U32 irq=I386IrqSave;
   CI386CmpRelease state;
   CI386CmpCtrl *control=cc;
-  CIntermediateCode *node;
   CI386CodeAllocation *record,*next;
   Bool live=FALSE;
   if(!I386CmpCodeOwner(heap,cc)) { I386IrqRestore(irq); return FALSE; }
   control->code_busy=1;if(control->task)control->task->compiler_busy=1;
   state.heap=heap;state.control=cc;state.ok=TRUE;
   I386IrqRestore(irq);
-  while((node=cc->coc.coc_head.next)!=&cc->coc.coc_head.next) {
-    irq=I386IrqSave;ICDetach(node);I386CodeFreeIC(&state,node);I386IrqRestore(irq);
+  while(cc->coc.coc_head.next!=&cc->coc.coc_head.next) {
+    irq=I386IrqSave;I386COCReleaseInstructionRun(&state);I386IrqRestore(irq);
     if(!state.ok)break;
   }
   //A saved outer graph may still borrow retired tree operands. With no live
