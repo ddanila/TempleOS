@@ -6551,3 +6551,22 @@ character and style words on both guests for a line comment, including
 the terminating zero. The native guest freed the result and returned to
 fresh arithmetic.
 [DocHighlight comparison](../build/i386-doc-highlight-v1/result.json)
+
+### Retained providers on the ODE template image
+
+At frozen revision `5e9064e5`, the 128 MiB KVM guest built all nine
+retained providers. The assembly audit verified the persisted modules and
+preserved the build inputs. The first-generation installer then installed
+those exact modules together.
+[Retained module audit](../build/i386-ode-template-port-v1/all-retained128/result.json) ·
+[First-generation module install](../build/i386-ode-template-port-v1/native-generations128/gen1-install/result.json)
+
+A separate installation replaced only the console provider with the
+2,738,076-byte guest build and passed the 8 MiB cold-boot check. On that
+image, the bundled HTML generator and the custom-link conversion produced
+byte-exact HTML matching their pinned expectations. Both tests also verified
+fresh arithmetic at the prompt.
+[Console build](../build/i386-ode-template-port-v1/native-console128/result.json) ·
+[Console install and boot](../build/i386-ode-template-port-v1/native-console-install/result.json) ·
+[HTML generator](../build/i386-ode-template-port-v1/native-console-htmlgen/result.json) ·
+[Custom link conversion](../build/i386-ode-template-port-v1/native-console-custom-link/result.json)

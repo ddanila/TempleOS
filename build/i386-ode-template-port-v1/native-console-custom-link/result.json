@@ -1,0 +1,22 @@
+{
+  "result": "pass",
+  "disk_sha256": "5385ca600316ed36bbeda1a72f102153c191ca4a61af57fbd5a679ec0a643ac9",
+  "source_sha256": {
+    "Demo/ToHtmlToTXTDemo/HtmlGen.HC": "382b45d753d9acd33affabb2bb34d630082081b0403ef236b9aa991cfabd9263",
+    "Demo/ToHtmlToTXTDemo/ToHtml.HC": "35fcff61a7a36454d027b17a78c43328b9b995b7265fa8a921bd87e08a0c3d9b",
+    "Demo/ToHtmlToTXTDemo/DemoInPage.DD": "24e3b0dae5ee8dc0bd833af486b564615983dd1d5eefead5a8c28c1f9ca8cd21"
+  },
+  "rtc_base": "2026-11-27T00:00:00",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 11,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "bytes": 1160,
+  "output_sha256": "ad7d7f9164c4869f67126e56aec9c057f689ae1b76380a1ce02fce625680d4e7",
+  "expected_sha256": "ad7d7f9164c4869f67126e56aec9c057f689ae1b76380a1ce02fce625680d4e7"
+}

@@ -1,0 +1,142 @@
+{
+  "result": "pass",
+  "source_disk_sha256": "7111933fa9a245f5ded0f5fdc0770b8d96c6e2bc030d10aa7a8298aa9cde73ec",
+  "module_order": [
+    "ConsoleRuntime",
+    "CompilerRuntime",
+    "CompilerProbe",
+    "Startup",
+    "MemoryRuntime",
+    "FileRuntime",
+    "BuildRuntime",
+    "DocDiagnosticRuntime",
+    "EditorRuntime"
+  ],
+  "modules": {
+    "ConsoleRuntime": {
+      "bytes": 2738076,
+      "records": 13705,
+      "exports": 1451,
+      "sha256": "81476c7c227b31ea52fc3629cfcf9cd674c8f310509eeeaa0e0121c6a0c36b5f",
+      "reference_sha256": "e411c19cfb9d365db606116e0ca0bf015b30e0eb01b5bb363ee2dcc7f5547fc9"
+    },
+    "CompilerRuntime": {
+      "bytes": 1363983,
+      "records": 4731,
+      "exports": 544,
+      "sha256": "768439d04a345436304a2a57656321b3d1bb44832bfcbb02f5ef43311e3dc539",
+      "reference_sha256": "bd0b28296f1afa45bb7a37541515416491f3474458121c9296bf72b9f70ca032"
+    },
+    "CompilerProbe": {
+      "bytes": 588353,
+      "records": 2349,
+      "exports": 139,
+      "sha256": "77f2c716ef4c2f98271a2bcd3075d9599a391e7b8ea5c0fc905b55e576df42f9",
+      "reference_sha256": "fc8726481bf07b81ed4b62f73259c822b009a13f25acd03f685c80d03783a7a2"
+    },
+    "Startup": {
+      "bytes": 391,
+      "records": 6,
+      "exports": 1,
+      "sha256": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7",
+      "reference_sha256": "5d523c257fcfa26ed6882a4bcae163946426ece652daf72664de20291409423b"
+    },
+    "MemoryRuntime": {
+      "bytes": 251008,
+      "records": 1178,
+      "exports": 177,
+      "sha256": "798a02ce1e9ddc4dcd016ff46b02d286d47630ddf608127bfb59db7c4e101fd1",
+      "reference_sha256": "bef7b2e7c79b38c0e2ca5118f0197c0dc224a965493874dd86ae3e882eb9b8f7"
+    },
+    "FileRuntime": {
+      "bytes": 295839,
+      "records": 998,
+      "exports": 148,
+      "sha256": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38",
+      "reference_sha256": "23ed2c0014082ae65eb39aa583539db9650f8f4ccd84e0e4ef017ffa780fa4ac"
+    },
+    "BuildRuntime": {
+      "bytes": 97307,
+      "records": 300,
+      "exports": 45,
+      "sha256": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d",
+      "reference_sha256": "3134f883c0c637fea96a49bf7270dc660dbfc239457a10564a4bc64acf9977a0"
+    },
+    "DocDiagnosticRuntime": {
+      "bytes": 49623,
+      "records": 274,
+      "exports": 29,
+      "sha256": "10ae3b166ccca52dcdfa1ea271c2e7b7973ec2e4a9e91087d96cef6e9544d9e6",
+      "reference_sha256": "f96db8db10285df64ded906e23dae14d430cc75dd4d7fd4546cce789f984bf3d"
+    },
+    "EditorRuntime": {
+      "bytes": 53736,
+      "records": 259,
+      "exports": 49,
+      "sha256": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e",
+      "reference_sha256": "9c82338f318a3d0290e79bcb8bcc807c15826c980b3d78cd06d687cf13d26230"
+    }
+  },
+  "build_receipts": [
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/native-console128/result.json",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/native-compiler128/result.json",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/native-services128/result.json"
+  ],
+  "input_sha256": {
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/cross/kernel.img": "a185bfdd164052e0821890a370066bc1c5f99562a26947c54758c3b677912004",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/frozen-5e9064e5/tools/test-i386-retained-build.py": "be2c521ffb8c0209fda5fb65bea1794738d974cc8c4b6e3dcc48045fb7ddc432",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/frozen-5e9064e5/tools/package-i386-native-image.py": "7ad2e4ccd30c64d1f937f954b20c9874f3002acf0ee27166e70afc6fc18cc237",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/frozen-5e9064e5/tools/build-i386-kernel.py": "aa504bbd15abc0dcfbdc600eff9a0d29bedf099416cb1adb10dcb6d09ee3bd4b",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/frozen-5e9064e5/tools/assemble-i386-retained-build.py": "53025a353a5b8a6a0c6b321b92b10134a37b408e9aaac6b58f39c4d8b06ea5a4",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/native-console128/result.json": "1f454c982cd4dd220374b4d08966576fe14a0d58c42ef9f27b2ab82dd32f7a94",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/native-console128/source.img": "4d046bd75258408a4c821af1c530eb70b73461c4601859cc5d7c4d1c3db597f9",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/native-compiler128/result.json": "f8abcdb5308ec2d448fb8533934412f5f6a278f3a3a833095f11f5421a844735",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/native-compiler128/source.img": "061dc15b3df855c4834c23e2ec7d760c45cd70901fdcfcea362ea49ffeba7bcf",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/native-services128/result.json": "8c173f4e5feb93aa4732bf11681d5e2ca8823ae1756899e07c970dd294817c9d",
+    "/home/ddanila/fun/TempleOS/build/i386-ode-template-port-v1/native-services128/source.img": "a8569cea635f4b14cd75a125113549a453b6b90200a6f56b985f5d31824ed170"
+  },
+  "inputs_unchanged": true,
+  "packaging": {
+    "result": "pass",
+    "source_sha256": "a185bfdd164052e0821890a370066bc1c5f99562a26947c54758c3b677912004",
+    "image_sha256": "7111933fa9a245f5ded0f5fdc0770b8d96c6e2bc030d10aa7a8298aa9cde73ec",
+    "boot_area_sha256": "38f284616347c8666e673e28a9074e59c0da46098adeba06dc3c967a149f910b",
+    "source_filesystem": {
+      "directories": 63,
+      "files": 1949,
+      "owned_sectors": 96301,
+      "bitmap": "matches reachable extents"
+    },
+    "packaged_filesystem": {
+      "directories": 63,
+      "files": 1958,
+      "owned_sectors": 106928,
+      "bitmap": "matches reachable extents"
+    },
+    "source_unchanged": true,
+    "added_files": {
+      "/Probe/RetainedBuildRuntime.t32m": "7d0e1aa31b15c7c351e91cb977fbb5ae57cd4abe2ab933e4323b91d28564246d",
+      "/Probe/RetainedCompilerProbe.t32m": "77f2c716ef4c2f98271a2bcd3075d9599a391e7b8ea5c0fc905b55e576df42f9",
+      "/Probe/RetainedCompilerRuntime.t32m": "768439d04a345436304a2a57656321b3d1bb44832bfcbb02f5ef43311e3dc539",
+      "/Probe/RetainedConsoleRuntime.t32m": "81476c7c227b31ea52fc3629cfcf9cd674c8f310509eeeaa0e0121c6a0c36b5f",
+      "/Probe/RetainedDocDiagnosticRuntime.t32m": "10ae3b166ccca52dcdfa1ea271c2e7b7973ec2e4a9e91087d96cef6e9544d9e6",
+      "/Probe/RetainedEditorRuntime.t32m": "6941507122ccc69c1a2536e894585ce7e3437eca2056a6b36e9bfa6c4c88447e",
+      "/Probe/RetainedFileRuntime.t32m": "5690afcc214c955c9deffbe3418ecd5824c0bf3d4cbfab6199e756f117516b38",
+      "/Probe/RetainedMemoryRuntime.t32m": "798a02ce1e9ddc4dcd016ff46b02d286d47630ddf608127bfb59db7c4e101fd1",
+      "/Probe/RetainedStartup.t32m": "055a0910bcd09bd22d84d583164fca71065613daea8d9701717b69c3f744fab7"
+    },
+    "added_attributes": {
+      "/Probe/RetainedBuildRuntime.t32m": 2048,
+      "/Probe/RetainedCompilerProbe.t32m": 2048,
+      "/Probe/RetainedCompilerRuntime.t32m": 2048,
+      "/Probe/RetainedConsoleRuntime.t32m": 2048,
+      "/Probe/RetainedDocDiagnosticRuntime.t32m": 2048,
+      "/Probe/RetainedEditorRuntime.t32m": 2048,
+      "/Probe/RetainedFileRuntime.t32m": 2048,
+      "/Probe/RetainedMemoryRuntime.t32m": 2048,
+      "/Probe/RetainedStartup.t32m": 2048
+    },
+    "scope": "Sorted live tree placement with explicit non-replacing additions; preserves original file bytes, attributes, dates and native boot area; not runtime qualification"
+  },
+  "scope": "Byte-verified assembly of complete guest-built retained module outputs"
+}
