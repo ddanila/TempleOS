@@ -1,0 +1,15 @@
+--- a/Kernel/I386/ConsoleRuntime.HC
++++ b/Kernel/I386/ConsoleRuntime.HC
+@@ -943,7 +943,11 @@
+     HashAdd(&console_doc_exports[i],task->hash_table);
+   }
+   DocDefaultsInit(&doldoc);
+-  display_planes=I386HeapAlloc(config->heap,153600,TRUE);
++  CI386KernelSymbol *high_alloc=HashFind("I386HeapAllocHigh",task->hash_table,HTT_EXPORT_SYS_SYM);
++  U8 *(*allocate_display)(CI386Heap *heap,I64 size,Bool zero);
++  if(!high_alloc || high_alloc->kind!=1 || !high_alloc->val)return FALSE;
++  allocate_display=high_alloc->val;
++  display_planes=(*allocate_display)(config->heap,153600,TRUE);
+   if(!display_planes)return FALSE;
+   if(!NativeGraphicsStorageReserve) {
+     I386HeapFree(config->heap,display_planes);return FALSE;

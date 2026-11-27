@@ -249,6 +249,15 @@ The failure leaves the largest free block unchanged.
 [Heap census](build/i386-user8-fragmentation-v1/result.json) ·
 [Snapshot archive manifest](build/i386-user8-fragmentation-v1/snapshots.json)
 
+A ConsoleRuntime experiment moved the 153,600-byte framebuffer allocation
+to the high end of the main arena. The candidate boots to the managed
+prompt, but the largest free payload before `USCheck` only rises from
+173,336 to 175,272 bytes. The same 267,527-byte task request fails, with
+a 792-byte maximum fallback payload. The experiment remains an unapplied
+patch.
+[Physical comparison](build/i386-user8-console-plane-high-v1/comparison.json) ·
+[User startup result](build/i386-user8-console-plane-high-v1/user8.json)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

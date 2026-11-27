@@ -1,0 +1,18 @@
+{
+  "result": "fail",
+  "phase": "before USCheck",
+  "baseline": {
+    "framebuffer_payload_address": 5577008,
+    "arena_bytes": 6746112,
+    "free_span_bytes": 407064,
+    "largest_free_payload_bytes": 173336
+  },
+  "high_framebuffer": {
+    "framebuffer_payload_address": 8103936,
+    "arena_bytes": 6746112,
+    "free_span_bytes": 407520,
+    "largest_free_payload_bytes": 175272
+  },
+  "task_request_bytes": 267527,
+  "fallback_largest_payload_bytes": 792
+}
