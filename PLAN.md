@@ -14,15 +14,15 @@ this table instead of repeating "C1–C5 remain open" in checkpoint entries.
 | Measure | Count |
 | --- | --- |
 | Inventory entries (pinned original tree) | 686 |
-| Qualified | 101 (six apps and ninety-five demos) |
+| Qualified | 102 (six apps and ninety-six demos) |
 | Explicit host-only exclusions | 12 (Linux tools and download materials) |
 | Shared files covered by qualified workflows | 21 (fifteen support sources and six shared data or document files) |
-| Qualification gaps | 552 |
-| Linked to tests / with reference workflow and oracle | 258 / 188 |
+| Qualification gaps | 551 |
+| Linked to tests / with reference workflow and oracle | 259 / 189 |
 | Apps qualified | 6 of 12 (all 12 have test evidence) |
-| Demos qualified | 95 of 224 |
+| Demos qualified | 96 of 224 |
 
-C1 has 552 qualification gaps, including entries that still need a reference
+C1 has 551 qualification gaps, including entries that still need a reference
 workflow and oracle. C2 has passing editor save and reboot, Home handoff, menu,
 and form-input checks on specific images. End-to-end desktop qualification is
 pending. C5 reproduced two native generations from frozen revision `5303f095`.
@@ -31881,3 +31881,12 @@ during overlap and zero after the sprites separated in both guests.
 A key dismissed the demo, and i386 evaluated fresh prompt arithmetic.
 The paired check decoded the counter directly from the VGA glyphs.
 [Collision comparison](build/i386-demo-collision-pair-v3/result.json)
+
+
+### C1: expose original 3D arrow rendering to bundled demos
+
+The console now publishes its shared `GrArrow3` routine. The bundled
+CommonAncestor demo renders a tree with highlighted nodes in both guests,
+dismisses on a key, and returns to fresh arithmetic on i386. A fixed
+offscreen arrow matched all 768 pixels in the original and native guests.
+[Arrow and demo comparison](build/i386-gr-arrow-public-v1/result.json)

@@ -17875,10 +17875,26 @@
       "include_literals": [],
       "public_symbol_candidates": [],
       "source_at_discovery": "identical",
-      "compatibility": "unqualified",
-      "reference_workflow": null,
-      "oracle": null,
-      "tests": []
+      "compatibility": "qualified",
+      "reference_workflow": {
+        "status": "verified",
+        "description": "Run the bundled demo, observe its tree with arrows and highlighted nodes, and dismiss it with a key."
+      },
+      "oracle": {
+        "checks": [
+          "Observe the rendered tree and highlighted nodes in both guests.",
+          "Match every pixel of a separate 32-by-24 arrow fixture.",
+          "Confirm normal dismissal and fresh arithmetic on i386."
+        ]
+      },
+      "tests": [
+        {
+          "target": "paired-common-ancestor-and-arrow-raster",
+          "result": "pass",
+          "evidence": "build/i386-gr-arrow-public-v1/result.json",
+          "scope": "Both guests render their randomly generated tree and dismiss it. The fixed arrow fixture matches all 768 raster pixels."
+        }
+      ]
     },
     {
       "path": "Demo/Graphics/Doodle.HC",

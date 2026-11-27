@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "pixels": 768,
+  "raster_sha256": "92af57ecc43a47e66d68b22e0ef7685522d605f93e410fa8a087d3b1ab0db5b2",
+  "fixture_sha256": "ab5897473b542272df0103268b5438f5fff897aa312d99af2c44956e4051a823",
+  "fresh_arithmetic": {
+    "column": 0,
+    "row": 3,
+    "foreground": [
+      0,
+      168,
+      0
+    ]
+  },
+  "original_tree_sha256": "12c90d0ecba19baa8da4cf31f938ff56dbfcb1eb2942447ae58759f3f7cb0326",
+  "original_tree_blue_pixels": 951,
+  "native_tree_sha256": "b2bd51d5191bab1d2911a6f94c454e16922ef38726ac6b55c0e0c217b456a509",
+  "native_tree_blue_pixels": 1805,
+  "demo_source_sha256": "128901a2e3e1ec2b1ef9d578037c204b504a1fcdf8ea720b9cc98445a943da8c"
+}
