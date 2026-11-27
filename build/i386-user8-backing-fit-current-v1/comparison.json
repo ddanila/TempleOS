@@ -1,0 +1,45 @@
+{
+  "result": "fail",
+  "scope": "Late smallest-fit 8 KiB backing placement on the current image.",
+  "largest_free_payload_bytes": 175376,
+  "task_request_bytes": 267527,
+  "free_span_bytes": 407952,
+  "largest_free_spans": [
+    {
+      "address": 7808688,
+      "span": 175392,
+      "requested": 0,
+      "live": false
+    },
+    {
+      "address": 8026624,
+      "span": 140568,
+      "requested": 0,
+      "live": false
+    }
+  ],
+  "intervening": [
+    {
+      "address": 7984080,
+      "span": 1168,
+      "requested": 1152,
+      "live": true
+    },
+    {
+      "address": 7985248,
+      "span": 32752,
+      "requested": 0,
+      "live": false
+    },
+    {
+      "address": 8018000,
+      "span": 8624,
+      "requested": 8608,
+      "live": true,
+      "backing_region": {
+        "page_bytes": 8192,
+        "used_bytes": 8192
+      }
+    }
+  ]
+}

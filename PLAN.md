@@ -280,6 +280,15 @@ The effect of changing those choices on later allocations remains open.
 [Allocation history](build/i386-user8-backing-trace-current-v1/result.json) ·
 [Snapshot manifest](build/i386-user8-backing-trace-current-v1/snapshot.json)
 
+On the current image, late smallest-fit placement for native 8 KiB
+backing batches boots to the managed prompt. The pre-User census finds a
+175,376-byte largest free payload, up from 173,336 bytes. A fully occupied
+8 KiB backing region and a separate 1,168-byte live allocation now divide
+the two largest spans. The 267,527-byte task request still fails. The
+experimental policy remains outside the production sources.
+[Heap comparison](build/i386-user8-backing-fit-current-v1/comparison.json) ·
+[8 MiB acceptance result](build/i386-user8-backing-fit-current-v1/user8.json)
+
 The unchanged `ScrnCapture` demo now saves, reopens and replays its 640×480
 screen image on i386. The original and native replays each matched
 307,183 of their 307,200 saved pixels. The native guest accepted fresh

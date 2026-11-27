@@ -1,0 +1,9 @@
+{
+  "archive": "candidate.patch.zst",
+  "archive_sha256": "e3b68fd923f6a425c12eca7b121b55b434c09bd840c6bed422874db709c6cc82",
+  "base_manifest": "build/i386-psalmody-fresh-v1/image-archive.json",
+  "base_sha256": "c43e583e212de1f7a1e0d443bc40df968227d6018a86f371beac2673f2842672",
+  "raw_sha256": "9669b152f84da6fef73818daab14f0cd40fca9e0ef68fb67e7ff313e0d188dfc",
+  "raw_bytes": 16777216,
+  "verified_byte_for_byte": true
+}

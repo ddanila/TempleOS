@@ -1,0 +1,9 @@
+{
+  "result": "pass",
+  "base_sha256": "f99c2f9d9ea8286b8699f7fca9867068ea624a7bdf0c959f5ba5547b37336ed4",
+  "image_sha256": "9669b152f84da6fef73818daab14f0cd40fca9e0ef68fb67e7ff313e0d188dfc",
+  "changed_files": {
+    "/Kernel/I386/MemoryBacking.HC": "8922bcf8a75a480fca2c455cede7c95da201bfcb9c14f1373f8fa0117b8c94ba",
+    "/Modules/I386/MemoryRuntime.t32m": "b7a459a34583549b41b23837947743833a6a05e736fe9d1da777ade151e1c0f6"
+  }
+}
