@@ -132,11 +132,13 @@ i386. Both guests selected all six control points at identical
 coordinates and drew matching green, red and blue pixel masks. Space
 cleared both canvases and the native prompt accepted arithmetic. The
 image also passed the 8 MiB KVM diagnostics and 20 document resource
-sessions. The normal 8 MiB TCG timing run is in progress.
+sessions. It passed all nine exact VGA checkpoints under TCG at 8 MiB.
+Startup took 272.470 seconds against the 60-second requirement.
 [B-spline baseline](build/i386-bspline-v1/baseline/result.json) ·
 [Paired raster verification](build/i386-bspline-v1/comparison.json) ·
 [8 MiB diagnostics](build/i386-bspline-v1/diagnostic8-kvm/result.json) ·
-[8 MiB resource profile](build/i386-bspline-v1/resource8/resource-result.json)
+[8 MiB resource profile](build/i386-bspline-v1/resource8/resource-result.json) ·
+[8 MiB TCG startup budget](build/i386-bspline-v1/interactive8-tcg/startup-budget.json)
 
 The separate 8 MiB TCG profile of the color-picker image reached the
 prompt with 1,243 instruction-address samples. Heap scan, scan selection
@@ -155,10 +157,14 @@ full block. This removes one branch per block while preserving the
 full arena audit. Both the i386 assembly and the portable heap-core
 fixtures pass, including rejection of malformed 8- and 16-byte tails
 after a valid allocation and byte-for-byte preservation of the arena
-and allocator control record. A normal full-image TCG measurement is
-needed to quantify the change.
+and allocator control record. The fragmented-arena fixture also passes
+with 1,024 transient records. The cross-build changes only the kernel
+module and shrinks the flat kernel by 24 bytes. Full-image diagnostics,
+resource checks and normal TCG timing are pending on that image.
 [Assembly arena test](build/i386-heap-tail-v1/core386-v2/result.json) ·
-[Portable arena test](build/i386-heap-tail-v1/core-source-v2/result.json)
+[Portable arena test](build/i386-heap-tail-v1/core-source-v2/result.json) ·
+[Fragmented high allocation](build/i386-heap-tail-v1/high386/result.json) ·
+[Cross-build manifest](build/i386-heap-tail-v1/cross/result.json)
 
 The `build/` directory accounted for 336 GiB of allocated space, with
 1.7 GiB available on the filesystem at that checkpoint. The ISO archive ledger

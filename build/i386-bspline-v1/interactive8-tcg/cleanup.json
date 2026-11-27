@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-bspline-v1/interactive8-tcg/working.img",
+  "retained": "build/i386-bspline-v1/cross/kernel.img",
+  "sha256": "8d4db6051318f29862d50488f3e339c475107c4a70f98070502f2f57018ddde6",
+  "allocated_bytes": 67112960
+}
