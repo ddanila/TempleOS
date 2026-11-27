@@ -1,6 +1,7 @@
 #ifndef I386_HEAP_KNOWN_INCLUDED
 #define I386_HEAP_KNOWN_INCLUDED
 #include "/Kernel/I386/Heap.HH"
+#include "/Kernel/I386/HeapFreeBlock.HC"
 I64 I386HeapKnownRequested(CI386Heap *heap,U8 *ptr)
 {//Caller holds IRQ exclusion and has just validated this unchanged heap.
   //Walk physical block boundaries before interpreting any candidate header.
@@ -47,5 +48,46 @@ Bool I386HeapKnownAtLeast(CI386Heap *heap,U8 *ptr,U32 minimum)
 {
   I64 requested=I386HeapKnownRequested(heap,ptr);
   return requested>=0 && requested>=minimum;
+}
+Bool I386HeapKnownFree(CI386Heap *heap,U8 *ptr)
+{//The caller holds IRQ exclusion and has audited the arena before any writes.
+  CI386HeapBlock *block=0,*previous=0;
+  U8 *target=ptr-16;
+  if(!ptr)return TRUE;
+  asm {
+    PUSH EAX
+    PUSH ECX
+    PUSH EDX
+    PUSH ESI
+    MOV ESI,U32 &heap[EBP]
+    MOV ECX,U32 CI386Heap.size[ESI]
+    MOV ESI,U32 CI386Heap.base[ESI]
+    ADD ECX,ESI
+    MOV EAX,U32 &target[EBP]
+    CMP EAX,ECX
+    JAE @@30
+    XOR EDX,EDX
+    CMP ESI,EAX
+    JAE @@20
+@@10:
+    MOV EDX,ESI
+    ADD ESI,U32 CI386HeapBlock.span[ESI]
+    CMP ESI,EAX
+    JB @@10
+@@20:
+    JNE @@30
+    CMP U32 CI386HeapBlock.tag[ESI],I386_HEAP_USED
+    JNE @@30
+    MOV U32 &block[EBP],ESI
+    MOV U32 &previous[EBP],EDX
+@@30:
+    POP ESI
+    POP EDX
+    POP ECX
+    POP EAX
+  }
+  if(!block)return FALSE;
+  I386HeapFreeBlock(heap,block,previous);
+  return TRUE;
 }
 #endif

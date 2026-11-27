@@ -1,0 +1,13 @@
+{
+  "result": "pass",
+  "cpu": "486,-fpu",
+  "ram_mib": 8,
+  "startup_status": "ok",
+  "boot_mode": "interactive",
+  "startup_seconds": 262.8213846180006,
+  "commands": 9,
+  "setup_commands": 0,
+  "window_manager_pause_requested": false,
+  "vga": "all pixels matched at each checkpoint",
+  "interaction_latencies_seconds": {}
+}

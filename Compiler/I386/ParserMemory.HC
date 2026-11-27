@@ -58,6 +58,14 @@ Bool I386ParserFree(CI386Heap *heap,CCmpCtrl *cc,U8 *allocation)
   for(record=owned->parser_next;record!=&owned->parser_next;record=record->next)
     if(record->allocation==allocation) { found=TRUE; break; }
   if(!found) { I386IrqRestore(irq); return FALSE; }
+  if(!record->owner) {
+    //CodeOwner audited the arena. Neither this unlink nor a known free
+    //calls external code, and each free preserves the physical chain.
+    found=I386HeapKnownFree(heap,allocation);
+    record->last->next=record->next; record->next->last=record->last;
+    if(!I386HeapKnownFree(heap,record)) found=FALSE;
+    I386IrqRestore(irq); return found;
+  }
   release.heap=heap; release.control=cc; release.ok=TRUE;
   I386CmpReleaseAllocation(&release,allocation);
   I386IrqRestore(irq); return release.ok;

@@ -322,9 +322,10 @@ public I64 I386HeapSize(CI386Heap *hc,U8 *ptr)
   return I386HeapScan(hc,ptr);
 }
 
+#include "/Kernel/I386/HeapFreeBlock.HC"
 public Bool I386HeapFree(CI386Heap *hc,U8 *ptr)
 {//NULL is a no-op; validate every block and counter before mutating anything.
-  CI386HeapBlock *block=0,*previous=0,*next;
+  CI386HeapBlock *block=0,*previous=0;
   U8 *target=ptr-16;
 #ifdef I386_HEAP_SOURCE_BUILD
   CI386HeapBlock *cursor,*last_free=0;
@@ -412,13 +413,7 @@ public Bool I386HeapFree(CI386Heap *hc,U8 *ptr)
   }
   if(!valid || !block)return FALSE;
 #endif
-  hc->used-=block->span;hc->allocations--;
-  block->tag=I386_HEAP_FREE;block->requested=0;
-  if(block(U8 *)+block->span<hc->base+hc->size) {
-    next=block(U8 *)+block->span;
-    if(next->tag==I386_HEAP_FREE)block->span+=next->span;
-  }
-  if(previous)previous->span+=block->span;
+  I386HeapFreeBlock(hc,block,previous);
   return TRUE;
 }
 

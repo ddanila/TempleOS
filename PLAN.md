@@ -94,6 +94,13 @@ took 270.838 seconds with all nine VGA checks passing.
 [Bounded lookup resource receipt](build/i386-known-boundary-v2/resource8/resource-result.json) ·
 [Bounded lookup TCG budget check](build/i386-known-boundary-v2/interactive8-tcg/startup-budget.json)
 
+The post-emission instruction release build reached the same TCG prompt in
+262.821 seconds with all nine VGA checks passing. Reusing the parser's
+arena audit when freeing its payload and ownership record also passed the
+8 MiB KVM document resource and diagnostic tests.
+[Instruction release TCG behavior](build/i386-emission-slot-run-v2/interactive8-tcg/result.json) ·
+[Parser free resource receipt](build/i386-parser-known-free-v1/resource8/resource-result.json)
+
 The audited cross-build from `c4064751` passed the exact 1,572-file
 source audit, frozen 686-file content check, 8 MiB probe, all nine active
 64 MiB desktop commands, and configured HomeSys handoff. Its

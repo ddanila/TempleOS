@@ -1476,3 +1476,23 @@ The two-stage bootstrap, 386 instruction audit, 8 MiB diagnostics, and
 The same image also passed the full-content check against all 686
 inventory files at 64 MiB, including the bounded guest file reads.
 [64 MiB full-content result](../build/i386-emission-slot-run-v2/full-content64/result.json)
+
+The post-emission release image reached the 8 MiB TCG prompt in
+262.821 seconds, with all nine VGA checkpoints matching and zero
+build-provider loads. The preceding bounded-lookup image took 270.838
+seconds in a separate run. The 60-second requirement remains open.
+[Instruction release TCG receipt](../build/i386-emission-slot-run-v2/interactive8-tcg/result.json) ·
+[Startup budget verdict](../build/i386-emission-slot-run-v2/interactive8-tcg/startup-budget.json)
+
+Ordinary parser frees now reuse the full arena audit performed by compiler
+ownership validation while IRQ exclusion remains in effect. Each free
+locates an exact live block boundary and uses the same coalescing and
+accounting code as the public allocator. The code-owner callback path
+still performs its own checks. The arena test compares all 24 free orders,
+including byte-for-byte state and rejection of interior, out-of-range and
+already-freed pointers. Both the assembly and portable heap validator
+variants, the compiler ownership suite, 386 boot audit, 8 MiB KVM
+diagnostics, and the 20-session document resource test passed.
+[Assembly heap test](../build/i386-parser-known-free-v1/heap-core/result.json) ·
+[Portable heap test](../build/i386-parser-known-free-v1/heap-source/result.json) ·
+[8 MiB resource test](../build/i386-parser-known-free-v1/resource8/resource-result.json)
