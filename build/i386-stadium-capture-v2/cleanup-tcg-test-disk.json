@@ -1,0 +1,6 @@
+{
+  "removed": "build/i386-stadium-capture-v2/interactive8-tcg/working.img",
+  "retained": "build/i386-stadium-capture-v2/cross/kernel.img",
+  "sha256": "74616f2eb9510e2011fc6d6fc2a0f315b7da576832eeea67a3b091dbacbee7ec",
+  "allocated_bytes": 67112960
+}

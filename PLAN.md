@@ -104,6 +104,11 @@ a mouse-triggered pitch, and the Enter restart. Escape returned to
 command input and the native session accepted fresh arithmetic.
 [Stadium game comparison](build/i386-stadium-game-v1/comparison.json)
 
+The full-window capture image reached the 8 MiB TCG prompt in 269.231
+seconds and matched all nine VGA checkpoints. The 60-second requirement
+remains open.
+[Full-window capture TCG budget check](build/i386-stadium-capture-v2/interactive8-tcg/startup-budget.json)
+
 The packed opcode catalog and compiler teardown update passed the
 8 MiB KVM document resource test. All 20 sessions completed with exact
 heap recovery and eleven matching VGA checkpoints. The same build
