@@ -1271,3 +1271,12 @@ check and paused TCG profile also logged that rejection and subsequently
 reached the prompt. The strict run returned no valid startup time.
 [Timed run receipt](../build/i386-task-report-v2/interactive8-tcg/result.json) ·
 [Startup trace](../build/i386-task-report-v2/interactive8-tcg/debug.log)
+
+Compiler node retirement now reuses the arena validation already done by
+`I386CmpCodeOwner` while interrupts remain excluded. It still checks physical
+allocation boundaries, the registered slab and its exact allocation size,
+and the node lifetime record. Other lookup and teardown callers retain the
+full arena validation. The original two-generation bootstrap, 386 boot audit,
+task-symbol and compiler ownership corpus, and full 8 MiB KVM diagnostics passed.
+[Ownership corpus](../build/i386-ic-lifetime-known-v4/task-symbols/result.json) ·
+[8 MiB diagnostics](../build/i386-ic-lifetime-known-v4/diagnostic8-kvm/result.json)

@@ -1,4 +1,5 @@
 #include "/Compiler/I386/Emit.HH"
+#include "/Kernel/I386/HeapKnown.HC"
 //Included by Control.HC after its private control and release-state declarations.
 class CI386OwnedIC { CIntermediateCode node; CI386CodeAllocation lifetime; };
 class CI386OwnedMisc { CCodeMisc node; CI386CodeAllocation lifetime; };
@@ -23,11 +24,13 @@ class CI386ICSlab {
   CIntermediateCode *free_nodes;
   U8 body[1];
 };
-CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node)
+CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node,
+  Bool arena_valid=FALSE)
 {//Only registered slabs can admit an interior node; never trust a nearby header.
   CI386CmpCtrl *owned=cc;
   CI386ICSlab *slab;
   U64 address=(node+0)(U64),base,distance;
+  U32 bytes;
   for(slab=owned->ic_slabs;slab;slab=slab->next) {
     base=(slab->body+0)(U64);
     if(address>=base) {
@@ -35,35 +38,41 @@ CI386ICSlab *I386ICSlabFind(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node
       if(distance<slab->issued*I386_IC_SLAB_SLOT_BYTES && !(distance%I386_IC_SLAB_SLOT_BYTES)) {
         if(slab->lifetime.control!=cc || slab->lifetime.allocation!=slab ||
             slab->lifetime.kind!=I386_CODE_IC_SLAB || slab->issued>slab->capacity ||
-            slab->live>slab->issued || !slab->capacity || slab->capacity>I386_IC_SLAB_SLOTS ||
-            I386HeapSize(heap,slab)!=offset(CI386ICSlab.body)+slab->capacity*I386_IC_SLAB_SLOT_BYTES)
-          return 0;
+            slab->live>slab->issued || !slab->capacity || slab->capacity>I386_IC_SLAB_SLOTS) return 0;
+        bytes=offset(CI386ICSlab.body)+slab->capacity*I386_IC_SLAB_SLOT_BYTES;
+        if(arena_valid) {
+          if(!I386HeapKnownSize(heap,slab,bytes)) return 0;
+        } else if(I386HeapSize(heap,slab)!=bytes) return 0;
         return slab;
       }
     }
   }
   return 0;
 }
-CI386CodeAllocation *I386ICLifetime(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node)
-{
+CI386CodeAllocation *I386ICLifetime(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node,
+  Bool arena_valid=FALSE)
+{//Pass arena_valid only after CodeOwner audits the arena under continued IRQ exclusion.
   I64 bytes;
   CI386ICSlab *slab;
   CI386CodeAllocation *record;
   if(!node) return 0;
-  if(slab=I386ICSlabFind(heap,cc,node)) {
+  if(slab=I386ICSlabFind(heap,cc,node,arena_valid)) {
     record=node(U8 *)+I386_FRONTEND_IC_BYTES;
     if(record->control==cc && record->allocation==node && (record->kind==1 || record->kind==4))
       return record;
     return 0;
   }
-  bytes=I386HeapSize(heap,node);
-  if(bytes==sizeof(CI386OwnedIC)) return &node(CI386OwnedIC *)->lifetime;
-  if(bytes==I386_FRONTEND_IC_BYTES+sizeof(CI386CodeAllocation))
-    return node(U8 *)+I386_FRONTEND_IC_BYTES;
-  return 0;
+  if(arena_valid) {
+    if(I386HeapKnownSize(heap,node,sizeof(CI386OwnedIC))) return &node(CI386OwnedIC *)->lifetime;
+    if(!I386HeapKnownSize(heap,node,I386_FRONTEND_IC_BYTES+sizeof(CI386CodeAllocation))) return 0;
+  } else {
+    bytes=I386HeapSize(heap,node);
+    if(bytes==sizeof(CI386OwnedIC)) return &node(CI386OwnedIC *)->lifetime;
+    if(bytes!=I386_FRONTEND_IC_BYTES+sizeof(CI386CodeAllocation)) return 0;
+  }
+  return node(U8 *)+I386_FRONTEND_IC_BYTES;
 }
 
-#include "/Kernel/I386/HeapKnown.HC"
 Bool I386CmpCodeOwner(CI386Heap *heap,CCmpCtrl *cc)
 {
   CI386CmpCtrl *owned=cc;
@@ -251,7 +260,7 @@ Bool I386ICRetire(CI386Heap *heap,CCmpCtrl *cc,CIntermediateCode *node)
 {
   U32 irq=I386IrqSave;
   CI386CodeAllocation *record;
-  if(!I386CmpCodeOwner(heap,cc) || !(record=I386ICLifetime(heap,cc,node)) ||
+  if(!I386CmpCodeOwner(heap,cc) || !(record=I386ICLifetime(heap,cc,node,TRUE)) ||
       record->control!=cc || record->allocation!=node || record->kind!=1 ||
       !node->next || !node->last || node->next==node || node->last==node ||
       node->next->last!=node || node->last->next!=node) {
