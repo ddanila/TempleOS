@@ -1296,3 +1296,9 @@ nine exact VGA checkpoints. The startup trace had no allocation rejection
 or build-provider load.
 [Integrated KVM startup](../build/i386-sprite-early-integrated-v1/interactive8-kvm/result.json) ·
 [386 boot audit](../build/i386-sprite-early-integrated-v1/cross/boot-instruction-audit.json)
+
+The source-only sprite load-order trial also reached the prompt under
+8 MiB TCG in 279.356 seconds. All nine normal VGA checkpoints and the
+`Sprite2Code` publication check passed, with no allocation rejection.
+The run exceeded the 60-second startup limit.
+[Strict TCG trial](../build/i386-sprite-startup-early-v1/result-tcg.json)

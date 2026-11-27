@@ -1,0 +1,17 @@
+{
+  "result": "pass",
+  "cpu": "486,-fpu",
+  "ram_mib": 8,
+  "startup_status": "ok",
+  "boot_mode": "interactive",
+  "startup_seconds": 279.3562796160113,
+  "commands": 10,
+  "setup_commands": 0,
+  "window_manager_pause_requested": false,
+  "vga": "all pixels matched at each checkpoint",
+  "interaction_latencies_seconds": {},
+  "accel": "tcg",
+  "disk_sha256": "3cbb5d2b3b9c49853d81288ffc2a51e1ba7bcbbf021f2332dcfb87a8be9d963b",
+  "startup_budget_seconds": 60,
+  "interactive_budget_pass": false
+}
